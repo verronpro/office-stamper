@@ -481,7 +481,7 @@ public class DefaultTests {
     private static Arguments repeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate() {
         var context = Contexts.tableContext();
         var template = getResource(
-                Path.of("repeatDocPartAndCommentProcessorsIsolationTest.docx"));
+                Path.of("RepeatDocPartAndCommentProcessorsIsolationTest.docx"));
         var expected = """
                 This will stay untouched.
                                 

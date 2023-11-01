@@ -19,6 +19,8 @@ import pro.verron.docxstamper.utils.context.Contexts;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +35,12 @@ import static pro.verron.docxstamper.utils.context.Contexts.*;
 
 public class DefaultTests {
 
-    public static InputStream getResource(String name) {
-        return DefaultTests.class.getResourceAsStream(name);
+    public static InputStream getResource(String name)  {
+        try {
+            return Files.newInputStream(Path.of("test", "sources", name));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static Arguments replaceWordWithIntegrationTest() {

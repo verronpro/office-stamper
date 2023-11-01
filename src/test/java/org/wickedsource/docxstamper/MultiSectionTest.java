@@ -9,6 +9,7 @@ import org.wickedsource.docxstamper.util.DocumentUtil;
 import pro.verron.docxstamper.utils.TestDocxStamper;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,7 +20,7 @@ class MultiSectionTest {
 	@Test
     void expressionsInMultipleSections() throws Docx4JException, IOException {
 		var context = new NamesContext("Homer", "Marge");
-		var template = getResource("MultiSectionTest.docx");
+		var template = getResource(Path.of("MultiSectionTest.docx"));
 		var stamper = new TestDocxStamper<NamesContext>(
 				new DocxStamperConfiguration());
 		var document = stamper.stampAndLoad(template, context);

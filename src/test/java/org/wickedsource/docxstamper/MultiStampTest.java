@@ -2,9 +2,8 @@ package org.wickedsource.docxstamper;
 
 import org.junit.jupiter.api.Test;
 import pro.verron.docxstamper.utils.TestDocxStamper;
-import pro.verron.docxstamper.utils.context.Contexts;
 
-import java.util.List;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
@@ -17,7 +16,7 @@ class MultiStampTest {
         var context = names("Homer","Marge","Bart","Lisa","Maggie");
         var stamper = new TestDocxStamper<>(config);
 
-        var template1 = getResource("MultiStampTest.docx");
+        var template1 = getResource(Path.of("MultiStampTest.docx"));
         var document1 = stamper.stampAndLoadAndExtract(template1, context);
         assertEquals("""
                              ❬Multi-Stamp-Test❘spacing={after=120,afterLines=120,before=120,beforeLines=120,line=120,lineRule=120}❭
@@ -29,7 +28,7 @@ class MultiStampTest {
                              ❬❘spacing={after=140,afterLines=140,before=140,beforeLines=140,line=140,lineRule=140}❭""",
                      document1);
 
-        var template2 = getResource("MultiStampTest.docx");
+        var template2 = getResource(Path.of("MultiStampTest.docx"));
         var document2 = stamper.stampAndLoadAndExtract(template2, context);
         assertEquals("""
                              ❬Multi-Stamp-Test❘spacing={after=120,afterLines=120,before=120,beforeLines=120,line=120,lineRule=120}❭

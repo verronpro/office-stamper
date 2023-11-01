@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import pro.verron.docxstamper.utils.IOStreams;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +24,8 @@ class ObjectDeleterTest {
 
     @Test
     void deletesCorrectGlobalParagraphs() throws Docx4JException, IOException {
-        var template = getResource("util//ObjectDeleterTest-globalParagraphs.docx");
+        var template = getResource(Path.of("util","ObjectDeleterTest" +
+                                           "-globalParagraphs.docx"));
         var in = WordprocessingMLPackage.load(template);
         var coordinates = getParagraphsFromObject(in);
 
@@ -64,7 +66,8 @@ class ObjectDeleterTest {
     @Test
     void deletesCorrectParagraphsInTableCells() throws Docx4JException, IOException {
         var template = getResource(
-                "util//ObjectDeleterTest-paragraphsInTableCells.docx");
+                Path.of("util","ObjectDeleterTest-paragraphsInTableCells" +
+                               ".docx"));
         var document = WordprocessingMLPackage.load(template);
         final List<P> coordinates = getParagraphsFromObject(
                 getTableFromObject(document));
@@ -111,7 +114,8 @@ class ObjectDeleterTest {
 
     @Test
     void deletesCorrectGlobalTables() throws Docx4JException, IOException {
-        var template = getResource("util//ObjectDeleterTest-tables.docx");
+        var template = getResource(Path.of("util","ObjectDeleterTest-tables" +
+                                                  ".docx"));
         var document = WordprocessingMLPackage.load(template);
         var coordinates = DocumentUtil.getTableFromObject(document);
 
@@ -146,7 +150,8 @@ class ObjectDeleterTest {
 
     @Test
     void deletesCorrectTableRows() throws Docx4JException, IOException {
-        var template = getResource("util//ObjectDeleterTest-tableRows.docx");
+        var template = getResource(Path.of("util","ObjectDeleterTest" +
+                                                  "-tableRows.docx"));
         var document = WordprocessingMLPackage.load(template);
         var rowCoordinates = DocumentUtil.getTableRowsFromObject(document);
 

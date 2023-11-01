@@ -18,7 +18,7 @@ permissions:
 jobs:
   ci:
     name: Continuous Integration
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       actions: read
       contents: read

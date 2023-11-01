@@ -1,7 +1,6 @@
 package org.wickedsource.docxstamper.util;
 
 import org.docx4j.TextUtils;
-import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -20,12 +19,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
+import static org.docx4j.XmlUtils.unwrap;
 
 /**
- * <p>CommentUtil class.</p>
- *
- * @author joseph
- * @version $Id: $Id
+ * Utility class for working with comments in a DOCX document.
  */
 public class CommentUtil {
     private static final Logger logger = LoggerFactory.getLogger(
@@ -38,68 +35,79 @@ public class CommentUtil {
     }
 
     /**
-     * Returns the comment the given DOCX4J run is commented with.
+     * Returns the comment the given DOCX4J object is commented with.
      *
-     * @param run      the DOCX4J run whose comment to retrieve.
-     * @param document the document that contains the run.
-     * @return the comment, if found, null otherwise.
+     * @param run      the DOCX4J object whose comment to retrieve.
+     * @param document the document that contains the object.
+     * @return Optional of the comment, if found, Optional.empty() otherwise.
      */
-    public static Optional<Comments.Comment> getCommentAround(R run, WordprocessingMLPackage document) {
+    public static Optional<Comments.Comment> getCommentAround(
+            R run,
+            WordprocessingMLPackage document
+    ) {
         if (run == null)
             return Optional.empty();
 
         ContentAccessor parent = (ContentAccessor) ((Child) run).getParent();
         if (parent == null)
             return Optional.empty();
-        CommentRangeStart possibleComment = null;
-        boolean foundChild = false;
+
         try {
-            for (Object contentElement : parent.getContent()) {
-                // so first we look for the start of the comment
-                if (XmlUtils.unwrap(
-                        contentElement) instanceof CommentRangeStart) {
-                    possibleComment = (CommentRangeStart) contentElement;
-                }
-                // then we check if the child we are looking for is ours
-                else if (possibleComment != null && run.equals(
-                        contentElement)) {
-                    foundChild = true;
-                }
-                // and then if we have an end of a comment we are good!
-                else if (possibleComment != null && foundChild && XmlUtils
-                        .unwrap(contentElement) instanceof CommentRangeEnd) {
-                    try {
-                        BigInteger id = possibleComment.getId();
-                        Optional<Comments.Comment> comment = findComment(
-                                document, id);
-                        if (comment != null) return comment;
-                    } catch (InvalidFormatException e) {
-                        logger.warn(String.format(
-                                "Error while searching comment. Skipping run %s.",
-                                run), e);
-                    }
-                }
-                // else restart
-                else {
-                    possibleComment = null;
-                    foundChild = false;
-                }
-            }
-            return Optional.empty();
+            return getComment(run, document, parent);
         } catch (Docx4JException e) {
             throw new DocxStamperException(
                     "error accessing the comments of the document!", e);
         }
     }
 
-    public static Optional<Comments.Comment> findComment(WordprocessingMLPackage document, BigInteger id) throws Docx4JException {
+    private static Optional<Comments.Comment> getComment(
+            R run,
+            WordprocessingMLPackage document,
+            ContentAccessor parent
+    ) throws Docx4JException {
+        CommentRangeStart possibleComment = null;
+        boolean foundChild = false;
+        for (Object contentElement : parent.getContent()) {
+            // so first we look for the start of the comment
+            if (unwrap(contentElement) instanceof CommentRangeStart crs)
+                possibleComment = crs;
+                // then we check if the child we are looking for is ours
+            else if (possibleComment != null && run.equals(contentElement))
+                foundChild = true;
+                // and then if we have an end of a comment we are good!
+            else if (possibleComment != null
+                     && foundChild
+                     && unwrap(contentElement) instanceof CommentRangeEnd) {
+                try {
+                    var id = possibleComment.getId();
+                    return findComment(document, id);
+                } catch (InvalidFormatException e) {
+                    var format = "Error while searching comment. Skipping run %s.";
+                    var message = String.format(format, run);
+                    logger.warn(message, e);
+                }
+            }
+            // else restart
+            else {
+                possibleComment = null;
+                foundChild = false;
+            }
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<Comments.Comment> findComment(
+            WordprocessingMLPackage document,
+            BigInteger id
+    ) throws Docx4JException {
         var name = new PartName(WORD_COMMENTS_PART_NAME);
         var parts = document.getParts();
         var wordComments = (CommentsPart) parts.get(name);
         var comments = wordComments.getContents();
         return comments.getComment()
                 .stream()
-                .filter(comment -> comment.getId().equals(id))
+                .filter(comment -> comment.getId()
+                        .equals(id))
                 .findFirst();
     }
 
@@ -110,7 +118,10 @@ public class CommentUtil {
      * @param document the document that contains the object.
      * @return the comment, if found, null otherwise.
      */
-    public static String getCommentStringFor(ContentAccessor object, WordprocessingMLPackage document) {
+    public static String getCommentStringFor(
+            ContentAccessor object,
+            WordprocessingMLPackage document
+    ) {
         Comments.Comment comment = getCommentFor(object,
                                                  document).orElseThrow();
         return getCommentString(comment);
@@ -127,7 +138,10 @@ public class CommentUtil {
      * @return the concatenated string of all paragraphs of text within the comment or
      * null if the specified object is not commented.
      */
-    public static Optional<Comments.Comment> getCommentFor(ContentAccessor object, WordprocessingMLPackage document) {
+    public static Optional<Comments.Comment> getCommentFor(
+            ContentAccessor object,
+            WordprocessingMLPackage document
+    ) {
         for (Object contentObject : object.getContent()) {
             if (!(contentObject instanceof CommentRangeStart crs))
                 continue;
@@ -209,10 +223,13 @@ public class CommentUtil {
      * @param items     a {@link java.util.List} object
      * @param commentId a {@link java.math.BigInteger} object
      */
-    public static void deleteCommentFromElement(List<Object> items, BigInteger commentId) {
+    public static void deleteCommentFromElement(
+            List<Object> items,
+            BigInteger commentId
+    ) {
         List<Object> elementsToRemove = new ArrayList<>();
         for (Object item : items) {
-            Object unwrapped = XmlUtils.unwrap(item);
+            Object unwrapped = unwrap(item);
             if (unwrapped instanceof CommentRangeStart crs) {
                 if (crs.getId()
                         .equals(commentId)) {
@@ -236,12 +253,13 @@ public class CommentUtil {
     }
 
     /**
-     * Returns the string value of the specified comment object.
-     *
-     * @param document a {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} object
-     * @return a {@link java.util.Map} object
+     * Extracts all comments from the given document.
+     * @param document the document to extract comments from.
+     * @return a map of all comments, with the key being the comment id.
      */
-    public static Map<BigInteger, CommentWrapper> getComments(WordprocessingMLPackage document) {
+    public static Map<BigInteger, CommentWrapper> getComments(
+            WordprocessingMLPackage document
+    ) {
         Map<BigInteger, CommentWrapper> rootComments = new HashMap<>();
         Map<BigInteger, CommentWrapper> allComments = new HashMap<>();
         collectCommentRanges(rootComments, allComments, document);
@@ -361,18 +379,19 @@ public class CommentUtil {
         documentWalker.walk();
     }
 
-    private static void collectComments(Map<BigInteger, CommentWrapper> allComments, WordprocessingMLPackage document) {
+    private static void collectComments(
+            Map<BigInteger, CommentWrapper> allComments,
+            WordprocessingMLPackage document
+    ) {
         try {
             CommentsPart commentsPart = (CommentsPart) document.getParts()
                     .get(new PartName(WORD_COMMENTS_PART_NAME));
-            if (commentsPart != null) {
-                for (Comments.Comment comment : commentsPart.getContents()
-                        .getComment()) {
-                    CommentWrapper commentWrapper = allComments.get(
-                            comment.getId());
-                    if (commentWrapper != null) {
-                        commentWrapper.setComment(comment);
-                    }
+            if (commentsPart == null) {return;}
+            var commentsPartContents = commentsPart.getContents();
+            for (var comment : commentsPartContents.getComment()) {
+                var commentWrapper = allComments.get(comment.getId());
+                if (commentWrapper != null) {
+                    commentWrapper.setComment(comment);
                 }
             }
         } catch (Docx4JException e) {

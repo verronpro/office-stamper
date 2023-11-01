@@ -13,6 +13,7 @@ import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import pro.verron.docxstamper.utils.TestDocxStamper;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
@@ -23,7 +24,7 @@ class ExpressionReplacementInHeaderAndFooterTest {
 			IOException {
 		var context = new Name("Homer Simpson");
 		var template = getResource(
-				"ExpressionReplacementInHeaderAndFooterTest.docx");
+				Path.of("ExpressionReplacementInHeaderAndFooterTest.docx"));
 		var stamper = new TestDocxStamper<Name>(new DocxStamperConfiguration().setFailOnUnresolvedExpression(false));
 		var document = stamper.stampAndLoad(template, context);
 		resolvedExpressionsAreReplacedInHeader(document);

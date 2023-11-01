@@ -18,27 +18,27 @@ permissions:
 jobs:
   ci:
     name: Continuous Integration
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
-        
+
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          
+
       - name: Setup Java JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 21
+          java-version: 17
           distribution: 'temurin'
           cache: 'maven'
-          
+
       - name: Build with Maven
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}          
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
-        run: mvn --batch-mode --no-transfer-progress package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar "-Dsonar.organization=verronpro" "-Dsonar.projectkey=pro.verron:docx-stamper"  
+        run: mvn --batch-mode --no-transfer-progress package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar "-Dsonar.organization=verronpro" "-Dsonar.projectkey=pro.verron:docx-stamper"

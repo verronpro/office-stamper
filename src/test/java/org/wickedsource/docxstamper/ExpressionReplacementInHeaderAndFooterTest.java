@@ -13,14 +13,18 @@ import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import pro.verron.docxstamper.utils.TestDocxStamper;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
 class ExpressionReplacementInHeaderAndFooterTest {
 	@Test
-    void test() throws Docx4JException, IOException {
+    void expressionReplacementInHeaderAndFooterTest() throws Docx4JException,
+			IOException {
 		var context = new Name("Homer Simpson");
-		var template = getClass().getResourceAsStream("ExpressionReplacementInHeaderAndFooterTest.docx");
+		var template = getResource(
+				Path.of("ExpressionReplacementInHeaderAndFooterTest.docx"));
 		var stamper = new TestDocxStamper<Name>(new DocxStamperConfiguration().setFailOnUnresolvedExpression(false));
 		var document = stamper.stampAndLoad(template, context);
 		resolvedExpressionsAreReplacedInHeader(document);

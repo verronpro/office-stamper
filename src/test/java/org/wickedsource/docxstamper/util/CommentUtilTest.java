@@ -3,15 +3,20 @@ package org.wickedsource.docxstamper.util;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
+@DisplayName("Utilities - Comments")
 class CommentUtilTest {
 	@Test
 	void onlyParagraphsWithCommentRangeStartAreCommented() throws Docx4JException {
-		var in = getClass().getResourceAsStream("CommentUtilTest.docx");
+		var in = getResource(Path.of("util","CommentUtilTest.docx"));
 		var document = WordprocessingMLPackage.load(in);
 
 		P p1 = (P) document.getMainDocumentPart().getContent().get(0);

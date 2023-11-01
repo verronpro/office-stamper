@@ -13,6 +13,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.joining;
+
 /**
  * Common methods to interact with docx documents.
  *
@@ -24,13 +26,6 @@ public final class TestDocxStamper<T> {
 
 	private final DocxStamper<T> stamper;
 	private WordprocessingMLPackage document;
-
-	/**
-	 * <p>Constructor for TestDocxStamper.</p>
-	 */
-	public TestDocxStamper() {
-		this(new DocxStamperConfiguration());
-	}
 
 	/**
 	 * <p>Constructor for TestDocxStamper.</p>
@@ -66,11 +61,11 @@ public final class TestDocxStamper<T> {
 	 * @param context a T object
 	 * @return a {@link java.util.List} object
 	 */
-	public List<String> stampAndLoadAndExtract(InputStream template, T context) {
+	public String stampAndLoadAndExtract(InputStream template, T context) {
 		Stringifier stringifier = new Stringifier(() -> document);
 		return streamElements(template, context, P.class)
 				.map(stringifier::stringify)
-				.toList();
+				.collect(joining("\n"));
 	}
 
 	private <C> Stream<C> streamElements(InputStream template, T context, Class<C> clazz) {

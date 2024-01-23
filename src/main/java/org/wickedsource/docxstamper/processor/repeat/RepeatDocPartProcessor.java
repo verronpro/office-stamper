@@ -21,14 +21,15 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toMap;
 import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImportImages;
+import static org.wickedsource.docxstamper.util.DocxStamperExceptionUtil.docxStamperExceptionOf;
 
 /**
  * This class is responsible for processing the &lt;ds:repeat&gt; tag.
@@ -40,7 +41,6 @@ import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImpor
  * @version $Id: $Id
  */
 public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRepeatDocPartProcessor {
-    private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
     private static final ObjectFactory objectFactory = Context.getWmlObjectFactory();
 
     private final OpcStamper<WordprocessingMLPackage> stamper;
@@ -248,22 +248,36 @@ public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRep
     }
 
     private WordprocessingMLPackage outputWord(Consumer<OutputStream> outputter) {
+        var subTaskError = new ArrayList<RuntimeException>();
         try (
                 PipedOutputStream os = new PipedOutputStream();
                 PipedInputStream is = new PipedInputStream(os)
         ) {
-            Thread thread = threadFactory.newThread(() -> outputter.accept(os));
-            thread.start();
+            var subTask = CompletableFuture.runAsync(() -> {
+                try{
+                    outputter.accept(os);
+                }
+                catch(RuntimeException e){
+                    subTaskError.add(e);
+                    throw e;
+                }
+                finally{
+                    docxStamperExceptionOf(() -> os.close()); //closing is necessary here, or we might block the pipe infinitely
+                }
+            });
             WordprocessingMLPackage wordprocessingMLPackage = WordprocessingMLPackage.load(
                     is);
-            thread.join();
+            subTask.get();
             return wordprocessingMLPackage;
 
         } catch (Docx4JException | IOException | InterruptedException e) {
+            if (!subTaskError.isEmpty()) throw docxStamperExceptionOf(subTaskError.get(0)); //subtask error has priority
             throw new DocxStamperException(e);
+        } catch (ExecutionException e) {
+            throw docxStamperExceptionOf(e.getCause());
         }
     }
-
+    
     private void copy(
             WordprocessingMLPackage aPackage,
             OutputStream outputStream

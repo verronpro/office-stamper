@@ -13,8 +13,8 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * @version $Id: $Id
  */
 public class ExpressionResolver {
-    public static final Matcher DEFAULT_MATCHER = new Matcher("${", "}");
-    public static final Matcher SECONDARY_MATCHER = new Matcher("#{", "}");
+    private static final Matcher DEFAULT_MATCHER = new Matcher("${", "}");
+    private static final Matcher SECONDARY_MATCHER = new Matcher("#{", "}");
     private final ExpressionParser parser;
     private final StandardEvaluationContext evaluationContext;
 
@@ -32,6 +32,12 @@ public class ExpressionResolver {
         this.evaluationContext = standardEvaluationContext;
     }
 
+    /**
+     * Cleans the given expression by stripping the prefix and suffix if they match any of the configured matchers.
+     *
+     * @param expression the expression to clean.
+     * @return the cleaned expression.
+     */
     public static String cleanExpression(String expression) {
         if (DEFAULT_MATCHER.match(expression))
             return DEFAULT_MATCHER.strip(expression);

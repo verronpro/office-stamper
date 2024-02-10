@@ -29,9 +29,9 @@ import static java.util.stream.Collectors.joining;
 /**
  * <p>Stringifier class.</p>
  *
- * @author joseph
- * @version $Id: $Id
  * @since 1.6.5
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class Stringifier {
 
@@ -41,6 +41,7 @@ public class Stringifier {
      * <p>Constructor for Stringifier.</p>
      *
      * @param documentSupplier a {@link java.util.function.Supplier} object
+     * @since 1.6.6
      */
     public Stringifier(Supplier<WordprocessingMLPackage> documentSupplier) {
         this.documentSupplier = documentSupplier;
@@ -63,6 +64,7 @@ public class Stringifier {
      *
      * @param blip a {@link org.docx4j.dml.CTBlip} object
      * @return a {@link java.lang.String} object
+     * @since 1.6.6
      */
     public String stringify(CTBlip blip) {
         var image = document()
@@ -90,6 +92,7 @@ public class Stringifier {
      *
      * @param bytes a long
      * @return a {@link java.lang.String} object
+     * @since 1.6.6
      */
     public String humanReadableByteCountSI(long bytes) {
         if (-1000 < bytes && bytes < 1000) return bytes + "B";
@@ -115,6 +118,7 @@ public class Stringifier {
      *
      * @param o a {@link java.lang.Object} object
      * @return a {@link java.lang.String} object
+     * @since 1.6.6
      */
     public String stringify(Object o) {
         if (o instanceof JAXBElement<?> jaxbElement)
@@ -163,6 +167,13 @@ public class Stringifier {
         throw new RuntimeException("Unsupported run content: " + o.getClass());
     }
 
+    /**
+     * <p>stringify.</p>
+     *
+     * @param spacing a {@link org.docx4j.wml.PPrBase.Spacing} object
+     * @return a {@link java.util.Optional} object
+     * @since 1.6.6
+     */
     public Optional<String> stringify(PPrBase.Spacing spacing) {
         if (spacing == null) return Optional.empty();
         SortedMap<String, Object> map = new TreeMap<>();
@@ -191,6 +202,7 @@ public class Stringifier {
      *
      * @param p a {@link org.docx4j.wml.P} object
      * @return a {@link java.lang.String} object
+     * @since 1.6.6
      */
     public String stringify(P p) {
         String runs = extractDocumentRuns(p);
@@ -205,6 +217,7 @@ public class Stringifier {
      *
      * @param p a {@link java.lang.Object} object
      * @return a {@link java.lang.String} object
+     * @since 1.6.6
      */
     public String extractDocumentRuns(Object p) {
         var runCollector = new RunCollector();
@@ -272,6 +285,7 @@ public class Stringifier {
      *
      * @param run a {@link org.docx4j.wml.R} object
      * @return a {@link java.lang.String} object
+     * @since 1.6.6
      */
     public String stringify(R run) {
         String serialized = stringify(run.getContent());
@@ -288,6 +302,7 @@ public class Stringifier {
      *
      * @param rPr a {@link org.docx4j.wml.RPrAbstract} object
      * @return a {@link java.lang.String} object
+     * @since 1.6.6
      */
     public Optional<String> stringify(RPrAbstract rPr) {
         if (rPr == null)

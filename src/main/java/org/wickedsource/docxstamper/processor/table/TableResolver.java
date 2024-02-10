@@ -19,8 +19,8 @@ import java.util.function.Function;
 /**
  * <p>TableResolver class.</p>
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class TableResolver extends BaseCommentProcessor implements ITableResolver {
 	private final Map<Tbl, StampTable> cols = new HashMap<>();

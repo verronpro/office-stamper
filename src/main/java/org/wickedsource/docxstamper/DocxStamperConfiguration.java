@@ -19,8 +19,8 @@ import java.util.*;
 /**
  * Provides configuration parameters for DocxStamper.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class DocxStamperConfiguration {
 

@@ -13,9 +13,9 @@ import java.util.function.Supplier;
 /**
  * <p>IOStreams class.</p>
  *
- * @author joseph
- * @version $Id: $Id
  * @since 1.6.5
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class IOStreams {
 	/**
@@ -34,6 +34,7 @@ public class IOStreams {
 	 *
 	 * @return a {@link java.io.OutputStream} object
 	 * @throws java.io.IOException if any.
+	 * @since 1.6.6
 	 */
 	public static OutputStream getOutputStream() throws IOException {
 		if (KEEP_OUTPUT_FILE) {
@@ -56,6 +57,7 @@ public class IOStreams {
 	 *
 	 * @param out a {@link java.io.OutputStream} object
 	 * @return a {@link java.io.InputStream} object
+	 * @since 1.6.6
 	 */
 	public static InputStream getInputStream(OutputStream out) {
 		return streams.get(out).get();

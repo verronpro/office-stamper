@@ -18,8 +18,8 @@ import org.docx4j.wml.R;
  * </p>
  *
  * @param <T> the type of the object this type resolver is responsible for.
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public interface ITypeResolver<T> {
     /**

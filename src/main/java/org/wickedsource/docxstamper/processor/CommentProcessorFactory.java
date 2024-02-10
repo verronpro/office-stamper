@@ -16,8 +16,8 @@ import pro.verron.docxstamper.OpcStamper;
 /**
  * Factory class to create the correct comment processor for a given comment.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class CommentProcessorFactory {
 	private final DocxStamperConfiguration configuration;

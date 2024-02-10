@@ -23,6 +23,9 @@ import static org.docx4j.XmlUtils.unwrap;
 
 /**
  * Utility class for working with comments in a DOCX document.
+ *
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class CommentUtil {
     private static final Logger logger = LoggerFactory.getLogger(CommentUtil.class);
@@ -95,7 +98,7 @@ public class CommentUtil {
      * @param document the WordprocessingMLPackage document to search for the comment
      * @param id       the ID of the comment to find
      * @return an Optional containing the Comment if found, or an empty Optional if not found
-     * @throws Docx4JException if an error occurs while searching for the comment
+     * @throws org.docx4j.openpackaging.exceptions.Docx4JException if an error occurs while searching for the comment
      */
     public static Optional<Comments.Comment> findComment(
             WordprocessingMLPackage document, BigInteger id

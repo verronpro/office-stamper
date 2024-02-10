@@ -37,8 +37,8 @@ import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImpor
  * copies the resulting sub document to the correct position in the
  * main document.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRepeatDocPartProcessor {
     private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
@@ -214,9 +214,7 @@ public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRep
         return subDocuments;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public void commitChanges(WordprocessingMLPackage document) {
         for (Entry<CommentWrapper, List<Object>> entry : this.contexts.entrySet()) {
@@ -292,9 +290,7 @@ public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRep
         stamper.stamp(template, context, outputStream);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public void reset() {
         contexts.clear();

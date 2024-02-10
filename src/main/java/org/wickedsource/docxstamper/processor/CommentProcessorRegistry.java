@@ -30,8 +30,8 @@ import static org.wickedsource.docxstamper.el.ExpressionUtil.findProcessorExpres
  * registration time. Provides several getter methods to access the registered
  * ICommentProcessors.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class CommentProcessorRegistry {
     private final Logger logger = LoggerFactory.getLogger(

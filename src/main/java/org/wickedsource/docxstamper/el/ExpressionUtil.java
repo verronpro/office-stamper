@@ -13,8 +13,8 @@ import static java.util.Collections.emptyList;
 /**
  * Utility class for working with expressions in a text.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class ExpressionUtil {
 	private static final Pattern VARIABLE_EXPRESSION_PATTERN = Pattern.compile("\\$\\{(.*?)}");

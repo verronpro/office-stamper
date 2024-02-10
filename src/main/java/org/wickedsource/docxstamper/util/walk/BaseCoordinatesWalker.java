@@ -6,8 +6,8 @@ import org.docx4j.wml.R;
 /**
  * A {@link org.wickedsource.docxstamper.util.walk.CoordinatesWalker} that does nothing in the {@link #onRun(R, P)} and {@link #onParagraph(P)} methods.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public abstract class BaseCoordinatesWalker extends CoordinatesWalker {
 
@@ -18,9 +18,7 @@ public abstract class BaseCoordinatesWalker extends CoordinatesWalker {
 	protected void onRun(R run, P paragraph) {
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	protected void onParagraph(P paragraph) {
 	}

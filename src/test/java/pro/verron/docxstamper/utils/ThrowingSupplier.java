@@ -5,15 +5,16 @@ import java.util.function.Supplier;
 /**
  * <p>ThrowingSupplier interface.</p>
  *
- * @author joseph
- * @version $Id: $Id
  * @since 1.6.5
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public interface ThrowingSupplier<T> extends Supplier<T> {
 	/**
 	 * <p>get.</p>
 	 *
 	 * @return a T object
+	 * @since 1.6.6
 	 */
 	default T get() {
 		try {
@@ -28,6 +29,7 @@ public interface ThrowingSupplier<T> extends Supplier<T> {
 	 *
 	 * @return a T object
 	 * @throws java.lang.Exception if any.
+	 * @since 1.6.6
 	 */
 	T throwingGet() throws Exception;
 }

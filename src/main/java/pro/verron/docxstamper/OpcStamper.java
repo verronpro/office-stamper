@@ -9,15 +9,17 @@ import java.io.OutputStream;
  * OpcStamper is an interface that defines the contract for stamping templates with context and writing the result to an OutputStream.
  *
  * @param <T> The type of the template that can be stamped.
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public interface OpcStamper<T extends OpcPackage> {
-    /**
-     * Stamps the template with the context and writes the result to the outputStream.
-     *
-     * @param template     template to stamp
-     * @param context      context to use for stamping
-     * @param outputStream output stream to write the result to
-     * @throws org.wickedsource.docxstamper.api.DocxStamperException if the stamping fails
-     */
+	/**
+	 * Stamps the template with the context and writes the result to the outputStream.
+	 *
+	 * @param template     template to stamp
+	 * @param context      context to use for stamping
+	 * @param outputStream output stream to write the result to
+	 * @throws org.wickedsource.docxstamper.api.DocxStamperException if the stamping fails
+	 */
 	void stamp(T template, Object context, OutputStream outputStream) throws DocxStamperException;
 }

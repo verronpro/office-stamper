@@ -24,8 +24,8 @@ import static java.util.Collections.singletonList;
  * It is used internally by the DocxStamper and should not be instantiated by
  * clients.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class ParagraphRepeatProcessor extends BaseCommentProcessor implements IParagraphRepeatProcessor {
 	private final Supplier<? extends List<? extends P>> nullSupplier;

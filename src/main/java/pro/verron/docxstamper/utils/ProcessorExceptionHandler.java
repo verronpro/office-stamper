@@ -18,6 +18,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * thread.setUncaughtExceptionHandler(exceptionHandler);
  *
  * @see Thread.UncaughtExceptionHandler
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class ProcessorExceptionHandler
         implements Thread.UncaughtExceptionHandler {
@@ -34,11 +36,10 @@ public class ProcessorExceptionHandler
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Captures and stores an uncaught exception from a thread run
      * and executes all defined routines on occurrence of the exception.
-     *
-     * @param t the thread where the exception occurred
-     * @param e the uncaught exception
      */
     @Override
     public void uncaughtException(Thread t, Throwable e) {

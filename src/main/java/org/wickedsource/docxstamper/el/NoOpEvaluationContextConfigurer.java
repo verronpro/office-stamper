@@ -6,8 +6,8 @@ import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
 /**
  * {@link org.wickedsource.docxstamper.api.EvaluationContextConfigurer} that does no customization.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class NoOpEvaluationContextConfigurer implements EvaluationContextConfigurer {
     /**

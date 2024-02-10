@@ -12,8 +12,8 @@ import java.util.Objects;
 /**
  * Base class for comment processors. The current run and paragraph are set by the {@link org.wickedsource.docxstamper.DocxStamper} class.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public abstract class BaseCommentProcessor implements ICommentProcessor {
 

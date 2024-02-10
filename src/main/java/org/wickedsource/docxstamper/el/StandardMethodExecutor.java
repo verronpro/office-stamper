@@ -12,8 +12,8 @@ import java.util.function.Function;
  * This class is a wrapper around a method call which can be executed by the Spring Expression Language.
  * It is used by the {@link org.wickedsource.docxstamper.el.ExpressionResolver} to evaluate method calls.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class StandardMethodExecutor implements MethodExecutor {
 

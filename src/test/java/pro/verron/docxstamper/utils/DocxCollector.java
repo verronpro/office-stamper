@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 /**
  * <p>DocxCollector class.</p>
  *
- * @author joseph
- * @version $Id: $Id
  * @since 1.6.5
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class DocxCollector<T> extends TraversalUtil.CallbackImpl {
 
@@ -23,6 +23,7 @@ public class DocxCollector<T> extends TraversalUtil.CallbackImpl {
      * <p>Constructor for DocxCollector.</p>
      *
      * @param type a {@link java.lang.Class} object
+     * @since 1.6.6
      */
     public DocxCollector(Class<T> type) {
         super();
@@ -43,6 +44,7 @@ public class DocxCollector<T> extends TraversalUtil.CallbackImpl {
      * <p>elements.</p>
      *
      * @return a {@link java.util.stream.Stream} object
+     * @since 1.6.6
      */
     public Stream<T> elements() {
         return elements.stream();

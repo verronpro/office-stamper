@@ -7,9 +7,9 @@ import java.util.*;
 /**
  * <p>Contexts class.</p>
  *
- * @author joseph
- * @version $Id: $Id
  * @since 1.6.5
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class Contexts {
     private Contexts() {
@@ -21,6 +21,7 @@ public class Contexts {
      * <p>empty.</p>
      *
      * @return a {@link java.lang.Object} object
+     * @since 1.6.6
      */
     public static Object empty() {
         record EmptyContext() {
@@ -33,12 +34,20 @@ public class Contexts {
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.Object} object
+     * @since 1.6.6
      */
     public static Object name(String name) {
         record Name(String name) {}
         return new Name(name);
     }
 
+    /**
+     * <p>names.</p>
+     *
+     * @param names a {@link java.lang.String} object
+     * @return a {@link java.lang.Object} object
+     * @since 1.6.6
+     */
     public static Object names(String... names) {
         record Name(String name) {}
         record Names(List<Name> names) {}
@@ -51,6 +60,7 @@ public class Contexts {
      * @param character       a {@link java.lang.String} object
      * @param danCastellaneta a {@link java.lang.String} object
      * @return a {@link pro.verron.docxstamper.utils.context.Contexts.Role} object
+     * @since 1.6.6
      */
     public static Role role(String character, String danCastellaneta) {
         return new Role(character, danCastellaneta);
@@ -61,11 +71,18 @@ public class Contexts {
      *
      * @param roles a {@link pro.verron.docxstamper.utils.context.Contexts.Role} object
      * @return a {@link pro.verron.docxstamper.utils.context.Contexts.Characters} object
+     * @since 1.6.6
      */
     public static Characters roles(Role... roles) {
         return new Characters(List.of(roles));
     }
 
+    /**
+     * <p>subDocPartContext.</p>
+     *
+     * @return a {@link java.util.HashMap} object
+     * @since 1.6.6
+     */
     public static HashMap<String, Object> subDocPartContext() {
         var context = new HashMap<String, Object>();
         var subDocParts = new ArrayList<Map<String, Object>>();
@@ -82,6 +99,12 @@ public class Contexts {
         return context;
     }
 
+    /**
+     * <p>schoolContext.</p>
+     *
+     * @return a {@link pro.verron.docxstamper.utils.context.Contexts.SchoolContext} object
+     * @since 1.6.6
+     */
     public static SchoolContext schoolContext() {
         List<Grade> grades = new ArrayList<>();
         for (int grade1 = 0; grade1 < 3; grade1++) {
@@ -98,6 +121,12 @@ public class Contexts {
         return new SchoolContext("South Park Primary School", grades);
     }
 
+    /**
+     * <p>tableContext.</p>
+     *
+     * @return a {@link java.util.HashMap} object
+     * @since 1.6.6
+     */
     public static HashMap<String, Object> tableContext() {
         var context = new HashMap<String, Object>();
 
@@ -122,6 +151,12 @@ public class Contexts {
         return context;
     }
 
+    /**
+     * <p>coupleContext.</p>
+     *
+     * @return a {@link java.util.Map} object
+     * @since 1.6.6
+     */
     public static Map<String, Object> coupleContext() {
         Map<String, Object> context = new HashMap<>();
 
@@ -136,12 +171,24 @@ public class Contexts {
         return context;
     }
 
+    /**
+     * <p>nowContext.</p>
+     *
+     * @return a {@link pro.verron.docxstamper.utils.context.Contexts.DateContext} object
+     * @since 1.6.6
+     */
     public static DateContext nowContext() {
         var now = new Date();
         var context = new DateContext(now);
         return context;
     }
 
+    /**
+     * <p>mapAndReflectiveContext.</p>
+     *
+     * @return a {@link java.util.HashMap} object
+     * @since 1.6.6
+     */
     public static HashMap<String, Object> mapAndReflectiveContext() {
         var listProp = new ArrayList<Container>();
         listProp.add(new Container("first value"));
@@ -153,6 +200,12 @@ public class Contexts {
         return context;
     }
 
+    /**
+     * <p>nullishContext.</p>
+     *
+     * @return a {@link pro.verron.docxstamper.utils.context.Contexts.NullishContext} object
+     * @since 1.6.6
+     */
     public static NullishContext nullishContext() {
         return new NullishContext(
                 "Fullish1",
@@ -292,13 +345,26 @@ public class Contexts {
 
     }
 
+    /**
+     * This class represents a SubContext object.
+     */
     public static final class SubContext {
         private String value;
         private List<String> li;
 
+        /**
+         * This class represents a SubContext object.
+         */
         public SubContext() {
+            // DO NOTHING, FOR BEAN SPEC
         }
 
+        /**
+         * Creates a SubContext object with the given value and list of strings.
+         *
+         * @param value The value for the SubContext.
+         * @param li    The list of strings for the SubContext.
+         */
         public SubContext(
                 String value,
                 List<String> li
@@ -307,18 +373,38 @@ public class Contexts {
             this.li = li;
         }
 
+        /**
+         * Returns the value of the SubContext object.
+         *
+         * @return The value of the SubContext object.
+         */
         public String getValue() {
             return value;
         }
 
+        /**
+         * Sets the value of the object.
+         *
+         * @param value The new value to be set.
+         */
         public void setValue(String value) {
             this.value = value;
         }
 
+        /**
+         * Returns the list of strings in the SubContext object.
+         *
+         * @return The list of strings in the SubContext object.
+         */
         public List<String> getLi() {
             return li;
         }
 
+        /**
+         * Sets the list of strings in the SubContext object.
+         *
+         * @param li The new list of strings to be set.
+         */
         public void setLi(List<String> li) {
             this.li = li;
         }

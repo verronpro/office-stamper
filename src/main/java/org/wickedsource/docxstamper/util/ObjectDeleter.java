@@ -11,8 +11,8 @@ import java.util.Iterator;
 /**
  * Utility class for deleting objects from a {@link org.docx4j.wml.Document}.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class ObjectDeleter {
 	private static final Logger log = LoggerFactory.getLogger(ObjectDeleter.class);

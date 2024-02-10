@@ -13,8 +13,8 @@ import java.util.List;
 /**
  * Removes all {@link org.docx4j.wml.ProofErr} elements from the document.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class RemoveProofErrors implements PreProcessor {
 
@@ -26,9 +26,9 @@ public class RemoveProofErrors implements PreProcessor {
 		}
 	};
 
-    /**
-     * {@inheritDoc}
-     */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void process(WordprocessingMLPackage document) {
 		var mainDocumentPart = document.getMainDocumentPart();

@@ -18,8 +18,8 @@ import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstract
  * object will be replaced by an actual image in the resulting .docx document. The image will be put as an inline into
  * the surrounding paragraph of text.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class ImageResolver implements ITypeResolver<Image> {
 
@@ -56,7 +56,9 @@ public class ImageResolver implements ITypeResolver<Image> {
 
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
     @Override
     public R resolve(WordprocessingMLPackage document, Image image) {
         try {

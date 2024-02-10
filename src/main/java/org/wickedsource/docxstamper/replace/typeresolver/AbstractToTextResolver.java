@@ -10,8 +10,8 @@ import org.wickedsource.docxstamper.util.RunUtil;
  * from it.
  *
  * @param <S> the type which to map into a run of text.
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public abstract class AbstractToTextResolver<S> implements ITypeResolver<S> {
 

@@ -3,8 +3,8 @@ package org.wickedsource.docxstamper.processor.displayif;
 /**
  * Interface for processors that may be used to delete commented paragraphs or tables from the document, depending on a given condition.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public interface IDisplayIfProcessor {
 

@@ -19,8 +19,8 @@ import static java.util.Collections.emptyList;
 /**
  * Repeats a table row for each element in a list.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProcessor {
 
@@ -36,12 +36,12 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
 		nullSupplier = nullSupplier1;
 	}
 
-    /**
-     * Creates a new RepeatProcessor.
-     *
-     * @param pr The PlaceholderReplacer to use.
-     * @return A new RepeatProcessor.
-     */
+	/**
+	 * Creates a new RepeatProcessor.
+	 *
+	 * @param pr The PlaceholderReplacer to use.
+	 * @return A new RepeatProcessor.
+	 */
 	public static ICommentProcessor newInstanceWithNullReplacement(PlaceholderReplacer pr) {
 		return new RepeatProcessor(pr, (document, row) -> RepeatProcessor.stampEmptyContext(pr, document, row));
     }
@@ -59,13 +59,13 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
         Object emptyContext = new Object();
         new ParagraphResolverDocumentWalker(rowClone, emptyContext, document, pr).walk();
         return List.of(rowClone);
-    }
+	}
 
-    /**
-     * Creates a new RepeatProcessor.
-     *
-     * @param pr The PlaceholderReplacer to use.
-     * @return A new RepeatProcessor.
+	/**
+	 * Creates a new RepeatProcessor.
+	 *
+	 * @param pr The PlaceholderReplacer to use.
+	 * @return A new RepeatProcessor.
 	 */
 	public static ICommentProcessor newInstance(PlaceholderReplacer pr) {
 		return new RepeatProcessor(pr, (document, row) -> emptyList());

@@ -8,8 +8,8 @@ import org.docx4j.wml.*;
  * This makes it easier to implement a custom {@link org.wickedsource.docxstamper.util.walk.DocumentWalker} because the implementor
  * only has to implement the methods that are of interest.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public abstract class BaseDocumentWalker extends DocumentWalker {
 
@@ -30,17 +30,13 @@ public abstract class BaseDocumentWalker extends DocumentWalker {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     protected void onRun(R run) {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     protected void onTable(Tbl table) {
 
@@ -73,6 +69,6 @@ public abstract class BaseDocumentWalker extends DocumentWalker {
     /** {@inheritDoc} */
     @Override
     protected void onCommentReference(R.CommentReference commentReference) {
-        
+
     }
 }

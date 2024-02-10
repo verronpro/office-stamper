@@ -34,13 +34,11 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * <p>
- * Main class of the docx-stamper library. This class can be used to "stamp" .docx templates
- * to create a .docx document filled with custom data at runtime.
- * </p>
+ * The DocxStamper class is an implementation of the OpcStamper interface that is used to stamp DOCX templates with a context object and write the result to an output stream.
  *
- * @author joseph
- * @version $Id: $Id
+ * @param <T> The type of the context that can be stamped
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 	private final List<PreProcessor> preprocessors;

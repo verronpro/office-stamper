@@ -9,8 +9,8 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 /**
  * Utility class for creating paragraphs.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class ParagraphUtil {
 

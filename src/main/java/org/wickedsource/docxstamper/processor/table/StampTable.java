@@ -8,8 +8,8 @@ import static java.util.Collections.singletonList;
 /**
  * Represents a table with several columns, a headers line, and several lines of content
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class StampTable {
     private final List<String> headers;

@@ -18,9 +18,9 @@ import static java.util.stream.Collectors.joining;
 /**
  * Common methods to interact with docx documents.
  *
- * @author joseph
- * @version $Id: $Id
  * @since 1.6.5
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public final class TestDocxStamper<T> {
 
@@ -31,6 +31,7 @@ public final class TestDocxStamper<T> {
 	 * <p>Constructor for TestDocxStamper.</p>
 	 *
 	 * @param config a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+	 * @since 1.6.6
 	 */
 	public TestDocxStamper(DocxStamperConfiguration config) {
 		stamper = new DocxStamper<>(config);
@@ -46,6 +47,7 @@ public final class TestDocxStamper<T> {
 	 * @return a {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} object
 	 * @throws java.io.IOException if any.
 	 * @throws org.docx4j.openpackaging.exceptions.Docx4JException if any.
+	 * @since 1.6.6
 	 */
 	public WordprocessingMLPackage stampAndLoad(InputStream template, T context) throws IOException, Docx4JException {
 		OutputStream out = IOStreams.getOutputStream();
@@ -60,6 +62,7 @@ public final class TestDocxStamper<T> {
 	 * @param template a {@link java.io.InputStream} object
 	 * @param context a T object
 	 * @return a {@link java.util.List} object
+	 * @since 1.6.6
 	 */
 	public String stampAndLoadAndExtract(InputStream template, T context) {
 		Stringifier stringifier = new Stringifier(() -> document);
@@ -98,6 +101,7 @@ public final class TestDocxStamper<T> {
 	 * @param clazz a {@link java.lang.Class} object
 	 * @param <C> a C class
 	 * @return a {@link java.util.List} object
+	 * @since 1.6.6
 	 */
 	public <C> List<String> stampAndLoadAndExtract(InputStream template, T context, Class<C> clazz) {
 		Stringifier stringifier = new Stringifier(() -> document);

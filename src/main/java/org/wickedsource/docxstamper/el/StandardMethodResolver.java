@@ -16,21 +16,21 @@ import java.util.function.Function;
 /**
  * Resolves methods that are used as expression functions or comment processors.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class StandardMethodResolver implements MethodResolver {
 	private final Map<Class<?>, Object> commentProcessors;
 	private final Map<Class<?>, Object> expressionFunctions;
 	private final Function<ReflectiveOperationException, TypedValue> onFail;
 
-    /**
-     * <p>Constructor for StandardMethodResolver.</p>
-     *
-     * @param commentProcessors   map of comment processors
-     * @param expressionFunctions map of expression functions
-     * @param onResolutionFail    function that is called when a method cannot be resolved
-     */
+	/**
+	 * <p>Constructor for StandardMethodResolver.</p>
+	 *
+	 * @param commentProcessors   map of comment processors
+	 * @param expressionFunctions map of expression functions
+	 * @param onResolutionFail    function that is called when a method cannot be resolved
+	 */
 	public StandardMethodResolver(
 			Map<Class<?>, Object> commentProcessors,
 			Map<Class<?>, Object> expressionFunctions,
@@ -39,11 +39,9 @@ public class StandardMethodResolver implements MethodResolver {
 		this.commentProcessors = commentProcessors;
 		this.expressionFunctions = expressionFunctions;
 		this.onFail = onResolutionFail;
-    }
+	}
 
-    /**
-     * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public MethodExecutor resolve(
 			@NonNull EvaluationContext context,

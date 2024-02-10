@@ -29,7 +29,7 @@ public interface ThrowingRunnable
     /**
      * Executes the runnable task
      *
-     * @throws DocxStamperException if an exception occurs executing the task
+     * @throws Exception if an exception occurs executing the task
      */
     void throwingRun() throws Exception;
 }

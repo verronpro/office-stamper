@@ -25,13 +25,11 @@ import static org.docx4j.XmlUtils.unwrap;
  * Utility class for working with comments in a DOCX document.
  */
 public class CommentUtil {
-    private static final Logger logger = LoggerFactory.getLogger(
-            CommentUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommentUtil.class);
     private static final String WORD_COMMENTS_PART_NAME = "/word/comments.xml";
 
     private CommentUtil() {
-        throw new DocxStamperException(
-                "Utility class shouldn't be instantiated");
+        throw new DocxStamperException("Utility class shouldn't be instantiated");
     }
 
     /**
@@ -42,28 +40,24 @@ public class CommentUtil {
      * @return Optional of the comment, if found, Optional.empty() otherwise.
      */
     public static Optional<Comments.Comment> getCommentAround(
-            R run,
-            WordprocessingMLPackage document
+            R run, WordprocessingMLPackage document
     ) {
-        if (run == null)
-            return Optional.empty();
+        if (run == null) return Optional.empty();
 
         ContentAccessor parent = (ContentAccessor) ((Child) run).getParent();
-        if (parent == null)
-            return Optional.empty();
+        if (parent == null) return Optional.empty();
 
         try {
             return getComment(run, document, parent);
         } catch (Docx4JException e) {
             throw new DocxStamperException(
-                    "error accessing the comments of the document!", e);
+                    "error accessing the comments of the document!",
+                    e);
         }
     }
 
     private static Optional<Comments.Comment> getComment(
-            R run,
-            WordprocessingMLPackage document,
-            ContentAccessor parent
+            R run, WordprocessingMLPackage document, ContentAccessor parent
     ) throws Docx4JException {
         CommentRangeStart possibleComment = null;
         boolean foundChild = false;
@@ -75,9 +69,8 @@ public class CommentUtil {
             else if (possibleComment != null && run.equals(contentElement))
                 foundChild = true;
                 // and then if we have an end of a comment we are good!
-            else if (possibleComment != null
-                     && foundChild
-                     && unwrap(contentElement) instanceof CommentRangeEnd) {
+            else if (possibleComment != null && foundChild && unwrap(
+                    contentElement) instanceof CommentRangeEnd) {
                 try {
                     var id = possibleComment.getId();
                     return findComment(document, id);
@@ -96,9 +89,16 @@ public class CommentUtil {
         return Optional.empty();
     }
 
+    /**
+     * Finds a comment with the given ID in the specified WordprocessingMLPackage document.
+     *
+     * @param document the WordprocessingMLPackage document to search for the comment
+     * @param id       the ID of the comment to find
+     * @return an Optional containing the Comment if found, or an empty Optional if not found
+     * @throws Docx4JException if an error occurs while searching for the comment
+     */
     public static Optional<Comments.Comment> findComment(
-            WordprocessingMLPackage document,
-            BigInteger id
+            WordprocessingMLPackage document, BigInteger id
     ) throws Docx4JException {
         var name = new PartName(WORD_COMMENTS_PART_NAME);
         var parts = document.getParts();
@@ -119,8 +119,7 @@ public class CommentUtil {
      * @return the comment, if found, null otherwise.
      */
     public static String getCommentStringFor(
-            ContentAccessor object,
-            WordprocessingMLPackage document
+            ContentAccessor object, WordprocessingMLPackage document
     ) {
         Comments.Comment comment = getCommentFor(object,
                                                  document).orElseThrow();
@@ -139,12 +138,10 @@ public class CommentUtil {
      * null if the specified object is not commented.
      */
     public static Optional<Comments.Comment> getCommentFor(
-            ContentAccessor object,
-            WordprocessingMLPackage document
+            ContentAccessor object, WordprocessingMLPackage document
     ) {
         for (Object contentObject : object.getContent()) {
-            if (!(contentObject instanceof CommentRangeStart crs))
-                continue;
+            if (!(contentObject instanceof CommentRangeStart crs)) continue;
             BigInteger id = crs.getId();
             PartName partName;
             try {
@@ -162,7 +159,8 @@ public class CommentUtil {
                 comments = commentsPart.getContents();
             } catch (Docx4JException e) {
                 throw new DocxStamperException(
-                        "error accessing the comments of the document!", e);
+                        "error accessing the comments of the document!",
+                        e);
             }
 
             for (Comments.Comment comment : comments.getComment()) {
@@ -224,8 +222,7 @@ public class CommentUtil {
      * @param commentId a {@link java.math.BigInteger} object
      */
     public static void deleteCommentFromElement(
-            List<Object> items,
-            BigInteger commentId
+            List<Object> items, BigInteger commentId
     ) {
         List<Object> elementsToRemove = new ArrayList<>();
         for (Object item : items) {
@@ -254,6 +251,7 @@ public class CommentUtil {
 
     /**
      * Extracts all comments from the given document.
+     *
      * @param document the document to extract comments from.
      * @return a map of all comments, with the key being the comment id.
      */
@@ -274,12 +272,10 @@ public class CommentUtil {
             if (isCommentMalformed(comment)) {
                 logger.error(
                         "Skipping malformed comment, missing range start and/or range end : {}",
-                        getCommentContent(comment)
-                );
+                        getCommentContent(comment));
             } else {
                 filteredCommentEntries.put(key, comment);
-                comment.setChildren(
-                        cleanMalformedComments(comment.getChildren()));
+                comment.setChildren(cleanMalformedComments(comment.getChildren()));
             }
         });
         return filteredCommentEntries;
@@ -291,25 +287,21 @@ public class CommentUtil {
                     if (isCommentMalformed(comment)) {
                         logger.error(
                                 "Skipping malformed comment, missing range start and/or range end : {}",
-                                getCommentContent(comment)
-                        );
+                                getCommentContent(comment));
                         return false;
                     }
-                    comment.setChildren(
-                            cleanMalformedComments(comment.getChildren()));
+                    comment.setChildren(cleanMalformedComments(comment.getChildren()));
                     return true;
                 })
                 .collect(toSet());
     }
 
     private static String getCommentContent(CommentWrapper comment) {
-        return comment.getComment() != null
-                ? comment.getComment()
+        return comment.getComment() != null ? comment.getComment()
                 .getContent()
                 .stream()
                 .map(TextUtils::getText)
-                .collect(Collectors.joining(""))
-                : "<no content>";
+                .collect(Collectors.joining("")) : "<no content>";
     }
 
     private static boolean isCommentMalformed(CommentWrapper comment) {
@@ -321,10 +313,8 @@ public class CommentUtil {
             Map<BigInteger, CommentWrapper> allComments,
             WordprocessingMLPackage document
     ) {
-        Queue<CommentWrapper> stack = Collections.asLifoQueue(
-                new ArrayDeque<>());
-        DocumentWalker documentWalker = new BaseDocumentWalker(
-                document.getMainDocumentPart()) {
+        Queue<CommentWrapper> stack = Collections.asLifoQueue(new ArrayDeque<>());
+        DocumentWalker documentWalker = new BaseDocumentWalker(document.getMainDocumentPart()) {
             @Override
             protected void onCommentRangeStart(CommentRangeStart commentRangeStart) {
                 CommentWrapper commentWrapper = allComments.get(
@@ -347,32 +337,25 @@ public class CommentUtil {
 
             @Override
             protected void onCommentRangeEnd(CommentRangeEnd commentRangeEnd) {
-                CommentWrapper commentWrapper = allComments.get(
-                        commentRangeEnd.getId());
-                if (commentWrapper == null)
-                    throw new DocxStamperException(
-                            "Found a comment range end before the comment range start !");
+                CommentWrapper commentWrapper = allComments.get(commentRangeEnd.getId());
+                if (commentWrapper == null) throw new DocxStamperException(
+                        "Found a comment range end before the comment range start !");
 
                 commentWrapper.setCommentRangeEnd(commentRangeEnd);
 
-                if (stack.isEmpty())
-                    return;
+                if (stack.isEmpty()) return;
 
                 if (stack.peek()
-                        .equals(commentWrapper))
-                    stack.remove();
-                else
-                    throw new DocxStamperException(
-                            "Cannot figure which comment contains the other !");
+                        .equals(commentWrapper)) stack.remove();
+                else throw new DocxStamperException(
+                        "Cannot figure which comment contains the other !");
             }
 
             @Override
             protected void onCommentReference(R.CommentReference commentReference) {
-                CommentWrapper commentWrapper = allComments.get(
-                        commentReference.getId());
-                if (commentWrapper == null)
-                    throw new DocxStamperException(
-                            "Found a comment reference before the comment range start !");
+                CommentWrapper commentWrapper = allComments.get(commentReference.getId());
+                if (commentWrapper == null) throw new DocxStamperException(
+                        "Found a comment reference before the comment range start !");
                 commentWrapper.setCommentReference(commentReference);
             }
         };

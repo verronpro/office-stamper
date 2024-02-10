@@ -6,10 +6,9 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import java.io.OutputStream;
 
 /**
- * <p>OpcStamper interface.</p>
+ * OpcStamper is an interface that defines the contract for stamping templates with context and writing the result to an OutputStream.
  *
- * @author joseph
- * @version $Id: $Id
+ * @param <T> The type of the template that can be stamped.
  */
 public interface OpcStamper<T extends OpcPackage> {
     /**

@@ -14,8 +14,8 @@ import static java.util.Optional.ofNullable;
 /**
  * Utility class to handle section breaks in paragraphs.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class SectionUtil {
 	private static final Logger log = LoggerFactory.getLogger(SectionUtil.class);

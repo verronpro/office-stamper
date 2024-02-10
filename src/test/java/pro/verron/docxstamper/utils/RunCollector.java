@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 /**
  * <p>RunCollector class.</p>
  *
- * @author joseph
- * @version $Id: $Id
  * @since 1.6.5
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class RunCollector extends TraversalUtilVisitor<R> {
 	private final Set<R> paragraphs = new LinkedHashSet<>();
@@ -21,6 +21,7 @@ public class RunCollector extends TraversalUtilVisitor<R> {
 	 * <p>runs.</p>
 	 *
 	 * @return a {@link java.util.stream.Stream} object
+	 * @since 1.6.6
 	 */
 	public Stream<R> runs() {
 		return paragraphs.stream();

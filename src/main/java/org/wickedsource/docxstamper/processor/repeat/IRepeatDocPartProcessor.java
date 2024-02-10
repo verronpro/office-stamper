@@ -7,8 +7,8 @@ import java.util.List;
  * passed-in list.
  * Within each copy of the row, all expressions are evaluated against one of the objects in the list.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public interface IRepeatDocPartProcessor {
 

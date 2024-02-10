@@ -9,8 +9,8 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * Resolves expressions against a given context object. Expressions can be either SpEL expressions or simple property
  * expressions.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class ExpressionResolver {
     private static final Matcher DEFAULT_MATCHER = new Matcher("${", "}");

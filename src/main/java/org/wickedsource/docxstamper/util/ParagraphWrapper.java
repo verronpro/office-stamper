@@ -17,27 +17,27 @@ import static java.util.stream.Collectors.joining;
  * Call addRun() to add all runs that should be aggregated. Then, call methods to modify the aggregated text. Finally,
  * call getText() or getRuns() to get the modified text or the list of modified runs.</p>
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class ParagraphWrapper {
 	private final List<IndexedRun> runs = new ArrayList<>();
 	private final P paragraph;
 	private int currentPosition = 0;
 
-    /**
-     * Constructs a new ParagraphWrapper for the given paragraph.
-     *
-     * @param paragraph the paragraph to wrap.
-     */
+	/**
+	 * Constructs a new ParagraphWrapper for the given paragraph.
+	 *
+	 * @param paragraph the paragraph to wrap.
+	 */
 	public ParagraphWrapper(P paragraph) {
 		this.paragraph = paragraph;
 		recalculateRuns();
-    }
+	}
 
-    /**
-     * Recalculates the runs of the paragraph. This method is called automatically by the constructor, but can also be
-     * called manually to recalculate the runs after a modification to the paragraph was done.
+	/**
+	 * Recalculates the runs of the paragraph. This method is called automatically by the constructor, but can also be
+	 * called manually to recalculate the runs after a modification to the paragraph was done.
 	 */
 	public void recalculateRuns() {
 		currentPosition = 0;
@@ -165,9 +165,9 @@ public class ParagraphWrapper {
 	 */
 	public List<R> getRuns() {
         return runs.stream().map(IndexedRun::run).toList();
-    }
+	}
 
-    /** {@inheritDoc} */
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return getText();

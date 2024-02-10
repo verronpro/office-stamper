@@ -14,8 +14,8 @@ import java.util.List;
  * The processor then copies the paragraph once for each object in the list and evaluates all expressions
  * within each copy against the respective object.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public interface IParagraphRepeatProcessor {
 

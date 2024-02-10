@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 /**
  * Utility class to retrieve elements from a document.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class DocumentUtil {
 	private DocumentUtil() {
@@ -56,23 +56,23 @@ public class DocumentUtil {
 		}
 	}
 
-    /**
-     * Retrieve all the paragraphs from a document
-     *
-     * @param parentObject the document to get the paragraphs from
-     * @return a list of paragraphs
-     */
+	/**
+	 * Retrieve all the paragraphs from a document
+	 *
+	 * @param parentObject the document to get the paragraphs from
+	 * @return a list of paragraphs
+	 */
 	public static List<P> getParagraphsFromObject(Object parentObject) {
 		return streamElements(parentObject, P.class).toList();
-    }
+	}
 
-    /**
-     * Retrieve all the elements of a given class from an object.
-     *
-     * @param object       the object to get the elements from
-     * @param elementClass the class of the elements to get
-     * @param <T>          the type of the elements to get
-     * @return a stream of the elements
+	/**
+	 * Retrieve all the elements of a given class from an object.
+	 *
+	 * @param object       the object to get the elements from
+	 * @param elementClass the class of the elements to get
+	 * @param <T>          the type of the elements to get
+	 * @return a stream of the elements
 	 */
 	public static <T> Stream<T> streamElements(Object object, Class<T> elementClass) {
 		return object instanceof WordprocessingMLPackage document
@@ -110,53 +110,53 @@ public class DocumentUtil {
 				.getRelationshipsByType(namespace).stream()
 				.map(mainParts::getPart)
 				.flatMap(part -> streamObjectElements(part, elementClass));
-    }
+	}
 
-    /**
-     * Retrieve all the tables from an object.
-     *
-     * @param parentObject the object to get the tables from
-     * @return a list of tables
+	/**
+	 * Retrieve all the tables from an object.
+	 *
+	 * @param parentObject the object to get the tables from
+	 * @return a list of tables
 	 */
 	public static List<Tbl> getTableFromObject(Object parentObject) {
 		return streamElements(parentObject, Tbl.class).toList();
-    }
+	}
 
-    /**
-     * Retrieve all the rows from an object.
-     *
-     * @param parentObject the object to get the rows from
-     * @return a list of rows
+	/**
+	 * Retrieve all the rows from an object.
+	 *
+	 * @param parentObject the object to get the rows from
+	 * @return a list of rows
 	 */
 	public static List<Tr> getTableRowsFromObject(Object parentObject) {
 		return streamElements(parentObject, Tr.class).toList();
-    }
+	}
 
-    /**
-     * Retrieve all the cells from an object.
-     *
-     * @param parentObject the object to get the cells from
-     * @return a list of cells
+	/**
+	 * Retrieve all the cells from an object.
+	 *
+	 * @param parentObject the object to get the cells from
+	 * @return a list of cells
 	 */
 	public static List<Tc> getTableCellsFromObject(Object parentObject) {
 		return streamElements(parentObject, Tc.class).toList();
-    }
+	}
 
-    /**
-     * Retrieve the first element from an object.
-     *
-     * @param subDocument the object to get the first element from
-     * @return the first element
+	/**
+	 * Retrieve the first element from an object.
+	 *
+	 * @param subDocument the object to get the first element from
+	 * @return the first element
 	 */
 	public static Object lastElement(WordprocessingMLPackage subDocument) {
 		return new ArrayDeque<>(subDocument.getMainDocumentPart().getContent()).getLast();
-    }
+	}
 
-    /**
-     * Retrieve the last element from an object.
-     *
-     * @param subDocument the object to get the last element from
-     * @return the last element
+	/**
+	 * Retrieve the last element from an object.
+	 *
+	 * @param subDocument the object to get the last element from
+	 * @return the last element
 	 */
 	public static List<Object> allElements(WordprocessingMLPackage subDocument) {
 		return subDocument.getMainDocumentPart().getContent();
@@ -167,7 +167,7 @@ public class DocumentUtil {
 	 *
 	 * @param source source document containing image files.
 	 * @param target target document to add image files to.
-     * @return a {@link java.util.Map} object
+	 * @return a {@link java.util.Map} object
 	 */
 	public static Map<R, R> walkObjectsAndImportImages(WordprocessingMLPackage source, WordprocessingMLPackage target) {
 		return walkObjectsAndImportImages(source.getMainDocumentPart(), source, target);
@@ -179,7 +179,7 @@ public class DocumentUtil {
 	 * @param container source container to walk.
 	 * @param source    source document containing image files.
 	 * @param target    target document to add image files to.
-     * @return a {@link java.util.Map} object
+	 * @return a {@link java.util.Map} object
 	 */
 	public static Map<R, R> walkObjectsAndImportImages(
 			ContentAccessor container,
@@ -227,14 +227,14 @@ public class DocumentUtil {
 			return BinaryPartAbstractImage.createImagePart(destDocument, imageData);
 		} catch (Exception e) {
 			throw new DocxStamperException(e);
-        }
-    }
+		}
+	}
 
-    /**
-     * Retrieve all the runs from a document.
-     *
-     * @param document the document to get the runs from
-     * @return the runs
+	/**
+	 * Retrieve all the runs from a document.
+	 *
+	 * @param document the document to get the runs from
+	 * @return the runs
 	 */
 	public static Stream<P> streamParagraphs(WordprocessingMLPackage document) {
 		return streamElements(document, P.class);

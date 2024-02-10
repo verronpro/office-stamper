@@ -14,8 +14,8 @@ import java.util.List;
  * {@link org.wickedsource.docxstamper.api.EvaluationContextConfigurer} that has a better default security,
  * especially doesn't allow Especially known injections.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class DefaultEvaluationContextConfigurer implements EvaluationContextConfigurer {
     /**

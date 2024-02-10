@@ -124,6 +124,7 @@
             <url>https://verron.pro</url>
         </developer>
     </developers>
+
     <build>
         <plugins>
             <plugin>
@@ -173,7 +174,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -204,7 +204,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -293,7 +292,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
-            <version>6.0.13</version>
+            <version>6.1.3</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -304,7 +303,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>6.0.13</version>
+            <version>6.1.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -326,4 +325,3 @@
         </repository>
     </distributionManagement>
 </project>
-

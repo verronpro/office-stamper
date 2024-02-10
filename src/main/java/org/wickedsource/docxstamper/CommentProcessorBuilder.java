@@ -5,8 +5,8 @@ import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
 /**
  * Factory interface for creating {@link org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor} instances.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public interface CommentProcessorBuilder {
     /**

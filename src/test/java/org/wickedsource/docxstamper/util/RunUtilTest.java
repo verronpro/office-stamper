@@ -27,9 +27,11 @@ class RunUtilTest {
 
 	/**
 	 * Loads a document from the given path.
+	 *
 	 * @param path the path to the document.
 	 * @return the loaded document.
-	 * @throws Docx4JException if any.
+	 * @throws org.docx4j.openpackaging.exceptions.Docx4JException if any.
+	 * @since 1.6.6
 	 */
 	public WordprocessingMLPackage loadDocument(Path path) throws Docx4JException {
 		var in = getResource(path);

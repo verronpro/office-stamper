@@ -17,18 +17,18 @@ import java.util.Arrays;
 /**
  * Extracts images from a docx document.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class DocxImageExtractor {
 
 	private final WordprocessingMLPackage wordprocessingMLPackage;
 
-    /**
-     * Creates a new image extractor for the given docx document.
-     *
-     * @param wordprocessingMLPackage the docx document to extract images from.
-     */
+	/**
+	 * Creates a new image extractor for the given docx document.
+	 *
+	 * @param wordprocessingMLPackage the docx document to extract images from.
+	 */
 	public DocxImageExtractor(WordprocessingMLPackage wordprocessingMLPackage) {
 		this.wordprocessingMLPackage = wordprocessingMLPackage;
 	}
@@ -126,34 +126,34 @@ public class DocxImageExtractor {
 			return is.read(data);
 		} catch (IOException e) {
 			throw new DocxStamperException(e);
-        }
-    }
+		}
+	}
 
-    /**
-     * Extract the name of the image from an embedded image run.
-     *
-     * @param run run containing the embedded drawing.
-     * @return a {@link java.lang.String} object
+	/**
+	 * Extract the name of the image from an embedded image run.
+	 *
+	 * @param run run containing the embedded drawing.
+	 * @return a {@link java.lang.String} object
 	 */
 	public String getRunDrawingFilename(R run) {
 		return getPic(run).getNvPicPr().getCNvPr().getName();
-    }
+	}
 
-    /**
-     * Extract the content type of the image from an embedded image run.
-     *
-     * @param run run containing the embedded drawing.
-     * @return a {@link java.lang.String} object
+	/**
+	 * Extract the content type of the image from an embedded image run.
+	 *
+	 * @param run run containing the embedded drawing.
+	 * @return a {@link java.lang.String} object
 	 */
 	public String getRunDrawingAltText(R run) {
 		return getPic(run).getNvPicPr().getCNvPr().getDescr();
-    }
+	}
 
-    /**
-     * Extract the width of the image from an embedded image run.
-     *
-     * @param run run containing the embedded drawing.
-     * @return a {@link java.lang.Integer} object
+	/**
+	 * Extract the width of the image from an embedded image run.
+	 *
+	 * @param run run containing the embedded drawing.
+	 * @return a {@link java.lang.Integer} object
 	 */
 	public Integer getRunDrawingMaxWidth(R run) {
 		return (int) getPic(run).getSpPr().getXfrm().getExt().getCx();

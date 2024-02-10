@@ -31,10 +31,22 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.docxstamper.utils.context.Contexts.*;
 
+/**
+ * <p>DefaultTests class.</p>
+ *
+ * @author Joseph Verron
+ * @version 1.6.6
+ * @since 1.6.6
+ */
 @DisplayName("Core Features")
-
 public class DefaultTests {
 
+    /**
+     * <p>getResource.</p>
+     *
+     * @param path a {@link java.nio.file.Path} object
+     * @return a {@link java.io.InputStream} object
+     */
     public static InputStream getResource(Path path) {
         try {
             var testRoot = Path.of("test", "sources");
@@ -1170,6 +1182,11 @@ public class DefaultTests {
                          expected);
     }
 
+    /**
+     * <p>tests.</p>
+     *
+     * @return a {@link java.util.stream.Stream} object
+     */
     public static Stream<Arguments> tests() {
         return Stream.of(tabulations(),
                          whitespaces(),

@@ -4,8 +4,8 @@ package org.wickedsource.docxstamper.processor.replaceExpression;
  * Interface for processors that replace a single word with an expression defined
  * in a comment.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public interface IReplaceWithProcessor {
 

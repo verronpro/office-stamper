@@ -6,8 +6,8 @@ import java.util.Map;
 /**
  * Registry for all implementations of ITypeResolver that are used by DocxStamper.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class TypeResolverRegistry {
 	private final Map<Class<?>, ITypeResolver<?>> typeResolversByType = new HashMap<>();

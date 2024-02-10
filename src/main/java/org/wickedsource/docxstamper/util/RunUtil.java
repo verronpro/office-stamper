@@ -11,8 +11,8 @@ import java.util.Objects;
 /**
  * Utility class to handle runs.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class RunUtil {
 

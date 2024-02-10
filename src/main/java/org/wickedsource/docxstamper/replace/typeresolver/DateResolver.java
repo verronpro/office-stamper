@@ -7,16 +7,16 @@ import java.util.Date;
 /**
  * This ITypeResolver creates a formatted date String for expressions that return a Date object.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class DateResolver extends AbstractToTextResolver<Date> {
 
 	private final DateTimeFormatter formatter;
 
-    /**
-     * Creates a new DateResolver that uses the format "dd.MM.yyyy".
-     */
+	/**
+	 * Creates a new DateResolver that uses the format "dd.MM.yyyy".
+	 */
 	public DateResolver() {
 		this(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 	}
@@ -28,11 +28,9 @@ public class DateResolver extends AbstractToTextResolver<Date> {
 	 */
 	public DateResolver(DateTimeFormatter formatter) {
 		this.formatter = formatter;
-    }
+	}
 
-    /**
-     * {@inheritDoc}
-     */
+	/** {@inheritDoc} */
 	@Override
 	protected String resolveStringForObject(Date date) {
 		return formatter.format(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());

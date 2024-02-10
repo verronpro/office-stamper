@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 /**
  * <p>CommentWrapper class.</p>
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class CommentWrapper {
 

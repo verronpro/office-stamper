@@ -18,13 +18,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
 /**
+ * <p>RepeatDocPartBadExpressionTest class.</p>
  *
  * @author jenei.attila
+ * @version 1.6.6
+ * @since 1.6.6
  */
 public class RepeatDocPartBadExpressionTest {
     static Logger logger =
             LoggerFactory.getLogger(RepeatDocPartBadExpressionTest.class);
 
+    /**
+     * <p>testBadExpressionShouldNotBlockCallerThread.</p>
+     */
     @Test
     @Timeout(10) // in case of pipe lock because of unknown exceptions
     public void testBadExpressionShouldNotBlockCallerThread() {

@@ -16,14 +16,14 @@ import java.util.Objects;
 /**
  * Merges runs with the same style that are next to each other.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class MergeSameStyleRuns implements PreProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void process(WordprocessingMLPackage document) {
 		var mainDocumentPart = document.getMainDocumentPart();

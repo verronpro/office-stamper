@@ -1,10 +1,11 @@
 package org.wickedsource.docxstamper.api;
 
 /**
- * This exception is thrown when DocxStamper encounters an error.
+ * This class represents an exception that can be thrown during the processing of a Docx file using the DocxStamper library.
+ * It extends the RuntimeException class and provides additional constructors to handle different scenarios.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class DocxStamperException extends RuntimeException {
 

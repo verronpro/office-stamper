@@ -6,32 +6,30 @@ import java.time.format.DateTimeFormatter;
 /**
  * Resolves {@link java.time.LocalDateTime} values to a formatted string.
  *
- * @author joseph
- * @version $Id: $Id
+ * @author Joseph Verron
+ * @version 1.6.6
  */
 public class LocalDateTimeResolver extends AbstractToTextResolver<LocalDateTime> {
 	private final DateTimeFormatter formatter;
 
-    /**
-     * Creates a new resolver that uses {@link java.time.format.DateTimeFormatter#ISO_LOCAL_DATE_TIME} to format {@link java.time.LocalDateTime}
-     * values.
-     */
+	/**
+	 * Creates a new resolver that uses {@link java.time.format.DateTimeFormatter#ISO_LOCAL_DATE_TIME} to format {@link java.time.LocalDateTime}
+	 * values.
+	 */
 	public LocalDateTimeResolver() {
 		this(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-    }
+	}
 
-    /**
-     * Creates a new resolver that uses the given formatter to format {@link java.time.LocalDateTime} values.
-     *
-     * @param formatter the formatter to use.
-     */
+	/**
+	 * Creates a new resolver that uses the given formatter to format {@link java.time.LocalDateTime} values.
+	 *
+	 * @param formatter the formatter to use.
+	 */
 	public LocalDateTimeResolver(DateTimeFormatter formatter) {
 		this.formatter = formatter;
-    }
+	}
 
-    /**
-     * {@inheritDoc}
-     */
+	/** {@inheritDoc} */
 	@Override
 	protected String resolveStringForObject(LocalDateTime localDateTime) {
 		return localDateTime.format(formatter);

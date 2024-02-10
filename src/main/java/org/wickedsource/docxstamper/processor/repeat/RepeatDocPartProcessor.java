@@ -14,6 +14,7 @@ import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
 import pro.verron.docxstamper.OpcStamper;
+import pro.verron.docxstamper.utils.ProcessorExceptionHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -248,19 +249,27 @@ public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRep
     }
 
     private WordprocessingMLPackage outputWord(Consumer<OutputStream> outputter) {
+        var exceptionHandler = new ProcessorExceptionHandler();
         try (
                 PipedOutputStream os = new PipedOutputStream();
                 PipedInputStream is = new PipedInputStream(os)
         ) {
-            Thread thread = threadFactory.newThread(() -> outputter.accept(os));
+            // closing on exception to not block the pipe infinitely
+            // TODO: model both PipedxxxStream as 1 class for only 1 close()
+            exceptionHandler.onException(is::close); // I know it's redundant,
+            exceptionHandler.onException(os::close); // but symmetry
+
+            var thread = threadFactory.newThread(() -> outputter.accept(os));
+            thread.setUncaughtExceptionHandler(exceptionHandler);
             thread.start();
-            WordprocessingMLPackage wordprocessingMLPackage = WordprocessingMLPackage.load(
-                    is);
+            var wordprocessingMLPackage = WordprocessingMLPackage.load(is);
             thread.join();
             return wordprocessingMLPackage;
-
         } catch (Docx4JException | IOException | InterruptedException e) {
-            throw new DocxStamperException(e);
+            DocxStamperException exception = new DocxStamperException(e);
+            exceptionHandler.exception()
+                    .ifPresent(exception::addSuppressed);
+            throw exception;
         }
     }
 

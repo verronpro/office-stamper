@@ -1,4 +1,6 @@
-package org.wickedsource.docxstamper.api.typeresolver;
+package org.wickedsource.docxstamper.replace.typeresolver;
+
+import org.wickedsource.docxstamper.api.typeresolver.ITypeResolver;
 
 import java.util.HashMap;
 import java.util.Map;

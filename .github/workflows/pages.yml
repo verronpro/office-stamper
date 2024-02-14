@@ -35,7 +35,7 @@ jobs:
         run: mvn -B -ntp package site -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
 
       - name: Setup Pages
-        uses: actions/configure-pages@v2
+        uses: actions/configure-pages@v4.0.0
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

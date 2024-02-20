@@ -12,20 +12,23 @@ import org.wickedsource.docxstamper.processor.repeat.IRepeatDocPartProcessor;
 import org.wickedsource.docxstamper.processor.repeat.IRepeatProcessor;
 import org.wickedsource.docxstamper.processor.replaceExpression.IReplaceWithProcessor;
 import org.wickedsource.docxstamper.processor.table.ITableResolver;
-import org.wickedsource.docxstamper.replace.typeresolver.FallbackResolver;
+import org.wickedsource.docxstamper.replace.typeresolver.TypeResolver;
+import pro.verron.docxstamper.api.ObjectResolver;
+import pro.verron.docxstamper.preset.resolver.Null2DefaultResolver;
+import pro.verron.docxstamper.preset.resolver.Resolvers;
 
 import java.util.*;
 
+import static java.util.stream.Collectors.toMap;
+
 /**
- * Provides configuration parameters for DocxStamper.
- *
- * @author Joseph Verron
- * @version 1.6.6
+ * The {@code DocxStamperConfiguration} class represents the configuration for the {@code DocxStamper} class.
+ * It provides methods to customize the behavior of the stamper.
  */
 public class DocxStamperConfiguration {
 
     private final Map<Class<?>, CommentProcessorBuilder> commentProcessors = new HashMap<>();
-    private final Map<Class<?>, ITypeResolver<?>> typeResolvers = new HashMap<>();
+    private final List<ObjectResolver> resolvers = new ArrayList<>();
     private final Map<Class<?>, Object> expressionFunctions = new HashMap<>();
     private final List<PreProcessor> preprocessors = new ArrayList<>();
     private String lineBreakPlaceholder;
@@ -34,9 +37,10 @@ public class DocxStamperConfiguration {
     private boolean leaveEmptyOnExpressionError = false;
     private boolean replaceUnresolvedExpressions = false;
     private String unresolvedExpressionsDefaultValue = null;
+    @Deprecated(since = "1.6.7")
     private boolean replaceNullValues = false;
+    @Deprecated(since = "1.6.7")
     private String nullValuesDefault = null;
-    private ITypeResolver<Object> defaultTypeResolver = new FallbackResolver();
     private SpelParserConfiguration spelParserConfiguration = new SpelParserConfiguration();
 
     /**
@@ -45,22 +49,38 @@ public class DocxStamperConfiguration {
     public DocxStamperConfiguration() {
         CommentProcessorFactory pf = new CommentProcessorFactory(this);
         commentProcessors.put(IRepeatProcessor.class, pf::repeat);
-        commentProcessors.put(IParagraphRepeatProcessor.class, pf::repeatParagraph);
+        commentProcessors.put(IParagraphRepeatProcessor.class,
+                              pf::repeatParagraph);
         commentProcessors.put(IRepeatDocPartProcessor.class, pf::repeatDocPart);
         commentProcessors.put(ITableResolver.class, pf::tableResolver);
         commentProcessors.put(IDisplayIfProcessor.class, pf::displayIf);
         commentProcessors.put(IReplaceWithProcessor.class, pf::replaceWith);
+
+        resolvers.addAll(List.of(Resolvers.image(),
+                                 Resolvers.legacyDate(),
+                                 Resolvers.isoDate(),
+                                 Resolvers.isoTime(),
+                                 Resolvers.isoDateTime(),
+                                 Resolvers.nullToEmpty(),
+                                 Resolvers.fallback()));
     }
 
     /**
-     * <p>nullReplacementValue.</p>
+     * Retrieves the default replacement value for null values.
      *
-     * @return the {@link org.wickedsource.docxstamper.api.typeresolver.ITypeResolver} for the given type or the default resolver if no resolver is registered for the given type.
+     * @return the {@link Optional} containing the default replacement value,
+     * or an empty {@link Optional} if no default replacement value is found
+     * @deprecated This method is deprecated since version 1.6.7.
+     * You shouldn't have to use it, it was a crutch use for inner workinf of
+     * docx-stamper
      */
+    @Deprecated(since = "1.6.7")
     public Optional<String> nullReplacementValue() {
-        return replaceNullValues
-                ? Optional.ofNullable(nullValuesDefault)
-                : Optional.empty();
+        return resolvers.stream()
+                .filter(Null2DefaultResolver.class::isInstance)
+                .map(Null2DefaultResolver.class::cast)
+                .map(Null2DefaultResolver::defaultValue)
+                .findFirst();
     }
 
     /**
@@ -73,51 +93,53 @@ public class DocxStamperConfiguration {
     }
 
     /**
-     * The String provided as lineBreakPlaceholder will be replaced with a line break
-     * when stamping a document. If no lineBreakPlaceholder is provided, no replacement
-     * will take place.
+     * If set to true, stamper will throw an {@link org.wickedsource.docxstamper.api.DocxStamperException}
+     * if a variable expression or processor expression within the document or within the comments is encountered that cannot be resolved. Is set to true by default.
      *
-     * @param lineBreakPlaceholder the String that should be replaced with line breaks during stamping.
-     * @return the configuration object for chaining.
+     * @param failOnUnresolvedExpression a boolean
+     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
      */
-    public DocxStamperConfiguration setLineBreakPlaceholder(String lineBreakPlaceholder) {
-        this.lineBreakPlaceholder = lineBreakPlaceholder;
+    public DocxStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression) {
+        this.failOnUnresolvedExpression = failOnUnresolvedExpression;
         return this;
     }
 
     /**
-     * Provides an {@link org.wickedsource.docxstamper.api.EvaluationContextConfigurer} which may change the configuration of a Spring
-     * {@link org.springframework.expression.EvaluationContext} which is used for evaluating expressions
-     * in comments and text.
+     * Sets the default value for null values in the document.
      *
-     * @param evaluationContextConfigurer the configurer to use.
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @param nullValuesDefault The default value for null values.
+     * @return The updated DocxStamperConfiguration object.
+     * @deprecated This method has been deprecated since version 1.6.7.
+     * It is recommended to use
+     * {@link DocxStamperConfiguration#addResolver(ObjectResolver)} and
+     * {@link Resolvers#nullToDefault(String)} instead.
      */
-    public DocxStamperConfiguration setEvaluationContextConfigurer(EvaluationContextConfigurer evaluationContextConfigurer) {
-        this.evaluationContextConfigurer = evaluationContextConfigurer;
-        return this;
-    }
-
-    /**
-     * Indicates if expressions that resolve to null should be replaced by a global default value.
-     *
-     * @param nullValuesDefault value to use instead for expression resolving to null
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
-     * @see DocxStamperConfiguration#replaceNullValues
-     */
+    @Deprecated(since = "1.6.7", forRemoval = true)
     public DocxStamperConfiguration nullValuesDefault(String nullValuesDefault) {
         this.nullValuesDefault = nullValuesDefault;
+        this.resolvers.add(0, this.replaceNullValues
+                ? Resolvers.nullToDefault(this.nullValuesDefault)
+                : Resolvers.nullToPlaceholder());
         return this;
     }
 
     /**
-     * Indicates if expressions that resolve to null should be processed.
+     * Replaces null values with either empty string or a placeholder value,
+     * based on the given flag.
      *
-     * @param replaceNullValues true to replace null value expression with resolved value (which is null), false to leave the expression as is
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @param replaceNullValues Flag indicating whether to replace null values or not.
+     * @return The updated DocxStamperConfiguration object.
+     * @deprecated This method has been deprecated since version 1.6.7.
+     * It is recommended to use
+     * {@link DocxStamperConfiguration#addResolver(ObjectResolver)} and
+     * {@link Resolvers#nullToDefault(String)} instead.
      */
+    @Deprecated(since = "1.6.7", forRemoval = true)
     public DocxStamperConfiguration replaceNullValues(boolean replaceNullValues) {
         this.replaceNullValues = replaceNullValues;
+        this.resolvers.add(this.replaceNullValues
+                                   ? Resolvers.nullToEmpty()
+                                   : Resolvers.nullToPlaceholder());
         return this;
     }
 
@@ -165,14 +187,25 @@ public class DocxStamperConfiguration {
      * Note that each type can only be resolved by ONE ITypeResolver implementation. Multiple calls to addTypeResolver()
      * with the same resolvedType parameter will override earlier calls.
      * </p>
+     * <p>
      *
      * @param resolvedType the class whose objects are to be passed to the given ITypeResolver.
      * @param resolver     the resolver to resolve objects of the given type.
      * @param <T>          the type resolved by the ITypeResolver.
      * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @deprecated This method has been deprecated since version 1.6.7 and
+     * it is scheduled for removal.
+     * It's recommended to use the
+     * {@link DocxStamperConfiguration#addResolver(ObjectResolver)}
+     * method
+     * for adding resolvers.</b>
+     * <
      */
-    public <T> DocxStamperConfiguration addTypeResolver(Class<T> resolvedType, ITypeResolver<T> resolver) {
-        this.typeResolvers.put(resolvedType, resolver);
+    @Deprecated(since = "1.6.7", forRemoval = true)
+    public <T> DocxStamperConfiguration addTypeResolver(
+            Class<T> resolvedType, ITypeResolver<T> resolver
+    ) {
+        this.resolvers.add(0, new TypeResolver<>(resolvedType, resolver));
         return this;
     }
 
@@ -184,7 +217,9 @@ public class DocxStamperConfiguration {
      *                       within the expression language. Must implement the interface above.
      * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
      */
-    public DocxStamperConfiguration exposeInterfaceToExpressionLanguage(Class<?> interfaceClass, Object implementation) {
+    public DocxStamperConfiguration exposeInterfaceToExpressionLanguage(
+            Class<?> interfaceClass, Object implementation
+    ) {
         this.expressionFunctions.put(interfaceClass, implementation);
         return this;
     }
@@ -210,22 +245,11 @@ public class DocxStamperConfiguration {
      *
      * @param <T> a T class
      * @return a {@link org.wickedsource.docxstamper.DocxStamper} object
-     * @deprecated use new DocxStamper(DocxStamperConfiguration configuration) instead
+     * @deprecated use new {@link DocxStamper(DocxStamperConfiguration) instead
      */
     @Deprecated(forRemoval = true, since = "1.6.4")
     public <T> DocxStamper<T> build() {
         return new DocxStamper<>(this);
-    }
-
-    /**
-     * <p>Setter for the field <code>defaultTypeResolver</code>.</p>
-     *
-     * @param defaultTypeResolver a {@link org.wickedsource.docxstamper.api.typeresolver.ITypeResolver} object
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
-     */
-    public DocxStamperConfiguration setDefaultTypeResolver(ITypeResolver<? super Object> defaultTypeResolver) {
-        this.defaultTypeResolver = defaultTypeResolver;
-        return this;
     }
 
     /**
@@ -235,32 +259,6 @@ public class DocxStamperConfiguration {
      */
     public void addPreprocessor(PreProcessor preprocessor) {
         preprocessors.add(preprocessor);
-    }
-
-    /**
-     * Sets the {@link org.springframework.expression.spel.SpelParserConfiguration} to use for expression parsing.
-     * <p>
-     * Note that this configuration will be used for all expressions in the document, including expressions in comments!
-     * </p>
-     *
-     * @param spelParserConfiguration the configuration to use.
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
-     */
-    public DocxStamperConfiguration setSpelParserConfiguration(SpelParserConfiguration spelParserConfiguration) {
-        this.spelParserConfiguration = spelParserConfiguration;
-        return this;
-    }
-
-    /**
-     * If set to true, stamper will throw an {@link org.wickedsource.docxstamper.api.DocxStamperException}
-     * if a variable expression or processor expression within the document or within the comments is encountered that cannot be resolved. Is set to true by default.
-     *
-     * @param failOnUnresolvedExpression a boolean
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
-     */
-    public DocxStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression) {
-        this.failOnUnresolvedExpression = failOnUnresolvedExpression;
-        return this;
     }
 
     /**
@@ -300,12 +298,40 @@ public class DocxStamperConfiguration {
     }
 
     /**
+     * The String provided as lineBreakPlaceholder will be replaced with a line break
+     * when stamping a document. If no lineBreakPlaceholder is provided, no replacement
+     * will take place.
+     *
+     * @param lineBreakPlaceholder the String that should be replaced with line breaks during stamping.
+     * @return the configuration object for chaining.
+     */
+    public DocxStamperConfiguration setLineBreakPlaceholder(String lineBreakPlaceholder) {
+        this.lineBreakPlaceholder = lineBreakPlaceholder;
+        return this;
+    }
+
+    /**
      * <p>Getter for the field <code>evaluationContextConfigurer</code>.</p>
      *
      * @return a {@link org.wickedsource.docxstamper.api.EvaluationContextConfigurer} object
      */
     public EvaluationContextConfigurer getEvaluationContextConfigurer() {
         return evaluationContextConfigurer;
+    }
+
+    /**
+     * Provides an {@link org.wickedsource.docxstamper.api.EvaluationContextConfigurer} which may change the configuration of a Spring
+     * {@link org.springframework.expression.EvaluationContext} which is used for evaluating expressions
+     * in comments and text.
+     *
+     * @param evaluationContextConfigurer the configurer to use.
+     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     */
+    public DocxStamperConfiguration setEvaluationContextConfigurer(
+            EvaluationContextConfigurer evaluationContextConfigurer
+    ) {
+        this.evaluationContextConfigurer = evaluationContextConfigurer;
+        return this;
     }
 
     /**
@@ -318,6 +344,22 @@ public class DocxStamperConfiguration {
     }
 
     /**
+     * Sets the {@link org.springframework.expression.spel.SpelParserConfiguration} to use for expression parsing.
+     * <p>
+     * Note that this configuration will be used for all expressions in the document, including expressions in comments!
+     * </p>
+     *
+     * @param spelParserConfiguration the configuration to use.
+     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     */
+    public DocxStamperConfiguration setSpelParserConfiguration(
+            SpelParserConfiguration spelParserConfiguration
+    ) {
+        this.spelParserConfiguration = spelParserConfiguration;
+        return this;
+    }
+
+    /**
      * <p>Getter for the field <code>expressionFunctions</code>.</p>
      *
      * @return a {@link java.util.Map} object
@@ -327,21 +369,58 @@ public class DocxStamperConfiguration {
     }
 
     /**
-     * <p>Getter for the field <code>typeResolvers</code>.</p>
+     * Retrieves the map of type resolvers.
      *
-     * @return a {@link java.util.Map} object
+     * @return the map of type resolvers
+     * @deprecated This method is deprecated since version 1.6.7
      */
+    @Deprecated(since = "1.6.7", forRemoval = true)
     public Map<Class<?>, ITypeResolver<?>> getTypeResolvers() {
-        return typeResolvers;
+        return resolvers.stream()
+                .filter(resolver -> resolver instanceof TypeResolver)
+                .map(TypeResolver.class::cast)
+                .collect(toMap(TypeResolver::type, TypeResolver::resolver));
     }
 
     /**
-     * <p>Getter for the field <code>defaultTypeResolver</code>.</p>
+     * Returns the default type resolver.
+     * <p>
+     * This method returns the default type resolver from a list of resolvers. It filters the resolvers to only include instances of
+     * {@link ITypeResolver}, and returns the first one found. If no type resolver is found, null is returned.
      *
-     * @return a {@link org.wickedsource.docxstamper.api.typeresolver.ITypeResolver} object
+     * @return the default type resolver, or null if not found
+     * @deprecated This method is deprecated since version 1.6.7 and is scheduled for removal.
+     * You should not have to use it, it was a clutch for previosu version of
+     * docx-stamper.
      */
+    @Deprecated(since = "1.6.7", forRemoval = true)
     public ITypeResolver<Object> getDefaultTypeResolver() {
-        return defaultTypeResolver;
+        return (ITypeResolver<Object>) resolvers.stream()
+                .filter(ITypeResolver.class::isInstance)
+                .map(ITypeResolver.class::cast)
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Sets the default type resolver for the DocxStamperConfiguration.
+     *
+     * @param defaultResolver The default type resolver to set.
+     * @return The updated DocxStamperConfiguration instance.
+     * @deprecated This method is deprecated and scheduled for removal in version 1.6.7.
+     * Please set your "default" resolver through
+     * {@link DocxStamperConfiguration#addResolver(ObjectResolver)} by
+     * putting your default first in the list, or by using
+     * {@link DocxStamperConfiguration#setResolvers(List)}} and putting your
+     * fallback resolvers in the last place.
+     */
+    @Deprecated(since = "1.6.7", forRemoval = true)
+    public DocxStamperConfiguration setDefaultTypeResolver(
+            ITypeResolver<? super Object> defaultResolver
+    ) {
+        var resolver = new TypeResolver<>(Object.class, defaultResolver, true);
+        this.resolvers.add(resolver);
+        return this;
     }
 
     /**
@@ -354,19 +433,26 @@ public class DocxStamperConfiguration {
     }
 
     /**
-     * <p>isReplaceNullValues.</p>
+     * Gets the flag indicating whether null values should be replaced.
      *
-     * @return a boolean
+     * @return {@code true} if null values should be replaced, {@code false} otherwise.
+     * @deprecated This method is deprecated since version 1.6.7 and will be removed in a future release.
+     * You shouldn't have to use it, it was a clutch for
+     * docx-stamper workings.
      */
+    @Deprecated(since = "1.6.7", forRemoval = true)
     public boolean isReplaceNullValues() {
         return replaceNullValues;
     }
 
     /**
-     * <p>Getter for the field <code>nullValuesDefault</code>.</p>
+     * Retrieves the default value used for representing null values.
      *
-     * @return a {@link java.lang.String} object
+     * @return the default value for null values
+     * @deprecated This method has been deprecated since version 1.6.7 and is scheduled for removal.
+     * You shouldn't have to use it, it was a clutch for docx-stamper workings.
      */
+    @Deprecated(since = "1.6.7", forRemoval = true)
     public String getNullValuesDefault() {
         return nullValuesDefault;
     }
@@ -378,5 +464,37 @@ public class DocxStamperConfiguration {
      */
     public List<PreProcessor> getPreprocessors() {
         return preprocessors;
+    }
+
+    /**
+     * Retrieves the list of resolvers.
+     *
+     * @return The list of object resolvers.
+     */
+    public List<ObjectResolver> getResolvers() {
+        return resolvers;
+    }
+
+    /**
+     * Sets the resolvers for resolving objects in the DocxStamperConfiguration.
+     * <p>
+     * This method is the evolution of the method {@code addTypeResolver},
+     * and the order in which the resolvers are ordered is determinant - the first resolvers
+     * in the list will be tried first. If a fallback resolver is desired, it should be placed last in the list.
+     *
+     * @param resolvers The list of ObjectResolvers to be set.
+     * @return The updated DocxStamperConfiguration instance.
+     */
+    public DocxStamperConfiguration setResolvers(
+            List<ObjectResolver> resolvers
+    ) {
+        this.resolvers.clear();
+        this.resolvers.addAll(resolvers);
+        return this;
+    }
+
+    public DocxStamperConfiguration addResolver(ObjectResolver resolver) {
+        resolvers.add(0, resolver);
+        return this;
     }
 }

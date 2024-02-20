@@ -10,10 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.api.typeresolver.ITypeResolver;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.ExpressionUtil;
-import org.wickedsource.docxstamper.replace.typeresolver.TypeResolverRegistry;
+import org.wickedsource.docxstamper.replace.typeresolver.ObjectResolverRegistry;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
@@ -25,14 +24,12 @@ import java.util.Optional;
  * Replaces expressions in a document with the values provided by the {@link org.wickedsource.docxstamper.el.ExpressionResolver}.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version 1.6.7
  */
 public class PlaceholderReplacer {
     private static final Logger log = LoggerFactory.getLogger(PlaceholderReplacer.class);
     private final ExpressionResolver expressionResolver;
-    private final TypeResolverRegistry typeResolverRegistry;
-    private final boolean replaceNullValues;
-    private final String nullValuesDefault;
+    private final ObjectResolverRegistry resolverRegistry;
     private final boolean failOnUnresolvedExpression;
     private final boolean leaveEmptyOnExpressionError;
     private final boolean replaceUnresolvedExpressions;
@@ -42,11 +39,8 @@ public class PlaceholderReplacer {
     /**
      * <p>Constructor for PlaceholderReplacer.</p>
      *
-     * @param typeResolverRegistry              the registry containing all available type resolvers.
+     * @param resolverRegistry              the registry containing all available type resolvers.
      * @param expressionResolver                the expression resolver used to resolve expressions in the document.
-     * @param replaceNullValues                 if set to true, null values are replaced with the value provided in the
-     *                                          nullValuesDefault parameter.
-     * @param nullValuesDefault                 the value to use when replacing null values.
      * @param failOnUnresolvedExpression        if set to true, an exception is thrown when an expression cannot be
      *                                          resolved.
      * @param replaceUnresolvedExpressions      if set to true, expressions that cannot be resolved are replaced by the
@@ -58,20 +52,16 @@ public class PlaceholderReplacer {
      *                                          replaced with a line break.
      */
     public PlaceholderReplacer(
-            TypeResolverRegistry typeResolverRegistry,
+            ObjectResolverRegistry resolverRegistry,
             ExpressionResolver expressionResolver,
-            boolean replaceNullValues,
-            String nullValuesDefault,
             boolean failOnUnresolvedExpression,
             boolean replaceUnresolvedExpressions,
             String unresolvedExpressionsDefaultValue,
             boolean leaveEmptyOnExpressionError,
             String lineBreakPlaceholder
     ) {
-        this.typeResolverRegistry = typeResolverRegistry;
+        this.resolverRegistry = resolverRegistry;
         this.expressionResolver = expressionResolver;
-        this.replaceNullValues = replaceNullValues;
-        this.nullValuesDefault = nullValuesDefault;
         this.failOnUnresolvedExpression = failOnUnresolvedExpression;
         this.replaceUnresolvedExpressions = replaceUnresolvedExpressions;
         this.unresolvedExpressionsDefaultValue = unresolvedExpressionsDefaultValue;
@@ -102,26 +92,16 @@ public class PlaceholderReplacer {
      * @param expressionContext the context root
      * @param document          the document in which to replace all expressions.
      */
-    @SuppressWarnings("unchecked")
     public void resolveExpressionsForParagraph(P p, Object expressionContext, WordprocessingMLPackage document) {
         ParagraphWrapper paragraphWrapper = new ParagraphWrapper(p);
         List<String> placeholders = ExpressionUtil.findVariableExpressions(paragraphWrapper.getText());
         for (String placeholder : placeholders) {
             try {
                 Object replacement = expressionResolver.resolveExpression(placeholder, expressionContext);
-                if (replacement != null) {
-                    //noinspection rawtypes
-                    ITypeResolver resolver = typeResolverRegistry.getResolverForType(replacement.getClass());
-                    R replacementObject = resolver.resolve(document, replacement);
-                    replace(paragraphWrapper, placeholder, replacementObject);
-                    log.debug("Expression '{}' replaced by typeResolver {}", placeholder, resolver.getClass());
-                } else if (replaceNullValues) {
-                    //noinspection rawtypes
-                    ITypeResolver resolver = typeResolverRegistry.getDefaultResolver();
-                    R replacementObject = resolver.resolve(document, nullValuesDefault);
-                    replace(paragraphWrapper, placeholder, replacementObject);
-                    log.debug("Expression '{}' replaced by typeResolver {}", placeholder, resolver.getClass());
-                }
+                R replacementObject = resolverRegistry.resolve(document,
+                                                               placeholder,
+                                                               replacement);
+                replace(paragraphWrapper, placeholder, replacementObject);
             } catch (SpelEvaluationException | SpelParseException e) {
                 if (isFailOnUnresolvedExpression()) {
                     String message = "Expression %s could not be resolved against context of type %s"

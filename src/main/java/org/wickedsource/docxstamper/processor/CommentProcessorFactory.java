@@ -17,7 +17,7 @@ import pro.verron.docxstamper.OpcStamper;
  * Factory class to create the correct comment processor for a given comment.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version 1.6.7
  */
 public class CommentProcessorFactory {
 	private final DocxStamperConfiguration configuration;
@@ -38,10 +38,7 @@ public class CommentProcessorFactory {
 	 * @return a {@link org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor} object
 	 */
 	public ICommentProcessor repeatParagraph(PlaceholderReplacer pr) {
-		return configuration
-				.nullReplacementValue()
-				.map(nullReplacementValue -> ParagraphRepeatProcessor.newInstance(pr, nullReplacementValue))
-				.orElseGet(() -> ParagraphRepeatProcessor.newInstance(pr));
+		return ParagraphRepeatProcessor.newInstance(pr);
 	}
 
 	/**
@@ -51,10 +48,7 @@ public class CommentProcessorFactory {
 	 * @return a {@link org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor} object
 	 */
 	public ICommentProcessor repeatDocPart(PlaceholderReplacer pr) {
-		return configuration
-				.nullReplacementValue()
-				.map(nullReplacementValue -> RepeatDocPartProcessor.newInstance(pr, getStamper(), nullReplacementValue))
-				.orElseGet(() -> RepeatDocPartProcessor.newInstance(pr, getStamper()));
+		return RepeatDocPartProcessor.newInstance(pr, getStamper());
 	}
 
 	private OpcStamper<WordprocessingMLPackage> getStamper() {
@@ -68,10 +62,7 @@ public class CommentProcessorFactory {
 	 * @return a {@link org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor} object
 	 */
 	public ICommentProcessor repeat(PlaceholderReplacer pr) {
-		return configuration
-				.nullReplacementValue()
-				.map(nullReplacementValue -> RepeatProcessor.newInstanceWithNullReplacement(pr))
-				.orElseGet(() -> RepeatProcessor.newInstance(pr));
+		return RepeatProcessor.newInstance(pr);
 	}
 
 	/**
@@ -81,10 +72,7 @@ public class CommentProcessorFactory {
 	 * @return a {@link org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor} object
 	 */
 	public ICommentProcessor tableResolver(PlaceholderReplacer pr) {
-		return configuration
-				.nullReplacementValue()
-				.map(nullReplacementValue -> TableResolver.newInstance(pr, nullReplacementValue))
-				.orElseGet(() -> TableResolver.newInstance(pr));
+		return TableResolver.newInstance(pr);
 	}
 
 	/**
@@ -104,9 +92,6 @@ public class CommentProcessorFactory {
 	 * @return a {@link org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor} object
 	 */
 	public ICommentProcessor replaceWith(PlaceholderReplacer pr) {
-		return configuration
-				.nullReplacementValue()
-				.map(nullReplacementValue -> ReplaceWithProcessor.newInstance(pr, nullReplacementValue))
-				.orElseGet(() -> ReplaceWithProcessor.newInstance(pr));
+		return ReplaceWithProcessor.newInstance(pr);
 	}
 }

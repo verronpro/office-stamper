@@ -13,6 +13,7 @@ import pro.verron.docxstamper.Functions;
 import pro.verron.docxstamper.accessors.SimpleGetter;
 import pro.verron.docxstamper.commentProcessors.CustomCommentProcessor;
 import pro.verron.docxstamper.commentProcessors.ICustomCommentProcessor;
+import pro.verron.docxstamper.preset.resolver.Resolvers;
 import pro.verron.docxstamper.resolver.CustomTypeResolver;
 import pro.verron.docxstamper.utils.TestDocxStamper;
 import pro.verron.docxstamper.utils.context.Contexts;
@@ -136,15 +137,17 @@ public class DefaultTests {
 
     private static Arguments replaceNullExpressionTest() {
         return of("Do not replace 'null' values",
-                  new DocxStamperConfiguration().replaceNullValues(false),
+                  new DocxStamperConfiguration()
+                          .addResolver(Resolvers.nullToPlaceholder()),
                   name(null),
-                  getResource(Path.of("ReplaceNullExpressionTest" + ".docx")),
+                  getResource(Path.of("ReplaceNullExpressionTest.docx")),
                   "I am ${name}.");
     }
 
     private static Arguments replaceNullExpressionTest2() {
         return of("Do replace 'null' values",
-                  new DocxStamperConfiguration().replaceNullValues(true),
+                  new DocxStamperConfiguration()
+                          .addResolver(Resolvers.nullToEmpty()),
                   name(null),
                   getResource(Path.of("ReplaceNullExpressionTest.docx")),
                   "I am .");
@@ -844,9 +847,8 @@ public class DefaultTests {
 
     private static Arguments customTypeResolverTest() {
         return arguments("customTypeResolverTest",
-                         new DocxStamperConfiguration().addTypeResolver(
-                                 CustomType.class,
-                                 new CustomTypeResolver()),
+                         new DocxStamperConfiguration()
+                                 .addResolver(new CustomTypeResolver()),
                          new Context(new CustomType()),
                          getResource(Path.of("CustomTypeResolverTest.docx")),
                          """
@@ -1007,7 +1009,8 @@ public class DefaultTests {
 
     private static Arguments imageReplacementInGlobalParagraphsTestWithMaxWidth() {
         var context = new Contexts.ImageContext(getImage(Path.of("monalisa" +
-                                                                 ".jpg"), 1000));
+                                                                 ".jpg"),
+                                                         1000));
         var template = getResource(Path.of(
                 "ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
@@ -1088,11 +1091,10 @@ public class DefaultTests {
                 Paragraph end
                 """;
 
-        var config = new DocxStamperConfiguration().setFailOnUnresolvedExpression(
-                        false)
+        var config = new DocxStamperConfiguration()
+                .setFailOnUnresolvedExpression(false)
                 .setLineBreakPlaceholder("\n")
-                .replaceNullValues(true)
-                .nullValuesDefault("N/C")
+                .addResolver(Resolvers.nullToDefault("N/C"))
                 .replaceUnresolvedExpressions(true)
                 .unresolvedExpressionsDefaultValue("N/C")
                 .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(
@@ -1168,12 +1170,11 @@ public class DefaultTests {
         // Beware, this configuration only autogrows pojos and java beans,
         // so it will not work if your type has no default constructor and no setters.
 
-        var config = new DocxStamperConfiguration().setSpelParserConfiguration(
+        var config = new DocxStamperConfiguration()
+                .setSpelParserConfiguration(
                         new SpelParserConfiguration(true, true))
                 .setEvaluationContextConfigurer(new NoOpEvaluationContextConfigurer())
-                .nullValuesDefault("Nullish value!!")
-                .replaceNullValues(true);
-
+                .addResolver(Resolvers.nullToDefault("Nullish value!!"));
 
         return arguments("nullPointerResolutionTest_testWithCustomSpel",
                          config,

@@ -8,22 +8,16 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
 import org.wickedsource.docxstamper.api.preprocessor.PreProcessor;
-import org.wickedsource.docxstamper.api.typeresolver.ITypeResolver;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
 import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
-import org.wickedsource.docxstamper.replace.typeresolver.*;
-import org.wickedsource.docxstamper.replace.typeresolver.image.Image;
-import org.wickedsource.docxstamper.replace.typeresolver.image.ImageResolver;
+import org.wickedsource.docxstamper.replace.typeresolver.ObjectResolverRegistry;
 import pro.verron.docxstamper.OpcStamper;
+import pro.verron.docxstamper.api.ObjectResolver;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +28,7 @@ import java.util.function.Function;
  *
  * @param <T> The type of the context that can be stamped
  * @author Joseph Verron
- * @version 1.6.6
+ * @version 1.6.7
  */
 public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 	private final List<PreProcessor> preprocessors;
@@ -65,10 +59,8 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 				configuration.getLineBreakPlaceholder(),
 				configuration.getEvaluationContextConfigurer(),
 				configuration.getExpressionFunctions(),
-				configureTypeResolverRegistry(configuration.getTypeResolvers(), configuration.getDefaultTypeResolver()),
+				configuration.getResolvers(),
 				configuration.getCommentProcessors(),
-				configuration.isReplaceNullValues(),
-				configuration.getNullValuesDefault(),
 				configuration.getPreprocessors(),
 				configuration.getSpelParserConfiguration()
 		);
@@ -82,9 +74,8 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 			String lineBreakPlaceholder,
 			EvaluationContextConfigurer evaluationContextConfigurer,
 			Map<Class<?>, Object> expressionFunctions,
-			TypeResolverRegistry typeResolverRegistry,
+			List<ObjectResolver> resolvers,
 			Map<Class<?>, CommentProcessorBuilder> configurationCommentProcessors,
-			boolean replaceNullValues, String nullValuesDefault,
 			List<PreProcessor> preprocessors,
 			SpelParserConfiguration spelParserConfiguration
 	) {
@@ -109,11 +100,11 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 				spelParserConfiguration
 		);
 
+		var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
+
 		var placeholderReplacerInstance = new PlaceholderReplacer(
 				typeResolverRegistry,
 				expressionResolver,
-				replaceNullValues,
-				nullValuesDefault,
 				failOnUnresolvedExpression,
 				replaceUnresolvedExpressions,
 				unresolvedExpressionsDefaultValue,
@@ -136,24 +127,6 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 		this.placeholderReplacer = placeholderReplacerInstance;
 		this.commentProcessorRegistry = commentProcessorRegistryInstance;
 		this.preprocessors = preprocessors.stream().toList();
-	}
-
-	private static TypeResolverRegistry configureTypeResolverRegistry(
-			Map<Class<?>, ITypeResolver<?>> typeResolvers,
-			ITypeResolver<Object> defaultResolver
-	) {
-		var typeResolverRegistry = new TypeResolverRegistry(defaultResolver);
-		typeResolverRegistry.registerTypeResolver(Image.class, new ImageResolver());
-		typeResolverRegistry.registerTypeResolver(Date.class, new DateResolver());
-		typeResolverRegistry.registerTypeResolver(LocalDate.class, new LocalDateResolver());
-		typeResolverRegistry.registerTypeResolver(LocalDateTime.class, new LocalDateTimeResolver());
-		typeResolverRegistry.registerTypeResolver(LocalTime.class, new LocalTimeResolver());
-
-		for (var entry : typeResolvers.entrySet()) {
-			//noinspection unchecked,rawtypes
-			typeResolverRegistry.registerTypeResolver((Class) entry.getKey(), (ITypeResolver) entry.getValue());
-		}
-		return typeResolverRegistry;
 	}
 
 	private static TypedValue throwException(ReflectiveOperationException exception) {

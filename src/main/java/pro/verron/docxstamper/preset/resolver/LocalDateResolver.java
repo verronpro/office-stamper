@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.replace.typeresolver;
+package pro.verron.docxstamper.preset.resolver;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -7,9 +7,10 @@ import java.time.format.DateTimeFormatter;
  * Resolves {@link java.time.LocalDate} objects by formatting them with a {@link java.time.format.DateTimeFormatter}.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version 1.6.7
  */
-public class LocalDateResolver extends AbstractToTextResolver<LocalDate> {
+public class LocalDateResolver
+		extends StringResolver<LocalDate> {
 	private final DateTimeFormatter formatter;
 
 	/**
@@ -25,6 +26,7 @@ public class LocalDateResolver extends AbstractToTextResolver<LocalDate> {
 	 * @param formatter the formatter to use.
 	 */
 	public LocalDateResolver(DateTimeFormatter formatter) {
+		super(LocalDate.class);
 		this.formatter = formatter;
 	}
 

@@ -11,7 +11,7 @@ import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.replace.typeresolver.image.ImageResolver;
+import pro.verron.docxstamper.preset.resolver.ImageResolver;
 
 import java.util.*;
 import java.util.stream.Stream;

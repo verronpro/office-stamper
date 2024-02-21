@@ -54,9 +54,11 @@ public class Resolvers {
     }
 
     /**
-     * Returns an instance of {@link LocalTimeResolver}.
-     * The LocalTimeResolver class is an implementation of the {@link ObjectResolver} interface
-     * that resolves {@link java.time
+     * Returns an instance of LocalTimeResolver.
+     * The LocalTimeResolver class is an implementation of the StringResolver interface
+     * that resolves LocalTime values to a formatted string using the ISO_LOCAL_TIME pattern.
+     *
+     * @return An instance of LocalTimeResolver
      */
     public static LocalTimeResolver isoDateTime() {
         return new LocalTimeResolver();
@@ -117,10 +119,11 @@ public class Resolvers {
     }
 
     /**
-     * Creates a new instance of DateResolver using the given DateTimeFormatter.
+     * This method returns an instance of DateResolver that creates a formatted date string for expressions that return a Date object.
      *
-     * @param formatter the DateTimeFormatter to use for formatting Date objects
-     **/
+     * @param formatter the format to use for date formatting. See java.time.format.DateTimeFormatter.
+     * @return an instance of DateResolver
+     */
     public static DateResolver legacyDate(DateTimeFormatter formatter) {
         return new DateResolver(formatter);
     }

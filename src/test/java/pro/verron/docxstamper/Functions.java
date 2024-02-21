@@ -10,14 +10,25 @@ package pro.verron.docxstamper;
 public class Functions {
 
     /**
-     * <p>upperCase.</p>
+     * Returns an implementation of the UppercaseFunction interface.
+     * The implementation converts a string to uppercase.
      *
-     * @return a {@link pro.verron.docxstamper.Functions.UppercaseFunction} object
+     * @return an implementation of UppercaseFunction interface
      */
     public static UppercaseFunction upperCase(){
         return String::toUpperCase;
     }
+
+    /**
+     * The UppercaseFunction interface defines a method for converting a string to uppercase.
+     */
     public interface UppercaseFunction {
+        /**
+         * Converts the given string to uppercase.
+         *
+         * @param string the string to be converted to uppercase
+         * @return the uppercase representation of the given string
+         */
         String toUppercase(String string);
     }
 }

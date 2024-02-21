@@ -222,38 +222,75 @@ public class Contexts {
         );
     }
 
+    /**
+     * The Role class represents a role played by an actor.
+     */
     public record Role(String name, String actor) {
     }
 
+    /**
+     * The Characters class represents a list of characters played by actors.
+     */
     public record Characters(List<Role> characters) {
     }
 
+    /**
+     * Represents a Date context.
+     *
+     * @param date The Date value to be encapsulated in the context.
+     */
     public record DateContext(Date date) {
     }
 
+    /**
+     * A static inner class representing a Spacy context.
+     */
     public static class SpacyContext {
         private final String expressionWithLeadingAndTrailingSpace = " Expression ";
         private final String expressionWithLeadingSpace = " Expression";
         private final String expressionWithTrailingSpace = "Expression ";
         private final String expressionWithoutSpaces = "Expression";
 
+        /**
+         * Retrieves the expression with leading and trailing spaces.
+         *
+         * @return The expression with leading and trailing spaces.
+         */
         public String getExpressionWithLeadingAndTrailingSpace() {
             return " Expression ";
         }
 
+        /**
+         * Retrieves the expression with a leading space.
+         *
+         * @return The expression with a leading space.
+         */
         public String getExpressionWithLeadingSpace() {
             return " Expression";
         }
 
+        /**
+         * Retrieves the expression with a trailing space.
+         *
+         * @return The expression with a trailing space.
+         */
         public String getExpressionWithTrailingSpace() {
             return "Expression ";
         }
 
+        /**
+         * Retrieves the expression without spaces.
+         *
+         * @return The expression without spaces.
+         */
         public String getExpressionWithoutSpaces() {
             return "Expression";
         }
     }
 
+    /**
+     * Represents the context for an image that will be inserted into a document.
+     */
     public record ImageContext(Image monalisa) {
     }
 
@@ -265,15 +302,29 @@ public class Contexts {
         }
     }
 
+    /**
+     * This class represents a NullishContext object.
+     */
     public static final class NullishContext {
         private String fullish_value;
         private SubContext fullish;
         private String nullish_value;
         private SubContext nullish;
 
+        /**
+         * Represents a NullishContext object.
+         */
         public NullishContext() {
         }
 
+        /**
+         * Represents a NullishContext object.
+         *
+         * @param fullish_value The value associated with the fullish context.
+         * @param fullish       An instance of the SubContext related to the fullish context.
+         * @param nullish_value The value associated with the nullish context.
+         * @param nullish       An instance of the SubContext related to the nullish context.
+         */
         public NullishContext(
                 String fullish_value,
                 SubContext fullish,
@@ -286,34 +337,74 @@ public class Contexts {
             this.nullish = nullish;
         }
 
+        /**
+         * Returns the value of the fullish_value attribute of the NullishContext object.
+         *
+         * @return The value of the fullish_value attribute.
+         */
         public String getFullish_value() {
             return fullish_value;
         }
 
+        /**
+         * Sets the value of the fullish_value attribute in the NullishContext object.
+         *
+         * @param fullish_value The new value for the fullish_value attribute.
+         */
         public void setFullish_value(String fullish_value) {
             this.fullish_value = fullish_value;
         }
 
+        /**
+         * Returns the fullish attribute of the NullishContext object.
+         *
+         * @return The fullish attribute.
+         */
         public SubContext getFullish() {
             return fullish;
         }
 
+        /**
+         * Sets the fullish attribute of the NullishContext object.
+         *
+         * @param fullish The new value for the fullish attribute.
+         */
         public void setFullish(SubContext fullish) {
             this.fullish = fullish;
         }
 
+        /**
+         * Returns the value of the nullish_value attribute of the NullishContext object.
+         *
+         * @return The value of the nullish_value attribute.
+         */
         public String getNullish_value() {
             return nullish_value;
         }
 
+        /**
+         * Sets the value of the nullish_value attribute in the NullishContext object.
+         *
+         * @param nullish_value The new value for the nullish_value attribute.
+         */
         public void setNullish_value(String nullish_value) {
             this.nullish_value = nullish_value;
         }
 
+        /**
+         * Returns the nullish attribute of the NullishContext object.
+         *
+         * @return The nullish attribute.
+         */
         public SubContext getNullish() {
             return nullish;
         }
 
+        /**
+         * Sets the nullish attribute of the NullishContext object.
+         *
+         * @param nullish The new value for the nullish attribute.
+         */
         public void setNullish(SubContext nullish) {
             this.nullish = nullish;
         }
@@ -432,21 +523,56 @@ public class Contexts {
 
     }
 
+    /**
+     * Represents the context of a school.
+     *
+     * @param schoolName the name of the school
+     * @param grades the list of grades in the school
+     */
     record SchoolContext(String schoolName, List<Grade> grades) {}
 
+    /**
+     * Represents a grade in a school.
+     *
+     * @param number the grade number
+     * @param classes the list of classes in the grade
+     */
     record Grade(int number, List<AClass> classes) {}
 
+    /**
+     * Represents a Show, which is a collection of CharacterRecords.
+     *
+     * @param characters The list of CharacterRecords in the Show.
+     */
     public record Show(List<CharacterRecord> characters) {}
 
+    /**
+     * Represents a character record.
+     */
     public record CharacterRecord(int index, String indexSuffix, String characterName, String actorName) {}
 
+    /**
+     * Represents a character in a movie or play.
+     */
     public record Character(String name, String actor) {}
 
-
+    /**
+     * Represents a class.
+     */
     public record AClass(int number, List<Student> students) {}
 
+    /**
+     * Represents a student.
+     *
+     * @param number the student number
+     * @param name the student name
+     * @param age the student age
+     */
     record Student(int number, String name, int age) {}
 
+    /**
+     * Represents a value in a table.
+     */
     static class TableValue {
         public String value;
 
@@ -455,12 +581,28 @@ public class Contexts {
         }
     }
 
+    /**
+     * Represents a name.
+     */
     public record Name(String name) {}
 
+    /**
+     * Represents an empty context.
+     */
     public static class EmptyContext {
     }
 
+    /**
+     * The {@code Context} class represents a context object that contains a {@code CustomType}.
+     * It is used in various contexts within the application.
+     *
+     * @param name The {@code CustomType} object.
+     */
     public record Context(CustomType name) {}
 
+    /**
+     * CustomType is a static nested class that represents a custom type.
+     * It is used in various contexts within the application.
+     */
     public static class CustomType {}
 }

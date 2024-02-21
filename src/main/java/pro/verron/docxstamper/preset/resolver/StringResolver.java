@@ -17,6 +17,11 @@ public abstract class StringResolver<T>
 
     private final Class<T> type;
 
+    /**
+     * Creates a new StringResolver with the given type.
+     *
+     * @param type the type of object to be resolved
+     */
     protected StringResolver(Class<T> type) {
         assert type != null;
         this.type = type;

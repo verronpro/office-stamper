@@ -12,6 +12,11 @@ import pro.verron.docxstamper.utils.context.Contexts;
  */
 public class CustomTypeResolver
         extends StringResolver<Contexts.CustomType> {
+    /**
+     * The CustomTypeResolver class is a class that provides resolution of
+     * an arbitrary custom type.
+     * It extends the StringResolver class and is used to resolve strings for objects of type Contexts.CustomType.
+     */
     public CustomTypeResolver() {
         super(Contexts.CustomType.class);
     }

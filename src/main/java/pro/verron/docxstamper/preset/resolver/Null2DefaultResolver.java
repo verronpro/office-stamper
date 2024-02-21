@@ -35,6 +35,11 @@ public class Null2DefaultResolver
         return RunUtil.create(text);
     }
 
+    /**
+     * Retrieves the default value of the Null2DefaultResolver object.
+     *
+     * @return the default value of the Null2DefaultResolver object as a String
+     */
     public String defaultValue() {
         return text;
     }

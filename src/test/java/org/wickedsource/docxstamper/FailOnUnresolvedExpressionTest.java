@@ -18,7 +18,9 @@ class FailOnUnresolvedExpressionTest {
         var context = new Name("Homer");
         try (var template = getResource(Path.of("FailOnUnresolvedExpressionTest" +
                                                 ".docx"))) {
-            var stamper = new DocxStamper<Name>();
+            var config = new DocxStamperConfiguration()
+                    .setFailOnUnresolvedExpression(true);
+            var stamper = new DocxStamper<Name>(config);
             var outputStream = new ByteArrayOutputStream();
             assertThrows(UnresolvedExpressionException.class, () -> stamper.stamp(template, context, outputStream));
         }

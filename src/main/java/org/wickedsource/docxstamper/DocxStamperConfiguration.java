@@ -187,19 +187,15 @@ public class DocxStamperConfiguration {
      * Note that each type can only be resolved by ONE ITypeResolver implementation. Multiple calls to addTypeResolver()
      * with the same resolvedType parameter will override earlier calls.
      * </p>
-     * <p>
      *
      * @param resolvedType the class whose objects are to be passed to the given ITypeResolver.
      * @param resolver     the resolver to resolve objects of the given type.
      * @param <T>          the type resolved by the ITypeResolver.
      * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
-     * @deprecated This method has been deprecated since version 1.6.7 and
+     * @deprecated This method has been deprecated since version 1.6.7, and
      * it is scheduled for removal.
-     * It's recommended to use the
-     * {@link DocxStamperConfiguration#addResolver(ObjectResolver)}
-     * method
-     * for adding resolvers.</b>
-     * <
+     * It's recommended to use the {@link DocxStamperConfiguration#addResolver(ObjectResolver)}
+     * method for adding resolvers.
      */
     @Deprecated(since = "1.6.7", forRemoval = true)
     public <T> DocxStamperConfiguration addTypeResolver(
@@ -241,11 +237,11 @@ public class DocxStamperConfiguration {
     }
 
     /**
-     * Creates a {@link org.wickedsource.docxstamper.DocxStamper} instance configured with this configuration.
+     * Creates a {@link DocxStamper} instance configured with this configuration.
      *
      * @param <T> a T class
-     * @return a {@link org.wickedsource.docxstamper.DocxStamper} object
-     * @deprecated use new {@link DocxStamper(DocxStamperConfiguration) instead
+     * @return a {@link DocxStamper} object
+     * @deprecated use new {@link DocxStamper#DocxStamper(DocxStamperConfiguration)} instead
      */
     @Deprecated(forRemoval = true, since = "1.6.4")
     public <T> DocxStamper<T> build() {
@@ -493,6 +489,13 @@ public class DocxStamperConfiguration {
         return this;
     }
 
+    /**
+     * Adds a resolver to the list of resolvers in the `DocxStamperConfiguration` object.
+     * Resolvers are used to resolve objects during the stamping process.
+     *
+     * @param resolver The resolver to be added. This resolver should implement the `ObjectResolver` interface.
+     * @return The modified `DocxStamperConfiguration` object, with the resolver added to the beginning of the resolver list.
+     */
     public DocxStamperConfiguration addResolver(ObjectResolver resolver) {
         resolvers.add(0, resolver);
         return this;

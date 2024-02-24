@@ -10,7 +10,7 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * It provides a way to resolve null objects by not replacing their placeholder string.
  *
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  * @since 1.6.7
  */
 public class Null2PlaceholderResolver

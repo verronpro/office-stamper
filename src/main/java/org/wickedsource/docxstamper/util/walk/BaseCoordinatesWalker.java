@@ -7,7 +7,7 @@ import org.docx4j.wml.R;
  * A {@link org.wickedsource.docxstamper.util.walk.CoordinatesWalker} that does nothing in the {@link #onRun(R, P)} and {@link #onParagraph(P)} methods.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public abstract class BaseCoordinatesWalker extends CoordinatesWalker {
 

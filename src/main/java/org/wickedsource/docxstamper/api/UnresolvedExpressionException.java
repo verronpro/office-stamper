@@ -4,7 +4,7 @@ package org.wickedsource.docxstamper.api;
  * This exception is thrown if an expression could not be processed by any comment processor.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class UnresolvedExpressionException extends DocxStamperException {
     /**

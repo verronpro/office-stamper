@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
  * Resolves {@link java.time.LocalDateTime} values to a formatted string.
  *
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  */
 public final class LocalDateTimeResolver
 		extends StringResolver<LocalDateTime> {

@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.joining;
  *
  * @since 1.6.5
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public final class TestDocxStamper<T> {
 

@@ -15,7 +15,7 @@ import static java.util.Optional.ofNullable;
  * Utility class to handle section breaks in paragraphs.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class SectionUtil {
 	private static final Logger log = LoggerFactory.getLogger(SectionUtil.class);

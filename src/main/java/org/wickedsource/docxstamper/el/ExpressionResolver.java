@@ -10,7 +10,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * expressions.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class ExpressionResolver {
     private static final Matcher DEFAULT_MATCHER = new Matcher("${", "}");

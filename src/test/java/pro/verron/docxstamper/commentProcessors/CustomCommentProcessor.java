@@ -21,7 +21,7 @@ import java.util.List;
  * marking it with the text "Visited." in the resultant stamped Word document.
  *
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  * @since 1.6.6
  */
 public class CustomCommentProcessor

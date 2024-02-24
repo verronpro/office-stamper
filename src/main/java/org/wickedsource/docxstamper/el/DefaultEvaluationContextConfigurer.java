@@ -15,7 +15,7 @@ import java.util.List;
  * especially doesn't allow Especially known injections.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class DefaultEvaluationContextConfigurer implements EvaluationContextConfigurer {
     /**

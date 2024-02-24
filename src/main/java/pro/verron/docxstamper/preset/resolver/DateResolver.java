@@ -10,7 +10,7 @@ import java.util.Date;
  * @author Joseph Verron
  * @version 1.6.7
  */
-public class DateResolver
+public final class DateResolver
         extends StringResolver<Date> {
 
     private final DateTimeFormatter formatter;
@@ -39,7 +39,7 @@ public class DateResolver
      * @return the formatted date string.
      */
     @Override
-    protected String resolveStringForObject(Date date) {
+    protected String resolve(Date date) {
         var zone = ZoneId.systemDefault();
         var localDate = date.toInstant()
                 .atZone(zone)

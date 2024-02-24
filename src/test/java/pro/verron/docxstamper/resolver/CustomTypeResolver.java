@@ -22,7 +22,7 @@ public class CustomTypeResolver
     }
 
     @Override
-    protected String resolveStringForObject(Contexts.CustomType object) {
+    protected String resolve(Contexts.CustomType object) {
         return "foo";
     }
 }

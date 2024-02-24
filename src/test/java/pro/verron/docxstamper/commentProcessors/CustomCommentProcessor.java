@@ -12,13 +12,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>CustomCommentProcessor class.</p>
+ * This is the CustomCommentProcessor class, a example of a custom CommentProcessor implementation.
+ * <p>
+ * It serves as a guide for users of the docx-stamper library, illustrating how they could leverage
+ * the library to create their own custom comment processors.
+ * <p>
+ * Specifically, it's designed to replace each paragraph that has been commented with the annotation "visitParagraph",
+ * marking it with the text "Visited." in the resultant stamped Word document.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version 1.6.7
  * @since 1.6.6
  */
-public class CustomCommentProcessor extends BaseCommentProcessor implements ICustomCommentProcessor {
+public class CustomCommentProcessor
+        extends BaseCommentProcessor
+        implements ICustomCommentProcessor {
 
     private static final List<P> visitedParagraphs = new ArrayList<>();
 
@@ -34,15 +42,6 @@ public class CustomCommentProcessor extends BaseCommentProcessor implements ICus
     }
 
     /**
-     * <p>Getter for the field <code>visitedParagraphs</code>.</p>
-     *
-     * @return a {@link java.util.List} object
-     */
-    public static List<P> getVisitedParagraphs() {
-        return visitedParagraphs;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -54,34 +53,46 @@ public class CustomCommentProcessor extends BaseCommentProcessor implements ICus
         });
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void reset() {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setCurrentRun(R run) {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setParagraph(P paragraph) {
         currentParagraph = paragraph;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setCurrentCommentWrapper(CommentWrapper commentWrapper) {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated(since = "1.6.5", forRemoval = true)
     @Override
     public void setDocument(WordprocessingMLPackage document) {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void visitParagraph() {
         visitedParagraphs.add(currentParagraph);

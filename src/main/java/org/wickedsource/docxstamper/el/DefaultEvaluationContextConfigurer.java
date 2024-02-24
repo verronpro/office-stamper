@@ -29,6 +29,7 @@ public class DefaultEvaluationContextConfigurer implements EvaluationContextConf
         context.setPropertyAccessors(List.of(DataBindingPropertyAccessor.forReadWriteAccess()));
         context.setConstructorResolvers(Collections.emptyList());
         context.setMethodResolvers(new ArrayList<>(List.of(DataBindingMethodResolver.forInstanceMethodInvocation())));
+        //noinspection DataFlowIssue, ignore the warning since it is a workaround fixing potential security issues
         context.setBeanResolver(null);
         context.setTypeLocator(typeLocator);
         context.setTypeConverter(new StandardTypeConverter());

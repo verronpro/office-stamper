@@ -15,7 +15,7 @@ import java.util.List;
  * within each copy against the respective object.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public interface IParagraphRepeatProcessor {
 

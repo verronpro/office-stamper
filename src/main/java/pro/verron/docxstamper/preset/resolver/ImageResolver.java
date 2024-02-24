@@ -20,7 +20,7 @@ import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstract
  * the surrounding paragraph of text.
  *
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  */
 public class ImageResolver
         implements ObjectResolver {

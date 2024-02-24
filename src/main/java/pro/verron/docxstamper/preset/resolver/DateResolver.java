@@ -8,7 +8,7 @@ import java.util.Date;
  * This ITypeResolver creates a formatted date String for expressions that return a Date object.
  *
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  */
 public final class DateResolver
         extends StringResolver<Date> {

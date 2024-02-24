@@ -9,7 +9,7 @@ import java.util.*;
  *
  * @since 1.6.5
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class Contexts {
     private Contexts() {

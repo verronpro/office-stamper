@@ -14,7 +14,7 @@ import java.util.List;
  * Removes all {@link org.docx4j.wml.ProofErr} elements from the document.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class RemoveProofErrors implements PreProcessor {
 

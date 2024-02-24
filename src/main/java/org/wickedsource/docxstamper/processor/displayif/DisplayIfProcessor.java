@@ -18,7 +18,7 @@ import java.util.List;
  * Processor for the {@link org.wickedsource.docxstamper.processor.displayif.IDisplayIfProcessor} comment.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class DisplayIfProcessor extends BaseCommentProcessor implements IDisplayIfProcessor {
 

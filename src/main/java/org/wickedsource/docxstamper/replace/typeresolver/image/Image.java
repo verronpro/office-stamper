@@ -10,7 +10,7 @@ import java.io.InputStream;
  * This class describes an image which will be inserted into document.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class Image {
 

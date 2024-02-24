@@ -17,7 +17,7 @@ import java.util.Objects;
  * Merges runs with the same style that are next to each other.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class MergeSameStyleRuns implements PreProcessor {
 

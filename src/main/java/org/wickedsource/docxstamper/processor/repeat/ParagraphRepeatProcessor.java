@@ -25,7 +25,7 @@ import static java.util.Collections.singletonList;
  * clients.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class ParagraphRepeatProcessor extends BaseCommentProcessor implements IParagraphRepeatProcessor {
 	private final Supplier<? extends List<? extends P>> nullSupplier;

@@ -17,7 +17,7 @@ import java.util.function.Function;
  * Resolves methods that are used as expression functions or comment processors.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class StandardMethodResolver implements MethodResolver {
 	private final Map<Class<?>, Object> commentProcessors;

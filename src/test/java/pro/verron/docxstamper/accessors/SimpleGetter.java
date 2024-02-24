@@ -8,7 +8,7 @@ import org.springframework.expression.TypedValue;
  * <p>SimpleGetter class.</p>
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  * @since 1.6.6
  */
 public class SimpleGetter implements PropertyAccessor {

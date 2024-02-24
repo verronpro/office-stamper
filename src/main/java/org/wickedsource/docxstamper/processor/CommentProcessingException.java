@@ -10,7 +10,7 @@ import static org.docx4j.TextUtils.getText;
  * Thrown when an error occurs while processing a comment in the docx template.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class CommentProcessingException extends DocxStamperException {
 

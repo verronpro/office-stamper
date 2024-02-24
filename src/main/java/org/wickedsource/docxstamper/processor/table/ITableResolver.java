@@ -5,7 +5,7 @@ package org.wickedsource.docxstamper.processor.table;
  * The table is passed to the resolveTable method and will be used to fill an existing Tbl object in the document.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public interface ITableResolver {
 	/**

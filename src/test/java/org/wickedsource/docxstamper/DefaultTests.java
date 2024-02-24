@@ -1136,18 +1136,19 @@ public class DefaultTests {
     }
 
     private static Arguments customCommentProcessor() {
-        return arguments("customCommentProcessor",
-                         new DocxStamperConfiguration().addCommentProcessor(
-                                 ICustomCommentProcessor.class,
-                                 CustomCommentProcessor::new),
-                         Contexts.empty(),
-                         getResource(Path.of("CustomCommentProcessorTest" +
-                                             ".docx")),
-                         """
-                                 Custom CommentProcessor Test
-                                 Visited.
-                                 This paragraph is untouched.
-                                 Visited.""");
+        return arguments(
+                "customCommentProcessor",
+                new DocxStamperConfiguration()
+                        .addCommentProcessor(
+                                ICustomCommentProcessor.class,
+                                CustomCommentProcessor::new),
+                Contexts.empty(),
+                getResource(Path.of("CustomCommentProcessorTest.docx")),
+                """     
+                        Custom CommentProcessor Test
+                        Visited.
+                        This paragraph is untouched.
+                        Visited.""");
     }
 
     private static Arguments nullPointerResolutionTest_testWithCustomSpel() {

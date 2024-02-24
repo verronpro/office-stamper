@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
  * @author Joseph Verron
  * @version 1.6.7
  */
-public class LocalTimeResolver
+public final class LocalTimeResolver
 		extends StringResolver<LocalTime> {
 	private final DateTimeFormatter formatter;
 
@@ -32,7 +32,7 @@ public class LocalTimeResolver
 
 	/** {@inheritDoc} */
 	@Override
-	protected String resolveStringForObject(LocalTime localTime) {
+	protected String resolve(LocalTime localTime) {
 		return localTime.format(formatter);
 	}
 }

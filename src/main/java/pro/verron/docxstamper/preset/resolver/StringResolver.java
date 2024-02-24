@@ -47,12 +47,12 @@ public abstract class StringResolver<T>
      * @return the newly created run with the resolved string as content
      */
     @Override
-    public R resolve(
+    public final R resolve(
             WordprocessingMLPackage document,
             String placeholder,
             Object object
     ) {
-        return RunUtil.create(resolveStringForObject(type.cast(object)));
+        return RunUtil.create(resolve(type.cast(object)));
     }
 
     /**
@@ -61,5 +61,5 @@ public abstract class StringResolver<T>
      * @param object the object to be resolved
      * @return the string representation of the object
      */
-    protected abstract String resolveStringForObject(T object);
+    protected abstract String resolve(T object);
 }

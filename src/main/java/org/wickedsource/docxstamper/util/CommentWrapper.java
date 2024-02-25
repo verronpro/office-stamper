@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * <p>CommentWrapper class.</p>
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class CommentWrapper {
 

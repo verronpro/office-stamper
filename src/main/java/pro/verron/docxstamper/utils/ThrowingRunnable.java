@@ -10,7 +10,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
  * wrapped inside a {@link org.wickedsource.docxstamper.api.DocxStamperException}.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public interface ThrowingRunnable
         extends Runnable {

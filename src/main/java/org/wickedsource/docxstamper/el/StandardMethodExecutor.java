@@ -13,7 +13,7 @@ import java.util.function.Function;
  * It is used by the {@link org.wickedsource.docxstamper.el.ExpressionResolver} to evaluate method calls.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class StandardMethodExecutor implements MethodExecutor {
 

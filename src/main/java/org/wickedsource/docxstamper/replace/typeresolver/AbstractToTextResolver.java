@@ -6,12 +6,12 @@ import org.wickedsource.docxstamper.api.typeresolver.ITypeResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 
 /**
- * Abstract ITypeResolver that takes a String from the implementing sub class and creates a Run of text
+ * Abstract ITypeResolver that takes a String from the implementing subclass and creates a Run of text
  * from it.
  *
  * @param <S> the type which to map into a run of text.
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 @Deprecated(since = "1.6.7", forRemoval = true)
 public abstract class AbstractToTextResolver<S> implements ITypeResolver<S> {

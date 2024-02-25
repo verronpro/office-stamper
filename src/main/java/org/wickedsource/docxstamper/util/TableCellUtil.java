@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  * Utility class for table cells
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class TableCellUtil {
 

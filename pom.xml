@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>pro.verron</groupId>
     <artifactId>docx-stamper</artifactId>
-    <version>1.6.7-SNAPSHOT</version>
+    <version>1.6.7</version>
     <packaging>jar</packaging>
     <name>docx-stamper</name>
 
@@ -91,7 +91,7 @@
                         </dependencies>
                         <executions>
                             <execution>
-                                <phase>pre-site</phase>
+                                <phase>post-integration-test</phase>
                                 <goals>
                                     <goal>mutationCoverage</goal>
                                 </goals>
@@ -126,6 +126,12 @@
     </developers>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -154,6 +160,7 @@
                     <defaultVersion>${project.version}</defaultVersion>
                     <defaultSince>${project.version}</defaultSince>
                     <encoding>UTF-8</encoding>
+                    <docencoding>UTF-8</docencoding>
                 </configuration>
                 <executions>
                     <execution>

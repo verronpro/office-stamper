@@ -31,7 +31,7 @@ import org.wickedsource.docxstamper.util.CommentWrapper;
  * Register your comment processor in DocxStamper by calling DocxStamperConfiguration#addCommentProcessor().</p>
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public interface ICommentProcessor {
 
@@ -47,7 +47,8 @@ public interface ICommentProcessor {
 
 	/**
 	 * Passes the paragraph that is currently being processed (i.e. the paragraph that is commented in the
-	 * .docx template. This method is always called BEFORE the custom methods of the custom comment processor interface
+	 * .docx template). This method is always called BEFORE the custom
+	 * methods of the custom comment processor interface
 	 * are called.
 	 *
 	 * @param paragraph coordinates of the currently processed paragraph within the template.
@@ -56,7 +57,8 @@ public interface ICommentProcessor {
 
 	/**
 	 * Passes the run that is currently being processed (i.e. the run that is commented in the
-	 * .docx template. This method is always called BEFORE the custom methods of the custom comment processor interface
+	 * .docx template). This method is always called BEFORE the custom
+	 * methods of the custom comment processor interface
 	 * are called.
 	 *
 	 * @param run coordinates of the currently processed run within the template.
@@ -65,7 +67,7 @@ public interface ICommentProcessor {
 
 	/**
 	 * Passes the comment range wrapper that is currently being processed
-	 * (i.e. the start and end of comment that in the .docx template.
+	 * (i.e. the start and end of comment that in the .docx template).
 	 * This method is always called BEFORE the custom methods of the custom comment
 	 * processor interface are called.
 	 *
@@ -74,7 +76,8 @@ public interface ICommentProcessor {
 	void setCurrentCommentWrapper(CommentWrapper commentWrapper);
 
 	/**
-	 * Passes the processed document, in order to make all linked data (images, etc) available
+	 * Passes the processed document, in order to make all linked data
+	 * (images, etc.) available
 	 * to processors that need it (example : repeatDocPart)
 	 *
 	 * @param document DocX template being processed.

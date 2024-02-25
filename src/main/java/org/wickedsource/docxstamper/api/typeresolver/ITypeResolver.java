@@ -20,7 +20,7 @@ import pro.verron.docxstamper.api.ObjectResolver;
  *
  * @param <T> the type of the object this type resolver is responsible for.
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  *
  * @deprecated as of version 1.6.7, replaced by {@link ObjectResolver}.
  * The new resolver is more versatile, requires less reflection mechanism,
@@ -33,7 +33,8 @@ public interface ITypeResolver<T> {
      * was found in the .docx template. It creates an object of the DOCX4J api that is put in the place of the found
      * expression.
      *
-     * @param document         the word document that can be accessed via the DOCX4J api.
+     * @param document         the Word document that can be accessed via the
+     *                        DOCX4J api.
      * @param expressionResult the result of an expression. Only objects of classes this type resolver is registered for
      *                         within the TypeResolverRegistrey are passed into this method.
      * @return an object of the DOCX4J api (usually of type org.docx4j.wml.R = "run of text") that will be put in the place of an

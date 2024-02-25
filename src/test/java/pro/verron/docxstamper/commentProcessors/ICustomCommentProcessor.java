@@ -6,7 +6,7 @@ import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
  * <p>ICustomCommentProcessor interface.</p>
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  * @since 1.6.6
  */
 public interface ICustomCommentProcessor extends ICommentProcessor {

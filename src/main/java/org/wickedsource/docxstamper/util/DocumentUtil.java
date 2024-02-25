@@ -2,8 +2,6 @@ package org.wickedsource.docxstamper.util;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
-import org.docx4j.dml.Graphic;
-import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.finders.ClassFinder;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
@@ -20,40 +18,11 @@ import java.util.stream.Stream;
  * Utility class to retrieve elements from a document.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class DocumentUtil {
 	private DocumentUtil() {
 		throw new DocxStamperException("Utility classes shouldn't be instantiated");
-	}
-
-	/**
-	 * Retrieve an embedded drawing relationship id.
-	 *
-	 * @param drawing the drawing to get the relationship id.
-	 * @return the id of the graphic
-	 */
-	public static String getImageRelationshipId(Drawing drawing) {
-		Graphic graphic = getInlineGraphic(drawing);
-		return graphic.getGraphicData().getPic().getBlipFill().getBlip().getEmbed();
-	}
-
-	/**
-	 * Extract an inline graphic from a drawing.
-	 *
-	 * @param drawing the drawing containing the graphic.
-	 * @return the graphic
-	 */
-	private static Graphic getInlineGraphic(Drawing drawing) {
-		if (drawing.getAnchorOrInline().isEmpty()) {
-            throw new DocxStamperException("Anchor or Inline is empty !");
-		}
-		Object anchorOrInline = drawing.getAnchorOrInline().get(0);
-		if (anchorOrInline instanceof Inline inline) {
-			return inline.getGraphic();
-		} else {
-            throw new DocxStamperException("Don't know how to process anchor !");
-		}
 	}
 
 	/**

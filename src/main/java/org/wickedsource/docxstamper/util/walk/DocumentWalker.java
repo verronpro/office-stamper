@@ -27,7 +27,7 @@ import org.docx4j.wml.*;
  * </ul>
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public abstract class DocumentWalker {
 

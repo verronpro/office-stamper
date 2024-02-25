@@ -28,7 +28,7 @@ import java.util.function.Function;
  *
  * @param <T> The type of the context that can be stamped
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  */
 public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 	private final List<PreProcessor> preprocessors;

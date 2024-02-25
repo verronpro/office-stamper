@@ -39,7 +39,8 @@ public final class TestDocxStamper<T> {
 
 	/**
 	 * Stamps the given template resolving the expressions within the template against the specified context.
-	 * Returns the resulting document after it has been saved and loaded again to ensure that changes in the Docx4j
+	 * Returns the resulting document after it has been saved and loaded
+	 * again to ensure that changes in the DOCX4J
 	 * object structure were really transported into the XML of the .docx file.
 	 *
 	 * @param template a {@link java.io.InputStream} object

@@ -97,7 +97,7 @@ public abstract class BaseCommentProcessor implements ICommentProcessor {
 	/**
 	 * <p>Getter for the field <code>document</code>.</p>
 	 *
-	 * @return a {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} object
+	 * @return a {@link WordprocessingMLPackage} object
 	 * @deprecated the document is passed to the processor through the commitChange method now
 	 * and will probably pe passed through the constructor in the future
 	 */

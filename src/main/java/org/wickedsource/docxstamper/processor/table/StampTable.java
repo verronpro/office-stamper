@@ -27,7 +27,7 @@ public class StampTable {
      * Instantiate a table with headers and several lines
      *
      * @param headers the header lines
-     * @param records the lines that the table should contains
+     * @param records the lines that the table should contain
      */
     public StampTable(
             List<String> headers,

@@ -19,7 +19,8 @@ public interface IDisplayIfProcessor {
     /**
      * May be called to delete the commented paragraph or not, depending on the presence of the given data.
      *
-     * @param condition if non null, the commented paragraph will remain in the document. If null, the commented paragraph
+     * @param condition if non-null, the commented paragraph will remain in
+     *                  the document. If null, the commented paragraph
      *                  will be deleted at stamping.
      */
     void displayParagraphIfPresent(Object condition);

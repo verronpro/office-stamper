@@ -179,8 +179,7 @@ public class Contexts {
      */
     public static DateContext nowContext() {
         var now = new Date();
-        var context = new DateContext(now);
-        return context;
+        return new DateContext(now);
     }
 
     /**
@@ -294,12 +293,7 @@ public class Contexts {
     public record ImageContext(Image monalisa) {
     }
 
-    static class Container {
-        public String value;
-
-        public Container(String value) {
-            this.value = value;
-        }
+    record Container(String value) {
     }
 
     /**
@@ -529,7 +523,7 @@ public class Contexts {
      * @param schoolName the name of the school
      * @param grades the list of grades in the school
      */
-    record SchoolContext(String schoolName, List<Grade> grades) {}
+    public record SchoolContext(String schoolName, List<Grade> grades) {}
 
     /**
      * Represents a grade in a school.
@@ -573,12 +567,7 @@ public class Contexts {
     /**
      * Represents a value in a table.
      */
-    static class TableValue {
-        public String value;
-
-        TableValue(String value) {
-            this.value = value;
-        }
+    record TableValue(String value) {
     }
 
     /**

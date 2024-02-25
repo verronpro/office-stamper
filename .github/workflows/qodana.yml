@@ -19,6 +19,13 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
 
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+          cache: 'maven'
+
       - name: Build with Maven
         run: mvn --batch-mode --no-transfer-progress verify
 

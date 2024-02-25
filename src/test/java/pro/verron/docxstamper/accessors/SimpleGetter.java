@@ -3,6 +3,7 @@ package pro.verron.docxstamper.accessors;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypedValue;
+import org.springframework.lang.NonNull;
 
 /**
  * <p>SimpleGetter class.</p>
@@ -36,28 +37,44 @@ public class SimpleGetter implements PropertyAccessor {
 
     /** {@inheritDoc} */
     @Override
-    public boolean canRead(EvaluationContext context, Object target, String name) {
+    public boolean canRead(
+            @NonNull EvaluationContext context,
+            Object target,
+            @NonNull String name
+    ) {
         return true;
     }
 
     /** {@inheritDoc} */
     @Override
-    public TypedValue read(EvaluationContext context, Object target, String name) {
+    @NonNull
+    public TypedValue read(
+            @NonNull EvaluationContext context, Object target, String name
+    ) {
         if (name.equals(this.fieldName)) {
             return new TypedValue(value);
         } else {
-            return null;
+            return TypedValue.NULL;
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean canWrite(EvaluationContext context, Object target, String name) {
+    public boolean canWrite(
+            @NonNull EvaluationContext context,
+            Object target,
+            @NonNull String name
+    ) {
         return false;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void write(EvaluationContext context, Object target, String name, Object newValue) {
+    public void write(
+            @NonNull EvaluationContext context,
+            Object target,
+            @NonNull String name,
+            Object newValue
+    ) {
     }
 }

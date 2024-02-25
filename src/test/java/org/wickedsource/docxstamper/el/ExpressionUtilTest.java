@@ -56,11 +56,10 @@ class ExpressionUtilTest {
     void stripsExpressions() {
         String expressionValue = "myExpression";
         String expression = "${%s}".formatted(expressionValue);
-        String expected = expressionValue;
 
         String actual = cleanExpression(expression);
 
-        assertEquals(expected, actual);
+        assertEquals(expressionValue, actual);
     }
 
     @Test

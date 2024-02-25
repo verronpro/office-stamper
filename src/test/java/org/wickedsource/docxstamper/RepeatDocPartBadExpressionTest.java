@@ -25,7 +25,7 @@ import static org.wickedsource.docxstamper.DefaultTests.getResource;
  * @since 1.6.6
  */
 public class RepeatDocPartBadExpressionTest {
-    static Logger logger =
+    private static final Logger logger =
             LoggerFactory.getLogger(RepeatDocPartBadExpressionTest.class);
 
     /**

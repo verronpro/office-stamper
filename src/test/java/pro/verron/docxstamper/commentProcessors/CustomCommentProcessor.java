@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is the CustomCommentProcessor class, a example of a custom CommentProcessor implementation.
+ * This is the CustomCommentProcessor class, an example of a custom
+ * CommentProcessor implementation.
  * <p>
  * It serves as a guide for users of the docx-stamper library, illustrating how they could leverage
  * the library to create their own custom comment processors.

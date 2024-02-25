@@ -49,7 +49,8 @@ class ObjectDeleterTest {
 
     /**
      * Saves the given document into a temporal ByteArrayOutputStream and loads it from there again. This is useful to
-     * check if changes in the Docx4j object structure are really transported into the XML of the .docx file.
+     * check if changes in the DOCX4J object structure are really transported
+     * into the XML of the .docx file.
      *
      * @param document the document to save and load again.
      * @return the document after it has been saved and loaded again.

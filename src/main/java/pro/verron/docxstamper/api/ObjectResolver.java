@@ -10,7 +10,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
  * and to actually resolve an object to a run.
  *
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  * @since 1.6.7
  */
 public interface ObjectResolver {

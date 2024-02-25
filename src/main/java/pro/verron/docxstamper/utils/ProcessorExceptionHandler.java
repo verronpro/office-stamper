@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @see Thread.UncaughtExceptionHandler
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class ProcessorExceptionHandler
         implements Thread.UncaughtExceptionHandler {

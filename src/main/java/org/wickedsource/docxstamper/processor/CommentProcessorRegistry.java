@@ -31,7 +31,7 @@ import static org.wickedsource.docxstamper.el.ExpressionUtil.findProcessorExpres
  * ICommentProcessors.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class CommentProcessorRegistry {
     private final Logger logger = LoggerFactory.getLogger(
@@ -120,7 +120,7 @@ public class CommentProcessorRegistry {
      * the string within the comment against all registered
      * {@link ICommentProcessor}s.
      *
-     * @param document          the word document.
+     * @param document          the Word document.
      * @param comments          the comments within the document.
      * @param expressionContext the context root object
      * @param paragraph         the paragraph whose comments to evaluate.

@@ -7,7 +7,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * This can  for example be used to add custom {@link org.springframework.expression.PropertyAccessor}s and {@link org.springframework.expression.MethodResolver}s.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public interface EvaluationContextConfigurer {
     /**

@@ -9,7 +9,7 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * The Null2DefaultResolver class is an implementation of the ObjectResolver interface
  * that resolves null objects by creating a run with a default text value.
  *
- * @version 1.6.7
+ * @version ${version}
  * @since 1.6.7
  */
 public class Null2DefaultResolver

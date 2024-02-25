@@ -13,7 +13,7 @@ import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
  * to create a .docx document filled with custom data at runtime.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class StamperFactory {
 

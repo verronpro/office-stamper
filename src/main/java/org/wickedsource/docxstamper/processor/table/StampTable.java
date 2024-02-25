@@ -9,7 +9,7 @@ import static java.util.Collections.singletonList;
  * Represents a table with several columns, a headers line, and several lines of content
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class StampTable {
     private final List<String> headers;
@@ -27,7 +27,7 @@ public class StampTable {
      * Instantiate a table with headers and several lines
      *
      * @param headers the header lines
-     * @param records the lines that the table should contains
+     * @param records the lines that the table should contain
      */
     public StampTable(
             List<String> headers,

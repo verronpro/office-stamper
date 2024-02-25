@@ -4,7 +4,7 @@ package pro.verron.docxstamper;
  * <p>Functions class.</p>
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  * @since 1.6.6
  */
 public class Functions {

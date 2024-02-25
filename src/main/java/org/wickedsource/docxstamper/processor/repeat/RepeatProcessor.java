@@ -20,7 +20,7 @@ import static java.util.Collections.emptyList;
  * Repeats a table row for each element in a list.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProcessor {
 

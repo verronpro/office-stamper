@@ -11,7 +11,7 @@ import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
  * This walker only replaces placeholders in paragraphs, not in tables.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class ParagraphResolverDocumentWalker extends BaseDocumentWalker {
 	private final Object expressionContext;

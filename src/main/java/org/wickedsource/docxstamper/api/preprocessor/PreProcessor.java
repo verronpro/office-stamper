@@ -11,7 +11,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
  * @see org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns
  * @see org.wickedsource.docxstamper.preprocessor.RemoveProofErrors
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public interface PreProcessor {
 	/**

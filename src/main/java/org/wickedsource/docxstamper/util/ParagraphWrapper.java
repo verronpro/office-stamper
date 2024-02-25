@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.joining;
  * call getText() or getRuns() to get the modified text or the list of modified runs.</p>
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class ParagraphWrapper {
 	private final List<IndexedRun> runs = new ArrayList<>();

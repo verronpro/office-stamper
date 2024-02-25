@@ -7,9 +7,9 @@ import java.time.format.DateTimeFormatter;
  * Resolves {@link java.time.LocalDate} objects by formatting them with a {@link java.time.format.DateTimeFormatter}.
  *
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  */
-public class LocalDateResolver
+public final class LocalDateResolver
 		extends StringResolver<LocalDate> {
 	private final DateTimeFormatter formatter;
 
@@ -32,7 +32,7 @@ public class LocalDateResolver
 
 	/** {@inheritDoc} */
 	@Override
-	protected String resolveStringForObject(LocalDate localDateTime) {
+	protected String resolve(LocalDate localDateTime) {
 		return localDateTime.format(formatter);
 	}
 }

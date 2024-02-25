@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  *
  * @since 1.6.5
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class RunCollector extends TraversalUtilVisitor<R> {
 	private final Set<R> paragraphs = new LinkedHashSet<>();

@@ -13,7 +13,7 @@ import java.util.Objects;
  * Base class for comment processors. The current run and paragraph are set by the {@link org.wickedsource.docxstamper.DocxStamper} class.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public abstract class BaseCommentProcessor implements ICommentProcessor {
 
@@ -97,7 +97,7 @@ public abstract class BaseCommentProcessor implements ICommentProcessor {
 	/**
 	 * <p>Getter for the field <code>document</code>.</p>
 	 *
-	 * @return a {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} object
+	 * @return a {@link WordprocessingMLPackage} object
 	 * @deprecated the document is passed to the processor through the commitChange method now
 	 * and will probably pe passed through the constructor in the future
 	 */

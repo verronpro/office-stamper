@@ -18,7 +18,7 @@ import java.util.Arrays;
  * Extracts images from a docx document.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class DocxImageExtractor {
 

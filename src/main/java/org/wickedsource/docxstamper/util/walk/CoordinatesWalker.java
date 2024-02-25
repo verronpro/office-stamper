@@ -11,7 +11,7 @@ import org.wickedsource.docxstamper.util.DocumentUtil;
  * Walks through a document and calls the methods on each paragraph and run.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public abstract class CoordinatesWalker {
 	/**

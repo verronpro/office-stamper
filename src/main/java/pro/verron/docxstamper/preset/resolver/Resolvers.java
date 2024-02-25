@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
  * The Resolvers class provides static methods to create different types of ObjectResolvers.
  *
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  * @since 1.6.7
  */
 public class Resolvers {

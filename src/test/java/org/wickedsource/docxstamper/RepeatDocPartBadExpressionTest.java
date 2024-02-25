@@ -21,11 +21,11 @@ import static org.wickedsource.docxstamper.DefaultTests.getResource;
  * <p>RepeatDocPartBadExpressionTest class.</p>
  *
  * @author jenei.attila
- * @version 1.6.6
+ * @version ${version}
  * @since 1.6.6
  */
 public class RepeatDocPartBadExpressionTest {
-    static Logger logger =
+    private static final Logger logger =
             LoggerFactory.getLogger(RepeatDocPartBadExpressionTest.class);
 
     /**

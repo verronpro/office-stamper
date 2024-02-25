@@ -12,7 +12,7 @@ import pro.verron.docxstamper.preset.resolver.Resolvers;
  *
  * @author Joseph Verron
  *
- * @version 1.6.7
+ * @version ${version}
  *
  * @deprecated as of version 1.6.7, use {@link Resolvers#fallback()} instead. LegacyFallbackResolver
  * was capable of mapping any object to their String representation.

@@ -24,7 +24,7 @@ import java.util.Optional;
  * Replaces expressions in a document with the values provided by the {@link org.wickedsource.docxstamper.el.ExpressionResolver}.
  *
  * @author Joseph Verron
- * @version 1.6.7
+ * @version ${version}
  */
 public class PlaceholderReplacer {
     private static final Logger log = LoggerFactory.getLogger(PlaceholderReplacer.class);

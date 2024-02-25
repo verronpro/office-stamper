@@ -10,7 +10,7 @@ import java.io.OutputStream;
  *
  * @param <T> The type of the template that can be stamped.
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public interface OpcStamper<T extends OpcPackage> {
 	/**

@@ -18,7 +18,7 @@ import static java.lang.String.format;
  * This is useful for replacing an expression in a comment with the result of the expression.
  *
  * @author Joseph Verron
- * @version 1.6.6
+ * @version ${version}
  */
 public class ReplaceWithProcessor
 		extends BaseCommentProcessor

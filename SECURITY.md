@@ -4,10 +4,10 @@
 
 Currently, only the latest version of our project is being supported with security updates.
 
-Version | Supported          
-------- | ------------------
-Latest  | :white_check_mark:
-< Older | :x:
+| Version | Supported          |
+|---------|--------------------|
+| Latest  | :white_check_mark: |
+| < Older | :x:                |
 
 ## Reporting a Vulnerability
 

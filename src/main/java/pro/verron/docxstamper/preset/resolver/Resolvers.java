@@ -60,7 +60,7 @@ public class Resolvers {
      *
      * @return An instance of LocalTimeResolver
      */
-    public static LocalTimeResolver isoDateTime() {
+    public static ObjectResolver isoDateTime() {
         return new LocalTimeResolver();
     }
 
@@ -71,7 +71,7 @@ public class Resolvers {
      *
      * @return An instance of LocalDateTimeResolver
      */
-    public static LocalDateTimeResolver isoTime() {
+    public static ObjectResolver isoTime() {
         return new LocalDateTimeResolver();
     }
 
@@ -81,7 +81,7 @@ public class Resolvers {
      * @param formatter the DateTimeFormatter to use for formatting LocalDateTime values
      * @return a new instance of LocalDateTimeResolver
      */
-    public static LocalDateTimeResolver isoTime(DateTimeFormatter formatter) {
+    public static ObjectResolver isoTime(DateTimeFormatter formatter) {
         return new LocalDateTimeResolver(formatter);
     }
 
@@ -92,7 +92,7 @@ public class Resolvers {
      *
      * @return An instance of LocalDateResolver
      */
-    public static LocalDateResolver isoDate() {
+    public static ObjectResolver isoDate() {
         return new LocalDateResolver();
     }
 
@@ -103,7 +103,7 @@ public class Resolvers {
      * @param formatter the DateTimeFormatter to use for formatting LocalDate values
      * @return an instance of LocalDateResolver
      */
-    public static LocalDateResolver isoDate(DateTimeFormatter formatter) {
+    public static ObjectResolver isoDate(DateTimeFormatter formatter) {
         return new LocalDateResolver(formatter);
     }
 
@@ -114,7 +114,7 @@ public class Resolvers {
      *
      * @return An instance of DateResolver
      */
-    public static DateResolver legacyDate() {
+    public static ObjectResolver legacyDate() {
         return new DateResolver();
     }
 
@@ -124,7 +124,7 @@ public class Resolvers {
      * @param formatter the format to use for date formatting. See java.time.format.DateTimeFormatter.
      * @return an instance of DateResolver
      */
-    public static DateResolver legacyDate(DateTimeFormatter formatter) {
+    public static ObjectResolver legacyDate(DateTimeFormatter formatter) {
         return new DateResolver(formatter);
     }
 
@@ -135,7 +135,7 @@ public class Resolvers {
      *
      * @return An instance of ImageResolver
      */
-    public static ImageResolver image() {
+    public static ObjectResolver image() {
         return new ImageResolver();
     }
 }

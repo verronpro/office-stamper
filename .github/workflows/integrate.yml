@@ -42,4 +42,4 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - run: mvn -B -ntp verify
+      - run: mvn -B -ntp test

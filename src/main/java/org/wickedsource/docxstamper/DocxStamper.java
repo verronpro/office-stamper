@@ -14,6 +14,7 @@ import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
 import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
 import org.wickedsource.docxstamper.replace.typeresolver.ObjectResolverRegistry;
 import pro.verron.docxstamper.OpcStamper;
+import pro.verron.docxstamper.StamperFactory;
 import pro.verron.docxstamper.api.ObjectResolver;
 
 import java.io.InputStream;
@@ -38,7 +39,7 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 	/**
 	 * Creates a new DocxStamper with the default configuration.
 	 *
-	 * @deprecated since 1.6.4, use {@link pro.verron.docxstamper.StamperFactory#newDocxStamper()} or {@link pro.verron.docxstamper.StamperFactory#nopreprocessingDocxStamper()} instead.
+	 * @deprecated since 1.6.4, use {@link StamperFactory#newDocxStamper()} or {@link StamperFactory#nopreprocessingDocxStamper()} instead.
 	 */
 	@Deprecated(since = "1.6.4", forRemoval = true)
 	public DocxStamper() {
@@ -160,7 +161,7 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 	 * </ul>
 	 * <p>
 	 * If you need a wider vocabulary of methods available in the comments, you can create your own ICommentProcessor
-	 * and register it via getCommentProcessorRegistry().addCommentProcessor().
+	 * and register it via {@link DocxStamperConfiguration#addCommentProcessor(Class, CommentProcessorBuilder)}.
 	 * </p>
 	 */
 	public void stamp(InputStream template, Object contextRoot, OutputStream out) throws DocxStamperException {
@@ -176,7 +177,8 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Same as stamp(InputStream, T, OutputStream) except that you may pass in a DOCX4J document as a template instead
+	 * Same as {@link #stamp(InputStream, Object, OutputStream)} except that you
+	 * may pass in a DOCX4J document as a template instead
 	 * of an InputStream.
 	 */
 	@Override

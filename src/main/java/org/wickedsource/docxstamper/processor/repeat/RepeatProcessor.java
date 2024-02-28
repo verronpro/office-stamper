@@ -50,8 +50,8 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
      * Creates a new RepeatProcessor.
      *
      * @param pr       The PlaceholderReplacer to use.
-     * @param document a {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} object
-     * @param row1     a {@link org.docx4j.wml.Tr} object
+     * @param document a {@link WordprocessingMLPackage} object
+     * @param row1     a {@link Tr} object
      * @return A new RepeatProcessor.
      */
     public static List<Tr> stampEmptyContext(PlaceholderReplacer pr, WordprocessingMLPackage document, Tr row1) {

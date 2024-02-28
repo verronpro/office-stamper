@@ -4,7 +4,7 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 
 /**
- * A {@link org.wickedsource.docxstamper.util.walk.CoordinatesWalker} that does nothing in the {@link #onRun(R, P)} and {@link #onParagraph(P)} methods.
+ * A {@link CoordinatesWalker} that does nothing in the {@link #onRun(R, P)} and {@link #onParagraph(P)} methods.
  *
  * @author Joseph Verron
  * @version ${version}

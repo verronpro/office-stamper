@@ -88,7 +88,7 @@ public class DocxImageExtractor {
 	}
 
 	/**
-	 * Converts an InputStream to byte array.
+	 * Converts an InputStream to a byte array.
 	 *
 	 * @param size expected size of the byte array.
 	 * @param is   input stream to read data from.
@@ -133,7 +133,7 @@ public class DocxImageExtractor {
 	 * Extract the name of the image from an embedded image run.
 	 *
 	 * @param run run containing the embedded drawing.
-	 * @return a {@link java.lang.String} object
+	 * @return a {@link String} object
 	 */
 	public String getRunDrawingFilename(R run) {
 		return getPic(run).getNvPicPr().getCNvPr().getName();
@@ -143,7 +143,7 @@ public class DocxImageExtractor {
 	 * Extract the content type of the image from an embedded image run.
 	 *
 	 * @param run run containing the embedded drawing.
-	 * @return a {@link java.lang.String} object
+	 * @return a {@link String} object
 	 */
 	public String getRunDrawingAltText(R run) {
 		return getPic(run).getNvPicPr().getCNvPr().getDescr();
@@ -153,7 +153,7 @@ public class DocxImageExtractor {
 	 * Extract the width of the image from an embedded image run.
 	 *
 	 * @param run run containing the embedded drawing.
-	 * @return a {@link java.lang.Integer} object
+	 * @return a {@link Integer} object
 	 */
 	public Integer getRunDrawingMaxWidth(R run) {
 		return (int) getPic(run).getSpPr().getXfrm().getExt().getCx();

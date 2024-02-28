@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Processor for the {@link org.wickedsource.docxstamper.processor.displayif.IDisplayIfProcessor} comment.
+ * Processor for the {@link IDisplayIfProcessor} comment.
  *
  * @author Joseph Verron
  * @version ${version}
@@ -33,7 +33,7 @@ public class DisplayIfProcessor extends BaseCommentProcessor implements IDisplay
 	/**
 	 * Creates a new DisplayIfProcessor instance.
 	 *
-	 * @param pr the {@link org.wickedsource.docxstamper.replace.PlaceholderReplacer} to use for replacing placeholders.
+	 * @param pr the {@link PlaceholderReplacer} to use for replacing placeholders.
 	 * @return a new DisplayIfProcessor instance.
 	 */
 	public static ICommentProcessor newInstance(PlaceholderReplacer pr) {

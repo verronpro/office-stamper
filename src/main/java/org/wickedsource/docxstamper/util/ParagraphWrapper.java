@@ -14,8 +14,9 @@ import static java.util.stream.Collectors.joining;
  * relatively free in splitting a paragraph of text into multiple runs, so there is no strict rule to say over how many
  * runs a word or a string of words is spread.</p>
  * <p>This class aggregates multiple runs so they can be treated as a single text, no matter how many runs the text spans.
- * Call addRun() to add all runs that should be aggregated. Then, call methods to modify the aggregated text. Finally,
- * call getText() or getRuns() to get the modified text or the list of modified runs.</p>
+ * Call {@link #addRun(R, int)} to add all runs that should be aggregated. Then, call
+ * methods to modify the aggregated text. Finally, call {@link #getText()} or
+ * {@link #getRuns()} to get the modified text or  the list of modified runs.
  *
  * @author Joseph Verron
  * @version ${version}
@@ -159,7 +160,7 @@ public class ParagraphWrapper {
 
 	/**
 	 * Returns the list of runs that are aggregated. Depending on what modifications were done to the aggregated text
-	 * this list may not return the same runs that were initially added to the aggregator.
+	 * this list may not return the same runs initially added to the aggregator.
 	 *
 	 * @return the list of aggregated runs.
 	 */
@@ -176,7 +177,7 @@ public class ParagraphWrapper {
 	/**
 	 * <p>Getter for the field <code>paragraph</code>.</p>
 	 *
-	 * @return a {@link org.docx4j.wml.P} object
+	 * @return a {@link P} object
 	 */
 	public P getParagraph() {
 		return paragraph;

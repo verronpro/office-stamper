@@ -7,6 +7,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
+import org.docx4j.wml.Comments.Comment;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class CommentUtil {
      * @param document the document that contains the object.
      * @return Optional of the comment, if found, Optional.empty() otherwise.
      */
-    public static Optional<Comments.Comment> getCommentAround(
+    public static Optional<Comment> getCommentAround(
             R run, WordprocessingMLPackage document
     ) {
         if (run == null) return Optional.empty();
@@ -59,7 +60,7 @@ public class CommentUtil {
         }
     }
 
-    private static Optional<Comments.Comment> getComment(
+    private static Optional<Comment> getComment(
             R run, WordprocessingMLPackage document, ContentAccessor parent
     ) throws Docx4JException {
         CommentRangeStart possibleComment = null;
@@ -98,9 +99,9 @@ public class CommentUtil {
      * @param document the WordprocessingMLPackage document to search for the comment
      * @param id       the ID of the comment to find
      * @return an Optional containing the Comment if found, or an empty Optional if not found
-     * @throws org.docx4j.openpackaging.exceptions.Docx4JException if an error occurs while searching for the comment
+     * @throws Docx4JException if an error occurs while searching for the comment
      */
-    public static Optional<Comments.Comment> findComment(
+    public static Optional<Comment> findComment(
             WordprocessingMLPackage document, BigInteger id
     ) throws Docx4JException {
         var name = new PartName(WORD_COMMENTS_PART_NAME);
@@ -124,7 +125,7 @@ public class CommentUtil {
     public static String getCommentStringFor(
             ContentAccessor object, WordprocessingMLPackage document
     ) {
-        Comments.Comment comment = getCommentFor(object,
+        Comment comment = getCommentFor(object,
                                                  document).orElseThrow();
         return getCommentString(comment);
     }
@@ -137,10 +138,10 @@ public class CommentUtil {
      * @param object   the object whose comment to load.
      * @param document the document in which the object is embedded (needed to load the
      *                 comment from the comments.xml part).
-     * @return the concatenated string of all paragraphs of text within the comment or
-     * null if the specified object is not commented.
+     * @return the concatenated string of all text paragraphs within the
+     * comment or null if the specified object is not commented.
      */
-    public static Optional<Comments.Comment> getCommentFor(
+    public static Optional<Comment> getCommentFor(
             ContentAccessor object, WordprocessingMLPackage document
     ) {
         for (Object contentObject : object.getContent()) {
@@ -166,7 +167,7 @@ public class CommentUtil {
                         e);
             }
 
-            for (Comments.Comment comment : comments.getComment()) {
+            for (Comment comment : comments.getComment()) {
                 if (comment.getId()
                         .equals(id)) {
                     return Optional.of(comment);
@@ -179,10 +180,10 @@ public class CommentUtil {
     /**
      * Returns the string value of the specified comment object.
      *
-     * @param comment a {@link org.docx4j.wml.Comments.Comment} object
-     * @return a {@link java.lang.String} object
+     * @param comment a {@link Comment} object
+     * @return a {@link String} object
      */
-    public static String getCommentString(Comments.Comment comment) {
+    public static String getCommentString(Comment comment) {
         StringBuilder builder = new StringBuilder();
         for (Object commentChildObject : comment.getContent()) {
             if (commentChildObject instanceof P p) {
@@ -195,7 +196,7 @@ public class CommentUtil {
     /**
      * Returns the string value of the specified comment object.
      *
-     * @param comment a {@link org.wickedsource.docxstamper.util.CommentWrapper} object
+     * @param comment a {@link CommentWrapper} object
      */
     public static void deleteComment(CommentWrapper comment) {
         CommentRangeEnd end = comment.getCommentRangeEnd();
@@ -221,8 +222,8 @@ public class CommentUtil {
     /**
      * Returns the string value of the specified comment object.
      *
-     * @param items     a {@link java.util.List} object
-     * @param commentId a {@link java.math.BigInteger} object
+     * @param items     a {@link List} object
+     * @param commentId a {@link BigInteger} object
      */
     public static void deleteCommentFromElement(
             List<Object> items, BigInteger commentId

@@ -132,7 +132,7 @@ public class DocumentUtil {
 	}
 
 	/**
-	 * Recursively walk through source to find embedded images and import them in the target document.
+	 * Recursively walk through a source to find embedded images and import them in the target document.
 	 *
 	 * @param source source document containing image files.
 	 * @param target target document to add image files to.

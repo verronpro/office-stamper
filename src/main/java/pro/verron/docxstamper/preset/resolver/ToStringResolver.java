@@ -6,9 +6,9 @@ import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.docxstamper.api.ObjectResolver;
 
 /**
- * The ToStringResolver class is an implementation of the ObjectResolver interface
+ * This class is an implementation of the {@link ObjectResolver} interface
  * that resolves objects by converting them to a string representation using the
- * `toString()` method and creating a new run with the resolved content.
+ * {@link Object#toString()} method and creating a new run with the resolved content.
  */
 public class ToStringResolver
         implements ObjectResolver {

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Removes all {@link org.docx4j.wml.ProofErr} elements from the document.
+ * Removes all {@link ProofErr} elements from the document.
  *
  * @author Joseph Verron
  * @version ${version}

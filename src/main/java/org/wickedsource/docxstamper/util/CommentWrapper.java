@@ -6,6 +6,8 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.*;
+import org.docx4j.wml.Comments.Comment;
+import org.docx4j.wml.R.CommentReference;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 
@@ -21,12 +23,12 @@ import java.util.stream.Collectors;
 public class CommentWrapper {
 
 	private final Set<CommentWrapper> children = new HashSet<>();
-	private Comments.Comment comment;
+	private Comment comment;
 	private CommentRangeStart commentRangeStart;
 	private CommentRangeEnd commentRangeEnd;
-	private R.CommentReference commentReference;
+	private CommentReference commentReference;
 
-	void setComment(Comments.Comment comment) {
+	void setComment(Comment comment) {
 		this.comment = comment;
 	}
 
@@ -38,7 +40,7 @@ public class CommentWrapper {
 		this.commentRangeEnd = commentRangeEnd;
 	}
 
-	void setCommentReference(R.CommentReference commentReference) {
+	void setCommentReference(CommentReference commentReference) {
 		this.commentReference = commentReference;
 	}
 
@@ -116,7 +118,7 @@ public class CommentWrapper {
 		CommentUtil.deleteCommentFromElement(fakeBody.getContent(), getComment().getId());
 	}
 
-	private void extractedSubComments(List<Comments.Comment> commentList, Set<CommentWrapper> commentWrapperChildren) {
+	private void extractedSubComments(List<Comment> commentList, Set<CommentWrapper> commentWrapperChildren) {
 		Queue<CommentWrapper> q = new ArrayDeque<>(commentWrapperChildren);
 		while (!q.isEmpty()) {
 			CommentWrapper element = q.remove();
@@ -131,7 +133,7 @@ public class CommentWrapper {
 	 *
 	 * @param document the document from which to copy the elements.
 	 * @return a new document containing only the elements between the comment range anchors.
-	 * @throws java.lang.Exception if the subtemplate could not be created.
+	 * @throws Exception if the sub template could not be created.
 	 */
 	public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document) throws Exception {
 		List<Object> repeatElements = getRepeatElements();
@@ -162,7 +164,8 @@ public class CommentWrapper {
 
 	/**
 	 * Creates a new document containing only the elements between the comment range anchors.
-	 * If the subtemplate could not be created, a {@link org.wickedsource.docxstamper.api.DocxStamperException} is thrown.
+	 * If the sub template could not be created, a
+	 * {@link DocxStamperException} is thrown.
 	 *
 	 * @param document the document from which to copy the elements.
 	 * @return a new document containing only the elements between the comment range anchors.
@@ -178,7 +181,7 @@ public class CommentWrapper {
 	/**
 	 * <p>Getter for the field <code>commentRangeEnd</code>.</p>
 	 *
-	 * @return a {@link org.docx4j.wml.CommentRangeEnd} object
+	 * @return a {@link CommentRangeEnd} object
 	 */
 	public CommentRangeEnd getCommentRangeEnd() {
 		return commentRangeEnd;
@@ -187,7 +190,7 @@ public class CommentWrapper {
 	/**
 	 * <p>Getter for the field <code>commentRangeStart</code>.</p>
 	 *
-	 * @return a {@link org.docx4j.wml.CommentRangeStart} object
+	 * @return a {@link CommentRangeStart} object
 	 */
 	public CommentRangeStart getCommentRangeStart() {
 		return commentRangeStart;
@@ -196,16 +199,16 @@ public class CommentWrapper {
 	/**
 	 * <p>Getter for the field <code>commentReference</code>.</p>
 	 *
-	 * @return a {@link org.docx4j.wml.R.CommentReference} object
+	 * @return a {@link CommentReference} object
 	 */
-	public R.CommentReference getCommentReference() {
+	public CommentReference getCommentReference() {
 		return commentReference;
 	}
 
 	/**
 	 * <p>Getter for the field <code>children</code>.</p>
 	 *
-	 * @return a {@link java.util.Set} object
+	 * @return a {@link Set} object
 	 */
 	public Set<CommentWrapper> getChildren() {
 		return children;
@@ -214,9 +217,9 @@ public class CommentWrapper {
 	/**
 	 * <p>Getter for the field <code>comment</code>.</p>
 	 *
-	 * @return a {@link org.docx4j.wml.Comments.Comment} object
+	 * @return a {@link Comment} object
 	 */
-	public Comments.Comment getComment() {
+	public Comment getComment() {
 		return comment;
 	}
 }

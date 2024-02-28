@@ -6,7 +6,7 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 
 /**
- * Represents a table with several columns, a headers line, and several lines of content
+ * Represents a table with several columns, a header line, and several lines of content
  *
  * @author Joseph Verron
  * @version ${version}
@@ -40,16 +40,19 @@ public class StampTable {
     /**
      * <p>empty.</p>
      *
-     * @return a {@link org.wickedsource.docxstamper.processor.table.StampTable} object
+     * @return a {@link StampTable} object
      */
     public static StampTable empty() {
-        return new StampTable(singletonList("placeholder"), singletonList(singletonList("placeholder")));
+        return new StampTable(
+                singletonList("placeholder"),
+                singletonList(singletonList("placeholder"))
+        );
     }
 
     /**
      * <p>headers.</p>
      *
-     * @return a {@link java.util.List} object
+     * @return a {@link List} object
      */
     public List<String> headers() {
         return headers;
@@ -58,7 +61,7 @@ public class StampTable {
     /**
      * <p>records.</p>
      *
-     * @return a {@link java.util.List} object
+     * @return a {@link List} object
      */
     public List<List<String>> records() {
         return records;

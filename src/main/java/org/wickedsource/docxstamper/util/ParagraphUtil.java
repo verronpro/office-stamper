@@ -23,7 +23,9 @@ public class ParagraphUtil {
 	/**
 	 * Creates a new paragraph.
 	 *
-	 * @param texts the text of this paragraph. If more than one text is specified each text will be placed within its own Run.
+	 * @param texts the text of this paragraph.
+	 *             If more than one text is specified,
+	 *             each text will be placed within its own Run.
 	 * @return a new paragraph containing the given text.
 	 */
 	public static P create(String... texts) {

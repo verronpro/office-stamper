@@ -25,10 +25,10 @@ import java.util.*;
 import static org.wickedsource.docxstamper.el.ExpressionUtil.findProcessorExpressions;
 
 /**
- * Allows registration of ICommentProcessor objects. Each registered
+ * Allows registration of {@link ICommentProcessor} objects. Each registered
  * ICommentProcessor must implement an interface which has to be specified at
  * registration time. Provides several getter methods to access the registered
- * ICommentProcessors.
+ * {@link ICommentProcessor}.
  *
  * @author Joseph Verron
  * @version ${version}
@@ -62,8 +62,8 @@ public class CommentProcessorRegistry {
     }
 
     /**
-     * Lets each registered ICommentProcessor have a run on the specified docx
-     * document. At the end of the document the commit method is called for each
+     * Lets each registered ICommentProcessor run on the specified docx
+     * document. At the end of the document, the commit method is called for each
      * ICommentProcessor. The ICommentProcessors are run in the order they were
      * registered.
      *

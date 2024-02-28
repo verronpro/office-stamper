@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This class describes an image which will be inserted into document.
+ * This class describes an image which will be inserted into a document.
  *
  * @author Joseph Verron
  * @version ${version}
@@ -21,7 +21,7 @@ public class Image {
      * <p>Constructor for Image.</p>
      *
      * @param in - content of the image as InputStream
-     * @throws java.io.IOException if any.
+     * @throws IOException if any.
      */
     public Image(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -34,7 +34,7 @@ public class Image {
      *
      * @param in - content of the image as InputStream
      * @param maxWidth - max width of the image in twip
-     * @throws java.io.IOException if any.
+     * @throws IOException if any.
      */
     public Image(InputStream in, Integer maxWidth) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

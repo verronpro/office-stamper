@@ -1,6 +1,9 @@
 package org.wickedsource.docxstamper;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
 import org.wickedsource.docxstamper.api.preprocessor.PreProcessor;
 import org.wickedsource.docxstamper.api.typeresolver.ITypeResolver;
@@ -22,7 +25,8 @@ import java.util.*;
 import static java.util.stream.Collectors.toMap;
 
 /**
- * The {@code DocxStamperConfiguration} class represents the configuration for the {@code DocxStamper} class.
+ * The {@link DocxStamperConfiguration} class represents the configuration for
+ * the {@link DocxStamper} class.
  * It provides methods to customize the behavior of the stamper.
  */
 public class DocxStamperConfiguration {
@@ -70,8 +74,8 @@ public class DocxStamperConfiguration {
      *
      * @return the {@link Optional} containing the default replacement value,
      * or an empty {@link Optional} if no default replacement value is found
-     * @deprecated This method is deprecated since version 1.6.7.
-     * You shouldn't have to use it, it was a crutch use for inner workinf of
+     * @deprecated This method's been deprecated since version 1.6.7.
+     * You shouldn't have to use it, it was a crutch use for inner working of
      * docx-stamper
      */
     @Deprecated(since = "1.6.7")
@@ -93,11 +97,11 @@ public class DocxStamperConfiguration {
     }
 
     /**
-     * If set to true, stamper will throw an {@link org.wickedsource.docxstamper.api.DocxStamperException}
+     * If set to true, stamper will throw an {@link DocxStamperException}
      * if a variable expression or processor expression within the document or within the comments is encountered that cannot be resolved. Is set to true by default.
      *
      * @param failOnUnresolvedExpression a boolean
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @return a {@link DocxStamperConfiguration} object
      */
     public DocxStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression) {
         this.failOnUnresolvedExpression = failOnUnresolvedExpression;
@@ -147,7 +151,7 @@ public class DocxStamperConfiguration {
      * Indicates the default value to use for expressions that doesn't resolve.
      *
      * @param unresolvedExpressionsDefaultValue value to use instead for expression that doesn't resolve
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @return a {@link DocxStamperConfiguration} object
      * @see DocxStamperConfiguration#replaceUnresolvedExpressions
      */
     public DocxStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue) {
@@ -156,10 +160,10 @@ public class DocxStamperConfiguration {
     }
 
     /**
-     * Indicates if expressions that doesn't resolve should be replaced by a default value.
+     * Indicates if a default value should replace expressions that don't resolve.
      *
      * @param replaceUnresolvedExpressions true to replace null value expression with resolved value (which is null), false to leave the expression as is
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @return a {@link DocxStamperConfiguration} object
      */
     public DocxStamperConfiguration replaceUnresolvedExpressions(boolean replaceUnresolvedExpressions) {
         this.replaceUnresolvedExpressions = replaceUnresolvedExpressions;
@@ -167,11 +171,11 @@ public class DocxStamperConfiguration {
     }
 
     /**
-     * If an error is caught while evaluating an expression the expression will be replaced with an empty string instead
+     * If an error is caught while evaluating an expression, the expression will be replaced with an empty string instead
      * of leaving the original expression in the document.
      *
      * @param leaveEmpty true to replace expressions with empty string when an error is caught while evaluating
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @return a {@link DocxStamperConfiguration} object
      */
     public DocxStamperConfiguration leaveEmptyOnExpressionError(boolean leaveEmpty) {
         this.leaveEmptyOnExpressionError = leaveEmpty;
@@ -180,7 +184,8 @@ public class DocxStamperConfiguration {
 
     /**
      * <p>
-     * Registers the given ITypeResolver for the given class. The registered ITypeResolver's resolve() method will only
+     * Registers the given {@link ITypeResolver} for the given class. The
+     * registered {@link ITypeResolver#resolve(WordprocessingMLPackage, Object)} method will only
      * be called with objects of the specified class.
      * </p>
      * <p>
@@ -191,7 +196,7 @@ public class DocxStamperConfiguration {
      * @param resolvedType the class whose objects are to be passed to the given ITypeResolver.
      * @param resolver     the resolver to resolve objects of the given type.
      * @param <T>          the type resolved by the ITypeResolver.
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @return a {@link DocxStamperConfiguration} object
      * @deprecated This method has been deprecated since version 1.6.7, and
      * it is scheduled for removal.
      * It's recommended to use the {@link DocxStamperConfiguration#addResolver(ObjectResolver)}
@@ -211,7 +216,7 @@ public class DocxStamperConfiguration {
      * @param interfaceClass the interface whose methods should be exposed in the expression language.
      * @param implementation the implementation that should be called to evaluate invocations of the interface methods
      *                       within the expression language. Must implement the interface above.
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @return a {@link DocxStamperConfiguration} object
      */
     public DocxStamperConfiguration exposeInterfaceToExpressionLanguage(
             Class<?> interfaceClass, Object implementation
@@ -226,7 +231,7 @@ public class DocxStamperConfiguration {
      *
      * @param interfaceClass          the Interface which is implemented by the commentProcessor.
      * @param commentProcessorFactory the commentProcessor factory generating the specified interface.
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @return a {@link DocxStamperConfiguration} object
      */
     public DocxStamperConfiguration addCommentProcessor(
             Class<?> interfaceClass,
@@ -278,7 +283,7 @@ public class DocxStamperConfiguration {
     /**
      * <p>Getter for the field <code>unresolvedExpressionsDefaultValue</code>.</p>
      *
-     * @return a {@link java.lang.String} object
+     * @return a {@link String} object
      */
     public String getUnresolvedExpressionsDefaultValue() {
         return unresolvedExpressionsDefaultValue;
@@ -287,7 +292,7 @@ public class DocxStamperConfiguration {
     /**
      * <p>Getter for the field <code>lineBreakPlaceholder</code>.</p>
      *
-     * @return a {@link java.lang.String} object
+     * @return a {@link String} object
      */
     public String getLineBreakPlaceholder() {
         return lineBreakPlaceholder;
@@ -309,19 +314,19 @@ public class DocxStamperConfiguration {
     /**
      * <p>Getter for the field <code>evaluationContextConfigurer</code>.</p>
      *
-     * @return a {@link org.wickedsource.docxstamper.api.EvaluationContextConfigurer} object
+     * @return a {@link EvaluationContextConfigurer} object
      */
     public EvaluationContextConfigurer getEvaluationContextConfigurer() {
         return evaluationContextConfigurer;
     }
 
     /**
-     * Provides an {@link org.wickedsource.docxstamper.api.EvaluationContextConfigurer} which may change the configuration of a Spring
-     * {@link org.springframework.expression.EvaluationContext} which is used for evaluating expressions
+     * Provides an {@link EvaluationContextConfigurer} which may change the configuration of a Spring
+     * {@link EvaluationContext} which is used for evaluating expressions
      * in comments and text.
      *
      * @param evaluationContextConfigurer the configurer to use.
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @return a {@link DocxStamperConfiguration} object
      */
     public DocxStamperConfiguration setEvaluationContextConfigurer(
             EvaluationContextConfigurer evaluationContextConfigurer
@@ -333,20 +338,20 @@ public class DocxStamperConfiguration {
     /**
      * <p>Getter for the field <code>spelParserConfiguration</code>.</p>
      *
-     * @return a {@link org.springframework.expression.spel.SpelParserConfiguration} object
+     * @return a {@link SpelParserConfiguration} object
      */
     public SpelParserConfiguration getSpelParserConfiguration() {
         return spelParserConfiguration;
     }
 
     /**
-     * Sets the {@link org.springframework.expression.spel.SpelParserConfiguration} to use for expression parsing.
+     * Sets the {@link SpelParserConfiguration} to use for expression parsing.
      * <p>
      * Note that this configuration will be used for all expressions in the document, including expressions in comments!
      * </p>
      *
      * @param spelParserConfiguration the configuration to use.
-     * @return a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @return a {@link DocxStamperConfiguration} object
      */
     public DocxStamperConfiguration setSpelParserConfiguration(
             SpelParserConfiguration spelParserConfiguration
@@ -358,7 +363,7 @@ public class DocxStamperConfiguration {
     /**
      * <p>Getter for the field <code>expressionFunctions</code>.</p>
      *
-     * @return a {@link java.util.Map} object
+     * @return a {@link Map} object
      */
     public Map<Class<?>, Object> getExpressionFunctions() {
         return expressionFunctions;
@@ -368,7 +373,7 @@ public class DocxStamperConfiguration {
      * Retrieves the map of type resolvers.
      *
      * @return the map of type resolvers
-     * @deprecated This method is deprecated since version 1.6.7
+     * @deprecated This method's been deprecated since version 1.6.7
      */
     @Deprecated(since = "1.6.7", forRemoval = true)
     public Map<Class<?>, ITypeResolver<?>> getTypeResolvers() {
@@ -385,8 +390,8 @@ public class DocxStamperConfiguration {
      * {@link ITypeResolver}, and returns the first one found. If no type resolver is found, null is returned.
      *
      * @return the default type resolver, or null if not found
-     * @deprecated This method is deprecated since version 1.6.7 and is scheduled for removal.
-     * You should not have to use it, it was a clutch for previosu version of
+     * @deprecated This method's been deprecated since version 1.6.7 and is scheduled for removal.
+     * You should not have to use it, it was a clutch for previous version of
      * docx-stamper.
      */
     @Deprecated(since = "1.6.7", forRemoval = true)
@@ -422,7 +427,7 @@ public class DocxStamperConfiguration {
     /**
      * <p>Getter for the field <code>commentProcessors</code>.</p>
      *
-     * @return a {@link java.util.Map} object
+     * @return a {@link Map} object
      */
     public Map<Class<?>, CommentProcessorBuilder> getCommentProcessors() {
         return commentProcessors;
@@ -432,7 +437,7 @@ public class DocxStamperConfiguration {
      * Gets the flag indicating whether null values should be replaced.
      *
      * @return {@code true} if null values should be replaced, {@code false} otherwise.
-     * @deprecated This method is deprecated since version 1.6.7 and will be removed in a future release.
+     * @deprecated This method's been deprecated since version 1.6.7 and will be removed in a future release.
      * You shouldn't have to use it, it was a clutch for
      * docx-stamper workings.
      */
@@ -456,7 +461,7 @@ public class DocxStamperConfiguration {
     /**
      * <p>Getter for the field <code>preprocessors</code>.</p>
      *
-     * @return a {@link java.util.List} object
+     * @return a {@link List} object
      */
     public List<PreProcessor> getPreprocessors() {
         return preprocessors;

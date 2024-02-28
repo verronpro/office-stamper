@@ -32,8 +32,8 @@ import static java.util.stream.Collectors.toMap;
 import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImportImages;
 
 /**
- * This class is responsible for processing the &lt;ds:repeat&gt; tag.
- * It uses the {@link pro.verron.docxstamper.OpcStamper} to stamp the sub document and then
+ * This class is responsible for processing the &lt;ds: repeat&gt; tag.
+ * It uses the {@link OpcStamper} to stamp the sub document and then
  * copies the resulting sub document to the correct position in the
  * main document.
  *

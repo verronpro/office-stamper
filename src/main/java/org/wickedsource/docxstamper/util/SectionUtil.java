@@ -29,8 +29,8 @@ public class SectionUtil {
 	/**
 	 * Creates a new section break object.
 	 *
-	 * @param firstObject a {@link java.lang.Object} object
-	 * @param parent      a {@link org.docx4j.wml.ContentAccessor} object
+	 * @param firstObject a {@link Object} object
+	 * @param parent      a {@link ContentAccessor} object
 	 * @return a new section break object.
 	 */
 	public static SectPr getPreviousSectionBreakIfPresent(Object firstObject, ContentAccessor parent) {
@@ -56,7 +56,7 @@ public class SectionUtil {
 	 * Creates a new section break object.
 	 *
 	 * @return a new section break object.
-	 * @param p a {@link org.docx4j.wml.P} object
+	 * @param p a {@link P} object
 	 */
 	public static SectPr getParagraphSectionBreak(P p) {
 		return p.getPPr() != null && p.getPPr().getSectPr() != null
@@ -68,7 +68,7 @@ public class SectionUtil {
 	 * Creates a new section break object.
 	 *
 	 * @return a new section break object.
-	 * @param objects a {@link java.util.List} object
+	 * @param objects a {@link List} object
 	 */
 	public static boolean isOddNumberOfSectionBreaks(List<Object> objects) {
 		long count = objects.stream()
@@ -82,8 +82,8 @@ public class SectionUtil {
 	/**
 	 * Creates a new section break object.
 	 *
-	 * @param sectPr a {@link org.docx4j.wml.SectPr} object
-	 * @param paragraph a {@link org.docx4j.wml.P} object
+	 * @param sectPr a {@link SectPr} object
+	 * @param paragraph a {@link P} object
 	 */
 	public static void applySectionBreakToParagraph(SectPr sectPr, P paragraph) {
 		PPr nextPPr = ofNullable(paragraph.getPPr())

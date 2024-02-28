@@ -9,7 +9,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import java.util.Iterator;
 
 /**
- * Utility class for deleting objects from a {@link org.docx4j.wml.Document}.
+ * Utility class for deleting objects from a {@link Document}.
  *
  * @author Joseph Verron
  * @version ${version}

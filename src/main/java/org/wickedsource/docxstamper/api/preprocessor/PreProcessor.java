@@ -1,15 +1,18 @@
 package org.wickedsource.docxstamper.api.preprocessor;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.wickedsource.docxstamper.DocxStamper;
+import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
+import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
 
 /**
  * The interface for all pre-processors. Pre-processors are called before the
  * document is processed by the DocxStamper. They can be used to manipulate the
  * document before the actual processing takes place.
  *
- * @see org.wickedsource.docxstamper.DocxStamper
- * @see org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns
- * @see org.wickedsource.docxstamper.preprocessor.RemoveProofErrors
+ * @see DocxStamper
+ * @see MergeSameStyleRuns
+ * @see RemoveProofErrors
  * @author Joseph Verron
  * @version ${version}
  */

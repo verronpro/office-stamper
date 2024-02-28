@@ -14,7 +14,9 @@ import pro.verron.docxstamper.preset.resolver.Resolvers;
  *
  * @version ${version}
  *
- * @deprecated as of version 1.6.7, use {@link Resolvers#fallback()} instead. LegacyFallbackResolver
+ * @deprecated as of version 1.6.7, use
+ * {@link Resolvers#fallback()} instead.
+ * LegacyFallbackResolver
  * was capable of mapping any object to their String representation.
  * Now, this is more streamlined and manageable using {@link Resolvers#fallback()}.
  */

@@ -3,9 +3,9 @@ package org.wickedsource.docxstamper.util.walk;
 import org.docx4j.wml.*;
 
 /**
- * This class is an abstract implementation of the {@link org.wickedsource.docxstamper.util.walk.DocumentWalker} interface.
+ * This class is an abstract implementation of the {@link DocumentWalker} interface.
  * It implements all methods of the interface and does nothing in the individual methods.
- * This makes it easier to implement a custom {@link org.wickedsource.docxstamper.util.walk.DocumentWalker} because the implementor
+ * This makes it easier to implement a custom {@link DocumentWalker} because the implementor
  * only has to implement the methods that are of interest.
  *
  * @author Joseph Verron

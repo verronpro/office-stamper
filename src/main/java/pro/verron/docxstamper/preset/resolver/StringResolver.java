@@ -6,8 +6,9 @@ import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.docxstamper.api.ObjectResolver;
 
 /**
- * A StringResolver is an abstract class that provides a generic implementation for resolving objects
- * to strings. It is used in conjunction with ObjectResolver interface to provide a flexible way to
+ * This is an abstract class that provides a generic implementation for
+ * resolving objects to strings. It is used in conjunction with
+ * {@link ObjectResolver} interface to provide a flexible way to
  * resolve different types of objects to strings.
  *
  * @param <T> the type of the object to resolve

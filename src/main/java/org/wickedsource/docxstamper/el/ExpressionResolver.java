@@ -22,7 +22,7 @@ public class ExpressionResolver {
      * Creates a new ExpressionResolver with the given SpEL parser configuration.
      *
      * @param spelParserConfiguration   the configuration for the SpEL parser.
-     * @param standardEvaluationContext a {@link org.springframework.expression.spel.support.StandardEvaluationContext} object
+     * @param standardEvaluationContext a {@link StandardEvaluationContext} object
      */
     public ExpressionResolver(
             StandardEvaluationContext standardEvaluationContext,

@@ -1,11 +1,17 @@
 package pro.verron.docxstamper.preset.resolver;
 
+import org.wickedsource.docxstamper.replace.typeresolver.image.Image;
 import pro.verron.docxstamper.api.ObjectResolver;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 /**
- * The Resolvers class provides static methods to create different types of ObjectResolvers.
+ * This class provides static methods to create different types of
+ * {@link ObjectResolver}.
  *
  * @author Joseph Verron
  * @version ${version}
@@ -14,126 +20,144 @@ import java.time.format.DateTimeFormatter;
 public class Resolvers {
 
     /**
-     * Returns an instance of ObjectResolver that acts as a fallback resolver.
-     * It uses the ToStringResolver implementation of ObjectResolver.
+     * Returns an instance of {@link ObjectResolver} that can act as a fallback
+     * resolver. Will call the {@link Object#toString()} method on every type
+     * of objects.
      *
-     * @return An instance of ObjectResolver
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver fallback() {
         return new ToStringResolver();
     }
 
     /**
-     * Returns an instance of ObjectResolver that replaces null values with an empty string.
+     * Returns an instance of {@link ObjectResolver} that replaces null values with an empty string.
      *
-     * @return An instance of ObjectResolver
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver nullToEmpty() {
         return nullToDefault("");
     }
 
     /**
-     * Returns an instance of ObjectResolver that resolves null objects
+     * Returns an instance of {@link ObjectResolver} that resolves null objects
      * by creating a run with a default text value.
      *
      * @param value The default value for null objects.
-     * @return An instance of ObjectResolver
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver nullToDefault(String value) {
         return new Null2DefaultResolver(value);
     }
 
     /**
-     * Returns an instance of ObjectResolver that resolves null objects
+     * Returns an instance of {@link ObjectResolver} that resolves null objects
      * by not replacing their placeholder string.
      *
-     * @return An instance of ObjectResolver
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver nullToPlaceholder() {
         return new Null2PlaceholderResolver();
     }
 
     /**
-     * Returns an instance of LocalTimeResolver.
-     * The LocalTimeResolver class is an implementation of the StringResolver interface
-     * that resolves LocalTime values to a formatted string using the ISO_LOCAL_TIME pattern.
+     * Returns an instance of {@link ObjectResolver} that resolves
+     * {@link LocalDateTime} values to a formatted string using the
+     * {@link DateTimeFormatter#ISO_LOCAL_DATE_TIME} pattern.
      *
-     * @return An instance of LocalTimeResolver
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver isoDateTime() {
-        return new LocalTimeResolver();
-    }
-
-    /**
-     * Returns an instance of {@link LocalDateTimeResolver}.
-     * The LocalDateTimeResolver class is an implementation of the {@link ObjectResolver} interface
-     * that resolves {@link java.time.LocalDateTime} values to a formatted string.
-     *
-     * @return An instance of LocalDateTimeResolver
-     */
-    public static ObjectResolver isoTime() {
         return new LocalDateTimeResolver();
     }
 
     /**
-     * Creates a new instance of LocalDateTimeResolver using the given formatter.
+     * Returns an instance of {@link ObjectResolver} that resolves
+     * {@link LocalTime} values to a formatted string using the
+     * {@link DateTimeFormatter#ISO_LOCAL_TIME} pattern.
      *
-     * @param formatter the DateTimeFormatter to use for formatting LocalDateTime values
-     * @return a new instance of LocalDateTimeResolver
+     * @return An instance of {@link ObjectResolver}
      */
-    public static ObjectResolver isoTime(DateTimeFormatter formatter) {
-        return new LocalDateTimeResolver(formatter);
+    public static ObjectResolver isoTime() {
+        return new LocalTimeResolver();
     }
 
     /**
-     * Returns an instance of {@link LocalDateResolver}.
-     * The LocalDateResolver class is an implementation of the {@link StringResolver} interface
-     * that resolves {@link java.time.LocalDate} objects by formatting them with a {@link DateTimeFormatter}.
+     * Returns an instance of {@link ObjectResolver} that resolves
+     * {@link LocalDate} values to a formatted string using the
+     * {@link DateTimeFormatter#ISO_LOCAL_DATE} pattern.
      *
-     * @return An instance of LocalDateResolver
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver isoDate() {
         return new LocalDateResolver();
     }
 
     /**
-     * Returns an instance of LocalDateResolver that resolves {@link java.time.LocalDate} objects
-     * by formatting them with the given {@link DateTimeFormatter}.
+     * Returns an instance of {@link ObjectResolver} that resolves
+     * {@link LocalTime} values to a formatted string using the given
+     * {@link DateTimeFormatter} pattern.
      *
-     * @param formatter the DateTimeFormatter to use for formatting LocalDate values
-     * @return an instance of LocalDateResolver
+     * @param formatter the {@link DateTimeFormatter} pattern to use
+     * @return An instance of {@link ObjectResolver}
+     */
+    public static ObjectResolver isoTime(DateTimeFormatter formatter) {
+        return new LocalTimeResolver(formatter);
+    }
+
+    /**
+     * Returns an instance of {@link ObjectResolver} that resolves
+     * {@link LocalDate} values to a formatted string using the given
+     * {@link DateTimeFormatter} pattern.
+     *
+     * @param formatter the {@link DateTimeFormatter} pattern to use
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver isoDate(DateTimeFormatter formatter) {
         return new LocalDateResolver(formatter);
     }
 
     /**
-     * Returns an instance of DateResolver.
-     * The DateResolver class is an implementation of the StringResolver interface
-     * that creates a formatted date string for expressions that return a Date object.
+     * Returns an instance of {@link ObjectResolver} that resolves
+     * {@link LocalDateTime} values to a formatted string using the given
+     * {@link DateTimeFormatter} pattern.
      *
-     * @return An instance of DateResolver
+     * @param formatter the {@link DateTimeFormatter} pattern to use
+     * @return An instance of {@link ObjectResolver}
+     */
+    public static ObjectResolver isoDateTime(DateTimeFormatter formatter) {
+        return new LocalDateTimeResolver(formatter);
+    }
+
+    /**
+     * Returns an instance of {@link ObjectResolver} that resolves
+     * {@link Date} values to a formatted string using the
+     * "dd.MM.yyyy" pattern.
+     *
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver legacyDate() {
         return new DateResolver();
     }
 
     /**
-     * This method returns an instance of DateResolver that creates a formatted date string for expressions that return a Date object.
+     * Returns an instance of {@link ObjectResolver} that resolves
+     * {@link Date} values to a formatted string using the given
+     * {@link DateTimeFormatter} pattern.
      *
-     * @param formatter the format to use for date formatting. See java.time.format.DateTimeFormatter.
-     * @return an instance of DateResolver
+     * @param formatter the {@link DateTimeFormatter} pattern to use
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver legacyDate(DateTimeFormatter formatter) {
         return new DateResolver(formatter);
     }
 
     /**
-     * Returns an instance of ImageResolver that allows context objects to return objects of type Image.
-     * An expression that resolves to an Image object will be replaced by an actual image in the resulting .docx document.
+     * Returns an instance of {@link ObjectResolver} that resolves
+     * {@link Image} to an actual image in the resulting .docx document.
      * The image will be put as an inline into the surrounding paragraph of text.
      *
-     * @return An instance of ImageResolver
+     * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver image() {
         return new ImageResolver();

@@ -3,6 +3,7 @@ package org.wickedsource.docxstamper.processor;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
+import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
 import org.wickedsource.docxstamper.util.CommentWrapper;
@@ -10,7 +11,7 @@ import org.wickedsource.docxstamper.util.CommentWrapper;
 import java.util.Objects;
 
 /**
- * Base class for comment processors. The current run and paragraph are set by the {@link org.wickedsource.docxstamper.DocxStamper} class.
+ * Base class for comment processors. The current run and paragraph are set by the {@link DocxStamper} class.
  *
  * @author Joseph Verron
  * @version ${version}

@@ -19,7 +19,7 @@ public class StamperFactory {
 
 	/**
 	 * Creates a new DocxStamper with the default configuration.
-	 * Also adds the {@link org.wickedsource.docxstamper.preprocessor.RemoveProofErrors} and {@link org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns} preprocessors.
+	 * Also adds the {@link RemoveProofErrors} and {@link MergeSameStyleRuns} preprocessors.
 	 *
 	 * @return a new DocxStamper
 	 */

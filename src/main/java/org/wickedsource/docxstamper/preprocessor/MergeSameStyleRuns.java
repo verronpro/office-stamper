@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Merges runs with the same style that are next to each other.
+ * Merges same style runs that are next to each other.
  *
  * @author Joseph Verron
  * @version ${version}

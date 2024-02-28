@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@link org.wickedsource.docxstamper.api.EvaluationContextConfigurer} that has a better default security,
- * especially doesn't allow Especially known injections.
+ * {@link EvaluationContextConfigurer} that has better default security,
+ * especially doesn't allow especially known injections.
  *
  * @author Joseph Verron
  * @version ${version}

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Resolves {@link java.time.LocalDateTime} values to a formatted string.
+ * Resolves {@link LocalDateTime} values to a formatted string.
  *
  * @author Joseph Verron
  * @version ${version}
@@ -14,7 +14,7 @@ public final class LocalDateTimeResolver
 	private final DateTimeFormatter formatter;
 
 	/**
-	 * Creates a new resolver that uses {@link java.time.format.DateTimeFormatter#ISO_LOCAL_DATE_TIME} to format {@link java.time.LocalDateTime}
+	 * Creates a new resolver that uses {@link DateTimeFormatter#ISO_LOCAL_DATE_TIME} to format {@link LocalDateTime}
 	 * values.
 	 */
 	public LocalDateTimeResolver() {
@@ -22,7 +22,7 @@ public final class LocalDateTimeResolver
 	}
 
 	/**
-	 * Creates a new resolver that uses the given formatter to format {@link java.time.LocalDateTime} values.
+	 * Creates a new resolver that uses the given formatter to format {@link LocalDateTime} values.
 	 *
 	 * @param formatter the formatter to use.
 	 */

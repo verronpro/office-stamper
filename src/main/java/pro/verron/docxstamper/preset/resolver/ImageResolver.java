@@ -15,9 +15,10 @@ import java.util.Random;
 import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage.createImagePart;
 
 /**
- * This ITypeResolver allows context objects to return objects of type Image. An expression that resolves to an Image
- * object will be replaced by an actual image in the resulting .docx document. The image will be put as an inline into
- * the surrounding paragraph of text.
+ * This {@link ObjectResolver} allows context objects to return objects of
+ * type {@link Image}. An expression that resolves to an {@link Image}
+ * object will be replaced by an actual image in the resulting .docx document.
+ * The image will be put as an inline into the surrounding paragraph of text.
  *
  * @author Joseph Verron
  * @version ${version}
@@ -92,7 +93,8 @@ public class ImageResolver
     }
 
     /**
-     * Resolves an image and adds it to a WordprocessingMLPackage document.
+     * Resolves an image and adds it to a {@link WordprocessingMLPackage}
+     * document.
      *
      * @param document The WordprocessingMLPackage document
      * @param image    The image to be resolved and added

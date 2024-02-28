@@ -38,7 +38,7 @@ public class ReplaceWithProcessor
 	 * Creates a new processor that replaces the current run with the result of the expression.
 	 *
 	 * @param pr                   the placeholder replacer to use
-	 * @param nullReplacementValue a {@link java.lang.String} object
+	 * @param nullReplacementValue a {@link String} object
 	 * @return the processor
 	 */
 	public static ICommentProcessor newInstance(PlaceholderReplacer pr, String nullReplacementValue) {

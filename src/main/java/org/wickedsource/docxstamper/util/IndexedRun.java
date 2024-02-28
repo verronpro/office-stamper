@@ -3,7 +3,7 @@ package org.wickedsource.docxstamper.util;
 import org.docx4j.wml.R;
 
 /**
- * Represents a run (i.e. a text fragment) in a paragraph. The run is indexed relative to the containing paragraph
+ * Represents a run (i.e., a text fragment) in a paragraph. The run is indexed relative to the containing paragraph
  * and also relative to the containing document.
  * @param startIndex    the start index of the run relative to the containing paragraph.
  * @param endIndex       the end index of the run relative to the containing paragraph.

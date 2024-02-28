@@ -29,15 +29,17 @@ import pro.verron.docxstamper.api.ObjectResolver;
 @Deprecated(since = "1.6.7", forRemoval = true)
 public interface ITypeResolver<T> {
     /**
-     * This method is called when a placeholder in the .docx template is to replaced by the result of an expression that
+     * This method is called when a placeholder in the .docx template is to
+     * be replaced by the result of an expression that
      * was found in the .docx template. It creates an object of the DOCX4J api that is put in the place of the found
      * expression.
      *
      * @param document         the Word document that can be accessed via the
      *                        DOCX4J api.
      * @param expressionResult the result of an expression. Only objects of classes this type resolver is registered for
-     *                         within the TypeResolverRegistrey are passed into this method.
-     * @return an object of the DOCX4J api (usually of type org.docx4j.wml.R = "run of text") that will be put in the place of an
+     *                         within the TypeResolverRegistry are passed into this method.
+     * @return an object of the DOCX4J api (usually of type {@link R} = "run
+     * of text" that will be put in the place of an
      * expression found in the .docx document.
      */
     R resolve(WordprocessingMLPackage document, T expressionResult);

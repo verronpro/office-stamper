@@ -27,7 +27,7 @@ public class RunUtil {
 	 * Returns the text string of a run.
 	 *
 	 * @param run the run whose text to get.
-	 * @return String representation of the run.
+	 * @return {@link String} representation of the run.
 	 */
 	public static String getText(R run) {
 		StringBuilder result = new StringBuilder();

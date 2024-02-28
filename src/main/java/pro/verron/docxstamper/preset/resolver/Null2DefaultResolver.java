@@ -6,7 +6,8 @@ import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.docxstamper.api.ObjectResolver;
 
 /**
- * The Null2DefaultResolver class is an implementation of the ObjectResolver interface
+ * The Null2DefaultResolver class is an implementation of the
+ * {@link ObjectResolver} interface
  * that resolves null objects by creating a run with a default text value.
  *
  * @version ${version}
@@ -36,9 +37,9 @@ public class Null2DefaultResolver
     }
 
     /**
-     * Retrieves the default value of the Null2DefaultResolver object.
+     * Retrieves the default value of the {@link Null2DefaultResolver} object.
      *
-     * @return the default value of the Null2DefaultResolver object as a String
+     * @return the default value of the {@link Null2DefaultResolver} object as a String
      */
     public String defaultValue() {
         return text;

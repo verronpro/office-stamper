@@ -38,7 +38,7 @@ public interface ICommentProcessor {
 	/**
 	 * This method is called after all comments in the .docx template have been passed to the comment processor.
 	 * All manipulations of the .docx document SHOULD BE done in this method. If certain manipulations are already done
-	 * within in the custom methods of a comment processor, the ongoing iteration over the paragraphs in the document
+	 * within the custom methods of a comment processor, the ongoing iteration over the paragraphs in the document
 	 * may be disturbed.
 	 *
 	 * @param document The Word document that can be manipulated by using the DOCX4J api.
@@ -46,7 +46,7 @@ public interface ICommentProcessor {
 	void commitChanges(WordprocessingMLPackage document);
 
 	/**
-	 * Passes the paragraph that is currently being processed (i.e. the paragraph that is commented in the
+	 * Passes the paragraph that is currently being processed (i.e., the paragraph that is commented in the
 	 * .docx template). This method is always called BEFORE the custom
 	 * methods of the custom comment processor interface
 	 * are called.
@@ -78,7 +78,7 @@ public interface ICommentProcessor {
 	/**
 	 * Passes the processed document, in order to make all linked data
 	 * (images, etc.) available
-	 * to processors that need it (example : repeatDocPart)
+	 * to processors that need it (example: repeatDocPart)
 	 *
 	 * @param document DocX template being processed.
 	 * @deprecated the document is passed to the processor through the commitChange method now,
@@ -89,7 +89,7 @@ public interface ICommentProcessor {
 	void setDocument(WordprocessingMLPackage document);
 
 	/**
-	 * Resets all state in the comment processor so that it can be re-used in another stamping process.
+	 * Resets all states in the comment processor so that it can be re-used in another stamping process.
 	 */
 	void reset();
 }

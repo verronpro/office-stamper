@@ -33,21 +33,21 @@ public class TableResolver extends BaseCommentProcessor implements ITableResolve
 	}
 
 	/**
-	 * Generate a new {@link org.wickedsource.docxstamper.processor.table.TableResolver} instance
+	 * Generate a new {@link TableResolver} instance
 	 *
-	 * @param pr                   a {@link org.wickedsource.docxstamper.replace.PlaceholderReplacer} instance
+	 * @param pr                   a {@link PlaceholderReplacer} instance
 	 * @param nullReplacementValue in case the value to interpret is <code>null</code>
-	 * @return a new {@link org.wickedsource.docxstamper.processor.table.TableResolver} instance
+	 * @return a new {@link TableResolver} instance
 	 */
 	public static ICommentProcessor newInstance(PlaceholderReplacer pr, String nullReplacementValue) {
 		return new TableResolver(pr, table -> List.of(ParagraphUtil.create(nullReplacementValue)));
 	}
 
 	/**
-	 * Generate a new {@link org.wickedsource.docxstamper.processor.table.TableResolver} instance where value is replaced by an empty list when <code>null</code>
+	 * Generate a new {@link TableResolver} instance where value is replaced by an empty list when <code>null</code>
 	 *
-	 * @param pr a {@link org.wickedsource.docxstamper.replace.PlaceholderReplacer} instance
-	 * @return a new {@link org.wickedsource.docxstamper.processor.table.TableResolver} instance
+	 * @param pr a {@link PlaceholderReplacer} instance
+	 * @return a new {@link TableResolver} instance
 	 */
 	public static ICommentProcessor newInstance(PlaceholderReplacer pr) {
         return new TableResolver(pr, table -> Collections.emptyList());

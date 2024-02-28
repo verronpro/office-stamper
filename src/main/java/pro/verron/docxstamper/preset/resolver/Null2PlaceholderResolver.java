@@ -6,7 +6,7 @@ import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.docxstamper.api.ObjectResolver;
 
 /**
- * The Null2PlaceholderResolver class is an implementation of the ObjectResolver interface.
+ * The {@link Null2PlaceholderResolver} class is an implementation of the ObjectResolver interface.
  * It provides a way to resolve null objects by not replacing their placeholder string.
  *
  * @author Joseph Verron

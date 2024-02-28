@@ -25,7 +25,8 @@ public class ExpressionUtil {
 	}
 
 	/**
-	 * Finds all variable expressions in a text and returns them as list. Example expression: "${myObject.property}".
+	 * Finds all variable expressions in a text and returns them as a list.
+	 * Example expression: "${myObject.property}".
 	 *
 	 * @param text the text to find expressions in.
 	 * @return a list of expressions (including the starting "${" and trailing "}").
@@ -49,7 +50,8 @@ public class ExpressionUtil {
 	}
 
 	/**
-	 * Finds all processor expressions in a text and returns them as list. Example expression: "#{myObject.property}".
+	 * Finds all processor expressions in a text and returns them as a list.
+	 * Example expression: "#{myObject.property}".
 	 *
 	 * @param text the text to find expressions in.
 	 * @return a list of expressions (including the starting "#{" and trailing "}").

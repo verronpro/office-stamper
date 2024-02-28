@@ -6,16 +6,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The ProcessorExceptionHandler class is responsible for capturing and handling uncaught exceptions that occur in a thread.
- * It implements the Thread.UncaughtExceptionHandler interface and can be assigned to a thread using the setUncaughtExceptionHandler() method.
- * When an exception occurs in the thread, the uncaughtException() method of ProcessorExceptionHandler will be called.
+ * This class is responsible for capturing and handling uncaught exceptions
+ * that occur in a thread.
+ * It implements the {@link Thread.UncaughtExceptionHandler} interface and can
+ * be assigned to a thread using the
+ * {@link Thread#setUncaughtExceptionHandler(Thread.UncaughtExceptionHandler)} method.
+ * When an exception occurs in the thread,
+ * the {@link ProcessorExceptionHandler#uncaughtException(Thread, Throwable)}
+ * method will be called.
  * This class provides the following features:
  * 1. Capturing and storing the uncaught exception.
  * 2. Executing a list of routines when an exception occurs.
  * 3. Providing access to the captured exception, if any.
  * Example usage:
- * ProcessorExceptionHandler exceptionHandler = new ProcessorExceptionHandler();
+ * <code>
+ * ProcessorExceptionHandler exceptionHandler = new
+ * ProcessorExceptionHandler(){};
  * thread.setUncaughtExceptionHandler(exceptionHandler);
+ * </code>
  *
  * @see Thread.UncaughtExceptionHandler
  * @author Joseph Verron
@@ -27,7 +35,7 @@ public class ProcessorExceptionHandler
     private final List<Runnable> onException;
 
     /**
-     * Constructs a new ProcessorExceptionHandler for managing thread's uncaught exceptions.
+     * Constructs a new instance for managing thread's uncaught exceptions.
      * Once set to a thread, it retains the exception information and performs specified routines.
      */
     public ProcessorExceptionHandler() {
@@ -60,8 +68,8 @@ public class ProcessorExceptionHandler
     /**
      * Returns the captured exception if present.
      *
-     * @return an Optional containing the captured exception,
-     * or an empty Optional if no exception was captured
+     * @return an {@link Optional} containing the captured exception,
+     * or an {@link Optional#empty()} if no exception was captured
      */
     public Optional<Throwable> exception() {
         return Optional.ofNullable(exception.get());

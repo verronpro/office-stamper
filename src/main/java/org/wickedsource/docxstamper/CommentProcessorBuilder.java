@@ -8,6 +8,7 @@ import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.5
  */
 public interface CommentProcessorBuilder {
     /**

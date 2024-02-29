@@ -9,6 +9,10 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * This class is an implementation of the {@link ObjectResolver} interface
  * that resolves objects by converting them to a string representation using the
  * {@link Object#toString()} method and creating a new run with the resolved content.
+ * <p>
+ * * @author Joseph Verron
+ * * @version ${version}
+ * * @since 1.6.7
  */
 public class ToStringResolver
         implements ObjectResolver {

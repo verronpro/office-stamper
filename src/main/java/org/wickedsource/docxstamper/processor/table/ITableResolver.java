@@ -6,6 +6,7 @@ package org.wickedsource.docxstamper.processor.table;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.2
  */
 public interface ITableResolver {
 	/**

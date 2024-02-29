@@ -5,6 +5,7 @@ package org.wickedsource.docxstamper.processor.displayif;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public interface IDisplayIfProcessor {
 

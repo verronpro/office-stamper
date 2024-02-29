@@ -28,6 +28,9 @@ import static java.util.stream.Collectors.toMap;
  * The {@link DocxStamperConfiguration} class represents the configuration for
  * the {@link DocxStamper} class.
  * It provides methods to customize the behavior of the stamper.
+ * @author Joseph Verron
+ * @version ${version}
+ * @since 1.0.3
  */
 public class DocxStamperConfiguration {
 

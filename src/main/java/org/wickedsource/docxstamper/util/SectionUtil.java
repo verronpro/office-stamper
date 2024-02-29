@@ -16,6 +16,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.2
  */
 public class SectionUtil {
 	private static final Logger log = LoggerFactory.getLogger(SectionUtil.class);

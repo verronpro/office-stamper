@@ -15,6 +15,7 @@ import static java.util.Collections.emptyList;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class ExpressionUtil {
 	private static final Pattern VARIABLE_EXPRESSION_PATTERN = Pattern.compile("\\$\\{(.*?)}");

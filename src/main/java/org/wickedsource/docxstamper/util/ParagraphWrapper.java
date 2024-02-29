@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.joining;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.8
  */
 public class ParagraphWrapper {
 	private final List<IndexedRun> runs = new ArrayList<>();

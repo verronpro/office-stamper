@@ -14,6 +14,7 @@ import java.util.function.Predicate;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class TableCellUtil {
 

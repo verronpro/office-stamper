@@ -18,6 +18,7 @@ import java.util.function.Function;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.2
  */
 public class StandardMethodResolver implements MethodResolver {
 	private final Map<Class<?>, Object> commentProcessors;

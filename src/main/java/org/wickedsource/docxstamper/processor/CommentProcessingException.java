@@ -11,6 +11,7 @@ import static org.docx4j.TextUtils.getText;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class CommentProcessingException extends DocxStamperException {
 

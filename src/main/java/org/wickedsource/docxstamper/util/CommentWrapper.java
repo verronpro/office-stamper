@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.2
  */
 public class CommentWrapper {
 

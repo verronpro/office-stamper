@@ -25,6 +25,7 @@ import java.util.Optional;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class PlaceholderReplacer {
     private static final Logger log = LoggerFactory.getLogger(

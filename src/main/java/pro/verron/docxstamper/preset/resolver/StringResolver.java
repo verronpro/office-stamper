@@ -12,6 +12,9 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * resolve different types of objects to strings.
  *
  * @param <T> the type of the object to resolve
+ * @author Joseph Verron
+ * @version ${version}
+ * @since 1.6.7
  */
 public abstract class StringResolver<T>
         implements ObjectResolver {
@@ -49,9 +52,7 @@ public abstract class StringResolver<T>
      */
     @Override
     public final R resolve(
-            WordprocessingMLPackage document,
-            String placeholder,
-            Object object
+            WordprocessingMLPackage document, String placeholder, Object object
     ) {
         return RunUtil.create(resolve(type.cast(object)));
     }

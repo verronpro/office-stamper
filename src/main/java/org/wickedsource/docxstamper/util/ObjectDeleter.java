@@ -13,6 +13,7 @@ import java.util.Iterator;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class ObjectDeleter {
 	private static final Logger log = LoggerFactory.getLogger(ObjectDeleter.class);

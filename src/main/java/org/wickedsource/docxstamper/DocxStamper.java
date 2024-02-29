@@ -30,6 +30,7 @@ import java.util.function.Function;
  * @param <T> The type of the context that can be stamped
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 	private final List<PreProcessor> preprocessors;

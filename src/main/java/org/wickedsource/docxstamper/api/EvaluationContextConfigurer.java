@@ -11,6 +11,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.13
  */
 public interface EvaluationContextConfigurer {
     /**

@@ -5,6 +5,7 @@ package org.wickedsource.docxstamper.api;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.3
  */
 public class UnresolvedExpressionException extends DocxStamperException {
     /**

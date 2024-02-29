@@ -39,6 +39,7 @@ import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImpor
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.3.0
  */
 public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRepeatDocPartProcessor {
     private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();

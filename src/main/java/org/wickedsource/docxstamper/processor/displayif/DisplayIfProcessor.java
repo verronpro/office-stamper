@@ -19,6 +19,7 @@ import java.util.List;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class DisplayIfProcessor extends BaseCommentProcessor implements IDisplayIfProcessor {
 

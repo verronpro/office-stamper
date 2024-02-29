@@ -21,6 +21,7 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * @param <T> the type of the object this type resolver is responsible for.
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  *
  * @deprecated as of version 1.6.7, replaced by {@link ObjectResolver}.
  * The new resolver is more versatile, requires less reflection mechanism,

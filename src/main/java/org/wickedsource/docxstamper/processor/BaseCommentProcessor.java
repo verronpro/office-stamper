@@ -15,6 +15,7 @@ import java.util.Objects;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public abstract class BaseCommentProcessor implements ICommentProcessor {
 

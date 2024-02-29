@@ -19,6 +19,7 @@ import java.util.stream.Stream;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.4.7
  */
 public class DocumentUtil {
 	private DocumentUtil() {

@@ -11,8 +11,8 @@ import pro.verron.docxstamper.preset.resolver.Resolvers;
  * It was capable of mapping all objects to their String value.
  *
  * @author Joseph Verron
- *
  * @version ${version}
+ * @since 1.6.7
  *
  * @deprecated as of version 1.6.7, use
  * {@link Resolvers#fallback()} instead.

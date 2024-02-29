@@ -11,6 +11,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class ExpressionResolver {
     private static final Matcher DEFAULT_MATCHER = new Matcher("${", "}");

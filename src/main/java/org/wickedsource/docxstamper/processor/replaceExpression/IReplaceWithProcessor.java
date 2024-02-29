@@ -6,6 +6,7 @@ package org.wickedsource.docxstamper.processor.replaceExpression;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.8
  */
 public interface IReplaceWithProcessor {
 

@@ -19,6 +19,7 @@ import static java.lang.String.format;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.7
  */
 public class ReplaceWithProcessor
 		extends BaseCommentProcessor

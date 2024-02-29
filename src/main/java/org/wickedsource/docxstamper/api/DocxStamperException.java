@@ -6,6 +6,7 @@ package org.wickedsource.docxstamper.api;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class DocxStamperException extends RuntimeException {
 

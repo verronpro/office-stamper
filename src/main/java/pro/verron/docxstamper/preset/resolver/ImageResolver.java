@@ -22,6 +22,7 @@ import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstract
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.7
  */
 public class ImageResolver
         implements ObjectResolver {

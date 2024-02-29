@@ -20,6 +20,7 @@ import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
 
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.13
  */
 public class NoOpEvaluationContextConfigurer implements EvaluationContextConfigurer {
     /**

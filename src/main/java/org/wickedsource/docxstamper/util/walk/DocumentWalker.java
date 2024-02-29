@@ -29,6 +29,7 @@ import org.docx4j.wml.R.CommentReference;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public abstract class DocumentWalker {
 

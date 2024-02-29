@@ -12,6 +12,7 @@ import org.wickedsource.docxstamper.util.DocumentUtil;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public abstract class CoordinatesWalker {
 	/**

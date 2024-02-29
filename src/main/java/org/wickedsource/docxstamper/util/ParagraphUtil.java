@@ -11,6 +11,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class ParagraphUtil {
 

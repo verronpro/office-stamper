@@ -13,6 +13,7 @@ import java.util.Date;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.7
  */
 public final class DateResolver
         extends StringResolver<Date> {

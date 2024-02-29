@@ -2,6 +2,10 @@ package org.wickedsource.docxstamper.el;
 
 /**
  * Represents a Matcher that checks if an expression starts with a specified prefix and ends with a specified suffix.
+ *
+ * @author Joseph Verron
+ * @version ${version}
+ * @since 1.6.5
  */
 public record Matcher(String prefix, String suffix) {
     boolean match(String expression) {

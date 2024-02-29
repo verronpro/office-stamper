@@ -12,6 +12,7 @@ import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.4.7
  */
 public class ParagraphResolverDocumentWalker extends BaseDocumentWalker {
 	private final Object expressionContext;

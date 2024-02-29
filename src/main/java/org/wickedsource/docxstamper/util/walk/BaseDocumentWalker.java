@@ -10,6 +10,7 @@ import org.docx4j.wml.*;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public abstract class BaseDocumentWalker extends DocumentWalker {
 

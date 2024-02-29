@@ -16,6 +16,7 @@ import java.util.List;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public interface IParagraphRepeatProcessor {
 

@@ -32,6 +32,7 @@ import static org.wickedsource.docxstamper.el.ExpressionUtil.findProcessorExpres
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class CommentProcessorRegistry {
     private final Logger logger = LoggerFactory.getLogger(

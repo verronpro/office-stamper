@@ -27,6 +27,7 @@ import static org.docx4j.XmlUtils.unwrap;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.0.0
  */
 public class CommentUtil {
     private static final Logger logger = LoggerFactory.getLogger(CommentUtil.class);

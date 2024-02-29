@@ -10,6 +10,7 @@ import static java.util.Collections.singletonList;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.2
  */
 public class StampTable {
     private final List<String> headers;

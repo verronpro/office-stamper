@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * A registry for object resolvers. It allows registering and resolving object resolvers based on certain criteria.
  *
+ * @author Joseph Verron
  * @version ${version}
  * @since 1.6.7
  */

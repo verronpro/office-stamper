@@ -18,7 +18,9 @@ import java.util.List;
  * Processor for the {@link IDisplayIfProcessor} comment.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 public class DisplayIfProcessor extends BaseCommentProcessor implements IDisplayIfProcessor {
 

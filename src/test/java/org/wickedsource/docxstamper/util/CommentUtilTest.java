@@ -12,6 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
+/**
+ * @author Joseph Verron
+ * @author Tom Hombergs
+ */
 @DisplayName("Utilities - Comments")
 class CommentUtilTest {
 	@Test

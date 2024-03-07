@@ -6,8 +6,6 @@ import org.springframework.expression.TypedValue;
 import org.springframework.lang.NonNull;
 
 /**
- * <p>SimpleGetter class.</p>
- *
  * @author Joseph Verron
  * @version ${version}
  * @since 1.6.6

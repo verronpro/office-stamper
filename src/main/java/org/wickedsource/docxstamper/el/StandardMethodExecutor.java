@@ -14,6 +14,7 @@ import java.util.function.Function;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.2
  */
 public class StandardMethodExecutor implements MethodExecutor {
 

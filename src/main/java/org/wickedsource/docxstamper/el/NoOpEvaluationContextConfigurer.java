@@ -19,7 +19,9 @@ import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
  * contain any dangerous injections.
 
  * @author Joseph Verron
+ * @author Mario Siegenthaler
  * @version ${version}
+ * @since 1.0.13
  */
 public class NoOpEvaluationContextConfigurer implements EvaluationContextConfigurer {
     /**

@@ -1146,9 +1146,9 @@ public class DefaultTests {
                 getResource(Path.of("CustomCommentProcessorTest.docx")),
                 """     
                         Custom CommentProcessor Test
-                        Visited.
+                        Visited
                         This paragraph is untouched.
-                        Visited.""");
+                        Visited""");
     }
 
     private static Arguments nullPointerResolutionTest_testWithCustomSpel() {

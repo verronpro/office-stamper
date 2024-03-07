@@ -14,8 +14,13 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * @param resolver  the resolver to resolve objects of the given type.
  * @param nullProof a boolean value indicating whether the resolver is null-proof.
  * @param <T>       the type of the object this TypeResolver is responsible for resolving.
- * @deprecated This class is deprecated since version 1.6.7 and will be removed in a future release. Use the
- * {@link ObjectResolver} interface instead.
+ * @deprecated This class's been deprecated since version 1.6.7
+ * and will be removed in a future release.
+ * Use the {@link ObjectResolver} interface instead.
+ *
+ * @author Joseph Verron
+ * @version ${version}
+ * @since 1.6.7
  */
 @Deprecated(since = "1.6.7", forRemoval = true)
 public record TypeResolver<T>(

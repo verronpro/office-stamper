@@ -5,10 +5,15 @@ import org.docx4j.wml.R;
 /**
  * Represents a run (i.e., a text fragment) in a paragraph. The run is indexed relative to the containing paragraph
  * and also relative to the containing document.
+ *
  * @param startIndex    the start index of the run relative to the containing paragraph.
- * @param endIndex       the end index of the run relative to the containing paragraph.
- * @param indexInParent  the index of the run relative to the containing document.
- * @param run            the run itself.
+ * @param endIndex      the end index of the run relative to the containing paragraph.
+ * @param indexInParent the index of the run relative to the containing document.
+ * @param run           the run itself.
+ * @author Joseph Verron
+ * @author Tom Hombergs
+ * @version ${version}
+ * @since 1.0.0
  */
 public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run) {
 
@@ -29,8 +34,8 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
      */
     public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
         return ((startIndex >= globalStartIndex) && (startIndex <= globalEndIndex))
-                || ((endIndex >= globalStartIndex) && (endIndex <= globalEndIndex))
-                || ((startIndex <= globalStartIndex) && (endIndex >= globalEndIndex));
+               || ((endIndex >= globalStartIndex) && (endIndex <= globalEndIndex))
+               || ((startIndex <= globalStartIndex) && (endIndex >= globalEndIndex));
 
     }
 
@@ -41,7 +46,11 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
      * @param globalEndIndex   the global index (meaning the index relative to multiple aggregated runs) at which to end the replacement.
      * @param replacement      the string to replace the substring at the specified global index.
      */
-    public void replace(int globalStartIndex, int globalEndIndex, String replacement) {
+    public void replace(
+            int globalStartIndex,
+            int globalEndIndex,
+            String replacement
+    ) {
         int localStartIndex = globalIndexToLocalIndex(globalStartIndex);
         int localEndIndex = globalIndexToLocalIndex(globalEndIndex);
         String text = RunUtil.getText(run);
@@ -49,7 +58,8 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
         text += replacement;
         String runText = RunUtil.getText(run);
         if (!runText.isEmpty()) {
-            text += RunUtil.getText(run).substring(localEndIndex + 1);
+            text += RunUtil.getText(run)
+                    .substring(localEndIndex + 1);
         }
         RunUtil.setText(run, text);
     }
@@ -58,7 +68,8 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
         if (globalIndex < startIndex) {
             return 0;
         } else if (globalIndex > endIndex) {
-            return RunUtil.getText(run).length() - 1;
+            return RunUtil.getText(run)
+                           .length() - 1;
         } else {
             return globalIndex - startIndex;
         }
@@ -83,6 +94,11 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
 
     @Override
     public String toString() {
-        return String.format("[IndexedRun: startIndex=%d; endIndex=%d; indexInParent=%d text=%s}", startIndex, endIndex, indexInParent, RunUtil.getText(run));
+        return String.format(
+                "[IndexedRun: startIndex=%d; endIndex=%d; indexInParent=%d text=%s}",
+                startIndex,
+                endIndex,
+                indexInParent,
+                RunUtil.getText(run));
     }
 }

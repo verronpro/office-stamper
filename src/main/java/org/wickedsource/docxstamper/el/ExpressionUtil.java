@@ -14,7 +14,9 @@ import static java.util.Collections.emptyList;
  * Utility class for working with expressions in a text.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 public class ExpressionUtil {
 	private static final Pattern VARIABLE_EXPRESSION_PATTERN = Pattern.compile("\\$\\{(.*?)}");

@@ -43,11 +43,11 @@ public final class TestDocxStamper<T> {
 	 * again to ensure that changes in the DOCX4J
 	 * object structure were really transported into the XML of the .docx file.
 	 *
-	 * @param template a {@link java.io.InputStream} object
+	 * @param template a {@link InputStream} object
 	 * @param context a T object
-	 * @return a {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} object
-	 * @throws java.io.IOException if any.
-	 * @throws org.docx4j.openpackaging.exceptions.Docx4JException if any.
+	 * @return a {@link WordprocessingMLPackage} object
+	 * @throws IOException if any.
+	 * @throws Docx4JException if any.
 	 * @since 1.6.6
 	 */
 	public WordprocessingMLPackage stampAndLoad(InputStream template, T context) throws IOException, Docx4JException {
@@ -60,7 +60,7 @@ public final class TestDocxStamper<T> {
 	/**
 	 * <p>stampAndLoadAndExtract.</p>
 	 *
-	 * @param template a {@link java.io.InputStream} object
+	 * @param template a {@link InputStream} object
 	 * @param context a T object
 	 * @return a {@link java.util.List} object
 	 * @since 1.6.6
@@ -97,7 +97,7 @@ public final class TestDocxStamper<T> {
 	/**
 	 * <p>stampAndLoadAndExtract.</p>
 	 *
-	 * @param template a {@link java.io.InputStream} object
+	 * @param template a {@link InputStream} object
 	 * @param context a T object
 	 * @param clazz a {@link java.lang.Class} object
 	 * @param <C> a C class

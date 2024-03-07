@@ -11,7 +11,9 @@ import org.wickedsource.docxstamper.util.RunUtil;
  *
  * @param <S> the type which to map into a run of text.
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 @Deprecated(since = "1.6.7", forRemoval = true)
 public abstract class AbstractToTextResolver<S> implements ITypeResolver<S> {

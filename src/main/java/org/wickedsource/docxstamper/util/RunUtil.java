@@ -12,7 +12,9 @@ import java.util.Objects;
  * Utility class to handle runs.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 public class RunUtil {
 

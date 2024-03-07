@@ -24,7 +24,9 @@ import java.util.Optional;
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 public class PlaceholderReplacer {
     private static final Logger log = LoggerFactory.getLogger(

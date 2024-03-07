@@ -1,5 +1,8 @@
 package org.wickedsource.docxstamper.el;
 
+
+import org.springframework.lang.NonNull;
+
 /**
  * Represents a Matcher that checks if an expression starts with a specified prefix and ends with a specified suffix.
  *
@@ -7,16 +10,14 @@ package org.wickedsource.docxstamper.el;
  * @version ${version}
  * @since 1.6.5
  */
-public record Matcher(String prefix, String suffix) {
-    boolean match(String expression) {
-        assertNotNull(expression);
-        return expression.startsWith(prefix())
-               && expression.endsWith(suffix());
-    }
-
-    private static void assertNotNull(String expression) {
-        if (expression == null)
-            throw new IllegalArgumentException("Cannot strip NULL expression!");
+public record Matcher(
+        @NonNull String prefix,
+        @NonNull String suffix
+) {
+    @NonNull
+    boolean match(@NonNull String expression) {
+        return expression.startsWith(prefix)
+               && expression.endsWith(suffix);
     }
 
     /**
@@ -24,8 +25,8 @@ public record Matcher(String prefix, String suffix) {
      * @param expression the expression to strip.
      * @return the stripped expression.
      */
-    public String strip(String expression) {
-        assertNotNull(expression);
+    @NonNull
+    public String strip(@NonNull String expression) {
         int start = prefix.length();
         int end = expression.length() - suffix.length();
         return expression.substring(start, end);

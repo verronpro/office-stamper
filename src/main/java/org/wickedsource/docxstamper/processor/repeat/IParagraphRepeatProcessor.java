@@ -15,6 +15,7 @@ import java.util.List;
  * within each copy against the respective object.
  *
  * @author Joseph Verron
+ * @author Romain Lamarche
  * @version ${version}
  * @since 1.0.0
  */

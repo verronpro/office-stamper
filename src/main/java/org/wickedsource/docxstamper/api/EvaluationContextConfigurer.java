@@ -10,6 +10,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * This can, for example, be used to add custom {@link PropertyAccessor}s and {@link MethodResolver}s.
  *
  * @author Joseph Verron
+ * @author Mario Siegenthaler
  * @version ${version}
  * @since 1.0.13
  */

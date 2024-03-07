@@ -9,6 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
 import static pro.verron.docxstamper.utils.context.Contexts.names;
 
+/**
+ * @author Joseph Verron
+ * @author Tom Hombergs
+ */
 class MultiStampTest {
     @Test
     void expressionsAreResolvedOnMultiStamp() {

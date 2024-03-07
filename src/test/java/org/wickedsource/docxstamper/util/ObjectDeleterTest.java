@@ -19,6 +19,10 @@ import static org.wickedsource.docxstamper.DefaultTests.getResource;
 import static org.wickedsource.docxstamper.util.DocumentUtil.getParagraphsFromObject;
 import static org.wickedsource.docxstamper.util.DocumentUtil.getTableFromObject;
 
+/**
+ * @author Joseph Verron
+ * @author Tom Hombergs
+ */
 @DisplayName("Utilities - Deletion tools")
 class ObjectDeleterTest {
 

@@ -11,6 +11,7 @@ import org.docx4j.wml.R;
  * @param indexInParent the index of the run relative to the containing document.
  * @param run           the run itself.
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.0
  */

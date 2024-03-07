@@ -14,6 +14,10 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
+/**
+ * @author Joseph Verron
+ * @author Tom Hombergs
+ */
 @DisplayName("Utilities - Docx Run Methods")
 class RunUtilTest {
 

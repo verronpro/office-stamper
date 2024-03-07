@@ -10,6 +10,7 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * {@link ObjectResolver} interface
  * that resolves null objects by creating a run with a default text value.
  *
+ * @author Joseph Verron
  * @version ${version}
  * @since 1.6.7
  */

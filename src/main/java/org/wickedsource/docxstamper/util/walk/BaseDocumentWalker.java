@@ -9,7 +9,9 @@ import org.docx4j.wml.*;
  * only has to implement the methods that are of interest.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 public abstract class BaseDocumentWalker extends DocumentWalker {
 

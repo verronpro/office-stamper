@@ -13,6 +13,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
+/**
+ * @author Joseph Verron
+ */
 class NullPointerResolutionTest {
     @Test
     void nullPointerResolutionTest_testThrowingCase() throws IOException {

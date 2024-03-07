@@ -12,7 +12,9 @@ import java.util.Iterator;
  * Utility class for deleting objects from a {@link Document}.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 public class ObjectDeleter {
 	private static final Logger log = LoggerFactory.getLogger(ObjectDeleter.class);

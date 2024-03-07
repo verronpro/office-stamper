@@ -10,6 +10,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
+/**
+ * @author Joseph Verron
+ * @author Thomas Oster
+ */
 class ExpressionReplacementInTextBoxesTest {
 	@Test
     void expressionReplacementInTextBoxesTest() {

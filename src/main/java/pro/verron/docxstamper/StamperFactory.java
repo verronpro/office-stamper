@@ -14,6 +14,7 @@ import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.4
  */
 public class StamperFactory {
 

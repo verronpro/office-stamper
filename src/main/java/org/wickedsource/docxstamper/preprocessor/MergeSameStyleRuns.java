@@ -18,6 +18,7 @@ import java.util.Objects;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.4
  */
 public class MergeSameStyleRuns implements PreProcessor {
 

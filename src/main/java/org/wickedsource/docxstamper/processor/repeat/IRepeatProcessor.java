@@ -6,7 +6,9 @@ import java.util.List;
  * Interface for processors that can repeat a table row.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 public interface IRepeatProcessor {
 

@@ -14,7 +14,9 @@ import java.util.Objects;
  * Base class for comment processors. The current run and paragraph are set by the {@link DocxStamper} class.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 public abstract class BaseCommentProcessor implements ICommentProcessor {
 

@@ -15,6 +15,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
+/**
+ * @author Joseph Verron
+ */
 class MultiSectionTest {
 
 	@Test

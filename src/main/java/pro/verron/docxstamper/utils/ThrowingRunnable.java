@@ -11,6 +11,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.6
  */
 public interface ThrowingRunnable
         extends Runnable {

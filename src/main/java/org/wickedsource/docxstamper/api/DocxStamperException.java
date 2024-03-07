@@ -5,7 +5,9 @@ package org.wickedsource.docxstamper.api;
  * It extends the RuntimeException class and provides additional constructors to handle different scenarios.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
+ * @since 1.0.0
  */
 public class DocxStamperException extends RuntimeException {
 

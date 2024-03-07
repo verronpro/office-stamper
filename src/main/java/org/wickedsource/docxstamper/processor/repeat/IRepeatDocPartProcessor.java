@@ -8,7 +8,9 @@ import java.util.List;
  * Within each copy of the row, all expressions are evaluated against one of the objects in the list.
  *
  * @author Joseph Verron
+ * @author Artem Medvedev
  * @version ${version}
+ * @since 1.0.0
  */
 public interface IRepeatDocPartProcessor {
 

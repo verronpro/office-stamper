@@ -16,6 +16,7 @@ import java.util.List;
  *
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.5
  */
 public class DefaultEvaluationContextConfigurer implements EvaluationContextConfigurer {
     /**

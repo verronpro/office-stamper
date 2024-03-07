@@ -38,6 +38,7 @@ import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImpor
  * main document.
  *
  * @author Joseph Verron
+ * @author Youssouf Naciri
  * @version ${version}
  * @since 1.3.0
  */

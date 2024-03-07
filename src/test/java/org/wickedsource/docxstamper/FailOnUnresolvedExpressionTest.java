@@ -12,6 +12,10 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
+/**
+ * @author Joseph Verron
+ * @author Tom Hombergs
+ */
 class FailOnUnresolvedExpressionTest {
     @Test
     void fails() throws IOException {

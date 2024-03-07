@@ -26,6 +26,7 @@ import static org.docx4j.XmlUtils.unwrap;
  * Utility class for working with comments in a DOCX document.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.0
  */

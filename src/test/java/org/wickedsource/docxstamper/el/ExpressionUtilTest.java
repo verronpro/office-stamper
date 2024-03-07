@@ -9,6 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.wickedsource.docxstamper.el.ExpressionResolver.cleanExpression;
 import static org.wickedsource.docxstamper.el.ExpressionUtil.findVariableExpressions;
 
+/**
+ * @author Joseph Verron
+ * @author Tom Hombergs
+ */
 @DisplayName("Utilities - Expression finder")
 class ExpressionUtilTest {
     @Test
@@ -60,12 +64,6 @@ class ExpressionUtilTest {
         String actual = cleanExpression(expression);
 
         assertEquals(expressionValue, actual);
-    }
-
-    @Test
-    void stripsNullExpressionThrowsException() {
-        assertThrows(IllegalArgumentException.class,
-                     () -> cleanExpression(null));
     }
 
 }

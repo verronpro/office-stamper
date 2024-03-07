@@ -25,6 +25,7 @@ import static java.util.Collections.singletonList;
  * clients.
  *
  * @author Joseph Verron
+ * @author Youssouf Naciri
  * @version ${version}
  * @since 1.2.2
  */

@@ -7,6 +7,10 @@ import org.wickedsource.docxstamper.util.RunUtil;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author Joseph Verron
+ * @author Tom Hombergs
+ */
 @DisplayName("Utilities - Indexed Run")
 class IndexedRunTest {
 

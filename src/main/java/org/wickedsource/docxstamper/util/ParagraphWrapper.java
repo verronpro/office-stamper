@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.joining;
  * {@link #getRuns()} to get the modified text or  the list of modified runs.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.8
  */

@@ -10,6 +10,7 @@ import static org.docx4j.TextUtils.getText;
  * Thrown when an error occurs while processing a comment in the docx template.
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.0
  */

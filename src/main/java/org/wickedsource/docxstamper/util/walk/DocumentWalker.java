@@ -28,6 +28,7 @@ import org.docx4j.wml.R.CommentReference;
  * </ul>
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.0
  */

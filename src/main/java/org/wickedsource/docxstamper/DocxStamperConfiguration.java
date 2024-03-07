@@ -29,6 +29,7 @@ import static java.util.stream.Collectors.toMap;
  * the {@link DocxStamper} class.
  * It provides methods to customize the behavior of the stamper.
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.3
  */

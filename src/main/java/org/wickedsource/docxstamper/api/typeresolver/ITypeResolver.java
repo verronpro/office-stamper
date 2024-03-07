@@ -20,6 +20,7 @@ import pro.verron.docxstamper.api.ObjectResolver;
  *
  * @param <T> the type of the object this type resolver is responsible for.
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.0
  *

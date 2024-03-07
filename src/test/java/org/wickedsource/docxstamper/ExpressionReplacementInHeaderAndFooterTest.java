@@ -18,6 +18,10 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.wickedsource.docxstamper.DefaultTests.getResource;
 
+/**
+ * @author Joseph Verron
+ * @author Tom Hombergs
+ */
 class ExpressionReplacementInHeaderAndFooterTest {
 	@Test
     void expressionReplacementInHeaderAndFooterTest() throws Docx4JException,

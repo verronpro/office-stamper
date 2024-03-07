@@ -18,6 +18,7 @@ import java.util.stream.Stream;
  * Utility class to retrieve elements from a document.
  *
  * @author Joseph Verron
+ * @author DallanMC
  * @version ${version}
  * @since 1.4.7
  */

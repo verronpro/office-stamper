@@ -31,6 +31,7 @@ import org.wickedsource.docxstamper.util.CommentWrapper;
  * Register your comment processor in DocxStamper by calling DocxStamperConfiguration#addCommentProcessor().</p>
  *
  * @author Joseph Verron
+ * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.0
  */

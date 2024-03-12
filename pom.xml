@@ -14,6 +14,9 @@
         This is a fork from org.wickedsource.docx-stamper
     </description>
     <url>https://github.com/verronpro/docx-stamper</url>
+    <properties>
+        <docx4j.version>11.4.9</docx4j.version>
+    </properties>
     <scm>
         <url>https://github.com/verronpro/docx-stamper</url>
         <developerConnection>scm:git:https://github.com/verronpro/docx-stamper.git</developerConnection>
@@ -286,7 +289,7 @@
         <dependency>
             <groupId>org.docx4j</groupId>
             <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-            <version>11.4.9</version>
+            <version>${docx4j.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

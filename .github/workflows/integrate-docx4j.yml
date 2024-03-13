@@ -59,4 +59,4 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - run: mvn -B -ntp test -Ddocx4j.version="${{ matrix.os }}"
+      - run: mvn -B -ntp test -Ddocx4j.version="${{ matrix.docx4j }}"

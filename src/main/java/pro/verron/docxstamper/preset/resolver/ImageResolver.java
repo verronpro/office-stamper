@@ -120,7 +120,7 @@ public class ImageResolver
     @Override
     public R resolve(
             WordprocessingMLPackage document,
-            String placeholder,
+            String expression,
             Object object
     ) {
         if (object instanceof Image image)

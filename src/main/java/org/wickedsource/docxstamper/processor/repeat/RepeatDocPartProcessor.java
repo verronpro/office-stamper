@@ -42,7 +42,9 @@ import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImpor
  * @version ${version}
  * @since 1.3.0
  */
-public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRepeatDocPartProcessor {
+public class RepeatDocPartProcessor
+        extends BaseCommentProcessor
+        implements IRepeatDocPartProcessor {
     private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
     private static final ObjectFactory objectFactory = Context.getWmlObjectFactory();
 
@@ -63,9 +65,10 @@ public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRep
     /**
      * <p>newInstance.</p>
      *
-     * @param pr                   the placeholder replacer
+     * @param pr                   the placeholderReplacer
      * @param stamper              the stamper
-     * @param nullReplacementValue the value to use when the placeholder is null
+     * @param nullReplacementValue the value to use when the expression
+     *                             resolves to null
      * @return a new instance of this processor
      */
     public static ICommentProcessor newInstance(
@@ -81,7 +84,7 @@ public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRep
     /**
      * <p>newInstance.</p>
      *
-     * @param pr      the placeholder replacer
+     * @param pr      the placeholderReplacer
      * @param stamper the stamper
      * @return a new instance of this processor
      */
@@ -216,7 +219,9 @@ public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRep
         return subDocuments;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void commitChanges(WordprocessingMLPackage document) {
         for (Entry<CommentWrapper, List<Object>> entry : this.contexts.entrySet()) {
@@ -292,7 +297,9 @@ public class RepeatDocPartProcessor extends BaseCommentProcessor implements IRep
         stamper.stamp(template, context, outputStream);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void reset() {
         contexts.clear();

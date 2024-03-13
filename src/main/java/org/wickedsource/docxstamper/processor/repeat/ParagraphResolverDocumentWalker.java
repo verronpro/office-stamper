@@ -7,8 +7,9 @@ import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 
 /**
- * Walks through a document and replaces placeholders with values from the given expression context.
- * This walker only replaces placeholders in paragraphs, not in tables.
+ * Walks through a document and replaces expressions with values from the given
+ * expression context.
+ * This walker only replaces expressions in paragraphs, not in tables.
  *
  * @author Joseph Verron
  * @version ${version}
@@ -25,7 +26,7 @@ public class ParagraphResolverDocumentWalker extends BaseDocumentWalker {
 	 * @param rowClone          The row to start with
 	 * @param expressionContext The context of the expressions to resolve
 	 * @param document          The document to walk through
-	 * @param replacer          The placeholder replacer to use for resolving
+	 * @param replacer          The placeholderReplacer to use for resolving
 	 */
 	public ParagraphResolverDocumentWalker(Tr rowClone, Object expressionContext, WordprocessingMLPackage document, PlaceholderReplacer replacer) {
 		super(rowClone);

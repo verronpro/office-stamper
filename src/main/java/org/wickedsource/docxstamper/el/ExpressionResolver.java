@@ -4,6 +4,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import pro.verron.docxstamper.core.Expression;
 
 /**
  * Resolves expressions against a given context object. Expressions can be either SpEL expressions or simple property
@@ -15,8 +16,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * @since 1.0.0
  */
 public class ExpressionResolver {
-    private static final Matcher DEFAULT_MATCHER = new Matcher("${", "}");
-    private static final Matcher SECONDARY_MATCHER = new Matcher("#{", "}");
+
     private final ExpressionParser parser;
     private final StandardEvaluationContext evaluationContext;
 
@@ -35,30 +35,15 @@ public class ExpressionResolver {
     }
 
     /**
-     * Cleans the given expression by stripping the prefix and suffix if they match any of the configured matchers.
+     * Resolves the given expression against the provided context object.
      *
-     * @param expression the expression to clean.
-     * @return the cleaned expression.
+     * @param expression   the expression to resolve.
+     * @param contextRoot  the context object against which to resolve the expression.
+     * @return the resolved value of the expression.
      */
-    public static String cleanExpression(String expression) {
-        if (DEFAULT_MATCHER.match(expression))
-            return DEFAULT_MATCHER.strip(expression);
-        if (SECONDARY_MATCHER.match(expression))
-            return SECONDARY_MATCHER.strip(expression);
-        return expression;
-    }
-
-    /**
-     * Resolves the given expression against the given context object.
-     *
-     * @param expression  the expression to resolve.
-     * @param contextRoot the context object against which to resolve the expression.
-     * @return the result of the expression evaluation.
-     */
-    public Object resolveExpression(String expression, Object contextRoot) {
-        expression = cleanExpression(expression);
+    public Object resolve(Expression expression, Object contextRoot) {
         evaluationContext.setRootObject(contextRoot);
-        return parser.parseExpression(expression)
+        return parser.parseExpression(expression.inner())
                 .getValue(evaluationContext);
     }
 }

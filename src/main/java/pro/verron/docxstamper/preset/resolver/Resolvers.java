@@ -52,7 +52,7 @@ public class Resolvers {
 
     /**
      * Returns an instance of {@link ObjectResolver} that resolves null objects
-     * by not replacing their placeholder string.
+     * by not replacing their expression.
      *
      * @return An instance of {@link ObjectResolver}
      */

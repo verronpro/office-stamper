@@ -14,13 +14,12 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * @param resolver  the resolver to resolve objects of the given type.
  * @param nullProof a boolean value indicating whether the resolver is null-proof.
  * @param <T>       the type of the object this TypeResolver is responsible for resolving.
- * @deprecated This class's been deprecated since version 1.6.7
- * and will be removed in a future release.
- * Use the {@link ObjectResolver} interface instead.
- *
  * @author Joseph Verron
  * @version ${version}
  * @since 1.6.7
+ * @deprecated This class's been deprecated since version 1.6.7
+ * and will be removed in a future release.
+ * Use the {@link ObjectResolver} interface instead.
  */
 @Deprecated(since = "1.6.7", forRemoval = true)
 public record TypeResolver<T>(
@@ -59,16 +58,17 @@ public record TypeResolver<T>(
     /**
      * Resolves an object of a specified type to an object of the DOCX4J API that can be placed in a .docx document.
      *
-     * @param document    the WordprocessingMLPackage object representing the .docx document
-     * @param placeholder the placeholder string to be replaced in the .docx document
-     * @param object      the object to be resolved
-     * @return an object of the DOCX4J API that replaces the placeholder in the .docx document
+     * @param document   the WordprocessingMLPackage object representing the .docx document
+     * @param expression the expression to be replaced in the .docx document
+     * @param object     the object to be resolved
+     * @return an object of the DOCX4J API that replaces the expression in the
+     * .docx document
      * @throws DocxStamperException if the object is not an instance of the specified type
      */
     @Override
     public R resolve(
             WordprocessingMLPackage document,
-            String placeholder,
+            String expression,
             Object object
     ) {
         if (type.isInstance(object))

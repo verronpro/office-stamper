@@ -3,6 +3,7 @@ package org.wickedsource.docxstamper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.lang.NonNull;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
 import org.wickedsource.docxstamper.api.preprocessor.PreProcessor;
@@ -39,7 +40,7 @@ public class DocxStamperConfiguration {
     private final List<ObjectResolver> resolvers = new ArrayList<>();
     private final Map<Class<?>, Object> expressionFunctions = new HashMap<>();
     private final List<PreProcessor> preprocessors = new ArrayList<>();
-    private String lineBreakPlaceholder;
+    private String lineBreakPlaceholder = "\n";
     private EvaluationContextConfigurer evaluationContextConfigurer = new DefaultEvaluationContextConfigurer();
     private boolean failOnUnresolvedExpression = true;
     private boolean leaveEmptyOnExpressionError = false;
@@ -310,7 +311,7 @@ public class DocxStamperConfiguration {
      * @param lineBreakPlaceholder the String that should be replaced with line breaks during stamping.
      * @return the configuration object for chaining.
      */
-    public DocxStamperConfiguration setLineBreakPlaceholder(String lineBreakPlaceholder) {
+    public DocxStamperConfiguration setLineBreakPlaceholder(@NonNull String lineBreakPlaceholder) {
         this.lineBreakPlaceholder = lineBreakPlaceholder;
         return this;
     }

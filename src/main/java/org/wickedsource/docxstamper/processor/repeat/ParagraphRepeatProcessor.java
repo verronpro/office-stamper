@@ -48,7 +48,7 @@ public class ParagraphRepeatProcessor extends BaseCommentProcessor implements IP
 	/**
 	 * <p>newInstance.</p>
 	 *
-	 * @param pr              replaces placeholders with values
+	 * @param pr              replaces expressions with values
 	 * @param nullReplacement replaces null values
 	 * @return a new instance of ParagraphRepeatProcessor
 	 */
@@ -59,7 +59,7 @@ public class ParagraphRepeatProcessor extends BaseCommentProcessor implements IP
 	/**
 	 * <p>newInstance.</p>
 	 *
-	 * @param placeholderReplacer replaces placeholders with values
+	 * @param placeholderReplacer replaces expressions with values
 	 * @return a new instance of ParagraphRepeatProcessor
 	 */
 	public static ICommentProcessor newInstance(PlaceholderReplacer placeholderReplacer) {

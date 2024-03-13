@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import pro.verron.docxstamper.api.ObjectResolver;
+import pro.verron.docxstamper.core.Expression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,24 +34,24 @@ public class ObjectResolverRegistry {
     }
 
     /**
-     * Resolves the placeholder in the given document with the provided object.
+     * Resolves the expression in the given document with the provided object.
      *
-     * @param document    the WordprocessingMLPackage document in which to resolve the placeholder
-     * @param placeholder the placeholder value to be replaced
-     * @param object      the object to be used for resolving the placeholder
-     * @return the resolved value for the placeholder
+     * @param document   the WordprocessingMLPackage document in which to resolve the placeholder
+     * @param expression the expression value to be replaced
+     * @param object     the object to be used for resolving the expression
+     * @return the resolved value for the expression
      * @throws DocxStamperException if no resolver is found for the object
      */
     public R resolve(
             WordprocessingMLPackage document,
-            String placeholder,
+            Expression expression,
             Object object
     ) {
         for (ObjectResolver resolver : resolvers)
             if (resolver.canResolve(object)) {
-                R resolution = resolver.resolve(document, placeholder, object);
+                R resolution = resolver.resolve(document, expression, object);
                 var msg = "Expression '{}' replaced by '{}' with resolver {}";
-                log.debug(msg, placeholder, resolution, resolver);
+                log.debug(msg, expression, resolution, resolver);
                 return resolution;
             }
         String message = "No resolver found for %s".formatted(object);

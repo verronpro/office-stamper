@@ -35,7 +35,7 @@ public class DisplayIfProcessor extends BaseCommentProcessor implements IDisplay
 	/**
 	 * Creates a new DisplayIfProcessor instance.
 	 *
-	 * @param pr the {@link PlaceholderReplacer} to use for replacing placeholders.
+	 * @param pr the {@link PlaceholderReplacer} used for replacing expressions.
 	 * @return a new DisplayIfProcessor instance.
 	 */
 	public static ICommentProcessor newInstance(PlaceholderReplacer pr) {

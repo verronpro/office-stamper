@@ -45,14 +45,16 @@ public abstract class StringResolver<T>
     /**
      * Resolves an object to a string and creates a new run with the resolved string as content.
      *
-     * @param document    the WordprocessingMLPackage document
-     * @param placeholder the placeholder string
-     * @param object      the object to be resolved
+     * @param document   the WordprocessingMLPackage document
+     * @param expression the expression string
+     * @param object     the object to be resolved
      * @return the newly created run with the resolved string as content
      */
     @Override
     public final R resolve(
-            WordprocessingMLPackage document, String placeholder, Object object
+            WordprocessingMLPackage document,
+            String expression,
+            Object object
     ) {
         return RunUtil.create(resolve(type.cast(object)));
     }

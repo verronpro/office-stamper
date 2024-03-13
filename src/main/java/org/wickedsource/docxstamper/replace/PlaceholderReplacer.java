@@ -15,6 +15,7 @@ import org.wickedsource.docxstamper.replace.typeresolver.ObjectResolverRegistry;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
+import pro.verron.docxstamper.core.Expression;
 
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public class PlaceholderReplacer {
     private final boolean leaveEmptyOnExpressionError;
     private final boolean replaceUnresolvedExpressions;
     private final String unresolvedExpressionsDefaultValue;
-    private final String lineBreakPlaceholder;
+    private final Expression lineBreakPlaceholder;
 
     /**
      * <p>Constructor for PlaceholderReplacer.</p>
@@ -53,7 +54,8 @@ public class PlaceholderReplacer {
      *                                          that cannot be resolved will
      *                                          be by replaced by an
      *                                          empty string.
-     * @param lineBreakPlaceholder              if set to a non-null value, all occurrences of this placeholder will be
+     * @param lineBreakExpression               if set to a non-null value,
+     *                                          all occurrences of this placeholder will be
      *                                          replaced with a line break.
      */
     public PlaceholderReplacer(
@@ -63,7 +65,7 @@ public class PlaceholderReplacer {
             boolean replaceUnresolvedExpressions,
             String unresolvedExpressionsDefaultValue,
             boolean leaveEmptyOnExpressionError,
-            String lineBreakPlaceholder
+            Expression lineBreakExpression
     ) {
         this.registry = registry;
         this.resolver = resolver;
@@ -71,7 +73,7 @@ public class PlaceholderReplacer {
         this.replaceUnresolvedExpressions = replaceUnresolvedExpressions;
         this.unresolvedExpressionsDefaultValue = unresolvedExpressionsDefaultValue;
         this.leaveEmptyOnExpressionError = leaveEmptyOnExpressionError;
-        this.lineBreakPlaceholder = lineBreakPlaceholder;
+        this.lineBreakPlaceholder = lineBreakExpression;
     }
 
     /**
@@ -108,33 +110,32 @@ public class PlaceholderReplacer {
             WordprocessingMLPackage document
     ) {
         var paragraphWrapper = new ParagraphWrapper(p);
-        var placeholders = findVariableExpressions(paragraphWrapper.getText());
-        for (var placeholder : placeholders) {
+        var expressions = findVariableExpressions(paragraphWrapper.getText());
+        for (var expression : expressions) {
             try {
-                var resolution = resolver.resolveExpression(placeholder,
-                                                            context);
+                var resolution = resolver.resolve(expression, context);
                 var replacement = registry.resolve(document,
-                                                   placeholder,
+                                                   expression,
                                                    resolution);
-                replace(paragraphWrapper, placeholder, replacement);
+                replace(paragraphWrapper, expression, replacement);
             } catch (SpelEvaluationException | SpelParseException e) {
                 if (failOnUnresolvedExpression) {
                     String message = "Expression %s could not be resolved against context of type %s"
-                            .formatted(placeholder,
+                            .formatted(expression,
                                        context.getClass());
                     throw new DocxStamperException(message, e);
                 } else {
                     log.warn(
                             "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log level to TRACE to view Stacktrace.",
-                            placeholder,
+                            expression,
                             context.getClass(),
                             e.getMessage());
                     log.trace("Reason for skipping expression:", e);
                     if (leaveEmptyOnExpressionError) {
-                        replace(paragraphWrapper, placeholder, "");
+                        replace(paragraphWrapper, expression, "");
                     } else if (replaceUnresolvedExpressions()) {
                         replace(paragraphWrapper,
-                                placeholder,
+                                expression,
                                 unresolvedExpressionsDefaultValue());
                     }
                 }
@@ -147,10 +148,10 @@ public class PlaceholderReplacer {
 
     private void replace(
             ParagraphWrapper p,
-            String placeholder,
+            Expression expression,
             R replacementRun
     ) {
-        p.replace(placeholder,
+        p.replace(expression,
                   replacementRun == null ? RunUtil.create("") : replacementRun);
     }
 
@@ -158,19 +159,19 @@ public class PlaceholderReplacer {
      * Replaces expressions in the given paragraph and replaces them with the values provided by the expression resolver.
      *
      * @param p                 the paragraph in which to replace expressions.
-     * @param placeholder       the placeholder to replace.
-     * @param replacementObject the object to replace the placeholder with.
+     * @param expression        the expression to replace.
+     * @param replacementObject the object to replace the expression with.
      */
     public void replace(
             ParagraphWrapper p,
-            String placeholder,
+            Expression expression,
             String replacementObject
     ) {
         Optional.ofNullable(replacementObject)
                 .map(replacementStr -> RunUtil.create(replacementStr,
                                                       p.getParagraph()))
                 .ifPresent(replacementRun -> replace(p,
-                                                     placeholder,
+                                                     expression,
                                                      replacementRun));
     }
 
@@ -182,7 +183,7 @@ public class PlaceholderReplacer {
         return unresolvedExpressionsDefaultValue;
     }
 
-    private String lineBreakPlaceholder() {
+    private Expression lineBreakPlaceholder() {
         return lineBreakPlaceholder;
     }
 
@@ -191,7 +192,7 @@ public class PlaceholderReplacer {
                 .createBr();
         R run = RunUtil.create(lineBreak);
         while (paragraphWrapper.getText()
-                .contains(lineBreakPlaceholder())) {
+                .contains(lineBreakPlaceholder().inner())) {
             replace(paragraphWrapper, lineBreakPlaceholder(), run);
         }
     }

@@ -21,7 +21,7 @@ import java.util.Objects;
 public abstract class BaseCommentProcessor implements ICommentProcessor {
 
 	/**
-	 * PlaceholderReplacer used to replace placeholders in the comment text.
+	 * PlaceholderReplacer used to replace expressions in the comment text.
 	 */
 	protected final PlaceholderReplacer placeholderReplacer;
 

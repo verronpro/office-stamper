@@ -7,7 +7,8 @@ import pro.verron.docxstamper.api.ObjectResolver;
 /**
  * <p>
  * A type resolver is responsible for mapping an object of a certain Java class to an object of the DOCX4J api that
- * can be put into the .docx document. Type resolvers are used to replace placeholders within the .docx template.
+ * can be put into the .docx document. Type resolvers are used to replace
+ * expressions within the .docx template.
  * </p>
  * <p>
  * Example: if an expression returns a Date object as result, this date object is passed to a DateResolver which
@@ -23,7 +24,6 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.0
- *
  * @deprecated as of version 1.6.7, replaced by {@link ObjectResolver}.
  * The new resolver is more versatile, requires less reflection mechanism,
  * and simplifies the internal workings of the docx-stamper project.
@@ -31,13 +31,11 @@ import pro.verron.docxstamper.api.ObjectResolver;
 @Deprecated(since = "1.6.7", forRemoval = true)
 public interface ITypeResolver<T> {
     /**
-     * This method is called when a placeholder in the .docx template is to
-     * be replaced by the result of an expression that
-     * was found in the .docx template. It creates an object of the DOCX4J api that is put in the place of the found
-     * expression.
+     * This method is called when an expression is found in the .docx template.
+     * It creates an object of the DOCX4J api in the place of the found expression.
      *
      * @param document         the Word document that can be accessed via the
-     *                        DOCX4J api.
+     *                         DOCX4J api.
      * @param expressionResult the result of an expression. Only objects of classes this type resolver is registered for
      *                         within the TypeResolverRegistry are passed into this method.
      * @return an object of the DOCX4J api (usually of type {@link R} = "run

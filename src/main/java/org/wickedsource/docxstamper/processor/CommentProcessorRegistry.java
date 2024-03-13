@@ -18,11 +18,17 @@ import org.wickedsource.docxstamper.util.CommentUtil;
 import org.wickedsource.docxstamper.util.CommentWrapper;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
+import pro.verron.docxstamper.core.Expression;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static org.wickedsource.docxstamper.el.ExpressionUtil.findProcessorExpressions;
+import static org.wickedsource.docxstamper.util.CommentUtil.getCommentString;
+import static org.wickedsource.docxstamper.util.CommentUtil.getComments;
 
 /**
  * Allows registration of {@link ICommentProcessor} objects. Each registered
@@ -73,10 +79,12 @@ public class CommentProcessorRegistry {
      * @param expressionContext the context root object
      * @param <T>               a T class
      */
-    public <T> void runProcessors(final WordprocessingMLPackage document, final T expressionContext) {
-        final Map<BigInteger, CommentWrapper> comments = CommentUtil.getComments(
-                document);
-        final List<CommentWrapper> proceedComments = new ArrayList<>();
+    public <T> void runProcessors(
+            WordprocessingMLPackage document,
+            T expressionContext
+    ) {
+        var comments = getComments(document);
+        var proceedComments = new ArrayList<CommentWrapper>();
 
         new BaseCoordinatesWalker() {
             @Override
@@ -154,29 +162,23 @@ public class CommentProcessorRegistry {
             T expressionContext,
             P paragraph
     ) {
-        ParagraphWrapper paragraphWrapper = new ParagraphWrapper(paragraph);
-        List<String> processorExpressions = findProcessorExpressions(
-                paragraphWrapper.getText());
+        var paragraphWrapper = new ParagraphWrapper(paragraph);
+        var expressions = findProcessorExpressions(paragraphWrapper.getText());
 
-        for (String processorExpression : processorExpressions) {
-            String strippedExpression = ExpressionResolver.cleanExpression(
-                    processorExpression);
-
+        for (var expression : expressions) {
             for (final Object processor : commentProcessors.values()) {
                 ((ICommentProcessor) processor).setParagraph(paragraph);
             }
 
             try {
-                expressionResolver.resolveExpression(strippedExpression,
-                                                     expressionContext);
-                placeholderReplacer.replace(paragraphWrapper,
-                                            processorExpression, "");
+                expressionResolver.resolve(expression, expressionContext);
+                placeholderReplacer.replace(paragraphWrapper, expression, "");
                 logger.debug(
                         "Processor expression '{}' has been successfully processed by a comment processor.",
-                        processorExpression);
+                        expression);
             } catch (SpelEvaluationException | SpelParseException e) {
                 String msg = "Expression '%s' failed since no processor solves it".formatted(
-                        strippedExpression);
+                        expression);
                 if (failOnUnresolvedExpression) {
                     throw new DocxStamperException(msg, e);
                 } else {
@@ -201,7 +203,7 @@ public class CommentProcessorRegistry {
             return Optional.empty();
         }
 
-        String commentString = CommentUtil.getCommentString(comment);
+        String commentString = getCommentString(comment);
 
         for (final Object processor : commentProcessors.values()) {
             ((ICommentProcessor) processor).setParagraph(paragraph);
@@ -212,8 +214,8 @@ public class CommentProcessorRegistry {
         }
 
         try {
-            expressionResolver.resolveExpression(commentString,
-                                                 expressionContext);
+            expressionResolver.resolve(
+                    new Expression(commentString), expressionContext);
             comments.remove(comment.getId());
             logger.debug(
                     "Comment {} has been successfully processed by a comment processor.",

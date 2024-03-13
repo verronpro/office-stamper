@@ -2,12 +2,14 @@ package pro.verron.docxstamper.preset.resolver;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
+import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.docxstamper.api.ObjectResolver;
+import pro.verron.docxstamper.core.Expression;
 
 /**
  * The {@link Null2PlaceholderResolver} class is an implementation of the ObjectResolver interface.
- * It provides a way to resolve null objects by not replacing their placeholder string.
+ * It provides a way to resolve null objects by not replacing their expression.
  *
  * @author Joseph Verron
  * @version ${version}
@@ -28,9 +30,18 @@ public class Null2PlaceholderResolver
     @Override
     public R resolve(
             WordprocessingMLPackage document,
-            String placeholder,
+            Expression expression,
             Object object
     ) {
-        return RunUtil.create(placeholder);
+        return RunUtil.create(expression.expression());
+    }
+
+    @Override
+    public R resolve(
+            WordprocessingMLPackage document,
+            String expression,
+            Object object
+    ) {
+        throw new DocxStamperException("Should not be called");
     }
 }

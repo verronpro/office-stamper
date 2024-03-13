@@ -37,7 +37,7 @@ public class LegacyFallbackResolver
     @Override
     public R resolve(
             WordprocessingMLPackage document,
-            String placeholder,
+            String expression,
             Object object
     ) {
         return RunUtil.create(format(object));

@@ -5,6 +5,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.lang.NonNull;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
 import org.wickedsource.docxstamper.api.preprocessor.PreProcessor;
@@ -16,6 +17,7 @@ import org.wickedsource.docxstamper.replace.typeresolver.ObjectResolverRegistry;
 import pro.verron.docxstamper.OpcStamper;
 import pro.verron.docxstamper.StamperFactory;
 import pro.verron.docxstamper.api.ObjectResolver;
+import pro.verron.docxstamper.core.Expression;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,7 +76,7 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 			boolean replaceUnresolvedExpressions,
 			boolean leaveEmptyOnExpressionError,
 			String unresolvedExpressionsDefaultValue,
-			String lineBreakPlaceholder,
+			@NonNull String lineBreakPlaceholder,
 			EvaluationContextConfigurer evaluationContextConfigurer,
 			Map<Class<?>, Object> expressionFunctions,
 			List<ObjectResolver> resolvers,
@@ -112,7 +114,7 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 				replaceUnresolvedExpressions,
 				unresolvedExpressionsDefaultValue,
 				leaveEmptyOnExpressionError,
-				lineBreakPlaceholder
+				new Expression(lineBreakPlaceholder)
 		);
 
 		for (var entry : configurationCommentProcessors.entrySet()) {

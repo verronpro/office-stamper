@@ -2,6 +2,7 @@ package org.wickedsource.docxstamper.el;
 
 import org.springframework.lang.NonNull;
 import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.core.Expression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,19 +34,22 @@ public class ExpressionUtil {
 	 * @param text the text to find expressions in.
 	 * @return a list of expressions (including the starting "${" and trailing "}").
 	 */
-	public static List<String> findVariableExpressions(@NonNull String text) {
+	public static List<Expression> findVariableExpressions(@NonNull String text) {
 		return findExpressions(text, VARIABLE_EXPRESSION_PATTERN);
 	}
 
-	private static List<String> findExpressions(@NonNull String text, Pattern pattern) {
+	private static List<Expression> findExpressions(
+			@NonNull String text,
+			Pattern pattern
+	) {
 		if (text.isEmpty())
 			return emptyList();
 		Matcher matcher = pattern.matcher(text);
 		int index = 0;
-		List<String> matches = new ArrayList<>();
+		List<Expression> matches = new ArrayList<>();
 		while (matcher.find(index)) {
 			String match = matcher.group();
-			matches.add(match);
+			matches.add(new Expression(match));
 			index = matcher.end();
 		}
 		return matches;
@@ -58,7 +62,7 @@ public class ExpressionUtil {
 	 * @param text the text to find expressions in.
 	 * @return a list of expressions (including the starting "#{" and trailing "}").
 	 */
-	public static List<String> findProcessorExpressions(@NonNull String text) {
+	public static List<Expression> findProcessorExpressions(@NonNull String text) {
 		return findExpressions(text, PROCESSOR_EXPRESSION_PATTERN);
 	}
 

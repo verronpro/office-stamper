@@ -31,7 +31,7 @@ public class Null2DefaultResolver
     @Override
     public R resolve(
             WordprocessingMLPackage document,
-            String placeholder,
+            String expression,
             Object object
     ) {
         return RunUtil.create(text);

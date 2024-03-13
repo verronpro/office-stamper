@@ -3,6 +3,7 @@ package pro.verron.docxstamper.api;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.core.Expression;
 
 /**
  * The ObjectResolver interface provides a contract for resolving objects to create a run
@@ -23,17 +24,36 @@ public interface ObjectResolver {
     boolean canResolve(Object object);
 
     /**
-     * Resolves the placeholder in the given document with the provided object.
+     * Resolves the expression in the given document with the provided object.
      *
-     * @param document    the {@link WordprocessingMLPackage} document in which to resolve the placeholder
-     * @param placeholder the placeholder value to be replaced
-     * @param object      the object to be used for resolving the placeholder
-     * @return the resolved value for the placeholder
+     * @param document   the {@link WordprocessingMLPackage} document in
+     *                   which to resolve the expression
+     * @param expression the expression value to be replaced
+     * @param object     the object to be used for resolving the expression
+     * @return the resolved value for the expression
+     * @throws DocxStamperException if no resolver is found for the object
+     */
+    default R resolve(
+            WordprocessingMLPackage document,
+            Expression expression,
+            Object object
+    ) {
+        return resolve(document, expression.inner(), object);
+    }
+
+    /**
+     * Resolves the expression in the given document with the provided object.
+     *
+     * @param document   the {@link WordprocessingMLPackage} document in
+     *                   which to resolve the expression
+     * @param expression the expression value to be replaced
+     * @param object     the object to be used for resolving the expression
+     * @return the resolved value for the expression
      * @throws DocxStamperException if no resolver is found for the object
      */
     R resolve(
             WordprocessingMLPackage document,
-            String placeholder,
+            String expression,
             Object object
     );
 }

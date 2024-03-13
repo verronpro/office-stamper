@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.el;
+package pro.verron.docxstamper.core;
 
 
 import org.springframework.lang.NonNull;

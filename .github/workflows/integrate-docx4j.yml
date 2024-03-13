@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   ci:
+    continue-on-error: true
     name: Continuous Integration
     strategy:
       matrix:

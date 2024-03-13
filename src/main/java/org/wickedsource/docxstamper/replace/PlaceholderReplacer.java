@@ -11,14 +11,14 @@ import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
-import org.wickedsource.docxstamper.el.ExpressionUtil;
 import org.wickedsource.docxstamper.replace.typeresolver.ObjectResolverRegistry;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 
-import java.util.List;
 import java.util.Optional;
+
+import static org.wickedsource.docxstamper.el.ExpressionUtil.findVariableExpressions;
 
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
@@ -31,8 +31,8 @@ import java.util.Optional;
 public class PlaceholderReplacer {
     private static final Logger log = LoggerFactory.getLogger(
             PlaceholderReplacer.class);
-    private final ExpressionResolver expressionResolver;
-    private final ObjectResolverRegistry resolverRegistry;
+    private final ExpressionResolver resolver;
+    private final ObjectResolverRegistry registry;
     private final boolean failOnUnresolvedExpression;
     private final boolean leaveEmptyOnExpressionError;
     private final boolean replaceUnresolvedExpressions;
@@ -42,8 +42,8 @@ public class PlaceholderReplacer {
     /**
      * <p>Constructor for PlaceholderReplacer.</p>
      *
-     * @param resolverRegistry                  the registry containing all available type resolvers.
-     * @param expressionResolver                the expression resolver used to resolve expressions in the document.
+     * @param registry                          the registry containing all available type resolvers.
+     * @param resolver                          the expression resolver used to resolve expressions in the document.
      * @param failOnUnresolvedExpression        if set to true, an exception is thrown when an expression cannot be
      *                                          resolved.
      * @param replaceUnresolvedExpressions      if set to true, expressions that cannot be resolved are replaced by the
@@ -57,16 +57,16 @@ public class PlaceholderReplacer {
      *                                          replaced with a line break.
      */
     public PlaceholderReplacer(
-            ObjectResolverRegistry resolverRegistry,
-            ExpressionResolver expressionResolver,
+            ObjectResolverRegistry registry,
+            ExpressionResolver resolver,
             boolean failOnUnresolvedExpression,
             boolean replaceUnresolvedExpressions,
             String unresolvedExpressionsDefaultValue,
             boolean leaveEmptyOnExpressionError,
             String lineBreakPlaceholder
     ) {
-        this.resolverRegistry = resolverRegistry;
-        this.expressionResolver = expressionResolver;
+        this.registry = registry;
+        this.resolver = resolver;
         this.failOnUnresolvedExpression = failOnUnresolvedExpression;
         this.replaceUnresolvedExpressions = replaceUnresolvedExpressions;
         this.unresolvedExpressionsDefaultValue = unresolvedExpressionsDefaultValue;
@@ -98,38 +98,36 @@ public class PlaceholderReplacer {
     /**
      * Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.
      *
-     * @param p                 the paragraph in which to replace expressions.
-     * @param expressionContext the context root
-     * @param document          the document in which to replace all expressions.
+     * @param p        the paragraph in which to replace expressions.
+     * @param context  the context root
+     * @param document the document in which to replace all expressions.
      */
     public void resolveExpressionsForParagraph(
             P p,
-            Object expressionContext,
+            Object context,
             WordprocessingMLPackage document
     ) {
-        ParagraphWrapper paragraphWrapper = new ParagraphWrapper(p);
-        List<String> placeholders = ExpressionUtil.findVariableExpressions(
-                paragraphWrapper.getText());
-        for (String placeholder : placeholders) {
+        var paragraphWrapper = new ParagraphWrapper(p);
+        var placeholders = findVariableExpressions(paragraphWrapper.getText());
+        for (var placeholder : placeholders) {
             try {
-                Object replacement = expressionResolver.resolveExpression(
-                        placeholder,
-                        expressionContext);
-                R replacementObject = resolverRegistry.resolve(document,
-                                                               placeholder,
-                                                               replacement);
-                replace(paragraphWrapper, placeholder, replacementObject);
+                var resolution = resolver.resolveExpression(placeholder,
+                                                            context);
+                var replacement = registry.resolve(document,
+                                                   placeholder,
+                                                   resolution);
+                replace(paragraphWrapper, placeholder, replacement);
             } catch (SpelEvaluationException | SpelParseException e) {
                 if (failOnUnresolvedExpression) {
                     String message = "Expression %s could not be resolved against context of type %s"
                             .formatted(placeholder,
-                                       expressionContext.getClass());
+                                       context.getClass());
                     throw new DocxStamperException(message, e);
                 } else {
                     log.warn(
                             "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log level to TRACE to view Stacktrace.",
                             placeholder,
-                            expressionContext.getClass(),
+                            context.getClass(),
                             e.getMessage());
                     log.trace("Reason for skipping expression:", e);
                     if (leaveEmptyOnExpressionError) {

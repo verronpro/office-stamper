@@ -120,7 +120,7 @@ public class PlaceholderReplacer {
                                                                replacement);
                 replace(paragraphWrapper, placeholder, replacementObject);
             } catch (SpelEvaluationException | SpelParseException e) {
-                if (isFailOnUnresolvedExpression()) {
+                if (failOnUnresolvedExpression) {
                     String message = "Expression %s could not be resolved against context of type %s"
                             .formatted(placeholder,
                                        expressionContext.getClass());
@@ -132,7 +132,7 @@ public class PlaceholderReplacer {
                             expressionContext.getClass(),
                             e.getMessage());
                     log.trace("Reason for skipping expression:", e);
-                    if (leaveEmptyOnExpressionError()) {
+                    if (leaveEmptyOnExpressionError) {
                         replace(paragraphWrapper, placeholder, "");
                     } else if (replaceUnresolvedExpressions()) {
                         replace(paragraphWrapper,
@@ -154,14 +154,6 @@ public class PlaceholderReplacer {
     ) {
         p.replace(placeholder,
                   replacementRun == null ? RunUtil.create("") : replacementRun);
-    }
-
-    private boolean isFailOnUnresolvedExpression() {
-        return failOnUnresolvedExpression;
-    }
-
-    private boolean leaveEmptyOnExpressionError() {
-        return leaveEmptyOnExpressionError;
     }
 
     /**

@@ -3,7 +3,7 @@
 # For more information see:
 #  https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Continuous Integration
+name: Continuous Integration for OS
 
 on:
   workflow_dispatch:

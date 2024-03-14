@@ -10,7 +10,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.wickedsource.docxstamper.DocxStamperConfiguration;
 import org.wickedsource.docxstamper.el.NoOpEvaluationContextConfigurer;
 import pro.verron.docxstamper.api.Image;
-import pro.verron.docxstamper.preset.resolver.Resolvers;
+import pro.verron.docxstamper.preset.Resolvers;
 import pro.verron.docxstamper.test.Functions;
 import pro.verron.docxstamper.test.accessors.SimpleGetter;
 import pro.verron.docxstamper.test.commentProcessors.CustomCommentProcessor;

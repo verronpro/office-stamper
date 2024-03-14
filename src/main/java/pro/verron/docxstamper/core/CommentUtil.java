@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.util;
+package pro.verron.docxstamper.core;
 
 import org.docx4j.TextUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
@@ -12,11 +12,11 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wickedsource.docxstamper.api.DocxStamperException;
+import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import org.wickedsource.docxstamper.util.walk.DocumentWalker;
+import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.api.Placeholder;
-import pro.verron.docxstamper.core.CommentWrapper;
-import pro.verron.docxstamper.core.Expressions;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -333,7 +333,7 @@ public class CommentUtil {
                 CommentWrapper commentWrapper = allComments.get(
                         commentRangeStart.getId());
                 if (commentWrapper == null) {
-                    commentWrapper = new CommentWrapper();
+                    commentWrapper = new DefaultCommentWrapper();
                     allComments.put(commentRangeStart.getId(), commentWrapper);
                     if (stack.isEmpty()) {
                         rootComments.put(commentRangeStart.getId(),

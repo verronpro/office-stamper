@@ -15,10 +15,11 @@ import pro.verron.docxstamper.api.Placeholder;
  * @version ${version}
  * @since 1.6.7
  */
-class Null2PlaceholderResolver
+public class Null2PlaceholderResolver
         implements ObjectResolver {
 
-    /* package */ Null2PlaceholderResolver() {
+    /* package */
+    public Null2PlaceholderResolver() {
         //DO NOTHING
     }
 

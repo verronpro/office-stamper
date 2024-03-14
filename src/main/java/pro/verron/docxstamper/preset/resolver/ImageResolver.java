@@ -19,7 +19,7 @@ import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstract
  * @version ${version}
  * @since 1.6.7
  */
-class ImageResolver
+public class ImageResolver
         implements ObjectResolver {
 
     /**

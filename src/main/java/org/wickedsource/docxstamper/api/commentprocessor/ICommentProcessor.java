@@ -3,7 +3,7 @@ package org.wickedsource.docxstamper.api.commentprocessor;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import pro.verron.docxstamper.core.CommentWrapper;
+import pro.verron.docxstamper.api.CommentWrapper;
 
 /**
  * <p>In a .docx template used by DocxStamper, you can comment paragraphs of text to manipulate them. The comments in

@@ -14,7 +14,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.util.CommentUtil;
+import pro.verron.docxstamper.core.CommentUtil;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

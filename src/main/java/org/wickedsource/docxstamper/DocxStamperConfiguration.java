@@ -18,8 +18,8 @@ import org.wickedsource.docxstamper.processor.replaceExpression.IReplaceWithProc
 import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import org.wickedsource.docxstamper.replace.typeresolver.TypeResolver;
 import pro.verron.docxstamper.api.ObjectResolver;
+import pro.verron.docxstamper.preset.Resolvers;
 import pro.verron.docxstamper.preset.resolver.Null2DefaultResolver;
-import pro.verron.docxstamper.preset.resolver.Resolvers;
 
 import java.util.*;
 

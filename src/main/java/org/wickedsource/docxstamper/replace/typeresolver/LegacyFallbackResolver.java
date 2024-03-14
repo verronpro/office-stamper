@@ -4,7 +4,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.docxstamper.api.ObjectResolver;
-import pro.verron.docxstamper.preset.resolver.Resolvers;
+import pro.verron.docxstamper.preset.Resolvers;
 
 /**
  * The LegacyFallbackResolver served as a fallback when there was no ITypeResolver available for a certain type.

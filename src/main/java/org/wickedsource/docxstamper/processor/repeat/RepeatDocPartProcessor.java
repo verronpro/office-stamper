@@ -12,7 +12,7 @@ import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
 import pro.verron.docxstamper.OpcStamper;
-import pro.verron.docxstamper.core.CommentWrapper;
+import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.io.IOException;

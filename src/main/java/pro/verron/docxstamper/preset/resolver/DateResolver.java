@@ -16,7 +16,7 @@ import java.util.Date;
  * @version ${version}
  * @since 1.6.7
  */
-final class DateResolver
+public final class DateResolver
         extends StringResolver<Date> {
 
     private final DateTimeFormatter formatter;

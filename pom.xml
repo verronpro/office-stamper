@@ -306,6 +306,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
             <version>6.1.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-jcl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

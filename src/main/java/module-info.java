@@ -10,11 +10,12 @@ module pro.verron.opcstamper {
     exports org.wickedsource.docxstamper.processor;
     exports org.wickedsource.docxstamper.api;
 
-
-    requires org.apache.commons.io;
-    requires org.docx4j.core;
-    requires spring.expression;
-    requires org.slf4j;
     requires spring.core;
-    requires jakarta.xml.bind;
+    requires spring.expression;
+
+    requires transitive org.docx4j.core;
+
+    requires static org.apache.commons.io;
+    requires static org.slf4j;
+    requires static jakarta.xml.bind;
 }

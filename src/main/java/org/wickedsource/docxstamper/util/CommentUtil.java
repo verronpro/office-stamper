@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import org.wickedsource.docxstamper.util.walk.DocumentWalker;
+import pro.verron.docxstamper.core.Expression;
+import pro.verron.docxstamper.core.Matcher;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -124,11 +126,10 @@ public class CommentUtil {
      * @param document the document that contains the object.
      * @return the comment, if found, null otherwise.
      */
-    public static String getCommentStringFor(
+    public static Expression getCommentStringFor(
             ContentAccessor object, WordprocessingMLPackage document
     ) {
-        Comment comment = getCommentFor(object,
-                                                 document).orElseThrow();
+        Comment comment = getCommentFor(object, document).orElseThrow();
         return getCommentString(comment);
     }
 
@@ -185,14 +186,14 @@ public class CommentUtil {
      * @param comment a {@link Comment} object
      * @return a {@link String} object
      */
-    public static String getCommentString(Comment comment) {
+    public static Expression getCommentString(Comment comment) {
         StringBuilder builder = new StringBuilder();
         for (Object commentChildObject : comment.getContent()) {
             if (commentChildObject instanceof P p) {
                 builder.append(new ParagraphWrapper(p).getText());
             }
         }
-        return builder.toString();
+        return new Expression(new Matcher("", ""), builder.toString());
     }
 
     /**

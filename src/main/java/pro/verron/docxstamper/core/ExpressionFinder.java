@@ -8,18 +8,23 @@ import java.util.regex.Pattern;
 
 import static java.util.Collections.emptyList;
 
-public class ExpressionFinder {
-    private final Pattern pattern;
-    private final Matcher matcher;
-
-    public ExpressionFinder(
-            Pattern pattern,
-            Matcher matcher
-    ) {
-        this.pattern = pattern;
-        this.matcher = matcher;
-    }
-
+/**
+ * The ExpressionFinder class is responsible
+ * for finding expressions in a given text based on a specified pattern and matcher.
+ * It uses the Matcher class
+ * to determine if an expression matches the specified prefix and suffix,
+ * and the Expression class to represent each found expression.
+ */
+public record ExpressionFinder(
+        Pattern pattern,
+        Matcher matcher
+) {
+    /**
+     * Finds expressions in a given text based on a specified pattern and matcher.
+     *
+     * @param text the text to search for expressions
+     * @return a list of found expressions
+     */
     public List<Expression> find(@NonNull String text) {
         if (text.isEmpty())
             return emptyList();

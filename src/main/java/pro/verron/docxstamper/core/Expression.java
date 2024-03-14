@@ -2,14 +2,18 @@ package pro.verron.docxstamper.core;
 
 import org.springframework.lang.NonNull;
 
+/**
+ * Represents an expression with a configured Matcher.
+ */
 public record Expression(
         @NonNull Matcher matcher,
         @NonNull String expression
 ) {
     /**
-     * Cleans the given expression by stripping the prefix and suffix if they match any of the configured matchers.
+     * Returns the inner part of the expression
+     * by stripping the prefix and suffix.
      *
-     * @return the cleaned expression.
+     * @return the inner part of the expression.
      */
     public String inner() {
         return matcher.match(expression)

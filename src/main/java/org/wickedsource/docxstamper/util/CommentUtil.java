@@ -120,12 +120,16 @@ public class CommentUtil {
     }
 
     /**
-     * Returns the comment the given DOCX4J object is commented with.
+     * Returns the comment string for the given DOCX4J object and document.
      *
      * @param object   the DOCX4J object whose comment to retrieve.
      * @param document the document that contains the object.
-     * @return the comment, if found, null otherwise.
+     * @return an Expression representing the comment string.
+     * @throws DocxStamperException if an error occurs while retrieving the comment.
+     * @deprecated This method's been deprecated since version 1.6.8
+     * and will be removed in the future.
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     public static Expression getCommentStringFor(
             ContentAccessor object, WordprocessingMLPackage document
     ) {

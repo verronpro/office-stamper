@@ -345,7 +345,7 @@ public class Contexts {
         }
 
         /**
-         * Returns the value of the fullish_value attribute of the NullishContext object.
+         * Returns the value of the fullish_value attribute in the NullishContext object.
          *
          * @return The value of the fullish_value attribute.
          */
@@ -381,7 +381,7 @@ public class Contexts {
         }
 
         /**
-         * Returns the value of the nullish_value attribute of the NullishContext object.
+         * Returns the value of the nullish_value attribute in the NullishContext object.
          *
          * @return The value of the nullish_value attribute.
          */

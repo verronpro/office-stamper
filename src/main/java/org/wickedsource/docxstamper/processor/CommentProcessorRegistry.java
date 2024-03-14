@@ -13,10 +13,10 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.UnresolvedExpressionException;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
-import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
 import org.wickedsource.docxstamper.util.CommentUtil;
 import org.wickedsource.docxstamper.util.CommentWrapper;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
+import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.docxstamper.core.Expressions;
 
@@ -43,7 +43,6 @@ import static org.wickedsource.docxstamper.util.CommentUtil.getComments;
 public class CommentProcessorRegistry {
     private final Logger logger = LoggerFactory.getLogger(
             CommentProcessorRegistry.class);
-    private final PlaceholderReplacer placeholderReplacer;
     private final Map<Class<?>, Object> commentProcessors;
     private final boolean failOnUnresolvedExpression;
     private final ExpressionResolver expressionResolver;
@@ -51,18 +50,15 @@ public class CommentProcessorRegistry {
     /**
      * Creates a new CommentProcessorRegistry.
      *
-     * @param placeholderReplacer        the placeholder replacer
      * @param expressionResolver         the expression resolver
      * @param commentProcessors          the comment processors
      * @param failOnUnresolvedExpression whether to fail on unresolved expressions
      */
     public CommentProcessorRegistry(
-            PlaceholderReplacer placeholderReplacer,
             ExpressionResolver expressionResolver,
             Map<Class<?>, Object> commentProcessors,
             boolean failOnUnresolvedExpression
     ) {
-        this.placeholderReplacer = placeholderReplacer;
         this.expressionResolver = expressionResolver;
         this.commentProcessors = commentProcessors;
         this.failOnUnresolvedExpression = failOnUnresolvedExpression;
@@ -172,7 +168,7 @@ public class CommentProcessorRegistry {
 
             try {
                 expressionResolver.resolve(expression, expressionContext);
-                placeholderReplacer.replace(paragraphWrapper, expression, "");
+                paragraphWrapper.replace(expression, RunUtil.create(""));
                 logger.debug(
                         "Processor expression '{}' has been successfully processed by a comment processor.",
                         expression);

@@ -8,6 +8,7 @@ import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.util.Collections;
@@ -30,7 +31,7 @@ public class TableResolver
     private final Function<Tbl, List<Object>> nullSupplier;
 
     private TableResolver(
-            PlaceholderReplacer placeholderReplacer,
+            ParagraphPlaceholderReplacer placeholderReplacer,
             Function<Tbl, List<Object>> nullSupplier
     ) {
         super(placeholderReplacer);
@@ -59,7 +60,7 @@ public class TableResolver
      * @param pr a {@link PlaceholderReplacer} instance
      * @return a new {@link TableResolver} instance
      */
-    public static ICommentProcessor newInstance(PlaceholderReplacer pr) {
+    public static ICommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
         return new TableResolver(pr, table -> Collections.emptyList());
     }
 

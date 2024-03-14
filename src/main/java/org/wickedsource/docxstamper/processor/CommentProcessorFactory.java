@@ -11,6 +11,7 @@ import org.wickedsource.docxstamper.processor.repeat.RepeatProcessor;
 import org.wickedsource.docxstamper.processor.replaceExpression.ReplaceWithProcessor;
 import org.wickedsource.docxstamper.processor.table.TableResolver;
 import pro.verron.docxstamper.OpcStamper;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 /**
@@ -38,7 +39,7 @@ public class CommentProcessorFactory {
 	 * @param pr a {@link PlaceholderReplacer} object
 	 * @return a {@link ICommentProcessor} object
 	 */
-	public ICommentProcessor repeatParagraph(PlaceholderReplacer pr) {
+	public ICommentProcessor repeatParagraph(ParagraphPlaceholderReplacer pr) {
 		return ParagraphRepeatProcessor.newInstance(pr);
 	}
 
@@ -48,7 +49,7 @@ public class CommentProcessorFactory {
 	 * @param pr a {@link PlaceholderReplacer} object
 	 * @return a {@link ICommentProcessor} object
 	 */
-	public ICommentProcessor repeatDocPart(PlaceholderReplacer pr) {
+	public ICommentProcessor repeatDocPart(ParagraphPlaceholderReplacer pr) {
 		return RepeatDocPartProcessor.newInstance(pr, getStamper());
 	}
 
@@ -62,7 +63,7 @@ public class CommentProcessorFactory {
 	 * @param pr a {@link PlaceholderReplacer} object
 	 * @return a {@link ICommentProcessor} object
 	 */
-	public ICommentProcessor repeat(PlaceholderReplacer pr) {
+	public ICommentProcessor repeat(ParagraphPlaceholderReplacer pr) {
 		return RepeatProcessor.newInstance(pr);
 	}
 
@@ -72,7 +73,7 @@ public class CommentProcessorFactory {
 	 * @param pr a {@link PlaceholderReplacer} object
 	 * @return a {@link ICommentProcessor} object
 	 */
-	public ICommentProcessor tableResolver(PlaceholderReplacer pr) {
+	public ICommentProcessor tableResolver(ParagraphPlaceholderReplacer pr) {
 		return TableResolver.newInstance(pr);
 	}
 
@@ -82,7 +83,7 @@ public class CommentProcessorFactory {
 	 * @param pr a {@link PlaceholderReplacer} object
 	 * @return a {@link ICommentProcessor} object
 	 */
-	public ICommentProcessor displayIf(PlaceholderReplacer pr) {
+	public ICommentProcessor displayIf(ParagraphPlaceholderReplacer pr) {
 		return DisplayIfProcessor.newInstance(pr);
 	}
 
@@ -92,7 +93,7 @@ public class CommentProcessorFactory {
 	 * @param pr a {@link PlaceholderReplacer} object
 	 * @return a {@link ICommentProcessor} object
 	 */
-	public ICommentProcessor replaceWith(PlaceholderReplacer pr) {
+	public ICommentProcessor replaceWith(ParagraphPlaceholderReplacer pr) {
 		return ReplaceWithProcessor.newInstance(pr);
 	}
 }

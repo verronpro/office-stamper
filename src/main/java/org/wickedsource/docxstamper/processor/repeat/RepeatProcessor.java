@@ -7,6 +7,7 @@ import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import pro.verron.docxstamper.api.CommentWrapper;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.CommentUtil;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
@@ -31,7 +32,7 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
 	private Map<Tr, CommentWrapper> tableRowsCommentsToRemove = new HashMap<>();
 
 	private RepeatProcessor(
-			PlaceholderReplacer placeholderReplacer,
+			ParagraphPlaceholderReplacer placeholderReplacer,
 			BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier1
 	) {
 		super(placeholderReplacer);
@@ -69,7 +70,7 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
 	 * @param pr The PlaceholderReplacer to use.
 	 * @return A new RepeatProcessor.
 	 */
-	public static ICommentProcessor newInstance(PlaceholderReplacer pr) {
+	public static ICommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
 		return new RepeatProcessor(pr, (document, row) -> emptyList());
 	}
 

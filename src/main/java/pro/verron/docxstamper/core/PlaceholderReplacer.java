@@ -11,7 +11,6 @@ import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
-import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
@@ -88,7 +87,7 @@ public class PlaceholderReplacer
             @Override
             protected void onParagraph(P paragraph) {
                 resolveExpressionsForParagraph(
-                        new ParagraphWrapper(paragraph),
+                        new Paragraph(paragraph),
                         expressionContext,
                         document);
             }
@@ -104,7 +103,7 @@ public class PlaceholderReplacer
      */
     @Override
     public void resolveExpressionsForParagraph(
-            ParagraphWrapper paragraph,
+            Paragraph paragraph,
             Object context,
             WordprocessingMLPackage document
     ) {
@@ -154,7 +153,7 @@ public class PlaceholderReplacer
         return lineBreakPlaceholder;
     }
 
-    private void replaceLineBreaks(ParagraphWrapper paragraph) {
+    private void replaceLineBreaks(Paragraph paragraph) {
         Br lineBreak = Context.getWmlObjectFactory()
                 .createBr();
         R run = RunUtil.create(lineBreak);

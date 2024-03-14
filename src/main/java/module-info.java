@@ -1,5 +1,6 @@
 module pro.verron.opcstamper {
     exports pro.verron.docxstamper.api;
+    exports pro.verron.docxstamper.core;
     exports pro.verron.docxstamper.preset;
 
     exports org.wickedsource.docxstamper;
@@ -9,7 +10,7 @@ module pro.verron.opcstamper {
     exports org.wickedsource.docxstamper.api.commentprocessor;
     exports org.wickedsource.docxstamper.processor;
     exports org.wickedsource.docxstamper.api;
-    exports pro.verron.docxstamper.core;
+
 
     requires org.apache.commons.io;
     requires org.docx4j.core;

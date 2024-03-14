@@ -1,7 +1,6 @@
 package pro.verron.docxstamper.core;
 
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import pro.verron.docxstamper.api.Placeholder;
 import pro.verron.docxstamper.core.expression.ExpressionFinder;
 import pro.verron.docxstamper.core.expression.Matcher;
@@ -76,7 +75,7 @@ public class Expressions {
         return VAR_FINDER.find(text);
     }
 
-    public static List<Placeholder> findVariables(ParagraphWrapper paragraph) {
+    public static List<Placeholder> findVariables(Paragraph paragraph) {
         return findVariables(paragraph.getText());
     }
 

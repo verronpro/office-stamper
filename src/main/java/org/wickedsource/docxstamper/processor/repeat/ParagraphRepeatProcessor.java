@@ -7,10 +7,11 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
-import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.SectionUtil;
 import pro.verron.docxstamper.api.CommentWrapper;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.CommentUtil;
+import pro.verron.docxstamper.core.Paragraph;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.math.BigInteger;
@@ -41,7 +42,7 @@ public class ParagraphRepeatProcessor
      * @param nullSupplier        supplies a list of paragraphs if the list of objects to repeat is null
      */
     private ParagraphRepeatProcessor(
-            PlaceholderReplacer placeholderReplacer,
+            ParagraphPlaceholderReplacer placeholderReplacer,
             Supplier<? extends List<? extends P>> nullSupplier
     ) {
         super(placeholderReplacer);
@@ -71,7 +72,7 @@ public class ParagraphRepeatProcessor
      * @param placeholderReplacer replaces expressions with values
      * @return a new instance of ParagraphRepeatProcessor
      */
-    public static ICommentProcessor newInstance(PlaceholderReplacer placeholderReplacer) {
+    public static ICommentProcessor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
         return new ParagraphRepeatProcessor(placeholderReplacer,
                                             Collections::emptyList);
     }
@@ -200,7 +201,7 @@ public class ParagraphRepeatProcessor
                                                      paragraphs.commentWrapper.getComment()
                                                              .getId());
                 placeholderReplacer.resolveExpressionsForParagraph(
-                        new ParagraphWrapper(pClone),
+                        new Paragraph(pClone),
                         expressionContext,
                         document
                 );

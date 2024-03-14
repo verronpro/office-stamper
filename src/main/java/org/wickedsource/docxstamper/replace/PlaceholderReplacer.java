@@ -11,12 +11,12 @@ import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
-import org.wickedsource.docxstamper.replace.typeresolver.ObjectResolverRegistry;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.docxstamper.core.Expression;
 import pro.verron.docxstamper.core.Expressions;
+import pro.verron.docxstamper.core.ObjectResolverRegistry;
 
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.

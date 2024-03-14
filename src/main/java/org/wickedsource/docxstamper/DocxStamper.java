@@ -13,11 +13,11 @@ import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
 import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
-import org.wickedsource.docxstamper.replace.typeresolver.ObjectResolverRegistry;
 import pro.verron.docxstamper.OpcStamper;
 import pro.verron.docxstamper.StamperFactory;
 import pro.verron.docxstamper.api.ObjectResolver;
 import pro.verron.docxstamper.core.Expressions;
+import pro.verron.docxstamper.core.ObjectResolverRegistry;
 
 import java.io.InputStream;
 import java.io.OutputStream;

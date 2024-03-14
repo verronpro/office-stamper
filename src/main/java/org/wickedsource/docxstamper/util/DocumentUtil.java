@@ -9,7 +9,6 @@ import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import pro.verron.docxstamper.preset.resolver.ImageResolver;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -170,7 +169,9 @@ public class DocumentUtil {
 					byte[] imageData = docxImageExtractor.getRunDrawingData(currentR);
 					Integer maxWidth = docxImageExtractor.getRunDrawingMaxWidth(currentR);
 					BinaryPartAbstractImage imagePart = tryCreateImagePart(target, imageData);
-					replacements.put(currentR, ImageResolver.createRunWithImage(maxWidth, imagePart));
+					replacements.put(currentR,
+									 RunUtil.createRunWithImage(maxWidth,
+																imagePart));
 				} else if (currentObj instanceof ContentAccessor contentAccessor)
 					queue.addAll(contentAccessor.getContent());
 			}

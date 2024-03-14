@@ -1,6 +1,6 @@
 package pro.verron.docxstamper.resolver;
 
-import pro.verron.docxstamper.preset.resolver.StringResolver;
+import pro.verron.docxstamper.api.StringResolver;
 import pro.verron.docxstamper.utils.context.Contexts;
 
 /**

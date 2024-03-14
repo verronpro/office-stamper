@@ -1,5 +1,7 @@
 package pro.verron.docxstamper.preset.resolver;
 
+import pro.verron.docxstamper.api.StringResolver;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -10,7 +12,7 @@ import java.time.format.DateTimeFormatter;
  * @version ${version}
  * @since 1.6.4
  */
-public final class LocalDateTimeResolver
+final class LocalDateTimeResolver
 		extends StringResolver<LocalDateTime> {
 	private final DateTimeFormatter formatter;
 

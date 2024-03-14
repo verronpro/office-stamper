@@ -10,10 +10,14 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * {@link ObjectResolver} interface
  * that resolves null objects by creating a run with a default text value.
  *
+ * @deprecated will not be removed, but will be made package-private
+ *
  * @author Joseph Verron
  * @version ${version}
  * @since 1.6.7
  */
+
+@Deprecated(since = "1.6.7")
 public class Null2DefaultResolver
         implements ObjectResolver {
 

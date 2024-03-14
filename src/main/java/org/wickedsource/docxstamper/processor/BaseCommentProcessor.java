@@ -5,9 +5,8 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
+import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.docxstamper.core.CommentWrapper;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.util.Objects;
 
@@ -36,7 +35,7 @@ public abstract class BaseCommentProcessor implements ICommentProcessor {
 	 *
 	 * @param placeholderReplacer PlaceholderReplacer used to replace placeholders in the comment text.
 	 */
-	protected BaseCommentProcessor(PlaceholderReplacer placeholderReplacer) {
+	protected BaseCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
 		this.placeholderReplacer = placeholderReplacer;
 	}
 

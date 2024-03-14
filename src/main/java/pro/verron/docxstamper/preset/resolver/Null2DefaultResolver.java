@@ -23,7 +23,8 @@ public class Null2DefaultResolver
 
     private final String text;
 
-    /* package */ Null2DefaultResolver(String text) {
+    /* package */
+    public Null2DefaultResolver(String text) {
         this.text = text;
     }
 

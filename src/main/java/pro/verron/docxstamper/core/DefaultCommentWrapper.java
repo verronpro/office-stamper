@@ -10,8 +10,8 @@ import org.docx4j.wml.Comments.Comment;
 import org.docx4j.wml.R.CommentReference;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.util.CommentUtil;
 import org.wickedsource.docxstamper.util.DocumentUtil;
+import pro.verron.docxstamper.api.CommentWrapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
  * @version ${version}
  * @since 1.0.2
  */
-public class CommentWrapper {
+public class DefaultCommentWrapper
+		implements CommentWrapper {
 
 	private final Set<CommentWrapper> children = new HashSet<>();
 	private Comment comment;
@@ -57,6 +58,7 @@ public class CommentWrapper {
 	 *
 	 * @return the comment's author.
 	 */
+	@Override
 	public ContentAccessor getParent() {
 		return findGreatestCommonParent(
 				getCommentRangeEnd().getParent(),
@@ -99,6 +101,7 @@ public class CommentWrapper {
 	 *
 	 * @return the elements in the document that are between the comment range anchors.
 	 */
+	@Override
 	public List<Object> getRepeatElements() {
 		List<Object> repeatElements = new ArrayList<>();
 		boolean startFound = false;
@@ -139,6 +142,7 @@ public class CommentWrapper {
 	 * @return a new document containing only the elements between the comment range anchors.
 	 * @throws Exception if the sub template could not be created.
 	 */
+	@Override
 	public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document) throws Exception {
 		List<Object> repeatElements = getRepeatElements();
 
@@ -174,7 +178,10 @@ public class CommentWrapper {
 	 * @param document the document from which to copy the elements.
 	 * @return a new document containing only the elements between the comment range anchors.
 	 */
-	public WordprocessingMLPackage tryBuildingSubtemplate(WordprocessingMLPackage document) {
+	@Override
+	public WordprocessingMLPackage tryBuildingSubtemplate(
+			WordprocessingMLPackage document
+	) {
 		try {
 			return getSubTemplate(document);
 		} catch (Exception e) {
@@ -187,6 +194,7 @@ public class CommentWrapper {
 	 *
 	 * @return a {@link CommentRangeEnd} object
 	 */
+	@Override
 	public CommentRangeEnd getCommentRangeEnd() {
 		return commentRangeEnd;
 	}
@@ -196,6 +204,7 @@ public class CommentWrapper {
 	 *
 	 * @return a {@link CommentRangeStart} object
 	 */
+	@Override
 	public CommentRangeStart getCommentRangeStart() {
 		return commentRangeStart;
 	}
@@ -205,6 +214,7 @@ public class CommentWrapper {
 	 *
 	 * @return a {@link CommentReference} object
 	 */
+	@Override
 	public CommentReference getCommentReference() {
 		return commentReference;
 	}
@@ -214,6 +224,7 @@ public class CommentWrapper {
 	 *
 	 * @return a {@link Set} object
 	 */
+	@Override
 	public Set<CommentWrapper> getChildren() {
 		return children;
 	}
@@ -223,6 +234,7 @@ public class CommentWrapper {
 	 *
 	 * @return a {@link Comment} object
 	 */
+	@Override
 	public Comment getComment() {
 		return comment;
 	}

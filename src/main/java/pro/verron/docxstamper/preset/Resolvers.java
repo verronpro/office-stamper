@@ -1,7 +1,8 @@
-package pro.verron.docxstamper.preset.resolver;
+package pro.verron.docxstamper.preset;
 
-import org.wickedsource.docxstamper.replace.typeresolver.image.Image;
+import pro.verron.docxstamper.api.Image;
 import pro.verron.docxstamper.api.ObjectResolver;
+import pro.verron.docxstamper.preset.resolver.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

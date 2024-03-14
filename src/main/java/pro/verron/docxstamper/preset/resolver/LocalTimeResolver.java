@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
  * @version ${version}
  * @since 1.6.4
  */
-final class LocalTimeResolver
+public final class LocalTimeResolver
 		extends StringResolver<LocalTime> {
 	private final DateTimeFormatter formatter;
 

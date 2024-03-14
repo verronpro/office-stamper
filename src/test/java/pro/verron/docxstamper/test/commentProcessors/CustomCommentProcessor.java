@@ -6,8 +6,8 @@ import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.RunUtil;
-import pro.verron.docxstamper.core.CommentWrapper;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
+import pro.verron.docxstamper.api.CommentWrapper;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +39,9 @@ public class CustomCommentProcessor
     /**
      * <p>Constructor for CustomCommentProcessor.</p>
      *
-     * @param placeholderReplacer a {@link PlaceholderReplacer} object
+     * @param placeholderReplacer a {@link ParagraphPlaceholderReplacer} object
      */
-    public CustomCommentProcessor(PlaceholderReplacer placeholderReplacer) {
+    public CustomCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
         super(placeholderReplacer);
     }
 

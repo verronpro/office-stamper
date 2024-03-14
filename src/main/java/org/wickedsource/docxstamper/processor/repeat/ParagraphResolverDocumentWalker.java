@@ -5,7 +5,7 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.Tr;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 
 /**
  * Walks through a document and replaces expressions with values from the given
@@ -20,7 +20,7 @@ public class ParagraphResolverDocumentWalker
         extends BaseDocumentWalker {
     private final Object expressionContext;
     private final WordprocessingMLPackage document;
-    private final PlaceholderReplacer placeholderReplacer;
+    private final ParagraphPlaceholderReplacer placeholderReplacer;
 
     /**
      * <p>Constructor for ParagraphResolverDocumentWalker.</p>
@@ -34,7 +34,7 @@ public class ParagraphResolverDocumentWalker
             Tr rowClone,
             Object expressionContext,
             WordprocessingMLPackage document,
-            PlaceholderReplacer replacer
+            ParagraphPlaceholderReplacer replacer
     ) {
         super(rowClone);
         this.expressionContext = expressionContext;

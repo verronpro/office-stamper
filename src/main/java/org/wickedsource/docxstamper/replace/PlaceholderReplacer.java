@@ -16,10 +16,9 @@ import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.docxstamper.core.Expression;
+import pro.verron.docxstamper.core.Expressions;
 
 import java.util.Optional;
-
-import static org.wickedsource.docxstamper.el.ExpressionUtil.findVariableExpressions;
 
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
@@ -110,12 +109,12 @@ public class PlaceholderReplacer {
             WordprocessingMLPackage document
     ) {
         var paragraphWrapper = new ParagraphWrapper(p);
-        var expressions = findVariableExpressions(paragraphWrapper.getText());
+        String text = paragraphWrapper.getText();
+        var expressions = Expressions.findVariables(text);
         for (var expression : expressions) {
             try {
                 var resolution = resolver.resolve(expression, context);
-                var replacement = registry.resolve(document,
-                                                   expression,
+                var replacement = registry.resolve(document, expression,
                                                    resolution);
                 replace(paragraphWrapper, expression, replacement);
             } catch (SpelEvaluationException | SpelParseException e) {

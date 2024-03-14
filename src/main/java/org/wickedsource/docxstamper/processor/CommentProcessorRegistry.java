@@ -18,7 +18,7 @@ import org.wickedsource.docxstamper.util.CommentUtil;
 import org.wickedsource.docxstamper.util.CommentWrapper;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
-import pro.verron.docxstamper.core.Expression;
+import pro.verron.docxstamper.core.Expressions;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.wickedsource.docxstamper.el.ExpressionUtil.findProcessorExpressions;
 import static org.wickedsource.docxstamper.util.CommentUtil.getCommentString;
 import static org.wickedsource.docxstamper.util.CommentUtil.getComments;
 
@@ -163,7 +162,8 @@ public class CommentProcessorRegistry {
             P paragraph
     ) {
         var paragraphWrapper = new ParagraphWrapper(paragraph);
-        var expressions = findProcessorExpressions(paragraphWrapper.getText());
+        String text = paragraphWrapper.getText();
+        var expressions = Expressions.findProcessors(text);
 
         for (var expression : expressions) {
             for (final Object processor : commentProcessors.values()) {
@@ -203,7 +203,7 @@ public class CommentProcessorRegistry {
             return Optional.empty();
         }
 
-        String commentString = getCommentString(comment);
+        var commentExpression = getCommentString(comment);
 
         for (final Object processor : commentProcessors.values()) {
             ((ICommentProcessor) processor).setParagraph(paragraph);
@@ -214,20 +214,20 @@ public class CommentProcessorRegistry {
         }
 
         try {
-            expressionResolver.resolve(
-                    new Expression(commentString), expressionContext);
+            expressionResolver.resolve(commentExpression, expressionContext);
             comments.remove(comment.getId());
             logger.debug(
                     "Comment {} has been successfully processed by a comment processor.",
-                    commentString);
+                    commentExpression);
             return Optional.of(commentWrapper);
         } catch (SpelEvaluationException | SpelParseException e) {
             if (failOnUnresolvedExpression) {
-                throw new UnresolvedExpressionException(commentString, e);
+                throw new UnresolvedExpressionException(commentExpression.toString(),
+                                                        e);
             } else {
                 logger.warn(String.format(
                         "Skipping comment expression '%s' because it can not be resolved by any comment processor. Reason: %s. Set log level to TRACE to view Stacktrace.",
-                        commentString,
+                        commentExpression,
                         e.getMessage()));
                 logger.trace("Reason for skipping comment: ", e);
             }

@@ -120,23 +120,28 @@ public class PlaceholderReplacer {
             } catch (SpelEvaluationException | SpelParseException e) {
                 if (failOnUnresolvedExpression) {
                     String message = "Expression %s could not be resolved against context of type %s"
-                            .formatted(expression,
-                                       context.getClass());
+                            .formatted(expression, context.getClass());
                     throw new DocxStamperException(message, e);
-                } else {
+                } else if (leaveEmptyOnExpressionError) {
                     log.warn(
                             "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log level to TRACE to view Stacktrace.",
                             expression,
                             context.getClass(),
                             e.getMessage());
                     log.trace("Reason for skipping expression:", e);
-                    if (leaveEmptyOnExpressionError) {
-                        replace(paragraphWrapper, expression, "");
-                    } else if (replaceUnresolvedExpressions()) {
-                        replace(paragraphWrapper,
-                                expression,
-                                unresolvedExpressionsDefaultValue());
-                    }
+                    replace(paragraphWrapper, expression, "");
+                } else if (replaceUnresolvedExpressions) {
+                    log.warn(
+                            "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log level to TRACE to view Stacktrace.",
+                            expression,
+                            context.getClass(),
+                            e.getMessage());
+                    log.trace("Reason for skipping expression:", e);
+                    replace(paragraphWrapper,
+                            expression,
+                            unresolvedExpressionsDefaultValue);
+                } else {
+                    // DO NOTHING
                 }
             }
         }
@@ -172,14 +177,6 @@ public class PlaceholderReplacer {
                 .ifPresent(replacementRun -> replace(p,
                                                      expression,
                                                      replacementRun));
-    }
-
-    private boolean replaceUnresolvedExpressions() {
-        return replaceUnresolvedExpressions;
-    }
-
-    private String unresolvedExpressionsDefaultValue() {
-        return unresolvedExpressionsDefaultValue;
     }
 
     private Expression lineBreakPlaceholder() {

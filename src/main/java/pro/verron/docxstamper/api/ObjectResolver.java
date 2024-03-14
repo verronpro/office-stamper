@@ -47,7 +47,7 @@ public interface ObjectResolver {
     boolean canResolve(Object object);
 
     class Log {
-        static Logger log = LoggerFactory.getLogger(ObjectResolver.class);
+        static final Logger log = LoggerFactory.getLogger(ObjectResolver.class);
     }
 
     /**

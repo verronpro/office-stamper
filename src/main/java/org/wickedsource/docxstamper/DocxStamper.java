@@ -17,8 +17,7 @@ import org.wickedsource.docxstamper.replace.typeresolver.ObjectResolverRegistry;
 import pro.verron.docxstamper.OpcStamper;
 import pro.verron.docxstamper.StamperFactory;
 import pro.verron.docxstamper.api.ObjectResolver;
-import pro.verron.docxstamper.core.Expression;
-import pro.verron.docxstamper.core.Matcher;
+import pro.verron.docxstamper.core.Expressions;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -115,7 +114,7 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 				replaceUnresolvedExpressions,
 				unresolvedExpressionsDefaultValue,
 				leaveEmptyOnExpressionError,
-				new Expression(new Matcher("", ""), lineBreakPlaceholder)
+				Expressions.raw(lineBreakPlaceholder)
 		);
 
 		for (var entry : configurationCommentProcessors.entrySet()) {

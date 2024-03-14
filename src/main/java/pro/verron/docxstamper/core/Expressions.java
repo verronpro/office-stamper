@@ -1,14 +1,18 @@
 package pro.verron.docxstamper.core;
 
-import org.springframework.lang.NonNull;
 import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.core.expression.ExpressionFinder;
+import pro.verron.docxstamper.core.expression.Matcher;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * The Expressions class provides utility methods
- * for finding variables and processors in a given text.
+ * The Expressions class provides utility methods for finding variables and processors in a given text.
+ * It contains multiple constant variables for different types of expressions, such as VAR_MATCHER for variable expressions and PROC_MATCHER for processor expressions.
+ * The findVariables() method uses VAR_FINDER to find variable expressions in a given text and returns a list of found expressions.
+ * The findProcessors() method uses PROC_FINDER to find processor expressions in a given text and returns a list of found expressions.
+ * The raw() method creates a new Expression object using the RAW_MATCHER and a specified text.
  */
 public class Expressions {
     /**
@@ -48,6 +52,12 @@ public class Expressions {
      */
     private static final ExpressionFinder VAR_FINDER =
             new ExpressionFinder(VAR_PATTERN, VAR_MATCHER);
+    /**
+     * A Matcher matching raw expressions.
+     * It is typically used to wrap raw expressions that do not have a
+     * specific prefix or suffix.
+     */
+    private static final Matcher RAW_MATCHER = new Matcher("", "");
 
     private Expressions() {
         throw new DocxStamperException(
@@ -60,8 +70,7 @@ public class Expressions {
      * @param text the text to search for variable expressions
      * @return a list of found variable expressions as {@link Expression} objects
      */
-    @NonNull
-    public static List<Expression> findVariables(@NonNull String text) {
+    public static List<Expression> findVariables(String text) {
         return VAR_FINDER.find(text);
     }
 
@@ -72,8 +81,11 @@ public class Expressions {
      * @return a list of found processor expressions as {@link Expression}
      * objects
      */
-    @NonNull
-    public static List<Expression> findProcessors(@NonNull String text) {
+    public static List<Expression> findProcessors(String text) {
         return PROC_FINDER.find(text);
+    }
+
+    public static Expression raw(String text) {
+        return new Expression(RAW_MATCHER, text);
     }
 }

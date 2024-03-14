@@ -15,7 +15,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import org.wickedsource.docxstamper.util.walk.DocumentWalker;
 import pro.verron.docxstamper.core.Expression;
-import pro.verron.docxstamper.core.Matcher;
+import pro.verron.docxstamper.core.Expressions;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -197,7 +197,8 @@ public class CommentUtil {
                 builder.append(new ParagraphWrapper(p).getText());
             }
         }
-        return new Expression(new Matcher("", ""), builder.toString());
+        String string = builder.toString();
+        return Expressions.raw(string);
     }
 
     /**

@@ -2,8 +2,6 @@ package org.wickedsource.docxstamper.replace.typeresolver;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import pro.verron.docxstamper.api.ObjectResolver;
 import pro.verron.docxstamper.core.Expression;
@@ -18,9 +16,7 @@ import java.util.List;
  * @version ${version}
  * @since 1.6.7
  */
-public class ObjectResolverRegistry {
-    private static final Logger log = LoggerFactory.getLogger(
-            ObjectResolverRegistry.class);
+public final class ObjectResolverRegistry {
     private final List<ObjectResolver> resolvers = new ArrayList<>();
 
     /**

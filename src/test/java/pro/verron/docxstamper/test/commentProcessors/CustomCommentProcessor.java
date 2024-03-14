@@ -5,8 +5,8 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
-import org.wickedsource.docxstamper.util.CommentWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
+import pro.verron.docxstamper.core.CommentWrapper;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.util.ArrayList;

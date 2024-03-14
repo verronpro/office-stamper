@@ -15,6 +15,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import org.wickedsource.docxstamper.util.walk.DocumentWalker;
 import pro.verron.docxstamper.api.Placeholder;
+import pro.verron.docxstamper.core.CommentWrapper;
 import pro.verron.docxstamper.core.Expressions;
 
 import java.math.BigInteger;

@@ -6,7 +6,11 @@ import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
-import org.wickedsource.docxstamper.util.*;
+import org.wickedsource.docxstamper.util.CommentUtil;
+import org.wickedsource.docxstamper.util.ParagraphUtil;
+import org.wickedsource.docxstamper.util.ParagraphWrapper;
+import org.wickedsource.docxstamper.util.SectionUtil;
+import pro.verron.docxstamper.core.CommentWrapper;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.math.BigInteger;

@@ -11,11 +11,13 @@ import org.docx4j.dml.picture.Pic;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
+import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import pro.verron.docxstamper.core.CommentUtil;
 
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.CharacterIterator;
@@ -29,9 +31,9 @@ import static java.util.stream.Collectors.joining;
 /**
  * <p>Stringifier class.</p>
  *
- * @since 1.6.5
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.5
  */
 public class Stringifier {
 
@@ -53,6 +55,28 @@ public class Stringifier {
         } catch (NoSuchAlgorithmException e) {
             throw new DocxStamperException(e);
         }
+    }
+
+    /**
+     * Finds a comment with the given ID in the specified WordprocessingMLPackage document.
+     *
+     * @param document the WordprocessingMLPackage document to search for the comment
+     * @param id       the ID of the comment to find
+     * @return an Optional containing the Comment if found, or an empty Optional if not found
+     * @throws Docx4JException if an error occurs while searching for the comment
+     */
+    public static Optional<Comments.Comment> findComment(
+            WordprocessingMLPackage document, BigInteger id
+    ) throws Docx4JException {
+        var name = new PartName("/word/comments.xml");
+        var parts = document.getParts();
+        var wordComments = (CommentsPart) parts.get(name);
+        var comments = wordComments.getContents();
+        return comments.getComment()
+                .stream()
+                .filter(comment -> comment.getId()
+                        .equals(id))
+                .findFirst();
     }
 
     private WordprocessingMLPackage document() {
@@ -154,7 +178,7 @@ public class Stringifier {
             return "|TAB|";
         if (o instanceof R.CommentReference commentReference) {
             try {
-                return CommentUtil.findComment(document(),
+                return findComment(document(),
                                                commentReference.getId())
                         .map(c -> stringify(c.getContent()))
                         .orElseThrow();

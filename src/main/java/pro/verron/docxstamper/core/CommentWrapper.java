@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.util;
+package pro.verron.docxstamper.core;
 
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
@@ -10,6 +10,8 @@ import org.docx4j.wml.Comments.Comment;
 import org.docx4j.wml.R.CommentReference;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.wickedsource.docxstamper.api.DocxStamperException;
+import org.wickedsource.docxstamper.util.CommentUtil;
+import org.wickedsource.docxstamper.util.DocumentUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,23 +32,23 @@ public class CommentWrapper {
 	private CommentRangeEnd commentRangeEnd;
 	private CommentReference commentReference;
 
-	void setComment(Comment comment) {
+	public void setComment(Comment comment) {
 		this.comment = comment;
 	}
 
-	void setCommentRangeStart(CommentRangeStart commentRangeStart) {
+	public void setCommentRangeStart(CommentRangeStart commentRangeStart) {
 		this.commentRangeStart = commentRangeStart;
 	}
 
-	void setCommentRangeEnd(CommentRangeEnd commentRangeEnd) {
+	public void setCommentRangeEnd(CommentRangeEnd commentRangeEnd) {
 		this.commentRangeEnd = commentRangeEnd;
 	}
 
-	void setCommentReference(CommentReference commentReference) {
+	public void setCommentReference(CommentReference commentReference) {
 		this.commentReference = commentReference;
 	}
 
-	void setChildren(Set<CommentWrapper> children) {
+	public void setChildren(Set<CommentWrapper> children) {
 		this.children.addAll(children);
 	}
 

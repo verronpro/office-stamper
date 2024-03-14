@@ -5,8 +5,8 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
-import org.wickedsource.docxstamper.util.CommentWrapper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.docxstamper.core.CommentWrapper;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.util.Objects;
@@ -74,7 +74,7 @@ public abstract class BaseCommentProcessor implements ICommentProcessor {
 	/**
 	 * <p>Getter for the field <code>currentCommentWrapper</code>.</p>
 	 *
-	 * @return a {@link org.wickedsource.docxstamper.util.CommentWrapper} object
+	 * @return a {@link CommentWrapper} object
 	 */
 	public CommentWrapper getCurrentCommentWrapper() {
 		return currentCommentWrapper;

@@ -14,10 +14,10 @@ import org.wickedsource.docxstamper.api.UnresolvedExpressionException;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.CommentUtil;
-import org.wickedsource.docxstamper.util.CommentWrapper;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
+import pro.verron.docxstamper.core.CommentWrapper;
 import pro.verron.docxstamper.core.Expressions;
 
 import java.math.BigInteger;

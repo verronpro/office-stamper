@@ -3,8 +3,8 @@ package pro.verron.docxstamper.preset.resolver;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.replace.typeresolver.image.Image;
 import org.wickedsource.docxstamper.util.RunUtil;
+import pro.verron.docxstamper.api.Image;
 import pro.verron.docxstamper.api.ObjectResolver;
 
 import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage.createImagePart;

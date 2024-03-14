@@ -1,16 +1,18 @@
-package pro.verron.docxstamper.core;
+package pro.verron.docxstamper.core.expression;
 
-
-import org.springframework.lang.NonNull;
 
 /**
- * The Matcher class represents a matching criteria for expressions.
- * It defines a prefix and suffix,
- * and provides methods to match and strip expressions.
+ * The Matcher class provides methods to match and strip expressions based on a specified prefix and suffix.
+ * The match()
+ * method checks if an expression starts with the prefix
+ * and ends with the suffix.
+ * The strip()
+ * method removes the prefix and suffix from an expression
+ * and returns the inner part.
  */
 public record Matcher(
-        @NonNull String prefix,
-        @NonNull String suffix
+        String prefix,
+        String suffix
 ) {
 
     /**
@@ -21,8 +23,8 @@ public record Matcher(
      * and ends with the suffix,
      * {@code false} otherwise.
      */
-    @NonNull
-    boolean match(@NonNull String expression) {
+
+    public boolean match(String expression) {
         return expression.startsWith(prefix)
                && expression.endsWith(suffix);
     }
@@ -33,8 +35,7 @@ public record Matcher(
      * @param expression the expression to be stripped.
      * @return the inner part of the expression after stripping the prefix and suffix.
      */
-    @NonNull
-    String strip(@NonNull String expression) {
+    public String strip(String expression) {
         int start = prefix.length();
         int end = expression.length() - suffix.length();
         return expression.substring(start, end);

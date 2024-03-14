@@ -1,6 +1,6 @@
-package pro.verron.docxstamper.core;
+package pro.verron.docxstamper.core.expression;
 
-import org.springframework.lang.NonNull;
+import pro.verron.docxstamper.core.Expression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public record ExpressionFinder(
      * @param text the text to search for expressions
      * @return a list of found expressions
      */
-    public List<Expression> find(@NonNull String text) {
+    public List<Expression> find(String text) {
         if (text.isEmpty())
             return emptyList();
         var matcher = pattern.matcher(text);

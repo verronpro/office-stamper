@@ -1,13 +1,13 @@
 package pro.verron.docxstamper.core;
 
-import org.springframework.lang.NonNull;
+import pro.verron.docxstamper.core.expression.Matcher;
 
 /**
  * Represents an expression with a configured Matcher.
  */
 public record Expression(
-        @NonNull Matcher matcher,
-        @NonNull String expression
+        Matcher matcher,
+        String expression
 ) {
     /**
      * Returns the inner part of the expression

@@ -123,7 +123,6 @@ public class DocxStamper<T> implements OpcStamper<WordprocessingMLPackage> {
 
 
 		var commentProcessorRegistryInstance = new CommentProcessorRegistry(
-				placeholderReplacerInstance,
 				expressionResolver,
 				commentProcessors,
 				failOnUnresolvedExpression

@@ -18,8 +18,6 @@ import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.docxstamper.core.Expression;
 import pro.verron.docxstamper.core.Expressions;
 
-import java.util.Optional;
-
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
  *
@@ -89,9 +87,10 @@ public class PlaceholderReplacer {
         new BaseCoordinatesWalker() {
             @Override
             protected void onParagraph(P paragraph) {
-                resolveExpressionsForParagraph(paragraph,
-                                               expressionContext,
-                                               document);
+                resolveExpressionsForParagraph(
+                        new ParagraphWrapper(paragraph),
+                        expressionContext,
+                        document);
             }
         }.walk(document);
     }
@@ -99,24 +98,22 @@ public class PlaceholderReplacer {
     /**
      * Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.
      *
-     * @param p        the paragraph in which to replace expressions.
-     * @param context  the context root
-     * @param document the document in which to replace all expressions.
+     * @param paragraph the paragraph in which to replace expressions.
+     * @param context   the context root
+     * @param document  the document in which to replace all expressions.
      */
     public void resolveExpressionsForParagraph(
-            P p,
+            ParagraphWrapper paragraph,
             Object context,
             WordprocessingMLPackage document
     ) {
-        var paragraphWrapper = new ParagraphWrapper(p);
-        String text = paragraphWrapper.getText();
-        var expressions = Expressions.findVariables(text);
+        var expressions = Expressions.findVariables(paragraph);
         for (var expression : expressions) {
             try {
                 var resolution = resolver.resolve(expression, context);
                 var replacement = registry.resolve(document, expression,
                                                    resolution);
-                replace(paragraphWrapper, expression, replacement);
+                paragraph.replace(expression, replacement);
             } catch (SpelEvaluationException | SpelParseException e) {
                 if (failOnUnresolvedExpression) {
                     String message = "Expression %s could not be resolved against context of type %s"
@@ -129,7 +126,7 @@ public class PlaceholderReplacer {
                             context.getClass(),
                             e.getMessage());
                     log.trace("Reason for skipping expression:", e);
-                    replace(paragraphWrapper, expression, "");
+                    paragraph.replace(expression, RunUtil.create(""));
                 } else if (replaceUnresolvedExpressions) {
                     log.warn(
                             "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log level to TRACE to view Stacktrace.",
@@ -137,59 +134,32 @@ public class PlaceholderReplacer {
                             context.getClass(),
                             e.getMessage());
                     log.trace("Reason for skipping expression:", e);
-                    replace(paragraphWrapper,
+                    paragraph.replace(
                             expression,
-                            unresolvedExpressionsDefaultValue);
+                            RunUtil.create(unresolvedExpressionsDefaultValue));
                 } else {
                     // DO NOTHING
                 }
             }
         }
         if (lineBreakPlaceholder() != null) {
-            replaceLineBreaks(paragraphWrapper);
+            replaceLineBreaks(paragraph);
         }
     }
 
-    private void replace(
-            ParagraphWrapper p,
-            Expression expression,
-            R replacementRun
-    ) {
-        p.replace(expression,
-                  replacementRun == null ? RunUtil.create("") : replacementRun);
-    }
 
-    /**
-     * Replaces expressions in the given paragraph and replaces them with the values provided by the expression resolver.
-     *
-     * @param p                 the paragraph in which to replace expressions.
-     * @param expression        the expression to replace.
-     * @param replacementObject the object to replace the expression with.
-     */
-    public void replace(
-            ParagraphWrapper p,
-            Expression expression,
-            String replacementObject
-    ) {
-        Optional.ofNullable(replacementObject)
-                .map(replacementStr -> RunUtil.create(replacementStr,
-                                                      p.getParagraph()))
-                .ifPresent(replacementRun -> replace(p,
-                                                     expression,
-                                                     replacementRun));
-    }
-
+    // TODO: Remove this intermediate method
     private Expression lineBreakPlaceholder() {
         return lineBreakPlaceholder;
     }
 
-    private void replaceLineBreaks(ParagraphWrapper paragraphWrapper) {
+    private void replaceLineBreaks(ParagraphWrapper paragraph) {
         Br lineBreak = Context.getWmlObjectFactory()
                 .createBr();
         R run = RunUtil.create(lineBreak);
-        while (paragraphWrapper.getText()
+        while (paragraph.getText()
                 .contains(lineBreakPlaceholder().inner())) {
-            replace(paragraphWrapper, lineBreakPlaceholder(), run);
+            paragraph.replace(lineBreakPlaceholder(), run);
         }
     }
 }

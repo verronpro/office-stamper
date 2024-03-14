@@ -24,6 +24,7 @@ import static java.util.stream.Collectors.joining;
  * @version ${version}
  * @since 1.0.8
  */
+// TODO: Rename into Paragraph
 public class ParagraphWrapper {
     private final List<IndexedRun> runs = new ArrayList<>();
     private final P paragraph;

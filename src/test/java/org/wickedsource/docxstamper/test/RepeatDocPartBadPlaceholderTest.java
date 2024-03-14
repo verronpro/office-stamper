@@ -24,9 +24,9 @@ import static org.wickedsource.docxstamper.test.DefaultTests.getResource;
  * @version ${version}
  * @since 1.6.6
  */
-public class RepeatDocPartBadExpressionTest {
+public class RepeatDocPartBadPlaceholderTest {
     private static final Logger logger =
-            LoggerFactory.getLogger(RepeatDocPartBadExpressionTest.class);
+            LoggerFactory.getLogger(RepeatDocPartBadPlaceholderTest.class);
 
     @Test
     @Timeout(10) // in the case of pipe lock because of unknown exceptions

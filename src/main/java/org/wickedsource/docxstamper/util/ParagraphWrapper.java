@@ -2,7 +2,7 @@ package org.wickedsource.docxstamper.util;
 
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import pro.verron.docxstamper.core.Expression;
+import pro.verron.docxstamper.api.Placeholder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,12 +75,12 @@ public class ParagraphWrapper {
      * the paragraph.
      * The replacement object must be a valid DOCX4J Object.
      *
-     * @param expression  the expression to be replaced.
+     * @param placeholder  the expression to be replaced.
      * @param replacement the object to replace the expression.
      */
-    public void replace(Expression expression, R replacement) {
+    public void replace(Placeholder placeholder, R replacement) {
         String text = getText();
-        String full = expression.expression();
+        String full = placeholder.expression();
         int matchStartIndex = text.indexOf(full);
         if (matchStartIndex == -1) {
             // nothing to replace

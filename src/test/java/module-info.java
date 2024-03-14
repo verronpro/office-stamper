@@ -8,6 +8,7 @@ module pro.verron.opcstamper.test {
     requires org.docx4j.core;
     requires org.slf4j;
     requires jakarta.xml.bind;
+    requires spring.core;
 
     opens pro.verron.docxstamper.test to
             spring.expression, org.junit.platform.commons;

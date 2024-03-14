@@ -1,6 +1,7 @@
 package pro.verron.docxstamper.core.expression;
 
-import pro.verron.docxstamper.core.Expression;
+import pro.verron.docxstamper.api.Placeholder;
+import pro.verron.docxstamper.core.DefaultPlaceholder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +26,15 @@ public record ExpressionFinder(
      * @param text the text to search for expressions
      * @return a list of found expressions
      */
-    public List<Expression> find(String text) {
+    public List<Placeholder> find(String text) {
         if (text.isEmpty())
             return emptyList();
         var matcher = pattern.matcher(text);
         int index = 0;
-        List<Expression> matches = new ArrayList<>();
+        List<Placeholder> matches = new ArrayList<>();
         while (matcher.find(index)) {
             String match = matcher.group();
-            matches.add(new Expression(this.matcher, match));
+            matches.add(new DefaultPlaceholder(this.matcher, match));
             index = matcher.end();
         }
         return matches;

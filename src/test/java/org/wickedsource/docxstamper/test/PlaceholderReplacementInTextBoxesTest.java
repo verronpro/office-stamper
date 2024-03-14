@@ -15,7 +15,7 @@ import static org.wickedsource.docxstamper.test.DefaultTests.getResource;
  * @author Joseph Verron
  * @author Thomas Oster
  */
-class ExpressionReplacementInTextBoxesTest {
+class PlaceholderReplacementInTextBoxesTest {
 	@Test
     void expressionReplacementInTextBoxesTest() {
 		var context = new Name("Bart Simpson");

@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.replace;
+package pro.verron.docxstamper.core;
 
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -14,9 +14,7 @@ import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
-import pro.verron.docxstamper.core.Expression;
-import pro.verron.docxstamper.core.Expressions;
-import pro.verron.docxstamper.core.ObjectResolverRegistry;
+import pro.verron.docxstamper.api.Placeholder;
 
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
@@ -35,7 +33,7 @@ public class PlaceholderReplacer {
     private final boolean leaveEmptyOnExpressionError;
     private final boolean replaceUnresolvedExpressions;
     private final String unresolvedExpressionsDefaultValue;
-    private final Expression lineBreakPlaceholder;
+    private final Placeholder lineBreakPlaceholder;
 
     /**
      * <p>Constructor for PlaceholderReplacer.</p>
@@ -51,7 +49,7 @@ public class PlaceholderReplacer {
      *                                          that cannot be resolved will
      *                                          be by replaced by an
      *                                          empty string.
-     * @param lineBreakExpression               if set to a non-null value,
+     * @param linebreakPlaceholder               if set to a non-null value,
      *                                          all occurrences of this placeholder will be
      *                                          replaced with a line break.
      */
@@ -62,7 +60,7 @@ public class PlaceholderReplacer {
             boolean replaceUnresolvedExpressions,
             String unresolvedExpressionsDefaultValue,
             boolean leaveEmptyOnExpressionError,
-            Expression lineBreakExpression
+            Placeholder linebreakPlaceholder
     ) {
         this.registry = registry;
         this.resolver = resolver;
@@ -70,7 +68,7 @@ public class PlaceholderReplacer {
         this.replaceUnresolvedExpressions = replaceUnresolvedExpressions;
         this.unresolvedExpressionsDefaultValue = unresolvedExpressionsDefaultValue;
         this.leaveEmptyOnExpressionError = leaveEmptyOnExpressionError;
-        this.lineBreakPlaceholder = lineBreakExpression;
+        this.lineBreakPlaceholder = linebreakPlaceholder;
     }
 
     /**
@@ -149,7 +147,7 @@ public class PlaceholderReplacer {
 
 
     // TODO: Remove this intermediate method
-    private Expression lineBreakPlaceholder() {
+    private Placeholder lineBreakPlaceholder() {
         return lineBreakPlaceholder;
     }
 
@@ -158,7 +156,7 @@ public class PlaceholderReplacer {
                 .createBr();
         R run = RunUtil.create(lineBreak);
         while (paragraph.getText()
-                .contains(lineBreakPlaceholder().inner())) {
+                .contains(lineBreakPlaceholder().expression())) {
             paragraph.replace(lineBreakPlaceholder(), run);
         }
     }

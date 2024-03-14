@@ -2,6 +2,7 @@ package pro.verron.docxstamper.core;
 
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
+import pro.verron.docxstamper.api.Placeholder;
 import pro.verron.docxstamper.core.expression.ExpressionFinder;
 import pro.verron.docxstamper.core.expression.Matcher;
 
@@ -69,13 +70,13 @@ public class Expressions {
      * Finds variable expressions in a given text.
      *
      * @param text the text to search for variable expressions
-     * @return a list of found variable expressions as {@link Expression} objects
+     * @return a list of found variable expressions as {@link DefaultPlaceholder} objects
      */
-    public static List<Expression> findVariables(String text) {
+    public static List<Placeholder> findVariables(String text) {
         return VAR_FINDER.find(text);
     }
 
-    public static List<Expression> findVariables(ParagraphWrapper paragraph) {
+    public static List<Placeholder> findVariables(ParagraphWrapper paragraph) {
         return findVariables(paragraph.getText());
     }
 
@@ -83,14 +84,14 @@ public class Expressions {
      * Finds processors expressions in a given text.
      *
      * @param text the text to search for processor expressions
-     * @return a list of found processor expressions as {@link Expression}
+     * @return a list of found processor expressions as {@link DefaultPlaceholder}
      * objects
      */
-    public static List<Expression> findProcessors(String text) {
+    public static List<Placeholder> findProcessors(String text) {
         return PROC_FINDER.find(text);
     }
 
-    public static Expression raw(String text) {
-        return new Expression(RAW_MATCHER, text);
+    public static Placeholder raw(String text) {
+        return new DefaultPlaceholder(RAW_MATCHER, text);
     }
 }

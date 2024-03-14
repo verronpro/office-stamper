@@ -3,9 +3,9 @@ package org.wickedsource.docxstamper.processor.repeat;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.Tr;
-import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
+import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 /**
  * Walks through a document and replaces expressions with values from the given

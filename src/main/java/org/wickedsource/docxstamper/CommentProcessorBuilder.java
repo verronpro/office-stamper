@@ -1,7 +1,7 @@
 package org.wickedsource.docxstamper;
 
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
-import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
+import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 /**
  * Factory interface for creating {@link ICommentProcessor} instances.

@@ -11,6 +11,7 @@ import java.io.InputStream;
  * @version ${version}
  * @since 1.0.0
  */
+@Deprecated(since = "1.6.8", forRemoval = true)
 public final class Image
         extends pro.verron.docxstamper.api.Image {
 

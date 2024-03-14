@@ -5,7 +5,6 @@ import org.docx4j.wml.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import pro.verron.docxstamper.core.Expression;
 
 /**
  * The ObjectResolver interface provides a contract for resolving objects to create a run
@@ -23,19 +22,19 @@ public interface ObjectResolver {
      *
      * @param document   the {@link WordprocessingMLPackage} document in
      *                   which to resolve the expression
-     * @param expression the expression value to be replaced
+     * @param placeholder the expression value to be replaced
      * @param object     the object to be used for resolving the expression
      * @return the resolved value for the expression
      * @throws DocxStamperException if no resolver is found for the object
      */
     default R resolve(
             WordprocessingMLPackage document,
-            Expression expression,
+            Placeholder placeholder,
             Object object
     ) {
-        R resolution = resolve(document, expression.inner(), object);
+        R resolution = resolve(document, placeholder.content(), object);
         var msg = "Expression '{}' replaced by '{}' with resolver {}";
-        Log.log.debug(msg, expression, resolution, this);
+        Log.log.debug(msg, placeholder, resolution, this);
         return resolution;
     }
 

@@ -18,7 +18,7 @@ import static org.wickedsource.docxstamper.test.DefaultTests.getResource;
  * @author Joseph Verron
  * @author Tom Hombergs
  */
-class FailOnUnresolvedExpressionTest {
+class FailOnUnresolvedPlaceholderTest {
     @Test
     void fails() throws IOException {
         var context = new Name("Homer");

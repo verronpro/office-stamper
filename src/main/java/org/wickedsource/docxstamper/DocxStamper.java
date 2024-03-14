@@ -12,12 +12,12 @@ import org.wickedsource.docxstamper.api.preprocessor.PreProcessor;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
-import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
 import pro.verron.docxstamper.OpcStamper;
 import pro.verron.docxstamper.StamperFactory;
 import pro.verron.docxstamper.api.ObjectResolver;
 import pro.verron.docxstamper.core.Expressions;
 import pro.verron.docxstamper.core.ObjectResolverRegistry;
+import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -1,5 +1,6 @@
 package pro.verron.docxstamper.utils.context;
 
+import org.wickedsource.docxstamper.processor.table.StampTable;
 import org.wickedsource.docxstamper.replace.typeresolver.image.Image;
 
 import java.util.*;
@@ -7,9 +8,9 @@ import java.util.*;
 /**
  * <p>Contexts class.</p>
  *
- * @since 1.6.5
  * @author Joseph Verron
  * @version ${version}
+ * @since 1.6.5
  */
 public class Contexts {
     private Contexts() {
@@ -51,7 +52,9 @@ public class Contexts {
     public static Object names(String... names) {
         record Name(String name) {}
         record Names(List<Name> names) {}
-        return new Names(Arrays.stream(names).map(Name::new).toList());
+        return new Names(Arrays.stream(names)
+                                 .map(Name::new)
+                                 .toList());
     }
 
     /**
@@ -219,6 +222,16 @@ public class Contexts {
                 null,
                 null
         );
+    }
+
+    public static TableContext characterTable(
+            List<String> headers,
+            List<List<String>> records
+    ) {
+        return new TableContext(new StampTable(
+                headers,
+                records
+        ));
     }
 
     /**
@@ -521,14 +534,14 @@ public class Contexts {
      * Represents the context of a school.
      *
      * @param schoolName the name of the school
-     * @param grades the list of grades in the school
+     * @param grades     the list of grades in the school
      */
     public record SchoolContext(String schoolName, List<Grade> grades) {}
 
     /**
      * Represents a grade in a school.
      *
-     * @param number the grade number
+     * @param number  the grade number
      * @param classes the list of classes in the grade
      */
     record Grade(int number, List<AClass> classes) {}
@@ -559,8 +572,8 @@ public class Contexts {
      * Represents a student.
      *
      * @param number the student number
-     * @param name the student name
-     * @param age the student age
+     * @param name   the student name
+     * @param age    the student age
      */
     record Student(int number, String name, int age) {}
 
@@ -594,4 +607,6 @@ public class Contexts {
      * It is used in various contexts within the application.
      */
     public static class CustomType {}
+
+    public record TableContext(StampTable characters) {}
 }

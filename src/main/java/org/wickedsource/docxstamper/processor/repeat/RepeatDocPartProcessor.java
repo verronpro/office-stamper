@@ -13,6 +13,7 @@ import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
 import pro.verron.docxstamper.OpcStamper;
 import pro.verron.docxstamper.api.CommentWrapper;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class RepeatDocPartProcessor
     private final Supplier<? extends List<?>> nullSupplier;
 
     private RepeatDocPartProcessor(
-            PlaceholderReplacer placeholderReplacer,
+            ParagraphPlaceholderReplacer placeholderReplacer,
             OpcStamper<WordprocessingMLPackage> stamper,
             Supplier<? extends List<?>> nullSupplier
     ) {
@@ -90,7 +91,7 @@ public class RepeatDocPartProcessor
      * @return a new instance of this processor
      */
     public static ICommentProcessor newInstance(
-            PlaceholderReplacer pr,
+            ParagraphPlaceholderReplacer pr,
             OpcStamper<WordprocessingMLPackage> stamper
     ) {
         return new RepeatDocPartProcessor(pr, stamper, Collections::emptyList);

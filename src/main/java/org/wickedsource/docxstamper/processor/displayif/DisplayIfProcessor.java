@@ -9,6 +9,7 @@ import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import org.wickedsource.docxstamper.util.ObjectDeleter;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class DisplayIfProcessor extends BaseCommentProcessor implements IDisplay
 	private List<Tbl> tablesToBeRemoved = new ArrayList<>();
 	private List<Tr> tableRowsToBeRemoved = new ArrayList<>();
 
-	private DisplayIfProcessor(PlaceholderReplacer placeholderReplacer) {
+	private DisplayIfProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
 		super(placeholderReplacer);
 	}
 
@@ -38,7 +39,7 @@ public class DisplayIfProcessor extends BaseCommentProcessor implements IDisplay
 	 * @param pr the {@link PlaceholderReplacer} used for replacing expressions.
 	 * @return a new DisplayIfProcessor instance.
 	 */
-	public static ICommentProcessor newInstance(PlaceholderReplacer pr) {
+	public static ICommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
 		return new DisplayIfProcessor(pr);
 	}
 

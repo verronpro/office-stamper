@@ -3,9 +3,9 @@ package org.wickedsource.docxstamper.processor.repeat;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.Tr;
-import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.docxstamper.core.Paragraph;
 
 /**
  * Walks through a document and replaces expressions with values from the given
@@ -48,7 +48,7 @@ public class ParagraphResolverDocumentWalker
     @Override
     protected void onParagraph(P paragraph) {
         placeholderReplacer.resolveExpressionsForParagraph(
-                new ParagraphWrapper(paragraph),
+                new Paragraph(paragraph),
                 expressionContext, document
         );
     }

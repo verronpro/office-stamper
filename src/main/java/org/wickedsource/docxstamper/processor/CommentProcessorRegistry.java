@@ -13,12 +13,12 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.UnresolvedExpressionException;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
-import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.core.CommentUtil;
 import pro.verron.docxstamper.core.Expressions;
+import pro.verron.docxstamper.core.Paragraph;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -157,7 +157,7 @@ public class CommentProcessorRegistry {
             T expressionContext,
             P paragraph
     ) {
-        var paragraphWrapper = new ParagraphWrapper(paragraph);
+        var paragraphWrapper = new Paragraph(paragraph);
         String text = paragraphWrapper.getText();
         var expressions = Expressions.findProcessors(text);
 

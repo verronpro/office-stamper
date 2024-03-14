@@ -12,7 +12,6 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import org.wickedsource.docxstamper.util.walk.DocumentWalker;
 import pro.verron.docxstamper.api.CommentWrapper;
@@ -195,7 +194,7 @@ public class CommentUtil {
         StringBuilder builder = new StringBuilder();
         for (Object commentChildObject : comment.getContent()) {
             if (commentChildObject instanceof P p) {
-                builder.append(new ParagraphWrapper(p).getText());
+                builder.append(new Paragraph(p).getText());
             }
         }
         String string = builder.toString();

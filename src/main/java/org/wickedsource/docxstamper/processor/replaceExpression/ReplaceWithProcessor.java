@@ -6,6 +6,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.RunUtil;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class ReplaceWithProcessor
     private final Function<R, List<Object>> nullSupplier;
 
     private ReplaceWithProcessor(
-            PlaceholderReplacer placeholderReplacer,
+            ParagraphPlaceholderReplacer placeholderReplacer,
             Function<R, List<Object>> nullSupplier
     ) {
         super(placeholderReplacer);
@@ -58,7 +59,7 @@ public class ReplaceWithProcessor
      * @param pr the placeholder replacer to use
      * @return the processor
      */
-    public static ICommentProcessor newInstance(PlaceholderReplacer pr) {
+    public static ICommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
         return new ReplaceWithProcessor(pr, R::getContent);
     }
 

@@ -1,7 +1,9 @@
-package org.wickedsource.docxstamper.util;
+package pro.verron.docxstamper.core;
 
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
+import org.wickedsource.docxstamper.util.IndexedRun;
+import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.docxstamper.api.Placeholder;
 
 import java.util.ArrayList;
@@ -24,8 +26,7 @@ import static java.util.stream.Collectors.joining;
  * @version ${version}
  * @since 1.0.8
  */
-// TODO: Rename into Paragraph
-public class ParagraphWrapper {
+public class Paragraph {
     private final List<IndexedRun> runs = new ArrayList<>();
     private final P paragraph;
     private int currentPosition = 0;
@@ -35,7 +36,7 @@ public class ParagraphWrapper {
      *
      * @param paragraph the paragraph to wrap.
      */
-    public ParagraphWrapper(P paragraph) {
+    public Paragraph(P paragraph) {
         this.paragraph = paragraph;
         recalculateRuns();
     }

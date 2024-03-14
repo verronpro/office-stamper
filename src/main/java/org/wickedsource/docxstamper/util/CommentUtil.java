@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import org.wickedsource.docxstamper.util.walk.DocumentWalker;
-import pro.verron.docxstamper.core.Expression;
+import pro.verron.docxstamper.api.Placeholder;
 import pro.verron.docxstamper.core.Expressions;
 
 import java.math.BigInteger;
@@ -130,7 +130,7 @@ public class CommentUtil {
      * and will be removed in the future.
      */
     @Deprecated(since = "1.6.8", forRemoval = true)
-    public static Expression getCommentStringFor(
+    public static Placeholder getCommentStringFor(
             ContentAccessor object, WordprocessingMLPackage document
     ) {
         Comment comment = getCommentFor(object, document).orElseThrow();
@@ -190,7 +190,7 @@ public class CommentUtil {
      * @param comment a {@link Comment} object
      * @return a {@link String} object
      */
-    public static Expression getCommentString(Comment comment) {
+    public static Placeholder getCommentString(Comment comment) {
         StringBuilder builder = new StringBuilder();
         for (Object commentChildObject : comment.getContent()) {
             if (commentChildObject instanceof P p) {

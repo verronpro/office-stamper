@@ -7,8 +7,8 @@ import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
-import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
+import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -36,25 +36,25 @@ class Example {
 == Replacing Expressions in a .docx Template
 
 The main feature of docx-stamper is *replacement of expressions* within the text of the template document.
-Simply add expressions like `${person.name}` or `${person.name.equals(&quot;Homer&quot;) ? &quot;Duff&quot; : &quot;Budweiser&quot;}` in the text of your .docx template and provide a context object against which the expression can be resolved. docx-stamper will try to keep the original formatting of the text in the template intact.
+Simply add expressions like `${person.name}` or `${person.name.equals(&quot;Homer&quot;) ? &quot;Duff&quot; : &quot;Budweiser&quot;}` in the text of your .docx template and provide a context object against which the placeholder can be resolved. docx-stamper will try to keep the original formatting of the text in the template intact.
 You can use the full feature set of http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[Spring Expression Language] (SpEL).
 
-The value that an expression resolves to may be of the following types:
+The value that an placeholder resolves to may be of the following types:
 
 .Type that can be resolved to an element in the .docx document
 [cols=">1,3"]
 |===
-| Type of expression value  | Effect
-| `java.lang.Object`        | The expression is replaced by the String representation of the object (`String.valueOf()`).
-| `java.lang.String`          | The expression is replaced with the String value.
-| `java.util.Date`            | The expression is replaced by a formatted Date string (by default "dd.MM.yyyy"). You can change the format string by registering your own `link:{repo}/src/main/java/org/wickedsource/docxstamper/replace/typeresolver/DateResolver.java[DateResolver]`.
-| `java.time.LocalDate`       | The expression is replaced by a formatted Date string (by default DateTimeFormatter.ISO_LOCAL_DATE). You can change the format string by registering your own.
-| `java.time.LocalDateTime`   | The expression is replaced by a formatted Date string (by default DateTimeFormatter.ISO_LOCAL_DATE_TIME). You can change the format string by registering your own.
-| `java.time.LocalTime`       | The expression is replaced by a formatted Date string (by default DateTimeFormatter.ISO_LOCAL_TIME). You can change the format string by registering your own.
-| `link:{repo}/src/main/java/org/wickedsource/docxstamper/replace/typeresolver/image/Image.java[org.wickedsource...Image]` |The expression is replaced with an inline image.
+| Type of placeholder value  | Effect
+| `java.lang.Object`        | The placeholder is replaced by the String representation of the object (`String.valueOf()`).
+| `java.lang.String`          | The placeholder is replaced with the String value.
+| `java.util.Date`            | The placeholder is replaced by a formatted Date string (by default "dd.MM.yyyy"). You can change the format string by registering your own `link:{repo}/src/main/java/org/wickedsource/docxstamper/replace/typeresolver/DateResolver.java[DateResolver]`.
+| `java.time.LocalDate`       | The placeholder is replaced by a formatted Date string (by default DateTimeFormatter.ISO_LOCAL_DATE). You can change the format string by registering your own.
+| `java.time.LocalDateTime`   | The placeholder is replaced by a formatted Date string (by default DateTimeFormatter.ISO_LOCAL_DATE_TIME). You can change the format string by registering your own.
+| `java.time.LocalTime`       | The placeholder is replaced by a formatted Date string (by default DateTimeFormatter.ISO_LOCAL_TIME). You can change the format string by registering your own.
+| `link:{repo}/src/main/java/org/wickedsource/docxstamper/replace/typeresolver/image/Image.java[org.wickedsource...Image]` |The placeholder is replaced with an inline image.
 |===
 
-If an expression cannot be resolved successfully, it will be skipped (meaning the expression stays in the document as it was in the template).
+If an placeholder cannot be resolved successfully, it will be skipped (meaning the placeholder stays in the document as it was in the template).
 To support more than the above types, you can implement your own `link:{repo}/src/main/java/pro/verron/docxstamper/api/ObjectResolver.java[ObjectResolver]`.
 To register your it with docx-stamper, use the following code:
 
@@ -96,7 +96,7 @@ class Main {
 
 == Adding custom functions to the Expression Language
 
-If you want to create custom functions (for different number formats or different date formats, for example), you can register functions which can then be used in the expression language.
+If you want to create custom functions (for different number formats or different date formats, for example), you can register functions which can then be used in the placeholder language.
 The following code, for example, adds a function `toUppercase(String)`
 which can be used within the .docx document to uppercase a String:
 
@@ -130,7 +130,7 @@ By default, you can use the following expressions in comments:
 |`displayTableIf(boolean)` | The whole table surrounding the commented paragraph is only displayed in the resulting .docx document if the boolean condition resolves to `true`.
 |`repeatTableRow(List&lt;Object&gt;)` | The table row surrounding the commented paragraph is copied once for each object in the passed-in list. Expressions found in the cells of the table row are evaluated against the object from the list.
 |`repeatDocPart(List&lt;Object&gt;)` | Repeat the part of the document surrounded by the comment. The document part is copied once for each object in the passed-in list. Expressions found in the elements of the document part are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
-|`replaceWordWith(expression)` | Replaces the commented word (must be a single word) with the value of the given expression.
+|`replaceWordWith(expression)` | Replaces the commented word (must be a single word) with the value of the given placeholder.
 |`resolveTable(StampTable)` | Replace a table (that must have one column and two rows) with the values given by the StampTable. The StampTable contains a list of headers for columns, and a 2-level list of rows containing values for each column.
 |===
 
@@ -171,7 +171,7 @@ The expression will be evaluated as it would be in a comment.
 
 == Error Handling
 
-By default, DocxStamper fails with an UnresolvedExpressionException if an expression within the document or within the comments cannot be resolved successfully.
+By default, DocxStamper fails with an UnresolvedExpressionException if an placeholder within the document or within the comments cannot be resolved successfully.
 If you want to change this behavior, you can do the following:
 
 [source,java]

@@ -4,7 +4,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import pro.verron.docxstamper.core.Expression;
+import pro.verron.docxstamper.api.Placeholder;
 
 /**
  * Resolves expressions against a given context object. Expressions can be either SpEL expressions or simple property
@@ -37,13 +37,13 @@ public class ExpressionResolver {
     /**
      * Resolves the given expression against the provided context object.
      *
-     * @param expression   the expression to resolve.
+     * @param placeholder   the expression to resolve.
      * @param contextRoot  the context object against which to resolve the expression.
      * @return the resolved value of the expression.
      */
-    public Object resolve(Expression expression, Object contextRoot) {
+    public Object resolve(Placeholder placeholder, Object contextRoot) {
         evaluationContext.setRootObject(contextRoot);
-        return parser.parseExpression(expression.inner())
+        return parser.parseExpression(placeholder.content())
                 .getValue(evaluationContext);
     }
 }

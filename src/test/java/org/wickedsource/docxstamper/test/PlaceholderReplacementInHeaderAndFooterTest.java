@@ -23,7 +23,7 @@ import static org.wickedsource.docxstamper.test.DefaultTests.getResource;
  * @author Joseph Verron
  * @author Tom Hombergs
  */
-class ExpressionReplacementInHeaderAndFooterTest {
+class PlaceholderReplacementInHeaderAndFooterTest {
 	@Test
     void expressionReplacementInHeaderAndFooterTest() throws Docx4JException,
 			IOException {

@@ -5,7 +5,7 @@ import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.docxstamper.api.ObjectResolver;
-import pro.verron.docxstamper.core.Expression;
+import pro.verron.docxstamper.api.Placeholder;
 
 /**
  * The {@link Null2PlaceholderResolver} class is an implementation of the ObjectResolver interface.
@@ -30,10 +30,10 @@ class Null2PlaceholderResolver
     @Override
     public R resolve(
             WordprocessingMLPackage document,
-            Expression expression,
+            Placeholder placeholder,
             Object object
     ) {
-        return RunUtil.create(expression.expression());
+        return RunUtil.create(placeholder.expression());
     }
 
     @Override

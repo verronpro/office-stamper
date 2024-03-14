@@ -1,9 +1,8 @@
-package pro.verron.docxstamper.preset.resolver;
+package pro.verron.docxstamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.util.RunUtil;
-import pro.verron.docxstamper.api.ObjectResolver;
 
 /**
  * This is an abstract class that provides a generic implementation for

@@ -14,7 +14,7 @@ import pro.verron.docxstamper.api.ObjectResolver;
  * * @version ${version}
  * * @since 1.6.7
  */
-public class ToStringResolver
+class ToStringResolver
         implements ObjectResolver {
     @Override
     public boolean canResolve(Object object) {

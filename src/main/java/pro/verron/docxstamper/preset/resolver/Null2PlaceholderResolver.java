@@ -15,7 +15,7 @@ import pro.verron.docxstamper.core.Expression;
  * @version ${version}
  * @since 1.6.7
  */
-public class Null2PlaceholderResolver
+class Null2PlaceholderResolver
         implements ObjectResolver {
 
     /* package */ Null2PlaceholderResolver() {

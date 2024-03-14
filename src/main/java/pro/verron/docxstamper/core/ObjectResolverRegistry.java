@@ -1,10 +1,9 @@
-package org.wickedsource.docxstamper.replace.typeresolver;
+package pro.verron.docxstamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import pro.verron.docxstamper.api.ObjectResolver;
-import pro.verron.docxstamper.core.Expression;
 
 import java.util.ArrayList;
 import java.util.List;

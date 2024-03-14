@@ -48,13 +48,8 @@ public class ObjectResolverRegistry {
             Object object
     ) {
         for (ObjectResolver resolver : resolvers)
-            if (resolver.canResolve(object)) {
-                R resolution = resolver.resolve(document, expression, object);
-                var msg = "Expression '{}' replaced by '{}' with resolver {}";
-                log.debug(msg, expression, resolution, resolver);
-                return resolution;
-            }
-        String message = "No resolver found for %s".formatted(object);
-        throw new DocxStamperException(message);
+            if (resolver.canResolve(object))
+                return resolver.resolve(document, expression, object);
+        throw new DocxStamperException("No resolver for %s".formatted(object));
     }
 }

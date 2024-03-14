@@ -14,6 +14,7 @@ import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.ParagraphWrapper;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
+import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.api.Placeholder;
 
 /**
@@ -24,7 +25,8 @@ import pro.verron.docxstamper.api.Placeholder;
  * @version ${version}
  * @since 1.0.0
  */
-public class PlaceholderReplacer {
+public class PlaceholderReplacer
+        implements ParagraphPlaceholderReplacer {
     private static final Logger log = LoggerFactory.getLogger(
             PlaceholderReplacer.class);
     private final ExpressionResolver resolver;
@@ -100,6 +102,7 @@ public class PlaceholderReplacer {
      * @param context   the context root
      * @param document  the document in which to replace all expressions.
      */
+    @Override
     public void resolveExpressionsForParagraph(
             ParagraphWrapper paragraph,
             Object context,

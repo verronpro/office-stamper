@@ -1,8 +1,8 @@
 package org.wickedsource.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
 import pro.verron.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.preset.Configurations;
 import pro.verron.docxstamper.test.utils.TestDocxStamper;
 import pro.verron.docxstamper.test.utils.context.NullishContext;
 import pro.verron.docxstamper.test.utils.context.SubContext;
@@ -26,8 +26,8 @@ class NullPointerResolutionTest {
         var context = new NullishContext("Fullish1", subContext, null, null);
         try (var template =
                      getResource(Path.of("NullPointerResolution.docx"))) {
-            var stamper = new TestDocxStamper<NullishContext>(
-                    new DocxStamperConfiguration());
+            var configuration = Configurations.standard();
+            var stamper = new TestDocxStamper<NullishContext>(configuration);
             assertThrows(
                     DocxStamperException.class,
                     () -> stamper.stampAndLoadAndExtract(template, context)

@@ -9,14 +9,16 @@ import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.P;
-import org.wickedsource.docxstamper.DocxStamper;
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
+import pro.verron.docxstamper.api.DocxStamperConfiguration;
+import pro.verron.docxstamper.api.LoadingOpcStamper;
+import pro.verron.docxstamper.preset.Stampers;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -30,17 +32,24 @@ import static java.util.stream.Collectors.joining;
  */
 public final class TestDocxStamper<T> {
 
-    private final DocxStamper<T> stamper;
+    private final LoadingOpcStamper<WordprocessingMLPackage> stamper;
     private WordprocessingMLPackage document;
 
     /**
      * <p>Constructor for TestDocxStamper.</p>
      *
-     * @param config a {@link org.wickedsource.docxstamper.DocxStamperConfiguration} object
+     * @param config a {@link DocxStamperConfiguration} object
      * @since 1.6.6
      */
     public TestDocxStamper(DocxStamperConfiguration config) {
-        stamper = new DocxStamper<>(config);
+        Function<InputStream, WordprocessingMLPackage> loader = inputStream -> {
+            try {
+                return WordprocessingMLPackage.load(inputStream);
+            } catch (Docx4JException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        stamper = new LoadingOpcStamper<>(loader, Stampers.from(config));
     }
 
     /**

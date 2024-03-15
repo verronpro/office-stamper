@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.commentProcessors;
+package pro.verron.docxstamper.test;
 
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;

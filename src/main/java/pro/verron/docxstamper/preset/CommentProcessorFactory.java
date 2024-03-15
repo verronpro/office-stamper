@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.processor;
+package pro.verron.docxstamper.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.wickedsource.docxstamper.DocxStamper;
@@ -10,7 +10,7 @@ import org.wickedsource.docxstamper.processor.repeat.RepeatDocPartProcessor;
 import org.wickedsource.docxstamper.processor.repeat.RepeatProcessor;
 import org.wickedsource.docxstamper.processor.replaceExpression.ReplaceWithProcessor;
 import org.wickedsource.docxstamper.processor.table.TableResolver;
-import pro.verron.docxstamper.OpcStamper;
+import pro.verron.docxstamper.api.OpcStamper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 

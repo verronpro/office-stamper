@@ -15,7 +15,6 @@ module pro.verron.opcstamper.test {
     requires jakarta.xml.bind;
 
     opens pro.verron.docxstamper.test;
-    opens pro.verron.docxstamper.test.commentProcessors;
     opens pro.verron.docxstamper.test.utils.context;
     opens org.wickedsource.docxstamper.test;
 

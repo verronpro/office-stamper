@@ -1,7 +1,7 @@
 package org.wickedsource.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
+import pro.verron.docxstamper.preset.Configurations;
 import pro.verron.docxstamper.test.utils.TestDocxStamper;
 
 import java.nio.file.Path;
@@ -18,16 +18,15 @@ class MultiSectionTest {
     void expressionsInMultipleSections() {
         var context = new NamesContext("Homer", "Marge");
         var template = getResource(Path.of("MultiSectionTest.docx"));
-        var stamper = new TestDocxStamper<NamesContext>(
-                new DocxStamperConfiguration());
+        var configuration = Configurations.standard();
+        var stamper = new TestDocxStamper<NamesContext>(configuration);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         String expected = """
                 Homer
                         
                 ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
                 Marge""";
-        assertEquals(expected,
-                     actual);
+        assertEquals(expected, actual);
     }
 
 

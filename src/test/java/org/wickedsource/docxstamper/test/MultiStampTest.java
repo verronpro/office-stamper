@@ -1,7 +1,7 @@
 package org.wickedsource.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
+import pro.verron.docxstamper.preset.Configurations;
 import pro.verron.docxstamper.test.utils.TestDocxStamper;
 
 import java.nio.file.Path;
@@ -17,7 +17,7 @@ import static pro.verron.docxstamper.test.utils.context.Contexts.names;
 class MultiStampTest {
     @Test
     void expressionsAreResolvedOnMultiStamp() {
-        var config = new DocxStamperConfiguration();
+        var config = Configurations.standard();
         var context = names("Homer","Marge","Bart","Lisa","Maggie");
         var stamper = new TestDocxStamper<>(config);
 

@@ -60,13 +60,13 @@ public class Contexts {
     /**
      * <p>role.</p>
      *
-     * @param character       a {@link java.lang.String} object
-     * @param danCastellaneta a {@link java.lang.String} object
+     * @param character a {@link java.lang.String} object
+     * @param actor     a {@link java.lang.String} object
      * @return a {@link pro.verron.docxstamper.test.utils.context.Contexts.Role} object
      * @since 1.6.6
      */
-    public static Role role(String character, String danCastellaneta) {
-        return new Role(character, danCastellaneta);
+    public static Role role(String character, String actor) {
+        return new Role(character, actor);
     }
 
     /**

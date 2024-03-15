@@ -1,5 +1,7 @@
 package org.wickedsource.docxstamper.processor.table;
 
+import pro.verron.docxstamper.api.StampTable;
+
 /**
  * This interface is used to resolve a table in the template document.
  * The table is passed to the resolveTable method and will be used to fill an existing Tbl object in the document.

@@ -1,7 +1,6 @@
-package pro.verron.docxstamper;
+package pro.verron.docxstamper.api;
 
 import org.docx4j.openpackaging.packages.OpcPackage;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 
 import java.io.OutputStream;
 

@@ -14,7 +14,7 @@ module pro.verron.opcstamper {
     exports pro.verron.docxstamper.api;
     exports pro.verron.docxstamper.preset;
 
-    exports org.wickedsource.docxstamper;
+    // exports org.wickedsource.docxstamper;
     // exports org.wickedsource.docxstamper.api;
     // exports org.wickedsource.docxstamper.api.commentprocessor;
     // exports org.wickedsource.docxstamper.el;

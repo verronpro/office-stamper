@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.commentProcessors;
+package pro.verron.docxstamper.test;
 
 import pro.verron.docxstamper.api.CommentProcessor;
 

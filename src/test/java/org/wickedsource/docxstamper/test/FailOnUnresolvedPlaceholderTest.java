@@ -1,16 +1,15 @@
 package org.wickedsource.docxstamper.test;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wickedsource.docxstamper.DocxStamper;
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
 import pro.verron.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.preset.Configurations;
+import pro.verron.docxstamper.test.utils.TestDocxStamper;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.wickedsource.docxstamper.test.DefaultTests.getResource;
 
@@ -24,12 +23,11 @@ class FailOnUnresolvedPlaceholderTest {
         var context = new Name("Homer");
         try (var template = getResource(Path.of("FailOnUnresolvedExpressionTest" +
                                                 ".docx"))) {
-            var config = new DocxStamperConfiguration()
+            var config = Configurations.standard()
                     .setFailOnUnresolvedExpression(true);
-            var stamper = new DocxStamper<Name>(config);
-            var outputStream = new ByteArrayOutputStream();
+            var stamper = new TestDocxStamper<>(config);
             assertThrows(DocxStamperException.class,
-                         () -> stamper.stamp(template, context, outputStream));
+                         () -> stamper.stampAndLoad(template, context));
         }
     }
 
@@ -38,12 +36,10 @@ class FailOnUnresolvedPlaceholderTest {
         Name context = new Name("Homer");
         try (InputStream template = getResource(Path.of(
                 "FailOnUnresolvedExpressionTest.docx"))) {
-            var config = new DocxStamperConfiguration()
+            var config = Configurations.standard()
                     .setFailOnUnresolvedExpression(false);
-            var stamper = new DocxStamper<Name>(config);
-            Assertions.assertDoesNotThrow(() -> stamper.stamp(template,
-                                                              context,
-                                                              new ByteArrayOutputStream()));
+            var stamper = new TestDocxStamper<>(config);
+            assertDoesNotThrow(() -> stamper.stampAndLoad(template, context));
         }
     }
 

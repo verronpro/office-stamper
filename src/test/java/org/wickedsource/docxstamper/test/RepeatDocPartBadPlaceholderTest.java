@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
 import pro.verron.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.preset.Configurations;
 import pro.verron.docxstamper.test.utils.TestDocxStamper;
 import pro.verron.docxstamper.test.utils.context.Contexts.Characters;
 import pro.verron.docxstamper.test.utils.context.Contexts.Role;
@@ -36,7 +36,8 @@ public class RepeatDocPartBadPlaceholderTest {
                 List.of(new Role("Homer Simpson", "Dan Castellaneta"),
                         new Role("Marge Simpson", "Julie Kavner"),
                         new Role("Bart Simpson", "Nancy Cartwright")));
-        var stamper = new TestDocxStamper<>(new DocxStamperConfiguration());
+        var configuration = Configurations.standard();
+        var stamper = new TestDocxStamper<>(configuration);
 
         var exception = assertThrows(
                 DocxStamperException.class,

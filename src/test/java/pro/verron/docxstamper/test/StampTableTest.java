@@ -1,7 +1,7 @@
 package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
+import pro.verron.docxstamper.preset.Configurations;
 import pro.verron.docxstamper.test.utils.TestDocxStamper;
 import pro.verron.docxstamper.test.utils.context.Contexts;
 
@@ -21,7 +21,8 @@ class StampTableTest {
 
         var testDocx = getResource(Path.of("StampTableTest.docx"));
 
-        var stamper = new TestDocxStamper<>(new DocxStamperConfiguration());
+        var configuration = Configurations.standard();
+        var stamper = new TestDocxStamper<>(configuration);
 
         String string = stamper.stampAndLoadAndExtract(
                 testDocx,

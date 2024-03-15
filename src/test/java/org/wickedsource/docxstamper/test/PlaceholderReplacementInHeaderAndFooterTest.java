@@ -1,7 +1,7 @@
 package org.wickedsource.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
+import pro.verron.docxstamper.preset.Configurations;
 import pro.verron.docxstamper.test.utils.TestDocxStamper;
 
 import java.nio.file.Path;
@@ -19,8 +19,9 @@ class PlaceholderReplacementInHeaderAndFooterTest {
         var context = new Name("Homer Simpson");
         var template = getResource(
                 Path.of("ExpressionReplacementInHeaderAndFooterTest.docx"));
-        var stamper = new TestDocxStamper<Name>(new DocxStamperConfiguration().setFailOnUnresolvedExpression(
-                false));
+        var configuration = Configurations.standard()
+                .setFailOnUnresolvedExpression(false);
+        var stamper = new TestDocxStamper<Name>(configuration);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals("""
                              ❬❬This ❘lang=de-DE❭❬header ❘lang=de-DE❭❬paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭

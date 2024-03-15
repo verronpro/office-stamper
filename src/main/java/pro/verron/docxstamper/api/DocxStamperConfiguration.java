@@ -1,8 +1,8 @@
 package pro.verron.docxstamper.api;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.lang.NonNull;
-import org.wickedsource.docxstamper.DocxStamper;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ public interface DocxStamperConfiguration {
     );
 
     @Deprecated(forRemoval = true, since = "1.6.4")
-    <T> DocxStamper<T> build();
+    OpcStamper<WordprocessingMLPackage> build();
 
     void addPreprocessor(PreProcessor preprocessor);
 

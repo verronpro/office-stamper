@@ -18,8 +18,7 @@ import static java.util.stream.Collectors.joining;
  * runs a word or a string of words is spread.</p>
  * <p>This class aggregates multiple runs so they can be treated as a single text, no matter how many runs the text spans.
  * Call {@link #addRun(R, int)} to add all runs that should be aggregated. Then, call
- * methods to modify the aggregated text. Finally, call {@link #getText()} or
- * {@link #getRuns()} to get the modified text or  the list of modified runs.
+ * methods to modify the aggregated text. Finally, call {@link #asString()} to get the modified text.
  *
  * @author Joseph Verron
  * @author Tom Hombergs
@@ -45,7 +44,7 @@ public class Paragraph {
      * Recalculates the runs of the paragraph. This method is called automatically by the constructor, but can also be
      * called manually to recalculate the runs after a modification to the paragraph was done.
      */
-    public void recalculateRuns() {
+    private void recalculateRuns() {
         currentPosition = 0;
         this.runs.clear();
         int index = 0;
@@ -80,7 +79,7 @@ public class Paragraph {
      * @param replacement the object to replace the expression.
      */
     public void replace(Placeholder placeholder, R replacement) {
-        String text = getText();
+        String text = asString();
         String full = placeholder.expression();
         int matchStartIndex = text.indexOf(full);
         if (matchStartIndex == -1) {
@@ -172,7 +171,7 @@ public class Paragraph {
      *
      * @return the text of all runs.
      */
-    public String getText() {
+    public String asString() {
         return runs.stream()
                 .map(IndexedRun::run)
                 .map(RunUtil::getText)
@@ -191,7 +190,7 @@ public class Paragraph {
      *
      * @return the list of aggregated runs.
      */
-    public List<R> getRuns() {
+    private List<R> getRuns() {
         return runs.stream()
                 .map(IndexedRun::run)
                 .toList();
@@ -202,15 +201,7 @@ public class Paragraph {
      */
     @Override
     public String toString() {
-        return getText();
+        return asString();
     }
 
-    /**
-     * <p>Getter for the field <code>paragraph</code>.</p>
-     *
-     * @return a {@link P} object
-     */
-    public P getParagraph() {
-        return paragraph;
-    }
 }

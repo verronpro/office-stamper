@@ -194,7 +194,7 @@ public class CommentUtil {
         StringBuilder builder = new StringBuilder();
         for (Object commentChildObject : comment.getContent()) {
             if (commentChildObject instanceof P p) {
-                builder.append(new Paragraph(p).getText());
+                builder.append(new Paragraph(p).asString());
             }
         }
         String string = builder.toString();

@@ -767,7 +767,7 @@ public class DefaultTests {
                          expected);
     }
 
-    private static Arguments conditionalDisplayOfTablesBug32Test() {
+    private static Arguments conditionalDisplayOfTableBug32Test() {
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of(
                 "ConditionalDisplayOfTablesBug32Test.docx"));
@@ -791,7 +791,7 @@ public class DefaultTests {
                          expected);
     }
 
-    private static Arguments conditionalDisplayOfTablesTest() {
+    private static Arguments conditionalDisplayOfTableTest() {
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTablesTest" +
                                            ".docx"));
@@ -980,7 +980,7 @@ public class DefaultTests {
                          expected);
     }
 
-    private static Arguments expressionReplacementWithCommentsTest() {
+    private static Arguments expressionReplacementWithCommentTest() {
         var context = new Contexts.Name("Homer Simpson");
         var template = getResource(Path.of(
                 "ExpressionReplacementWithCommentsTest.docx"));

@@ -26,7 +26,7 @@ public interface CommentProcessor {
     void setParagraph(P paragraph);
 
     /**
-     * Passes the run that is currently being processed (i.e. the run that is commented in the
+     * Passes the run that is currently being processed (i.e., the run that is commented in the
      * .docx template). This method is always called BEFORE the custom
      * methods of the custom comment processor interface
      * are called.
@@ -37,7 +37,7 @@ public interface CommentProcessor {
 
     /**
      * Passes the comment range wrapper that is currently being processed
-     * (i.e. the start and end of comment that in the .docx template).
+     * (i.e., the start and end of comment that in the .docx template).
      * This method is always called BEFORE the custom methods of the custom comment
      * processor interface are called.
      *
@@ -46,7 +46,7 @@ public interface CommentProcessor {
     void setCurrentCommentWrapper(CommentWrapper commentWrapper);
 
     /**
-     * Passes the processed document, in order to make all linked data
+     * Passes the processed document, to make all linked data
      * (images, etc.) available
      * to processors that need it (example: repeatDocPart)
      *

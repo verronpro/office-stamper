@@ -13,7 +13,7 @@ public interface ITypeResolver<T> {
      * @param expressionResult the result of an expression. Only objects of classes this type resolver is registered for
      *                         within the TypeResolverRegistry are passed into this method.
      * @return an object of the DOCX4J api (usually of type {@link R} = "run
-     * of text" that will be put in the place of an
+     * of text") that will be put in the place of an
      * expression found in the .docx document.
      */
     R resolve(WordprocessingMLPackage document, T expressionResult);

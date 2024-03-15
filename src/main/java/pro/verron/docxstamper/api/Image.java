@@ -41,7 +41,7 @@ public sealed class Image
     /**
      * <p>Constructor for Image.</p>
      *
-     * @param imageBytes - content of the image as array of the bytes
+     * @param imageBytes - content of the image as an array of the bytes
      */
     public Image(byte[] imageBytes) {
         this.imageBytes = imageBytes;
@@ -49,7 +49,7 @@ public sealed class Image
     /**
      * <p>Constructor for Image.</p>
      *
-     * @param imageBytes - content of the image as array of the bytes
+     * @param imageBytes - content of the image as an array of the bytes
      * @param maxWidth   - max width of the image in twip
      */
     public Image(byte[] imageBytes, Integer maxWidth) {

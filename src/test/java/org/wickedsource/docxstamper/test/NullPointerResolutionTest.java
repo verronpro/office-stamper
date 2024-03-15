@@ -2,7 +2,7 @@ package org.wickedsource.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
 import org.wickedsource.docxstamper.DocxStamperConfiguration;
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.api.DocxStamperException;
 import pro.verron.docxstamper.test.utils.TestDocxStamper;
 import pro.verron.docxstamper.test.utils.context.NullishContext;
 import pro.verron.docxstamper.test.utils.context.SubContext;

@@ -15,11 +15,12 @@ module pro.verron.opcstamper.test {
     requires jakarta.xml.bind;
 
     opens pro.verron.docxstamper.test;
+    opens pro.verron.docxstamper.test.commentProcessors;
     opens pro.verron.docxstamper.test.utils.context;
     opens org.wickedsource.docxstamper.test;
-    
-    exports org.wickedsource.docxstamper.test;
-    exports pro.verron.docxstamper.test;
-    exports pro.verron.docxstamper.test.commentProcessors;
-    exports pro.verron.docxstamper.test.utils.context;
+
+    // exports pro.verron.docxstamper.test;
+    // exports pro.verron.docxstamper.test.commentProcessors;
+    // exports pro.verron.docxstamper.test.utils.context;
+    // exports org.wickedsource.docxstamper.test;
 }

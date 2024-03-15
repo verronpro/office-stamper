@@ -76,7 +76,7 @@ public class CommentUtil {
                 // then we check if the child we are looking for is ours
             else if (possibleComment != null && run.equals(contentElement))
                 foundChild = true;
-                // and then if we have an end of a comment we are good!
+                // and then, if we have an end of a comment, we are good!
             else if (possibleComment != null && foundChild && unwrap(
                     contentElement) instanceof CommentRangeEnd) {
                 try {

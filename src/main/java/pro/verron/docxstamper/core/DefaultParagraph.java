@@ -189,7 +189,7 @@ public class DefaultParagraph
     }
 
     /**
-     * Returns the list of runs that are aggregated. Depending on what modifications were done to the aggregated text
+     * Returns the list of runs that are aggregated. Depending on what modifications were done to the aggregated text,
      * this list may not return the same runs initially added to the aggregator.
      *
      * @return the list of aggregated runs.

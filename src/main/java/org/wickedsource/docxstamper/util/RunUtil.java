@@ -157,8 +157,9 @@ public class RunUtil {
             Integer maxWidth,
             BinaryPartAbstractImage abstractImage
     ) {
-        // creating random ids assuming they are unique
-        // id must not be too large, otherwise Word cannot open the document
+        // creating random ids assuming they are unique,
+        // id must not be too large;
+        // otherwise Word cannot open the document
         int id1 = random.nextInt(100000);
         int id2 = random.nextInt(100000);
         var filenameHint = "dummyFileName";

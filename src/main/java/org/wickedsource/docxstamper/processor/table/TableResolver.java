@@ -127,7 +127,7 @@ public class TableResolver
         setCellText(cell0tc, values.isEmpty() ? "" : values.get(0));
 
         if (values.size() > 1) {
-            //Copy first cell and replace content for each remaining values
+            //Copy the first cell and replace content for each remaining value
             for (String cellContent : values.subList(1, values.size())) {
                 JAXBElement<Tc> xmlCell = XmlUtils.deepCopy(cell0);
                 setCellText(xmlCell.getValue(), cellContent);

@@ -157,7 +157,7 @@ public class PlaceholderReplacer
         Br lineBreak = Context.getWmlObjectFactory()
                 .createBr();
         R run = RunUtil.create(lineBreak);
-        while (paragraph.getText()
+        while (paragraph.asString()
                 .contains(lineBreakPlaceholder().expression())) {
             paragraph.replace(lineBreakPlaceholder(), run);
         }

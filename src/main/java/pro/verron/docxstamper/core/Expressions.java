@@ -76,7 +76,7 @@ public class Expressions {
     }
 
     public static List<Placeholder> findVariables(Paragraph paragraph) {
-        return findVariables(paragraph.getText());
+        return findVariables(paragraph.asString());
     }
 
     /**

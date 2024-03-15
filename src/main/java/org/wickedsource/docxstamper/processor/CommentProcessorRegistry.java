@@ -158,7 +158,7 @@ public class CommentProcessorRegistry {
             P paragraph
     ) {
         var paragraphWrapper = new Paragraph(paragraph);
-        String text = paragraphWrapper.getText();
+        String text = paragraphWrapper.asString();
         var expressions = Expressions.findProcessors(text);
 
         for (var expression : expressions) {

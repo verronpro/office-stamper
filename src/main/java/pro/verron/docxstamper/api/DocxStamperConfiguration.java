@@ -3,8 +3,6 @@ package pro.verron.docxstamper.api;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.lang.NonNull;
 import org.wickedsource.docxstamper.DocxStamper;
-import org.wickedsource.docxstamper.api.preprocessor.PreProcessor;
-import org.wickedsource.docxstamper.api.typeresolver.ITypeResolver;
 
 import java.util.List;
 import java.util.Map;

@@ -3,7 +3,7 @@ package org.wickedsource.docxstamper.replace.typeresolver;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.api.typeresolver.ITypeResolver;
+import pro.verron.docxstamper.api.ITypeResolver;
 import pro.verron.docxstamper.api.ObjectResolver;
 
 /**

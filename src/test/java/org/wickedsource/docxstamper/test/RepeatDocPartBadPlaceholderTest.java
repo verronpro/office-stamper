@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wickedsource.docxstamper.DocxStamperConfiguration;
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.api.DocxStamperException;
 import pro.verron.docxstamper.test.utils.TestDocxStamper;
 import pro.verron.docxstamper.test.utils.context.Contexts.Characters;
 import pro.verron.docxstamper.test.utils.context.Contexts.Role;

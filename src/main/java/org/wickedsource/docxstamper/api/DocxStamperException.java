@@ -9,7 +9,8 @@ package org.wickedsource.docxstamper.api;
  * @version ${version}
  * @since 1.0.0
  */
-public class DocxStamperException extends RuntimeException {
+public class DocxStamperException
+        extends pro.verron.docxstamper.api.DocxStamperException {
 
     /**
      * <p>Constructor for DocxStamperException.</p>

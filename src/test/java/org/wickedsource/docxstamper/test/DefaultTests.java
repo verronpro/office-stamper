@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.SpelParserConfiguration;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.wickedsource.docxstamper.DocxStamperConfiguration;
 import pro.verron.docxstamper.api.Image;
 import pro.verron.docxstamper.preset.EvaluationContextConfigurers;
@@ -252,8 +251,9 @@ public class DefaultTests {
                 rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
                 """;
 
-        var config = new DocxStamperConfiguration().setEvaluationContextConfigurer(
-                ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        var config = new DocxStamperConfiguration()
+                .setEvaluationContextConfigurer(
+                        ctx -> ctx.addPropertyAccessor(new MapAccessor()));
         return of(
                 "repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument",
                 config,
@@ -273,8 +273,9 @@ public class DefaultTests {
     private static Arguments repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate() {
         return of(
                 "repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
-                new DocxStamperConfiguration().setEvaluationContextConfigurer((StandardEvaluationContext ctx) -> ctx.addPropertyAccessor(
-                        new MapAccessor())),
+                new DocxStamperConfiguration()
+                        .setEvaluationContextConfigurer(
+                                (ctx) -> ctx.addPropertyAccessor(new MapAccessor())),
                 Contexts.subDocPartContext(),
                 getResource(Path.of("RepeatDocPartWithImagesInSourceTest" +
                                     ".docx")),

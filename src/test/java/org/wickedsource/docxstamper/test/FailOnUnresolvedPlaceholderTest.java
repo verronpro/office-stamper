@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.DocxStamperConfiguration;
-import org.wickedsource.docxstamper.api.UnresolvedExpressionException;
+import pro.verron.docxstamper.api.DocxStamperException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +28,8 @@ class FailOnUnresolvedPlaceholderTest {
                     .setFailOnUnresolvedExpression(true);
             var stamper = new DocxStamper<Name>(config);
             var outputStream = new ByteArrayOutputStream();
-            assertThrows(UnresolvedExpressionException.class, () -> stamper.stamp(template, context, outputStream));
+            assertThrows(DocxStamperException.class,
+                         () -> stamper.stamp(template, context, outputStream));
         }
     }
 
@@ -40,7 +41,9 @@ class FailOnUnresolvedPlaceholderTest {
             var config = new DocxStamperConfiguration()
                     .setFailOnUnresolvedExpression(false);
             var stamper = new DocxStamper<Name>(config);
-            Assertions.assertDoesNotThrow(() -> stamper.stamp(template, context, new ByteArrayOutputStream()));
+            Assertions.assertDoesNotThrow(() -> stamper.stamp(template,
+                                                              context,
+                                                              new ByteArrayOutputStream()));
         }
     }
 

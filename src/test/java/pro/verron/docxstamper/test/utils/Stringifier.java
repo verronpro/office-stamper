@@ -15,7 +15,7 @@ import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.api.DocxStamperException;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;

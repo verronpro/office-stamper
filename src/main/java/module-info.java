@@ -1,4 +1,4 @@
-module pro.verron.opcstamper {
+module pro.verron.docxstamper {
     requires spring.core;
     requires spring.expression;
 
@@ -21,6 +21,4 @@ module pro.verron.opcstamper {
     // exports org.wickedsource.docxstamper.util;
     // exports org.wickedsource.docxstamper.processor;
     // exports org.wickedsource.docxstamper.processor.table;
-
-
 }

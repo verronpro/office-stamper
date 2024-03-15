@@ -17,8 +17,8 @@ import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.core.CommentUtil;
+import pro.verron.docxstamper.core.DefaultParagraph;
 import pro.verron.docxstamper.core.Expressions;
-import pro.verron.docxstamper.core.Paragraph;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -157,7 +157,7 @@ public class CommentProcessorRegistry {
             T expressionContext,
             P paragraph
     ) {
-        var paragraphWrapper = new Paragraph(paragraph);
+        var paragraphWrapper = new DefaultParagraph(paragraph);
         String text = paragraphWrapper.asString();
         var expressions = Expressions.findProcessors(text);
 

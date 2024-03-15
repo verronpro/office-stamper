@@ -11,7 +11,7 @@ import org.wickedsource.docxstamper.util.SectionUtil;
 import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.CommentUtil;
-import pro.verron.docxstamper.core.Paragraph;
+import pro.verron.docxstamper.core.DefaultParagraph;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
 import java.math.BigInteger;
@@ -201,7 +201,7 @@ public class ParagraphRepeatProcessor
                                                      paragraphs.commentWrapper.getComment()
                                                              .getId());
                 placeholderReplacer.resolveExpressionsForParagraph(
-                        new Paragraph(pClone),
+                        new DefaultParagraph(pClone),
                         expressionContext,
                         document
                 );

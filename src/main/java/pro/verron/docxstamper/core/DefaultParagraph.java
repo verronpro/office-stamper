@@ -4,6 +4,7 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.util.IndexedRun;
 import org.wickedsource.docxstamper.util.RunUtil;
+import pro.verron.docxstamper.api.Paragraph;
 import pro.verron.docxstamper.api.Placeholder;
 
 import java.util.ArrayList;
@@ -25,7 +26,8 @@ import static java.util.stream.Collectors.joining;
  * @version ${version}
  * @since 1.0.8
  */
-public class Paragraph {
+public class DefaultParagraph
+        implements Paragraph {
     private final List<IndexedRun> runs = new ArrayList<>();
     private final P paragraph;
     private int currentPosition = 0;
@@ -35,7 +37,7 @@ public class Paragraph {
      *
      * @param paragraph the paragraph to wrap.
      */
-    public Paragraph(P paragraph) {
+    public DefaultParagraph(P paragraph) {
         this.paragraph = paragraph;
         recalculateRuns();
     }
@@ -78,6 +80,7 @@ public class Paragraph {
      * @param placeholder  the expression to be replaced.
      * @param replacement the object to replace the expression.
      */
+    @Override
     public void replace(Placeholder placeholder, R replacement) {
         String text = asString();
         String full = placeholder.expression();
@@ -171,6 +174,7 @@ public class Paragraph {
      *
      * @return the text of all runs.
      */
+    @Override
     public String asString() {
         return runs.stream()
                 .map(IndexedRun::run)

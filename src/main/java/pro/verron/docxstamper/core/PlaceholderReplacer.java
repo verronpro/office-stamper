@@ -13,6 +13,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
+import pro.verron.docxstamper.api.Paragraph;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.api.Placeholder;
 
@@ -87,7 +88,7 @@ public class PlaceholderReplacer
             @Override
             protected void onParagraph(P paragraph) {
                 resolveExpressionsForParagraph(
-                        new Paragraph(paragraph),
+                        new DefaultParagraph(paragraph),
                         expressionContext,
                         document);
             }

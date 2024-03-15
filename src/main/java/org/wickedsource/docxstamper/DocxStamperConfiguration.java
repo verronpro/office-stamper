@@ -265,7 +265,7 @@ public class DocxStamperConfiguration
      */
     @Override
     @Deprecated(forRemoval = true, since = "1.6.4")
-    public <T> DocxStamper<T> build() {
+    public OpcStamper<WordprocessingMLPackage> build() {
         return new DocxStamper<>(this);
     }
 

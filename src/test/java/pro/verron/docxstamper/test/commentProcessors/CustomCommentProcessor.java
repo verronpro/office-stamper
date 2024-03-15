@@ -1,10 +1,10 @@
 package pro.verron.docxstamper.test.commentProcessors;
 
+import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
-import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.docxstamper.api.AbstractCommentProcessor;
 import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
@@ -45,6 +45,19 @@ public class CustomCommentProcessor
         super(placeholderReplacer);
     }
 
+    public static R create(String string) {
+        var factory = Context.getWmlObjectFactory();
+
+        var text = factory.createText();
+        text.setValue(string);
+
+        var run = factory.createR();
+        var runContent = run.getContent();
+        runContent.add(text);
+
+        return run;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -53,7 +66,7 @@ public class CustomCommentProcessor
         visitedParagraphs.forEach(p -> {
             var content = p.getContent();
             content.clear();
-            content.add(RunUtil.create("Visited"));
+            content.add(create("Visited"));
         });
     }
 

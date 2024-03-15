@@ -1,6 +1,5 @@
 package org.wickedsource.docxstamper.api.preprocessor;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
 import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
@@ -17,11 +16,6 @@ import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
  * @version ${version}
  * @since 1.6.4
  */
-public interface PreProcessor {
-	/**
-	 * Processes the given document before the actual processing takes place.
-	 *
-	 * @param document the document to process.
-	 */
-	void process(WordprocessingMLPackage document);
+public interface PreProcessor
+		extends pro.verron.docxstamper.api.PreProcessor {
 }

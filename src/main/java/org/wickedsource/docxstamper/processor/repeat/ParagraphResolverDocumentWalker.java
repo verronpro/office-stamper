@@ -5,7 +5,7 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.Tr;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.docxstamper.core.Paragraph;
+import pro.verron.docxstamper.core.DefaultParagraph;
 
 /**
  * Walks through a document and replaces expressions with values from the given
@@ -48,7 +48,7 @@ public class ParagraphResolverDocumentWalker
     @Override
     protected void onParagraph(P paragraph) {
         placeholderReplacer.resolveExpressionsForParagraph(
-                new Paragraph(paragraph),
+                new DefaultParagraph(paragraph),
                 expressionContext, document
         );
     }

@@ -1,6 +1,7 @@
 package pro.verron.docxstamper.core;
 
 import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.api.Paragraph;
 import pro.verron.docxstamper.api.Placeholder;
 import pro.verron.docxstamper.core.expression.ExpressionFinder;
 import pro.verron.docxstamper.core.expression.Matcher;

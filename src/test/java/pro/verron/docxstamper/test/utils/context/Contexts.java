@@ -1,7 +1,7 @@
 package pro.verron.docxstamper.test.utils.context;
 
-import org.wickedsource.docxstamper.processor.table.StampTable;
 import pro.verron.docxstamper.api.Image;
+import pro.verron.docxstamper.api.StampTable;
 
 import java.util.*;
 

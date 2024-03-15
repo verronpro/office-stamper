@@ -8,8 +8,8 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.wickedsource.docxstamper.DocxStamperConfiguration;
-import org.wickedsource.docxstamper.el.NoOpEvaluationContextConfigurer;
 import pro.verron.docxstamper.api.Image;
+import pro.verron.docxstamper.preset.EvaluationContextConfigurers;
 import pro.verron.docxstamper.preset.Resolvers;
 import pro.verron.docxstamper.test.Functions;
 import pro.verron.docxstamper.test.accessors.SimpleGetter;
@@ -1173,9 +1173,9 @@ public class DefaultTests {
         // so it will not work if your type has no default constructor and no setters.
 
         var config = new DocxStamperConfiguration()
-                .setSpelParserConfiguration(
-                        new SpelParserConfiguration(true, true))
-                .setEvaluationContextConfigurer(new NoOpEvaluationContextConfigurer())
+                .setSpelParserConfiguration(new SpelParserConfiguration(true,
+                                                                        true))
+                .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
                 .addResolver(Resolvers.nullToDefault("Nullish value!!"));
 
         return arguments("nullPointerResolutionTest_testWithCustomSpel",

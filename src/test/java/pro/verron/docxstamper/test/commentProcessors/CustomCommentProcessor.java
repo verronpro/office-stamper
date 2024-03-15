@@ -4,8 +4,8 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
-import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.RunUtil;
+import pro.verron.docxstamper.api.AbstractCommentProcessor;
 import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * @since 1.6.6
  */
 public class CustomCommentProcessor
-        extends BaseCommentProcessor
+        extends AbstractCommentProcessor
         implements ICustomCommentProcessor {
 
     private static final List<P> visitedParagraphs = new ArrayList<>();

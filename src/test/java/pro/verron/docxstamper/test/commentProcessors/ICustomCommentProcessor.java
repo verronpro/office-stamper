@@ -1,6 +1,6 @@
 package pro.verron.docxstamper.test.commentProcessors;
 
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
+import pro.verron.docxstamper.api.CommentProcessor;
 
 /**
  * <p>ICustomCommentProcessor interface.</p>
@@ -9,7 +9,8 @@ import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
  * @version ${version}
  * @since 1.6.6
  */
-public interface ICustomCommentProcessor extends ICommentProcessor {
+public interface ICustomCommentProcessor
+        extends CommentProcessor {
     /**
      * <p>visitParagraph.</p>
      */

@@ -4,8 +4,8 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import pro.verron.docxstamper.api.AbstractCommentProcessor;
+import pro.verron.docxstamper.api.CommentProcessor;
 import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is an example of a custom {@link ICommentProcessor} implementation.
+ * This is an example of a custom {@link CommentProcessor} implementation.
  * <p>
  * Users of the docx-stamper library could use it to understand how they could
  * leverage the library to create their own custom comment processors.

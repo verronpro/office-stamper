@@ -4,15 +4,15 @@ import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
-import pro.verron.docxstamper.api.CommentWrapper;
+import pro.verron.docxstamper.api.Comment;
+import pro.verron.docxstamper.api.CommentProcessor;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.CommentUtil;
-import pro.verron.docxstamper.core.DefaultParagraph;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
+import pro.verron.docxstamper.core.StandardParagraph;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -57,7 +57,7 @@ public class ParagraphRepeatProcessor
      * @return a new instance of ParagraphRepeatProcessor
      */
     // TODO: remove ?
-    public static ICommentProcessor newInstance(
+    public static CommentProcessor newInstance(
             PlaceholderReplacer pr,
             String nullReplacement
     ) {
@@ -72,7 +72,7 @@ public class ParagraphRepeatProcessor
      * @param placeholderReplacer replaces expressions with values
      * @return a new instance of ParagraphRepeatProcessor
      */
-    public static ICommentProcessor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
+    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
         return new ParagraphRepeatProcessor(placeholderReplacer,
                                             Collections::emptyList);
     }
@@ -153,7 +153,7 @@ public class ParagraphRepeatProcessor
         Deque<P> paragraphs = getParagraphsInsideComment(paragraph);
 
         Paragraphs toRepeat = new Paragraphs();
-        toRepeat.commentWrapper = getCurrentCommentWrapper();
+        toRepeat.comment = getCurrentCommentWrapper();
         toRepeat.data = new ArrayDeque<>(objects);
         toRepeat.paragraphs = paragraphs;
         toRepeat.sectionBreakBefore = SectionUtil.getPreviousSectionBreakIfPresent(
@@ -198,10 +198,10 @@ public class ParagraphRepeatProcessor
                 }
 
                 CommentUtil.deleteCommentFromElement(pClone.getContent(),
-                                                     paragraphs.commentWrapper.getComment()
+                                                     paragraphs.comment.getComment()
                                                              .getId());
                 placeholderReplacer.resolveExpressionsForParagraph(
-                        new DefaultParagraph(pClone),
+                        new StandardParagraph(pClone),
                         expressionContext,
                         document
                 );
@@ -246,7 +246,7 @@ public class ParagraphRepeatProcessor
     }
 
     private static class Paragraphs {
-        CommentWrapper commentWrapper;
+        Comment comment;
         Deque<Object> data;
         Deque<P> paragraphs;
         // hasOddSectionBreaks is true if the paragraphs to repeat contain an odd number of section breaks

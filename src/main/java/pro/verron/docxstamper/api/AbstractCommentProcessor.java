@@ -3,19 +3,18 @@ package pro.verron.docxstamper.api;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 
 import java.util.Objects;
 
 public abstract class AbstractCommentProcessor
-        implements ICommentProcessor {
+        implements CommentProcessor {
     /**
      * PlaceholderReplacer used to replace expressions in the comment text.
      */
     protected final ParagraphPlaceholderReplacer placeholderReplacer;
     private P paragraph;
     private R currentRun;
-    private CommentWrapper currentCommentWrapper;
+    private Comment currentComment;
     private WordprocessingMLPackage document;
 
     public AbstractCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {this.placeholderReplacer = placeholderReplacer;}
@@ -23,20 +22,20 @@ public abstract class AbstractCommentProcessor
     /**
      * <p>Getter for the field <code>currentCommentWrapper</code>.</p>
      *
-     * @return a {@link CommentWrapper} object
+     * @return a {@link Comment} object
      */
-    public CommentWrapper getCurrentCommentWrapper() {
-        return currentCommentWrapper;
+    public Comment getCurrentCommentWrapper() {
+        return currentComment;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setCurrentCommentWrapper(CommentWrapper currentCommentWrapper) {
-        Objects.requireNonNull(currentCommentWrapper.getCommentRangeStart());
-        Objects.requireNonNull(currentCommentWrapper.getCommentRangeEnd());
-        this.currentCommentWrapper = currentCommentWrapper;
+    public void setCurrentCommentWrapper(Comment currentComment) {
+        Objects.requireNonNull(currentComment.getCommentRangeStart());
+        Objects.requireNonNull(currentComment.getCommentRangeEnd());
+        this.currentComment = currentComment;
     }
 
     /**

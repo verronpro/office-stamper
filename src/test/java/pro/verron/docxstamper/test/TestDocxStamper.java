@@ -9,9 +9,9 @@ import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.P;
-import pro.verron.docxstamper.api.DocxStamperConfiguration;
 import pro.verron.docxstamper.api.LoadingOpcStamper;
-import pro.verron.docxstamper.preset.Stampers;
+import pro.verron.docxstamper.api.OpcStamperConfiguration;
+import pro.verron.docxstamper.preset.OpcStampers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,10 +38,10 @@ public final class TestDocxStamper<T> {
     /**
      * <p>Constructor for TestDocxStamper.</p>
      *
-     * @param config a {@link DocxStamperConfiguration} object
+     * @param config a {@link OpcStamperConfiguration} object
      * @since 1.6.6
      */
-    public TestDocxStamper(DocxStamperConfiguration config) {
+    public TestDocxStamper(OpcStamperConfiguration config) {
         Function<InputStream, WordprocessingMLPackage> loader = inputStream -> {
             try {
                 return WordprocessingMLPackage.load(inputStream);
@@ -49,7 +49,8 @@ public final class TestDocxStamper<T> {
                 throw new RuntimeException(e);
             }
         };
-        stamper = new LoadingOpcStamper<>(loader, Stampers.from(config));
+        stamper = new LoadingOpcStamper<>(loader,
+                                          OpcStampers.docxStamper(config));
     }
 
     /**

@@ -1,8 +1,8 @@
 package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.docxstamper.api.DocxStamperException;
-import pro.verron.docxstamper.preset.Configurations;
+import pro.verron.docxstamper.api.OpcStamperException;
+import pro.verron.docxstamper.preset.OpcStamperConfigurations;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,9 +20,11 @@ class SpelInjectionTest {
     void spelInjectionTest() throws IOException {
         var context = Contexts.empty();
         try (var template = getResource(Path.of("SpelInjectionTest.docx"))) {
-            var configuration = Configurations.standard();
+            var configuration = OpcStamperConfigurations.standard();
             var stamper = new TestDocxStamper<>(configuration);
-            assertThrows(DocxStamperException.class, () -> stamper.stampAndLoadAndExtract(template, context));
+            assertThrows(OpcStamperException.class,
+                         () -> stamper.stampAndLoadAndExtract(template,
+                                                              context));
         }
         assertDoesNotThrow(() -> "Does not throw", "Since VM is still up.");
     }

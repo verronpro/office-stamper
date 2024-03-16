@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
+import pro.verron.docxstamper.api.OpcStamperException;
 import pro.verron.docxstamper.api.Paragraph;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.api.Placeholder;
@@ -88,7 +88,7 @@ public class PlaceholderReplacer
             @Override
             protected void onParagraph(P paragraph) {
                 resolveExpressionsForParagraph(
-                        new DefaultParagraph(paragraph),
+                        new StandardParagraph(paragraph),
                         expressionContext,
                         document);
             }
@@ -108,7 +108,7 @@ public class PlaceholderReplacer
             Object context,
             WordprocessingMLPackage document
     ) {
-        var expressions = Expressions.findVariables(paragraph);
+        var expressions = Placeholders.findVariables(paragraph);
         for (var expression : expressions) {
             try {
                 var resolution = resolver.resolve(expression, context);
@@ -119,7 +119,7 @@ public class PlaceholderReplacer
                 if (failOnUnresolvedExpression) {
                     String message = "Expression %s could not be resolved against context of type %s"
                             .formatted(expression, context.getClass());
-                    throw new DocxStamperException(message, e);
+                    throw new OpcStamperException(message, e);
                 } else if (leaveEmptyOnExpressionError) {
                     log.warn(
                             "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log level to TRACE to view Stacktrace.",

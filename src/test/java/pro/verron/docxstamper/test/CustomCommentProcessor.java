@@ -5,8 +5,8 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import pro.verron.docxstamper.api.AbstractCommentProcessor;
+import pro.verron.docxstamper.api.Comment;
 import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.api.CommentWrapper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class CustomCommentProcessor
      * {@inheritDoc}
      */
     @Override
-    public void setCurrentCommentWrapper(CommentWrapper commentWrapper) {
+    public void setCurrentCommentWrapper(Comment comment) {
     }
 
     /**

@@ -1,5 +1,5 @@
-module pro.verron.docxstamper.test {
-    requires transitive pro.verron.docxstamper;
+module pro.verron.opcstamper.test {
+    requires transitive pro.verron.opcstamper;
 
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
@@ -15,9 +15,4 @@ module pro.verron.docxstamper.test {
     requires jakarta.xml.bind;
 
     opens pro.verron.docxstamper.test;
-
-    // exports pro.verron.docxstamper.test;
-    // exports pro.verron.docxstamper.test.commentProcessors;
-    // exports pro.verron.docxstamper.test.utils.context;
-    // exports org.wickedsource.docxstamper.test;
 }

@@ -2,10 +2,10 @@ package pro.verron.docxstamper.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.wickedsource.docxstamper.DocxStamper;
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
 import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
 import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
 import pro.verron.docxstamper.api.OpcStamper;
+import pro.verron.docxstamper.api.OpcStamperConfiguration;
 
 /**
  * Main class of the docx-stamper library.
@@ -17,9 +17,11 @@ import pro.verron.docxstamper.api.OpcStamper;
  * @version ${version}
  * @since 1.6.4
  */
-public class Stampers {
+public class OpcStampers {
 
-	public static OpcStamper<WordprocessingMLPackage> from(pro.verron.docxstamper.api.DocxStamperConfiguration config) {
+	public static OpcStamper<WordprocessingMLPackage> docxStamper(
+			OpcStamperConfiguration config
+	) {
 		return new DocxStamper<>(config);
 	}
 
@@ -29,21 +31,8 @@ public class Stampers {
 	 *
 	 * @return a new DocxStamper
 	 */
-	public OpcStamper<WordprocessingMLPackage> newDocxStamper() {
-		DocxStamperConfiguration configuration = new DocxStamperConfiguration();
-		configuration.addPreprocessor(new RemoveProofErrors());
-		configuration.addPreprocessor(new MergeSameStyleRuns());
-		return new DocxStamper<>(configuration);
+	public OpcStamper<WordprocessingMLPackage> docxStamper() {
+		return new DocxStamper<>(OpcStamperConfigurations.standardWithPreprocessing());
 	}
 
-	/**
-	 * Creates a new DocxStamper with the default configuration.
-	 * Does not add any preprocessors.
-	 *
-	 * @return a new DocxStamper
-	 */
-	public OpcStamper<WordprocessingMLPackage> nopreprocessingDocxStamper() {
-		DocxStamperConfiguration configuration = new DocxStamperConfiguration();
-		return new DocxStamper<>(configuration);
-	}
 }

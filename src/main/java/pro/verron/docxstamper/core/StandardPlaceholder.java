@@ -6,7 +6,7 @@ import pro.verron.docxstamper.core.expression.Matcher;
 /**
  * Represents an expression with a configured Matcher.
  */
-public record DefaultPlaceholder(
+public record StandardPlaceholder(
         Matcher matcher,
         String expression
 )

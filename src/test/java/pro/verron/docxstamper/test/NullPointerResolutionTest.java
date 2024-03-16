@@ -1,8 +1,8 @@
 package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.docxstamper.api.DocxStamperException;
-import pro.verron.docxstamper.preset.Configurations;
+import pro.verron.docxstamper.api.OpcStamperException;
+import pro.verron.docxstamper.preset.OpcStamperConfigurations;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -23,10 +23,10 @@ class NullPointerResolutionTest {
         var context = new NullishContext("Fullish1", subContext, null, null);
         try (var template =
                      getResource(Path.of("NullPointerResolution.docx"))) {
-            var configuration = Configurations.standard();
+            var configuration = OpcStamperConfigurations.standard();
             var stamper = new TestDocxStamper<NullishContext>(configuration);
             assertThrows(
-                    DocxStamperException.class,
+                    OpcStamperException.class,
                     () -> stamper.stampAndLoadAndExtract(template, context)
             );
         }

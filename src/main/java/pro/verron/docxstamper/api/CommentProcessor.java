@@ -41,9 +41,9 @@ public interface CommentProcessor {
      * This method is always called BEFORE the custom methods of the custom comment
      * processor interface are called.
      *
-     * @param commentWrapper of the currently processed comment within the template.
+     * @param comment of the currently processed comment within the template.
      */
-    void setCurrentCommentWrapper(CommentWrapper commentWrapper);
+    void setCurrentCommentWrapper(Comment comment);
 
     /**
      * Passes the processed document, to make all linked data

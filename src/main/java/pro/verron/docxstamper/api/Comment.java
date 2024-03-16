@@ -6,7 +6,7 @@ import org.docx4j.wml.*;
 import java.util.List;
 import java.util.Set;
 
-public interface CommentWrapper {
+public interface Comment {
     ContentAccessor getParent();
 
     List<Object> getRepeatElements();
@@ -27,9 +27,9 @@ public interface CommentWrapper {
 
     void setCommentReference(R.CommentReference commentReference);
 
-    Set<CommentWrapper> getChildren();
+    Set<Comment> getChildren();
 
-    void setChildren(Set<CommentWrapper> commentWrappers);
+    void setChildren(Set<Comment> comments);
 
     Comments.Comment getComment();
 

@@ -5,10 +5,10 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import org.wickedsource.docxstamper.util.ObjectDeleter;
+import pro.verron.docxstamper.api.CommentProcessor;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
@@ -39,7 +39,7 @@ public class DisplayIfProcessor extends BaseCommentProcessor implements IDisplay
 	 * @param pr the {@link PlaceholderReplacer} used for replacing expressions.
 	 * @return a new DisplayIfProcessor instance.
 	 */
-	public static ICommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
+	public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
 		return new DisplayIfProcessor(pr);
 	}
 

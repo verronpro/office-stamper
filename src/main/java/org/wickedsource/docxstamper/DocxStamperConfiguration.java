@@ -15,6 +15,7 @@ import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import org.wickedsource.docxstamper.replace.typeresolver.TypeResolver;
 import pro.verron.docxstamper.api.*;
 import pro.verron.docxstamper.preset.CommentProcessorFactory;
+import pro.verron.docxstamper.preset.OpcStamperConfigurations;
 import pro.verron.docxstamper.preset.Resolvers;
 import pro.verron.docxstamper.preset.resolver.Null2DefaultResolver;
 
@@ -27,13 +28,22 @@ import static java.util.stream.Collectors.toMap;
  * The {@link DocxStamperConfiguration} class represents the configuration for
  * the {@link DocxStamper} class.
  * It provides methods to customize the behavior of the stamper.
+ *
  * @author Joseph Verron
  * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.3
+ * @deprecated since 1.6.8, This class has been deprecated in the effort
+ * of the library modularization, because it
+ * exposes too many implementation details to library users, and makes it
+ * hard to extend the library comfortably.
+ * It is recommended to use the  {@link OpcStamperConfigurations#standard()} method and
+ * {@link OpcStamperConfiguration} interface instead.
+ * This class will not be exported in the future releases of the module.
  */
+@Deprecated(since = "1.6.8", forRemoval = true)
 public class DocxStamperConfiguration
-        implements pro.verron.docxstamper.api.DocxStamperConfiguration {
+        implements OpcStamperConfiguration {
 
     private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors = new HashMap<>();
     private final List<ObjectResolver> resolvers = new ArrayList<>();
@@ -259,7 +269,6 @@ public class DocxStamperConfiguration
     /**
      * Creates a {@link DocxStamper} instance configured with this configuration.
      *
-     * @param <T> a T class
      * @return a {@link DocxStamper} object
      * @deprecated use new {@link DocxStamper#DocxStamper(DocxStamperConfiguration)} instead
      */

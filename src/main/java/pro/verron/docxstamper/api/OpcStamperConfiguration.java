@@ -9,40 +9,40 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-public interface DocxStamperConfiguration {
+public interface OpcStamperConfiguration {
     @Deprecated(since = "1.6.7")
     Optional<String> nullReplacementValue();
 
     boolean isFailOnUnresolvedExpression();
 
-    DocxStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression);
+    OpcStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression);
 
     @Deprecated(since = "1.6.7", forRemoval = true)
-    DocxStamperConfiguration nullValuesDefault(String nullValuesDefault);
+    OpcStamperConfiguration nullValuesDefault(String nullValuesDefault);
 
     @Deprecated(since = "1.6.7", forRemoval = true)
-    DocxStamperConfiguration replaceNullValues(boolean replaceNullValues);
+    OpcStamperConfiguration replaceNullValues(boolean replaceNullValues);
 
-    DocxStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue);
+    OpcStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue);
 
-    DocxStamperConfiguration replaceUnresolvedExpressions(
+    OpcStamperConfiguration replaceUnresolvedExpressions(
             boolean replaceUnresolvedExpressions
     );
 
-    DocxStamperConfiguration leaveEmptyOnExpressionError(
+    OpcStamperConfiguration leaveEmptyOnExpressionError(
             boolean leaveEmpty
     );
 
     @Deprecated(since = "1.6.7", forRemoval = true)
-    <T> DocxStamperConfiguration addTypeResolver(
+    <T> OpcStamperConfiguration addTypeResolver(
             Class<T> resolvedType, ITypeResolver<T> resolver
     );
 
-    DocxStamperConfiguration exposeInterfaceToExpressionLanguage(
+    OpcStamperConfiguration exposeInterfaceToExpressionLanguage(
             Class<?> interfaceClass, Object implementation
     );
 
-    DocxStamperConfiguration addCommentProcessor(
+    OpcStamperConfiguration addCommentProcessor(
             Class<?> interfaceClass,
             Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
     );
@@ -60,19 +60,19 @@ public interface DocxStamperConfiguration {
 
     String getLineBreakPlaceholder();
 
-    DocxStamperConfiguration setLineBreakPlaceholder(
+    OpcStamperConfiguration setLineBreakPlaceholder(
             @NonNull String lineBreakPlaceholder
     );
 
     EvaluationContextConfigurer getEvaluationContextConfigurer();
 
-    DocxStamperConfiguration setEvaluationContextConfigurer(
+    OpcStamperConfiguration setEvaluationContextConfigurer(
             EvaluationContextConfigurer evaluationContextConfigurer
     );
 
     SpelParserConfiguration getSpelParserConfiguration();
 
-    DocxStamperConfiguration setSpelParserConfiguration(
+    OpcStamperConfiguration setSpelParserConfiguration(
             SpelParserConfiguration spelParserConfiguration
     );
 
@@ -85,7 +85,7 @@ public interface DocxStamperConfiguration {
     ITypeResolver<Object> getDefaultTypeResolver();
 
     @Deprecated(since = "1.6.7", forRemoval = true)
-    DocxStamperConfiguration setDefaultTypeResolver(
+    OpcStamperConfiguration setDefaultTypeResolver(
             ITypeResolver<? super Object> defaultResolver
     );
 
@@ -101,11 +101,11 @@ public interface DocxStamperConfiguration {
 
     List<ObjectResolver> getResolvers();
 
-    DocxStamperConfiguration setResolvers(
+    OpcStamperConfiguration setResolvers(
             List<ObjectResolver> resolvers
     );
 
-    DocxStamperConfiguration addResolver(
+    OpcStamperConfiguration addResolver(
             ObjectResolver resolver
     );
 }

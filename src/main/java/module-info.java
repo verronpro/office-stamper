@@ -1,4 +1,4 @@
-module pro.verron.docxstamper {
+module pro.verron.opcstamper {
     requires spring.core;
     requires spring.expression;
 
@@ -14,11 +14,16 @@ module pro.verron.docxstamper {
     exports pro.verron.docxstamper.api;
     exports pro.verron.docxstamper.preset;
 
-    // exports org.wickedsource.docxstamper;
-    // exports org.wickedsource.docxstamper.api;
-    // exports org.wickedsource.docxstamper.api.commentprocessor;
-    // exports org.wickedsource.docxstamper.el;
-    // exports org.wickedsource.docxstamper.util;
-    // exports org.wickedsource.docxstamper.processor;
-    // exports org.wickedsource.docxstamper.processor.table;
+    /**
+     * TODO: remove all the following exports in next version
+     */
+    opens pro.verron.docxstamper;
+    exports pro.verron.docxstamper;
+    exports org.wickedsource.docxstamper;
+    exports org.wickedsource.docxstamper.api;
+    exports org.wickedsource.docxstamper.api.commentprocessor;
+    exports org.wickedsource.docxstamper.el;
+    exports org.wickedsource.docxstamper.util;
+    exports org.wickedsource.docxstamper.processor;
+    exports org.wickedsource.docxstamper.processor.table;
 }

@@ -6,10 +6,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.SpelParserConfiguration;
-import pro.verron.docxstamper.api.DocxStamperConfiguration;
 import pro.verron.docxstamper.api.Image;
-import pro.verron.docxstamper.preset.Configurations;
+import pro.verron.docxstamper.api.OpcStamperConfiguration;
 import pro.verron.docxstamper.preset.EvaluationContextConfigurers;
+import pro.verron.docxstamper.preset.OpcStamperConfigurations;
 import pro.verron.docxstamper.preset.Resolvers;
 
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class DefaultTests {
 
     private static Arguments replaceWordWithIntegrationTest() {
         return of("replaceWordWithIntegrationTest",
-                  Configurations.standard(),
+                  OpcStamperConfigurations.standard(),
                   name("Simpsons"),
                   getResource(Path.of("integration",
                                       "ReplaceWordWithIntegrationTest.docx")),
@@ -67,7 +67,7 @@ public class DefaultTests {
 
     private static Arguments repeatingRows() {
         return of("Repeating table rows should be possible",
-                  Configurations.standard(),
+                  OpcStamperConfigurations.standard(),
                   roles(role("Homer Simpson", "Dan Castellaneta"),
                         role("Marge Simpson", "Julie Kavner"),
                         role("Bart Simpson", "Nancy Cartwright"),
@@ -98,7 +98,7 @@ public class DefaultTests {
 
     private static Arguments ternary() {
         return of("Ternary operators should function",
-                  Configurations.standard(),
+                  OpcStamperConfigurations.standard(),
                   name("Homer"),
                   getResource(Path.of("TernaryOperatorTest.docx")),
                   """
@@ -111,7 +111,7 @@ public class DefaultTests {
 
     private static Arguments whitespaces() {
         return of("White spaces should be preserved",
-                  Configurations.standard(),
+                  OpcStamperConfigurations.standard(),
                   name("Homer Simpson"),
                   getResource(Path.of("TabsIndentationTest.docx")),
                   """
@@ -121,7 +121,7 @@ public class DefaultTests {
 
     private static Arguments tabulations() {
         return of("Tabulation should be preserved",
-                  Configurations.standard(),
+                  OpcStamperConfigurations.standard(),
                   name("Homer Simpson"),
                   getResource(Path.of("TabsIndentationTest.docx")),
                   """
@@ -131,7 +131,7 @@ public class DefaultTests {
 
     private static Arguments replaceNullExpressionTest() {
         return of("Do not replace 'null' values",
-                  Configurations.standard()
+                  OpcStamperConfigurations.standard()
                           .addResolver(Resolvers.nullToPlaceholder()),
                   name(null),
                   getResource(Path.of("ReplaceNullExpressionTest.docx")),
@@ -140,7 +140,7 @@ public class DefaultTests {
 
     private static Arguments replaceNullExpressionTest2() {
         return of("Do replace 'null' values",
-                  Configurations.standard()
+                  OpcStamperConfigurations.standard()
                           .addResolver(Resolvers.nullToEmpty()),
                   name(null),
                   getResource(Path.of("ReplaceNullExpressionTest.docx")),
@@ -149,7 +149,7 @@ public class DefaultTests {
 
     private static Arguments repeatTableRowKeepsFormatTest() {
         return of("repeatTableRowKeepsFormatTest",
-                  Configurations.standard(),
+                  OpcStamperConfigurations.standard(),
                   new Show(List.of(new CharacterRecord(1,
                                                        "st",
                                                        "Homer Simpson",
@@ -209,7 +209,7 @@ public class DefaultTests {
                 ❬There are ❬6❘lang=de-DE❭ characters.❘spacing={after=140,before=0}❭""";
 
         return arguments("repeatParagraphTest",
-                         Configurations.standard(),
+                         OpcStamperConfigurations.standard(),
                          context,
                          template,
                          expected);
@@ -234,7 +234,7 @@ public class DefaultTests {
                 rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
                 """;
 
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setEvaluationContextConfigurer(
                         ctx -> ctx.addPropertyAccessor(new MapAccessor()));
         return of(
@@ -256,7 +256,7 @@ public class DefaultTests {
     private static Arguments repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate() {
         return of(
                 "repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
-                Configurations.standard()
+                OpcStamperConfigurations.standard()
                         .setEvaluationContextConfigurer(
                                 (ctx) -> ctx.addPropertyAccessor(new MapAccessor())),
                 Contexts.subDocPartContext(),
@@ -275,7 +275,7 @@ public class DefaultTests {
 
     private static Arguments repeatDocPartTest() {
         return of("repeatDocPartTest",
-                  Configurations.standard(),
+                  OpcStamperConfigurations.standard(),
                   new Characters(List.of(
                           new Role("Homer Simpson", "Dan Castellaneta"),
                           new Role("Marge Simpson", "Julie Kavner"),
@@ -316,7 +316,7 @@ public class DefaultTests {
 
     private static Arguments repeatDocPartNestingTest() {
         return of("repeatDocPartNestingTest",
-                  Configurations.standard(),
+                  OpcStamperConfigurations.standard(),
                   Contexts.schoolContext(),
                   getResource(Path.of("RepeatDocPartNestingTest.docx")),
                   """
@@ -503,7 +503,7 @@ public class DefaultTests {
                                 
                 This will stay untouched too.""";
 
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setEvaluationContextConfigurer(
                         (ctx) -> ctx.addPropertyAccessor(new MapAccessor()));
 
@@ -518,7 +518,7 @@ public class DefaultTests {
     private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment() {
         return arguments(
                 "changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment",
-                Configurations.standard()
+                OpcStamperConfigurations.standard()
                         .setEvaluationContextConfigurer(
                                 ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues",
@@ -558,7 +558,7 @@ public class DefaultTests {
                 ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
                 Fourth page is set to portrait again.""";
 
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setEvaluationContextConfigurer(
                         ctx -> ctx.addPropertyAccessor(new MapAccessor()));
         return arguments(
@@ -573,7 +573,7 @@ public class DefaultTests {
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment() {
         return arguments(
                 "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment",
-                Configurations.standard()
+                OpcStamperConfigurations.standard()
                         .setEvaluationContextConfigurer(
                                 ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues",
@@ -599,7 +599,7 @@ public class DefaultTests {
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement() {
         return arguments(
                 "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement",
-                Configurations.standard()
+                OpcStamperConfigurations.standard()
                         .setEvaluationContextConfigurer(
                                 ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues",
@@ -630,7 +630,7 @@ public class DefaultTests {
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment() {
         return arguments(
                 "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment",
-                Configurations.standard()
+                OpcStamperConfigurations.standard()
                         .setEvaluationContextConfigurer(
                                 ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues",
@@ -669,7 +669,7 @@ public class DefaultTests {
 
         return arguments(
                 "conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved",
-                Configurations.standard(),
+                OpcStamperConfigurations.standard(),
                 context,
                 template,
                 expected);
@@ -693,7 +693,7 @@ public class DefaultTests {
                 """;
         return arguments(
                 "conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved",
-                Configurations.standard(),
+                OpcStamperConfigurations.standard(),
                 context,
                 template,
                 expected);
@@ -719,7 +719,7 @@ public class DefaultTests {
                 """;
         return arguments(
                 "conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved",
-                Configurations.standard(),
+                OpcStamperConfigurations.standard(),
                 context,
                 template,
                 expected);
@@ -739,7 +739,7 @@ public class DefaultTests {
                                 
                 ❬❘spacing={after=140,before=0}❭""";
         return arguments("conditionalDisplayOfTableRowsTest",
-                         Configurations.standard(),
+                         OpcStamperConfigurations.standard(),
                          context,
                          template,
                          expected);
@@ -763,7 +763,7 @@ public class DefaultTests {
                                 
                 ❬❬This paragraph stays untouched.❘lang=de-DE❭❘spacing={after=140,before=0}❭""";
         return arguments("conditionalDisplayOfTableBug32Test",
-                         Configurations.standard(),
+                         OpcStamperConfigurations.standard(),
                          context,
                          template,
                          expected);
@@ -787,7 +787,7 @@ public class DefaultTests {
                                 
                 ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE,spacing={after=140,before=0}❭""";
         return arguments("conditionalDisplayOfTablesTest",
-                         Configurations.standard(),
+                         OpcStamperConfigurations.standard(),
                          context,
                          template,
                          expected);
@@ -801,7 +801,7 @@ public class DefaultTests {
                 ❬Custom EvaluationContextConfigurer Test❘spacing={after=120,before=240}❭
                 ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE❭
                 ❬The variable foo has the value ❬bar❘lang=de-DE❭.❘spacing={after=140,before=0}❭""";
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setEvaluationContextConfigurer(
                         evalContext -> evalContext.addPropertyAccessor(new SimpleGetter(
                                 "foo",
@@ -823,7 +823,7 @@ public class DefaultTests {
                 ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
                 ❬❬In this paragraph, a custom expression function is used to uppercase a String: |BR|❘lang=de-DE❭❬HOMER SIMPSON❘b=true,lang=de-DE❭❬.❘lang=de-DE❭❘spacing={after=140,before=0}❭
                 ❬❬To test that custom functions work together with comment expressions, we toggle visibility of this paragraph with a comment expression.❘lang=de-DE❭❘spacing={after=140,before=0}❭""";
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .exposeInterfaceToExpressionLanguage(
                         Functions.UppercaseFunction.class,
                         Functions.upperCase());
@@ -836,7 +836,7 @@ public class DefaultTests {
 
     private static Arguments customTypeResolverTest() {
         return arguments("customTypeResolverTest",
-                         Configurations.standard()
+                         OpcStamperConfigurations.standard()
                                  .addResolver(new CustomTypeResolver()),
                          new Context(new CustomType()),
                          getResource(Path.of("CustomTypeResolverTest.docx")),
@@ -857,7 +857,7 @@ public class DefaultTests {
                 Today is: %s""".formatted(formattedDate);
 
         return arguments("dateReplacementTest",
-                         Configurations.standard(),
+                         OpcStamperConfigurations.standard(),
                          context,
                          template,
                          expected);
@@ -872,7 +872,7 @@ public class DefaultTests {
                 ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
                 ❬In this paragraph, the variable ❘lang=de-DE❭❬name❘b=true,lang=de-DE❭ should be resolved to the value ❬Homer Simpson❘lang=de-DE❭.
                 ❬❬In this paragraph, the variable ❘lang=de-DE❭❬foo❘b=true,lang=de-DE❭❬ should not be resolved: ${foo}.❘lang=de-DE❭❘spacing={after=140,before=0}❭""";
-        DocxStamperConfiguration config = Configurations.standard()
+        OpcStamperConfiguration config = OpcStamperConfigurations.standard()
                 .setFailOnUnresolvedExpression(false);
         return arguments("expressionReplacementInGlobalParagraphsTest",
                          config,
@@ -899,7 +899,7 @@ public class DefaultTests {
                 ${foo}
                                 
                 ❬❘spacing={after=140,before=0}❭""";
-        DocxStamperConfiguration config = Configurations.standard()
+        OpcStamperConfiguration config = OpcStamperConfigurations.standard()
                 .setFailOnUnresolvedExpression(false);
         return arguments("expressionReplacementInTablesTest",
                          config,
@@ -931,7 +931,7 @@ public class DefaultTests {
                 ❬It should be white over darkblue: ❬Homer Simpson❘color=FFFFFF,highlight=darkBlue❭❘b=true❭
                 ❬It should be with header formatting: ❬Homer Simpson❘rStyle=TitreCar❭❘b=true❭""";
         return arguments("expressionReplacementWithFormattingTest",
-                         Configurations.standard(),
+                         OpcStamperConfigurations.standard(),
                          context,
                          template,
                          expected);
@@ -952,7 +952,7 @@ public class DefaultTests {
                 Before Expression After.
                 ❬Before Expression After.❘spacing={after=140,before=0}❭""";
         return arguments("expressionWithSurroundingSpacesTest",
-                         Configurations.standard(),
+                         OpcStamperConfigurations.standard(),
                          spacyContext,
                          template,
                          expected);
@@ -967,7 +967,7 @@ public class DefaultTests {
                 This paragraph is untouched.
                 In this paragraph, the variable ❬name❘b=true❭ should be resolved to the value Homer Simpson.
                 ❬In this paragraph, the variable ❬foo❘b=true❭ should not be resolved: unresolvedValueWithCommentreplaceWordWith(foo).❘spacing={after=140,before=0,line=288,lineRule=AUTO}❭""";
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setFailOnUnresolvedExpression(false);
         return arguments("expressionReplacementWithCommentsTest",
                          config,
@@ -990,7 +990,7 @@ public class DefaultTests {
                 ❬In this paragraph, an image of Mona Lisa is inserted: ❬rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭.❘lang=de-DE❭
                 ❬This paragraph has the image ❬rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭""";
         return arguments("imageReplacementInGlobalParagraphsTest",
-                         Configurations.standard(),
+                         OpcStamperConfigurations.standard(),
                          context,
                          template,
                          expected);
@@ -1008,7 +1008,7 @@ public class DefaultTests {
                 ❬In this paragraph, an image of Mona Lisa is inserted: ❬rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭.❘lang=de-DE❭
                 ❬This paragraph has the image ❬rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭""";
         return arguments("imageReplacementInGlobalParagraphsTestWithMaxWidth",
-                         Configurations.standard(),
+                         OpcStamperConfigurations.standard(),
                          context,
                          template,
                          expected);
@@ -1029,7 +1029,7 @@ public class DefaultTests {
         var expected = """
                 Leave me empty .
                 ❬❘u=single❭""";
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setFailOnUnresolvedExpression(false)
                 .leaveEmptyOnExpressionError(true);
         return arguments("leaveEmptyOnExpressionErrorTest",
@@ -1040,7 +1040,7 @@ public class DefaultTests {
     }
 
     private static Arguments lineBreakReplacementTest() {
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setLineBreakPlaceholder("#");
         var context = new Contexts.Name(null);
         var template = getResource(Path.of("LineBreakReplacementTest.docx"));
@@ -1080,7 +1080,7 @@ public class DefaultTests {
                 Paragraph end
                 """;
 
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setFailOnUnresolvedExpression(false)
                 .setLineBreakPlaceholder("\n")
                 .addResolver(Resolvers.nullToDefault("N/C"))
@@ -1114,7 +1114,7 @@ public class DefaultTests {
                 Deal with: ${nullish.li[2] ?: "Nullish value!!"}
                 """;
 
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setFailOnUnresolvedExpression(false);
 
         return arguments("nullPointerResolutionTest_testWithDefaultSpel",
@@ -1127,7 +1127,7 @@ public class DefaultTests {
     private static Arguments customCommentProcessor() {
         return arguments(
                 "customCommentProcessor",
-                Configurations.standard()
+                OpcStamperConfigurations.standard()
                         .addCommentProcessor(
                                 ICustomCommentProcessor.class,
                                 CustomCommentProcessor::new),
@@ -1160,7 +1160,7 @@ public class DefaultTests {
         // Beware, this configuration only autogrows pojos and java beans,
         // so it will not work if your type has no default constructor and no setters.
 
-        var config = Configurations.standard()
+        var config = OpcStamperConfigurations.standard()
                 .setSpelParserConfiguration(new SpelParserConfiguration(true,
                                                                         true))
                 .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
@@ -1227,7 +1227,7 @@ public class DefaultTests {
     @ParameterizedTest(name = "{0}")
     void features(
             String ignoredName,
-            DocxStamperConfiguration config,
+            OpcStamperConfiguration config,
             Object context,
             InputStream template,
             String expected

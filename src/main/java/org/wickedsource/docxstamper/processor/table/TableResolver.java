@@ -4,10 +4,10 @@ import jakarta.xml.bind.JAXBElement;
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
+import pro.verron.docxstamper.api.CommentProcessor;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.api.StampTable;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
@@ -46,7 +46,7 @@ public class TableResolver
      * @param nullReplacementValue in case the value to interpret is <code>null</code>
      * @return a new {@link TableResolver} instance
      */
-    public static ICommentProcessor newInstance(
+    public static CommentProcessor newInstance(
             PlaceholderReplacer pr,
             String nullReplacementValue
     ) {
@@ -61,7 +61,7 @@ public class TableResolver
      * @param pr a {@link PlaceholderReplacer} instance
      * @return a new {@link TableResolver} instance
      */
-    public static ICommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
+    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
         return new TableResolver(pr, table -> Collections.emptyList());
     }
 

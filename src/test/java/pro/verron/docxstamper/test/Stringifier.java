@@ -15,6 +15,7 @@ import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
+import org.docx4j.wml.Comments.Comment;
 import pro.verron.docxstamper.api.DocxStamperException;
 
 import java.math.BigInteger;
@@ -23,6 +24,9 @@ import java.security.NoSuchAlgorithmException;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
@@ -42,7 +46,6 @@ public class Stringifier {
     /**
      * <p>Constructor for Stringifier.</p>
      *
-     * @param documentSupplier a {@link java.util.function.Supplier} object
      * @since 1.6.6
      */
     public Stringifier(Supplier<WordprocessingMLPackage> documentSupplier) {
@@ -65,7 +68,7 @@ public class Stringifier {
      * @return an Optional containing the Comment if found, or an empty Optional if not found
      * @throws Docx4JException if an error occurs while searching for the comment
      */
-    public static Optional<Comments.Comment> findComment(
+    public static Optional<Comment> findComment(
             WordprocessingMLPackage document, BigInteger id
     ) throws Docx4JException {
         var name = new PartName("/word/comments.xml");
@@ -74,13 +77,48 @@ public class Stringifier {
         var comments = wordComments.getContents();
         return comments.getComment()
                 .stream()
-                .filter(comment -> comment.getId()
-                        .equals(id))
+                .filter(idEqual(id))
                 .findFirst();
+    }
+
+    private static Predicate<Comment> idEqual(BigInteger id) {
+        return comment -> {
+            var commentId = comment.getId();
+            return commentId.equals(id);
+        };
+    }
+
+    private static void extract(
+            Map<String, Object> map,
+            String key,
+            Object value
+    ) {
+        if (value != null)
+            map.put(key, value);
+    }
+
+    private static Function<Entry<?, ?>, String> format(String format) {
+        return entry -> format.formatted(entry.getKey(), entry.getValue());
+    }
+
+    private String stringify(Text text) {
+        return TextUtils.getText(text);
     }
 
     private WordprocessingMLPackage document() {
         return documentSupplier.get();
+    }
+
+    private String stringify(R.LastRenderedPageBreak lrpb) {
+        return ""; // do not render
+    }
+
+    private String stringify(Br br) {
+        return "|BR|";
+    }
+
+    private String stringify(R.Tab tab) {
+        return "|TAB|";
     }
 
     /**
@@ -90,7 +128,7 @@ public class Stringifier {
      * @return a {@link java.lang.String} object
      * @since 1.6.6
      */
-    public String stringify(CTBlip blip) {
+    private String stringify(CTBlip blip) {
         var image = document()
                 .getParts()
                 .getParts()
@@ -99,7 +137,7 @@ public class Stringifier {
                 .filter(e -> e.getKey()
                         .getName()
                         .contains(blip.getEmbed()))
-                .map(Map.Entry::getValue)
+                .map(Entry::getValue)
                 .findFirst()
                 .map(BinaryPartAbstractImage.class::cast)
                 .orElseThrow();
@@ -118,7 +156,7 @@ public class Stringifier {
      * @return a {@link java.lang.String} object
      * @since 1.6.6
      */
-    public String humanReadableByteCountSI(long bytes) {
+    private String humanReadableByteCountSI(long bytes) {
         if (-1000 < bytes && bytes < 1000) return bytes + "B";
 
         CharacterIterator ci = new StringCharacterIterator("kMGTPE");
@@ -145,50 +183,68 @@ public class Stringifier {
      * @since 1.6.6
      */
     public String stringify(Object o) {
-        if (o instanceof JAXBElement<?> jaxbElement)
-            return stringify(jaxbElement.getValue());
-        if (o instanceof List<?> list)
-            return list.stream()
-                    .map(this::stringify)
-                    .collect(joining());
-        if (o instanceof Text text)
-            return TextUtils.getText(text);
-        if (o instanceof P p)
-            return stringify(p);
-        if (o instanceof Drawing drawing)
-            return stringify(drawing.getAnchorOrInline());
-        if (o instanceof Inline inline)
-            return stringify(inline.getGraphic()) + ":" + inline.getExtent()
-                    .getCx();
-        if (o instanceof Graphic graphic)
-            return stringify(graphic.getGraphicData());
-        if (o instanceof GraphicData graphicData)
-            return stringify(graphicData.getPic());
-        if (o instanceof Pic pic)
-            return stringify(pic.getBlipFill());
-        if (o instanceof CTBlipFillProperties blipFillProperties)
-            return stringify(blipFillProperties.getBlip());
-        if (o instanceof CTBlip blip)
-            return stringify(blip);
-        if (o instanceof R.LastRenderedPageBreak)
-            return ""; // do not serialize
-        if (o instanceof Br)
-            return "|BR|";
-        if (o instanceof R.Tab)
-            return "|TAB|";
-        if (o instanceof R.CommentReference commentReference) {
-            try {
-                return findComment(document(),
-                                               commentReference.getId())
-                        .map(c -> stringify(c.getContent()))
-                        .orElseThrow();
-            } catch (Docx4JException e) {
-                throw new RuntimeException(e);
-            }
+        if (o instanceof JAXBElement<?> jaxb) return stringify(jaxb.getValue());
+        if (o instanceof List<?> list) return stringify(list);
+        if (o instanceof Text text) return stringify(text);
+        if (o instanceof P p) return stringify(p);
+        if (o instanceof Drawing drawing) return stringify(drawing);
+        if (o instanceof Inline inline) return stringify(inline);
+        if (o instanceof Graphic graphic) return getStringify(graphic);
+        if (o instanceof GraphicData graphicData) return stringify(graphicData);
+        if (o instanceof Pic pic) return stringify(pic);
+        if (o instanceof CTBlipFillProperties bfp) return stringify(bfp);
+        if (o instanceof CTBlip blip) return stringify(blip);
+        if (o instanceof R.LastRenderedPageBreak lrpb) return stringify(lrpb);
+        if (o instanceof Br br) return stringify(br);
+        if (o instanceof R.Tab tab) return stringify(tab);
+        if (o instanceof R.CommentReference cr) return stringify(cr);
+        if (o == null) throw new RuntimeException("Unsupported content: NULL");
+        throw new RuntimeException("Unsupported content: " + o.getClass());
+    }
+
+    private String stringify(Pic pic) {
+        return stringify(pic.getBlipFill());
+    }
+
+    private String stringify(CTBlipFillProperties blipFillProperties) {
+        return stringify(blipFillProperties.getBlip());
+    }
+
+    private String stringify(R.CommentReference commentReference) {
+        try {
+            return findComment(document(),
+                               commentReference.getId())
+                    .map(c -> stringify(c.getContent()))
+                    .orElseThrow();
+        } catch (Docx4JException e) {
+            throw new RuntimeException(e);
         }
-        if (o == null)
-            throw new RuntimeException("Unsupported run content: NULL");
-        throw new RuntimeException("Unsupported run content: " + o.getClass());
+    }
+
+    private String stringify(GraphicData graphicData) {
+        return stringify(graphicData.getPic());
+    }
+
+    private String getStringify(Graphic graphic) {
+        return stringify(graphic.getGraphicData());
+    }
+
+    private String stringify(Inline inline) {
+        var graphic = inline.getGraphic();
+        var extent = inline.getExtent();
+        return "%s:%d".formatted(
+                stringify(graphic),
+                extent.getCx());
+    }
+
+    private String stringify(Drawing drawing) {
+        return stringify(drawing.getAnchorOrInline());
+    }
+
+    private String stringify(List<?> list) {
+        return list.stream()
+                .map(this::stringify)
+                .collect(joining());
     }
 
     /**
@@ -198,26 +254,20 @@ public class Stringifier {
      * @return a {@link java.util.Optional} object
      * @since 1.6.6
      */
-    public Optional<String> stringify(PPrBase.Spacing spacing) {
+    private Optional<String> stringify(PPrBase.Spacing spacing) {
         if (spacing == null) return Optional.empty();
         SortedMap<String, Object> map = new TreeMap<>();
-        ofNullable(spacing.getAfter())
-                .ifPresent(after -> map.put("after", after));
-        ofNullable(spacing.getAfter())
-                .ifPresent(after -> map.put("before", after));
-        ofNullable(spacing.getAfter())
-                .ifPresent(after -> map.put("beforeLines", after));
-        ofNullable(spacing.getAfter())
-                .ifPresent(after -> map.put("afterLines", after));
-        ofNullable(spacing.getAfter())
-                .ifPresent(after -> map.put("line", after));
-        ofNullable(spacing.getAfter())
-                .ifPresent(after -> map.put("lineRule", after));
+        extract(map, "after", spacing.getAfter());
+        extract(map, "before", spacing.getBefore());
+        extract(map, "beforeLines", spacing.getBeforeLines());
+        extract(map, "afterLines", spacing.getAfterLines());
+        extract(map, "line", spacing.getLine());
+        extract(map, "lineRule", spacing.getLineRule());
         return map.isEmpty()
                 ? Optional.empty()
                 : Optional.of(map.entrySet()
                                       .stream()
-                                      .map(entry -> entry.getKey() + "=" + entry.getValue())
+                                      .map(format("%s=%s"))
                                       .collect(joining(",", "{", "}")));
     }
 
@@ -228,7 +278,7 @@ public class Stringifier {
      * @return a {@link java.lang.String} object
      * @since 1.6.6
      */
-    public String stringify(P p) {
+    private String stringify(P p) {
         String runs = extractDocumentRuns(p);
         return ofNullable(p.getPPr())
                 .flatMap(this::stringify)
@@ -311,7 +361,7 @@ public class Stringifier {
      * @return a {@link java.lang.String} object
      * @since 1.6.6
      */
-    public String stringify(R run) {
+    private String stringify(R run) {
         String serialized = stringify(run.getContent());
         if (serialized.isEmpty())
             return "";
@@ -328,7 +378,7 @@ public class Stringifier {
      * @return a {@link java.lang.String} object
      * @since 1.6.6
      */
-    public Optional<String> stringify(RPrAbstract rPr) {
+    private Optional<String> stringify(RPrAbstract rPr) {
         if (rPr == null)
             return Optional.empty();
         var set = new TreeSet<String>();

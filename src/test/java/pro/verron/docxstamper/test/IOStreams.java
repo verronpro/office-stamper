@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.utils;
+package pro.verron.docxstamper.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

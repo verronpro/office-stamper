@@ -2,14 +2,12 @@ package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
 import pro.verron.docxstamper.preset.Configurations;
-import pro.verron.docxstamper.test.utils.TestDocxStamper;
-import pro.verron.docxstamper.test.utils.context.Contexts;
 
 import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.wickedsource.docxstamper.test.DefaultTests.getResource;
+import static pro.verron.docxstamper.test.DefaultTests.getResource;
 
 /**
  * A test class that verifies that stampTable feature works correctly

@@ -15,8 +15,6 @@ module pro.verron.docxstamper.test {
     requires jakarta.xml.bind;
 
     opens pro.verron.docxstamper.test;
-    opens pro.verron.docxstamper.test.utils.context;
-    opens org.wickedsource.docxstamper.test;
 
     // exports pro.verron.docxstamper.test;
     // exports pro.verron.docxstamper.test.commentProcessors;

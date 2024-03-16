@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.test;
+package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,13 +11,6 @@ import pro.verron.docxstamper.api.Image;
 import pro.verron.docxstamper.preset.Configurations;
 import pro.verron.docxstamper.preset.EvaluationContextConfigurers;
 import pro.verron.docxstamper.preset.Resolvers;
-import pro.verron.docxstamper.test.CustomCommentProcessor;
-import pro.verron.docxstamper.test.Functions;
-import pro.verron.docxstamper.test.ICustomCommentProcessor;
-import pro.verron.docxstamper.test.accessors.SimpleGetter;
-import pro.verron.docxstamper.test.resolver.CustomTypeResolver;
-import pro.verron.docxstamper.test.utils.TestDocxStamper;
-import pro.verron.docxstamper.test.utils.context.Contexts;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +24,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
-import static pro.verron.docxstamper.test.utils.context.Contexts.*;
+import static pro.verron.docxstamper.test.Contexts.*;
 
 /**
  * <p>DefaultTests class.</p>
@@ -767,7 +760,7 @@ public class DefaultTests {
                          expected);
     }
 
-    private static Arguments conditionalDisplayOfTableBug32Test() {
+    private static Arguments conditionalDisplayOfTablesBug32Test() {
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of(
                 "ConditionalDisplayOfTablesBug32Test.docx"));

@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.test;
+package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -6,9 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.docxstamper.api.DocxStamperException;
 import pro.verron.docxstamper.preset.Configurations;
-import pro.verron.docxstamper.test.utils.TestDocxStamper;
-import pro.verron.docxstamper.test.utils.context.Contexts.Characters;
-import pro.verron.docxstamper.test.utils.context.Contexts.Role;
+import pro.verron.docxstamper.test.Contexts.Characters;
+import pro.verron.docxstamper.test.Contexts.Role;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -16,7 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.wickedsource.docxstamper.test.DefaultTests.getResource;
+import static pro.verron.docxstamper.test.DefaultTests.getResource;
 
 /**
  * @author Jenei Attila

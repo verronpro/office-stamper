@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.utils.context;
+package pro.verron.docxstamper.test;
 
 import pro.verron.docxstamper.api.Image;
 import pro.verron.docxstamper.api.StampTable;
@@ -62,7 +62,7 @@ public class Contexts {
      *
      * @param character a {@link java.lang.String} object
      * @param actor     a {@link java.lang.String} object
-     * @return a {@link pro.verron.docxstamper.test.utils.context.Contexts.Role} object
+     * @return a {@link Contexts.Role} object
      * @since 1.6.6
      */
     public static Role role(String character, String actor) {
@@ -72,8 +72,8 @@ public class Contexts {
     /**
      * <p>roles.</p>
      *
-     * @param roles a {@link pro.verron.docxstamper.test.utils.context.Contexts.Role} object
-     * @return a {@link pro.verron.docxstamper.test.utils.context.Contexts.Characters} object
+     * @param roles a {@link Contexts.Role} object
+     * @return a {@link Contexts.Characters} object
      * @since 1.6.6
      */
     public static Characters roles(Role... roles) {
@@ -105,7 +105,7 @@ public class Contexts {
     /**
      * <p>schoolContext.</p>
      *
-     * @return a {@link pro.verron.docxstamper.test.utils.context.Contexts.SchoolContext} object
+     * @return a {@link Contexts.SchoolContext} object
      * @since 1.6.6
      */
     public static SchoolContext schoolContext() {
@@ -177,7 +177,7 @@ public class Contexts {
     /**
      * <p>nowContext.</p>
      *
-     * @return a {@link pro.verron.docxstamper.test.utils.context.Contexts.DateContext} object
+     * @return a {@link Contexts.DateContext} object
      * @since 1.6.6
      */
     public static DateContext nowContext() {
@@ -205,7 +205,7 @@ public class Contexts {
     /**
      * <p>nullishContext.</p>
      *
-     * @return a {@link pro.verron.docxstamper.test.utils.context.Contexts.NullishContext} object
+     * @return a {@link Contexts.NullishContext} object
      * @since 1.6.6
      */
     public static NullishContext nullishContext() {

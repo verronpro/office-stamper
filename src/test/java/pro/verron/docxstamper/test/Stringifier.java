@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.utils;
+package pro.verron.docxstamper.test;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TextUtils;

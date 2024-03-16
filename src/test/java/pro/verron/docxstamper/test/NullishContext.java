@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.utils.context;
+package pro.verron.docxstamper.test;
 
 import java.util.Objects;
 
@@ -25,9 +25,9 @@ public final class NullishContext {
      * <p>Constructor for NullishContext.</p>
      *
      * @param fullish_value a {@link java.lang.String} object
-     * @param fullish       a {@link pro.verron.docxstamper.test.utils.context.SubContext} object
+     * @param fullish       a {@link SubContext} object
      * @param nullish_value a {@link java.lang.String} object
-     * @param nullish       a {@link pro.verron.docxstamper.test.utils.context.SubContext} object
+     * @param nullish       a {@link SubContext} object
      */
     public NullishContext(
             String fullish_value,
@@ -62,7 +62,7 @@ public final class NullishContext {
     /**
      * <p>Getter for the field <code>fullish</code>.</p>
      *
-     * @return a {@link pro.verron.docxstamper.test.utils.context.SubContext} object
+     * @return a {@link SubContext} object
      */
     public SubContext getFullish() {
         return fullish;
@@ -71,7 +71,7 @@ public final class NullishContext {
     /**
      * <p>Setter for the field <code>fullish</code>.</p>
      *
-     * @param fullish a {@link pro.verron.docxstamper.test.utils.context.SubContext} object
+     * @param fullish a {@link SubContext} object
      */
     public void setFullish(SubContext fullish) {
         this.fullish = fullish;
@@ -98,7 +98,7 @@ public final class NullishContext {
     /**
      * <p>Getter for the field <code>nullish</code>.</p>
      *
-     * @return a {@link pro.verron.docxstamper.test.utils.context.SubContext} object
+     * @return a {@link SubContext} object
      */
     public SubContext getNullish() {
         return nullish;
@@ -107,7 +107,7 @@ public final class NullishContext {
     /**
      * <p>Setter for the field <code>nullish</code>.</p>
      *
-     * @param nullish a {@link pro.verron.docxstamper.test.utils.context.SubContext} object
+     * @param nullish a {@link SubContext} object
      */
     public void setNullish(SubContext nullish) {
         this.nullish = nullish;

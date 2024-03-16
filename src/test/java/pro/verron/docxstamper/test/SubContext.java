@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.utils.context;
+package pro.verron.docxstamper.test;
 
 import java.util.List;
 import java.util.Objects;

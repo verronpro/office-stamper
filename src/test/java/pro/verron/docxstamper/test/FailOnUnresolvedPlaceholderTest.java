@@ -1,9 +1,8 @@
-package org.wickedsource.docxstamper.test;
+package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
 import pro.verron.docxstamper.api.DocxStamperException;
 import pro.verron.docxstamper.preset.Configurations;
-import pro.verron.docxstamper.test.utils.TestDocxStamper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +10,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.wickedsource.docxstamper.test.DefaultTests.getResource;
+import static pro.verron.docxstamper.test.DefaultTests.getResource;
 
 /**
  * @author Joseph Verron

@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.utils;
+package pro.verron.docxstamper.test;
 
 import org.docx4j.TraversalUtil;
 

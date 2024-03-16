@@ -1,7 +1,6 @@
-package pro.verron.docxstamper.test.resolver;
+package pro.verron.docxstamper.test;
 
 import pro.verron.docxstamper.api.StringResolver;
-import pro.verron.docxstamper.test.utils.context.Contexts;
 
 /**
  * <p>CustomTypeResolver class.</p>

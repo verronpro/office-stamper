@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.utils;
+package pro.verron.docxstamper.test;
 
 import java.util.function.Supplier;
 

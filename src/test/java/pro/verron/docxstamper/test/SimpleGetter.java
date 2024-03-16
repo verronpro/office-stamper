@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.test.accessors;
+package pro.verron.docxstamper.test;
 
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.PropertyAccessor;

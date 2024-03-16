@@ -213,6 +213,8 @@ Note that as of version 1.4.0, you have to provide the dependency to your versio
 
 This way, you can choose which version of Docx4J you want to use instead of having it dictated by docx-stamper.
 
+Status of compatibility available here ->  https://github.com/verronpro/docx-stamper/actions/workflows/integrate-docx4j.yml)
+
 == Contribute
 
 If you have an issue or create a comment processor or type resolver that you think deserves to be part of the default distribution, feel free to open an issue or - even better - a pull request with your contribution.

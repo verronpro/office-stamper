@@ -1,7 +1,7 @@
 package pro.verron.docxstamper.core.expression;
 
 import pro.verron.docxstamper.api.Placeholder;
-import pro.verron.docxstamper.core.DefaultPlaceholder;
+import pro.verron.docxstamper.core.StandardPlaceholder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import static java.util.Collections.emptyList;
  * to determine if an expression matches the specified prefix and suffix,
  * and the Expression class to represent each found expression.
  */
-public record ExpressionFinder(
+public record PlaceholderFinder(
         Pattern pattern,
         Matcher matcher
 ) {
@@ -34,7 +34,7 @@ public record ExpressionFinder(
         List<Placeholder> matches = new ArrayList<>();
         while (matcher.find(index)) {
             String match = matcher.group();
-            matches.add(new DefaultPlaceholder(this.matcher, match));
+            matches.add(new StandardPlaceholder(this.matcher, match));
             index = matcher.end();
         }
         return matches;

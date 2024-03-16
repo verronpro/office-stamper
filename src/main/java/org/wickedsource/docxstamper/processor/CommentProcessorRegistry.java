@@ -15,10 +15,11 @@ import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
-import pro.verron.docxstamper.api.CommentWrapper;
+import pro.verron.docxstamper.api.Comment;
+import pro.verron.docxstamper.api.CommentProcessor;
 import pro.verron.docxstamper.core.CommentUtil;
-import pro.verron.docxstamper.core.DefaultParagraph;
-import pro.verron.docxstamper.core.Expressions;
+import pro.verron.docxstamper.core.Placeholders;
+import pro.verron.docxstamper.core.StandardParagraph;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class CommentProcessorRegistry {
             T expressionContext
     ) {
         var comments = getComments(document);
-        var proceedComments = new ArrayList<CommentWrapper>();
+        var proceedComments = new ArrayList<Comment>();
 
         new BaseCoordinatesWalker() {
             @Override
@@ -100,16 +101,16 @@ public class CommentProcessorRegistry {
         }.walk(document);
 
         for (Object processor : commentProcessors.values()) {
-            ((ICommentProcessor) processor).commitChanges(document);
+            ((CommentProcessor) processor).commitChanges(document);
         }
-        for (CommentWrapper commentWrapper : proceedComments) {
-            CommentUtil.deleteComment(commentWrapper);
+        for (Comment comment : proceedComments) {
+            CommentUtil.deleteComment(comment);
         }
     }
 
-    private <T> Optional<CommentWrapper> runProcessorsOnRunComment(
+    private <T> Optional<Comment> runProcessorsOnRunComment(
             WordprocessingMLPackage document,
-            Map<BigInteger, CommentWrapper> comments,
+            Map<BigInteger, Comment> comments,
             T expressionContext,
             P paragraph,
             R run
@@ -131,9 +132,9 @@ public class CommentProcessorRegistry {
      * @param paragraph         the paragraph whose comments to evaluate.
      * @param <T>               the type of the context root object.
      */
-    private <T> Optional<CommentWrapper> runProcessorsOnParagraphComment(
+    private <T> Optional<Comment> runProcessorsOnParagraphComment(
             WordprocessingMLPackage document,
-            Map<BigInteger, CommentWrapper> comments,
+            Map<BigInteger, Comment> comments,
             T expressionContext,
             P paragraph
     ) {
@@ -157,13 +158,13 @@ public class CommentProcessorRegistry {
             T expressionContext,
             P paragraph
     ) {
-        var paragraphWrapper = new DefaultParagraph(paragraph);
+        var paragraphWrapper = new StandardParagraph(paragraph);
         String text = paragraphWrapper.asString();
-        var expressions = Expressions.findProcessors(text);
+        var expressions = Placeholders.findProcessors(text);
 
         for (var expression : expressions) {
             for (final Object processor : commentProcessors.values()) {
-                ((ICommentProcessor) processor).setParagraph(paragraph);
+                ((CommentProcessor) processor).setParagraph(paragraph);
             }
 
             try {
@@ -184,15 +185,15 @@ public class CommentProcessorRegistry {
         }
     }
 
-    private <T> Optional<CommentWrapper> runCommentProcessors(
-            Map<BigInteger, CommentWrapper> comments,
+    private <T> Optional<Comment> runCommentProcessors(
+            Map<BigInteger, Comment> comments,
             T expressionContext,
             @NonNull Comments.Comment comment,
             P paragraph,
             R run,
             WordprocessingMLPackage document
     ) {
-        CommentWrapper commentWrapper = comments.get(comment.getId());
+        Comment commentWrapper = comments.get(comment.getId());
 
         if (Objects.isNull(commentWrapper)) {
             // no comment to process
@@ -202,11 +203,11 @@ public class CommentProcessorRegistry {
         var commentExpression = getCommentString(comment);
 
         for (final Object processor : commentProcessors.values()) {
-            ((ICommentProcessor) processor).setParagraph(paragraph);
-            ((ICommentProcessor) processor).setCurrentRun(run);
-            ((ICommentProcessor) processor).setCurrentCommentWrapper(
+            ((CommentProcessor) processor).setParagraph(paragraph);
+            ((CommentProcessor) processor).setCurrentRun(run);
+            ((CommentProcessor) processor).setCurrentCommentWrapper(
                     commentWrapper);
-            ((ICommentProcessor) processor).setDocument(document);
+            ((CommentProcessor) processor).setDocument(document);
         }
 
         try {
@@ -236,7 +237,7 @@ public class CommentProcessorRegistry {
      */
     public void reset() {
         for (Object processor : commentProcessors.values()) {
-            ((ICommentProcessor) processor).reset();
+            ((CommentProcessor) processor).reset();
         }
     }
 }

@@ -1,5 +1,7 @@
 package org.wickedsource.docxstamper.api;
 
+import pro.verron.docxstamper.api.OpcStamperException;
+
 /**
  * This class represents an exception that can be thrown during the processing of a Docx file using the DocxStamper library.
  * It extends the RuntimeException class and provides additional constructors to handle different scenarios.
@@ -8,9 +10,14 @@ package org.wickedsource.docxstamper.api;
  * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.0
+ * @deprecated since 1.6.8, This class has been deprecated in the effort
+ * of the library modularization.
+ * It is recommended to use the {@link OpcStamperException} class instead.
+ * This class will not be exported in the future releases of the module.
  */
+@Deprecated(since = "1.6.8", forRemoval = true)
 public class DocxStamperException
-        extends pro.verron.docxstamper.api.DocxStamperException {
+        extends OpcStamperException {
 
     /**
      * <p>Constructor for DocxStamperException.</p>

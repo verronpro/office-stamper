@@ -3,8 +3,8 @@ package pro.verron.docxstamper.core;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import pro.verron.docxstamper.api.Paragraph;
 import pro.verron.docxstamper.api.Placeholder;
-import pro.verron.docxstamper.core.expression.ExpressionFinder;
 import pro.verron.docxstamper.core.expression.Matcher;
+import pro.verron.docxstamper.core.expression.PlaceholderFinder;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * The findProcessors() method uses PROC_FINDER to find processor expressions in a given text and returns a list of found expressions.
  * The raw() method creates a new Expression object using the RAW_MATCHER and a specified text.
  */
-public class Expressions {
+public class Placeholders {
     /**
      * A regular expression pattern matching processor expressions.
      * The pattern search for expressions starting with '#{' and ending with
@@ -33,8 +33,8 @@ public class Expressions {
      * An ExpressionFinder to find processor expressions.
      * It is initialized with a specified pattern and matcher.
      */
-    private static final ExpressionFinder PROC_FINDER =
-            new ExpressionFinder(PROC_PATTERN, PROC_MATCHER);
+    private static final PlaceholderFinder PROC_FINDER =
+            new PlaceholderFinder(PROC_PATTERN, PROC_MATCHER);
 
     /**
      * A regular expression pattern matching processor expressions.
@@ -52,8 +52,8 @@ public class Expressions {
      * An ExpressionFinder to find variable expressions.
      * It is initialized with a specified pattern and matcher.
      */
-    private static final ExpressionFinder VAR_FINDER =
-            new ExpressionFinder(VAR_PATTERN, VAR_MATCHER);
+    private static final PlaceholderFinder VAR_FINDER =
+            new PlaceholderFinder(VAR_PATTERN, VAR_MATCHER);
     /**
      * A Matcher matching raw expressions.
      * It is typically used to wrap raw expressions that do not have a
@@ -61,7 +61,7 @@ public class Expressions {
      */
     private static final Matcher RAW_MATCHER = new Matcher("", "");
 
-    private Expressions() {
+    private Placeholders() {
         throw new DocxStamperException(
                 "Utility classes should not be instantiated!");
     }
@@ -70,7 +70,7 @@ public class Expressions {
      * Finds variable expressions in a given text.
      *
      * @param text the text to search for variable expressions
-     * @return a list of found variable expressions as {@link DefaultPlaceholder} objects
+     * @return a list of found variable expressions as {@link StandardPlaceholder} objects
      */
     public static List<Placeholder> findVariables(String text) {
         return VAR_FINDER.find(text);
@@ -84,7 +84,7 @@ public class Expressions {
      * Finds processors expressions in a given text.
      *
      * @param text the text to search for processor expressions
-     * @return a list of found processor expressions as {@link DefaultPlaceholder}
+     * @return a list of found processor expressions as {@link StandardPlaceholder}
      * objects
      */
     public static List<Placeholder> findProcessors(String text) {
@@ -92,6 +92,6 @@ public class Expressions {
     }
 
     public static Placeholder raw(String text) {
-        return new DefaultPlaceholder(RAW_MATCHER, text);
+        return new StandardPlaceholder(RAW_MATCHER, text);
     }
 }

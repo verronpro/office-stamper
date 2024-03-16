@@ -34,13 +34,13 @@ public class LoadingOpcStamper<T extends OpcPackage> {
      * @param inputStream  template to stamp
      * @param context      context to use for stamping
      * @param outputStream output stream to write the result to
-     * @throws DocxStamperException if the stamping fails
+     * @throws OpcStamperException if the stamping fails
      */
     public void stamp(
             InputStream inputStream,
             Object context,
             OutputStream outputStream
-    ) throws DocxStamperException {
+    ) throws OpcStamperException {
         T mlPackage = loader.apply(inputStream);
         stamper.stamp(mlPackage, context, outputStream);
     }

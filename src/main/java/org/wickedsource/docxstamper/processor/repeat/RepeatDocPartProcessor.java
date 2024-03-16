@@ -6,12 +6,12 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
-import pro.verron.docxstamper.api.CommentWrapper;
+import pro.verron.docxstamper.api.Comment;
+import pro.verron.docxstamper.api.CommentProcessor;
 import pro.verron.docxstamper.api.OpcStamper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
@@ -51,7 +51,7 @@ public class RepeatDocPartProcessor
     private static final ObjectFactory objectFactory = Context.getWmlObjectFactory();
 
     private final OpcStamper<WordprocessingMLPackage> stamper;
-    private final Map<CommentWrapper, List<Object>> contexts = new HashMap<>();
+    private final Map<Comment, List<Object>> contexts = new HashMap<>();
     private final Supplier<? extends List<?>> nullSupplier;
 
     private RepeatDocPartProcessor(
@@ -73,7 +73,7 @@ public class RepeatDocPartProcessor
      *                             resolves to null
      * @return a new instance of this processor
      */
-    public static ICommentProcessor newInstance(
+    public static CommentProcessor newInstance(
             PlaceholderReplacer pr,
             OpcStamper<WordprocessingMLPackage> stamper,
             String nullReplacementValue
@@ -90,7 +90,7 @@ public class RepeatDocPartProcessor
      * @param stamper the stamper
      * @return a new instance of this processor
      */
-    public static ICommentProcessor newInstance(
+    public static CommentProcessor newInstance(
             ParagraphPlaceholderReplacer pr,
             OpcStamper<WordprocessingMLPackage> stamper
     ) {
@@ -162,11 +162,11 @@ public class RepeatDocPartProcessor
         if (contexts == null)
             contexts = Collections.emptyList();
 
-        CommentWrapper currentCommentWrapper = getCurrentCommentWrapper();
-        List<Object> repeatElements = currentCommentWrapper.getRepeatElements();
+        Comment currentComment = getCurrentCommentWrapper();
+        List<Object> repeatElements = currentComment.getRepeatElements();
 
         if (!repeatElements.isEmpty()) {
-            this.contexts.put(currentCommentWrapper, contexts);
+            this.contexts.put(currentComment, contexts);
         }
     }
 
@@ -226,13 +226,13 @@ public class RepeatDocPartProcessor
      */
     @Override
     public void commitChanges(WordprocessingMLPackage document) {
-        for (Entry<CommentWrapper, List<Object>> entry : this.contexts.entrySet()) {
-            CommentWrapper commentWrapper = entry.getKey();
+        for (Entry<Comment, List<Object>> entry : this.contexts.entrySet()) {
+            Comment comment = entry.getKey();
             List<Object> expressionContexts = entry.getValue();
             ContentAccessor gcp = Objects.requireNonNull(
-                    commentWrapper.getParent());
-            List<Object> repeatElements = commentWrapper.getRepeatElements();
-            WordprocessingMLPackage subTemplate = commentWrapper.tryBuildingSubtemplate(
+                    comment.getParent());
+            List<Object> repeatElements = comment.getRepeatElements();
+            WordprocessingMLPackage subTemplate = comment.tryBuildingSubtemplate(
                     document);
             SectPr previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(
                     repeatElements.get(0), gcp);

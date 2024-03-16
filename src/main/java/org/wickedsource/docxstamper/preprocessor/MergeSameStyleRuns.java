@@ -6,7 +6,7 @@ import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
-import org.wickedsource.docxstamper.api.preprocessor.PreProcessor;
+import pro.verron.docxstamper.api.PreProcessor;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

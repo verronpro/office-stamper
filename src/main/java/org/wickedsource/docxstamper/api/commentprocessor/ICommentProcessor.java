@@ -1,5 +1,7 @@
 package org.wickedsource.docxstamper.api.commentprocessor;
 
+import pro.verron.docxstamper.api.CommentProcessor;
+
 /**
  * <p>In a .docx template used by DocxStamper, you can comment paragraphs of text to manipulate them. The comments in
  * the .docx template are passed to an implementation of ICommentProcessor that understands the expression used
@@ -29,7 +31,12 @@ package org.wickedsource.docxstamper.api.commentprocessor;
  * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.0
+ * @deprecated since 1.6.8, This class has been deprecated in the effort
+ * of the library modularization.
+ * It is recommended to use the {@link CommentProcessor} class instead.
+ * This class will not be exported in the future releases of the module.
  */
+@Deprecated(since = "1.6.8", forRemoval = true)
 public interface ICommentProcessor
-		extends pro.verron.docxstamper.api.CommentProcessor {
+        extends CommentProcessor {
 }

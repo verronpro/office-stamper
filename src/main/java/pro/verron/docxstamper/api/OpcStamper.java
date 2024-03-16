@@ -20,7 +20,11 @@ public interface OpcStamper<T extends OpcPackage> {
 	 * @param template     template to stamp
 	 * @param context      context to use for stamping
 	 * @param outputStream output stream to write the result to
-	 * @throws DocxStamperException if the stamping fails
+	 * @throws OpcStamperException if the stamping fails
 	 */
-	void stamp(T template, Object context, OutputStream outputStream) throws DocxStamperException;
+	void stamp(
+			T template,
+			Object context,
+			OutputStream outputStream
+	) throws OpcStamperException;
 }

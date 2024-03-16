@@ -1,8 +1,8 @@
 package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.docxstamper.api.DocxStamperException;
-import pro.verron.docxstamper.preset.Configurations;
+import pro.verron.docxstamper.api.OpcStamperException;
+import pro.verron.docxstamper.preset.OpcStamperConfigurations;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,10 +22,10 @@ class FailOnUnresolvedPlaceholderTest {
         var context = new Name("Homer");
         try (var template = getResource(Path.of("FailOnUnresolvedExpressionTest" +
                                                 ".docx"))) {
-            var config = Configurations.standard()
+            var config = OpcStamperConfigurations.standard()
                     .setFailOnUnresolvedExpression(true);
             var stamper = new TestDocxStamper<>(config);
-            assertThrows(DocxStamperException.class,
+            assertThrows(OpcStamperException.class,
                          () -> stamper.stampAndLoad(template, context));
         }
     }
@@ -35,7 +35,7 @@ class FailOnUnresolvedPlaceholderTest {
         Name context = new Name("Homer");
         try (InputStream template = getResource(Path.of(
                 "FailOnUnresolvedExpressionTest.docx"))) {
-            var config = Configurations.standard()
+            var config = OpcStamperConfigurations.standard()
                     .setFailOnUnresolvedExpression(false);
             var stamper = new TestDocxStamper<>(config);
             assertDoesNotThrow(() -> stamper.stampAndLoad(template, context));

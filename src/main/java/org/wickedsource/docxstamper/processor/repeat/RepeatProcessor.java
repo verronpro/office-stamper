@@ -3,10 +3,10 @@ package org.wickedsource.docxstamper.processor.repeat;
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
-import pro.verron.docxstamper.api.CommentWrapper;
+import pro.verron.docxstamper.api.Comment;
+import pro.verron.docxstamper.api.CommentProcessor;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.CommentUtil;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
@@ -29,7 +29,7 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
 
 	private final BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier;
 	private Map<Tr, List<Object>> tableRowsToRepeat = new HashMap<>();
-	private Map<Tr, CommentWrapper> tableRowsCommentsToRemove = new HashMap<>();
+	private Map<Tr, Comment> tableRowsCommentsToRemove = new HashMap<>();
 
 	private RepeatProcessor(
 			ParagraphPlaceholderReplacer placeholderReplacer,
@@ -45,7 +45,9 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
 	 * @param pr The PlaceholderReplacer to use.
 	 * @return A new RepeatProcessor.
 	 */
-	public static ICommentProcessor newInstanceWithNullReplacement(PlaceholderReplacer pr) {
+	public static CommentProcessor newInstanceWithNullReplacement(
+			PlaceholderReplacer pr
+	) {
 		return new RepeatProcessor(pr, (document, row) -> RepeatProcessor.stampEmptyContext(pr, document, row));
     }
 
@@ -70,7 +72,7 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
 	 * @param pr The PlaceholderReplacer to use.
 	 * @return A new RepeatProcessor.
 	 */
-	public static ICommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
+	public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
 		return new RepeatProcessor(pr, (document, row) -> emptyList());
 	}
 
@@ -103,7 +105,8 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
 				changes = new ArrayList<>();
 				for (Object expressionContext : expressionContexts) {
 					Tr rowClone = XmlUtils.deepCopy(row);
-					CommentWrapper commentWrapper = Objects.requireNonNull(tableRowsCommentsToRemove.get(row));
+					Comment commentWrapper = Objects.requireNonNull(
+							tableRowsCommentsToRemove.get(row));
 					Comments.Comment comment = Objects.requireNonNull(commentWrapper.getComment());
 					BigInteger commentId = comment.getId();
                     CommentUtil.deleteCommentFromElement(rowClone.getContent(), commentId);

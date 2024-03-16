@@ -6,12 +6,11 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.*;
-import org.docx4j.wml.Comments.Comment;
 import org.docx4j.wml.R.CommentReference;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.DocumentUtil;
-import pro.verron.docxstamper.api.CommentWrapper;
+import pro.verron.docxstamper.api.Comment;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,17 +23,26 @@ import java.util.stream.Collectors;
  * @version ${version}
  * @since 1.0.2
  */
-public class DefaultCommentWrapper
-		implements CommentWrapper {
+public class StandardComment
+		implements Comment {
 
-	private final Set<CommentWrapper> children = new HashSet<>();
-	private Comment comment;
+	private final Set<Comment> children = new HashSet<>();
+	private Comments.Comment comment;
 	private CommentRangeStart commentRangeStart;
 	private CommentRangeEnd commentRangeEnd;
 	private CommentReference commentReference;
 
-	public void setComment(Comment comment) {
-		this.comment = comment;
+	private void extractedSubComments(
+			List<Comments.Comment> commentList,
+			Set<Comment> commentChildren
+	) {
+		Queue<Comment> q = new ArrayDeque<>(commentChildren);
+		while (!q.isEmpty()) {
+			Comment element = q.remove();
+			commentList.add(element.getComment());
+			if (element.getChildren() != null)
+				q.addAll(element.getChildren());
+		}
 	}
 
 	public void setCommentRangeStart(CommentRangeStart commentRangeStart) {
@@ -49,8 +57,14 @@ public class DefaultCommentWrapper
 		this.commentReference = commentReference;
 	}
 
-	public void setChildren(Set<CommentWrapper> children) {
-		this.children.addAll(children);
+	/**
+	 * <p>Getter for the field <code>children</code>.</p>
+	 *
+	 * @return a {@link Set} object
+	 */
+	@Override
+	public Set<Comment> getChildren() {
+		return children;
 	}
 
 	/**
@@ -125,14 +139,8 @@ public class DefaultCommentWrapper
 		CommentUtil.deleteCommentFromElement(fakeBody.getContent(), getComment().getId());
 	}
 
-	private void extractedSubComments(List<Comment> commentList, Set<CommentWrapper> commentWrapperChildren) {
-		Queue<CommentWrapper> q = new ArrayDeque<>(commentWrapperChildren);
-		while (!q.isEmpty()) {
-			CommentWrapper element = q.remove();
-			commentList.add(element.getComment());
-			if (element.getChildren() != null)
-				q.addAll(element.getChildren());
-		}
+	public void setChildren(Set<Comment> children) {
+		this.children.addAll(children);
 	}
 
 	/**
@@ -220,22 +228,16 @@ public class DefaultCommentWrapper
 	}
 
 	/**
-	 * <p>Getter for the field <code>children</code>.</p>
-	 *
-	 * @return a {@link Set} object
-	 */
-	@Override
-	public Set<CommentWrapper> getChildren() {
-		return children;
-	}
-
-	/**
 	 * <p>Getter for the field <code>comment</code>.</p>
 	 *
-	 * @return a {@link Comment} object
+	 * @return a {@link Comments.Comment} object
 	 */
 	@Override
-	public Comment getComment() {
+	public Comments.Comment getComment() {
 		return comment;
+	}
+
+	public void setComment(Comments.Comment comment) {
+		this.comment = comment;
 	}
 }

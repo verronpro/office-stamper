@@ -26,7 +26,7 @@ import static java.util.stream.Collectors.joining;
  * @version ${version}
  * @since 1.0.8
  */
-public class DefaultParagraph
+public class StandardParagraph
         implements Paragraph {
     private final List<IndexedRun> runs = new ArrayList<>();
     private final P paragraph;
@@ -37,7 +37,7 @@ public class DefaultParagraph
      *
      * @param paragraph the paragraph to wrap.
      */
-    public DefaultParagraph(P paragraph) {
+    public StandardParagraph(P paragraph) {
         this.paragraph = paragraph;
         recalculateRuns();
     }

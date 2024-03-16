@@ -11,10 +11,11 @@ import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
 import pro.verron.docxstamper.api.*;
-import pro.verron.docxstamper.core.Expressions;
 import pro.verron.docxstamper.core.ObjectResolverRegistry;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
-import pro.verron.docxstamper.preset.Stampers;
+import pro.verron.docxstamper.core.Placeholders;
+import pro.verron.docxstamper.preset.OpcStamperConfigurations;
+import pro.verron.docxstamper.preset.OpcStampers;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,7 +32,14 @@ import java.util.function.Function;
  * @author Joseph Verron
  * @version ${version}
  * @since 1.0.0
+ * @deprecated since 1.6.8, This class has been deprecated in the effort
+ * of the library modularization, because it
+ * exposes too many implementation details to library users, and makes it
+ * hard to extend the library comfortably.
+ * It is recommended to use the {@link OpcStampers} methods instead.
+ * This class will not be exported in the future releases of the module.
  */
+@Deprecated(since = "1.6.8", forRemoval = true)
 public class DocxStamper<T>
         implements OpcStamper<WordprocessingMLPackage> {
     private final List<PreProcessor> preprocessors;
@@ -41,11 +49,11 @@ public class DocxStamper<T>
     /**
      * Creates a new DocxStamper with the default configuration.
      *
-     * @deprecated since 1.6.4, use {@link Stampers#newDocxStamper()} or {@link Stampers#nopreprocessingDocxStamper()} instead.
+     * @deprecated since 1.6.4, use {@link OpcStampers#docxStamper()} or {@link OpcStampers#nopreprocessingDocxStamper()} instead.
      */
     @Deprecated(since = "1.6.4", forRemoval = true)
     public DocxStamper() {
-        this(new DocxStamperConfiguration());
+        this(OpcStamperConfigurations.standard());
     }
 
     /**
@@ -53,7 +61,7 @@ public class DocxStamper<T>
      *
      * @param configuration the configuration to use for this DocxStamper.
      */
-    public DocxStamper(pro.verron.docxstamper.api.DocxStamperConfiguration configuration) {
+    public DocxStamper(OpcStamperConfiguration configuration) {
         this(
                 configuration.isFailOnUnresolvedExpression(),
                 configuration.isReplaceUnresolvedExpressions(),
@@ -112,7 +120,7 @@ public class DocxStamper<T>
                 replaceUnresolvedExpressions,
                 unresolvedExpressionsDefaultValue,
                 leaveEmptyOnExpressionError,
-                Expressions.raw(lineBreakPlaceholder)
+                Placeholders.raw(lineBreakPlaceholder)
         );
 
         for (var entry : configurationCommentProcessors.entrySet()) {
@@ -166,7 +174,7 @@ public class DocxStamper<T>
      * </ul>
      * <p>
      * If you need a wider vocabulary of methods available in the comments, you can create your own ICommentProcessor
-     * and register it via {@link DocxStamperConfiguration#addCommentProcessor(Class, CommentProcessorBuilder)}.
+     * and register it via {@link OpcStamperConfiguration#addCommentProcessor(Class, Function)}.
      * </p>
      */
     public void stamp(

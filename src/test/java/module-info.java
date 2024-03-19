@@ -1,5 +1,5 @@
-module pro.verron.opcstamper.test {
-    requires transitive pro.verron.opcstamper;
+module pro.verron.officestamper.test {
+    requires transitive pro.verron.officestamper;
 
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;

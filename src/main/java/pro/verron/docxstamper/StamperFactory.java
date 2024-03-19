@@ -1,6 +1,6 @@
 package pro.verron.docxstamper;
 
-import pro.verron.docxstamper.preset.OpcStampers;
+import pro.verron.docxstamper.preset.OfficeStampers;
 
 /**
  * @deprecated since 1.6.8, This class has been deprecated in the effort
@@ -11,5 +11,5 @@ import pro.verron.docxstamper.preset.OpcStampers;
  */
 @Deprecated(since = "1.6.8", forRemoval = true)
 public class StamperFactory
-        extends OpcStampers {
+        extends OfficeStampers {
 }

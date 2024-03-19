@@ -17,7 +17,7 @@ import pro.verron.docxstamper.api.OpcStamperConfiguration;
  * @version ${version}
  * @since 1.6.4
  */
-public class OpcStampers {
+public class OfficeStampers {
 
 	public static OpcStamper<WordprocessingMLPackage> docxStamper(
 			OpcStamperConfiguration config

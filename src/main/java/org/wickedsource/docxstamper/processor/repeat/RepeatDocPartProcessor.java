@@ -12,7 +12,7 @@ import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
 import pro.verron.docxstamper.api.Comment;
 import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.api.OpcStamper;
+import pro.verron.docxstamper.api.OfficeStamper;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
@@ -35,7 +35,7 @@ import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImpor
 
 /**
  * This class is responsible for processing the &lt;ds: repeat&gt; tag.
- * It uses the {@link OpcStamper} to stamp the sub document and then
+ * It uses the {@link OfficeStamper} to stamp the sub document and then
  * copies the resulting sub document to the correct position in the
  * main document.
  *
@@ -50,13 +50,13 @@ public class RepeatDocPartProcessor
     private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
     private static final ObjectFactory objectFactory = Context.getWmlObjectFactory();
 
-    private final OpcStamper<WordprocessingMLPackage> stamper;
+    private final OfficeStamper<WordprocessingMLPackage> stamper;
     private final Map<Comment, List<Object>> contexts = new HashMap<>();
     private final Supplier<? extends List<?>> nullSupplier;
 
     private RepeatDocPartProcessor(
             ParagraphPlaceholderReplacer placeholderReplacer,
-            OpcStamper<WordprocessingMLPackage> stamper,
+            OfficeStamper<WordprocessingMLPackage> stamper,
             Supplier<? extends List<?>> nullSupplier
     ) {
         super(placeholderReplacer);
@@ -75,7 +75,7 @@ public class RepeatDocPartProcessor
      */
     public static CommentProcessor newInstance(
             PlaceholderReplacer pr,
-            OpcStamper<WordprocessingMLPackage> stamper,
+            OfficeStamper<WordprocessingMLPackage> stamper,
             String nullReplacementValue
     ) {
         Supplier<List<?>> nullSupplier = () -> singletonList(
@@ -92,7 +92,7 @@ public class RepeatDocPartProcessor
      */
     public static CommentProcessor newInstance(
             ParagraphPlaceholderReplacer pr,
-            OpcStamper<WordprocessingMLPackage> stamper
+            OfficeStamper<WordprocessingMLPackage> stamper
     ) {
         return new RepeatDocPartProcessor(pr, stamper, Collections::emptyList);
     }

@@ -16,7 +16,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
 import org.docx4j.wml.Comments.Comment;
-import pro.verron.docxstamper.api.OpcStamperException;
+import pro.verron.docxstamper.api.OfficeStamperException;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -56,7 +56,7 @@ public class Stringifier {
         try {
             return MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException e) {
-            throw new OpcStamperException(e);
+            throw new OfficeStamperException(e);
         }
     }
 

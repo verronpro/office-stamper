@@ -1,7 +1,7 @@
 package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.docxstamper.preset.OpcStamperConfigurations;
+import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -19,7 +19,7 @@ class StampTableTest {
 
         var testDocx = getResource(Path.of("StampTableTest.docx"));
 
-        var configuration = OpcStamperConfigurations.standard();
+        var configuration = OfficeStamperConfigurations.standard();
         var stamper = new TestDocxStamper<>(configuration);
 
         String string = stamper.stampAndLoadAndExtract(

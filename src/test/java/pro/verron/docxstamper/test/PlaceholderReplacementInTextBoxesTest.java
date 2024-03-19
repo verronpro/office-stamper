@@ -2,7 +2,7 @@ package pro.verron.docxstamper.test;
 
 import org.docx4j.dml.wordprocessingDrawing.Anchor;
 import org.junit.jupiter.api.Test;
-import pro.verron.docxstamper.preset.OpcStamperConfigurations;
+import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -20,7 +20,7 @@ class PlaceholderReplacementInTextBoxesTest {
 		var context = new Name("Bart Simpson");
 		var template = getResource(Path.of("ExpressionReplacementInTextBoxesTest" +
 										   ".docx"));
-		var configuration = OpcStamperConfigurations.standard()
+		var configuration = OfficeStamperConfigurations.standard()
 				.setFailOnUnresolvedExpression(false);
 		var stamper = new TestDocxStamper<Name>(configuration);
 		var actual = stamper.stampAndLoadAndExtract(template, context, Anchor.class);

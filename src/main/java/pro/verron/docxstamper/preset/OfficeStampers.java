@@ -4,8 +4,8 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
 import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
-import pro.verron.docxstamper.api.OpcStamper;
-import pro.verron.docxstamper.api.OpcStamperConfiguration;
+import pro.verron.docxstamper.api.OfficeStamper;
+import pro.verron.docxstamper.api.OfficeStamperConfiguration;
 
 /**
  * Main class of the docx-stamper library.
@@ -19,8 +19,8 @@ import pro.verron.docxstamper.api.OpcStamperConfiguration;
  */
 public class OfficeStampers {
 
-	public static OpcStamper<WordprocessingMLPackage> docxStamper(
-			OpcStamperConfiguration config
+	public static OfficeStamper<WordprocessingMLPackage> docxStamper(
+			OfficeStamperConfiguration config
 	) {
 		return new DocxStamper<>(config);
 	}
@@ -31,8 +31,8 @@ public class OfficeStampers {
 	 *
 	 * @return a new DocxStamper
 	 */
-	public OpcStamper<WordprocessingMLPackage> docxStamper() {
-		return new DocxStamper<>(OpcStamperConfigurations.standardWithPreprocessing());
+	public OfficeStamper<WordprocessingMLPackage> docxStamper() {
+		return new DocxStamper<>(OfficeStamperConfigurations.standardWithPreprocessing());
 	}
 
 }

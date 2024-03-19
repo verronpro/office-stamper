@@ -10,8 +10,8 @@ import org.wickedsource.docxstamper.processor.repeat.RepeatProcessor;
 import org.wickedsource.docxstamper.processor.replaceExpression.ReplaceWithProcessor;
 import org.wickedsource.docxstamper.processor.table.TableResolver;
 import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.api.OpcStamper;
-import pro.verron.docxstamper.api.OpcStamperConfiguration;
+import pro.verron.docxstamper.api.OfficeStamper;
+import pro.verron.docxstamper.api.OfficeStamperConfiguration;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 
@@ -23,14 +23,14 @@ import pro.verron.docxstamper.core.PlaceholderReplacer;
  * @since 1.6.4
  */
 public class CommentProcessorFactory {
-	private final OpcStamperConfiguration configuration;
+	private final OfficeStamperConfiguration configuration;
 
 	/**
 	 * Creates a new CommentProcessorFactory.
 	 *
 	 * @param configuration the configuration to use for the created processors.
 	 */
-	public CommentProcessorFactory(OpcStamperConfiguration configuration) {
+	public CommentProcessorFactory(OfficeStamperConfiguration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -54,7 +54,7 @@ public class CommentProcessorFactory {
 		return RepeatDocPartProcessor.newInstance(pr, getStamper());
 	}
 
-	private OpcStamper<WordprocessingMLPackage> getStamper() {
+	private OfficeStamper<WordprocessingMLPackage> getStamper() {
 		return (template, context, output) -> new DocxStamper<>(configuration).stamp(template, context, output);
 	}
 

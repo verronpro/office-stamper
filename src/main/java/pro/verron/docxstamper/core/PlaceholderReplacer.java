@@ -12,7 +12,7 @@ import org.springframework.expression.spel.SpelParseException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
-import pro.verron.docxstamper.api.OpcStamperException;
+import pro.verron.docxstamper.api.OfficeStamperException;
 import pro.verron.docxstamper.api.Paragraph;
 import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.docxstamper.api.Placeholder;
@@ -119,7 +119,7 @@ public class PlaceholderReplacer
                 if (failOnUnresolvedExpression) {
                     String message = "Expression %s could not be resolved against context of type %s"
                             .formatted(expression, context.getClass());
-                    throw new OpcStamperException(message, e);
+                    throw new OfficeStamperException(message, e);
                 } else if (leaveEmptyOnExpressionError) {
                     log.warn(
                             "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log level to TRACE to view Stacktrace.",

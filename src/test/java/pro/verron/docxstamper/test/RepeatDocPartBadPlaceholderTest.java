@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.verron.docxstamper.api.OpcStamperException;
-import pro.verron.docxstamper.preset.OpcStamperConfigurations;
+import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
 import pro.verron.docxstamper.test.Contexts.Characters;
 import pro.verron.docxstamper.test.Contexts.Role;
 
@@ -35,11 +35,11 @@ public class RepeatDocPartBadPlaceholderTest {
                 List.of(new Role("Homer Simpson", "Dan Castellaneta"),
                         new Role("Marge Simpson", "Julie Kavner"),
                         new Role("Bart Simpson", "Nancy Cartwright")));
-        var configuration = OpcStamperConfigurations.standard();
+        var configuration = OfficeStamperConfigurations.standard();
         var stamper = new TestDocxStamper<>(configuration);
 
         var exception = assertThrows(
-                OpcStamperException.class,
+                OfficeStamperException.class,
                 () -> stamper.stampAndLoadAndExtract(template, context));
 
         String expectedErrorInfo = "someUnknownField";

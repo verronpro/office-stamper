@@ -1,7 +1,7 @@
 package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.docxstamper.preset.OpcStamperConfigurations;
+import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
 
 import java.nio.file.Path;
 
@@ -16,7 +16,7 @@ import static pro.verron.docxstamper.test.DefaultTests.getResource;
 class MultiStampTest {
     @Test
     void expressionsAreResolvedOnMultiStamp() {
-        var config = OpcStamperConfigurations.standard();
+        var config = OfficeStamperConfigurations.standard();
         var context = names("Homer","Marge","Bart","Lisa","Maggie");
         var stamper = new TestDocxStamper<>(config);
 

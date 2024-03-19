@@ -14,8 +14,8 @@ import pro.verron.docxstamper.api.*;
 import pro.verron.docxstamper.core.ObjectResolverRegistry;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 import pro.verron.docxstamper.core.Placeholders;
+import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
 import pro.verron.docxstamper.preset.OfficeStampers;
-import pro.verron.docxstamper.preset.OpcStamperConfigurations;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,7 +25,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * The DocxStamper class is an implementation of the OpcStamper interface that is used to stamp DOCX templates with a context object and write the result to an output stream.
+ * The DocxStamper class is an implementation of the {@link OfficeStamper}
+ * interface that is used to stamp DOCX templates with a context object and
+ * write the result to an output stream.
  *
  * @param <T> The type of the context that can be stamped
  * @author Tom Hombergs
@@ -41,7 +43,7 @@ import java.util.function.Function;
  */
 @Deprecated(since = "1.6.8", forRemoval = true)
 public class DocxStamper<T>
-        implements OpcStamper<WordprocessingMLPackage> {
+        implements OfficeStamper<WordprocessingMLPackage> {
     private final List<PreProcessor> preprocessors;
     private final PlaceholderReplacer placeholderReplacer;
     private final CommentProcessorRegistry commentProcessorRegistry;
@@ -53,7 +55,7 @@ public class DocxStamper<T>
      */
     @Deprecated(since = "1.6.4", forRemoval = true)
     public DocxStamper() {
-        this(OpcStamperConfigurations.standard());
+        this(OfficeStamperConfigurations.standard());
     }
 
     /**
@@ -61,7 +63,7 @@ public class DocxStamper<T>
      *
      * @param configuration the configuration to use for this DocxStamper.
      */
-    public DocxStamper(OpcStamperConfiguration configuration) {
+    public DocxStamper(OfficeStamperConfiguration configuration) {
         this(
                 configuration.isFailOnUnresolvedExpression(),
                 configuration.isReplaceUnresolvedExpressions(),
@@ -174,7 +176,7 @@ public class DocxStamper<T>
      * </ul>
      * <p>
      * If you need a wider vocabulary of methods available in the comments, you can create your own ICommentProcessor
-     * and register it via {@link OpcStamperConfiguration#addCommentProcessor(Class, Function)}.
+     * and register it via {@link OfficeStamperConfiguration#addCommentProcessor(Class, Function)}.
      * </p>
      */
     public void stamp(

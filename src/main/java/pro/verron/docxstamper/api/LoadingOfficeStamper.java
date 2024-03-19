@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.util.function.Function;
 
 /**
- * OpcStamper is an interface that defines the contract for stamping
+ * This is an interface that defines the contract for stamping
  * templates with context and writing the result to an {@link OutputStream}.
  *
  * @param <T> The type of the template that can be stamped.
@@ -15,14 +15,14 @@ import java.util.function.Function;
  * @version ${version}
  * @since 1.6.4
  */
-public class LoadingOpcStamper<T extends OpcPackage> {
+public class LoadingOfficeStamper<T extends OpcPackage> {
 
     private final Function<InputStream, T> loader;
-    private final OpcStamper<T> stamper;
+    private final OfficeStamper<T> stamper;
 
-    public LoadingOpcStamper(
+    public LoadingOfficeStamper(
             Function<InputStream, T> loader,
-            OpcStamper<T> stamper
+            OfficeStamper<T> stamper
     ) {
         this.loader = loader;
         this.stamper = stamper;
@@ -34,13 +34,13 @@ public class LoadingOpcStamper<T extends OpcPackage> {
      * @param inputStream  template to stamp
      * @param context      context to use for stamping
      * @param outputStream output stream to write the result to
-     * @throws OpcStamperException if the stamping fails
+     * @throws OfficeStamperException if the stamping fails
      */
     public void stamp(
             InputStream inputStream,
             Object context,
             OutputStream outputStream
-    ) throws OpcStamperException {
+    ) throws OfficeStamperException {
         T mlPackage = loader.apply(inputStream);
         stamper.stamp(mlPackage, context, outputStream);
     }

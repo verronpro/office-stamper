@@ -9,46 +9,46 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-public interface OpcStamperConfiguration {
+public interface OfficeStamperConfiguration {
     @Deprecated(since = "1.6.7")
     Optional<String> nullReplacementValue();
 
     boolean isFailOnUnresolvedExpression();
 
-    OpcStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression);
+    OfficeStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression);
 
     @Deprecated(since = "1.6.7", forRemoval = true)
-    OpcStamperConfiguration nullValuesDefault(String nullValuesDefault);
+    OfficeStamperConfiguration nullValuesDefault(String nullValuesDefault);
 
     @Deprecated(since = "1.6.7", forRemoval = true)
-    OpcStamperConfiguration replaceNullValues(boolean replaceNullValues);
+    OfficeStamperConfiguration replaceNullValues(boolean replaceNullValues);
 
-    OpcStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue);
+    OfficeStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue);
 
-    OpcStamperConfiguration replaceUnresolvedExpressions(
+    OfficeStamperConfiguration replaceUnresolvedExpressions(
             boolean replaceUnresolvedExpressions
     );
 
-    OpcStamperConfiguration leaveEmptyOnExpressionError(
+    OfficeStamperConfiguration leaveEmptyOnExpressionError(
             boolean leaveEmpty
     );
 
     @Deprecated(since = "1.6.7", forRemoval = true)
-    <T> OpcStamperConfiguration addTypeResolver(
+    <T> OfficeStamperConfiguration addTypeResolver(
             Class<T> resolvedType, ITypeResolver<T> resolver
     );
 
-    OpcStamperConfiguration exposeInterfaceToExpressionLanguage(
+    OfficeStamperConfiguration exposeInterfaceToExpressionLanguage(
             Class<?> interfaceClass, Object implementation
     );
 
-    OpcStamperConfiguration addCommentProcessor(
+    OfficeStamperConfiguration addCommentProcessor(
             Class<?> interfaceClass,
             Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
     );
 
     @Deprecated(forRemoval = true, since = "1.6.4")
-    OpcStamper<WordprocessingMLPackage> build();
+    OfficeStamper<WordprocessingMLPackage> build();
 
     void addPreprocessor(PreProcessor preprocessor);
 
@@ -60,19 +60,19 @@ public interface OpcStamperConfiguration {
 
     String getLineBreakPlaceholder();
 
-    OpcStamperConfiguration setLineBreakPlaceholder(
+    OfficeStamperConfiguration setLineBreakPlaceholder(
             @NonNull String lineBreakPlaceholder
     );
 
     EvaluationContextConfigurer getEvaluationContextConfigurer();
 
-    OpcStamperConfiguration setEvaluationContextConfigurer(
+    OfficeStamperConfiguration setEvaluationContextConfigurer(
             EvaluationContextConfigurer evaluationContextConfigurer
     );
 
     SpelParserConfiguration getSpelParserConfiguration();
 
-    OpcStamperConfiguration setSpelParserConfiguration(
+    OfficeStamperConfiguration setSpelParserConfiguration(
             SpelParserConfiguration spelParserConfiguration
     );
 
@@ -85,7 +85,7 @@ public interface OpcStamperConfiguration {
     ITypeResolver<Object> getDefaultTypeResolver();
 
     @Deprecated(since = "1.6.7", forRemoval = true)
-    OpcStamperConfiguration setDefaultTypeResolver(
+    OfficeStamperConfiguration setDefaultTypeResolver(
             ITypeResolver<? super Object> defaultResolver
     );
 
@@ -101,11 +101,11 @@ public interface OpcStamperConfiguration {
 
     List<ObjectResolver> getResolvers();
 
-    OpcStamperConfiguration setResolvers(
+    OfficeStamperConfiguration setResolvers(
             List<ObjectResolver> resolvers
     );
 
-    OpcStamperConfiguration addResolver(
+    OfficeStamperConfiguration addResolver(
             ObjectResolver resolver
     );
 }

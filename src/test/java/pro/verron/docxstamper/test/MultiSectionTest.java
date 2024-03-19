@@ -1,7 +1,7 @@
 package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.docxstamper.preset.OpcStamperConfigurations;
+import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
 
 import java.nio.file.Path;
 
@@ -17,7 +17,7 @@ class MultiSectionTest {
     void expressionsInMultipleSections() {
         var context = new NamesContext("Homer", "Marge");
         var template = getResource(Path.of("MultiSectionTest.docx"));
-        var configuration = OpcStamperConfigurations.standard();
+        var configuration = OfficeStamperConfigurations.standard();
         var stamper = new TestDocxStamper<NamesContext>(configuration);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         String expected = """

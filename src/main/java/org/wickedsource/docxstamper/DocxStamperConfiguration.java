@@ -15,7 +15,7 @@ import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import org.wickedsource.docxstamper.replace.typeresolver.TypeResolver;
 import pro.verron.docxstamper.api.*;
 import pro.verron.docxstamper.preset.CommentProcessorFactory;
-import pro.verron.docxstamper.preset.OpcStamperConfigurations;
+import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
 import pro.verron.docxstamper.preset.Resolvers;
 import pro.verron.docxstamper.preset.resolver.Null2DefaultResolver;
 
@@ -37,13 +37,13 @@ import static java.util.stream.Collectors.toMap;
  * of the library modularization, because it
  * exposes too many implementation details to library users, and makes it
  * hard to extend the library comfortably.
- * It is recommended to use the  {@link OpcStamperConfigurations#standard()} method and
- * {@link OpcStamperConfiguration} interface instead.
+ * It is recommended to use the  {@link OfficeStamperConfigurations#standard()} method and
+ * {@link OfficeStamperConfiguration} interface instead.
  * This class will not be exported in the future releases of the module.
  */
 @Deprecated(since = "1.6.8", forRemoval = true)
 public class DocxStamperConfiguration
-        implements OpcStamperConfiguration {
+        implements OfficeStamperConfiguration {
 
     private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors = new HashMap<>();
     private final List<ObjectResolver> resolvers = new ArrayList<>();
@@ -274,7 +274,7 @@ public class DocxStamperConfiguration
      */
     @Override
     @Deprecated(forRemoval = true, since = "1.6.4")
-    public OpcStamper<WordprocessingMLPackage> build() {
+    public OfficeStamper<WordprocessingMLPackage> build() {
         return new DocxStamper<>(this);
     }
 

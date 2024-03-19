@@ -1,8 +1,8 @@
 package pro.verron.docxstamper.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.docxstamper.api.OpcStamperException;
-import pro.verron.docxstamper.preset.OpcStamperConfigurations;
+import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,9 +20,9 @@ class SpelInjectionTest {
     void spelInjectionTest() throws IOException {
         var context = Contexts.empty();
         try (var template = getResource(Path.of("SpelInjectionTest.docx"))) {
-            var configuration = OpcStamperConfigurations.standard();
+            var configuration = OfficeStamperConfigurations.standard();
             var stamper = new TestDocxStamper<>(configuration);
-            assertThrows(OpcStamperException.class,
+            assertThrows(OfficeStamperException.class,
                          () -> stamper.stampAndLoadAndExtract(template,
                                                               context));
         }

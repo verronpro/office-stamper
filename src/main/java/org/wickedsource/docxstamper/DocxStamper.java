@@ -14,8 +14,8 @@ import pro.verron.docxstamper.api.*;
 import pro.verron.docxstamper.core.ObjectResolverRegistry;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 import pro.verron.docxstamper.core.Placeholders;
+import pro.verron.docxstamper.preset.OfficeStampers;
 import pro.verron.docxstamper.preset.OpcStamperConfigurations;
-import pro.verron.docxstamper.preset.OpcStampers;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,7 +36,7 @@ import java.util.function.Function;
  * of the library modularization, because it
  * exposes too many implementation details to library users, and makes it
  * hard to extend the library comfortably.
- * It is recommended to use the {@link OpcStampers} methods instead.
+ * It is recommended to use the {@link OfficeStampers} methods instead.
  * This class will not be exported in the future releases of the module.
  */
 @Deprecated(since = "1.6.8", forRemoval = true)
@@ -49,7 +49,7 @@ public class DocxStamper<T>
     /**
      * Creates a new DocxStamper with the default configuration.
      *
-     * @deprecated since 1.6.4, use {@link OpcStampers#docxStamper()} or {@link OpcStampers#nopreprocessingDocxStamper()} instead.
+     * @deprecated since 1.6.4, use {@link OfficeStampers#docxStamper()} or {@link OfficeStampers#nopreprocessingDocxStamper()} instead.
      */
     @Deprecated(since = "1.6.4", forRemoval = true)
     public DocxStamper() {

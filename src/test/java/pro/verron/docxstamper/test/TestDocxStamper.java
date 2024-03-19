@@ -11,7 +11,7 @@ import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.P;
 import pro.verron.docxstamper.api.LoadingOpcStamper;
 import pro.verron.docxstamper.api.OpcStamperConfiguration;
-import pro.verron.docxstamper.preset.OpcStampers;
+import pro.verron.docxstamper.preset.OfficeStampers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +50,7 @@ public final class TestDocxStamper<T> {
             }
         };
         stamper = new LoadingOpcStamper<>(loader,
-                                          OpcStampers.docxStamper(config));
+                                          OfficeStampers.docxStamper(config));
     }
 
     /**

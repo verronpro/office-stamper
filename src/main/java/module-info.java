@@ -1,4 +1,4 @@
-module pro.verron.opcstamper {
+module pro.verron.officestamper {
     requires spring.core;
     requires spring.expression;
 

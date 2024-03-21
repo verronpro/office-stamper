@@ -15,7 +15,7 @@ import java.util.function.Function;
  * @version ${version}
  * @since 1.6.4
  */
-public class LoadingOfficeStamper<T extends OpcPackage> {
+public class StreamStamper<T extends OpcPackage> {
 
     private final Function<InputStream, T> loader;
     private final OfficeStamper<T> stamper;

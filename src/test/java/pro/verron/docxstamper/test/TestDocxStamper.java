@@ -9,8 +9,8 @@ import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.P;
-import pro.verron.docxstamper.api.LoadingOfficeStamper;
 import pro.verron.docxstamper.api.OfficeStamperConfiguration;
+import pro.verron.docxstamper.api.StreamStamper;
 import pro.verron.docxstamper.preset.OfficeStampers;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.joining;
  */
 public final class TestDocxStamper<T> {
 
-    private final LoadingOfficeStamper<WordprocessingMLPackage> stamper;
+    private final StreamStamper<WordprocessingMLPackage> stamper;
     private WordprocessingMLPackage document;
 
     /**
@@ -49,8 +49,8 @@ public final class TestDocxStamper<T> {
                 throw new RuntimeException(e);
             }
         };
-        stamper = new LoadingOfficeStamper<>(loader,
-                                             OfficeStampers.docxStamper(config));
+        stamper = new StreamStamper<>(loader,
+                                      OfficeStampers.docxStamper(config));
     }
 
     /**

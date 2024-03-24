@@ -74,31 +74,4 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
             return globalIndex - startIndex;
         }
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof IndexedRun that)) return false;
-        if (endIndex != that.endIndex) return false;
-        if (indexInParent != that.indexInParent) return false;
-        return startIndex == that.startIndex;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = startIndex;
-        result = 31 * result + endIndex;
-        result = 31 * result + indexInParent;
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                "[IndexedRun: startIndex=%d; endIndex=%d; indexInParent=%d text=%s}",
-                startIndex,
-                endIndex,
-                indexInParent,
-                RunUtil.getText(run));
-    }
 }

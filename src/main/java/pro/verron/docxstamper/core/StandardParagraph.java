@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.joining;
  * @since 1.0.8
  */
 public class StandardParagraph
-        implements Paragraph {
+        implements Paragraph<R> {
     private final List<IndexedRun> runs = new ArrayList<>();
     private final P paragraph;
     private int currentPosition = 0;

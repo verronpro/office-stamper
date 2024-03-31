@@ -3,7 +3,6 @@ package pro.verron.docxstamper.core;
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
-import org.docx4j.wml.R;
 import pro.verron.docxstamper.api.Paragraph;
 import pro.verron.docxstamper.api.Placeholder;
 
@@ -19,8 +18,6 @@ import static java.util.stream.Collectors.joining;
  * runs a word or a string of words is spread.</p>
  * <p>This class aggregates multiple runs so they can be treated as a single text, no matter how many runs the text
  * spans.
- * Call {@link #addRun(R, int)} to add all runs that should be aggregated. Then, call
- * methods to modify the aggregated text. Finally, call {@link #asString()} to get the modified text.
  *
  * @author Joseph Verron
  * @author Tom Hombergs
@@ -292,23 +289,10 @@ public class PowerpointParagraph
     }
 
     /**
-     * Returns the list of runs that are aggregated. Depending on what modifications were done to the aggregated text,
-     * this list may not return the same runs initially added to the aggregator.
-     *
-     * @return the list of aggregated runs.
-     */
-    private List<CTRegularTextRun> getRuns() {
-        return runs.stream()
-                   .map(PowerpointRun::run)
-                   .toList();
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         return asString();
     }
-
 }

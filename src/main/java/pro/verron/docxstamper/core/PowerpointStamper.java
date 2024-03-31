@@ -29,7 +29,7 @@ public class PowerpointStamper
         for (CTTextParagraph paragraph : ctTextParagraphs) {
             PowerpointParagraph paragraph1 = new PowerpointParagraph(
                     paragraph);
-            String string = paragraph1.asString(paragraph);
+            String string = paragraph1.asString();
             for (var variable : Placeholders.findVariables(string)) {
                 var replacement = new CTRegularTextRun();
                 var evaluationContext = new StandardEvaluationContext(context);

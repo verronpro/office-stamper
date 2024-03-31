@@ -3,20 +3,24 @@ package pro.verron.docxstamper.test;
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TextUtils;
 import org.docx4j.TraversalUtil;
-import org.docx4j.dml.CTBlip;
-import org.docx4j.dml.CTBlipFillProperties;
-import org.docx4j.dml.Graphic;
-import org.docx4j.dml.GraphicData;
+import org.docx4j.dml.*;
 import org.docx4j.dml.picture.Pic;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.PresentationMLPackage;
+import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
 import org.docx4j.wml.Comments.Comment;
+import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
+import org.xlsx4j.sml.Cell;
 import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.docxstamper.core.ExcelCollector;
+import pro.verron.docxstamper.core.PowerpointCollector;
+import pro.verron.docxstamper.core.PowerpointParagraph;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -40,6 +44,18 @@ import static java.util.stream.Collectors.joining;
  * @since 1.6.5
  */
 public class Stringifier {
+
+    public static String stringifyPowerpoint(PresentationMLPackage presentation) {
+        var collector = new PowerpointCollector<>(CTTextParagraph.class);
+        collector.visit(presentation);
+        var collected = collector.collect();
+
+        var powerpoint = new StringBuilder();
+        for (CTTextParagraph paragraph : collected) {
+            powerpoint.append(new PowerpointParagraph(paragraph).asString());
+        }
+        return powerpoint.toString();
+    }
 
     private final Supplier<WordprocessingMLPackage> documentSupplier;
 
@@ -65,20 +81,23 @@ public class Stringifier {
      *
      * @param document the WordprocessingMLPackage document to search for the comment
      * @param id       the ID of the comment to find
+     *
      * @return an Optional containing the Comment if found, or an empty Optional if not found
+     *
      * @throws Docx4JException if an error occurs while searching for the comment
      */
     public static Optional<Comment> findComment(
             WordprocessingMLPackage document, BigInteger id
-    ) throws Docx4JException {
+    )
+            throws Docx4JException {
         var name = new PartName("/word/comments.xml");
         var parts = document.getParts();
         var wordComments = (CommentsPart) parts.get(name);
         var comments = wordComments.getContents();
         return comments.getComment()
-                .stream()
-                .filter(idEqual(id))
-                .findFirst();
+                       .stream()
+                       .filter(idEqual(id))
+                       .findFirst();
     }
 
     private static Predicate<Comment> idEqual(BigInteger id) {
@@ -125,7 +144,9 @@ public class Stringifier {
      * <p>stringify.</p>
      *
      * @param blip a {@link org.docx4j.dml.CTBlip} object
+     *
      * @return a {@link java.lang.String} object
+     *
      * @since 1.6.6
      */
     private String stringify(CTBlip blip) {
@@ -135,8 +156,8 @@ public class Stringifier {
                 .entrySet()
                 .stream()
                 .filter(e -> e.getKey()
-                        .getName()
-                        .contains(blip.getEmbed()))
+                              .getName()
+                              .contains(blip.getEmbed()))
                 .map(Entry::getValue)
                 .findFirst()
                 .map(BinaryPartAbstractImage.class::cast)
@@ -153,7 +174,9 @@ public class Stringifier {
      * <p>humanReadableByteCountSI.</p>
      *
      * @param bytes a long
+     *
      * @return a {@link java.lang.String} object
+     *
      * @since 1.6.6
      */
     private String humanReadableByteCountSI(long bytes) {
@@ -165,7 +188,7 @@ public class Stringifier {
             ci.next();
         }
         return String.format(Locale.US, "%.1f%cB", bytes / 1000.0,
-                             ci.current());
+                ci.current());
     }
 
     private String sha1b64(byte[] imageBytes) {
@@ -179,7 +202,9 @@ public class Stringifier {
      * <p>stringify.</p>
      *
      * @param o a {@link java.lang.Object} object
+     *
      * @return a {@link java.lang.String} object
+     *
      * @since 1.6.6
      */
     public String stringify(Object o) {
@@ -213,7 +238,7 @@ public class Stringifier {
     private String stringify(R.CommentReference commentReference) {
         try {
             return findComment(document(),
-                               commentReference.getId())
+                    commentReference.getId())
                     .map(c -> stringify(c.getContent()))
                     .orElseThrow();
         } catch (Docx4JException e) {
@@ -243,15 +268,17 @@ public class Stringifier {
 
     private String stringify(List<?> list) {
         return list.stream()
-                .map(this::stringify)
-                .collect(joining());
+                   .map(this::stringify)
+                   .collect(joining());
     }
 
     /**
      * <p>stringify.</p>
      *
      * @param spacing a {@link org.docx4j.wml.PPrBase.Spacing} object
+     *
      * @return a {@link java.util.Optional} object
+     *
      * @since 1.6.6
      */
     private Optional<String> stringify(PPrBase.Spacing spacing) {
@@ -266,16 +293,18 @@ public class Stringifier {
         return map.isEmpty()
                 ? Optional.empty()
                 : Optional.of(map.entrySet()
-                                      .stream()
-                                      .map(format("%s=%s"))
-                                      .collect(joining(",", "{", "}")));
+                                 .stream()
+                                 .map(format("%s=%s"))
+                                 .collect(joining(",", "{", "}")));
     }
 
     /**
      * <p>stringify.</p>
      *
      * @param p a {@link org.docx4j.wml.P} object
+     *
      * @return a {@link java.lang.String} object
+     *
      * @since 1.6.6
      */
     private String stringify(P p) {
@@ -290,7 +319,9 @@ public class Stringifier {
      * <p>extractDocumentRuns.</p>
      *
      * @param p a {@link java.lang.Object} object
+     *
      * @return a {@link java.lang.String} object
+     *
      * @since 1.6.6
      */
     public String extractDocumentRuns(Object p) {
@@ -299,7 +330,7 @@ public class Stringifier {
         return runCollector
                 .runs()
                 .filter(r -> !r.getContent()
-                        .isEmpty())
+                               .isEmpty())
                 .map(this::stringify)
                 .collect(joining());
     }
@@ -309,23 +340,23 @@ public class Stringifier {
             return Optional.empty();
         var set = new TreeSet<String>();
         if (pPr.getJc() != null) set.add("jc=" + pPr.getJc()
-                .getVal()
-                .value());
+                                                    .getVal()
+                                                    .value());
         if (pPr.getInd() != null) set.add("ind=" + pPr.getInd()
-                .getLeft()
-                .intValue());
+                                                      .getLeft()
+                                                      .intValue());
         if (pPr.getKeepLines() != null)
             set.add("keepLines=" + pPr.getKeepLines()
-                    .isVal());
+                                      .isVal());
         if (pPr.getKeepNext() != null) set.add("keepNext=" + pPr.getKeepNext()
-                .isVal());
+                                                                .isVal());
         if (pPr.getOutlineLvl() != null)
             set.add("outlineLvl=" + pPr.getOutlineLvl()
-                    .getVal()
-                    .intValue());
+                                       .getVal()
+                                       .intValue());
         if (pPr.getPageBreakBefore() != null)
             set.add("pageBreakBefore=" + pPr.getPageBreakBefore()
-                    .isVal());
+                                            .isVal());
         if (pPr.getPBdr() != null) set.add("pBdr=xxx");
         if (pPr.getPPrChange() != null) set.add("pPrChange=xxx");
         stringify(pPr.getRPr())
@@ -358,7 +389,9 @@ public class Stringifier {
      * <p>stringify.</p>
      *
      * @param run a {@link org.docx4j.wml.R} object
+     *
      * @return a {@link java.lang.String} object
+     *
      * @since 1.6.6
      */
     private String stringify(R run) {
@@ -375,7 +408,9 @@ public class Stringifier {
      * <p>stringify.</p>
      *
      * @param rPr a {@link org.docx4j.wml.RPrAbstract} object
+     *
      * @return a {@link java.lang.String} object
+     *
      * @since 1.6.6
      */
     private Optional<String> stringify(RPrAbstract rPr) {
@@ -383,70 +418,70 @@ public class Stringifier {
             return Optional.empty();
         var set = new TreeSet<String>();
         if (rPr.getB() != null) set.add("b=" + rPr.getB()
-                .isVal());
+                                                  .isVal());
         if (rPr.getBdr() != null) set.add("bdr=xxx");
         if (rPr.getCaps() != null) set.add("caps=" + rPr.getCaps()
-                .isVal());
+                                                        .isVal());
         if (rPr.getColor() != null) set.add("color=" + rPr.getColor()
-                .getVal());
+                                                          .getVal());
         if (rPr.getDstrike() != null) set.add("dstrike=" + rPr.getDstrike()
-                .isVal());
+                                                              .isVal());
         if (rPr.getI() != null) set.add("i=" + rPr.getI()
-                .isVal());
+                                                  .isVal());
         if (rPr.getKern() != null) set.add("kern=" + rPr.getKern()
-                .getVal()
-                .intValue());
+                                                        .getVal()
+                                                        .intValue());
         if (rPr.getLang() != null) set.add("lang=" + rPr.getLang()
-                .getVal());
+                                                        .getVal());
         //if (rPr.getRFonts() != null) set.add("rFonts=xxx:" + rPr.getRFonts().getHint().value());
         if (rPr.getRPrChange() != null) set.add("rPrChange=xxx");
         if (rPr.getRStyle() != null) set.add("rStyle=" + rPr.getRStyle()
-                .getVal());
+                                                            .getVal());
         if (rPr.getRtl() != null) set.add("rtl=" + rPr.getRtl()
-                .isVal());
+                                                      .isVal());
         if (rPr.getShadow() != null) set.add("shadow=" + rPr.getShadow()
-                .isVal());
+                                                            .isVal());
         if (rPr.getShd() != null) set.add("shd=" + rPr.getShd()
-                .getColor());
+                                                      .getColor());
         if (rPr.getSmallCaps() != null)
             set.add("smallCaps=" + rPr.getSmallCaps()
-                    .isVal());
+                                      .isVal());
         if (rPr.getVertAlign() != null)
             set.add("vertAlign=" + rPr.getVertAlign()
-                    .getVal()
-                    .value());
+                                      .getVal()
+                                      .value());
         if (rPr.getSpacing() != null) set.add("spacing=" + rPr.getSpacing()
-                .getVal()
-                .intValue());
+                                                              .getVal()
+                                                              .intValue());
         if (rPr.getStrike() != null) set.add("strike=" + rPr.getStrike()
-                .isVal());
+                                                            .isVal());
         if (rPr.getOutline() != null) set.add("outline=" + rPr.getOutline()
-                .isVal());
+                                                              .isVal());
         if (rPr.getEmboss() != null) set.add("emboss=" + rPr.getEmboss()
-                .isVal());
+                                                            .isVal());
         if (rPr.getImprint() != null) set.add("imprint=" + rPr.getImprint()
-                .isVal());
+                                                              .isVal());
         if (rPr.getNoProof() != null) set.add("noProof=" + rPr.getNoProof()
-                .isVal());
+                                                              .isVal());
         if (rPr.getSpecVanish() != null)
             set.add("specVanish=" + rPr.getSpecVanish()
-                    .isVal());
+                                       .isVal());
         if (rPr.getU() != null) set.add("u=" + rPr.getU()
-                .getVal()
-                .value());
+                                                  .getVal()
+                                                  .value());
         if (rPr.getVanish() != null) set.add("vanish=" + rPr.getVanish()
-                .isVal());
+                                                            .isVal());
         if (rPr.getW() != null) set.add("w=" + rPr.getW()
-                .getVal());
+                                                  .getVal());
         if (rPr.getWebHidden() != null)
             set.add("webHidden=" + rPr.getWebHidden()
-                    .isVal());
+                                      .isVal());
         if (rPr.getHighlight() != null)
             set.add("highlight=" + rPr.getHighlight()
-                    .getVal());
+                                      .getVal());
         if (rPr.getEffect() != null) set.add("effect=" + rPr.getEffect()
-                .getVal()
-                .value());
+                                                            .getVal()
+                                                            .value());
         if (set.isEmpty())
             return Optional.empty();
         return Optional.of(String.join(",", set));
@@ -478,13 +513,13 @@ public class Stringifier {
     private String stringify(SectPr.PgSz pgSz) {
         var set = new TreeSet<String>();
         if (pgSz.getOrient() != null) set.add("orient=" + pgSz.getOrient()
-                .value());
+                                                              .value());
         if (pgSz.getW() != null) set.add("w=" + pgSz.getW()
-                .intValue());
+                                                    .intValue());
         if (pgSz.getH() != null) set.add("h=" + pgSz.getH()
-                .intValue());
+                                                    .intValue());
         if (pgSz.getCode() != null) set.add("code=" + pgSz.getCode()
-                .intValue());
+                                                          .intValue());
         return String.join(",", set);
     }
 }

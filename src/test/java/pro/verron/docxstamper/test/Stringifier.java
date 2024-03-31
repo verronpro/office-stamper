@@ -68,6 +68,17 @@ public class Stringifier {
         this.documentSupplier = documentSupplier;
     }
 
+
+    public static String stringifyExcel(SpreadsheetMLPackage presentation) {
+        var collector = new ExcelCollector<>(Cell.class);
+        collector.visit(presentation);
+        var formatter = new DataFormatter();
+        return collector.collect()
+                        .stream()
+                        .map(cell -> cell.getR() + ": " + formatter.formatCellValue(cell))
+                        .collect(joining("\n"));
+    }
+
     private static MessageDigest findDigest() {
         try {
             return MessageDigest.getInstance("SHA-1");

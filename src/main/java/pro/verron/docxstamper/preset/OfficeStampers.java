@@ -1,12 +1,14 @@
 package pro.verron.docxstamper.preset;
 
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
+import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
 import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
 import pro.verron.docxstamper.api.OfficeStamper;
 import pro.verron.docxstamper.api.OfficeStamperConfiguration;
+import pro.verron.docxstamper.core.ExcelStamper;
 import pro.verron.docxstamper.core.PowerpointStamper;
 
 /**
@@ -39,5 +41,9 @@ public class OfficeStampers {
 
 	public static OfficeStamper<PresentationMLPackage> pptxStamper() {
 		return new PowerpointStamper();
+	}
+
+	public static OfficeStamper<SpreadsheetMLPackage> xlsxStamper() {
+		return new ExcelStamper();
 	}
 }

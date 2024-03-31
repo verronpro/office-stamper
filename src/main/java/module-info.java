@@ -11,12 +11,11 @@ module pro.verron.officestamper {
     opens pro.verron.docxstamper.api;
     opens pro.verron.docxstamper.preset;
 
-    opens pro.verron.docxstamper.core to pro.verron.officestamper.test;
-    exports pro.verron.docxstamper to pro.verron.officestamper.test;
-
     exports pro.verron.docxstamper.api;
     exports pro.verron.docxstamper.preset;
 
+    opens pro.verron.docxstamper.core to pro.verron.officestamper.test;
+    exports pro.verron.docxstamper.core to pro.verron.officestamper.test;
     /**
      * TODO: remove all the following exports in next version
      */

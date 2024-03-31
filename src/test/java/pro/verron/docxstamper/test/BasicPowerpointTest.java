@@ -30,6 +30,6 @@ public class BasicPowerpointTest {
                         Hello
                         Bart
                         """,
-                Stringifiers.stringifyPowerpoint(presentationMLPackage));
+                Stringifier.stringifyPowerpoint(presentationMLPackage));
     }
 }

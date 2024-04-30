@@ -2,7 +2,6 @@ package pro.verron.docxstamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 
@@ -20,8 +19,8 @@ public interface ObjectResolver {
     /**
      * Resolves the expression in the given document with the provided object.
      *
-     * @param document   the {@link WordprocessingMLPackage} document in
-     *                   which to resolve the expression
+     * @param document    the {@link WordprocessingMLPackage} document in
+     *                    which to resolve the expression
      * @param placeholder the expression value to be replaced
      * @param object      the object to be used for resolving the expression
      *
@@ -36,7 +35,8 @@ public interface ObjectResolver {
     ) {
         R resolution = resolve(document, placeholder.content(), object);
         var msg = "Expression '{}' replaced by '{}' with resolver {}";
-        Log.log.debug(msg, placeholder, resolution, this);
+        LoggerFactory.getLogger(ObjectResolver.class)
+                     .debug(msg, placeholder, resolution, this);
         return resolution;
     }
 
@@ -44,13 +44,10 @@ public interface ObjectResolver {
      * Checks if the given object can be resolved.
      *
      * @param object the object to be resolved
+     *
      * @return true if the object can be resolved, false otherwise
      */
     boolean canResolve(Object object);
-
-    class Log {
-        static final Logger log = LoggerFactory.getLogger(ObjectResolver.class);
-    }
 
     /**
      * Resolves the expression in the given document with the provided object.
@@ -69,4 +66,5 @@ public interface ObjectResolver {
             String expression,
             Object object
     );
+
 }

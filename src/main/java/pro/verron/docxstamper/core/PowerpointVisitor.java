@@ -20,7 +20,6 @@ abstract class PowerpointVisitor {
         before(object);
         try {
             if (object instanceof PresentationMLPackage element) visit(element.getParts());
-
             else if (object instanceof PartName ignored) { /* Do nothing */ }
             else if (object instanceof Parts element) visit(element.getParts());
             else if (object instanceof SlideLayoutPart ignored) { /* Do nothing */ }
@@ -47,6 +46,7 @@ abstract class PowerpointVisitor {
             else if (object instanceof Presentation.SldSz ignored) { /* Do Nothing */ }
             else if (object instanceof Presentation ignored) { /* Do Nothing */ }
             else if (object == null) { /* Do Nothing */ }
+            // TODO: replace this test throws by a noop before usage in the wild
             else throw new OfficeStamperException("Unknown case %s : %s".formatted(object.getClass(), object));
         } catch (Docx4JException e) {
             throw new OfficeStamperException(e);

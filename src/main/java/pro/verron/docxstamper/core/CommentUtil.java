@@ -35,6 +35,9 @@ public class CommentUtil {
     private static final Logger logger = LoggerFactory.getLogger(CommentUtil.class);
     private static final String WORD_COMMENTS_PART_NAME = "/word/comments.xml";
 
+    /**
+     * Utility class for handling comments in a DOCX document.
+     */
     // TODO: Move to private for next version
     protected CommentUtil() {
         throw new DocxStamperException("Utility class shouldn't be instantiated");

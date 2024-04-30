@@ -27,8 +27,9 @@ import pro.verron.docxstamper.api.Placeholder;
  */
 public class PlaceholderReplacer
         implements ParagraphPlaceholderReplacer {
-    private static final Logger log = LoggerFactory.getLogger(
-            PlaceholderReplacer.class);
+
+    private static final Logger log = LoggerFactory.getLogger(PlaceholderReplacer.class);
+
     private final ExpressionResolver resolver;
     private final ObjectResolverRegistry registry;
     private final boolean failOnUnresolvedExpression;
@@ -51,7 +52,7 @@ public class PlaceholderReplacer
      *                                          that cannot be resolved will
      *                                          be by replaced by an
      *                                          empty string.
-     * @param linebreakPlaceholder               if set to a non-null value,
+     * @param linebreakPlaceholder              if set to a non-null value,
      *                                          all occurrences of this placeholder will be
      *                                          replaced with a line break.
      */
@@ -113,24 +114,28 @@ public class PlaceholderReplacer
             try {
                 var resolution = resolver.resolve(expression, context);
                 var replacement = registry.resolve(document, expression,
-                                                   resolution);
+                        resolution);
                 paragraph.replace(expression, replacement);
             } catch (SpelEvaluationException | SpelParseException e) {
                 if (failOnUnresolvedExpression) {
                     String message = "Expression %s could not be resolved against context of type %s"
                             .formatted(expression, context.getClass());
                     throw new OfficeStamperException(message, e);
-                } else if (leaveEmptyOnExpressionError) {
+                }
+                else if (leaveEmptyOnExpressionError) {
                     log.warn(
-                            "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log level to TRACE to view Stacktrace.",
+                            "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log"
+                                    + " level to TRACE to view Stacktrace.",
                             expression,
                             context.getClass(),
                             e.getMessage());
                     log.trace("Reason for skipping expression:", e);
                     paragraph.replace(expression, RunUtil.create(""));
-                } else if (replaceUnresolvedExpressions) {
+                }
+                else if (replaceUnresolvedExpressions) {
                     log.warn(
-                            "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log level to TRACE to view Stacktrace.",
+                            "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log"
+                                    + " level to TRACE to view Stacktrace.",
                             expression,
                             context.getClass(),
                             e.getMessage());
@@ -138,7 +143,8 @@ public class PlaceholderReplacer
                     paragraph.replace(
                             expression,
                             RunUtil.create(unresolvedExpressionsDefaultValue));
-                } else {
+                }
+                else {
                     // DO NOTHING
                 }
             }
@@ -156,10 +162,10 @@ public class PlaceholderReplacer
 
     private void replaceLineBreaks(Paragraph paragraph) {
         Br lineBreak = Context.getWmlObjectFactory()
-                .createBr();
+                              .createBr();
         R run = RunUtil.create(lineBreak);
         while (paragraph.asString()
-                .contains(lineBreakPlaceholder().expression())) {
+                        .contains(lineBreakPlaceholder().expression())) {
             paragraph.replace(lineBreakPlaceholder(), run);
         }
     }

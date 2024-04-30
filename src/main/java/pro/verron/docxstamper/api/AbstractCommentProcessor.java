@@ -6,6 +6,11 @@ import org.docx4j.wml.R;
 
 import java.util.Objects;
 
+/**
+ * AbstractCommentProcessor is an abstract base class for comment processors.
+ * It implements the CommentProcessor interface.
+ * It provides common functionality and fields that subclasses can use.
+ */
 public abstract class AbstractCommentProcessor
         implements CommentProcessor {
     /**
@@ -17,7 +22,14 @@ public abstract class AbstractCommentProcessor
     private Comment currentComment;
     private WordprocessingMLPackage document;
 
-    public AbstractCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {this.placeholderReplacer = placeholderReplacer;}
+    /**
+     * Creates an instance of AbstractCommentProcessor with the given ParagraphPlaceholderReplacer.
+     *
+     * @param placeholderReplacer the ParagraphPlaceholderReplacer used to replace expressions in the comment text
+     */
+    public AbstractCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
+        this.placeholderReplacer = placeholderReplacer;
+    }
 
     /**
      * <p>Getter for the field <code>currentCommentWrapper</code>.</p>

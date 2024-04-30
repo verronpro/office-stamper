@@ -6,10 +6,25 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * This class describes an image which will be inserted into a document.
+ *
+ * @author Joseph Verron
+ * @author Romster
+ * @version ${version}
+ * @since 1.0.0
+ */
 public sealed class Image
         permits org.wickedsource.docxstamper.replace.typeresolver.image.Image {
 
+    /**
+     * todo: make private asap
+     */
     protected final byte[] imageBytes;
+
+    /**
+     * todo: make private asap
+     */
     protected Integer maxWidth;
 
     /**

@@ -4,6 +4,9 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 
+/**
+ * CommentProcessor is an interface that defines the methods for processing comments in a .docx template.
+ */
 public interface CommentProcessor {
     /**
      * This method is called after all comments in the .docx template have been passed to the comment processor.

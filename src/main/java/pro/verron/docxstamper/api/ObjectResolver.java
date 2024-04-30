@@ -23,8 +23,10 @@ public interface ObjectResolver {
      * @param document   the {@link WordprocessingMLPackage} document in
      *                   which to resolve the expression
      * @param placeholder the expression value to be replaced
-     * @param object     the object to be used for resolving the expression
+     * @param object      the object to be used for resolving the expression
+     *
      * @return the resolved value for the expression
+     *
      * @throws DocxStamperException if no resolver is found for the object
      */
     default R resolve(
@@ -57,7 +59,9 @@ public interface ObjectResolver {
      *                   which to resolve the expression
      * @param expression the expression value to be replaced
      * @param object     the object to be used for resolving the expression
+     *
      * @return the resolved value for the expression
+     *
      * @throws DocxStamperException if no resolver is found for the object
      */
     R resolve(

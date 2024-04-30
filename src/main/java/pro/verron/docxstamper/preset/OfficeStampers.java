@@ -23,6 +23,13 @@ import pro.verron.docxstamper.core.PowerpointStamper;
  */
 public class OfficeStampers {
 
+	/**
+	 * Creates a new instance of the {@link DocxStamper} class with the specified {@link OfficeStamperConfiguration}.
+	 *
+	 * @param config the configuration for the docx stamper
+	 *
+	 * @return a new instance of the {@link DocxStamper} class
+	 */
 	public static OfficeStamper<WordprocessingMLPackage> docxStamper(
 			OfficeStamperConfiguration config
 	) {
@@ -39,10 +46,25 @@ public class OfficeStampers {
 		return new DocxStamper<>(OfficeStamperConfigurations.standardWithPreprocessing());
 	}
 
+	/**
+	 * Returns a new instance of the OfficeStamper implementation
+	 * for stamping Powerpoint presentations with context and writing
+	 * the result to an OutputStream.
+	 *
+	 * @return a new OfficeStamper instance for Powerpoint presentations
+	 * @since 1.6.8
+	 */
 	public static OfficeStamper<PresentationMLPackage> pptxStamper() {
 		return new PowerpointStamper();
 	}
 
+	/**
+	 * Returns a new instance of the OfficeStamper implementation
+	 * for stamping Excel templates with context and writing the result to an OutputStream.
+	 *
+	 * @return a new OfficeStamper instance for Excel templates
+	 * @since 1.6.8
+	 */
 	public static OfficeStamper<SpreadsheetMLPackage> xlsxStamper() {
 		return new ExcelStamper();
 	}

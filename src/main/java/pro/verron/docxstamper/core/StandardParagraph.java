@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.joining;
  * @since 1.0.8
  */
 public class StandardParagraph
-        implements Paragraph<R> {
+        implements Paragraph {
     private final List<IndexedRun> runs = new ArrayList<>();
     private final P paragraph;
     private int currentPosition = 0;
@@ -81,7 +81,10 @@ public class StandardParagraph
      * @param replacement the object to replace the expression.
      */
     @Override
-    public void replace(Placeholder placeholder, R replacement) {
+    public void replace(Placeholder placeholder, Object replacement) {
+        if (!(replacement instanceof R replacementRun))
+            throw new AssertionError("replacement must be a R");
+
         String text = asString();
         String full = placeholder.expression();
         int matchStartIndex = text.indexOf(full);
@@ -106,7 +109,7 @@ public class StandardParagraph
             boolean expressionAtEndOfRun = matchEndIndex == run.endIndex();
             boolean expressionWithinRun = matchStartIndex > run.startIndex() && matchEndIndex < run.endIndex();
 
-            replacement.setRPr(run.run()
+            replacementRun.setRPr(run.run()
                                        .getRPr());
 
             if (expressionSpansCompleteRun) {
@@ -146,7 +149,7 @@ public class StandardParagraph
         } else {
             IndexedRun firstRun = affectedRuns.get(0);
             IndexedRun lastRun = affectedRuns.get(affectedRuns.size() - 1);
-            replacement.setRPr(firstRun.run()
+            replacementRun.setRPr(firstRun.run()
                                        .getRPr());
             // remove the expression from first and last run
             firstRun.replace(matchStartIndex, matchEndIndex, "");
@@ -185,18 +188,6 @@ public class StandardParagraph
     private List<IndexedRun> getAffectedRuns(int startIndex, int endIndex) {
         return runs.stream()
                 .filter(run -> run.isTouchedByRange(startIndex, endIndex))
-                .toList();
-    }
-
-    /**
-     * Returns the list of runs that are aggregated. Depending on what modifications were done to the aggregated text,
-     * this list may not return the same runs initially added to the aggregator.
-     *
-     * @return the list of aggregated runs.
-     */
-    private List<R> getRuns() {
-        return runs.stream()
-                .map(IndexedRun::run)
                 .toList();
     }
 

@@ -2,13 +2,36 @@ package pro.verron.docxstamper.core;
 
 import org.docx4j.dml.CTRegularTextRun;
 
-public record PowerpointRun(int startIndex, int endIndex, int indexInParent, CTRegularTextRun run) {
+/**
+ * Represents a run within a PowerPoint slide.
+ */
+public record PowerpointRun(
+        int startIndex,
+        int endIndex,
+        int indexInParent,
+        CTRegularTextRun run
+) {
+    /**
+     * Checks if the given range of indices touches the start or end index of the run.
+     *
+     * @param globalStartIndex the start index of the global range.
+     * @param globalEndIndex   the end index of the global range.
+     *
+     * @return {@code true} if the range touches the start or end index of the run, {@code false} otherwise.
+     */
     public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
         return ((startIndex >= globalStartIndex) && (startIndex <= globalEndIndex))
                 || ((endIndex >= globalStartIndex) && (endIndex <= globalEndIndex))
                 || ((startIndex <= globalStartIndex) && (endIndex >= globalEndIndex));
     }
 
+    /**
+     * Replaces a substring within the run's text.
+     *
+     * @param globalStartIndex the start index of the substring to be replaced.
+     * @param globalEndIndex   the end index of the substring to be replaced.
+     * @param replacement      the replacement string.
+     */
     public void replace(
             int globalStartIndex,
             int globalEndIndex,
@@ -25,8 +48,12 @@ public record PowerpointRun(int startIndex, int endIndex, int indexInParent, CTR
 
     private int globalIndexToLocalIndex(int globalIndex) {
         if (globalIndex < startIndex) return 0;
-        else if (globalIndex > endIndex) return lastIndex(run.getT());
+        else if (globalIndex > endIndex) return lastIndex();
         else return globalIndex - startIndex;
+    }
+
+    private int lastIndex() {
+        return lastIndex(run.getT());
     }
 
     private int lastIndex(String string) {

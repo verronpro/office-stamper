@@ -53,8 +53,6 @@ public class CommentUtil {
     public static Optional<Comments.Comment> getCommentAround(
             R run, WordprocessingMLPackage document
     ) {
-        if (run == null) return Optional.empty();
-
         ContentAccessor parent = (ContentAccessor) ((Child) run).getParent();
         if (parent == null) return Optional.empty();
 

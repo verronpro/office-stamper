@@ -45,7 +45,8 @@ import static java.util.stream.Collectors.toMap;
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
 
-    private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors = new HashMap<>();
+    private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors =
+            new HashMap<>();
     private final List<ObjectResolver> resolvers = new ArrayList<>();
     private final Map<Class<?>, Object> expressionFunctions = new HashMap<>();
     private final List<PreProcessor> preprocessors = new ArrayList<>();

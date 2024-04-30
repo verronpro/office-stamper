@@ -13,6 +13,9 @@ import java.io.OutputStream;
 
 import static pro.verron.docxstamper.core.Placeholders.findVariables;
 
+/**
+ * TODO: javadoc
+ */
 public class ExcelStamper
         implements OfficeStamper<SpreadsheetMLPackage> {
 

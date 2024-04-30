@@ -13,6 +13,11 @@ import pro.verron.docxstamper.api.OfficeStamperException;
 import java.io.OutputStream;
 import java.util.List;
 
+/**
+ * The PowerpointStamper class implements the OfficeStamper interface
+ * to provide functionality for stamping Powerpoint presentations with
+ * context and writing the result to an OutputStream.
+ */
 public class PowerpointStamper
         implements OfficeStamper<PresentationMLPackage> {
 

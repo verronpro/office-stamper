@@ -3,6 +3,9 @@ package pro.verron.docxstamper.core;
 import org.xlsx4j.sml.CTRst;
 import pro.verron.docxstamper.api.Placeholder;
 
+/**
+ * TODO: javadoc
+ */
 public class ExcelParagraph {
     private final CTRst paragraph;
 

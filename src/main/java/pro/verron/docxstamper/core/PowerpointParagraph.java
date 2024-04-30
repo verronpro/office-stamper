@@ -25,7 +25,7 @@ import static java.util.stream.Collectors.joining;
  * @since 1.0.8
  */
 public class PowerpointParagraph
-        implements Paragraph<CTRegularTextRun> {
+        implements Paragraph {
     private final List<PowerpointRun> runs = new ArrayList<>();
     private final CTTextParagraph paragraph;
     private int currentPosition = 0;
@@ -79,7 +79,9 @@ public class PowerpointParagraph
      * @param replacement the object to replace the expression.
      */
     @Override
-    public void replace(Placeholder placeholder, CTRegularTextRun replacement) {
+    public void replace(Placeholder placeholder, Object replacement) {
+        if (!(replacement instanceof CTRegularTextRun replacementRun))
+            throw new AssertionError("replacement is not a CTRegularTextRun");
         String text = asString();
         String full = placeholder.expression();
         int matchStartIndex = text.indexOf(full);
@@ -106,7 +108,7 @@ public class PowerpointParagraph
             boolean expressionAtEndOfRun = matchEndIndex == run.endIndex();
             boolean expressionWithinRun = matchStartIndex > run.startIndex() && matchEndIndex < run.endIndex();
 
-            replacement.setRPr(run.run()
+            replacementRun.setRPr(run.run()
                                   .getRPr());
 
             if (expressionSpansCompleteRun) {
@@ -143,7 +145,7 @@ public class PowerpointParagraph
         else {
             PowerpointRun firstRun = affectedRuns.get(0);
             PowerpointRun lastRun = affectedRuns.get(affectedRuns.size() - 1);
-            replacement.setRPr(firstRun.run()
+            replacementRun.setRPr(firstRun.run()
                                        .getRPr());
             // remove the expression from first and last run
             firstRun.replace(matchStartIndex, matchEndIndex, "");

@@ -14,10 +14,16 @@ import java.util.List;
 @Deprecated(since = "1.6.8", forRemoval = true)
 public class StampTable
         extends pro.verron.docxstamper.api.StampTable {
+    /**
+     * {@inheritDoc}
+     */
     public StampTable() {
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public StampTable(
             @NonNull List<String> headers,
             @NonNull List<List<String>> records

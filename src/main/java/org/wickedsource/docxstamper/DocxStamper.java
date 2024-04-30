@@ -51,7 +51,7 @@ public class DocxStamper<T>
     /**
      * Creates a new DocxStamper with the default configuration.
      *
-     * @deprecated since 1.6.4, use {@link OfficeStampers#docxStamper()} or {@link OfficeStampers#nopreprocessingDocxStamper()} instead.
+     * @deprecated since 1.6.4, use {@link OfficeStampers#docxStamper()} instead.
      */
     @Deprecated(since = "1.6.4", forRemoval = true)
     public DocxStamper() {

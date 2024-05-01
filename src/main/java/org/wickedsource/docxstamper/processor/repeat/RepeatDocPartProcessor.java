@@ -10,11 +10,9 @@ import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
-import pro.verron.docxstamper.api.Comment;
-import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.api.OfficeStamper;
-import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.docxstamper.api.*;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
+import pro.verron.docxstamper.preset.Resolvers;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -73,7 +71,12 @@ public class RepeatDocPartProcessor
      *                             resolves to null
      *
      * @return a new instance of this processor
+     *
+     * @deprecated use {@link RepeatDocPartProcessor#newInstance(ParagraphPlaceholderReplacer, OfficeStamper)} for
+     * instantiation and {@link OfficeStamperConfiguration#addResolver(ObjectResolver)} with
+     * {@link Resolvers#nullToDefault(String)} instead
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     public static CommentProcessor newInstance(
             PlaceholderReplacer pr,
             OfficeStamper<WordprocessingMLPackage> stamper,
@@ -184,40 +187,6 @@ public class RepeatDocPartProcessor
         return subDocuments;
     }
 
-    private static void recursivelyReplaceImages(
-            ContentAccessor r,
-            Map<R, R> replacements
-    ) {
-        Queue<ContentAccessor> q = new ArrayDeque<>();
-        q.add(r);
-        while (!q.isEmpty()) {
-            ContentAccessor run = q.remove();
-            if (replacements.containsKey(run)
-                    && run instanceof Child child
-                    && child.getParent() instanceof ContentAccessor parent) {
-                List<Object> parentContent = parent.getContent();
-                parentContent.add(parentContent.indexOf(run),
-                        replacements.get(run));
-                parentContent.remove(run);
-            }
-            else {
-                q.addAll(run.getContent()
-                            .stream()
-                            .filter(ContentAccessor.class::isInstance)
-                            .map(ContentAccessor.class::cast)
-                            .toList());
-            }
-        }
-    }
-
-    private static void setParentIfPossible(
-            Object object,
-            ContentAccessor parent
-    ) {
-        if (object instanceof Child child)
-            child.setParent(parent);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -251,6 +220,40 @@ public class RepeatDocPartProcessor
             gcpContent.removeAll(repeatElements);
         }
 
+    }
+
+    private static void recursivelyReplaceImages(
+            ContentAccessor r,
+            Map<R, R> replacements
+    ) {
+        Queue<ContentAccessor> q = new ArrayDeque<>();
+        q.add(r);
+        while (!q.isEmpty()) {
+            ContentAccessor run = q.remove();
+            if (replacements.containsKey(run)
+                    && run instanceof Child child
+                    && child.getParent() instanceof ContentAccessor parent) {
+                List<Object> parentContent = parent.getContent();
+                parentContent.add(parentContent.indexOf(run),
+                        replacements.get(run));
+                parentContent.remove(run);
+            }
+            else {
+                q.addAll(run.getContent()
+                            .stream()
+                            .filter(ContentAccessor.class::isInstance)
+                            .map(ContentAccessor.class::cast)
+                            .toList());
+            }
+        }
+    }
+
+    private static void setParentIfPossible(
+            Object object,
+            ContentAccessor parent
+    ) {
+        if (object instanceof Child child)
+            child.setParent(parent);
     }
 
     private WordprocessingMLPackage outputWord(Consumer<OutputStream> outputter) {

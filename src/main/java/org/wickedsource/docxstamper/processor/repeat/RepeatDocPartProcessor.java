@@ -153,7 +153,6 @@ public class RepeatDocPartProcessor
         if (object instanceof Child child)
             child.setParent(parent);
     }
-
     /**
      * {@inheritDoc}
      */
@@ -170,56 +169,6 @@ public class RepeatDocPartProcessor
         }
     }
 
-    private List<Object> stampSubDocuments(
-            WordprocessingMLPackage document,
-            List<Object> expressionContexts,
-            ContentAccessor gcp,
-            WordprocessingMLPackage subTemplate,
-            SectPr previousSectionBreak,
-            boolean oddNumberOfBreaks
-    ) {
-        Deque<WordprocessingMLPackage> subDocuments = stampSubDocuments(
-                expressionContexts, subTemplate);
-        Map<R, R> replacements = subDocuments
-                .stream()
-                .map(p -> walkObjectsAndImportImages(p,
-                                                     document)) // TODO: remove the side effect here
-                .map(Map::entrySet)
-                .flatMap(Set::stream)
-                .collect(toMap(Entry::getKey, Entry::getValue));
-
-        var changes = new ArrayList<>();
-        for (WordprocessingMLPackage subDocument : subDocuments) {
-            var os = documentAsInsertableElements(subDocument,
-                                                  oddNumberOfBreaks,
-                                                  previousSectionBreak);
-            os.stream()
-                    .filter(ContentAccessor.class::isInstance)
-                    .map(ContentAccessor.class::cast)
-                    .forEach(o -> recursivelyReplaceImages(o, replacements));
-            os.forEach(c -> setParentIfPossible(c, gcp));
-            changes.addAll(os);
-        }
-        return changes;
-    }
-
-    private Deque<WordprocessingMLPackage> stampSubDocuments(
-            List<Object> subContexts,
-            WordprocessingMLPackage subTemplate
-    ) {
-        Deque<WordprocessingMLPackage> subDocuments = new ArrayDeque<>();
-        for (Object subContext : subContexts) {
-            WordprocessingMLPackage templateCopy = outputWord(
-                    os -> copy(subTemplate, os));
-            WordprocessingMLPackage subDocument = outputWord(
-                    os -> stamp(subContext,
-                                templateCopy,
-                                os
-                    ));
-            subDocuments.add(subDocument);
-        }
-        return subDocuments;
-    }
 
     /**
      * {@inheritDoc}
@@ -253,6 +202,51 @@ public class RepeatDocPartProcessor
             gcpContent.addAll(index, changes);
             gcpContent.removeAll(repeatElements);
         }
+
+    }
+
+    private List<Object> stampSubDocuments(
+            WordprocessingMLPackage document,
+            List<Object> expressionContexts,
+            ContentAccessor gcp,
+            WordprocessingMLPackage subTemplate,
+            SectPr previousSectionBreak,
+            boolean oddNumberOfBreaks
+    ) {
+        var subDocuments = stampSubDocuments(expressionContexts, subTemplate);
+        var replacements = subDocuments
+                .stream()
+                .map(p -> walkObjectsAndImportImages(p, document)) // TODO_LATER: move the side effect somewhere else
+                .map(Map::entrySet)
+                .flatMap(Set::stream)
+                .collect(toMap(Entry::getKey, Entry::getValue));
+
+        var changes = new ArrayList<>();
+        for (WordprocessingMLPackage subDocument : subDocuments) {
+            var os = documentAsInsertableElements(subDocument,
+                    oddNumberOfBreaks,
+                    previousSectionBreak);
+            os.stream()
+              .filter(ContentAccessor.class::isInstance)
+              .map(ContentAccessor.class::cast)
+              .forEach(o -> recursivelyReplaceImages(o, replacements));
+            os.forEach(c -> setParentIfPossible(c, gcp));
+            changes.addAll(os);
+        }
+        return changes;
+    }
+
+    private List<WordprocessingMLPackage> stampSubDocuments(
+            List<Object> subContexts,
+            WordprocessingMLPackage subTemplate
+    ) {
+        var subDocuments = new ArrayList<WordprocessingMLPackage>();
+        for (Object subContext : subContexts) {
+            var templateCopy = outputWord(os -> copy(subTemplate, os));
+            var subDocument = outputWord(os -> stamp(subContext, templateCopy, os));
+            subDocuments.add(subDocument);
+        }
+        return subDocuments;
     }
 
     private WordprocessingMLPackage outputWord(Consumer<OutputStream> outputter) {
@@ -275,7 +269,7 @@ public class RepeatDocPartProcessor
         } catch (Docx4JException | IOException | InterruptedException e) {
             DocxStamperException exception = new DocxStamperException(e);
             exceptionHandler.exception()
-                    .ifPresent(exception::addSuppressed);
+                            .ifPresent(exception::addSuppressed);
             throw exception;
         }
     }
@@ -337,7 +331,8 @@ public class RepeatDocPartProcessor
          *
          * @throws Exception if an exception occurs executing the task
          */
-        void throwingRun() throws Exception;
+        void throwingRun()
+                throws Exception;
     }
 
     /**

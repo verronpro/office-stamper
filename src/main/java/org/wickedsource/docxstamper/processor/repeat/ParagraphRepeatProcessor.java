@@ -82,6 +82,35 @@ public class ParagraphRepeatProcessor
                 Collections::emptyList);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void repeatParagraph(List<Object> objects) {
+        P paragraph = getParagraph();
+
+        Deque<P> paragraphs = getParagraphsInsideComment(paragraph);
+
+        Paragraphs toRepeat = new Paragraphs();
+        toRepeat.comment = getCurrentCommentWrapper();
+        toRepeat.data = new ArrayDeque<>(objects);
+        toRepeat.paragraphs = paragraphs;
+        toRepeat.sectionBreakBefore = SectionUtil.getPreviousSectionBreakIfPresent(
+                paragraph,
+                (ContentAccessor) paragraph.getParent());
+        toRepeat.firstParagraphSectionBreak = SectionUtil.getParagraphSectionBreak(
+                paragraph);
+        toRepeat.hasOddSectionBreaks = SectionUtil.isOddNumberOfSectionBreaks(
+                new ArrayList<>(toRepeat.paragraphs));
+
+        if (paragraph.getPPr() != null && paragraph.getPPr()
+                                                   .getSectPr() != null) {
+            // we need to clear the first paragraph's section break to be able to control how to repeat it
+            paragraph.getPPr()
+                     .setSectPr(null);
+        }
+        pToRepeat.put(paragraph, toRepeat);
+    }
 
     /**
      * Returns all paragraphs inside the comment of the given paragraph.
@@ -140,44 +169,30 @@ public class ParagraphRepeatProcessor
         return paragraphs;
     }
 
-    private static void restoreFirstSectionBreakIfNeeded(
-            Paragraphs paragraphs,
-            Deque<P> paragraphsToAdd
-    ) {
-        if (paragraphs.firstParagraphSectionBreak != null) {
-            P breakP = paragraphsToAdd.getLast();
-            SectionUtil.applySectionBreakToParagraph(paragraphs.firstParagraphSectionBreak,
-                                                     breakP);
-        }
-    }
     /**
      * {@inheritDoc}
      */
     @Override
-    public void repeatParagraph(List<Object> objects) {
-        P paragraph = getParagraph();
+    public void commitChanges(WordprocessingMLPackage document) {
+        for (Map.Entry<P, Paragraphs> entry : pToRepeat.entrySet()) {
+            P currentP = entry.getKey();
+            ContentAccessor parent = (ContentAccessor) currentP.getParent();
+            List<Object> parentContent = parent.getContent();
+            int index = parentContent.indexOf(currentP);
+            if (index < 0) throw new DocxStamperException("Impossible");
 
-        Deque<P> paragraphs = getParagraphsInsideComment(paragraph);
-
-        Paragraphs toRepeat = new Paragraphs();
-        toRepeat.comment = getCurrentCommentWrapper();
-        toRepeat.data = new ArrayDeque<>(objects);
-        toRepeat.paragraphs = paragraphs;
-        toRepeat.sectionBreakBefore = SectionUtil.getPreviousSectionBreakIfPresent(
-                paragraph,
-                (ContentAccessor) paragraph.getParent());
-        toRepeat.firstParagraphSectionBreak = SectionUtil.getParagraphSectionBreak(
-                paragraph);
-        toRepeat.hasOddSectionBreaks = SectionUtil.isOddNumberOfSectionBreaks(
-                new ArrayList<>(toRepeat.paragraphs));
-
-        if (paragraph.getPPr() != null && paragraph.getPPr()
-                                                  .getSectPr() != null) {
-            // we need to clear the first paragraph's section break to be able to control how to repeat it
-            paragraph.getPPr()
-                    .setSectPr(null);
+            Paragraphs paragraphsToRepeat = entry.getValue();
+            Deque<Object> expressionContexts = Objects.requireNonNull(
+                    paragraphsToRepeat).data;
+            Deque<P> collection = expressionContexts == null
+                    ? new ArrayDeque<>(nullSupplier.get())
+                    : generateParagraphsToAdd(document,
+                            paragraphsToRepeat,
+                            expressionContexts);
+            restoreFirstSectionBreakIfNeeded(paragraphsToRepeat, collection);
+            parentContent.addAll(index, collection);
+            parentContent.removeAll(paragraphsToRepeat.paragraphs);
         }
-        pToRepeat.put(paragraph, toRepeat);
     }
 
     private Deque<P> generateParagraphsToAdd(
@@ -217,29 +232,14 @@ public class ParagraphRepeatProcessor
         return paragraphsToAdd;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void commitChanges(WordprocessingMLPackage document) {
-        for (Map.Entry<P, Paragraphs> entry : pToRepeat.entrySet()) {
-            P currentP = entry.getKey();
-            ContentAccessor parent = (ContentAccessor) currentP.getParent();
-            List<Object> parentContent = parent.getContent();
-            int index = parentContent.indexOf(currentP);
-            if (index < 0) throw new DocxStamperException("Impossible");
-
-            Paragraphs paragraphsToRepeat = entry.getValue();
-            Deque<Object> expressionContexts = Objects.requireNonNull(
-                    paragraphsToRepeat).data;
-            Deque<P> collection = expressionContexts == null
-                    ? new ArrayDeque<>(nullSupplier.get())
-                    : generateParagraphsToAdd(document,
-                                              paragraphsToRepeat,
-                                              expressionContexts);
-            restoreFirstSectionBreakIfNeeded(paragraphsToRepeat, collection);
-            parentContent.addAll(index, collection);
-            parentContent.removeAll(paragraphsToRepeat.paragraphs);
+    private static void restoreFirstSectionBreakIfNeeded(
+            Paragraphs paragraphs,
+            Deque<P> paragraphsToAdd
+    ) {
+        if (paragraphs.firstParagraphSectionBreak != null) {
+            P breakP = paragraphsToAdd.getLast();
+            SectionUtil.applySectionBreakToParagraph(paragraphs.firstParagraphSectionBreak,
+                    breakP);
         }
     }
 

@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
  * @since 1.0.2
  */
 public class StandardComment
-		implements Comment {
+        implements Comment {
 
-	private final Set<Comment> children = new HashSet<>();
-	private Comments.Comment comment;
-	private CommentRangeStart commentRangeStart;
-	private CommentRangeEnd commentRangeEnd;
-	private CommentReference commentReference;
+    private final Set<Comment> children = new HashSet<>();
+    private Comments.Comment comment;
+    private CommentRangeStart commentRangeStart;
+    private CommentRangeEnd commentRangeEnd;
+    private CommentReference commentReference;
 
 	private void extractedSubComments(
 			List<Comments.Comment> commentList,
@@ -67,18 +67,18 @@ public class StandardComment
 		return children;
 	}
 
-	/**
-	 * <p>getParent.</p>
-	 *
-	 * @return the comment's author.
-	 */
-	@Override
-	public ContentAccessor getParent() {
-		return findGreatestCommonParent(
-				getCommentRangeEnd().getParent(),
-				(ContentAccessor) getCommentRangeStart().getParent()
-		);
-	}
+    /**
+     * <p>getParent.</p>
+     *
+     * @return the comment's author.
+     */
+    @Override
+    public ContentAccessor getParent() {
+        return findGreatestCommonParent(
+                getCommentRangeEnd().getParent(),
+                (ContentAccessor) getCommentRangeStart().getParent()
+        );
+    }
 
 	private ContentAccessor findGreatestCommonParent(Object end, ContentAccessor start) {
 		if (depthElementSearch(end, start)) {
@@ -110,29 +110,28 @@ public class StandardComment
 		return searchFrom;
 	}
 
-	/**
-	 * <p>getRepeatElements.</p>
-	 *
-	 * @return the elements in the document that are between the comment range anchors.
-	 */
-	@Override
-	public List<Object> getRepeatElements() {
-		List<Object> repeatElements = new ArrayList<>();
-		boolean startFound = false;
-		for (Object element : getParent().getContent()) {
-			if (!startFound
-					&& depthElementSearch(getCommentRangeStart(), element)) {
-				startFound = true;
-			}
-			if (startFound) {
-				repeatElements.add(element);
-				if (depthElementSearch(getCommentRangeEnd(), element)) {
-					break;
-				}
-			}
-		}
-		return repeatElements;
-	}
+    /**
+     * <p>getRepeatElements.</p>
+     *
+     * @return the elements in the document that are between the comment range anchors.
+     */
+    @Override
+    public List<Object> getElements() {
+        List<Object> repeatElements = new ArrayList<>();
+        boolean startFound = false;
+        for (Object element : getParent().getContent()) {
+            if (!startFound && depthElementSearch(getCommentRangeStart(), element)) {
+                startFound = true;
+            }
+            if (startFound) {
+                repeatElements.add(element);
+                if (depthElementSearch(getCommentRangeEnd(), element)) {
+                    break;
+                }
+            }
+        }
+        return repeatElements;
+    }
 
 	private void removeCommentAnchorsFromFinalElements(List<Object> finalRepeatElements) {
 		ContentAccessor fakeBody = () -> finalRepeatElements;
@@ -143,101 +142,114 @@ public class StandardComment
 		this.children.addAll(children);
 	}
 
-	/**
-	 * Creates a new document containing only the elements between the comment range anchors.
-	 *
-	 * @param document the document from which to copy the elements.
-	 * @return a new document containing only the elements between the comment range anchors.
-	 * @throws Exception if the sub template could not be created.
-	 */
-	@Override
-	public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document) throws Exception {
-		List<Object> repeatElements = getRepeatElements();
+    /**
+     * Creates a new document containing only the elements between the comment range anchors.
+     *
+     * @param document the document from which to copy the elements.
+     *
+     * @return a new document containing only the elements between the comment range anchors.
+     *
+     * @throws Exception if the sub template could not be created.
+     */
+    @Override
+    public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
+            throws Exception {
+        List<Object> repeatElements = getRepeatElements();
 
-		WordprocessingMLPackage subDocument = WordprocessingMLPackage.createPackage();
-		MainDocumentPart subDocumentMainDocumentPart = subDocument.getMainDocumentPart();
+        WordprocessingMLPackage subDocument = WordprocessingMLPackage.createPackage();
+        MainDocumentPart subDocumentMainDocumentPart = subDocument.getMainDocumentPart();
 
-		CommentsPart commentsPart = new CommentsPart();
-		subDocumentMainDocumentPart.addTargetPart(commentsPart);
+        CommentsPart commentsPart = new CommentsPart();
+        subDocumentMainDocumentPart.addTargetPart(commentsPart);
 
-		// copy the elements to repeat without comment range anchors
-		List<Object> finalRepeatElements = repeatElements.stream().map(XmlUtils::deepCopy).collect(Collectors.toList());
-		removeCommentAnchorsFromFinalElements(finalRepeatElements);
-		subDocumentMainDocumentPart.getContent().addAll(finalRepeatElements);
+        // copy the elements to repeat without comment range anchors
+        List<Object> finalRepeatElements = repeatElements.stream()
+                                                         .map(XmlUtils::deepCopy)
+                                                         .collect(Collectors.toList());
+        removeCommentAnchorsFromFinalElements(finalRepeatElements);
+        subDocumentMainDocumentPart.getContent()
+                                   .addAll(finalRepeatElements);
 
-		// copy the images from parent document using the original repeat elements
-		ObjectFactory wmlObjectFactory = Context.getWmlObjectFactory();
-		ContentAccessor fakeBody = wmlObjectFactory.createBody();
-		fakeBody.getContent().addAll(repeatElements);
-		DocumentUtil.walkObjectsAndImportImages(fakeBody, document, subDocument);
+        // copy the images from parent document using the original repeat elements
+        ObjectFactory wmlObjectFactory = Context.getWmlObjectFactory();
+        ContentAccessor fakeBody = wmlObjectFactory.createBody();
+        fakeBody.getContent()
+                .addAll(repeatElements);
+        DocumentUtil.walkObjectsAndImportImages(fakeBody, document, subDocument);
 
-		Comments comments = wmlObjectFactory.createComments();
-		extractedSubComments(comments.getComment(), this.getChildren());
-		commentsPart.setContents(comments);
+        Comments comments = wmlObjectFactory.createComments();
+        extractedSubComments(comments.getComment(), this.getChildren());
+        commentsPart.setContents(comments);
 
-		return subDocument;
-	}
+        return subDocument;
+    }
 
-	/**
-	 * Creates a new document containing only the elements between the comment range anchors.
-	 * If the sub template could not be created, a
-	 * {@link DocxStamperException} is thrown.
-	 *
-	 * @param document the document from which to copy the elements.
-	 * @return a new document containing only the elements between the comment range anchors.
-	 */
-	@Override
-	public WordprocessingMLPackage tryBuildingSubtemplate(
-			WordprocessingMLPackage document
-	) {
-		try {
-			return getSubTemplate(document);
-		} catch (Exception e) {
-			throw new DocxStamperException(e);
-		}
-	}
+    /**
+     * Creates a new document containing only the elements between the comment range anchors.
+     * If the sub template could not be created, a
+     * {@link DocxStamperException} is thrown.
+     *
+     * @param document the document from which to copy the elements.
+     *
+     * @return a new document containing only the elements between the comment range anchors.
+     */
+    @Override
+    public WordprocessingMLPackage tryBuildingSubtemplate(
+            WordprocessingMLPackage document
+    ) {
+        try {
+            return getSubTemplate(document);
+        } catch (Exception e) {
+            throw new DocxStamperException(e);
+        }
+    }
 
-	/**
-	 * <p>Getter for the field <code>commentRangeEnd</code>.</p>
-	 *
-	 * @return a {@link CommentRangeEnd} object
-	 */
-	@Override
-	public CommentRangeEnd getCommentRangeEnd() {
-		return commentRangeEnd;
-	}
 
-	/**
-	 * <p>Getter for the field <code>commentRangeStart</code>.</p>
-	 *
-	 * @return a {@link CommentRangeStart} object
-	 */
-	@Override
-	public CommentRangeStart getCommentRangeStart() {
-		return commentRangeStart;
-	}
+    /**
+     * <p>Getter for the field <code>commentRangeEnd</code>.</p>
+     *
+     * @return a {@link CommentRangeEnd} object
+     */
+    @Override
+    public CommentRangeEnd getCommentRangeEnd() {
+        return commentRangeEnd;
+    }
 
-	/**
-	 * <p>Getter for the field <code>commentReference</code>.</p>
-	 *
-	 * @return a {@link CommentReference} object
-	 */
-	@Override
-	public CommentReference getCommentReference() {
-		return commentReference;
-	}
 
-	/**
-	 * <p>Getter for the field <code>comment</code>.</p>
-	 *
-	 * @return a {@link Comments.Comment} object
-	 */
-	@Override
-	public Comments.Comment getComment() {
-		return comment;
-	}
+    /**
+     * <p>Getter for the field <code>commentRangeStart</code>.</p>
+     *
+     * @return a {@link CommentRangeStart} object
+     */
+    @Override
+    public CommentRangeStart getCommentRangeStart() {
+        return commentRangeStart;
+    }
 
-	public void setComment(Comments.Comment comment) {
-		this.comment = comment;
-	}
+
+    /**
+     * <p>Getter for the field <code>commentReference</code>.</p>
+     *
+     * @return a {@link CommentReference} object
+     */
+    @Override
+    public CommentReference getCommentReference() {
+        return commentReference;
+    }
+
+
+    /**
+     * <p>Getter for the field <code>comment</code>.</p>
+     *
+     * @return a {@link Comments.Comment} object
+     */
+    @Override
+    public Comments.Comment getComment() {
+        return comment;
+    }
+
+    public void setComment(Comments.Comment comment) {
+        this.comment = comment;
+    }
+
 }

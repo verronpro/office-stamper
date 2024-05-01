@@ -180,7 +180,7 @@ public interface OfficeStamperConfiguration {
     String getUnresolvedExpressionsDefaultValue();
 
     /**
-     * TODO:javadoc
+     * TODO: javadoc
      */
     String getLineBreakPlaceholder();
 

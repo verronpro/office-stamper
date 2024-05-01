@@ -263,7 +263,7 @@ public class RepeatDocPartProcessor
                 PipedInputStream is = new PipedInputStream(os)
         ) {
             // closing on exception to not block the pipe infinitely
-            // TODO: model both PipedxxxStream as 1 class for only 1 close()
+            // TODO_LATER: model both PipedxxxStream as 1 class for only 1 close()
             exceptionHandler.onException(is::close); // I know it's redundant,
             exceptionHandler.onException(os::close); // but symmetry
 

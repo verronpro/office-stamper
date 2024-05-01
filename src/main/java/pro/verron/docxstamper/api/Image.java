@@ -18,12 +18,12 @@ public sealed class Image
         permits org.wickedsource.docxstamper.replace.typeresolver.image.Image {
 
     /**
-     * todo: make private asap
+     * TODO_LATER: make private asap
      */
     protected final byte[] imageBytes;
 
     /**
-     * todo: make private asap
+     * TODO_LATER: make private asap
      */
     protected Integer maxWidth;
 

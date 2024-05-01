@@ -32,41 +32,6 @@ public class StandardComment
     private CommentRangeEnd commentRangeEnd;
     private CommentReference commentReference;
 
-	private void extractedSubComments(
-			List<Comments.Comment> commentList,
-			Set<Comment> commentChildren
-	) {
-		Queue<Comment> q = new ArrayDeque<>(commentChildren);
-		while (!q.isEmpty()) {
-			Comment element = q.remove();
-			commentList.add(element.getComment());
-			if (element.getChildren() != null)
-				q.addAll(element.getChildren());
-		}
-	}
-
-	public void setCommentRangeStart(CommentRangeStart commentRangeStart) {
-		this.commentRangeStart = commentRangeStart;
-	}
-
-	public void setCommentRangeEnd(CommentRangeEnd commentRangeEnd) {
-		this.commentRangeEnd = commentRangeEnd;
-	}
-
-	public void setCommentReference(CommentReference commentReference) {
-		this.commentReference = commentReference;
-	}
-
-	/**
-	 * <p>Getter for the field <code>children</code>.</p>
-	 *
-	 * @return a {@link Set} object
-	 */
-	@Override
-	public Set<Comment> getChildren() {
-		return children;
-	}
-
     /**
      * <p>getParent.</p>
      *
@@ -79,36 +44,6 @@ public class StandardComment
                 (ContentAccessor) getCommentRangeStart().getParent()
         );
     }
-
-	private ContentAccessor findGreatestCommonParent(Object end, ContentAccessor start) {
-		if (depthElementSearch(end, start)) {
-			return findInsertableParent(start);
-		}
-		return findGreatestCommonParent(end, (ContentAccessor) ((Child) start).getParent());
-	}
-
-	private boolean depthElementSearch(Object searchTarget, Object content) {
-		content = XmlUtils.unwrap(content);
-		if (searchTarget.equals(content)) {
-			return true;
-		} else if (content instanceof ContentAccessor contentAccessor) {
-			for (Object object : contentAccessor.getContent()) {
-				Object unwrappedObject = XmlUtils.unwrap(object);
-				if (searchTarget.equals(unwrappedObject)
-						|| depthElementSearch(searchTarget, unwrappedObject)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private ContentAccessor findInsertableParent(ContentAccessor searchFrom) {
-		if (!(searchFrom instanceof Tc || searchFrom instanceof Body)) {
-			return findInsertableParent((ContentAccessor) ((Child) searchFrom).getParent());
-		}
-		return searchFrom;
-	}
 
     /**
      * <p>getRepeatElements.</p>
@@ -132,15 +67,6 @@ public class StandardComment
         }
         return repeatElements;
     }
-
-	private void removeCommentAnchorsFromFinalElements(List<Object> finalRepeatElements) {
-		ContentAccessor fakeBody = () -> finalRepeatElements;
-		CommentUtil.deleteCommentFromElement(fakeBody.getContent(), getComment().getId());
-	}
-
-	public void setChildren(Set<Comment> children) {
-		this.children.addAll(children);
-	}
 
     /**
      * Creates a new document containing only the elements between the comment range anchors.
@@ -204,6 +130,23 @@ public class StandardComment
         }
     }
 
+    private void removeCommentAnchorsFromFinalElements(List<Object> finalRepeatElements) {
+        ContentAccessor fakeBody = () -> finalRepeatElements;
+        CommentUtil.deleteCommentFromElement(fakeBody.getContent(), getComment().getId());
+    }
+
+    private void extractedSubComments(
+            List<Comments.Comment> commentList,
+            Set<Comment> commentChildren
+    ) {
+        Queue<Comment> q = new ArrayDeque<>(commentChildren);
+        while (!q.isEmpty()) {
+            Comment element = q.remove();
+            commentList.add(element.getComment());
+            if (element.getChildren() != null)
+                q.addAll(element.getChildren());
+        }
+    }
 
     /**
      * <p>Getter for the field <code>commentRangeEnd</code>.</p>
@@ -215,6 +158,9 @@ public class StandardComment
         return commentRangeEnd;
     }
 
+    public void setCommentRangeEnd(CommentRangeEnd commentRangeEnd) {
+        this.commentRangeEnd = commentRangeEnd;
+    }
 
     /**
      * <p>Getter for the field <code>commentRangeStart</code>.</p>
@@ -226,6 +172,9 @@ public class StandardComment
         return commentRangeStart;
     }
 
+    public void setCommentRangeStart(CommentRangeStart commentRangeStart) {
+        this.commentRangeStart = commentRangeStart;
+    }
 
     /**
      * <p>Getter for the field <code>commentReference</code>.</p>
@@ -237,6 +186,23 @@ public class StandardComment
         return commentReference;
     }
 
+    public void setCommentReference(CommentReference commentReference) {
+        this.commentReference = commentReference;
+    }
+
+    /**
+     * <p>Getter for the field <code>children</code>.</p>
+     *
+     * @return a {@link Set} object
+     */
+    @Override
+    public Set<Comment> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Set<Comment> children) {
+        this.children.addAll(children);
+    }
 
     /**
      * <p>Getter for the field <code>comment</code>.</p>
@@ -250,6 +216,37 @@ public class StandardComment
 
     public void setComment(Comments.Comment comment) {
         this.comment = comment;
+    }
+
+    private ContentAccessor findGreatestCommonParent(Object end, ContentAccessor start) {
+        if (depthElementSearch(end, start)) {
+            return findInsertableParent(start);
+        }
+        return findGreatestCommonParent(end, (ContentAccessor) ((Child) start).getParent());
+    }
+
+    private boolean depthElementSearch(Object searchTarget, Object content) {
+        content = XmlUtils.unwrap(content);
+        if (searchTarget.equals(content)) {
+            return true;
+        }
+        else if (content instanceof ContentAccessor contentAccessor) {
+            for (Object object : contentAccessor.getContent()) {
+                Object unwrappedObject = XmlUtils.unwrap(object);
+                if (searchTarget.equals(unwrappedObject)
+                        || depthElementSearch(searchTarget, unwrappedObject)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private ContentAccessor findInsertableParent(ContentAccessor searchFrom) {
+        if (!(searchFrom instanceof Tc || searchFrom instanceof Body)) {
+            return findInsertableParent((ContentAccessor) ((Child) searchFrom).getParent());
+        }
+        return searchFrom;
     }
 
 }

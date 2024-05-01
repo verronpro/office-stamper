@@ -7,12 +7,11 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
-import pro.verron.docxstamper.api.Comment;
-import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.docxstamper.api.*;
 import pro.verron.docxstamper.core.CommentUtil;
 import pro.verron.docxstamper.core.PlaceholderReplacer;
 import pro.verron.docxstamper.core.StandardParagraph;
+import pro.verron.docxstamper.preset.Resolvers;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -54,28 +53,35 @@ public class ParagraphRepeatProcessor
      *
      * @param pr              replaces expressions with values
      * @param nullReplacement replaces null values
+     *
      * @return a new instance of ParagraphRepeatProcessor
+     *
+     * @deprecated use {@link ParagraphRepeatProcessor#newInstance(ParagraphPlaceholderReplacer)} for instantiation
+     * and {@link OfficeStamperConfiguration#addResolver(ObjectResolver)} with
+     * {@link Resolvers#nullToDefault(String)} instead
      */
-    // TODO: remove ?
+    @Deprecated(since = "1.6.8", forRemoval = true)
     public static CommentProcessor newInstance(
             PlaceholderReplacer pr,
             String nullReplacement
     ) {
         return new ParagraphRepeatProcessor(pr,
-                                            () -> singletonList(ParagraphUtil.create(
-                                                    nullReplacement)));
+                () -> singletonList(ParagraphUtil.create(
+                        nullReplacement)));
     }
 
     /**
      * <p>newInstance.</p>
      *
      * @param placeholderReplacer replaces expressions with values
+     *
      * @return a new instance of ParagraphRepeatProcessor
      */
     public static CommentProcessor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
         return new ParagraphRepeatProcessor(placeholderReplacer,
-                                            Collections::emptyList);
+                Collections::emptyList);
     }
+
 
     /**
      * Returns all paragraphs inside the comment of the given paragraph.
@@ -83,6 +89,7 @@ public class ParagraphRepeatProcessor
      * If the paragraph is not inside a comment, the given paragraph is returned.
      *
      * @param paragraph the paragraph to analyze
+     *
      * @return all paragraphs inside the comment of the given paragraph
      */
     public static Deque<P> getParagraphsInsideComment(P paragraph) {
@@ -104,23 +111,24 @@ public class ParagraphRepeatProcessor
         Object parent = paragraph.getParent();
         if (parent instanceof ContentAccessor contentAccessor) {
             int index = contentAccessor.getContent()
-                    .indexOf(paragraph);
+                                       .indexOf(paragraph);
             for (int i = index + 1; i < contentAccessor.getContent()
-                    .size() && !foundEnd; i++) {
+                                                       .size() && !foundEnd; i++) {
                 Object next = contentAccessor.getContent()
-                        .get(i);
+                                             .get(i);
 
                 if (next instanceof CommentRangeEnd cre && cre.getId()
-                        .equals(commentId)) {
+                                                              .equals(commentId)) {
                     foundEnd = true;
-                } else {
+                }
+                else {
                     if (next instanceof P p) {
                         paragraphs.add(p);
                     }
                     if (next instanceof ContentAccessor childContent) {
                         for (Object child : childContent.getContent()) {
                             if (child instanceof CommentRangeEnd cre && cre.getId()
-                                    .equals(commentId)) {
+                                                                           .equals(commentId)) {
                                 foundEnd = true;
                                 break;
                             }
@@ -142,7 +150,6 @@ public class ParagraphRepeatProcessor
                                                      breakP);
         }
     }
-
     /**
      * {@inheritDoc}
      */
@@ -170,7 +177,6 @@ public class ParagraphRepeatProcessor
             paragraph.getPPr()
                     .setSectPr(null);
         }
-
         pToRepeat.put(paragraph, toRepeat);
     }
 
@@ -189,17 +195,17 @@ public class ParagraphRepeatProcessor
                 P pClone = XmlUtils.deepCopy(paragraphToClone);
 
                 if (paragraphs.sectionBreakBefore != null
-                    && paragraphs.hasOddSectionBreaks
-                    && expressionContext != lastExpressionContext
-                    && paragraphToClone == lastParagraph
+                        && paragraphs.hasOddSectionBreaks
+                        && expressionContext != lastExpressionContext
+                        && paragraphToClone == lastParagraph
                 ) {
                     SectionUtil.applySectionBreakToParagraph(paragraphs.sectionBreakBefore,
-                                                             pClone);
+                            pClone);
                 }
 
                 CommentUtil.deleteCommentFromElement(pClone.getContent(),
-                                                     paragraphs.comment.getComment()
-                                                             .getId());
+                        paragraphs.comment.getComment()
+                                          .getId());
                 placeholderReplacer.resolveExpressionsForParagraph(
                         new StandardParagraph(pClone),
                         expressionContext,

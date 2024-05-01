@@ -71,6 +71,7 @@ public class RepeatDocPartProcessor
      * @param stamper              the stamper
      * @param nullReplacementValue the value to use when the expression
      *                             resolves to null
+     *
      * @return a new instance of this processor
      */
     public static CommentProcessor newInstance(
@@ -88,6 +89,7 @@ public class RepeatDocPartProcessor
      *
      * @param pr      the placeholderReplacer
      * @param stamper the stamper
+     *
      * @return a new instance of this processor
      */
     public static CommentProcessor newInstance(
@@ -97,62 +99,6 @@ public class RepeatDocPartProcessor
         return new RepeatDocPartProcessor(pr, stamper, Collections::emptyList);
     }
 
-    private static void recursivelyReplaceImages(
-            ContentAccessor r,
-            Map<R, R> replacements
-    ) {
-        Queue<ContentAccessor> q = new ArrayDeque<>();
-        q.add(r);
-        while (!q.isEmpty()) {
-            ContentAccessor run = q.remove();
-            if (replacements.containsKey(run)
-                && run instanceof Child child
-                && child.getParent() instanceof ContentAccessor parent) {
-                List<Object> parentContent = parent.getContent();
-                parentContent.add(parentContent.indexOf(run),
-                                  replacements.get(run));
-                parentContent.remove(run);
-            } else {
-                q.addAll(run.getContent()
-                                 .stream()
-                                 .filter(ContentAccessor.class::isInstance)
-                                 .map(ContentAccessor.class::cast)
-                                 .toList());
-            }
-        }
-    }
-
-    private static List<Object> documentAsInsertableElements(
-            WordprocessingMLPackage subDocument,
-            boolean oddNumberOfBreaks,
-            SectPr previousSectionBreak
-    ) {
-        List<Object> inserts = new ArrayList<>(
-                DocumentUtil.allElements(subDocument));
-        // make sure we replicate the previous section break before each repeated doc part
-        if (oddNumberOfBreaks && previousSectionBreak != null) {
-            if (DocumentUtil.lastElement(subDocument) instanceof P p) {
-                SectionUtil.applySectionBreakToParagraph(previousSectionBreak,
-                                                         p);
-            } else {
-                // when the last element to be repeated is not a paragraph, we need to add a new
-                // one right after to carry the section break to have a valid xml
-                P p = objectFactory.createP();
-                SectionUtil.applySectionBreakToParagraph(previousSectionBreak,
-                                                         p);
-                inserts.add(p);
-            }
-        }
-        return inserts;
-    }
-
-    private static void setParentIfPossible(
-            Object object,
-            ContentAccessor parent
-    ) {
-        if (object instanceof Child child)
-            child.setParent(parent);
-    }
     /**
      * {@inheritDoc}
      */
@@ -169,40 +115,29 @@ public class RepeatDocPartProcessor
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void commitChanges(WordprocessingMLPackage document) {
-        for (Entry<Comment, List<Object>> entry : this.contexts.entrySet()) {
-            Comment comment = entry.getKey();
-            List<Object> expressionContexts = entry.getValue();
-            ContentAccessor gcp = Objects.requireNonNull(
-                    comment.getParent());
-            List<Object> repeatElements = comment.getRepeatElements();
-            WordprocessingMLPackage subTemplate = comment.tryBuildingSubtemplate(
-                    document);
-            SectPr previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(
-                    repeatElements.get(0), gcp);
-            boolean oddNumberOfBreaks = SectionUtil.isOddNumberOfSectionBreaks(
-                    repeatElements);
-
-            List<?> changes = expressionContexts == null
-                    ? nullSupplier.get()
-                    : stampSubDocuments(document,
-                                        expressionContexts,
-                                        gcp,
-                                        subTemplate,
-                                        previousSectionBreak,
-                                        oddNumberOfBreaks);
-
-            List<Object> gcpContent = gcp.getContent();
-            int index = gcpContent.indexOf(repeatElements.get(0));
-            gcpContent.addAll(index, changes);
-            gcpContent.removeAll(repeatElements);
+    private static List<Object> documentAsInsertableElements(
+            WordprocessingMLPackage subDocument,
+            boolean oddNumberOfBreaks,
+            SectPr previousSectionBreak
+    ) {
+        List<Object> inserts = new ArrayList<>(
+                DocumentUtil.allElements(subDocument));
+        // make sure we replicate the previous section break before each repeated doc part
+        if (oddNumberOfBreaks && previousSectionBreak != null) {
+            if (DocumentUtil.lastElement(subDocument) instanceof P p) {
+                SectionUtil.applySectionBreakToParagraph(previousSectionBreak,
+                        p);
+            }
+            else {
+                // when the last element to be repeated is not a paragraph, we need to add a new
+                // one right after to carry the section break to have a valid xml
+                P p = objectFactory.createP();
+                SectionUtil.applySectionBreakToParagraph(previousSectionBreak,
+                        p);
+                inserts.add(p);
+            }
         }
-
+        return inserts;
     }
 
     private List<Object> stampSubDocuments(
@@ -247,6 +182,75 @@ public class RepeatDocPartProcessor
             subDocuments.add(subDocument);
         }
         return subDocuments;
+    }
+
+    private static void recursivelyReplaceImages(
+            ContentAccessor r,
+            Map<R, R> replacements
+    ) {
+        Queue<ContentAccessor> q = new ArrayDeque<>();
+        q.add(r);
+        while (!q.isEmpty()) {
+            ContentAccessor run = q.remove();
+            if (replacements.containsKey(run)
+                    && run instanceof Child child
+                    && child.getParent() instanceof ContentAccessor parent) {
+                List<Object> parentContent = parent.getContent();
+                parentContent.add(parentContent.indexOf(run),
+                        replacements.get(run));
+                parentContent.remove(run);
+            }
+            else {
+                q.addAll(run.getContent()
+                            .stream()
+                            .filter(ContentAccessor.class::isInstance)
+                            .map(ContentAccessor.class::cast)
+                            .toList());
+            }
+        }
+    }
+
+    private static void setParentIfPossible(
+            Object object,
+            ContentAccessor parent
+    ) {
+        if (object instanceof Child child)
+            child.setParent(parent);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void commitChanges(WordprocessingMLPackage document) {
+        for (Entry<Comment, List<Object>> entry : this.contexts.entrySet()) {
+            Comment comment = entry.getKey();
+            List<Object> expressionContexts = entry.getValue();
+            ContentAccessor gcp = Objects.requireNonNull(
+                    comment.getParent());
+            List<Object> repeatElements = comment.getRepeatElements();
+            WordprocessingMLPackage subTemplate = comment.tryBuildingSubtemplate(
+                    document);
+            SectPr previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(
+                    repeatElements.get(0), gcp);
+            boolean oddNumberOfBreaks = SectionUtil.isOddNumberOfSectionBreaks(
+                    repeatElements);
+
+            List<?> changes = expressionContexts == null
+                    ? nullSupplier.get()
+                    : stampSubDocuments(document,
+                            expressionContexts,
+                            gcp,
+                            subTemplate,
+                            previousSectionBreak,
+                            oddNumberOfBreaks);
+
+            List<Object> gcpContent = gcp.getContent();
+            int index = gcpContent.indexOf(repeatElements.get(0));
+            gcpContent.addAll(index, changes);
+            gcpContent.removeAll(repeatElements);
+        }
+
     }
 
     private WordprocessingMLPackage outputWord(Consumer<OutputStream> outputter) {

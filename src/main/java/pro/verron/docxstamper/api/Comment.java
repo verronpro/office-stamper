@@ -22,9 +22,19 @@ public interface Comment {
      * Retrieves the elements in the document that are between the comment range anchors.
      *
      * @return a list of objects representing the elements between the comment range anchors.
-     * TODO: Rename to be a more generic
+     * @deprecated removed for replacement by {@link Comment#getElements()} which doesn't imply a specific usage
      */
-    List<Object> getRepeatElements();
+    @Deprecated(since = "1.6.8", forRemoval = true)
+    default List<Object> getRepeatElements() {
+        return getElements();
+    }
+
+    /**
+     * Retrieves the elements in the document that are between the comment range anchors.
+     *
+     * @return a list of objects representing the elements between the comment range anchors.
+     */
+    List<Object> getElements();
 
     /**
      * Creates a new document containing only the elements between the comment range anchors.
@@ -34,8 +44,8 @@ public interface Comment {
      * @return a new document containing only the elements between the comment range anchors.
      *
      * @throws Exception if the sub template could not be created.
-     *                   TODO: Remove from this interface and move to an utility class
      */
+    // TODO: Remove from this interface and move to an utility class
     WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
             throws Exception;
 
@@ -43,9 +53,10 @@ public interface Comment {
      * Tries to build a subtemplate from the given WordprocessingMLPackage document.
      *
      * @param document the source document from which to build the subtemplate
+     *
      * @return the built subtemplate as a WordprocessingMLPackage
-     * TODO: Remove from this interface and move to an utility class
      */
+    // TODO: Remove from this interface and move to an utility class
     WordprocessingMLPackage tryBuildingSubtemplate(WordprocessingMLPackage document);
 
     /**
@@ -59,8 +70,8 @@ public interface Comment {
      * Sets the {@link CommentRangeEnd} object associated with this comment.
      *
      * @param commentRangeEnd the {@link CommentRangeEnd} object to set
-     * TODO: Remove the setting method from interface to increase immutability
      */
+    // TODO: Remove the setting method from interface to increase immutability
     void setCommentRangeEnd(CommentRangeEnd commentRangeEnd);
 
     /**
@@ -74,8 +85,8 @@ public interface Comment {
      * Sets the CommentRangeStart object associated with this comment.
      *
      * @param commentRangeStart the CommentRangeStart object to set
-     * TODO: Remove the setting method from interface to increase immutability
      */
+    // TODO: Remove the setting method from interface to increase immutability
     void setCommentRangeStart(CommentRangeStart commentRangeStart);
 
     /**
@@ -89,8 +100,8 @@ public interface Comment {
      * Sets the comment reference for this comment.
      *
      * @param commentReference the comment reference to set
-     * TODO: Remove the setting method from interface to increase immutability
      */
+    // TODO: Remove the setting method from interface to increase immutability
     void setCommentReference(R.CommentReference commentReference);
 
     /**
@@ -104,8 +115,8 @@ public interface Comment {
      * Sets the children of the comment.
      *
      * @param comments the set of Comment objects representing the children of the comment
-     * TODO: Remove the setting method from interface to increase immutability
      */
+    // TODO: Remove the setting method from interface to increase immutability
     void setChildren(Set<Comment> comments);
 
     /**
@@ -119,7 +130,7 @@ public interface Comment {
      * Sets the comment for this object.
      *
      * @param comment the comment to set
-     * TODO: Remove the setting method from interface to increase immutability
      */
+    // TODO: Remove the setting method from interface to increase immutability
     void setComment(Comments.Comment comment);
 }

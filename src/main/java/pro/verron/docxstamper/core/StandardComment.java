@@ -44,10 +44,7 @@ public class StandardComment
      */
     @Override
     public ContentAccessor getParent() {
-        return findGreatestCommonParent(
-                getCommentRangeStart(),
-                getCommentRangeEnd()
-        );
+        return findSmallestCommonParent(getCommentRangeStart(), getCommentRangeEnd());
     }
 
     /**
@@ -228,11 +225,11 @@ public class StandardComment
         return document;
     }
 
-    private ContentAccessor findGreatestCommonParent(Object o1, Object o2) {
+    private ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
         if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
             return findInsertableParent(contentAccessor);
         else if (o2 instanceof Child child)
-            return findGreatestCommonParent(o1, child.getParent());
+            return findSmallestCommonParent(o1, child.getParent());
         else
             throw new OfficeStamperException();
     }

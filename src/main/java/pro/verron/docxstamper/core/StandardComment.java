@@ -27,10 +27,73 @@ public class StandardComment
         implements Comment {
 
     private final Set<Comment> children = new HashSet<>();
+    private final WordprocessingMLPackage document;
     private Comments.Comment comment;
     private CommentRangeStart commentRangeStart;
     private CommentRangeEnd commentRangeEnd;
     private CommentReference commentReference;
+
+    public StandardComment(WordprocessingMLPackage document) {
+        this.document = document;
+    }
+
+    /**
+     * Creates a new document containing only the elements between the comment range anchors.
+     *
+     * @param document the document from which to copy the elements.
+     *
+     * @return a new document containing only the elements between the comment range anchors.
+     *
+     * @throws Exception if the sub template could not be created.
+     */
+    @Override
+    public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
+            throws Exception {
+        List<Object> repeatElements = getElements();
+        return createSubWordDocument(this, repeatElements);
+    }
+
+    private static WordprocessingMLPackage createSubWordDocument(
+            Comment comment,
+            List<Object> repeatElements
+    )
+            throws InvalidFormatException {
+        WordprocessingMLPackage target = WordprocessingMLPackage.createPackage();
+        MainDocumentPart targetMainPart = target.getMainDocumentPart();
+
+        CommentsPart commentsPart = new CommentsPart();
+        targetMainPart.addTargetPart(commentsPart);
+
+        // copy the elements to repeat without comment range anchors
+        List<Object> finalRepeatElements = repeatElements.stream()
+                                                         .map(XmlUtils::deepCopy)
+                                                         .collect(Collectors.toList());
+        StandardComment.removeCommentAnchorsFromFinalElements(comment, finalRepeatElements);
+        targetMainPart.getContent()
+                      .addAll(finalRepeatElements);
+
+        // copy the images from parent document using the original repeat elements
+        ObjectFactory wmlObjectFactory = Context.getWmlObjectFactory();
+        ContentAccessor fakeBody = wmlObjectFactory.createBody();
+        fakeBody.getContent()
+                .addAll(repeatElements);
+        DocumentUtil.walkObjectsAndImportImages(fakeBody, comment.getDocument(), target);
+
+        Comments comments = wmlObjectFactory.createComments();
+        StandardComment.extractedSubComments(comments.getComment(), comment.getChildren());
+        commentsPart.setContents(comments);
+        return target;
+    }
+
+    private static void removeCommentAnchorsFromFinalElements(
+            Comment comment,
+            List<Object> finalRepeatElements
+    ) {
+        ContentAccessor fakeBody = () -> finalRepeatElements;
+        CommentUtil.deleteCommentFromElement(fakeBody.getContent(),
+                comment.getComment()
+                       .getId());
+    }
 
     /**
      * <p>getParent.</p>
@@ -216,6 +279,10 @@ public class StandardComment
 
     public void setComment(Comments.Comment comment) {
         this.comment = comment;
+    }
+
+    @Override public WordprocessingMLPackage getDocument() {
+        return document;
     }
 
     private ContentAccessor findGreatestCommonParent(Object end, ContentAccessor start) {

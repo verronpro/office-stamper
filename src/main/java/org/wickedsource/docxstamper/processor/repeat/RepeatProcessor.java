@@ -109,7 +109,7 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
 							tableRowsCommentsToRemove.get(row));
 					Comments.Comment comment = Objects.requireNonNull(commentWrapper.getComment());
 					BigInteger commentId = comment.getId();
-                    CommentUtil.deleteCommentFromElement(rowClone.getContent(), commentId);
+					CommentUtil.deleteCommentFromElements(rowClone.getContent(), commentId);
 					new ParagraphResolverDocumentWalker(rowClone,
 														expressionContext,
 														document,

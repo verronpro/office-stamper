@@ -255,7 +255,7 @@ public class CommentUtil {
      * @param items     a {@link List} object
      * @param commentId a {@link BigInteger} object
      */
-    public static void deleteCommentFromElement(
+    public static void deleteCommentFromElements(
             List<Object> items, BigInteger commentId
     ) {
         List<Object> elementsToRemove = new ArrayList<>();
@@ -280,7 +280,7 @@ public class CommentUtil {
                 }
             }
             else if (unwrapped instanceof ContentAccessor ca) {
-                deleteCommentFromElement(ca.getContent(), commentId);
+                deleteCommentFromElements(ca.getContent(), commentId);
             }
         }
         items.removeAll(elementsToRemove);
@@ -404,12 +404,12 @@ public class CommentUtil {
         }
     }
 
-    static void removeCommentAnchorsFromFinalElements(
+    static void deleteCommentFromElements(
             Comment comment,
             List<Object> elements
     ) {
         var docx4jComment = comment.getComment();
         var commentId = docx4jComment.getId();
-        deleteCommentFromElement(elements, commentId);
+        deleteCommentFromElements(elements, commentId);
     }
 }

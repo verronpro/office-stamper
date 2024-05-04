@@ -1,10 +1,6 @@
 package pro.verron.docxstamper.core;
 
-import org.docx4j.XmlUtils;
-import org.docx4j.jaxb.Context;
-import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.CommentRangeEnd;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.Comments;
@@ -14,8 +10,10 @@ import org.wickedsource.docxstamper.util.DocumentUtil;
 import pro.verron.docxstamper.api.Comment;
 import pro.verron.docxstamper.api.OfficeStamperException;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>CommentWrapper class.</p>
@@ -78,7 +76,7 @@ public class StandardComment
     @Override
     public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
             throws Exception {
-        return createSubWordDocument(this);
+        return CommentUtil.createSubWordDocument(this);
     }
 
     /**
@@ -99,52 +97,6 @@ public class StandardComment
         } catch (Exception e) {
             throw new OfficeStamperException(e);
         }
-    }
-
-    private static WordprocessingMLPackage createSubWordDocument(Comment comment)
-            throws InvalidFormatException {
-        var elements = comment.getElements();
-
-        var targetCommentsPart = new CommentsPart();
-
-        var target = WordprocessingMLPackage.createPackage();
-        var targetMainPart = target.getMainDocumentPart();
-        targetMainPart.addTargetPart(targetCommentsPart);
-
-        // copy the elements without comment range anchors
-        var finalElements = elements.stream()
-                                    .map(XmlUtils::deepCopy)
-                                    .collect(Collectors.toList());
-        CommentUtil.deleteCommentFromElements(comment, finalElements);
-        targetMainPart.getContent()
-                      .addAll(finalElements);
-
-        // copy the images from parent document using the original repeat elements
-        var wmlObjectFactory = Context.getWmlObjectFactory();
-        var fakeBody = wmlObjectFactory.createBody();
-        fakeBody.getContent()
-                .addAll(elements);
-        DocumentUtil.walkObjectsAndImportImages(fakeBody, comment.getDocument(), target);
-
-        var comments = StandardComment.extractComments(comment.getChildren());
-        targetCommentsPart.setContents(comments);
-        return target;
-    }
-
-    private static Comments extractComments(Set<Comment> commentChildren) {
-        var wmlObjectFactory = Context.getWmlObjectFactory();
-        var comments = wmlObjectFactory.createComments();
-        var commentList = comments.getComment();
-
-        var queue = new ArrayDeque<>(commentChildren);
-        while (!queue.isEmpty()) {
-            var comment = queue.remove();
-            commentList.add(comment.getComment());
-            if (comment.getChildren() != null) {
-                queue.addAll(comment.getChildren());
-            }
-        }
-        return comments;
     }
 
     /**

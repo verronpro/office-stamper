@@ -2,6 +2,7 @@ package pro.verron.docxstamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
+import pro.verron.docxstamper.core.CommentUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -44,8 +45,9 @@ public interface Comment {
      * @return a new document containing only the elements between the comment range anchors.
      *
      * @throws Exception if the sub template could not be created.
+     * @deprecated use {@link CommentUtil#createSubWordDocument(Comment)} instead
      */
-    // TODO: Remove from this interface and move to an utility class
+    @Deprecated(since = "1.6.8", forRemoval = true)
     WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
             throws Exception;
 
@@ -55,8 +57,9 @@ public interface Comment {
      * @param document the source document from which to build the subtemplate
      *
      * @return the built subtemplate as a WordprocessingMLPackage
+     * @deprecated use {@link CommentUtil#createSubWordDocument(Comment)} instead
      */
-    // TODO: Remove from this interface and move to an utility class
+    @Deprecated(since = "1.6.8", forRemoval = true)
     WordprocessingMLPackage tryBuildingSubtemplate(WordprocessingMLPackage document);
 
     /**

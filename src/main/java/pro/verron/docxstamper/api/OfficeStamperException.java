@@ -11,31 +11,38 @@ public class OfficeStamperException
     /**
      * OfficeStamperException is a subclass of RuntimeException that represents an exception that can be thrown
      * during the processing of an Office document using the OfficeStamper
-     *  library.
+     * library.
      *
      * @param message a message describing the error
      */
-    public OfficeStamperException(String message) {super(message);}
+    public OfficeStamperException(String message) {
+        super(message);
+    }
 
     /**
      * OfficeStamperException is a subclass of RuntimeException that represents an exception that can be thrown
      * during the processing of an Office document using the OfficeStamper
-     *  library.
+     * library.
      *
      * @param cause the cause of the exception
      */
-    public OfficeStamperException(Throwable cause) {super(cause);}
+    public OfficeStamperException(Throwable cause) {
+        super(cause);
+    }
 
     /**
      * OfficeStamperException is a subclass of RuntimeException that represents an exception that can be thrown
      * during the processing of an Office document using the OfficeStamper
-     *  library.
+     * library.
      *
      * @param message a message describing the error
      * @param cause   the cause of the exception
      */
     public OfficeStamperException(String message, Throwable cause) {
-        super(message,
-              cause);
+        super(message, cause);
+    }
+
+    public OfficeStamperException() {
+        super("Unexpected exception");
     }
 }

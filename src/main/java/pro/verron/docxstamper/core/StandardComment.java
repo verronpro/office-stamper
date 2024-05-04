@@ -2,15 +2,16 @@ package pro.verron.docxstamper.core;
 
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import pro.verron.docxstamper.api.Comment;
+import pro.verron.docxstamper.api.OfficeStamperException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,10 +54,7 @@ public class StandardComment
         return createSubWordDocument(this, repeatElements);
     }
 
-    private static WordprocessingMLPackage createSubWordDocument(
-            Comment comment,
-            List<Object> repeatElements
-    )
+    private static WordprocessingMLPackage createSubWordDocument(Comment comment, List<Object> elements)
             throws InvalidFormatException {
         WordprocessingMLPackage target = WordprocessingMLPackage.createPackage();
         MainDocumentPart targetMainPart = target.getMainDocumentPart();
@@ -65,10 +63,10 @@ public class StandardComment
         targetMainPart.addTargetPart(commentsPart);
 
         // copy the elements to repeat without comment range anchors
-        List<Object> finalRepeatElements = repeatElements.stream()
-                                                         .map(XmlUtils::deepCopy)
-                                                         .collect(Collectors.toList());
-        StandardComment.removeCommentAnchorsFromFinalElements(comment, finalRepeatElements);
+        List<Object> finalRepeatElements = elements.stream()
+                                                   .map(XmlUtils::deepCopy)
+                                                   .collect(Collectors.toList());
+        CommentUtil.removeCommentAnchorsFromFinalElements(comment, finalRepeatElements);
         targetMainPart.getContent()
                       .addAll(finalRepeatElements);
 
@@ -76,23 +74,13 @@ public class StandardComment
         ObjectFactory wmlObjectFactory = Context.getWmlObjectFactory();
         ContentAccessor fakeBody = wmlObjectFactory.createBody();
         fakeBody.getContent()
-                .addAll(repeatElements);
+                .addAll(elements);
         DocumentUtil.walkObjectsAndImportImages(fakeBody, comment.getDocument(), target);
 
         Comments comments = wmlObjectFactory.createComments();
         StandardComment.extractedSubComments(comments.getComment(), comment.getChildren());
         commentsPart.setContents(comments);
         return target;
-    }
-
-    private static void removeCommentAnchorsFromFinalElements(
-            Comment comment,
-            List<Object> finalRepeatElements
-    ) {
-        ContentAccessor fakeBody = () -> finalRepeatElements;
-        CommentUtil.deleteCommentFromElement(fakeBody.getContent(),
-                comment.getComment()
-                       .getId());
     }
 
     /**
@@ -131,52 +119,23 @@ public class StandardComment
         return repeatElements;
     }
 
-    /**
-     * Creates a new document containing only the elements between the comment range anchors.
-     *
-     * @param document the document from which to copy the elements.
-     *
-     * @return a new document containing only the elements between the comment range anchors.
-     *
-     * @throws Exception if the sub template could not be created.
-     */
-    @Override
-    public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
-            throws Exception {
-        List<Object> repeatElements = getRepeatElements();
-
-        WordprocessingMLPackage subDocument = WordprocessingMLPackage.createPackage();
-        MainDocumentPart subDocumentMainDocumentPart = subDocument.getMainDocumentPart();
-
-        CommentsPart commentsPart = new CommentsPart();
-        subDocumentMainDocumentPart.addTargetPart(commentsPart);
-
-        // copy the elements to repeat without comment range anchors
-        List<Object> finalRepeatElements = repeatElements.stream()
-                                                         .map(XmlUtils::deepCopy)
-                                                         .collect(Collectors.toList());
-        removeCommentAnchorsFromFinalElements(finalRepeatElements);
-        subDocumentMainDocumentPart.getContent()
-                                   .addAll(finalRepeatElements);
-
-        // copy the images from parent document using the original repeat elements
-        ObjectFactory wmlObjectFactory = Context.getWmlObjectFactory();
-        ContentAccessor fakeBody = wmlObjectFactory.createBody();
-        fakeBody.getContent()
-                .addAll(repeatElements);
-        DocumentUtil.walkObjectsAndImportImages(fakeBody, document, subDocument);
-
-        Comments comments = wmlObjectFactory.createComments();
-        extractedSubComments(comments.getComment(), this.getChildren());
-        commentsPart.setContents(comments);
-
-        return subDocument;
+    private static void extractedSubComments(
+            List<Comments.Comment> commentList,
+            Set<Comment> commentChildren
+    ) {
+        Queue<Comment> q = new ArrayDeque<>(commentChildren);
+        while (!q.isEmpty()) {
+            Comment element = q.remove();
+            commentList.add(element.getComment());
+            if (element.getChildren() != null)
+                q.addAll(element.getChildren());
+        }
     }
 
     /**
      * Creates a new document containing only the elements between the comment range anchors.
      * If the sub template could not be created, a
-     * {@link DocxStamperException} is thrown.
+     * {@link OfficeStamperException} is thrown.
      *
      * @param document the document from which to copy the elements.
      *
@@ -189,25 +148,7 @@ public class StandardComment
         try {
             return getSubTemplate(document);
         } catch (Exception e) {
-            throw new DocxStamperException(e);
-        }
-    }
-
-    private void removeCommentAnchorsFromFinalElements(List<Object> finalRepeatElements) {
-        ContentAccessor fakeBody = () -> finalRepeatElements;
-        CommentUtil.deleteCommentFromElement(fakeBody.getContent(), getComment().getId());
-    }
-
-    private void extractedSubComments(
-            List<Comments.Comment> commentList,
-            Set<Comment> commentChildren
-    ) {
-        Queue<Comment> q = new ArrayDeque<>(commentChildren);
-        while (!q.isEmpty()) {
-            Comment element = q.remove();
-            commentList.add(element.getComment());
-            if (element.getChildren() != null)
-                q.addAll(element.getChildren());
+            throw new OfficeStamperException(e);
         }
     }
 

@@ -2,12 +2,14 @@ package org.wickedsource.docxstamper.util;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
+import org.docx4j.XmlUtils;
 import org.docx4j.finders.ClassFinder;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.*;
+import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.docxstamper.api.OfficeStamperException;
 
 import java.util.*;
@@ -263,5 +265,42 @@ public class DocumentUtil {
      */
     public static Stream<P> streamParagraphs(WordprocessingMLPackage document) {
         return streamElements(document, P.class);
+    }
+
+    public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
+        if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
+            return findInsertableParent(contentAccessor);
+        else if (o2 instanceof Child child)
+            return findSmallestCommonParent(o1, child.getParent());
+        else
+            throw new OfficeStamperException();
+    }
+
+    public static boolean depthElementSearch(Object searchTarget, Object content) {
+        content = XmlUtils.unwrap(content);
+        if (searchTarget.equals(content)) {
+            return true;
+        }
+        else if (content instanceof ContentAccessor contentAccessor) {
+            for (Object object : contentAccessor.getContent()) {
+                Object unwrappedObject = XmlUtils.unwrap(object);
+                if (searchTarget.equals(unwrappedObject)
+                        || depthElementSearch(searchTarget, unwrappedObject)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static ContentAccessor findInsertableParent(Object searchFrom) {
+        if (searchFrom instanceof Tc tc)
+            return tc;
+        else if (searchFrom instanceof Body body)
+            return body;
+        else if (searchFrom instanceof Child child)
+            return findInsertableParent(child.getParent());
+        else
+            throw new OfficeStamperException();
     }
 }

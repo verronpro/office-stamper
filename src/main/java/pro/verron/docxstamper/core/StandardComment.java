@@ -5,9 +5,11 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
-import org.docx4j.wml.*;
+import org.docx4j.wml.CommentRangeEnd;
+import org.docx4j.wml.CommentRangeStart;
+import org.docx4j.wml.Comments;
+import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R.CommentReference;
-import org.jvnet.jaxb2_commons.ppp.Child;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import pro.verron.docxstamper.api.Comment;
 import pro.verron.docxstamper.api.OfficeStamperException;
@@ -44,7 +46,7 @@ public class StandardComment
      */
     @Override
     public ContentAccessor getParent() {
-        return findSmallestCommonParent(getCommentRangeStart(), getCommentRangeEnd());
+        return DocumentUtil.findSmallestCommonParent(getCommentRangeStart(), getCommentRangeEnd());
     }
 
     /**
@@ -57,12 +59,12 @@ public class StandardComment
         List<Object> repeatElements = new ArrayList<>();
         boolean startFound = false;
         for (Object element : getParent().getContent()) {
-            if (!startFound && depthElementSearch(getCommentRangeStart(), element)) {
+            if (!startFound && DocumentUtil.depthElementSearch(getCommentRangeStart(), element)) {
                 startFound = true;
             }
             if (startFound) {
                 repeatElements.add(element);
-                if (depthElementSearch(getCommentRangeEnd(), element)) {
+                if (DocumentUtil.depthElementSearch(getCommentRangeEnd(), element)) {
                     break;
                 }
             }
@@ -223,43 +225,6 @@ public class StandardComment
 
     @Override public WordprocessingMLPackage getDocument() {
         return document;
-    }
-
-    private ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
-        if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
-            return findInsertableParent(contentAccessor);
-        else if (o2 instanceof Child child)
-            return findSmallestCommonParent(o1, child.getParent());
-        else
-            throw new OfficeStamperException();
-    }
-
-    private boolean depthElementSearch(Object searchTarget, Object content) {
-        content = XmlUtils.unwrap(content);
-        if (searchTarget.equals(content)) {
-            return true;
-        }
-        else if (content instanceof ContentAccessor contentAccessor) {
-            for (Object object : contentAccessor.getContent()) {
-                Object unwrappedObject = XmlUtils.unwrap(object);
-                if (searchTarget.equals(unwrappedObject)
-                        || depthElementSearch(searchTarget, unwrappedObject)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private ContentAccessor findInsertableParent(Object searchFrom) {
-        if (searchFrom instanceof Tc tc)
-            return tc;
-        else if (searchFrom instanceof Body body)
-            return body;
-        else if (searchFrom instanceof Child child)
-            return findInsertableParent(child.getParent());
-        else
-            throw new OfficeStamperException();
     }
 
 }

@@ -50,26 +50,20 @@ public class StandardComment
     }
 
     /**
-     * <p>getRepeatElements.</p>
-     *
      * @return the elements in the document that are between the comment range anchors.
      */
     @Override
     public List<Object> getElements() {
-        List<Object> repeatElements = new ArrayList<>();
+        List<Object> elements = new ArrayList<>();
         boolean startFound = false;
-        for (Object element : getParent().getContent()) {
-            if (!startFound && DocumentUtil.depthElementSearch(getCommentRangeStart(), element)) {
-                startFound = true;
-            }
-            if (startFound) {
-                repeatElements.add(element);
-                if (DocumentUtil.depthElementSearch(getCommentRangeEnd(), element)) {
-                    break;
-                }
-            }
+        boolean endFound = false;
+        var parentElements = getParent().getContent();
+        for (Object element : parentElements) {
+            startFound = startFound || DocumentUtil.depthElementSearch(getCommentRangeStart(), element);
+            if (startFound && !endFound) elements.add(element);
+            endFound = endFound || DocumentUtil.depthElementSearch(getCommentRangeEnd(), element);
         }
-        return repeatElements;
+        return elements;
     }
 
     /**

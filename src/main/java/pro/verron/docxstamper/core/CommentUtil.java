@@ -416,7 +416,7 @@ public class CommentUtil {
         deleteCommentFromElements(elements, commentId);
     }
 
-    static WordprocessingMLPackage createSubWordDocument(Comment comment)
+    public static WordprocessingMLPackage createSubWordDocument(Comment comment)
             throws InvalidFormatException {
         var elements = comment.getElements();
 

@@ -72,7 +72,9 @@ public class StandardComment
      * @return a new document containing only the elements between the comment range anchors.
      *
      * @throws Exception if the sub template could not be created.
+     * @deprecated use {@link CommentUtil#createSubWordDocument(Comment)} instead
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     @Override
     public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
             throws Exception {
@@ -87,7 +89,9 @@ public class StandardComment
      * @param document the document from which to copy the elements.
      *
      * @return a new document containing only the elements between the comment range anchors.
+     * @deprecated use {@link CommentUtil#createSubWordDocument(Comment)} instead
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     @Override
     public WordprocessingMLPackage tryBuildingSubtemplate(
             WordprocessingMLPackage document

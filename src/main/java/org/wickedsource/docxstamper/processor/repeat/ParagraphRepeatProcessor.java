@@ -218,7 +218,7 @@ public class ParagraphRepeatProcessor
                             pClone);
                 }
 
-                CommentUtil.deleteCommentFromElement(pClone.getContent(),
+                CommentUtil.deleteCommentFromElements(pClone.getContent(),
                         paragraphs.comment.getComment()
                                           .getId());
                 placeholderReplacer.resolveExpressionsForParagraph(

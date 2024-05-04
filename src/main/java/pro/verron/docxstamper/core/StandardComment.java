@@ -67,7 +67,7 @@ public class StandardComment
         List<Object> finalRepeatElements = elements.stream()
                                                    .map(XmlUtils::deepCopy)
                                                    .collect(Collectors.toList());
-        CommentUtil.removeCommentAnchorsFromFinalElements(comment, finalRepeatElements);
+        CommentUtil.deleteCommentFromElements(comment, finalRepeatElements);
         targetMainPart.getContent()
                       .addAll(finalRepeatElements);
 

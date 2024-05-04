@@ -50,12 +50,13 @@ public class StandardComment
     @Override
     public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
             throws Exception {
-        List<Object> repeatElements = getElements();
-        return createSubWordDocument(this, repeatElements);
+        return createSubWordDocument(this);
     }
 
-    private static WordprocessingMLPackage createSubWordDocument(Comment comment, List<Object> elements)
+    private static WordprocessingMLPackage createSubWordDocument(Comment comment)
             throws InvalidFormatException {
+        var elements = comment.getElements();
+
         WordprocessingMLPackage target = WordprocessingMLPackage.createPackage();
         MainDocumentPart targetMainPart = target.getMainDocumentPart();
 

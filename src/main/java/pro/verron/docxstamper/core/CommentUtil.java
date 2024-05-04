@@ -334,7 +334,7 @@ public class CommentUtil {
                 Comment comment = allComments.get(
                         commentRangeStart.getId());
                 if (comment == null) {
-                    comment = new StandardComment();
+                    comment = new StandardComment(document);
                     allComments.put(commentRangeStart.getId(), comment);
                     if (stack.isEmpty()) {
                         rootComments.put(commentRangeStart.getId(),

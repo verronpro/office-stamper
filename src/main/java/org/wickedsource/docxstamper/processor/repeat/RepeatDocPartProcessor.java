@@ -111,9 +111,9 @@ public class RepeatDocPartProcessor
             contexts = Collections.emptyList();
 
         Comment currentComment = getCurrentCommentWrapper();
-        List<Object> repeatElements = currentComment.getRepeatElements();
+        List<Object> elements = currentComment.getElements();
 
-        if (!repeatElements.isEmpty()) {
+        if (!elements.isEmpty()) {
             this.contexts.put(currentComment, contexts);
         }
     }

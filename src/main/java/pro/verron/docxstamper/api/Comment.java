@@ -133,4 +133,6 @@ public interface Comment {
      */
     // TODO: Remove the setting method from interface to increase immutability
     void setComment(Comments.Comment comment);
+
+    WordprocessingMLPackage getDocument();
 }

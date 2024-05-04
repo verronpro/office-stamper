@@ -45,8 +45,8 @@ public class StandardComment
     @Override
     public ContentAccessor getParent() {
         return findGreatestCommonParent(
-                getCommentRangeEnd().getParent(),
-                (ContentAccessor) getCommentRangeStart().getParent()
+                getCommentRangeStart(),
+                getCommentRangeEnd()
         );
     }
 
@@ -228,11 +228,13 @@ public class StandardComment
         return document;
     }
 
-    private ContentAccessor findGreatestCommonParent(Object end, ContentAccessor start) {
-        if (depthElementSearch(end, start)) {
-            return findInsertableParent(start);
-        }
-        return findGreatestCommonParent(end, (ContentAccessor) ((Child) start).getParent());
+    private ContentAccessor findGreatestCommonParent(Object o1, Object o2) {
+        if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
+            return findInsertableParent(contentAccessor);
+        else if (o2 instanceof Child child)
+            return findGreatestCommonParent(o1, child.getParent());
+        else
+            throw new OfficeStamperException();
     }
 
     private boolean depthElementSearch(Object searchTarget, Object content) {
@@ -252,11 +254,15 @@ public class StandardComment
         return false;
     }
 
-    private ContentAccessor findInsertableParent(ContentAccessor searchFrom) {
-        if (!(searchFrom instanceof Tc || searchFrom instanceof Body)) {
-            return findInsertableParent((ContentAccessor) ((Child) searchFrom).getParent());
-        }
-        return searchFrom;
+    private ContentAccessor findInsertableParent(Object searchFrom) {
+        if (searchFrom instanceof Tc tc)
+            return tc;
+        else if (searchFrom instanceof Body body)
+            return body;
+        else if (searchFrom instanceof Child child)
+            return findInsertableParent(child.getParent());
+        else
+            throw new OfficeStamperException();
     }
 
 }

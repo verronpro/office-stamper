@@ -14,4 +14,7 @@ import pro.verron.docxstamper.core.StandardComment;
 @Deprecated(since = "1.6.8", forRemoval = true)
 public class CommentWrapper
         extends StandardComment {
+    public CommentWrapper() {
+        super(null);
+    }
 }

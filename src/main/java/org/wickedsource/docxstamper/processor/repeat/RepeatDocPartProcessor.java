@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImportImages;
 
@@ -102,22 +103,6 @@ public class RepeatDocPartProcessor
         return new RepeatDocPartProcessor(pr, stamper, Collections::emptyList);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void repeatDocPart(List<Object> contexts) {
-        if (contexts == null)
-            contexts = Collections.emptyList();
-
-        Comment currentComment = getCurrentCommentWrapper();
-        List<Object> elements = currentComment.getElements();
-
-        if (!elements.isEmpty()) {
-            this.contexts.put(currentComment, contexts);
-        }
-    }
-
     private static List<Object> documentAsInsertableElements(
             WordprocessingMLPackage subDocument,
             boolean oddNumberOfBreaks,
@@ -141,6 +126,22 @@ public class RepeatDocPartProcessor
             }
         }
         return inserts;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void repeatDocPart(List<Object> contexts) {
+        if (contexts == null)
+            contexts = Collections.emptyList();
+
+        Comment currentComment = getCurrentCommentWrapper();
+        List<Object> elements = currentComment.getElements();
+
+        if (!elements.isEmpty()) {
+            this.contexts.put(currentComment, contexts);
+        }
     }
 
     private List<Object> stampSubDocuments(
@@ -193,13 +194,11 @@ public class RepeatDocPartProcessor
     @Override
     public void commitChanges(WordprocessingMLPackage document) {
         for (Entry<Comment, List<Object>> entry : this.contexts.entrySet()) {
-            Comment comment = entry.getKey();
-            List<Object> expressionContexts = entry.getValue();
-            ContentAccessor gcp = Objects.requireNonNull(
-                    comment.getParent());
-            List<Object> repeatElements = comment.getRepeatElements();
-            WordprocessingMLPackage subTemplate = comment.tryBuildingSubtemplate(
-                    document);
+            var comment = entry.getKey();
+            var expressionContexts = entry.getValue();
+            var gcp = requireNonNull(comment.getParent());
+            var repeatElements = comment.getElements();
+            var subTemplate = comment.tryBuildingSubtemplate(document);
             SectPr previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(
                     repeatElements.get(0), gcp);
             boolean oddNumberOfBreaks = SectionUtil.isOddNumberOfSectionBreaks(

@@ -5,7 +5,6 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import org.jvnet.jaxb2_commons.ppp.Child;
@@ -36,52 +35,6 @@ public class StandardComment
 
     public StandardComment(WordprocessingMLPackage document) {
         this.document = document;
-    }
-
-    /**
-     * Creates a new document containing only the elements between the comment range anchors.
-     *
-     * @param document the document from which to copy the elements.
-     *
-     * @return a new document containing only the elements between the comment range anchors.
-     *
-     * @throws Exception if the sub template could not be created.
-     */
-    @Override
-    public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
-            throws Exception {
-        return createSubWordDocument(this);
-    }
-
-    private static WordprocessingMLPackage createSubWordDocument(Comment comment)
-            throws InvalidFormatException {
-        var elements = comment.getElements();
-
-        WordprocessingMLPackage target = WordprocessingMLPackage.createPackage();
-        MainDocumentPart targetMainPart = target.getMainDocumentPart();
-
-        CommentsPart commentsPart = new CommentsPart();
-        targetMainPart.addTargetPart(commentsPart);
-
-        // copy the elements to repeat without comment range anchors
-        List<Object> finalRepeatElements = elements.stream()
-                                                   .map(XmlUtils::deepCopy)
-                                                   .collect(Collectors.toList());
-        CommentUtil.deleteCommentFromElements(comment, finalRepeatElements);
-        targetMainPart.getContent()
-                      .addAll(finalRepeatElements);
-
-        // copy the images from parent document using the original repeat elements
-        ObjectFactory wmlObjectFactory = Context.getWmlObjectFactory();
-        ContentAccessor fakeBody = wmlObjectFactory.createBody();
-        fakeBody.getContent()
-                .addAll(elements);
-        DocumentUtil.walkObjectsAndImportImages(fakeBody, comment.getDocument(), target);
-
-        Comments comments = wmlObjectFactory.createComments();
-        StandardComment.extractedSubComments(comments.getComment(), comment.getChildren());
-        commentsPart.setContents(comments);
-        return target;
     }
 
     /**
@@ -120,17 +73,19 @@ public class StandardComment
         return repeatElements;
     }
 
-    private static void extractedSubComments(
-            List<Comments.Comment> commentList,
-            Set<Comment> commentChildren
-    ) {
-        Queue<Comment> q = new ArrayDeque<>(commentChildren);
-        while (!q.isEmpty()) {
-            Comment element = q.remove();
-            commentList.add(element.getComment());
-            if (element.getChildren() != null)
-                q.addAll(element.getChildren());
-        }
+    /**
+     * Creates a new document containing only the elements between the comment range anchors.
+     *
+     * @param document the document from which to copy the elements.
+     *
+     * @return a new document containing only the elements between the comment range anchors.
+     *
+     * @throws Exception if the sub template could not be created.
+     */
+    @Override
+    public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
+            throws Exception {
+        return createSubWordDocument(this);
     }
 
     /**
@@ -151,6 +106,52 @@ public class StandardComment
         } catch (Exception e) {
             throw new OfficeStamperException(e);
         }
+    }
+
+    private static WordprocessingMLPackage createSubWordDocument(Comment comment)
+            throws InvalidFormatException {
+        var elements = comment.getElements();
+
+        var targetCommentsPart = new CommentsPart();
+
+        var target = WordprocessingMLPackage.createPackage();
+        var targetMainPart = target.getMainDocumentPart();
+        targetMainPart.addTargetPart(targetCommentsPart);
+
+        // copy the elements without comment range anchors
+        var finalElements = elements.stream()
+                                    .map(XmlUtils::deepCopy)
+                                    .collect(Collectors.toList());
+        CommentUtil.deleteCommentFromElements(comment, finalElements);
+        targetMainPart.getContent()
+                      .addAll(finalElements);
+
+        // copy the images from parent document using the original repeat elements
+        var wmlObjectFactory = Context.getWmlObjectFactory();
+        var fakeBody = wmlObjectFactory.createBody();
+        fakeBody.getContent()
+                .addAll(elements);
+        DocumentUtil.walkObjectsAndImportImages(fakeBody, comment.getDocument(), target);
+
+        var comments = StandardComment.extractComments(comment.getChildren());
+        targetCommentsPart.setContents(comments);
+        return target;
+    }
+
+    private static Comments extractComments(Set<Comment> commentChildren) {
+        var wmlObjectFactory = Context.getWmlObjectFactory();
+        var comments = wmlObjectFactory.createComments();
+        var commentList = comments.getComment();
+
+        var queue = new ArrayDeque<>(commentChildren);
+        while (!queue.isEmpty()) {
+            var comment = queue.remove();
+            commentList.add(comment.getComment());
+            if (comment.getChildren() != null) {
+                queue.addAll(comment.getChildren());
+            }
+        }
+        return comments;
     }
 
     /**

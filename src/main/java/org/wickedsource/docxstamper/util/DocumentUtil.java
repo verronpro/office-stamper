@@ -8,7 +8,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.*;
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.api.OfficeStamperException;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -22,17 +22,21 @@ import java.util.stream.Stream;
  * @since 1.4.7
  */
 public class DocumentUtil {
+
     private DocumentUtil() {
-        throw new DocxStamperException(
-                "Utility classes shouldn't be instantiated");
+        throw new OfficeStamperException("Utility classes shouldn't be instantiated");
     }
 
     /**
      * Retrieve all the paragraphs from a document
      *
      * @param parentObject the document to get the paragraphs from
+     *
      * @return a list of paragraphs
+     *
+     * @deprecated method not used internally so will be removed
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     public static List<P> getParagraphsFromObject(Object parentObject) {
         return streamElements(parentObject, P.class).toList();
     }
@@ -43,6 +47,7 @@ public class DocumentUtil {
      * @param object       the object to get the elements from
      * @param elementClass the class of the elements to get
      * @param <T>          the type of the elements to get
+     *
      * @return a stream of the elements
      */
     public static <T> Stream<T> streamElements(
@@ -61,6 +66,7 @@ public class DocumentUtil {
      * @param document     the document to get the elements from
      * @param elementClass the class of the elements to get
      * @param <T>          the type of the elements to get
+     *
      * @return a stream of the elements
      */
     private static <T> Stream<T> streamDocumentElements(
@@ -68,14 +74,14 @@ public class DocumentUtil {
             Class<T> elementClass
     ) {
         RelationshipsPart mainParts = document.getMainDocumentPart()
-                .getRelationshipsPart();
+                                              .getRelationshipsPart();
         return Stream.of(
-                        streamElements(mainParts, Namespaces.HEADER, elementClass),
-                        streamObjectElements(document.getMainDocumentPart(),
-                                             elementClass),
-                        streamElements(mainParts, Namespaces.FOOTER, elementClass)
-                )
-                .reduce(Stream.empty(), Stream::concat);
+                             streamElements(mainParts, Namespaces.HEADER, elementClass),
+                             streamObjectElements(document.getMainDocumentPart(),
+                                     elementClass),
+                             streamElements(mainParts, Namespaces.FOOTER, elementClass)
+                     )
+                     .reduce(Stream.empty(), Stream::concat);
     }
 
     private static <T> Stream<T> streamObjectElements(
@@ -85,7 +91,7 @@ public class DocumentUtil {
         ClassFinder finder = new ClassFinder(elementClass);
         TraversalUtil.visit(obj, finder);
         return finder.results.stream()
-                .map(elementClass::cast);
+                             .map(elementClass::cast);
     }
 
     private static <T> Stream<T> streamElements(
@@ -104,8 +110,12 @@ public class DocumentUtil {
      * Retrieve all the tables from an object.
      *
      * @param parentObject the object to get the tables from
+     *
      * @return a list of tables
+     *
+     * @deprecated method not used internally so will be removed
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     public static List<Tbl> getTableFromObject(Object parentObject) {
         return streamElements(parentObject, Tbl.class).toList();
     }
@@ -114,8 +124,12 @@ public class DocumentUtil {
      * Retrieve all the rows from an object.
      *
      * @param parentObject the object to get the rows from
+     *
      * @return a list of rows
+     *
+     * @deprecated method not used internally so will be removed
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     public static List<Tr> getTableRowsFromObject(Object parentObject) {
         return streamElements(parentObject, Tr.class).toList();
     }
@@ -124,8 +138,12 @@ public class DocumentUtil {
      * Retrieve all the cells from an object.
      *
      * @param parentObject the object to get the cells from
+     *
      * @return a list of cells
+     *
+     * @deprecated method not used internally so will be removed
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     public static List<Tc> getTableCellsFromObject(Object parentObject) {
         return streamElements(parentObject, Tc.class).toList();
     }
@@ -134,22 +152,25 @@ public class DocumentUtil {
      * Retrieve the first element from an object.
      *
      * @param subDocument the object to get the first element from
+     *
      * @return the first element
      */
     public static Object lastElement(WordprocessingMLPackage subDocument) {
-        return new ArrayDeque<>(subDocument.getMainDocumentPart()
-                                        .getContent()).getLast();
+        var mainDocumentPart = subDocument.getMainDocumentPart();
+        var mainDocumentPartContent = mainDocumentPart.getContent();
+        return mainDocumentPartContent.get(mainDocumentPartContent.size() - 1);
     }
 
     /**
      * Retrieve the last element from an object.
      *
      * @param subDocument the object to get the last element from
+     *
      * @return the last element
      */
     public static List<Object> allElements(WordprocessingMLPackage subDocument) {
         return subDocument.getMainDocumentPart()
-                .getContent();
+                          .getContent();
     }
 
     /**
@@ -157,6 +178,7 @@ public class DocumentUtil {
      *
      * @param source source document containing image files.
      * @param target target document to add image files to.
+     *
      * @return a {@link java.util.Map} object
      */
     public static Map<R, R> walkObjectsAndImportImages(
@@ -164,8 +186,8 @@ public class DocumentUtil {
             WordprocessingMLPackage target
     ) {
         return walkObjectsAndImportImages(source.getMainDocumentPart(),
-                                          source,
-                                          target);
+                source,
+                target);
     }
 
     /**
@@ -174,6 +196,7 @@ public class DocumentUtil {
      * @param container source container to walk.
      * @param source    source document containing image files.
      * @param target    target document to add image files to.
+     *
      * @return a {@link java.util.Map} object
      */
     public static Map<R, R> walkObjectsAndImportImages(
@@ -190,19 +213,14 @@ public class DocumentUtil {
                 Object currentObj = queue.remove();
 
                 if (currentObj instanceof R currentR && isImageRun(currentR)) {
-                    DocxImageExtractor docxImageExtractor = new DocxImageExtractor(
-                            source);
-                    byte[] imageData = docxImageExtractor.getRunDrawingData(
-                            currentR);
-                    Integer maxWidth = docxImageExtractor.getRunDrawingMaxWidth(
-                            currentR);
-                    BinaryPartAbstractImage imagePart = tryCreateImagePart(
-                            target,
-                            imageData);
-                    R runWithImage = RunUtil.createRunWithImage(maxWidth,
-                                                                imagePart);
+                    var docxImageExtractor = new DocxImageExtractor(source);
+                    var imageData = docxImageExtractor.getRunDrawingData(currentR);
+                    var maxWidth = docxImageExtractor.getRunDrawingMaxWidth(currentR);
+                    var imagePart = tryCreateImagePart(target, imageData);
+                    var runWithImage = RunUtil.createRunWithImage(maxWidth, imagePart);
                     replacements.put(currentR, runWithImage);
-                } else if (currentObj instanceof ContentAccessor contentAccessor)
+                }
+                else if (currentObj instanceof ContentAccessor contentAccessor)
                     queue.addAll(contentAccessor.getContent());
             }
         }
@@ -213,15 +231,16 @@ public class DocumentUtil {
      * Check if a run contains an embedded image.
      *
      * @param run the run to analyze
+     *
      * @return true if the run contains an image, false otherwise.
      */
     private static boolean isImageRun(R run) {
         return run.getContent()
-                .stream()
-                .filter(JAXBElement.class::isInstance)
-                .map(JAXBElement.class::cast)
-                .map(JAXBElement::getValue)
-                .anyMatch(Drawing.class::isInstance);
+                  .stream()
+                  .filter(JAXBElement.class::isInstance)
+                  .map(JAXBElement.class::cast)
+                  .map(JAXBElement::getValue)
+                  .anyMatch(Drawing.class::isInstance);
     }
 
     private static BinaryPartAbstractImage tryCreateImagePart(
@@ -229,10 +248,9 @@ public class DocumentUtil {
             byte[] imageData
     ) {
         try {
-            return BinaryPartAbstractImage.createImagePart(destDocument,
-                                                           imageData);
+            return BinaryPartAbstractImage.createImagePart(destDocument, imageData);
         } catch (Exception e) {
-            throw new DocxStamperException(e);
+            throw new OfficeStamperException(e);
         }
     }
 
@@ -240,6 +258,7 @@ public class DocumentUtil {
      * Retrieve all the runs from a document.
      *
      * @param document the document to get the runs from
+     *
      * @return the runs
      */
     public static Stream<P> streamParagraphs(WordprocessingMLPackage document) {

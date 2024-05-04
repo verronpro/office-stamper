@@ -44,7 +44,9 @@ public class RepeatProcessor extends BaseCommentProcessor implements IRepeatProc
 	 *
 	 * @param pr The PlaceholderReplacer to use.
 	 * @return A new RepeatProcessor.
+	 * @deprecated since unused in core lib
 	 */
+	@Deprecated(since = "1.6.8", forRemoval = true)
 	public static CommentProcessor newInstanceWithNullReplacement(
 			PlaceholderReplacer pr
 	) {

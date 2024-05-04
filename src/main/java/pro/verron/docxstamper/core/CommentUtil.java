@@ -262,20 +262,20 @@ public class CommentUtil {
         for (Object item : items) {
             Object unwrapped = unwrap(item);
             if (unwrapped instanceof CommentRangeStart crs) {
-                if (crs.getId()
-                       .equals(commentId)) {
+                var id = crs.getId();
+                if (id.equals(commentId)) {
                     elementsToRemove.add(item);
                 }
             }
             else if (unwrapped instanceof CommentRangeEnd cre) {
-                if (cre.getId()
-                       .equals(commentId)) {
+                var id = cre.getId();
+                if (id.equals(commentId)) {
                     elementsToRemove.add(item);
                 }
             }
             else if (unwrapped instanceof R.CommentReference rcr) {
-                if (rcr.getId()
-                       .equals(commentId)) {
+                var id = rcr.getId();
+                if (id.equals(commentId)) {
                     elementsToRemove.add(item);
                 }
             }
@@ -402,5 +402,14 @@ public class CommentUtil {
         } catch (Docx4JException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    static void removeCommentAnchorsFromFinalElements(
+            Comment comment,
+            List<Object> elements
+    ) {
+        var docx4jComment = comment.getComment();
+        var commentId = docx4jComment.getId();
+        deleteCommentFromElement(elements, commentId);
     }
 }

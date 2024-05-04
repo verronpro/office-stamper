@@ -1,6 +1,8 @@
 package pro.verron.docxstamper.core;
 
 import org.docx4j.TextUtils;
+import org.docx4j.XmlUtils;
+import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -10,6 +12,7 @@ import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import org.wickedsource.docxstamper.util.walk.DocumentWalker;
 import pro.verron.docxstamper.api.Comment;
@@ -411,5 +414,51 @@ public class CommentUtil {
         var docx4jComment = comment.getComment();
         var commentId = docx4jComment.getId();
         deleteCommentFromElements(elements, commentId);
+    }
+
+    static WordprocessingMLPackage createSubWordDocument(Comment comment)
+            throws InvalidFormatException {
+        var elements = comment.getElements();
+
+        var targetCommentsPart = new CommentsPart();
+
+        var target = WordprocessingMLPackage.createPackage();
+        var targetMainPart = target.getMainDocumentPart();
+        targetMainPart.addTargetPart(targetCommentsPart);
+
+        // copy the elements without comment range anchors
+        var finalElements = elements.stream()
+                                    .map(XmlUtils::deepCopy)
+                                    .collect(Collectors.toList());
+        deleteCommentFromElements(comment, finalElements);
+        targetMainPart.getContent()
+                      .addAll(finalElements);
+
+        // copy the images from parent document using the original repeat elements
+        var wmlObjectFactory = Context.getWmlObjectFactory();
+        var fakeBody = wmlObjectFactory.createBody();
+        fakeBody.getContent()
+                .addAll(elements);
+        DocumentUtil.walkObjectsAndImportImages(fakeBody, comment.getDocument(), target);
+
+        var comments = extractComments(comment.getChildren());
+        targetCommentsPart.setContents(comments);
+        return target;
+    }
+
+    private static Comments extractComments(Set<Comment> commentChildren) {
+        var wmlObjectFactory = Context.getWmlObjectFactory();
+        var comments = wmlObjectFactory.createComments();
+        var commentList = comments.getComment();
+
+        var queue = new ArrayDeque<>(commentChildren);
+        while (!queue.isEmpty()) {
+            var comment = queue.remove();
+            commentList.add(comment.getComment());
+            if (comment.getChildren() != null) {
+                queue.addAll(comment.getChildren());
+            }
+        }
+        return comments;
     }
 }

@@ -82,16 +82,11 @@ public class PlaceholderReplacer
      * @param expressionContext the context root
      */
     public void resolveExpressions(
-            final WordprocessingMLPackage document,
-            Object expressionContext
+            final WordprocessingMLPackage document, Object expressionContext
     ) {
         new BaseCoordinatesWalker() {
-            @Override
-            protected void onParagraph(P paragraph) {
-                resolveExpressionsForParagraph(
-                        new StandardParagraph(paragraph),
-                        expressionContext,
-                        document);
+            @Override protected void onParagraph(P paragraph) {
+                resolveExpressionsForParagraph(new StandardParagraph(paragraph), expressionContext, document);
             }
         }.walk(document);
     }
@@ -103,61 +98,42 @@ public class PlaceholderReplacer
      * @param context   the context root
      * @param document  the document in which to replace all expressions.
      */
-    @Override
-    public void resolveExpressionsForParagraph(
-            Paragraph paragraph,
-            Object context,
-            WordprocessingMLPackage document
+    @Override public void resolveExpressionsForParagraph(
+            Paragraph paragraph, Object context, WordprocessingMLPackage document
     ) {
         var expressions = Placeholders.findVariables(paragraph);
         for (var expression : expressions) {
             try {
                 var resolution = resolver.resolve(expression, context);
-                var replacement = registry.resolve(document, expression,
-                        resolution);
+                var replacement = registry.resolve(document, expression, resolution);
                 paragraph.replace(expression, replacement);
             } catch (SpelEvaluationException | SpelParseException e) {
                 if (failOnUnresolvedExpression) {
-                    String message = "Expression %s could not be resolved against context of type %s"
-                            .formatted(expression, context.getClass());
+                    String message = "Expression %s could not be resolved against context of type %s".formatted(
+                            expression,
+                            context.getClass());
                     throw new OfficeStamperException(message, e);
                 }
                 else if (leaveEmptyOnExpressionError) {
-                    log.warn(
-                            "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log"
-                                    + " level to TRACE to view Stacktrace.",
-                            expression,
-                            context.getClass(),
-                            e.getMessage());
+                    log.warn("Expression {} could not be resolved against context root of type {}. Reason: {}. Set log"
+                            + " level to TRACE to view Stacktrace.", expression, context.getClass(), e.getMessage());
                     log.trace("Reason for skipping expression:", e);
                     paragraph.replace(expression, RunUtil.create(""));
                 }
                 else if (replaceUnresolvedExpressions) {
-                    log.warn(
-                            "Expression {} could not be resolved against context root of type {}. Reason: {}. Set log"
-                                    + " level to TRACE to view Stacktrace.",
-                            expression,
-                            context.getClass(),
-                            e.getMessage());
+                    log.warn("Expression {} could not be resolved against context root of type {}. Reason: {}. Set log"
+                            + " level to TRACE to view Stacktrace.", expression, context.getClass(), e.getMessage());
                     log.trace("Reason for skipping expression:", e);
-                    paragraph.replace(
-                            expression,
-                            RunUtil.create(unresolvedExpressionsDefaultValue));
+                    paragraph.replace(expression, RunUtil.create(unresolvedExpressionsDefaultValue));
                 }
                 else {
                     // DO NOTHING
                 }
             }
         }
-        if (lineBreakPlaceholder() != null) {
+        if (lineBreakPlaceholder != null) {
             replaceLineBreaks(paragraph);
         }
-    }
-
-
-    // TODO: Remove this intermediate method
-    private Placeholder lineBreakPlaceholder() {
-        return lineBreakPlaceholder;
     }
 
     private void replaceLineBreaks(Paragraph paragraph) {
@@ -165,8 +141,8 @@ public class PlaceholderReplacer
                               .createBr();
         R run = RunUtil.create(lineBreak);
         while (paragraph.asString()
-                        .contains(lineBreakPlaceholder().expression())) {
-            paragraph.replace(lineBreakPlaceholder(), run);
+                        .contains(lineBreakPlaceholder.expression())) {
+            paragraph.replace(lineBreakPlaceholder, run);
         }
     }
 }

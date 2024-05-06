@@ -33,7 +33,7 @@ public class ImageResolver
      */
     public R resolve(WordprocessingMLPackage document, Image image) {
         try {
-            // TODO: adding the same image twice will put the image twice into the docx-zip file. make the second
+            // TODO_LATER: adding the same image twice will put the image twice into the docx-zip file. make the second
             //       addition of the same image a reference instead.
             return RunUtil.createRunWithImage(
                     image.getMaxWidth(),

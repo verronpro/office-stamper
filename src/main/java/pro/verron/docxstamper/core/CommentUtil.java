@@ -41,7 +41,7 @@ public class CommentUtil {
     /**
      * Utility class for handling comments in a DOCX document.
      */
-    // TODO: Move to private for next version
+    // TODO_LATER: Move to private for next version
     protected CommentUtil() {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }

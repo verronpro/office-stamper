@@ -53,6 +53,7 @@ abstract class ExcelVisitor {
             else if (object instanceof Map<?, ?> element) visit(element.entrySet());
             else if (object instanceof Map.Entry<?, ?> element) visit(element.getValue());
             else if (object == null) { /* do nothing */ }
+            // TODO: replace this test throws by a noop before usage in the wild
             else throw new OfficeStamperException("Unknown case : %s %s".formatted(object, object.getClass()));
         } catch (Docx4JException e) {
             throw new OfficeStamperException(e);

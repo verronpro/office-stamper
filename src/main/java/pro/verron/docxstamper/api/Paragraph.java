@@ -1,10 +1,22 @@
 package pro.verron.docxstamper.api;
 
+import org.docx4j.wml.R;
+
 /**
  * The Paragraph interface represents a paragraph in a text document.
  * It provides methods for replacing a placeholder within the paragraph and retrieving the paragraph as a string.
  */
 public interface Paragraph {
+
+    default void replaceAll(Placeholder placeholder, R replacement) {
+        while (contains(placeholder.expression())) {
+            replace(placeholder, replacement);
+        }
+    }
+
+    default boolean contains(String expression) {
+        return asString().contains(expression);
+    }
 
     /**
      * Replaces a placeholder in the given paragraph with the specified replacement.

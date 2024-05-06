@@ -2,9 +2,7 @@ package pro.verron.docxstamper.core;
 
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.Br;
 import org.docx4j.wml.P;
-import org.docx4j.wml.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
@@ -143,18 +141,14 @@ public class PlaceholderReplacer
                 else throw new OfficeStamperException(e);
             }
         }
-        if (lineBreakPlaceholder != null) {
-            replaceLineBreaks(paragraph);
-        }
+        replaceLineBreaks(paragraph);
     }
 
     private void replaceLineBreaks(Paragraph paragraph) {
-        Br lineBreak = Context.getWmlObjectFactory()
-                              .createBr();
-        R run = RunUtil.create(lineBreak);
-        while (paragraph.asString()
-                        .contains(lineBreakPlaceholder.expression())) {
-            paragraph.replace(lineBreakPlaceholder, run);
-        }
+        var factory = Context.getWmlObjectFactory();
+        var lineBreak = factory.createBr();
+        var lineBreakRun = RunUtil.create(lineBreak);
+        paragraph.replaceAll(lineBreakPlaceholder, lineBreakRun);
     }
+
 }

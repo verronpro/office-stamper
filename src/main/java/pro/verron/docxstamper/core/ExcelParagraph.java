@@ -4,7 +4,8 @@ import org.xlsx4j.sml.CTRst;
 import pro.verron.docxstamper.api.Placeholder;
 
 /**
- * TODO: javadoc
+ * The ExcelParagraph class represents a paragraph in an Excel document.
+ * It provides methods to replace expressions and retrieve the aggregated text over all runs.
  */
 public class ExcelParagraph {
     private final CTRst paragraph;

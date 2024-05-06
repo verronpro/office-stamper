@@ -180,7 +180,9 @@ public interface OfficeStamperConfiguration {
     String getUnresolvedExpressionsDefaultValue();
 
     /**
-     * TODO: javadoc
+     * Retrieves the line break placeholder used in the OfficeStamper configuration.
+     *
+     * @return the line break placeholder as a String.
      */
     String getLineBreakPlaceholder();
 

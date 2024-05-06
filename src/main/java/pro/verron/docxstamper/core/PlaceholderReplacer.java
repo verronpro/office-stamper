@@ -107,28 +107,40 @@ public class PlaceholderReplacer
                 var resolution = resolver.resolve(expression, context);
                 var replacement = registry.resolve(document, expression, resolution);
                 paragraph.replace(expression, replacement);
-            } catch (SpelEvaluationException | SpelParseException e) {
+            } catch (SpelEvaluationException e) {
                 if (failOnUnresolvedExpression) {
-                    String message = "Expression %s could not be resolved against context of type %s".formatted(
-                            expression,
-                            context.getClass());
+                    var template = "Expression %s could not be resolved against context of type %s";
+                    var message = template.formatted(expression, context.getClass());
                     throw new OfficeStamperException(message, e);
                 }
                 else if (leaveEmptyOnExpressionError) {
-                    log.warn("Expression {} could not be resolved against context root of type {}. Reason: {}. Set log"
-                            + " level to TRACE to view Stacktrace.", expression, context.getClass(), e.getMessage());
+                    var template = "Expression {} seems erroneous when evaluating against root of type {}."
+                            + " Reason: {}."
+                            + " Set log level to TRACE to view Stacktrace.";
+                    log.warn(template, expression, context.getClass(), e.getMessage());
                     log.trace("Reason for skipping expression:", e);
                     paragraph.replace(expression, RunUtil.create(""));
                 }
                 else if (replaceUnresolvedExpressions) {
-                    log.warn("Expression {} could not be resolved against context root of type {}. Reason: {}. Set log"
-                            + " level to TRACE to view Stacktrace.", expression, context.getClass(), e.getMessage());
+                    log.warn("Expression {} could not be resolved against context root of type {}."
+                                    + " Reason: {}. "
+                                    + "Set log level to TRACE to view Stacktrace.",
+                            expression,
+                            context.getClass(),
+                            e.getMessage());
                     log.trace("Reason for skipping expression:", e);
                     paragraph.replace(expression, RunUtil.create(unresolvedExpressionsDefaultValue));
                 }
-                else {
-                    // DO NOTHING
+            } catch (SpelParseException e) {
+                if (leaveEmptyOnExpressionError) {
+                    var template = "Expression {} seems erroneous when evaluating against root of type {}."
+                            + " Reason: {}."
+                            + " Set log level to TRACE to view Stacktrace.";
+                    log.warn(template, expression, context.getClass(), e.getMessage());
+                    log.trace("Reason for skipping expression:", e);
+                    paragraph.replace(expression, RunUtil.create(""));
                 }
+                else throw new OfficeStamperException(e);
             }
         }
         if (lineBreakPlaceholder != null) {

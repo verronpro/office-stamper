@@ -33,6 +33,7 @@ public class RunUtil {
      * Returns the text string of a run.
      *
      * @param run the run whose text to get.
+     *
      * @return {@link String} representation of the run.
      */
     public static String getText(R run) {
@@ -40,7 +41,8 @@ public class RunUtil {
         for (Object content : run.getContent()) {
             if (content instanceof JAXBElement) {
                 result.append(getText((JAXBElement<?>) content));
-            } else if (content instanceof Text text) {
+            }
+            else if (content instanceof Text text) {
                 result.append(getText(text));
             }
         }
@@ -68,12 +70,13 @@ public class RunUtil {
      * Creates a new run with the given object as content.
      *
      * @param content the content of the run.
+     *
      * @return the newly created run.
      */
     public static R create(Object content) {
         R run = factory.createR();
-        run.getContent()
-                .add(content);
+        var runContent = run.getContent();
+        runContent.add(content);
         return run;
     }
 
@@ -82,6 +85,7 @@ public class RunUtil {
      *
      * @param text            the initial text of the run.
      * @param parentParagraph the parent paragraph whose style to inherit.
+     *
      * @return the newly created run.
      */
     public static R create(String text, P parentParagraph) {
@@ -94,6 +98,7 @@ public class RunUtil {
      * Creates a new run with the specified text.
      *
      * @param text the initial text of the run.
+     *
      * @return the newly created run.
      */
     public static R create(String text) {
@@ -110,10 +115,10 @@ public class RunUtil {
      */
     public static void applyParagraphStyle(P p, R run) {
         if (p.getPPr() != null && p.getPPr()
-                                          .getRPr() != null) {
+                                   .getRPr() != null) {
             RPr runProperties = new RPr();
             StyleUtil.apply(p.getPPr()
-                                    .getRPr(), runProperties);
+                             .getRPr(), runProperties);
             run.setRPr(runProperties);
         }
     }
@@ -126,16 +131,17 @@ public class RunUtil {
      */
     public static void setText(R run, String text) {
         run.getContent()
-                .clear();
+           .clear();
         Text textObj = createText(text);
         run.getContent()
-                .add(textObj);
+           .add(textObj);
     }
 
     /**
      * Creates a text object with the given text.
      *
      * @param text the text to set.
+     *
      * @return the newly created text object.
      */
     public static Text createText(String text) {
@@ -151,6 +157,7 @@ public class RunUtil {
      *
      * @param maxWidth      max width of the image
      * @param abstractImage the image
+     *
      * @return the run containing the image
      */
     public static R createRunWithImage(
@@ -178,9 +185,9 @@ public class RunUtil {
         R run = factory.createR();
         Drawing drawing = factory.createDrawing();
         run.getContent()
-                .add(drawing);
+           .add(drawing);
         drawing.getAnchorOrInline()
-                .add(inline);
+               .add(inline);
 
         return run;
 
@@ -197,16 +204,16 @@ public class RunUtil {
         try {
             return maxWidth == null
                     ? abstractImage.createImageInline(filenameHint,
-                                                      altText,
-                                                      id1,
-                                                      id2,
-                                                      false)
+                    altText,
+                    id1,
+                    id2,
+                    false)
                     : abstractImage.createImageInline(filenameHint,
-                                                      altText,
-                                                      id1,
-                                                      id2,
-                                                      false,
-                                                      maxWidth);
+                            altText,
+                            id1,
+                            id2,
+                            false,
+                            maxWidth);
         } catch (Exception e) {
             throw new DocxStamperException(e);
         }

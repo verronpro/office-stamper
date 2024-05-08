@@ -42,8 +42,9 @@ import static pro.verron.docxstamper.core.CommentUtil.getComments;
  * @since 1.0.0
  */
 public class CommentProcessorRegistry {
-    private final Logger logger = LoggerFactory.getLogger(
-            CommentProcessorRegistry.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(CommentProcessorRegistry.class);
+
     private final Map<Class<?>, Object> commentProcessors;
     private final boolean failOnUnresolvedExpression;
     private final ExpressionResolver expressionResolver;
@@ -86,14 +87,14 @@ public class CommentProcessorRegistry {
             @Override
             protected void onRun(R run, P paragraph) {
                 runProcessorsOnRunComment(document, comments, expressionContext,
-                                          paragraph, run)
+                        paragraph, run)
                         .ifPresent(proceedComments::add);
             }
 
             @Override
             protected void onParagraph(P paragraph) {
                 runProcessorsOnParagraphComment(document, comments,
-                                                expressionContext, paragraph)
+                        expressionContext, paragraph)
                         .ifPresent(proceedComments::add);
                 runProcessorsOnInlineContent(expressionContext, paragraph);
             }
@@ -118,7 +119,7 @@ public class CommentProcessorRegistry {
         var comment = CommentUtil.getCommentAround(run, document);
         return comment.flatMap(
                 c -> runCommentProcessors(comments, expressionContext, c,
-                                          paragraph, run, document));
+                        paragraph, run, document));
     }
 
     /**
@@ -141,9 +142,9 @@ public class CommentProcessorRegistry {
         return CommentUtil
                 .getCommentFor(paragraph, document)
                 .flatMap(c -> this.runCommentProcessors(comments,
-                                                        expressionContext, c,
-                                                        paragraph, null,
-                                                        document));
+                        expressionContext, c,
+                        paragraph, null,
+                        document));
     }
 
     /**
@@ -178,7 +179,8 @@ public class CommentProcessorRegistry {
                         expression);
                 if (failOnUnresolvedExpression) {
                     throw new DocxStamperException(msg, e);
-                } else {
+                }
+                else {
                     logger.warn(msg, e);
                 }
             }
@@ -220,10 +222,12 @@ public class CommentProcessorRegistry {
         } catch (SpelEvaluationException | SpelParseException e) {
             if (failOnUnresolvedExpression) {
                 throw new UnresolvedExpressionException(commentExpression.toString(),
-                                                        e);
-            } else {
+                        e);
+            }
+            else {
                 logger.warn(String.format(
-                        "Skipping comment expression '%s' because it can not be resolved by any comment processor. Reason: %s. Set log level to TRACE to view Stacktrace.",
+                        "Skipping comment expression '%s' because it can not be resolved by any comment processor. "
+                                + "Reason: %s. Set log level to TRACE to view Stacktrace.",
                         commentExpression,
                         e.getMessage()));
                 logger.trace("Reason for skipping comment: ", e);

@@ -11,9 +11,12 @@ import java.util.regex.Pattern;
 
 /**
  * The Expressions class provides utility methods for finding variables and processors in a given text.
- * It contains multiple constant variables for different types of expressions, such as VAR_MATCHER for variable expressions and PROC_MATCHER for processor expressions.
- * The findVariables() method uses VAR_FINDER to find variable expressions in a given text and returns a list of found expressions.
- * The findProcessors() method uses PROC_FINDER to find processor expressions in a given text and returns a list of found expressions.
+ * It contains multiple constant variables for different types of expressions, such as VAR_MATCHER for variable
+ * expressions and PROC_MATCHER for processor expressions.
+ * The findVariables() method uses VAR_FINDER to find variable expressions in a given text and returns a list of found
+ * expressions.
+ * The findProcessors() method uses PROC_FINDER to find processor expressions in a given text and returns a list of
+ * found expressions.
  * The raw() method creates a new Expression object using the RAW_MATCHER and a specified text.
  */
 public class Placeholders {
@@ -62,18 +65,7 @@ public class Placeholders {
     private static final Matcher RAW_MATCHER = new Matcher("", "");
 
     private Placeholders() {
-        throw new DocxStamperException(
-                "Utility classes should not be instantiated!");
-    }
-
-    /**
-     * Finds variable expressions in a given text.
-     *
-     * @param text the text to search for variable expressions
-     * @return a list of found variable expressions as {@link StandardPlaceholder} objects
-     */
-    public static List<Placeholder> findVariables(String text) {
-        return VAR_FINDER.find(text);
+        throw new DocxStamperException("Utility classes should not be instantiated!");
     }
 
     public static List<Placeholder> findVariables(Paragraph paragraph) {
@@ -81,9 +73,21 @@ public class Placeholders {
     }
 
     /**
+     * Finds variable expressions in a given text.
+     *
+     * @param text the text to search for variable expressions
+     *
+     * @return a list of found variable expressions as {@link StandardPlaceholder} objects
+     */
+    public static List<Placeholder> findVariables(String text) {
+        return VAR_FINDER.find(text);
+    }
+
+    /**
      * Finds processors expressions in a given text.
      *
      * @param text the text to search for processor expressions
+     *
      * @return a list of found processor expressions as {@link StandardPlaceholder}
      * objects
      */

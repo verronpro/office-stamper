@@ -138,15 +138,15 @@ public class Stringifier {
         return documentSupplier.get();
     }
 
-    private String stringify(R.LastRenderedPageBreak lrpb) {
+    private String stringify(R.LastRenderedPageBreak ignored) {
         return ""; // do not render
     }
 
     private String stringify(Br br) {
-        return "|BR|";
+        return "|BR(" + br.getType() + ")|";
     }
 
-    private String stringify(R.Tab tab) {
+    private String stringify(R.Tab ignored) {
         return "|TAB|";
     }
 

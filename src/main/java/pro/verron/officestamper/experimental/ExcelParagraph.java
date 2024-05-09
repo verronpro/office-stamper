@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.core;
+package pro.verron.officestamper.experimental;
 
 import org.xlsx4j.sml.CTRst;
 import pro.verron.docxstamper.api.Placeholder;

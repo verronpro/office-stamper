@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.core;
+package pro.verron.officestamper.experimental;
 
 
 import java.util.ArrayList;

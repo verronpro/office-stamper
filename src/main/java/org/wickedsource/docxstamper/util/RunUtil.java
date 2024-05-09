@@ -7,6 +7,7 @@ import org.docx4j.model.styles.StyleUtil;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.docxstamper.api.OfficeStamperException;
 
 import java.util.Objects;
 import java.util.Random;
@@ -203,19 +204,10 @@ public class RunUtil {
     ) {
         try {
             return maxWidth == null
-                    ? abstractImage.createImageInline(filenameHint,
-                    altText,
-                    id1,
-                    id2,
-                    false)
-                    : abstractImage.createImageInline(filenameHint,
-                            altText,
-                            id1,
-                            id2,
-                            false,
-                            maxWidth);
+                    ? abstractImage.createImageInline(filenameHint, altText, id1, id2, false)
+                    : abstractImage.createImageInline(filenameHint, altText, id1, id2, false, maxWidth);
         } catch (Exception e) {
-            throw new DocxStamperException(e);
+            throw new OfficeStamperException(e);
         }
     }
 }

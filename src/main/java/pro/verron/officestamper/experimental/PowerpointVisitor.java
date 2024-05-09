@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.core;
+package pro.verron.officestamper.experimental;
 
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextBody;

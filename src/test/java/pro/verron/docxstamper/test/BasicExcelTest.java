@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 import static org.docx4j.openpackaging.packages.SpreadsheetMLPackage.load;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.docxstamper.preset.OfficeStampers.xlsxStamper;
+import static pro.verron.docxstamper.preset.ExperimentalStampers.xlsxStamper;
 import static pro.verron.docxstamper.test.IOStreams.getInputStream;
 import static pro.verron.docxstamper.test.IOStreams.getOutputStream;
 import static pro.verron.docxstamper.test.Stringifier.stringifyExcel;

@@ -1,4 +1,4 @@
-package pro.verron.docxstamper.core;
+package pro.verron.officestamper.experimental;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.openpackaging.exceptions.Docx4JException;

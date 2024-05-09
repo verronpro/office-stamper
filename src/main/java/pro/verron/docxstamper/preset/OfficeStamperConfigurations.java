@@ -34,13 +34,4 @@ public class OfficeStamperConfigurations {
         return new DocxStamperConfiguration();
     }
 
-    /**
-     * Returns a new instance of OfficeStamperConfiguration specifically for PowerPoint files.
-     *
-     * @return a new OfficeStamperConfiguration instance for PowerPoint files
-     */
-    public static OfficeStamperConfiguration powerpoint() {
-        return new PowerpointStamperConfiguration();
-    }
-
 }

@@ -18,9 +18,9 @@ import org.docx4j.wml.Comments.Comment;
 import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
 import org.xlsx4j.sml.Cell;
 import pro.verron.docxstamper.api.OfficeStamperException;
-import pro.verron.docxstamper.core.ExcelCollector;
-import pro.verron.docxstamper.core.PowerpointCollector;
-import pro.verron.docxstamper.core.PowerpointParagraph;
+import pro.verron.officestamper.experimental.ExcelCollector;
+import pro.verron.officestamper.experimental.PowerpointCollector;
+import pro.verron.officestamper.experimental.PowerpointParagraph;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -45,18 +45,6 @@ import static java.util.stream.Collectors.joining;
  */
 public class Stringifier {
 
-    public static String stringifyPowerpoint(PresentationMLPackage presentation) {
-        var collector = new PowerpointCollector<>(CTTextParagraph.class);
-        collector.visit(presentation);
-        var collected = collector.collect();
-
-        var powerpoint = new StringBuilder();
-        for (CTTextParagraph paragraph : collected) {
-            powerpoint.append(new PowerpointParagraph(paragraph).asString());
-        }
-        return powerpoint.toString();
-    }
-
     private final Supplier<WordprocessingMLPackage> documentSupplier;
 
     /**
@@ -68,6 +56,17 @@ public class Stringifier {
         this.documentSupplier = documentSupplier;
     }
 
+    public static String stringifyPowerpoint(PresentationMLPackage presentation) {
+        var collector = new PowerpointCollector<>(CTTextParagraph.class);
+        collector.visit(presentation);
+        var collected = collector.collect();
+
+        var powerpoint = new StringBuilder();
+        for (CTTextParagraph paragraph : collected) {
+            powerpoint.append(new PowerpointParagraph(paragraph).asString());
+        }
+        return powerpoint.toString();
+    }
 
     public static String stringifyExcel(SpreadsheetMLPackage presentation) {
         var collector = new ExcelCollector<>(Cell.class);

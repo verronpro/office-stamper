@@ -15,7 +15,6 @@ import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import org.wickedsource.docxstamper.replace.typeresolver.TypeResolver;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
-import pro.verron.officestamper.preset.Null2DefaultResolver;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
@@ -97,9 +96,9 @@ public class DocxStamperConfiguration
     @Deprecated(since = "1.6.7")
     public Optional<String> nullReplacementValue() {
         return resolvers.stream()
-                .filter(Null2DefaultResolver.class::isInstance)
-                .map(Null2DefaultResolver.class::cast)
-                .map(Null2DefaultResolver::defaultValue)
+                        .filter(Resolvers.Null2DefaultResolver.class::isInstance)
+                        .map(Resolvers.Null2DefaultResolver.class::cast)
+                        .map(Resolvers.Null2DefaultResolver::defaultValue)
                 .findFirst();
     }
 

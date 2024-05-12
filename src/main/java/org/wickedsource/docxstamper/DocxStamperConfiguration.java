@@ -15,9 +15,9 @@ import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import org.wickedsource.docxstamper.replace.typeresolver.TypeResolver;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.preset.Null2DefaultResolver;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
-import pro.verron.officestamper.preset.resolver.Null2DefaultResolver;
 
 import java.util.*;
 import java.util.function.Function;

@@ -45,14 +45,15 @@ module pro.verron.officestamper {
     requires static jakarta.xml.bind;
 
     opens pro.verron.officestamper.api;
-    opens pro.verron.officestamper.preset;
-
     exports pro.verron.officestamper.api;
+
+    opens pro.verron.officestamper.preset;
     exports pro.verron.officestamper.preset;
 
-    opens pro.verron.officestamper.core to pro.verron.officestamper.test;
     opens pro.verron.officestamper.experimental to pro.verron.officestamper.test;
     exports pro.verron.officestamper.experimental to pro.verron.officestamper.test;
+
+    opens pro.verron.officestamper.core to pro.verron.officestamper.test;
     exports pro.verron.officestamper.core to pro.verron.officestamper.test;
 
     // TODO_LATER: remove all the following exports in next version

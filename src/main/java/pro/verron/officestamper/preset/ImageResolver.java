@@ -1,10 +1,10 @@
-package pro.verron.officestamper.preset.resolver;
+package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
+import org.springframework.lang.Nullable;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.RunUtil;
-import pro.verron.officestamper.api.Image;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 
@@ -24,7 +24,7 @@ public class ImageResolver
         implements ObjectResolver {
 
     @Override
-    public boolean canResolve(Object object) {
+    public boolean canResolve(@Nullable Object object) {
         return object instanceof Image;
     }
 

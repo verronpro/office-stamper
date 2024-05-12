@@ -1,4 +1,4 @@
-package pro.verron.officestamper.preset.resolver;
+package pro.verron.officestamper.preset;
 
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.StringResolver;

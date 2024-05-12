@@ -1,4 +1,4 @@
-package pro.verron.officestamper.preset.resolver;
+package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;

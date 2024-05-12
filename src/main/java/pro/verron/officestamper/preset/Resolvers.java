@@ -1,8 +1,6 @@
 package pro.verron.officestamper.preset;
 
-import pro.verron.officestamper.api.Image;
 import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.preset.resolver.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

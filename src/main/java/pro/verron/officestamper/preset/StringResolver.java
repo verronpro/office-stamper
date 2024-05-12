@@ -1,4 +1,4 @@
-package pro.verron.officestamper.preset.resolver;
+package pro.verron.officestamper.preset;
 
 /**
  * @deprecated since 1.6.8, This class has been deprecated in the effort

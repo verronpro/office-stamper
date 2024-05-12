@@ -1,5 +1,5 @@
 module pro.verron.officestamper.test {
-    requires transitive pro.verron.officestamper;
+    requires pro.verron.officestamper;
 
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
@@ -16,5 +16,4 @@ module pro.verron.officestamper.test {
 
     opens pro.verron.officestamper.test;
     exports pro.verron.officestamper.test;
-    exports pro.verron.officestamper.api;
 }

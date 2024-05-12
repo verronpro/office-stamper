@@ -14,10 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static java.util.Arrays.stream;
 
 abstract class PowerpointVisitor {
 
@@ -33,8 +34,8 @@ abstract class PowerpointVisitor {
             logger.debug(message);
     }
 
-    private static void ignore(@Nullable Object ignored1) {
-        logger.trace("ignored visit of '{}' object", ignored1);
+    private static void ignore(@Nullable Object ignored) {
+        logger.trace("ignored visit of '{}' object", ignored);
     }
 
     /**
@@ -85,8 +86,7 @@ abstract class PowerpointVisitor {
     }
 
     private void visit(Object... objs) {
-        Arrays.stream(objs)
-              .forEach(this::visit);
+        stream(objs).forEach(this::visit);
     }
 
     /**

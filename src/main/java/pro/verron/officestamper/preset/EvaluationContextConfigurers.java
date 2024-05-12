@@ -1,6 +1,8 @@
 package pro.verron.officestamper.preset;
 
 
+import org.springframework.expression.EvaluationContext;
+import org.wickedsource.docxstamper.el.DefaultEvaluationContextConfigurer;
 import org.wickedsource.docxstamper.el.NoOpEvaluationContextConfigurer;
 import pro.verron.officestamper.api.EvaluationContextConfigurer;
 
@@ -22,5 +24,22 @@ public class EvaluationContextConfigurers {
      */
     public static EvaluationContextConfigurer noopConfigurer() {
         return new NoOpEvaluationContextConfigurer();
+    }
+
+    /**
+     * Returns a default {@link EvaluationContextConfigurer} instance.
+     * <p>
+     * The default configurer provides better default security for the
+     * {@link EvaluationContext} used by office stamper.
+     * It sets up the context with enhanced security measures, such as
+     * limited property accessors, constructor resolvers, and method resolvers.
+     * It also sets a type locator, type converter, type comparator, and operator overloader.
+     * This configurer is recommended to be used when there is a need for improved security
+     * and protection against potential dangerous injections in the template.
+     *
+     * @return a {@link EvaluationContextConfigurer} instance with enhanced security features
+     */
+    public static EvaluationContextConfigurer defaultConfigurer() {
+        return new DefaultEvaluationContextConfigurer();
     }
 }

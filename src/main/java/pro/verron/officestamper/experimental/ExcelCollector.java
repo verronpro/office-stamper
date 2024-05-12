@@ -11,16 +11,17 @@ import java.util.List;
  */
 public class ExcelCollector<T>
         extends ExcelVisitor {
-    private final Class<T> aClass;
+
+    private final Class<T> type;
     private final List<T> list = new ArrayList<>();
 
-    public ExcelCollector(Class<T> aClass) {
-        this.aClass = aClass;
     /**
      * Constructs a new ExcelCollector object with the given type.
      *
      * @param type the class representing the type of objects to collect
      */
+    public ExcelCollector(Class<T> type) {
+        this.type = type;
     }
 
     /**
@@ -33,11 +34,11 @@ public class ExcelCollector<T>
      * @return a List containing the collected objects
      */
     public static <T> List<T> collect(
-            Object template,
-            Class<T> aClass
+            Object object,
+            Class<T> type
     ) {
-        var collector = new ExcelCollector<>(aClass);
-        collector.visit(template);
+        var collector = new ExcelCollector<>(type);
+        collector.visit(object);
         return collector.collect();
     }
 
@@ -58,7 +59,7 @@ public class ExcelCollector<T>
      */
     @Override
     protected void before(Object object) {
-        if (aClass.isInstance(object))
-            list.add(aClass.cast(object));
+        if (type.isInstance(object))
+            list.add(type.cast(object));
     }
 }

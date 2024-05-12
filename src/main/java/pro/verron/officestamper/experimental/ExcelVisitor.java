@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import static java.util.Arrays.stream;
 
 /**
  * The ExcelVisitor class provides a mechanism for visiting different types of Excel objects.
@@ -91,8 +92,7 @@ abstract class ExcelVisitor {
     }
 
     private void visit(Object... objs) {
-        Arrays.stream(objs)
-              .forEach(this::visit);
+        stream(objs).forEach(this::visit);
     }
 
     /**

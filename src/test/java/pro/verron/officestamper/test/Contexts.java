@@ -1,7 +1,7 @@
 package pro.verron.officestamper.test;
 
-import pro.verron.officestamper.api.Image;
-import pro.verron.officestamper.api.StampTable;
+import pro.verron.officestamper.preset.Image;
+import pro.verron.officestamper.preset.StampTable;
 
 import java.util.*;
 

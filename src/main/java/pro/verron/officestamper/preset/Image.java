@@ -1,4 +1,4 @@
-package pro.verron.officestamper.api;
+package pro.verron.officestamper.preset;
 
 import org.apache.commons.io.IOUtils;
 

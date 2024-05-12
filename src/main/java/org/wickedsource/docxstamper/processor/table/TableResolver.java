@@ -9,8 +9,8 @@ import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.officestamper.api.StampTable;
 import pro.verron.officestamper.core.PlaceholderReplacer;
+import pro.verron.officestamper.preset.StampTable;
 
 import java.util.Collections;
 import java.util.HashMap;

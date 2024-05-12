@@ -7,10 +7,10 @@ import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
-import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.docxstamper.api.StampTable;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.api.StampTable;
+import pro.verron.officestamper.core.PlaceholderReplacer;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +45,9 @@ public class TableResolver
      * @param pr                   a {@link PlaceholderReplacer} instance
      * @param nullReplacementValue in case the value to interpret is <code>null</code>
      * @return a new {@link TableResolver} instance
+     * @deprecated should be an internal implementation detail
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     public static CommentProcessor newInstance(
             PlaceholderReplacer pr,
             String nullReplacementValue

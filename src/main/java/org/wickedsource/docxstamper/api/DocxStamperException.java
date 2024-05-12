@@ -1,6 +1,6 @@
 package org.wickedsource.docxstamper.api;
 
-import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 /**
  * This class represents an exception that can be thrown during the processing of a Docx file using the DocxStamper library.

@@ -5,9 +5,9 @@ import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.RunUtil;
-import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.core.PlaceholderReplacer;
 
 import java.util.List;
 import java.util.function.Function;
@@ -42,8 +42,12 @@ public class ReplaceWithProcessor
      *
      * @param pr                   the placeholder replacer to use
      * @param nullReplacementValue a {@link String} object
+     *
      * @return the processor
+     *
+     * @deprecated should only be used internally by office stamper
      */
+    @Deprecated(since = "1.6.8", forRemoval = true)
     public static CommentProcessor newInstance(
             PlaceholderReplacer pr,
             String nullReplacementValue

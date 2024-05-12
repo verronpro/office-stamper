@@ -3,15 +3,14 @@ package org.wickedsource.docxstamper.processor.repeat;
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
-import pro.verron.docxstamper.api.*;
-import pro.verron.docxstamper.core.CommentUtil;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
-import pro.verron.docxstamper.core.StandardParagraph;
-import pro.verron.docxstamper.preset.Resolvers;
+import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.core.CommentUtil;
+import pro.verron.officestamper.core.PlaceholderReplacer;
+import pro.verron.officestamper.core.StandardParagraph;
+import pro.verron.officestamper.preset.Resolvers;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -179,7 +178,7 @@ public class ParagraphRepeatProcessor
             ContentAccessor parent = (ContentAccessor) currentP.getParent();
             List<Object> parentContent = parent.getContent();
             int index = parentContent.indexOf(currentP);
-            if (index < 0) throw new DocxStamperException("Impossible");
+            if (index < 0) throw new OfficeStamperException("Impossible");
 
             Paragraphs paragraphsToRepeat = entry.getValue();
             Deque<Object> expressionContexts = Objects.requireNonNull(

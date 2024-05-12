@@ -1,18 +1,18 @@
 package org.wickedsource.docxstamper.replace;
 
 import org.wickedsource.docxstamper.el.ExpressionResolver;
-import pro.verron.docxstamper.api.Placeholder;
-import pro.verron.docxstamper.core.ObjectResolverRegistry;
+import pro.verron.officestamper.api.Placeholder;
+import pro.verron.officestamper.core.ObjectResolverRegistry;
 
 /**
  * @deprecated since 1.6.8, This class has been deprecated in the effort
  * of the library modularization.
- * It is recommended to use the {@link pro.verron.docxstamper.core.PlaceholderReplacer} class instead.
+ * It is recommended to use the {@link pro.verron.officestamper.core.PlaceholderReplacer} class instead.
  * This class will not be exported in the future releases of the module.
  */
 @Deprecated(since = "1.6.8", forRemoval = true)
 public class PlaceholderReplacer
-        extends pro.verron.docxstamper.core.PlaceholderReplacer {
+        extends pro.verron.officestamper.core.PlaceholderReplacer {
     /**
      * <p>Constructor for PlaceholderReplacer.</p>
      *

@@ -1,8 +1,8 @@
 package org.wickedsource.docxstamper.processor;
 
 import org.wickedsource.docxstamper.DocxStamper;
-import pro.verron.docxstamper.api.AbstractCommentProcessor;
-import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.api.AbstractCommentProcessor;
+import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 
 /**
  * Base class for comment processors. The current run and paragraph are set by the {@link DocxStamper} class.

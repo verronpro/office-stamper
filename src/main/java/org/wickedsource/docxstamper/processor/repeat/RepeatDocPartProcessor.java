@@ -10,9 +10,9 @@ import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
-import pro.verron.docxstamper.api.*;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
-import pro.verron.docxstamper.preset.Resolvers;
+import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.core.PlaceholderReplacer;
+import pro.verron.officestamper.preset.Resolvers;
 
 import java.io.IOException;
 import java.io.OutputStream;

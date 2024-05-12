@@ -1,6 +1,6 @@
 package org.wickedsource.docxstamper.processor.table;
 
-import pro.verron.docxstamper.api.StampTable;
+import pro.verron.officestamper.api.StampTable;
 
 /**
  * This interface is used to resolve a table in the template document.

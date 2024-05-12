@@ -5,11 +5,11 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
-import pro.verron.docxstamper.api.Comment;
-import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.docxstamper.core.CommentUtil;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
+import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.core.CommentUtil;
+import pro.verron.officestamper.core.PlaceholderReplacer;
 
 import java.math.BigInteger;
 import java.util.*;

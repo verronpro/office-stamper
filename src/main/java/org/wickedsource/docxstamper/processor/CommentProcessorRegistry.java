@@ -15,11 +15,11 @@ import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
-import pro.verron.docxstamper.api.Comment;
-import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.core.CommentUtil;
-import pro.verron.docxstamper.core.Placeholders;
-import pro.verron.docxstamper.core.StandardParagraph;
+import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.core.CommentUtil;
+import pro.verron.officestamper.core.Placeholders;
+import pro.verron.officestamper.core.StandardParagraph;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static pro.verron.docxstamper.core.CommentUtil.getCommentString;
-import static pro.verron.docxstamper.core.CommentUtil.getComments;
+import static pro.verron.officestamper.core.CommentUtil.getCommentString;
+import static pro.verron.officestamper.core.CommentUtil.getComments;
 
 /**
  * Allows registration of {@link ICommentProcessor} objects. Each registered

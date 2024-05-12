@@ -3,8 +3,8 @@ package org.wickedsource.docxstamper.replace.typeresolver;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import pro.verron.docxstamper.api.ITypeResolver;
-import pro.verron.docxstamper.api.ObjectResolver;
+import pro.verron.officestamper.api.ITypeResolver;
+import pro.verron.officestamper.api.ObjectResolver;
 
 /**
  * The TypeResolver class is responsible for resolving objects of a specified type to objects of the DOCX4J API

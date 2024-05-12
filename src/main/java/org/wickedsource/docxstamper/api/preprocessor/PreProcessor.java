@@ -15,10 +15,10 @@ import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
  * @since 1.6.4
  * @deprecated since 1.6.8, This class has been deprecated in the effort
  * of the library modularization.
- * It is recommended to use the {@link pro.verron.docxstamper.api.PreProcessor} class instead.
+ * It is recommended to use the {@link pro.verron.officestamper.api.PreProcessor} class instead.
  * This class will not be exported in the future releases of the module.
  */
 @Deprecated(since = "1.6.8", forRemoval = true)
 public interface PreProcessor
-		extends pro.verron.docxstamper.api.PreProcessor {
+		extends pro.verron.officestamper.api.PreProcessor {
 }

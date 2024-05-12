@@ -10,12 +10,12 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
-import pro.verron.docxstamper.api.*;
-import pro.verron.docxstamper.core.ObjectResolverRegistry;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
-import pro.verron.docxstamper.core.Placeholders;
-import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
-import pro.verron.docxstamper.preset.OfficeStampers;
+import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.core.ObjectResolverRegistry;
+import pro.verron.officestamper.core.PlaceholderReplacer;
+import pro.verron.officestamper.core.Placeholders;
+import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.OfficeStampers;
 
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -2,6 +2,7 @@ package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
+import org.springframework.lang.Nullable;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.officestamper.api.ObjectResolver;
@@ -24,7 +25,7 @@ public class Null2PlaceholderResolver
     }
 
     @Override
-    public boolean canResolve(Object object) {
+    public boolean canResolve(@Nullable Object object) {
         return object == null;
     }
 

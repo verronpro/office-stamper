@@ -3,6 +3,7 @@ package pro.verron.officestamper.api;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 
 /**
@@ -47,7 +48,7 @@ public interface ObjectResolver {
      *
      * @return true if the object can be resolved, false otherwise
      */
-    boolean canResolve(Object object);
+    boolean canResolve(@Nullable Object object);
 
     /**
      * Resolves the expression in the given document with the provided object.

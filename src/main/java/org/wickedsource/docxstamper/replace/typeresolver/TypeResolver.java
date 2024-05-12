@@ -2,6 +2,7 @@ package org.wickedsource.docxstamper.replace.typeresolver;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
+import org.springframework.lang.Nullable;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import pro.verron.officestamper.api.ITypeResolver;
 import pro.verron.officestamper.api.ObjectResolver;
@@ -49,7 +50,7 @@ public record TypeResolver<T>(
      * @return true if the object can be resolved, false otherwise
      */
     @Override
-    public boolean canResolve(Object object) {
+    public boolean canResolve(@Nullable Object object) {
         if (object == null && this.nullProof)
             return true;
         return type.isInstance(object);

@@ -2,6 +2,7 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
+import org.springframework.lang.Nullable;
 import org.wickedsource.docxstamper.util.RunUtil;
 
 /**
@@ -37,7 +38,7 @@ public abstract class StringResolver<T>
      * @return true if the object can be resolved, false otherwise
      */
     @Override
-    public final boolean canResolve(Object object) {
+    public final boolean canResolve(@Nullable Object object) {
         return type.isInstance(object);
     }
 

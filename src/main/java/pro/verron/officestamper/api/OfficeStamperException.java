@@ -42,6 +42,12 @@ public class OfficeStamperException
         super(message, cause);
     }
 
+    /**
+     * OfficeStamperException is a subclass of RuntimeException
+     * that represents an exception
+     * that can be thrown during the processing of an Office document using the OfficeStamper
+     * library.
+     */
     public OfficeStamperException() {
         super("Unexpected exception");
     }

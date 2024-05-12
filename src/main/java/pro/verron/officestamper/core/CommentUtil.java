@@ -416,6 +416,16 @@ public class CommentUtil {
         deleteCommentFromElements(elements, commentId);
     }
 
+    /**
+     * Creates a sub Word document
+     * by extracting a specified comment and its associated content from the original document.
+     *
+     * @param comment The comment to be extracted from the original document.
+     *
+     * @return The sub Word document containing the content of the specified comment.
+     *
+     * @throws InvalidFormatException TODO_LATER: remove this explicit exception from public signature
+     */
     public static WordprocessingMLPackage createSubWordDocument(Comment comment)
             throws InvalidFormatException {
         var elements = comment.getElements();

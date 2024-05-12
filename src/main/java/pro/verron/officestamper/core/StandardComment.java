@@ -33,6 +33,11 @@ public class StandardComment
     private CommentRangeEnd commentRangeEnd;
     private CommentReference commentReference;
 
+    /**
+     * Constructs a new StandardComment object.
+     *
+     * @param document the WordprocessingMLPackage document instance
+     */
     public StandardComment(WordprocessingMLPackage document) {
         this.document = document;
     }

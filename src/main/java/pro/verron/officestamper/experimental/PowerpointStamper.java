@@ -7,9 +7,9 @@ import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import pro.verron.docxstamper.api.OfficeStamper;
-import pro.verron.docxstamper.api.OfficeStamperException;
-import pro.verron.docxstamper.core.Placeholders;
+import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.core.Placeholders;
 
 import java.io.OutputStream;
 import java.util.List;

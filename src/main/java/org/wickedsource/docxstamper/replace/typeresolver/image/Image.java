@@ -14,12 +14,12 @@ import java.io.InputStream;
  * @deprecated since 1.6.8, This class has been deprecated in the effort
  * of the library modularization.
  * It is recommended to use the
- * {@link pro.verron.docxstamper.api.Image} class instead.
+ * {@link pro.verron.officestamper.api.Image} class instead.
  * This class will not be exported in the future releases of the module.
  */
 @Deprecated(since = "1.6.8", forRemoval = true)
 public final class Image
-        extends pro.verron.docxstamper.api.Image {
+        extends pro.verron.officestamper.api.Image {
 
     /**
      * <p>Constructor for Image.</p>

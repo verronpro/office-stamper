@@ -1,7 +1,7 @@
 package pro.verron.officestamper.experimental;
 
 import org.xlsx4j.sml.CTRst;
-import pro.verron.docxstamper.api.Placeholder;
+import pro.verron.officestamper.api.Placeholder;
 
 /**
  * The ExcelParagraph class represents a paragraph in an Excel document.

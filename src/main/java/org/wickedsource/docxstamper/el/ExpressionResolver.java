@@ -4,7 +4,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import pro.verron.docxstamper.api.Placeholder;
+import pro.verron.officestamper.api.Placeholder;
 
 /**
  * Resolves expressions against a given context object. Expressions can be either SpEL expressions or simple property

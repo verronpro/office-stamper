@@ -7,7 +7,7 @@ import org.docx4j.model.styles.StyleUtil;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.Objects;
 import java.util.Random;

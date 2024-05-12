@@ -1,6 +1,6 @@
 package org.wickedsource.docxstamper.api.commentprocessor;
 
-import pro.verron.docxstamper.api.CommentProcessor;
+import pro.verron.officestamper.api.CommentProcessor;
 
 /**
  * <p>In a .docx template used by DocxStamper, you can comment paragraphs of text to manipulate them. The comments in

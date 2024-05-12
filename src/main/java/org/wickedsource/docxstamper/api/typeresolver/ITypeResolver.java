@@ -1,6 +1,6 @@
 package org.wickedsource.docxstamper.api.typeresolver;
 
-import pro.verron.docxstamper.api.ObjectResolver;
+import pro.verron.officestamper.api.ObjectResolver;
 
 /**
  * <p>
@@ -28,5 +28,5 @@ import pro.verron.docxstamper.api.ObjectResolver;
  */
 @Deprecated(since = "1.6.7", forRemoval = true)
 public interface ITypeResolver<T>
-        extends pro.verron.docxstamper.api.ITypeResolver<T> {
+        extends pro.verron.officestamper.api.ITypeResolver<T> {
 }

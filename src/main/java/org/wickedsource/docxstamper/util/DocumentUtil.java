@@ -10,7 +10,7 @@ import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -267,6 +267,16 @@ public class DocumentUtil {
         return streamElements(document, P.class);
     }
 
+    /**
+     * Finds the smallest common parent between two objects.
+     *
+     * @param o1 the first object
+     * @param o2 the second object
+     *
+     * @return the smallest common parent of the two objects
+     *
+     * @throws OfficeStamperException if there is an error finding the common parent
+     */
     public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
         if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
             return findInsertableParent(contentAccessor);
@@ -276,6 +286,14 @@ public class DocumentUtil {
             throw new OfficeStamperException();
     }
 
+    /**
+     * Recursively searches for an element in a content tree.
+     *
+     * @param searchTarget the element to search for
+     * @param content      the content tree to search in
+     *
+     * @return true if the element is found, false otherwise
+     */
     public static boolean depthElementSearch(Object searchTarget, Object content) {
         content = XmlUtils.unwrap(content);
         if (searchTarget.equals(content)) {

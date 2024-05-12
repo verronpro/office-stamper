@@ -8,9 +8,9 @@ import org.docx4j.wml.Tr;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import org.wickedsource.docxstamper.util.ObjectDeleter;
-import pro.verron.docxstamper.api.CommentProcessor;
-import pro.verron.docxstamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.docxstamper.core.PlaceholderReplacer;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.core.PlaceholderReplacer;
 
 import java.util.ArrayList;
 import java.util.List;

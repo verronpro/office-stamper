@@ -13,11 +13,11 @@ import org.wickedsource.docxstamper.processor.repeat.IRepeatProcessor;
 import org.wickedsource.docxstamper.processor.replaceExpression.IReplaceWithProcessor;
 import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import org.wickedsource.docxstamper.replace.typeresolver.TypeResolver;
-import pro.verron.docxstamper.api.*;
-import pro.verron.docxstamper.preset.CommentProcessorFactory;
-import pro.verron.docxstamper.preset.OfficeStamperConfigurations;
-import pro.verron.docxstamper.preset.Resolvers;
-import pro.verron.docxstamper.preset.resolver.Null2DefaultResolver;
+import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.Resolvers;
+import pro.verron.officestamper.preset.resolver.Null2DefaultResolver;
 
 import java.util.*;
 import java.util.function.Function;
@@ -271,7 +271,7 @@ public class DocxStamperConfiguration
      * Creates a {@link DocxStamper} instance configured with this configuration.
      *
      * @return a {@link DocxStamper} object
-     * @deprecated use new {@link DocxStamper#DocxStamper(DocxStamperConfiguration)} instead
+     * @deprecated use new {@link DocxStamper#DocxStamper(OfficeStamperConfiguration)}} instead
      */
     @Override
     @Deprecated(forRemoval = true, since = "1.6.4")

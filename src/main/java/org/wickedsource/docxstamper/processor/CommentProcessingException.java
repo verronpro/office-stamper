@@ -1,7 +1,7 @@
 package org.wickedsource.docxstamper.processor;
 
 import org.docx4j.wml.P;
-import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import static java.lang.String.format;
 import static org.docx4j.TextUtils.getText;

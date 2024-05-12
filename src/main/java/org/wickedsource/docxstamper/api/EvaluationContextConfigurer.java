@@ -14,10 +14,10 @@ import org.springframework.expression.PropertyAccessor;
  * @since 1.0.13
  * @deprecated since 1.6.8, This class has been deprecated in the effort
  * of the library modularization.
- * It is recommended to use the {@link pro.verron.docxstamper.api.EvaluationContextConfigurer} class instead.
+ * It is recommended to use the {@link pro.verron.officestamper.api.EvaluationContextConfigurer} class instead.
  * This class will not be exported in the future releases of the module.
  */
 @Deprecated(since = "1.6.8", forRemoval = true)
 public interface EvaluationContextConfigurer
-        extends pro.verron.docxstamper.api.EvaluationContextConfigurer {
+        extends pro.verron.officestamper.api.EvaluationContextConfigurer {
 }

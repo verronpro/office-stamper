@@ -15,9 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.xlsx4j.sml.*;
-import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,7 +41,6 @@ abstract class ExcelVisitor {
     }
 
     public final void visit(@Nullable Object object) {
-
         before(object);
         try {
             if (object instanceof SpreadsheetMLPackage element) visit(element.getParts());

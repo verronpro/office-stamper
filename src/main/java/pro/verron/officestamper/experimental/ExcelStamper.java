@@ -6,12 +6,12 @@ import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.xlsx4j.sml.CTRst;
-import pro.verron.docxstamper.api.OfficeStamper;
-import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.io.OutputStream;
 
-import static pro.verron.docxstamper.core.Placeholders.findVariables;
+import static pro.verron.officestamper.core.Placeholders.findVariables;
 
 /**
  * The ExcelStamper class is an implementation of the OfficeStamper interface for stamping Excel templates.

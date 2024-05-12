@@ -12,7 +12,7 @@ import org.pptx4j.pml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
-import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.Arrays;
 import java.util.List;

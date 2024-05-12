@@ -1,6 +1,6 @@
 package org.wickedsource.docxstamper.api;
 
-import pro.verron.docxstamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 /**
  * This exception is thrown if an expression could not be processed by any comment processor.

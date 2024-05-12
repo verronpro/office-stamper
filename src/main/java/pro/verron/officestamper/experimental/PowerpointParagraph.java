@@ -3,8 +3,8 @@ package pro.verron.officestamper.experimental;
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
-import pro.verron.docxstamper.api.Paragraph;
-import pro.verron.docxstamper.api.Placeholder;
+import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.Placeholder;
 
 import java.util.ArrayList;
 import java.util.List;

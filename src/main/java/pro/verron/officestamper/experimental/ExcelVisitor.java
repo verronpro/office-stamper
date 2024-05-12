@@ -22,6 +22,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+
+/**
+ * The ExcelVisitor class provides a mechanism for visiting different types of Excel objects.
+ * It contains visit methods for various types of objects and performs specific actions based on the object type.
+ * Subclasses can extend this class and override the before method to define custom behavior before visiting an object.
+ */
 abstract class ExcelVisitor {
 
     private static final Logger logger = LoggerFactory.getLogger(ExcelVisitor.class);
@@ -40,6 +46,11 @@ abstract class ExcelVisitor {
         logger.trace("ignored visit of '{}' object", ignored1);
     }
 
+    /**
+     * Visits the given object and performs specific operations based on its type.
+     *
+     * @param object the object to visit
+     */
     public final void visit(@Nullable Object object) {
         before(object);
         try {
@@ -84,5 +95,12 @@ abstract class ExcelVisitor {
               .forEach(this::visit);
     }
 
+    /**
+     * This method is called before performing a visit.
+     * It provides an opportunity to perform any necessary setup or validation
+     * before the actual visit takes place.
+     *
+     * @param object the object on which the visit will be performed.
+     */
     protected abstract void before(@Nullable Object object);
 }

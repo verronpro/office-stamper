@@ -15,7 +15,7 @@ public interface OfficeStamperConfiguration {
     /**
      * Retrieves the null replacement value.
      *
-     * @return an Optional containing the null replacement value, if it exists; otherwise, an empty Optional.
+     * @return an Optional containing the null replacement value if it exists; otherwise, an empty Optional.
      *
      * @deprecated since version 1.6.7
      */
@@ -101,6 +101,7 @@ public interface OfficeStamperConfiguration {
      *
      * @param resolvedType the Java class that the type resolver is responsible for.
      * @param resolver     the implementation of {@link ITypeResolver} that resolves objects of the given type.
+     * @param <T>          type expected to be resolved by the resolver
      *
      * @return the updated OfficeStamperConfiguration object.
      *
@@ -186,51 +187,157 @@ public interface OfficeStamperConfiguration {
      */
     String getLineBreakPlaceholder();
 
+    /**
+     * Sets the line break placeholder used in the OfficeStamper configuration.
+     *
+     * @param lineBreakPlaceholder the line break placeholder as a String
+     *
+     * @return the updated OfficeStamperConfiguration object
+     */
     OfficeStamperConfiguration setLineBreakPlaceholder(
             String lineBreakPlaceholder
     );
 
+    /**
+     * Retrieves the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL) EvaluationContext
+     * used by the docxstamper.
+     *
+     * @return the EvaluationContextConfigurer for configuring the SPEL EvaluationContext.
+     */
     EvaluationContextConfigurer getEvaluationContextConfigurer();
 
+    /**
+     * Sets the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL) EvaluationContext.
+     *
+     * @param evaluationContextConfigurer the EvaluationContextConfigurer for configuring the SPEL EvaluationContext.
+     *                                    Must implement the evaluateEvaluationContext() method.
+     *
+     * @return the updated OfficeStamperConfiguration object.
+     */
     OfficeStamperConfiguration setEvaluationContextConfigurer(
             EvaluationContextConfigurer evaluationContextConfigurer
     );
 
+    /**
+     * Retrieves the SpelParserConfiguration used by the OfficeStamperConfiguration.
+     *
+     * @return the SpelParserConfiguration object used by the OfficeStamperConfiguration.
+     */
     SpelParserConfiguration getSpelParserConfiguration();
 
+    /**
+     * Sets the SpelParserConfiguration used by the OfficeStamperConfiguration.
+     *
+     * @param spelParserConfiguration the SpelParserConfiguration to be set
+     *
+     * @return the updated OfficeStamperConfiguration object
+     */
     OfficeStamperConfiguration setSpelParserConfiguration(
             SpelParserConfiguration spelParserConfiguration
     );
 
+    /**
+     * Retrieves the map of expression functions associated with their corresponding classes.
+     *
+     * @return a map containing the expression functions as values and their corresponding classes as keys.
+     */
     Map<Class<?>, Object> getExpressionFunctions();
 
+    /**
+     * Retrieves a map of type resolvers.
+     *
+     * @return A map containing type resolvers. The keys of the map are classes and the values are instances
+     * of ITypeResolver.
+     *
+     * @deprecated This method has been deprecated since version 1.6.7 and will be removed in a future release.
+     * Use of this method is discouraged and should be replaced with an alternative implementation.
+     */
     @Deprecated(since = "1.6.7", forRemoval = true)
     Map<Class<?>, ITypeResolver<?>> getTypeResolvers();
 
+    /**
+     * Retrieves the default type resolver.
+     *
+     * @return The default type resolver.
+     *
+     * @deprecated This method has been deprecated since version 1.6.7 and will be removed in a future release.
+     */
     @Deprecated(since = "1.6.7", forRemoval = true)
     ITypeResolver<Object> getDefaultTypeResolver();
 
+    /**
+     * Sets the default type resolver for the OfficeStamperConfiguration.
+     * This method is deprecated and will be removed in version 1.6.7.
+     *
+     * @param defaultResolver the default type resolver to be set
+     *
+     * @return the OfficeStamperConfiguration with the updated default type resolver
+     */
     @Deprecated(since = "1.6.7", forRemoval = true)
     OfficeStamperConfiguration setDefaultTypeResolver(
             ITypeResolver<? super Object> defaultResolver
     );
 
+    /**
+     * Returns a map of comment processors associated with their respective classes.
+     *
+     * @return The map of comment processors. The keys are the classes, and the values are the corresponding comment
+     * processors.
+     */
     Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors();
 
+    /**
+     * Determines whether null values should be replaced.
+     *
+     * @return true if null values should be replaced, false otherwise.
+     *
+     * @deprecated Since version 1.6.7. This method will be removed in a future release.
+     */
     @Deprecated(since = "1.6.7", forRemoval = true)
     boolean isReplaceNullValues();
 
+    /**
+     * Retrieves the default value for null values.
+     *
+     * @return The default value for null values.
+     *
+     * @deprecated This method has been deprecated since version 1.6.7 and will be removed in a future release.
+     */
     @Deprecated(since = "1.6.7", forRemoval = true)
     String getNullValuesDefault();
 
+    /**
+     * Retrieves the list of pre-processors.
+     *
+     * @return The list of pre-processors.
+     */
     List<PreProcessor> getPreprocessors();
 
+    /**
+     * Retrieves the list of ObjectResolvers.
+     *
+     * @return The list of ObjectResolvers.
+     */
     List<ObjectResolver> getResolvers();
 
+    /**
+     * Sets the list of object resolvers for the OfficeStamper configuration.
+     *
+     * @param resolvers the list of object resolvers to be set
+     *
+     * @return the updated OfficeStamperConfiguration instance
+     */
     OfficeStamperConfiguration setResolvers(
             List<ObjectResolver> resolvers
     );
 
+    /**
+     * Adds an ObjectResolver to the OfficeStamperConfiguration.
+     *
+     * @param resolver The ObjectResolver to add to the configuration.
+     *
+     * @return The updated OfficeStamperConfiguration.
+     */
     OfficeStamperConfiguration addResolver(
             ObjectResolver resolver
     );

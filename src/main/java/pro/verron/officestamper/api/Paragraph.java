@@ -8,12 +8,25 @@ import org.docx4j.wml.R;
  */
 public interface Paragraph {
 
+    /**
+     * Replaces all occurrences of a placeholder with a specified replacement value within a paragraph.
+     *
+     * @param placeholder The placeholder to be replaced.
+     * @param replacement The replacement value for the placeholder.
+     */
     default void replaceAll(Placeholder placeholder, R replacement) {
         while (contains(placeholder.expression())) {
             replace(placeholder, replacement);
         }
     }
 
+    /**
+     * Returns true if the given expression is found within the paragraph, otherwise returns false.
+     *
+     * @param expression The string to search for within the paragraph.
+     *
+     * @return true if the given expression is found within the paragraph, otherwise false.
+     */
     default boolean contains(String expression) {
         return asString().contains(expression);
     }

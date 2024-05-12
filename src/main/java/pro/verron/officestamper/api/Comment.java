@@ -137,5 +137,10 @@ public interface Comment {
     // TODO_LATER: Remove the setting method from interface to increase immutability
     void setComment(Comments.Comment comment);
 
+    /**
+     * Retrieves the WordprocessingMLPackage document.
+     *
+     * @return the WordprocessingMLPackage document.
+     */
     WordprocessingMLPackage getDocument();
 }

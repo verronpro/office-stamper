@@ -12,9 +12,10 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
+
+1. Go to '…'
+2. Click on '…'
+3. Scroll down to '…'
 4. See error
 
 **Expected behavior**
@@ -31,4 +32,4 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
-Notably you can attach the file to stamp, if the problems comes from a file.
+Notably you can attach the file to stamp if the problems come from a file.

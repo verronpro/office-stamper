@@ -2,9 +2,10 @@ package org.wickedsource.docxstamper.replace.typeresolver;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
+import org.springframework.lang.Nullable;
 import org.wickedsource.docxstamper.util.RunUtil;
-import pro.verron.docxstamper.api.ObjectResolver;
-import pro.verron.docxstamper.preset.resolver.Resolvers;
+import pro.verron.officestamper.api.ObjectResolver;
+import pro.verron.officestamper.preset.Resolvers;
 
 /**
  * The LegacyFallbackResolver served as a fallback when there was no ITypeResolver available for a certain type.
@@ -30,14 +31,14 @@ public class LegacyFallbackResolver
     }
 
 	@Override
-    public boolean canResolve(Object object) {
+    public boolean canResolve(@Nullable Object object) {
         return true;
     }
 
     @Override
     public R resolve(
             WordprocessingMLPackage document,
-            String placeholder,
+            String expression,
             Object object
     ) {
         return RunUtil.create(format(object));

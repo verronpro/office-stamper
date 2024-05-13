@@ -1,8 +1,5 @@
 package org.wickedsource.docxstamper.replace.typeresolver.image;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -13,11 +10,16 @@ import java.io.InputStream;
  * @author Romster
  * @version ${version}
  * @since 1.0.0
+ *
+ * @deprecated since 1.6.8, This class has been deprecated in the effort
+ * of the library modularization.
+ * It is recommended to use the
+ * {@link pro.verron.officestamper.preset.Image} class instead.
+ * This class will not be exported in the future releases of the module.
  */
-public class Image {
-
-    private final byte[] imageBytes;
-    private Integer maxWidth;
+@Deprecated(since = "1.6.8", forRemoval = true)
+public final class Image
+        extends pro.verron.officestamper.preset.Image {
 
     /**
      * <p>Constructor for Image.</p>
@@ -26,9 +28,7 @@ public class Image {
      * @throws IOException if any.
      */
     public Image(InputStream in) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        IOUtils.copy(in, out);
-        this.imageBytes = out.toByteArray();
+        super(in);
     }
 
     /**
@@ -39,47 +39,26 @@ public class Image {
      * @throws IOException if any.
      */
     public Image(InputStream in, Integer maxWidth) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        IOUtils.copy(in, out);
-        this.imageBytes = out.toByteArray();
-        this.maxWidth = maxWidth;
+        super(in, maxWidth);
     }
 
     /**
      * <p>Constructor for Image.</p>
      *
-     * @param imageBytes - content of the image as array of the bytes
+     * @param imageBytes - content of the image as an array of the bytes
      */
     public Image(byte[] imageBytes) {
-        this.imageBytes = imageBytes;
+        super(imageBytes);
     }
 
     /**
      * <p>Constructor for Image.</p>
      *
-     * @param imageBytes - content of the image as array of the bytes
+     * @param imageBytes - content of the image as an array of the bytes
      * @param maxWidth - max width of the image in twip
      */
     public Image(byte[] imageBytes, Integer maxWidth) {
-        this.imageBytes = imageBytes;
-        this.maxWidth = maxWidth;
+        super(imageBytes, maxWidth);
     }
 
-    /**
-     * <p>Getter for the field <code>maxWidth</code>.</p>
-     *
-     * @return a {@link java.lang.Integer} object
-     */
-    public Integer getMaxWidth() {
-        return maxWidth;
-    }
-
-    /**
-     * <p>Getter for the field <code>imageBytes</code>.</p>
-     *
-     * @return an array of {@link byte} objects
-     */
-    public byte[] getImageBytes() {
-        return imageBytes;
-    }
 }

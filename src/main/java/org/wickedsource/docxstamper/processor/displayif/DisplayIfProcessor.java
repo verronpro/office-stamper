@@ -5,11 +5,12 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.processor.CommentProcessingException;
-import org.wickedsource.docxstamper.replace.PlaceholderReplacer;
 import org.wickedsource.docxstamper.util.ObjectDeleter;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.core.PlaceholderReplacer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,17 +29,17 @@ public class DisplayIfProcessor extends BaseCommentProcessor implements IDisplay
 	private List<Tbl> tablesToBeRemoved = new ArrayList<>();
 	private List<Tr> tableRowsToBeRemoved = new ArrayList<>();
 
-	private DisplayIfProcessor(PlaceholderReplacer placeholderReplacer) {
+	private DisplayIfProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
 		super(placeholderReplacer);
 	}
 
 	/**
 	 * Creates a new DisplayIfProcessor instance.
 	 *
-	 * @param pr the {@link PlaceholderReplacer} to use for replacing placeholders.
+	 * @param pr the {@link PlaceholderReplacer} used for replacing expressions.
 	 * @return a new DisplayIfProcessor instance.
 	 */
-	public static ICommentProcessor newInstance(PlaceholderReplacer pr) {
+	public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
 		return new DisplayIfProcessor(pr);
 	}
 

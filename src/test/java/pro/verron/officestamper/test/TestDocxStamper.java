@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -42,15 +41,7 @@ public final class TestDocxStamper<T> {
      * @since 1.6.6
      */
     public TestDocxStamper(OfficeStamperConfiguration config) {
-        Function<InputStream, WordprocessingMLPackage> loader = inputStream -> {
-            try {
-                return WordprocessingMLPackage.load(inputStream);
-            } catch (Docx4JException e) {
-                throw new RuntimeException(e);
-            }
-        };
-        stamper = new StreamStamper<>(loader,
-                                      OfficeStampers.docxStamper(config));
+        stamper = OfficeStampers.docxStamper(config);
     }
 
     /**

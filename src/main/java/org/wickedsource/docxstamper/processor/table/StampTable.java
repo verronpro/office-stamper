@@ -1,70 +1,34 @@
 package org.wickedsource.docxstamper.processor.table;
 
-import java.util.ArrayList;
+import org.springframework.lang.NonNull;
+
 import java.util.List;
 
-import static java.util.Collections.singletonList;
-
 /**
- * Represents a table with several columns, a header line, and several lines of content
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.2
+ * @deprecated since 1.6.8, This class has been deprecated in the effort
+ * of the library modularization.
+ * It is recommended to use the
+ * {@link pro.verron.officestamper.preset.StampTable} class instead.
+ * This class will be removed in the future releases of the module.
  */
-public class StampTable {
-    private final List<String> headers;
-    private final List<List<String>> records;
-
+@Deprecated(since = "1.6.8", forRemoval = true)
+public class StampTable
+        extends pro.verron.officestamper.preset.StampTable {
     /**
-     * Instantiate an empty table
+     * {@inheritDoc}
      */
     public StampTable() {
-        this.headers = new ArrayList<>();
-        this.records = new ArrayList<>();
+        super();
     }
 
     /**
-     * Instantiate a table with headers and several lines
-     *
-     * @param headers the header lines
-     * @param records the lines that the table should contain
+     * {@inheritDoc}
      */
     public StampTable(
-            List<String> headers,
-            List<List<String>> records
+            @NonNull List<String> headers,
+            @NonNull List<List<String>> records
     ) {
-        this.headers = headers;
-        this.records = records;
+        super(headers, records);
     }
 
-    /**
-     * <p>empty.</p>
-     *
-     * @return a {@link StampTable} object
-     */
-    public static StampTable empty() {
-        return new StampTable(
-                singletonList("placeholder"),
-                singletonList(singletonList("placeholder"))
-        );
-    }
-
-    /**
-     * <p>headers.</p>
-     *
-     * @return a {@link List} object
-     */
-    public List<String> headers() {
-        return headers;
-    }
-
-    /**
-     * <p>records.</p>
-     *
-     * @return a {@link List} object
-     */
-    public List<List<String>> records() {
-        return records;
-    }
 }

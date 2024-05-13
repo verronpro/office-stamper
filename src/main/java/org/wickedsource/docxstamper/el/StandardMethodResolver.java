@@ -81,7 +81,7 @@ public class StandardMethodResolver implements MethodResolver {
 		for (int i = 0; i < expectedArguments.size(); i++) {
 			Class<?> expectedType = expectedArguments.get(i) != null ? expectedArguments.get(i).getType() : null;
 			Class<?> actualType = actualMethod.getParameterTypes()[i];
-			// null is allowed in place of any type of argument
+			// null is allowed in place of any argument type
 			if (expectedType != null && !actualType.isAssignableFrom(expectedType)) {
 				return false;
 			}

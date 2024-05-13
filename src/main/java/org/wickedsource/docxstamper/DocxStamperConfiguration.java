@@ -3,12 +3,9 @@ package org.wickedsource.docxstamper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.lang.NonNull;
 import org.wickedsource.docxstamper.api.DocxStamperException;
-import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
-import org.wickedsource.docxstamper.api.preprocessor.PreProcessor;
-import org.wickedsource.docxstamper.api.typeresolver.ITypeResolver;
 import org.wickedsource.docxstamper.el.DefaultEvaluationContextConfigurer;
-import org.wickedsource.docxstamper.processor.CommentProcessorFactory;
 import org.wickedsource.docxstamper.processor.displayif.IDisplayIfProcessor;
 import org.wickedsource.docxstamper.processor.repeat.IParagraphRepeatProcessor;
 import org.wickedsource.docxstamper.processor.repeat.IRepeatDocPartProcessor;
@@ -16,11 +13,13 @@ import org.wickedsource.docxstamper.processor.repeat.IRepeatProcessor;
 import org.wickedsource.docxstamper.processor.replaceExpression.IReplaceWithProcessor;
 import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import org.wickedsource.docxstamper.replace.typeresolver.TypeResolver;
-import pro.verron.docxstamper.api.ObjectResolver;
-import pro.verron.docxstamper.preset.resolver.Null2DefaultResolver;
-import pro.verron.docxstamper.preset.resolver.Resolvers;
+import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.Resolvers;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -28,18 +27,29 @@ import static java.util.stream.Collectors.toMap;
  * The {@link DocxStamperConfiguration} class represents the configuration for
  * the {@link DocxStamper} class.
  * It provides methods to customize the behavior of the stamper.
+ *
  * @author Joseph Verron
  * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.3
+ * @deprecated since 1.6.8, This class has been deprecated in the effort
+ * of the library modularization, because it
+ * exposes too many implementation details to library users, and makes it
+ * hard to extend the library comfortably.
+ * It is recommended to use the  {@link OfficeStamperConfigurations#standard()} method and
+ * {@link OfficeStamperConfiguration} interface instead.
+ * This class will not be exported in the future releases of the module.
  */
-public class DocxStamperConfiguration {
+@Deprecated(since = "1.6.8", forRemoval = true)
+public class DocxStamperConfiguration
+        implements OfficeStamperConfiguration {
 
-    private final Map<Class<?>, CommentProcessorBuilder> commentProcessors = new HashMap<>();
+    private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors =
+            new HashMap<>();
     private final List<ObjectResolver> resolvers = new ArrayList<>();
     private final Map<Class<?>, Object> expressionFunctions = new HashMap<>();
     private final List<PreProcessor> preprocessors = new ArrayList<>();
-    private String lineBreakPlaceholder;
+    private String lineBreakPlaceholder = "\n";
     private EvaluationContextConfigurer evaluationContextConfigurer = new DefaultEvaluationContextConfigurer();
     private boolean failOnUnresolvedExpression = true;
     private boolean leaveEmptyOnExpressionError = false;
@@ -82,12 +92,13 @@ public class DocxStamperConfiguration {
      * You shouldn't have to use it, it was a crutch use for inner working of
      * docx-stamper
      */
+    @Override
     @Deprecated(since = "1.6.7")
     public Optional<String> nullReplacementValue() {
         return resolvers.stream()
-                .filter(Null2DefaultResolver.class::isInstance)
-                .map(Null2DefaultResolver.class::cast)
-                .map(Null2DefaultResolver::defaultValue)
+                        .filter(Resolvers.Null2DefaultResolver.class::isInstance)
+                        .map(Resolvers.Null2DefaultResolver.class::cast)
+                        .map(Resolvers.Null2DefaultResolver::defaultValue)
                 .findFirst();
     }
 
@@ -96,6 +107,7 @@ public class DocxStamperConfiguration {
      *
      * @return a boolean
      */
+    @Override
     public boolean isFailOnUnresolvedExpression() {
         return failOnUnresolvedExpression;
     }
@@ -107,6 +119,7 @@ public class DocxStamperConfiguration {
      * @param failOnUnresolvedExpression a boolean
      * @return a {@link DocxStamperConfiguration} object
      */
+    @Override
     public DocxStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression) {
         this.failOnUnresolvedExpression = failOnUnresolvedExpression;
         return this;
@@ -122,6 +135,7 @@ public class DocxStamperConfiguration {
      * {@link DocxStamperConfiguration#addResolver(ObjectResolver)} and
      * {@link Resolvers#nullToDefault(String)} instead.
      */
+    @Override
     @Deprecated(since = "1.6.7", forRemoval = true)
     public DocxStamperConfiguration nullValuesDefault(String nullValuesDefault) {
         this.nullValuesDefault = nullValuesDefault;
@@ -142,6 +156,7 @@ public class DocxStamperConfiguration {
      * {@link DocxStamperConfiguration#addResolver(ObjectResolver)} and
      * {@link Resolvers#nullToDefault(String)} instead.
      */
+    @Override
     @Deprecated(since = "1.6.7", forRemoval = true)
     public DocxStamperConfiguration replaceNullValues(boolean replaceNullValues) {
         this.replaceNullValues = replaceNullValues;
@@ -158,6 +173,7 @@ public class DocxStamperConfiguration {
      * @return a {@link DocxStamperConfiguration} object
      * @see DocxStamperConfiguration#replaceUnresolvedExpressions
      */
+    @Override
     public DocxStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue) {
         this.unresolvedExpressionsDefaultValue = unresolvedExpressionsDefaultValue;
         return this;
@@ -169,6 +185,7 @@ public class DocxStamperConfiguration {
      * @param replaceUnresolvedExpressions true to replace null value expression with resolved value (which is null), false to leave the expression as is
      * @return a {@link DocxStamperConfiguration} object
      */
+    @Override
     public DocxStamperConfiguration replaceUnresolvedExpressions(boolean replaceUnresolvedExpressions) {
         this.replaceUnresolvedExpressions = replaceUnresolvedExpressions;
         return this;
@@ -181,6 +198,7 @@ public class DocxStamperConfiguration {
      * @param leaveEmpty true to replace expressions with empty string when an error is caught while evaluating
      * @return a {@link DocxStamperConfiguration} object
      */
+    @Override
     public DocxStamperConfiguration leaveEmptyOnExpressionError(boolean leaveEmpty) {
         this.leaveEmptyOnExpressionError = leaveEmpty;
         return this;
@@ -206,6 +224,7 @@ public class DocxStamperConfiguration {
      * It's recommended to use the {@link DocxStamperConfiguration#addResolver(ObjectResolver)}
      * method for adding resolvers.
      */
+    @Override
     @Deprecated(since = "1.6.7", forRemoval = true)
     public <T> DocxStamperConfiguration addTypeResolver(
             Class<T> resolvedType, ITypeResolver<T> resolver
@@ -222,6 +241,7 @@ public class DocxStamperConfiguration {
      *                       within the expression language. Must implement the interface above.
      * @return a {@link DocxStamperConfiguration} object
      */
+    @Override
     public DocxStamperConfiguration exposeInterfaceToExpressionLanguage(
             Class<?> interfaceClass, Object implementation
     ) {
@@ -237,9 +257,10 @@ public class DocxStamperConfiguration {
      * @param commentProcessorFactory the commentProcessor factory generating the specified interface.
      * @return a {@link DocxStamperConfiguration} object
      */
+    @Override
     public DocxStamperConfiguration addCommentProcessor(
             Class<?> interfaceClass,
-            CommentProcessorBuilder commentProcessorFactory
+            Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
     ) {
         this.commentProcessors.put(interfaceClass, commentProcessorFactory);
         return this;
@@ -248,12 +269,12 @@ public class DocxStamperConfiguration {
     /**
      * Creates a {@link DocxStamper} instance configured with this configuration.
      *
-     * @param <T> a T class
      * @return a {@link DocxStamper} object
-     * @deprecated use new {@link DocxStamper#DocxStamper(DocxStamperConfiguration)} instead
+     * @deprecated use new {@link DocxStamper#DocxStamper(OfficeStamperConfiguration)}} instead
      */
+    @Override
     @Deprecated(forRemoval = true, since = "1.6.4")
-    public <T> DocxStamper<T> build() {
+    public OfficeStamper<WordprocessingMLPackage> build() {
         return new DocxStamper<>(this);
     }
 
@@ -262,6 +283,7 @@ public class DocxStamperConfiguration {
      *
      * @param preprocessor the preprocessor to add.
      */
+    @Override
     public void addPreprocessor(PreProcessor preprocessor) {
         preprocessors.add(preprocessor);
     }
@@ -271,6 +293,7 @@ public class DocxStamperConfiguration {
      *
      * @return a boolean
      */
+    @Override
     public boolean isReplaceUnresolvedExpressions() {
         return replaceUnresolvedExpressions;
     }
@@ -280,6 +303,7 @@ public class DocxStamperConfiguration {
      *
      * @return a boolean
      */
+    @Override
     public boolean isLeaveEmptyOnExpressionError() {
         return leaveEmptyOnExpressionError;
     }
@@ -289,6 +313,7 @@ public class DocxStamperConfiguration {
      *
      * @return a {@link String} object
      */
+    @Override
     public String getUnresolvedExpressionsDefaultValue() {
         return unresolvedExpressionsDefaultValue;
     }
@@ -298,6 +323,7 @@ public class DocxStamperConfiguration {
      *
      * @return a {@link String} object
      */
+    @Override
     public String getLineBreakPlaceholder() {
         return lineBreakPlaceholder;
     }
@@ -310,7 +336,8 @@ public class DocxStamperConfiguration {
      * @param lineBreakPlaceholder the String that should be replaced with line breaks during stamping.
      * @return the configuration object for chaining.
      */
-    public DocxStamperConfiguration setLineBreakPlaceholder(String lineBreakPlaceholder) {
+    @Override
+    public DocxStamperConfiguration setLineBreakPlaceholder(@NonNull String lineBreakPlaceholder) {
         this.lineBreakPlaceholder = lineBreakPlaceholder;
         return this;
     }
@@ -320,6 +347,7 @@ public class DocxStamperConfiguration {
      *
      * @return a {@link EvaluationContextConfigurer} object
      */
+    @Override
     public EvaluationContextConfigurer getEvaluationContextConfigurer() {
         return evaluationContextConfigurer;
     }
@@ -332,6 +360,7 @@ public class DocxStamperConfiguration {
      * @param evaluationContextConfigurer the configurer to use.
      * @return a {@link DocxStamperConfiguration} object
      */
+    @Override
     public DocxStamperConfiguration setEvaluationContextConfigurer(
             EvaluationContextConfigurer evaluationContextConfigurer
     ) {
@@ -344,6 +373,7 @@ public class DocxStamperConfiguration {
      *
      * @return a {@link SpelParserConfiguration} object
      */
+    @Override
     public SpelParserConfiguration getSpelParserConfiguration() {
         return spelParserConfiguration;
     }
@@ -357,6 +387,7 @@ public class DocxStamperConfiguration {
      * @param spelParserConfiguration the configuration to use.
      * @return a {@link DocxStamperConfiguration} object
      */
+    @Override
     public DocxStamperConfiguration setSpelParserConfiguration(
             SpelParserConfiguration spelParserConfiguration
     ) {
@@ -369,6 +400,7 @@ public class DocxStamperConfiguration {
      *
      * @return a {@link Map} object
      */
+    @Override
     public Map<Class<?>, Object> getExpressionFunctions() {
         return expressionFunctions;
     }
@@ -379,6 +411,7 @@ public class DocxStamperConfiguration {
      * @return the map of type resolvers
      * @deprecated This method's been deprecated since version 1.6.7
      */
+    @Override
     @Deprecated(since = "1.6.7", forRemoval = true)
     public Map<Class<?>, ITypeResolver<?>> getTypeResolvers() {
         return resolvers.stream()
@@ -398,6 +431,7 @@ public class DocxStamperConfiguration {
      * You should not have to use it, it was a clutch for previous version of
      * docx-stamper.
      */
+    @Override
     @Deprecated(since = "1.6.7", forRemoval = true)
     public ITypeResolver<Object> getDefaultTypeResolver() {
         return (ITypeResolver<Object>) resolvers.stream()
@@ -419,6 +453,7 @@ public class DocxStamperConfiguration {
      * {@link DocxStamperConfiguration#setResolvers(List)}} and putting your
      * fallback resolvers in the last place.
      */
+    @Override
     @Deprecated(since = "1.6.7", forRemoval = true)
     public DocxStamperConfiguration setDefaultTypeResolver(
             ITypeResolver<? super Object> defaultResolver
@@ -433,7 +468,8 @@ public class DocxStamperConfiguration {
      *
      * @return a {@link Map} object
      */
-    public Map<Class<?>, CommentProcessorBuilder> getCommentProcessors() {
+    @Override
+    public Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors() {
         return commentProcessors;
     }
 
@@ -445,6 +481,7 @@ public class DocxStamperConfiguration {
      * You shouldn't have to use it, it was a clutch for
      * docx-stamper workings.
      */
+    @Override
     @Deprecated(since = "1.6.7", forRemoval = true)
     public boolean isReplaceNullValues() {
         return replaceNullValues;
@@ -457,6 +494,7 @@ public class DocxStamperConfiguration {
      * @deprecated This method has been deprecated since version 1.6.7 and is scheduled for removal.
      * You shouldn't have to use it, it was a clutch for docx-stamper workings.
      */
+    @Override
     @Deprecated(since = "1.6.7", forRemoval = true)
     public String getNullValuesDefault() {
         return nullValuesDefault;
@@ -467,6 +505,7 @@ public class DocxStamperConfiguration {
      *
      * @return a {@link List} object
      */
+    @Override
     public List<PreProcessor> getPreprocessors() {
         return preprocessors;
     }
@@ -476,6 +515,7 @@ public class DocxStamperConfiguration {
      *
      * @return The list of object resolvers.
      */
+    @Override
     public List<ObjectResolver> getResolvers() {
         return resolvers;
     }
@@ -490,6 +530,7 @@ public class DocxStamperConfiguration {
      * @param resolvers The list of ObjectResolvers to be set.
      * @return The updated DocxStamperConfiguration instance.
      */
+    @Override
     public DocxStamperConfiguration setResolvers(
             List<ObjectResolver> resolvers
     ) {
@@ -505,6 +546,7 @@ public class DocxStamperConfiguration {
      * @param resolver The resolver to be added. This resolver should implement the `ObjectResolver` interface.
      * @return The modified `DocxStamperConfiguration` object, with the resolver added to the beginning of the resolver list.
      */
+    @Override
     public DocxStamperConfiguration addResolver(ObjectResolver resolver) {
         resolvers.add(0, resolver);
         return this;

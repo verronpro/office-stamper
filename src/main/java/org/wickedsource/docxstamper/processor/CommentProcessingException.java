@@ -1,7 +1,7 @@
 package org.wickedsource.docxstamper.processor;
 
 import org.docx4j.wml.P;
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import static java.lang.String.format;
 import static org.docx4j.TextUtils.getText;
@@ -14,7 +14,8 @@ import static org.docx4j.TextUtils.getText;
  * @version ${version}
  * @since 1.0.0
  */
-public class CommentProcessingException extends DocxStamperException {
+public class CommentProcessingException
+        extends OfficeStamperException {
 
     /**
      * <p>Constructor for CommentProcessingException.</p>
@@ -25,5 +26,4 @@ public class CommentProcessingException extends DocxStamperException {
     public CommentProcessingException(String message, P paragraph) {
         super(format("%s : %s", message, getText(paragraph)));
     }
-
 }

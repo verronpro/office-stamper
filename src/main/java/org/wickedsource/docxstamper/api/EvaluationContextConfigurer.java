@@ -3,7 +3,6 @@ package org.wickedsource.docxstamper.api;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.MethodResolver;
 import org.springframework.expression.PropertyAccessor;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 /**
  * Allows for custom configuration of a spring expression language {@link EvaluationContext}.
@@ -13,12 +12,12 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * @author Mario Siegenthaler
  * @version ${version}
  * @since 1.0.13
+ * @deprecated since 1.6.8, This class has been deprecated in the effort
+ * of the library modularization.
+ * It is recommended to use the {@link pro.verron.officestamper.api.EvaluationContextConfigurer} class instead.
+ * This class will not be exported in the future releases of the module.
  */
-public interface EvaluationContextConfigurer {
-    /**
-     * Configure the context before it's used by docxstamper.
-     *
-     * @param context the SPEL eval context, not null
-     */
-    void configureEvaluationContext(StandardEvaluationContext context);
+@Deprecated(since = "1.6.8", forRemoval = true)
+public interface EvaluationContextConfigurer
+        extends pro.verron.officestamper.api.EvaluationContextConfigurer {
 }

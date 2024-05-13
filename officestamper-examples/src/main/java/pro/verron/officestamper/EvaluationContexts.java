@@ -1,7 +1,7 @@
 package pro.verron.officestamper;
 
 import org.springframework.context.expression.MapAccessor;
-import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
+import pro.verron.officestamper.api.EvaluationContextConfigurer;
 
 public class EvaluationContexts {
     static EvaluationContextConfigurer enableMapAccess() {

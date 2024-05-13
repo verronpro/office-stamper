@@ -317,7 +317,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
-            <version>6.1.4</version>
+            <version>6.1.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>

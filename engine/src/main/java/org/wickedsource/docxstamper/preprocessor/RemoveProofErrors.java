@@ -5,7 +5,6 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.ProofErr;
-import org.wickedsource.docxstamper.api.preprocessor.PreProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,8 @@ import java.util.List;
  * @version ${version}
  * @since 1.6.4
  */
-public class RemoveProofErrors implements PreProcessor {
+public class RemoveProofErrors
+		implements pro.verron.officestamper.api.PreProcessor {
 
 	private final List<ProofErr> proofErrs = new ArrayList<>();
 	private final TraversalUtilVisitor<ProofErr> visitor = new TraversalUtilVisitor<>() {

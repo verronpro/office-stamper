@@ -11,7 +11,6 @@ import org.springframework.expression.spel.SpelParseException;
 import org.springframework.lang.NonNull;
 import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.UnresolvedExpressionException;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
@@ -31,10 +30,10 @@ import static pro.verron.officestamper.core.CommentUtil.getCommentString;
 import static pro.verron.officestamper.core.CommentUtil.getComments;
 
 /**
- * Allows registration of {@link ICommentProcessor} objects. Each registered
+ * Allows registration of {@link CommentProcessor} objects. Each registered
  * ICommentProcessor must implement an interface which has to be specified at
  * registration time. Provides several getter methods to access the registered
- * {@link ICommentProcessor}.
+ * {@link CommentProcessor}.
  *
  * @author Joseph Verron
  * @author Tom Hombergs
@@ -77,25 +76,20 @@ public class CommentProcessorRegistry {
      * @param <T>               a T class
      */
     public <T> void runProcessors(
-            WordprocessingMLPackage document,
-            T expressionContext
+            WordprocessingMLPackage document, T expressionContext
     ) {
         var comments = getComments(document);
         var proceedComments = new ArrayList<Comment>();
 
         new BaseCoordinatesWalker() {
-            @Override
-            protected void onRun(R run, P paragraph) {
-                runProcessorsOnRunComment(document, comments, expressionContext,
-                        paragraph, run)
-                        .ifPresent(proceedComments::add);
+            @Override protected void onRun(R run, P paragraph) {
+                runProcessorsOnRunComment(document, comments, expressionContext, paragraph, run).ifPresent(
+                        proceedComments::add);
             }
 
-            @Override
-            protected void onParagraph(P paragraph) {
-                runProcessorsOnParagraphComment(document, comments,
-                        expressionContext, paragraph)
-                        .ifPresent(proceedComments::add);
+            @Override protected void onParagraph(P paragraph) {
+                runProcessorsOnParagraphComment(document, comments, expressionContext, paragraph).ifPresent(
+                        proceedComments::add);
                 runProcessorsOnInlineContent(expressionContext, paragraph);
             }
 
@@ -110,22 +104,16 @@ public class CommentProcessorRegistry {
     }
 
     private <T> Optional<Comment> runProcessorsOnRunComment(
-            WordprocessingMLPackage document,
-            Map<BigInteger, Comment> comments,
-            T expressionContext,
-            P paragraph,
-            R run
+            WordprocessingMLPackage document, Map<BigInteger, Comment> comments, T expressionContext, P paragraph, R run
     ) {
         var comment = CommentUtil.getCommentAround(run, document);
-        return comment.flatMap(
-                c -> runCommentProcessors(comments, expressionContext, c,
-                        paragraph, run, document));
+        return comment.flatMap(c -> runCommentProcessors(comments, expressionContext, c, paragraph, run, document));
     }
 
     /**
      * Takes the first comment on the specified paragraph and tries to evaluate
      * the string within the comment against all registered
-     * {@link ICommentProcessor}s.
+     * {@link CommentProcessor}s.
      *
      * @param document          the Word document.
      * @param comments          the comments within the document.
@@ -134,30 +122,27 @@ public class CommentProcessorRegistry {
      * @param <T>               the type of the context root object.
      */
     private <T> Optional<Comment> runProcessorsOnParagraphComment(
-            WordprocessingMLPackage document,
-            Map<BigInteger, Comment> comments,
-            T expressionContext,
-            P paragraph
+            WordprocessingMLPackage document, Map<BigInteger, Comment> comments, T expressionContext, P paragraph
     ) {
-        return CommentUtil
-                .getCommentFor(paragraph, document)
-                .flatMap(c -> this.runCommentProcessors(comments,
-                        expressionContext, c,
-                        paragraph, null,
-                        document));
+        return CommentUtil.getCommentFor(paragraph, document)
+                          .flatMap(c -> this.runCommentProcessors(comments,
+                                  expressionContext,
+                                  c,
+                                  paragraph,
+                                  null,
+                                  document));
     }
 
     /**
      * Finds all processor expressions within the specified paragraph and tries
-     * to evaluate it against all registered {@link ICommentProcessor}s.
+     * to evaluate it against all registered {@link CommentProcessor}s.
      *
      * @param expressionContext a builder for a proxy around the context root object to customize its interface
      * @param paragraph         the paragraph to process.
      * @param <T>               type of the context root object
      */
     private <T> void runProcessorsOnInlineContent(
-            T expressionContext,
-            P paragraph
+            T expressionContext, P paragraph
     ) {
         var paragraphWrapper = new StandardParagraph(paragraph);
         String text = paragraphWrapper.asString();
@@ -171,12 +156,10 @@ public class CommentProcessorRegistry {
             try {
                 expressionResolver.resolve(expression, expressionContext);
                 paragraphWrapper.replace(expression, RunUtil.create(""));
-                logger.debug(
-                        "Processor expression '{}' has been successfully processed by a comment processor.",
+                logger.debug("Processor expression '{}' has been successfully processed by a comment processor.",
                         expression);
             } catch (SpelEvaluationException | SpelParseException e) {
-                String msg = "Expression '%s' failed since no processor solves it".formatted(
-                        expression);
+                String msg = "Expression '%s' failed since no processor solves it".formatted(expression);
                 if (failOnUnresolvedExpression) {
                     throw new DocxStamperException(msg, e);
                 }
@@ -207,22 +190,18 @@ public class CommentProcessorRegistry {
         for (final Object processor : commentProcessors.values()) {
             ((CommentProcessor) processor).setParagraph(paragraph);
             ((CommentProcessor) processor).setCurrentRun(run);
-            ((CommentProcessor) processor).setCurrentCommentWrapper(
-                    commentWrapper);
+            ((CommentProcessor) processor).setCurrentCommentWrapper(commentWrapper);
             ((CommentProcessor) processor).setDocument(document);
         }
 
         try {
             expressionResolver.resolve(commentExpression, expressionContext);
             comments.remove(comment.getId());
-            logger.debug(
-                    "Comment {} has been successfully processed by a comment processor.",
-                    commentExpression);
+            logger.debug("Comment {} has been successfully processed by a comment processor.", commentExpression);
             return Optional.of(commentWrapper);
         } catch (SpelEvaluationException | SpelParseException e) {
             if (failOnUnresolvedExpression) {
-                throw new UnresolvedExpressionException(commentExpression.toString(),
-                        e);
+                throw new UnresolvedExpressionException(commentExpression.toString(), e);
             }
             else {
                 logger.warn(String.format(

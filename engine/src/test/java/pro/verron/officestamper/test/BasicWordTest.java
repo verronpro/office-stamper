@@ -2,8 +2,6 @@ package pro.verron.officestamper.test;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,12 +9,11 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 
 public class BasicWordTest {
     @Test
-    public void testStamper()
-            throws IOException {
+    public void testStamper() {
         var stamperConfiguration = standardWithPreprocessing();
         var stamper = new TestDocxStamper<>(stamperConfiguration);
-        var templatePath = Path.of("test", "sources", "word-base.docx");
-        var templateStream = Files.newInputStream(templatePath);
+        var templateStream = TestUtils.getResource(Path.of("word-base.docx"));
+
         record Person(String name) {}
         var context = new Person("Bart");
         var actual = stamper.stampAndLoadAndExtract(templateStream

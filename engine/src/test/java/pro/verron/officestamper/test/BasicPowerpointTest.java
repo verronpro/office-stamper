@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 
-import static java.nio.file.Files.newInputStream;
 import static pro.verron.officestamper.preset.ExperimentalStampers.pptxStamper;
 import static pro.verron.officestamper.test.IOStreams.getInputStream;
 import static pro.verron.officestamper.test.IOStreams.getOutputStream;
@@ -20,8 +19,8 @@ public class BasicPowerpointTest {
     public void testStamper()
             throws IOException, Docx4JException {
         var stamper = pptxStamper();
-        var templatePath = Path.of("test", "sources", "powerpoint-base.pptx");
-        var templateStream = newInputStream(templatePath);
+        var templateStream = TestUtils.getResource(Path.of("powerpoint-base.pptx"));
+
         record Person(String name) {}
         var context = new Person("Bart");
         PresentationMLPackage load = PresentationMLPackage.load(templateStream);

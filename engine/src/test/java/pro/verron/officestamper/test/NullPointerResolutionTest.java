@@ -5,24 +5,22 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static pro.verron.officestamper.test.DefaultTests.getResource;
+import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**
  * @author Joseph Verron
  */
 class NullPointerResolutionTest {
     @Test
-    void nullPointerResolutionTest_testThrowingCase() throws IOException {
+    void nullPointerResolutionTest_testThrowingCase()
+            throws IOException {
         var subContext = new SubContext("Fullish2",
-                                        List.of("Fullish3", "Fullish4",
-                                                "Fullish5"));
+                List.of("Fullish3", "Fullish4", "Fullish5"));
         var context = new NullishContext("Fullish1", subContext, null, null);
-        try (var template =
-                     getResource(Path.of("NullPointerResolution.docx"))) {
+        try (var template = getResource("NullPointerResolution.docx")) {
             var configuration = OfficeStamperConfigurations.standard();
             var stamper = new TestDocxStamper<NullishContext>(configuration);
             assertThrows(

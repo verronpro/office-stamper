@@ -14,7 +14,6 @@ import pro.verron.officestamper.preset.Resolvers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -25,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.test.Contexts.*;
+import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**
  * <p>DefaultTests class.</p>
@@ -1203,23 +1203,6 @@ public class DefaultTests {
                         Visited
                         This paragraph is untouched.
                         Visited""");
-    }
-
-    /**
-     * <p>getResource.</p>
-     *
-     * @param path a {@link java.nio.file.Path} object
-     *
-     * @return a {@link java.io.InputStream} object
-     */
-    public static InputStream getResource(Path path) {
-        try {
-            var testRoot = Path.of("test", "sources");
-            var resolve = testRoot.resolve(path);
-            return Files.newInputStream(resolve);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @MethodSource("tests")

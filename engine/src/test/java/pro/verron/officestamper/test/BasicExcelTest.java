@@ -4,7 +4,6 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.docx4j.openpackaging.packages.SpreadsheetMLPackage.load;
@@ -20,8 +19,7 @@ public class BasicExcelTest {
             throws IOException, Docx4JException {
 
         var stamper = xlsxStamper();
-        var templatePath = Path.of("test", "sources", "excel-base.xlsx");
-        var templateStream = Files.newInputStream(templatePath);
+        var templateStream = TestUtils.getResource(Path.of("excel-base.xlsx"));
 
         var templatePackage = load(templateStream);
         var templateExpectedString = """

@@ -55,6 +55,7 @@ public class Resolvers {
      * by creating a run with a default text value.
      *
      * @param value The default value for null objects.
+     *
      * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver nullToDefault(String value) {
@@ -110,6 +111,7 @@ public class Resolvers {
      * {@link DateTimeFormatter} pattern.
      *
      * @param formatter the {@link DateTimeFormatter} pattern to use
+     *
      * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver isoTime(DateTimeFormatter formatter) {
@@ -122,6 +124,7 @@ public class Resolvers {
      * {@link DateTimeFormatter} pattern.
      *
      * @param formatter the {@link DateTimeFormatter} pattern to use
+     *
      * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver isoDate(DateTimeFormatter formatter) {
@@ -134,6 +137,7 @@ public class Resolvers {
      * {@link DateTimeFormatter} pattern.
      *
      * @param formatter the {@link DateTimeFormatter} pattern to use
+     *
      * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver isoDateTime(DateTimeFormatter formatter) {
@@ -157,6 +161,7 @@ public class Resolvers {
      * {@link DateTimeFormatter} pattern.
      *
      * @param formatter the {@link DateTimeFormatter} pattern to use
+     *
      * @return An instance of {@link ObjectResolver}
      */
     public static ObjectResolver legacyDate(DateTimeFormatter formatter) {
@@ -394,13 +399,18 @@ public class Resolvers {
      * @since 1.6.7
      * @deprecated will not be removed, but will be made package-private
      */
-
     @Deprecated(since = "1.6.7")
     public static class Null2DefaultResolver
             implements ObjectResolver {
 
         private final String text;
 
+        /**
+         * The Null2DefaultResolver class is an implementation of the ObjectResolver interface
+         * that resolves null objects by creating a run with a default text value.
+         *
+         * @param text The default text value to be used when the resolved object is null
+         */
         /* package */
         public Null2DefaultResolver(String text) {
             this.text = text;

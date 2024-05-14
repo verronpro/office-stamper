@@ -3,11 +3,9 @@ package pro.verron.officestamper.test;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
-import java.nio.file.Path;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.test.Contexts.names;
-import static pro.verron.officestamper.test.DefaultTests.getResource;
+import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**
  * @author Joseph Verron
@@ -20,9 +18,8 @@ class MultiStampTest {
         var context = names("Homer","Marge","Bart","Lisa","Maggie");
         var stamper = new TestDocxStamper<>(config);
 
-        var templatePath = Path.of("MultiStampTest.docx");
-
-        var template1 = getResource(templatePath);
+        var filename = "MultiStampTest.docx";
+        var template1 = getResource(filename);
         var document1 = stamper.stampAndLoadAndExtract(template1, context);
         assertEquals("""
                              ❬Multi-Stamp-Test❘spacing={after=120,before=240}❭
@@ -34,7 +31,7 @@ class MultiStampTest {
                              ❬❘spacing={after=140,before=0}❭""",
                      document1);
 
-        var template2 = getResource(templatePath);
+        var template2 = getResource(filename);
         var document2 = stamper.stampAndLoadAndExtract(template2, context);
         assertEquals("""
                              ❬Multi-Stamp-Test❘spacing={after=120,before=240}❭

@@ -9,13 +9,12 @@ import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.test.Contexts.Characters;
 import pro.verron.officestamper.test.Contexts.Role;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static pro.verron.officestamper.test.DefaultTests.getResource;
+import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**
  * @author Jenei Attila
@@ -30,7 +29,7 @@ public class RepeatDocPartBadPlaceholderTest {
     @Test
     @Timeout(10) // in the case of pipe lock because of unknown exceptions
     public void testBadExpressionShouldNotBlockCallerThread() {
-        var template = getResource(Path.of("RepeatDocPartBadExpressionTest.docx"));
+        var template = getResource("RepeatDocPartBadExpressionTest.docx");
         var context = new Characters(
                 List.of(new Role("Homer Simpson", "Dan Castellaneta"),
                         new Role("Marge Simpson", "Julie Kavner"),
@@ -44,10 +43,10 @@ public class RepeatDocPartBadPlaceholderTest {
 
         String expectedErrorInfo = "someUnknownField";
         var findDirectInfo = exception.getMessage()
-                .contains(expectedErrorInfo);
+                                      .contains(expectedErrorInfo);
         var findSuppressedInfo = Arrays.stream(exception.getSuppressed())
-                .map(Throwable::getMessage)
-                .anyMatch(s -> s.contains(expectedErrorInfo));
+                                       .map(Throwable::getMessage)
+                                       .anyMatch(s -> s.contains(expectedErrorInfo));
 
         logger.info("Here is the exception info dump:", exception);
         String errorMessage = "Could not find the expected '%s' information"

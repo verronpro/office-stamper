@@ -3,11 +3,11 @@ package pro.verron.officestamper.test;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
-import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.test.DefaultTests.getResource;
+import static pro.verron.officestamper.test.TestUtils.getResource;
+
 
 /**
  * A test class that verifies that stampTable feature works correctly
@@ -16,8 +16,7 @@ class StampTableTest {
 
     @Test
     void stampTableTest() {
-
-        var testDocx = getResource(Path.of("StampTableTest.docx"));
+        var testDocx = getResource("StampTableTest.docx");
 
         var configuration = OfficeStamperConfigurations.standard();
         var stamper = new TestDocxStamper<>(configuration);
@@ -37,24 +36,24 @@ class StampTableTest {
                 )
         );
         assertEquals("""
-                             Stamping Table
-                             List of Simpsons characters
-                             Character
-                             Actor
-                             Homer Simpson
-                             Dan Castellaneta
-                             Marge Simpson
-                             Julie Kavner
-                             Bart Simpson
-                             Nancy Cartwright
-                             Kent Brockman
-                             Harry Shearer
-                             Disco Stu
-                             Hank Azaria
-                             Krusty the Clown
-                             Dan Castellaneta
-                                                          
-                             There are 6 characters in the above table.""",
-                     string);
+                        Stamping Table
+                        List of Simpsons characters
+                        Character
+                        Actor
+                        Homer Simpson
+                        Dan Castellaneta
+                        Marge Simpson
+                        Julie Kavner
+                        Bart Simpson
+                        Nancy Cartwright
+                        Kent Brockman
+                        Harry Shearer
+                        Disco Stu
+                        Hank Azaria
+                        Krusty the Clown
+                        Dan Castellaneta
+                                                
+                        There are 6 characters in the above table.""",
+                string);
     }
 }

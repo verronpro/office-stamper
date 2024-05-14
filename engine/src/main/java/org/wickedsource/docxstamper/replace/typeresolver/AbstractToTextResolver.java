@@ -2,7 +2,6 @@ package org.wickedsource.docxstamper.replace.typeresolver;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
-import org.wickedsource.docxstamper.api.typeresolver.ITypeResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 
 /**
@@ -16,7 +15,8 @@ import org.wickedsource.docxstamper.util.RunUtil;
  * @since 1.0.0
  */
 @Deprecated(since = "1.6.7", forRemoval = true)
-public abstract class AbstractToTextResolver<S> implements ITypeResolver<S> {
+public abstract class AbstractToTextResolver<S>
+		implements pro.verron.officestamper.api.ITypeResolver<S> {
 
 	/**
 	 * Default constructor.

@@ -2,7 +2,6 @@ package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.wickedsource.docxstamper.DocxStamper;
-import org.wickedsource.docxstamper.api.commentprocessor.ICommentProcessor;
 import org.wickedsource.docxstamper.processor.displayif.DisplayIfProcessor;
 import org.wickedsource.docxstamper.processor.repeat.ParagraphRepeatProcessor;
 import org.wickedsource.docxstamper.processor.repeat.RepeatDocPartProcessor;
@@ -38,7 +37,7 @@ public class CommentProcessorFactory {
 	 * Creates a new CommentProcessorFactory with default configuration.
 	 *
 	 * @param pr a {@link PlaceholderReplacer} object
-	 * @return a {@link ICommentProcessor} object
+	 * @return a {@link CommentProcessor} object
 	 */
 	public CommentProcessor repeatParagraph(ParagraphPlaceholderReplacer pr) {
 		return ParagraphRepeatProcessor.newInstance(pr);
@@ -48,7 +47,7 @@ public class CommentProcessorFactory {
 	 * Creates a new CommentProcessorFactory with default configuration.
 	 *
 	 * @param pr a {@link PlaceholderReplacer} object
-	 * @return a {@link ICommentProcessor} object
+	 * @return a {@link CommentProcessor} object
 	 */
 	public CommentProcessor repeatDocPart(ParagraphPlaceholderReplacer pr) {
 		return RepeatDocPartProcessor.newInstance(pr, getStamper());
@@ -62,7 +61,7 @@ public class CommentProcessorFactory {
 	 * Creates a new CommentProcessorFactory with default configuration.
 	 *
 	 * @param pr a {@link PlaceholderReplacer} object
-	 * @return a {@link ICommentProcessor} object
+	 * @return a {@link CommentProcessor} object
 	 */
 	public CommentProcessor repeat(ParagraphPlaceholderReplacer pr) {
 		return RepeatProcessor.newInstance(pr);
@@ -72,7 +71,7 @@ public class CommentProcessorFactory {
 	 * Creates a new CommentProcessorFactory with default configuration.
 	 *
 	 * @param pr a {@link PlaceholderReplacer} object
-	 * @return a {@link ICommentProcessor} object
+	 * @return a {@link CommentProcessor} object
 	 */
 	public CommentProcessor tableResolver(ParagraphPlaceholderReplacer pr) {
 		return TableResolver.newInstance(pr);
@@ -82,7 +81,7 @@ public class CommentProcessorFactory {
 	 * Creates a new CommentProcessorFactory with default configuration.
 	 *
 	 * @param pr a {@link PlaceholderReplacer} object
-	 * @return a {@link ICommentProcessor} object
+	 * @return a {@link CommentProcessor} object
 	 */
 	public CommentProcessor displayIf(ParagraphPlaceholderReplacer pr) {
 		return DisplayIfProcessor.newInstance(pr);
@@ -92,7 +91,7 @@ public class CommentProcessorFactory {
 	 * Creates a new CommentProcessorFactory with default configuration.
 	 *
 	 * @param pr a {@link PlaceholderReplacer} object
-	 * @return a {@link ICommentProcessor} object
+	 * @return a {@link CommentProcessor} object
 	 */
 	public CommentProcessor replaceWith(ParagraphPlaceholderReplacer pr) {
 		return ReplaceWithProcessor.newInstance(pr);

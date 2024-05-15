@@ -1,6 +1,5 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.spel.SpelParserConfiguration;
 
 import java.util.List;
@@ -87,17 +86,6 @@ public interface OfficeStamperConfiguration {
             Class<?> interfaceClass,
             Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
     );
-
-    /**
-     * Retrieves the OfficeStamper configured with the current settings.
-     *
-     * @return the OfficeStamper configured with the current settings.
-     *
-     * @since 1.6.4
-     * @deprecated This method is marked for removal and should not be used. Consider using a different method instead.
-     */
-    @Deprecated(forRemoval = true, since = "1.6.4")
-    OfficeStamper<WordprocessingMLPackage> build();
 
     /**
      * Adds a pre-processor to the OfficeStamperConfiguration. A pre-processor is responsible for

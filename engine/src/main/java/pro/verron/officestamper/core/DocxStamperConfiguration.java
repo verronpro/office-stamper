@@ -1,6 +1,5 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.lang.NonNull;
@@ -179,19 +178,6 @@ public class DocxStamperConfiguration
     ) {
         this.commentProcessors.put(interfaceClass, commentProcessorFactory);
         return this;
-    }
-
-    /**
-     * Creates a {@link DocxStamper} instance configured with this configuration.
-     *
-     * @return a {@link DocxStamper} object
-     *
-     * @deprecated use new {@link DocxStamper#DocxStamper(OfficeStamperConfiguration)}} instead
-     */
-    @Override
-    @Deprecated(forRemoval = true, since = "1.6.4")
-    public OfficeStamper<WordprocessingMLPackage> build() {
-        return new DocxStamper<>(this);
     }
 
     /**

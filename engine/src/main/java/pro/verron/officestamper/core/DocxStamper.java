@@ -10,7 +10,6 @@ import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.OfficeStampers;
 
 import java.io.InputStream;
@@ -42,16 +41,6 @@ public class DocxStamper<T>
     private final List<PreProcessor> preprocessors;
     private final PlaceholderReplacer placeholderReplacer;
     private final CommentProcessorRegistry commentProcessorRegistry;
-
-    /**
-     * Creates a new DocxStamper with the default configuration.
-     *
-     * @deprecated since 1.6.4, use {@link OfficeStampers#docxStamper()} instead.
-     */
-    @Deprecated(since = "1.6.4", forRemoval = true)
-    public DocxStamper() {
-        this(OfficeStamperConfigurations.standard());
-    }
 
     /**
      * Creates a new DocxStamper with the given configuration.

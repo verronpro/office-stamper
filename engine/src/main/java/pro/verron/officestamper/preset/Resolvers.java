@@ -396,10 +396,8 @@ public class Resolvers {
      * @author Joseph Verron
      * @version ${version}
      * @since 1.6.7
-     * @deprecated will not be removed, but will be made package-private
      */
-    @Deprecated(since = "1.6.7")
-    public static class Null2DefaultResolver
+    private static class Null2DefaultResolver
             implements ObjectResolver {
 
         private final String text;

@@ -127,27 +127,6 @@ public class CommentUtil {
     }
 
     /**
-     * Returns the comment string for the given DOCX4J object and document.
-     *
-     * @param object   the DOCX4J object whose comment to retrieve.
-     * @param document the document that contains the object.
-     *
-     * @return an Expression representing the comment string.
-     *
-     * @throws OfficeStamperException if an error occurs while retrieving the comment.
-     * @deprecated This method's been deprecated since version 1.6.8
-     * and will be removed in the future.
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    public static Placeholder getCommentStringFor(
-            ContentAccessor object, WordprocessingMLPackage document
-    ) {
-        var comment = getCommentFor(object, document)
-                .orElseThrow(OfficeStamperException::new);
-        return getCommentString(comment);
-    }
-
-    /**
      * Returns the first comment found for the given docx object. Note that an object is
      * only considered commented if the comment STARTS within the object. Comments
      * spanning several objects are not supported by this method.

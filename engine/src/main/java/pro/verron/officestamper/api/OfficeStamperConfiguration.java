@@ -5,22 +5,13 @@ import org.springframework.expression.spel.SpelParserConfiguration;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
  * Represents the configuration for the OfficeStamper class.
  */
 public interface OfficeStamperConfiguration {
-    /**
-     * Retrieves the null replacement value.
-     *
-     * @return an Optional containing the null replacement value if it exists; otherwise, an empty Optional.
-     *
-     * @deprecated since version 1.6.7
-     */
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    Optional<String> nullReplacementValue();
+
 
     /**
      * Checks if the failOnUnresolvedExpression flag is set to true or false.
@@ -38,30 +29,6 @@ public interface OfficeStamperConfiguration {
      * @return the updated OfficeStamperConfiguration object
      */
     OfficeStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression);
-
-    /**
-     * Retrieves a new OfficeStamperConfiguration object with the provided null replacement value.
-     *
-     * @param nullValuesDefault the null replacement value.
-     *
-     * @return OfficeStamperConfiguration object with the provided null replacement value.
-     *
-     * @deprecated since version 1.6.7
-     */
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    OfficeStamperConfiguration nullValuesDefault(String nullValuesDefault);
-
-    /**
-     * Replaces null values in the OfficeStamperConfiguration object.
-     *
-     * @param replaceNullValues flag indicating whether to replace null values
-     *
-     * @return the updated OfficeStamperConfiguration object
-     *
-     * @deprecated since version 1.6.7
-     */
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    OfficeStamperConfiguration replaceNullValues(boolean replaceNullValues);
 
     /**
      * Sets the default value for unresolved expressions in the OfficeStamperConfiguration object.
@@ -231,26 +198,6 @@ public interface OfficeStamperConfiguration {
      * processors.
      */
     Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors();
-
-    /**
-     * Determines whether null values should be replaced.
-     *
-     * @return true if null values should be replaced, false otherwise.
-     *
-     * @deprecated Since version 1.6.7. This method will be removed in a future release.
-     */
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    boolean isReplaceNullValues();
-
-    /**
-     * Retrieves the default value for null values.
-     *
-     * @return The default value for null values.
-     *
-     * @deprecated This method has been deprecated since version 1.6.7 and will be removed in a future release.
-     */
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    String getNullValuesDefault();
 
     /**
      * Retrieves the list of pre-processors.

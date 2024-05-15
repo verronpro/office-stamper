@@ -106,30 +106,50 @@ public class CommentProcessorRegistry {
             WordprocessingMLPackage document, Map<BigInteger, Comment> comments, T expressionContext, P paragraph, R run
     ) {
         var comment = CommentUtil.getCommentAround(run, document);
-        return comment.flatMap(c -> runCommentProcessors(comments, expressionContext, c, paragraph, run, document));
+        return comment.flatMap(c -> runCommentProcessors(comments, expressionContext, c, paragraph, run));
     }
 
-    /**
-     * Takes the first comment on the specified paragraph and tries to evaluate
-     * the string within the comment against all registered
-     * {@link CommentProcessor}s.
-     *
-     * @param document          the Word document.
-     * @param comments          the comments within the document.
-     * @param expressionContext the context root object
-     * @param paragraph         the paragraph whose comments to evaluate.
-     * @param <T>               the type of the context root object.
-     */
-    private <T> Optional<Comment> runProcessorsOnParagraphComment(
-            WordprocessingMLPackage document, Map<BigInteger, Comment> comments, T expressionContext, P paragraph
+    private <T> Optional<Comment> runCommentProcessors(
+            Map<BigInteger, Comment> comments,
+            T expressionContext,
+            @NonNull Comments.Comment comment,
+            P paragraph,
+            R run
     ) {
-        return CommentUtil.getCommentFor(paragraph, document)
-                          .flatMap(c -> this.runCommentProcessors(comments,
-                                  expressionContext,
-                                  c,
-                                  paragraph,
-                                  null,
-                                  document));
+        Comment commentWrapper = comments.get(comment.getId());
+
+        if (Objects.isNull(commentWrapper)) {
+            // no comment to process
+            return Optional.empty();
+        }
+
+        var commentExpression = getCommentString(comment);
+
+        for (final Object processor : commentProcessors.values()) {
+            ((CommentProcessor) processor).setParagraph(paragraph);
+            ((CommentProcessor) processor).setCurrentRun(run);
+            ((CommentProcessor) processor).setCurrentCommentWrapper(commentWrapper);
+        }
+
+        try {
+            expressionResolver.resolve(commentExpression, expressionContext);
+            comments.remove(comment.getId());
+            logger.debug("Comment {} has been successfully processed by a comment processor.", commentExpression);
+            return Optional.of(commentWrapper);
+        } catch (SpelEvaluationException | SpelParseException e) {
+            if (failOnUnresolvedExpression) {
+                throw new OfficeStamperException(commentExpression.toString(), e);
+            }
+            else {
+                logger.warn(String.format(
+                        "Skipping comment expression '%s' because it can not be resolved by any comment processor. "
+                                + "Reason: %s. Set log level to TRACE to view Stacktrace.",
+                        commentExpression,
+                        e.getMessage()));
+                logger.trace("Reason for skipping comment: ", e);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -169,49 +189,27 @@ public class CommentProcessorRegistry {
         }
     }
 
-    private <T> Optional<Comment> runCommentProcessors(
-            Map<BigInteger, Comment> comments,
-            T expressionContext,
-            @NonNull Comments.Comment comment,
-            P paragraph,
-            R run,
-            WordprocessingMLPackage document
+    /**
+     * Takes the first comment on the specified paragraph and tries to evaluate
+     * the string within the comment against all registered
+     * {@link CommentProcessor}s.
+     *
+     * @param document          the Word document.
+     * @param comments          the comments within the document.
+     * @param expressionContext the context root object
+     * @param paragraph         the paragraph whose comments to evaluate.
+     * @param <T>               the type of the context root object.
+     */
+    private <T> Optional<Comment> runProcessorsOnParagraphComment(
+            WordprocessingMLPackage document, Map<BigInteger, Comment> comments, T expressionContext, P paragraph
     ) {
-        Comment commentWrapper = comments.get(comment.getId());
-
-        if (Objects.isNull(commentWrapper)) {
-            // no comment to process
-            return Optional.empty();
-        }
-
-        var commentExpression = getCommentString(comment);
-
-        for (final Object processor : commentProcessors.values()) {
-            ((CommentProcessor) processor).setParagraph(paragraph);
-            ((CommentProcessor) processor).setCurrentRun(run);
-            ((CommentProcessor) processor).setCurrentCommentWrapper(commentWrapper);
-            ((CommentProcessor) processor).setDocument(document);
-        }
-
-        try {
-            expressionResolver.resolve(commentExpression, expressionContext);
-            comments.remove(comment.getId());
-            logger.debug("Comment {} has been successfully processed by a comment processor.", commentExpression);
-            return Optional.of(commentWrapper);
-        } catch (SpelEvaluationException | SpelParseException e) {
-            if (failOnUnresolvedExpression) {
-                throw new OfficeStamperException(commentExpression.toString(), e);
-            }
-            else {
-                logger.warn(String.format(
-                        "Skipping comment expression '%s' because it can not be resolved by any comment processor. "
-                                + "Reason: %s. Set log level to TRACE to view Stacktrace.",
-                        commentExpression,
-                        e.getMessage()));
-                logger.trace("Reason for skipping comment: ", e);
-            }
-        }
-        return Optional.empty();
+        return CommentUtil.getCommentFor(paragraph, document)
+                          .flatMap(c -> this.runCommentProcessors(comments,
+                                  expressionContext,
+                                  c,
+                                  paragraph,
+                                  null
+                          ));
     }
 
     /**

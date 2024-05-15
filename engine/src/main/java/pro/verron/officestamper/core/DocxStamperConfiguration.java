@@ -16,7 +16,10 @@ import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -50,10 +53,6 @@ public class DocxStamperConfiguration
     private boolean leaveEmptyOnExpressionError = false;
     private boolean replaceUnresolvedExpressions = false;
     private String unresolvedExpressionsDefaultValue = null;
-    @Deprecated(since = "1.6.7")
-    private boolean replaceNullValues = false;
-    @Deprecated(since = "1.6.7")
-    private String nullValuesDefault = null;
     private SpelParserConfiguration spelParserConfiguration = new SpelParserConfiguration();
 
     /**
@@ -79,26 +78,6 @@ public class DocxStamperConfiguration
     }
 
     /**
-     * Retrieves the default replacement value for null values.
-     *
-     * @return the {@link Optional} containing the default replacement value,
-     * or an empty {@link Optional} if no default replacement value is found
-     *
-     * @deprecated This method's been deprecated since version 1.6.7.
-     * You shouldn't have to use it, it was a crutch use for inner working of
-     * docx-stamper
-     */
-    @Override
-    @Deprecated(since = "1.6.7")
-    public Optional<String> nullReplacementValue() {
-        return resolvers.stream()
-                        .filter(Resolvers.Null2DefaultResolver.class::isInstance)
-                        .map(Resolvers.Null2DefaultResolver.class::cast)
-                        .map(Resolvers.Null2DefaultResolver::defaultValue)
-                        .findFirst();
-    }
-
-    /**
      * <p>isFailOnUnresolvedExpression.</p>
      *
      * @return a boolean
@@ -120,51 +99,6 @@ public class DocxStamperConfiguration
     @Override
     public DocxStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression) {
         this.failOnUnresolvedExpression = failOnUnresolvedExpression;
-        return this;
-    }
-
-    /**
-     * Sets the default value for null values in the document.
-     *
-     * @param nullValuesDefault The default value for null values.
-     *
-     * @return The updated DocxStamperConfiguration object.
-     *
-     * @deprecated This method has been deprecated since version 1.6.7.
-     * It is recommended to use
-     * {@link DocxStamperConfiguration#addResolver(ObjectResolver)} and
-     * {@link Resolvers#nullToDefault(String)} instead.
-     */
-    @Override
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    public DocxStamperConfiguration nullValuesDefault(String nullValuesDefault) {
-        this.nullValuesDefault = nullValuesDefault;
-        this.resolvers.add(0, this.replaceNullValues
-                ? Resolvers.nullToDefault(this.nullValuesDefault)
-                : Resolvers.nullToPlaceholder());
-        return this;
-    }
-
-    /**
-     * Replaces null values with either empty string or a placeholder value,
-     * based on the given flag.
-     *
-     * @param replaceNullValues Flag indicating whether to replace null values or not.
-     *
-     * @return The updated DocxStamperConfiguration object.
-     *
-     * @deprecated This method has been deprecated since version 1.6.7.
-     * It is recommended to use
-     * {@link DocxStamperConfiguration#addResolver(ObjectResolver)} and
-     * {@link Resolvers#nullToDefault(String)} instead.
-     */
-    @Override
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    public DocxStamperConfiguration replaceNullValues(boolean replaceNullValues) {
-        this.replaceNullValues = replaceNullValues;
-        this.resolvers.add(this.replaceNullValues
-                ? Resolvers.nullToEmpty()
-                : Resolvers.nullToPlaceholder());
         return this;
     }
 
@@ -398,35 +332,6 @@ public class DocxStamperConfiguration
     @Override
     public Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors() {
         return commentProcessors;
-    }
-
-    /**
-     * Gets the flag indicating whether null values should be replaced.
-     *
-     * @return {@code true} if null values should be replaced, {@code false} otherwise.
-     *
-     * @deprecated This method's been deprecated since version 1.6.7 and will be removed in a future release.
-     * You shouldn't have to use it, it was a clutch for
-     * docx-stamper workings.
-     */
-    @Override
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    public boolean isReplaceNullValues() {
-        return replaceNullValues;
-    }
-
-    /**
-     * Retrieves the default value used for representing null values.
-     *
-     * @return the default value for null values
-     *
-     * @deprecated This method has been deprecated since version 1.6.7 and is scheduled for removal.
-     * You shouldn't have to use it, it was a clutch for docx-stamper workings.
-     */
-    @Override
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    public String getNullValuesDefault() {
-        return nullValuesDefault;
     }
 
     /**

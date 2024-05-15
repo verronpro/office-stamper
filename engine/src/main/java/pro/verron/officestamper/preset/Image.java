@@ -14,18 +14,17 @@ import java.io.InputStream;
  * @version ${version}
  * @since 1.0.0
  */
-public sealed class Image
-        permits org.wickedsource.docxstamper.replace.typeresolver.image.Image {
+public final class Image {
 
     /**
      * TODO_LATER: make private asap
      */
-    protected final byte[] imageBytes;
+    private final byte[] imageBytes;
 
     /**
      * TODO_LATER: make private asap
      */
-    protected Integer maxWidth;
+    private Integer maxWidth;
 
     /**
      * <p>Constructor for Image.</p>

@@ -60,7 +60,6 @@ module pro.verron.officestamper {
     opens pro.verron.officestamper;
     exports pro.verron.officestamper;
     exports org.wickedsource.docxstamper;
-    exports org.wickedsource.docxstamper.api;
     exports org.wickedsource.docxstamper.el;
     exports org.wickedsource.docxstamper.util;
     exports org.wickedsource.docxstamper.processor;

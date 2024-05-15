@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import org.springframework.lang.NonNull;
-import org.wickedsource.docxstamper.api.UnresolvedExpressionException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
@@ -201,7 +200,7 @@ public class CommentProcessorRegistry {
             return Optional.of(commentWrapper);
         } catch (SpelEvaluationException | SpelParseException e) {
             if (failOnUnresolvedExpression) {
-                throw new UnresolvedExpressionException(commentExpression.toString(), e);
+                throw new OfficeStamperException(commentExpression.toString(), e);
             }
             else {
                 logger.warn(String.format(

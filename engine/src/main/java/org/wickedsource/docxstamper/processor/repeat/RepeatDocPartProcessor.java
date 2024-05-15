@@ -5,7 +5,6 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
@@ -273,7 +272,7 @@ public class RepeatDocPartProcessor
             thread.join();
             return wordprocessingMLPackage;
         } catch (Docx4JException | IOException | InterruptedException e) {
-            DocxStamperException exception = new DocxStamperException(e);
+            OfficeStamperException exception = new OfficeStamperException(e);
             exceptionHandler.exception()
                             .ifPresent(exception::addSuppressed);
             throw exception;
@@ -287,7 +286,7 @@ public class RepeatDocPartProcessor
         try {
             aPackage.save(outputStream);
         } catch (Docx4JException e) {
-            throw new DocxStamperException(e);
+            throw new OfficeStamperException(e);
         }
     }
 
@@ -311,7 +310,7 @@ public class RepeatDocPartProcessor
      * A functional interface representing runnable task able to throw an exception.
      * It extends the {@link Runnable} interface and provides default implementation
      * of the {@link Runnable#run()} method handling the exception by rethrowing it
-     * wrapped inside a {@link DocxStamperException}.
+     * wrapped inside a {@link OfficeStamperException}.
      *
      * @author Joseph Verron
      * @version ${version}
@@ -322,13 +321,13 @@ public class RepeatDocPartProcessor
 
         /**
          * Executes the runnable task, handling any exception by throwing it wrapped
-         * inside a {@link DocxStamperException}.
+         * inside a {@link OfficeStamperException}.
          */
         default void run() {
             try {
                 throwingRun();
             } catch (Exception e) {
-                throw new DocxStamperException(e);
+                throw new OfficeStamperException(e);
             }
         }
 

@@ -6,7 +6,6 @@ import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.lang.NonNull;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
@@ -146,7 +145,7 @@ public class DocxStamper<T>
     }
 
     private static TypedValue throwException(ReflectiveOperationException exception) {
-        throw new DocxStamperException("Error calling method", exception);
+        throw new OfficeStamperException("Error calling method", exception);
     }
 
     /**
@@ -183,13 +182,13 @@ public class DocxStamper<T>
             InputStream template,
             Object contextRoot,
             OutputStream out
-    ) throws DocxStamperException {
+    ) {
         try {
             WordprocessingMLPackage document = WordprocessingMLPackage.load(
                     template);
             stamp(document, contextRoot, out);
         } catch (Docx4JException e) {
-            throw new DocxStamperException(e);
+            throw new OfficeStamperException(e);
         }
     }
 
@@ -206,7 +205,7 @@ public class DocxStamper<T>
             WordprocessingMLPackage document,
             Object contextRoot,
             OutputStream out
-    ) throws DocxStamperException {
+    ) {
         try {
             preprocess(document);
             processComments(document, contextRoot);
@@ -214,7 +213,7 @@ public class DocxStamper<T>
             document.save(out);
             commentProcessorRegistry.reset();
         } catch (Docx4JException e) {
-            throw new DocxStamperException(e);
+            throw new OfficeStamperException(e);
         }
     }
 

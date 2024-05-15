@@ -5,7 +5,7 @@ import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.function.Predicate;
 
@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 public class TableCellUtil {
 
     private TableCellUtil() {
-        throw new DocxStamperException("Utility class shouldn't be instantiated");
+		throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
 	private static final ObjectFactory objectFactory = new ObjectFactory();

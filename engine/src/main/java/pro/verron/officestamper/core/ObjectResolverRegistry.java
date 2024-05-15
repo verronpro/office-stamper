@@ -2,8 +2,8 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import pro.verron.officestamper.api.ObjectResolver;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Placeholder;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public final class ObjectResolverRegistry {
      * @param placeholder the expression value to be replaced
      * @param object     the object to be used for resolving the expression
      * @return the resolved value for the expression
-     * @throws DocxStamperException if no resolver is found for the object
+     * @throws OfficeStamperException if no resolver is found for the object
      */
     public R resolve(
             WordprocessingMLPackage document,
@@ -46,6 +46,6 @@ public final class ObjectResolverRegistry {
         for (ObjectResolver resolver : resolvers)
             if (resolver.canResolve(object))
                 return resolver.resolve(document, placeholder, object);
-        throw new DocxStamperException("No resolver for %s".formatted(object));
+        throw new OfficeStamperException("No resolver for %s".formatted(object));
     }
 }

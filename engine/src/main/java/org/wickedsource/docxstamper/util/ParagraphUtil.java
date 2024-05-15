@@ -4,7 +4,7 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 /**
  * Utility class for creating paragraphs.
@@ -17,7 +17,7 @@ import org.wickedsource.docxstamper.api.DocxStamperException;
 public class ParagraphUtil {
 
     private ParagraphUtil() {
-        throw new DocxStamperException("Utility class shouldn't be instantiated");
+		throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
 	private static final ObjectFactory objectFactory = Context.getWmlObjectFactory();

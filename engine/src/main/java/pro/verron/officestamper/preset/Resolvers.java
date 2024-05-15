@@ -3,7 +3,6 @@ package pro.verron.officestamper.preset;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -254,7 +253,7 @@ public class Resolvers {
             if (object instanceof Image image)
                 return resolve(document, image);
             String message = "Expected %s to be an Image".formatted(object);
-            throw new DocxStamperException(message);
+            throw new OfficeStamperException(message);
         }
 
         /**
@@ -476,7 +475,7 @@ public class Resolvers {
                 String expression,
                 Object object
         ) {
-            throw new DocxStamperException("Should not be called");
+            throw new OfficeStamperException("Should not be called");
         }
     }
 

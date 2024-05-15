@@ -2,12 +2,12 @@ package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
 import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.StreamStamper;
+import pro.verron.officestamper.core.DocxStamper;
 
 import java.io.InputStream;
 

@@ -1,7 +1,6 @@
 package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.processor.displayif.DisplayIfProcessor;
 import org.wickedsource.docxstamper.processor.repeat.ParagraphRepeatProcessor;
 import org.wickedsource.docxstamper.processor.repeat.RepeatDocPartProcessor;
@@ -12,6 +11,7 @@ import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.core.DocxStamper;
 import pro.verron.officestamper.core.PlaceholderReplacer;
 
 /**

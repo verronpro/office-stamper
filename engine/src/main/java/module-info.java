@@ -64,4 +64,5 @@ module pro.verron.officestamper {
     exports org.wickedsource.docxstamper.util;
     exports org.wickedsource.docxstamper.processor;
     exports org.wickedsource.docxstamper.processor.table;
+
 }

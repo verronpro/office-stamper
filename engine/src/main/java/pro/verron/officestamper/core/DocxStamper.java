@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper;
+package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -10,9 +10,6 @@ import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.core.ObjectResolverRegistry;
-import pro.verron.officestamper.core.PlaceholderReplacer;
-import pro.verron.officestamper.core.Placeholders;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.OfficeStampers;
 
@@ -40,7 +37,6 @@ import java.util.function.Function;
  * It is recommended to use the {@link OfficeStampers} methods instead.
  * This class will not be exported in the future releases of the module.
  */
-@Deprecated(since = "1.6.8", forRemoval = true)
 public class DocxStamper<T>
         implements OfficeStamper<WordprocessingMLPackage> {
     private final List<PreProcessor> preprocessors;

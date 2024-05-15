@@ -1,7 +1,7 @@
 package org.wickedsource.docxstamper.el;
 
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
+import pro.verron.officestamper.api.EvaluationContextConfigurer;
 
 /**
  * {@link EvaluationContextConfigurer} that does no customization.
@@ -17,13 +17,14 @@ import org.wickedsource.docxstamper.api.EvaluationContextConfigurer;
  * unfiltered features are accessible. It should be used when there is a need to use the
  * powerful features of the aforementioned class, and there is a trust that the template won't
  * contain any dangerous injections.
-
+ *
  * @author Joseph Verron
  * @author Mario Siegenthaler
  * @version ${version}
  * @since 1.0.13
  */
-public class NoOpEvaluationContextConfigurer implements EvaluationContextConfigurer {
+public class NoOpEvaluationContextConfigurer
+        implements EvaluationContextConfigurer {
     /**
      * Configures the provided StandardEvaluationContext.
      *

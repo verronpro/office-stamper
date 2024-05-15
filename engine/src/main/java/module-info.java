@@ -56,8 +56,6 @@ module pro.verron.officestamper {
     opens pro.verron.officestamper.core to pro.verron.officestamper.test;
 
     // TODO_LATER: remove all the following exports in next version
-    opens pro.verron.officestamper;
-    exports pro.verron.officestamper;
     exports org.wickedsource.docxstamper.el;
     exports org.wickedsource.docxstamper.util;
     exports org.wickedsource.docxstamper.processor;

@@ -95,25 +95,6 @@ public interface OfficeStamperConfiguration {
     );
 
     /**
-     * Adds a type resolver to the OfficeStamperConfiguration.
-     * A type resolver is responsible for mapping an object of a certain Java class to an object of the DOCX4J api that
-     * can be put into the .docx document. Type resolvers are used to replace expressions within the .docx template.
-     *
-     * @param resolvedType the Java class that the type resolver is responsible for.
-     * @param resolver     the implementation of {@link ITypeResolver} that resolves objects of the given type.
-     * @param <T>          type expected to be resolved by the resolver
-     *
-     * @return the updated OfficeStamperConfiguration object.
-     *
-     * @deprecated as of version 1.6.7, replaced by {@link ObjectResolver}.
-     * The new resolver is more versatile, requires less reflection mechanism,
-     * and simplifies the internal workings of the docx-stamper project.
-     */
-    @Deprecated(since = "1.6.7", forRemoval = true) <T> OfficeStamperConfiguration addTypeResolver(
-            Class<T> resolvedType, ITypeResolver<T> resolver
-    );
-
-    /**
      * Exposes an interface to the expression language.
      *
      * @param interfaceClass the interface class to be exposed
@@ -242,41 +223,6 @@ public interface OfficeStamperConfiguration {
      * @return a map containing the expression functions as values and their corresponding classes as keys.
      */
     Map<Class<?>, Object> getExpressionFunctions();
-
-    /**
-     * Retrieves a map of type resolvers.
-     *
-     * @return A map containing type resolvers. The keys of the map are classes and the values are instances
-     * of ITypeResolver.
-     *
-     * @deprecated This method has been deprecated since version 1.6.7 and will be removed in a future release.
-     * Use of this method is discouraged and should be replaced with an alternative implementation.
-     */
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    Map<Class<?>, ITypeResolver<?>> getTypeResolvers();
-
-    /**
-     * Retrieves the default type resolver.
-     *
-     * @return The default type resolver.
-     *
-     * @deprecated This method has been deprecated since version 1.6.7 and will be removed in a future release.
-     */
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    ITypeResolver<Object> getDefaultTypeResolver();
-
-    /**
-     * Sets the default type resolver for the OfficeStamperConfiguration.
-     * This method is deprecated and will be removed in version 1.6.7.
-     *
-     * @param defaultResolver the default type resolver to be set
-     *
-     * @return the OfficeStamperConfiguration with the updated default type resolver
-     */
-    @Deprecated(since = "1.6.7", forRemoval = true)
-    OfficeStamperConfiguration setDefaultTypeResolver(
-            ITypeResolver<? super Object> defaultResolver
-    );
 
     /**
      * Returns a map of comment processors associated with their respective classes.

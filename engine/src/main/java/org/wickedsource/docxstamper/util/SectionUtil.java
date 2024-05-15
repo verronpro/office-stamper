@@ -5,7 +5,7 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.wml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class SectionUtil {
 	private static final Logger log = LoggerFactory.getLogger(SectionUtil.class);
 
     private SectionUtil() {
-        throw new DocxStamperException("Utility class shouldn't be instantiated");
+		throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
 	private static final ObjectFactory factory = Context.getWmlObjectFactory();

@@ -4,7 +4,6 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 
 /**
  * The ObjectResolver interface provides a contract for resolving objects to create a run
@@ -27,7 +26,7 @@ public interface ObjectResolver {
      *
      * @return the resolved value for the expression
      *
-     * @throws DocxStamperException if no resolver is found for the object
+     * @throws OfficeStamperException if no resolver is found for the object
      */
     default R resolve(
             WordprocessingMLPackage document,
@@ -60,7 +59,7 @@ public interface ObjectResolver {
      *
      * @return the resolved value for the expression
      *
-     * @throws DocxStamperException if no resolver is found for the object
+     * @throws OfficeStamperException if no resolver is found for the object
      */
     R resolve(
             WordprocessingMLPackage document,

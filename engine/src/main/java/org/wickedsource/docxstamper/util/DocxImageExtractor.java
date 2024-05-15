@@ -8,7 +8,7 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Drawing;
 import org.docx4j.wml.R;
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +54,7 @@ public class DocxImageExtractor {
 			Graphic graphic = getInlineGraphic(drawing);
 			return graphic.getGraphicData().getPic();
 		}
-		throw new DocxStamperException("Run drawing not found !");
+		throw new OfficeStamperException("Run drawing not found !");
 	}
 
 	private String getImageRelPartName(String imageRelId) {
@@ -68,23 +68,23 @@ public class DocxImageExtractor {
 				.substring(1);
 	}
 
-	private long getImageSize(String imageRelPartName) {
-		try {
-			return wordprocessingMLPackage
-					.getSourcePartStore()
-					.getPartSize(imageRelPartName);
-		} catch (Docx4JException e) {
-			throw new DocxStamperException(e);
+	/**
+	 * Extract an inline graphic from a drawing.
+	 *
+	 * @param drawing the drawing containing the graphic.
+	 */
+	private static Graphic getInlineGraphic(Drawing drawing) {
+		if (drawing.getAnchorOrInline()
+				   .isEmpty()) {
+			throw new OfficeStamperException("Anchor or Inline is empty !");
 		}
-	}
-
-	private InputStream getImageStream(String imageRelPartName) {
-		try {
-			return wordprocessingMLPackage
-					.getSourcePartStore()
-					.loadPart(imageRelPartName);
-		} catch (Docx4JException e) {
-			throw new DocxStamperException(e);
+		Object anchorOrInline = drawing.getAnchorOrInline()
+									   .get(0);
+		if (anchorOrInline instanceof Inline inline) {
+			return inline.getGraphic();
+		}
+		else {
+			throw new OfficeStamperException("Don't know how to process anchor !");
 		}
 	}
 
@@ -97,7 +97,7 @@ public class DocxImageExtractor {
 	 */
 	private static byte[] streamToByteArray(long size, InputStream is) {
 		if (size > Integer.MAX_VALUE)
-			throw new DocxStamperException("Image size exceeds maximum allowed (2GB)");
+			throw new OfficeStamperException("Image size exceeds maximum allowed (2GB)");
 
 		int intSize = (int) size;
 		byte[] data = new byte[intSize];
@@ -105,28 +105,31 @@ public class DocxImageExtractor {
 		return Arrays.copyOfRange(data, 0, numRead);
 	}
 
-	/**
-	 * Extract an inline graphic from a drawing.
-	 *
-	 * @param drawing the drawing containing the graphic.
-	 */
-	private static Graphic getInlineGraphic(Drawing drawing) {
-		if (drawing.getAnchorOrInline().isEmpty()) {
-			throw new DocxStamperException("Anchor or Inline is empty !");
-		}
-		Object anchorOrInline = drawing.getAnchorOrInline().get(0);
-		if (anchorOrInline instanceof Inline inline) {
-			return inline.getGraphic();
-		} else {
-			throw new DocxStamperException("Don't know how to process anchor !");
-		}
-	}
-
 	private static int tryRead(InputStream is, byte[] data) {
 		try {
 			return is.read(data);
 		} catch (IOException e) {
-			throw new DocxStamperException(e);
+			throw new OfficeStamperException(e);
+		}
+	}
+
+	private long getImageSize(String imageRelPartName) {
+		try {
+			return wordprocessingMLPackage
+					.getSourcePartStore()
+					.getPartSize(imageRelPartName);
+		} catch (Docx4JException e) {
+			throw new OfficeStamperException(e);
+		}
+	}
+
+	private InputStream getImageStream(String imageRelPartName) {
+		try {
+			return wordprocessingMLPackage
+					.getSourcePartStore()
+					.loadPart(imageRelPartName);
+		} catch (Docx4JException e) {
+			throw new OfficeStamperException(e);
 		}
 	}
 

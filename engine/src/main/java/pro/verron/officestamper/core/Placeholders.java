@@ -1,6 +1,6 @@
 package pro.verron.officestamper.core;
 
-import org.wickedsource.docxstamper.api.DocxStamperException;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
 import pro.verron.officestamper.core.expression.Matcher;
@@ -65,7 +65,7 @@ public class Placeholders {
     private static final Matcher RAW_MATCHER = new Matcher("", "");
 
     private Placeholders() {
-        throw new DocxStamperException("Utility classes should not be instantiated!");
+        throw new OfficeStamperException("Utility classes should not be instantiated!");
     }
 
     /**

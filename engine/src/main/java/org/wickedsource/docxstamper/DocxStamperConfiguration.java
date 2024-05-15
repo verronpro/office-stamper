@@ -4,7 +4,6 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.lang.NonNull;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.el.DefaultEvaluationContextConfigurer;
 import org.wickedsource.docxstamper.processor.displayif.IDisplayIfProcessor;
 import org.wickedsource.docxstamper.processor.repeat.IParagraphRepeatProcessor;
@@ -113,7 +112,7 @@ public class DocxStamperConfiguration
     }
 
     /**
-     * If set to true, stamper will throw an {@link DocxStamperException}
+     * If set to true, stamper will throw an {@link OfficeStamperException}
      * if a variable expression or processor expression within the document or within the comments is encountered that cannot be resolved. Is set to true by default.
      *
      * @param failOnUnresolvedExpression a boolean

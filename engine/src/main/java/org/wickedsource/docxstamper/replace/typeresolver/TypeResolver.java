@@ -3,9 +3,9 @@ package org.wickedsource.docxstamper.replace.typeresolver;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import pro.verron.officestamper.api.ITypeResolver;
 import pro.verron.officestamper.api.ObjectResolver;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 /**
  * The TypeResolver class is responsible for resolving objects of a specified type to objects of the DOCX4J API
@@ -15,6 +15,7 @@ import pro.verron.officestamper.api.ObjectResolver;
  * @param resolver  the resolver to resolve objects of the given type.
  * @param nullProof a boolean value indicating whether the resolver is null-proof.
  * @param <T>       the type of the object this TypeResolver is responsible for resolving.
+ *
  * @author Joseph Verron
  * @version ${version}
  * @since 1.6.7
@@ -47,6 +48,7 @@ public record TypeResolver<T>(
      * Determines whether the given object can be resolved by the TypeResolver.
      *
      * @param object the object to be resolved
+     *
      * @return true if the object can be resolved, false otherwise
      */
     @Override
@@ -62,9 +64,11 @@ public record TypeResolver<T>(
      * @param document   the WordprocessingMLPackage object representing the .docx document
      * @param expression the expression to be replaced in the .docx document
      * @param object     the object to be resolved
+     *
      * @return an object of the DOCX4J API that replaces the expression in the
      * .docx document
-     * @throws DocxStamperException if the object is not an instance of the specified type
+     *
+     * @throws OfficeStamperException if the object is not an instance of the specified type
      */
     @Override
     public R resolve(
@@ -75,8 +79,7 @@ public record TypeResolver<T>(
         if (type.isInstance(object))
             return resolver.resolve(document, type.cast(object));
 
-        String message = "%s was not an instance of %s"
-                .formatted(object, type);
-        throw new DocxStamperException(message);
+        String message = "%s was not an instance of %s".formatted(object, type);
+        throw new OfficeStamperException(message);
     }
 }

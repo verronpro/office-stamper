@@ -9,13 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import org.springframework.lang.NonNull;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import org.wickedsource.docxstamper.api.UnresolvedExpressionException;
 import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.Placeholders;
 import pro.verron.officestamper.core.StandardParagraph;
@@ -161,7 +161,7 @@ public class CommentProcessorRegistry {
             } catch (SpelEvaluationException | SpelParseException e) {
                 String msg = "Expression '%s' failed since no processor solves it".formatted(expression);
                 if (failOnUnresolvedExpression) {
-                    throw new DocxStamperException(msg, e);
+                    throw new OfficeStamperException(msg, e);
                 }
                 else {
                     logger.warn(msg, e);

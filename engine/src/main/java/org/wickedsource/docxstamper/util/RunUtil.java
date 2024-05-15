@@ -6,7 +6,6 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.model.styles.StyleUtil;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.*;
-import org.wickedsource.docxstamper.api.DocxStamperException;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.Objects;
@@ -27,7 +26,7 @@ public class RunUtil {
     private static final ObjectFactory factory = Context.getWmlObjectFactory();
 
     private RunUtil() {
-        throw new DocxStamperException("Utility class shouldn't be instantiated");
+        throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
     /**

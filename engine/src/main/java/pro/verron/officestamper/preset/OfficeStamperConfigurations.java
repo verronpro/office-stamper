@@ -1,9 +1,9 @@
 package pro.verron.officestamper.preset;
 
-import org.wickedsource.docxstamper.DocxStamperConfiguration;
 import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
 import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import pro.verron.officestamper.core.DocxStamperConfiguration;
 
 import java.util.Collections;
 

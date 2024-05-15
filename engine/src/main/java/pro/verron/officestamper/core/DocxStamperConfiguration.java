@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper;
+package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.EvaluationContext;
@@ -12,7 +12,6 @@ import org.wickedsource.docxstamper.processor.repeat.IRepeatProcessor;
 import org.wickedsource.docxstamper.processor.replaceExpression.IReplaceWithProcessor;
 import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.core.DocxStamper;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
@@ -37,7 +36,6 @@ import java.util.function.Function;
  * {@link OfficeStamperConfiguration} interface instead.
  * This class will not be exported in the future releases of the module.
  */
-@Deprecated(since = "1.6.8", forRemoval = true)
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
 

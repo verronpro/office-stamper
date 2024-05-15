@@ -40,27 +40,10 @@ public class TableResolver
     }
 
     /**
-     * Generate a new {@link TableResolver} instance
-     *
-     * @param pr                   a {@link PlaceholderReplacer} instance
-     * @param nullReplacementValue in case the value to interpret is <code>null</code>
-     * @return a new {@link TableResolver} instance
-     * @deprecated should be an internal implementation detail
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    public static CommentProcessor newInstance(
-            PlaceholderReplacer pr,
-            String nullReplacementValue
-    ) {
-        return new TableResolver(pr,
-                                 table -> List.of(ParagraphUtil.create(
-                                         nullReplacementValue)));
-    }
-
-    /**
      * Generate a new {@link TableResolver} instance where value is replaced by an empty list when <code>null</code>
      *
      * @param pr a {@link PlaceholderReplacer} instance
+     *
      * @return a new {@link TableResolver} instance
      */
     public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
@@ -74,11 +57,11 @@ public class TableResolver
     public void resolveTable(StampTable givenTable) {
         P p = getParagraph();
         if (p.getParent() instanceof Tc tc
-            && tc.getParent() instanceof Tr tr
-            && tr.getParent() instanceof Tbl table
+                && tc.getParent() instanceof Tr tr
+                && tr.getParent() instanceof Tbl table
         ) cols.put(table, givenTable);
         else throw new CommentProcessingException("Paragraph is not within a " +
-                                                  "table!", p);
+                "table!", p);
     }
 
     /**
@@ -93,7 +76,8 @@ public class TableResolver
 
             if (stampedTable != null) {
                 replaceTableInplace(wordTable, stampedTable);
-            } else {
+            }
+            else {
                 List<Object> tableParentContent = ((ContentAccessor) wordTable.getParent()).getContent();
                 int tablePosition = tableParentContent.indexOf(wordTable);
                 List<Object> toInsert = nullSupplier.apply(wordTable);
@@ -151,9 +135,9 @@ public class TableResolver
 
     private void setCellText(Tc tableCell, String content) {
         tableCell.getContent()
-                .clear();
+                 .clear();
         tableCell.getContent()
-                .add(ParagraphUtil.create(content));
+                 .add(ParagraphUtil.create(content));
     }
 
     /**

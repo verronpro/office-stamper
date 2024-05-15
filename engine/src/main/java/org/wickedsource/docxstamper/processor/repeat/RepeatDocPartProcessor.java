@@ -7,11 +7,8 @@ import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.DocumentUtil;
-import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.core.PlaceholderReplacer;
-import pro.verron.officestamper.preset.Resolvers;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,7 +23,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImportImages;
@@ -60,31 +56,6 @@ public class RepeatDocPartProcessor
         super(placeholderReplacer);
         this.stamper = stamper;
         this.nullSupplier = nullSupplier;
-    }
-
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param pr                   the placeholderReplacer
-     * @param stamper              the stamper
-     * @param nullReplacementValue the value to use when the expression
-     *                             resolves to null
-     *
-     * @return a new instance of this processor
-     *
-     * @deprecated use {@link RepeatDocPartProcessor#newInstance(ParagraphPlaceholderReplacer, OfficeStamper)} for
-     * instantiation and {@link OfficeStamperConfiguration#addResolver(ObjectResolver)} with
-     * {@link Resolvers#nullToDefault(String)} instead
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    public static CommentProcessor newInstance(
-            PlaceholderReplacer pr,
-            OfficeStamper<WordprocessingMLPackage> stamper,
-            String nullReplacementValue
-    ) {
-        Supplier<List<?>> nullSupplier = () -> singletonList(
-                ParagraphUtil.create(nullReplacementValue));
-        return new RepeatDocPartProcessor(pr, stamper, nullSupplier);
     }
 
     /**

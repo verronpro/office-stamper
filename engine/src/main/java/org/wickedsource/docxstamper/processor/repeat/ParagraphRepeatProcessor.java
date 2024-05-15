@@ -4,19 +4,17 @@ import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
-import org.wickedsource.docxstamper.util.ParagraphUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.PlaceholderReplacer;
 import pro.verron.officestamper.core.StandardParagraph;
-import pro.verron.officestamper.preset.Resolvers;
 
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Supplier;
-
-import static java.util.Collections.singletonList;
 
 /**
  * This class is used to repeat paragraphs and tables.
@@ -45,28 +43,6 @@ public class ParagraphRepeatProcessor
     ) {
         super(placeholderReplacer);
         this.nullSupplier = nullSupplier;
-    }
-
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param pr              replaces expressions with values
-     * @param nullReplacement replaces null values
-     *
-     * @return a new instance of ParagraphRepeatProcessor
-     *
-     * @deprecated use {@link ParagraphRepeatProcessor#newInstance(ParagraphPlaceholderReplacer)} for instantiation
-     * and {@link OfficeStamperConfiguration#addResolver(ObjectResolver)} with
-     * {@link Resolvers#nullToDefault(String)} instead
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    public static CommentProcessor newInstance(
-            PlaceholderReplacer pr,
-            String nullReplacement
-    ) {
-        return new ParagraphRepeatProcessor(pr,
-                () -> singletonList(ParagraphUtil.create(
-                        nullReplacement)));
     }
 
     /**

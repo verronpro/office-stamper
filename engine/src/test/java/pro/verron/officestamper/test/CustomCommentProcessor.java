@@ -102,14 +102,6 @@ public class CustomCommentProcessor
     /**
      * {@inheritDoc}
      */
-    @Deprecated(since = "1.6.5", forRemoval = true)
-    @Override
-    public void setDocument(WordprocessingMLPackage document) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visitParagraph() {
         visitedParagraphs.add(currentParagraph);

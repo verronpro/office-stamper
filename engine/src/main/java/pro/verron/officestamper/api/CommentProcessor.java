@@ -49,19 +49,6 @@ public interface CommentProcessor {
     void setCurrentCommentWrapper(Comment comment);
 
     /**
-     * Passes the processed document, to make all linked data
-     * (images, etc.) available
-     * to processors that need it (example: repeatDocPart)
-     *
-     * @param document DocX template being processed.
-     * @deprecated the document is passed to the processor through the commitChange method now,
-     * and will probably pe passed through the constructor in the future
-     */
-
-    @Deprecated(since = "1.6.5", forRemoval = true)
-    void setDocument(WordprocessingMLPackage document);
-
-    /**
      * Resets all states in the comment processor so that it can be re-used in another stamping process.
      */
     void reset();

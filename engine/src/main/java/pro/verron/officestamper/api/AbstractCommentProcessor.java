@@ -1,6 +1,5 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 
@@ -20,7 +19,6 @@ public abstract class AbstractCommentProcessor
     private P paragraph;
     private R currentRun;
     private Comment currentComment;
-    private WordprocessingMLPackage document;
 
     /**
      * Creates an instance of AbstractCommentProcessor with the given ParagraphPlaceholderReplacer.
@@ -82,29 +80,5 @@ public abstract class AbstractCommentProcessor
     @Override
     public void setCurrentRun(R run) {
         this.currentRun = run;
-    }
-
-    /**
-     * <p>Getter for the field <code>document</code>.</p>
-     *
-     * @return a {@link WordprocessingMLPackage} object
-     * @deprecated the document is passed to the processor through the commitChange method now
-     * and will probably pe passed through the constructor in the future
-     */
-    @Deprecated(since = "1.6.5", forRemoval = true)
-    public WordprocessingMLPackage getDocument() {
-        return document;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @deprecated the document is passed to the processor through the commitChange method now,
-     * and will probably pe passed through the constructor in the future
-     */
-    @Deprecated(since = "1.6.5", forRemoval = true)
-    @Override
-    public void setDocument(WordprocessingMLPackage document) {
-        this.document = document;
     }
 }

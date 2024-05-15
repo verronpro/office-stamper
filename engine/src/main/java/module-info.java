@@ -54,15 +54,14 @@ module pro.verron.officestamper {
     exports pro.verron.officestamper.experimental to pro.verron.officestamper.test;
 
     opens pro.verron.officestamper.core to pro.verron.officestamper.test;
-    exports pro.verron.officestamper.core to pro.verron.officestamper.test;
 
     // TODO_LATER: remove all the following exports in next version
     opens pro.verron.officestamper;
     exports pro.verron.officestamper;
-    exports org.wickedsource.docxstamper;
     exports org.wickedsource.docxstamper.el;
     exports org.wickedsource.docxstamper.util;
     exports org.wickedsource.docxstamper.processor;
     exports org.wickedsource.docxstamper.processor.table;
+    exports pro.verron.officestamper.core;
 
 }

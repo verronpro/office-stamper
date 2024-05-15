@@ -29,19 +29,6 @@ public class DocumentUtil {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
     }
 
-    /**
-     * Retrieve all the paragraphs from a document
-     *
-     * @param parentObject the document to get the paragraphs from
-     *
-     * @return a list of paragraphs
-     *
-     * @deprecated method not used internally so will be removed
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    public static List<P> getParagraphsFromObject(Object parentObject) {
-        return streamElements(parentObject, P.class).toList();
-    }
 
     /**
      * Retrieve all the elements of a given class from an object.
@@ -106,48 +93,6 @@ public class DocumentUtil {
                 .stream()
                 .map(mainParts::getPart)
                 .flatMap(part -> streamObjectElements(part, elementClass));
-    }
-
-    /**
-     * Retrieve all the tables from an object.
-     *
-     * @param parentObject the object to get the tables from
-     *
-     * @return a list of tables
-     *
-     * @deprecated method not used internally so will be removed
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    public static List<Tbl> getTableFromObject(Object parentObject) {
-        return streamElements(parentObject, Tbl.class).toList();
-    }
-
-    /**
-     * Retrieve all the rows from an object.
-     *
-     * @param parentObject the object to get the rows from
-     *
-     * @return a list of rows
-     *
-     * @deprecated method not used internally so will be removed
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    public static List<Tr> getTableRowsFromObject(Object parentObject) {
-        return streamElements(parentObject, Tr.class).toList();
-    }
-
-    /**
-     * Retrieve all the cells from an object.
-     *
-     * @param parentObject the object to get the cells from
-     *
-     * @return a list of cells
-     *
-     * @deprecated method not used internally so will be removed
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    public static List<Tc> getTableCellsFromObject(Object parentObject) {
-        return streamElements(parentObject, Tc.class).toList();
     }
 
     /**

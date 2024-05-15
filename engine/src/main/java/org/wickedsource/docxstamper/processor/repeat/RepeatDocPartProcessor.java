@@ -2,6 +2,7 @@ package org.wickedsource.docxstamper.processor.repeat;
 
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
@@ -9,6 +10,7 @@ import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.core.CommentUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -168,7 +170,13 @@ public class RepeatDocPartProcessor
             var expressionContexts = entry.getValue();
             var gcp = requireNonNull(comment.getParent());
             var repeatElements = comment.getElements();
-            var subTemplate = comment.tryBuildingSubtemplate(document);
+            WordprocessingMLPackage subTemplate = null;
+            //TODO: fix that explicit exception more sneakily
+            try {
+                subTemplate = CommentUtil.createSubWordDocument(comment);
+            } catch (InvalidFormatException e) {
+                throw new RuntimeException(e);
+            }
             SectPr previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(
                     repeatElements.get(0), gcp);
             boolean oddNumberOfBreaks = SectionUtil.isOddNumberOfSectionBreaks(

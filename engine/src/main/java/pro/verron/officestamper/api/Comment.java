@@ -2,7 +2,6 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import pro.verron.officestamper.core.CommentUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -23,44 +22,8 @@ public interface Comment {
      * Retrieves the elements in the document that are between the comment range anchors.
      *
      * @return a list of objects representing the elements between the comment range anchors.
-     * @deprecated removed for replacement by {@link Comment#getElements()} which doesn't imply a specific usage
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    default List<Object> getRepeatElements() {
-        return getElements();
-    }
-
-    /**
-     * Retrieves the elements in the document that are between the comment range anchors.
-     *
-     * @return a list of objects representing the elements between the comment range anchors.
      */
     List<Object> getElements();
-
-    /**
-     * Creates a new document containing only the elements between the comment range anchors.
-     *
-     * @param document the document from which to copy the elements.
-     *
-     * @return a new document containing only the elements between the comment range anchors.
-     *
-     * @throws Exception if the sub template could not be created.
-     * @deprecated use {@link CommentUtil#createSubWordDocument(Comment)} instead
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
-            throws Exception;
-
-    /**
-     * Tries to build a subtemplate from the given WordprocessingMLPackage document.
-     *
-     * @param document the source document from which to build the subtemplate
-     *
-     * @return the built subtemplate as a WordprocessingMLPackage
-     * @deprecated use {@link CommentUtil#createSubWordDocument(Comment)} instead
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    WordprocessingMLPackage tryBuildingSubtemplate(WordprocessingMLPackage document);
 
     /**
      * Retrieves the {@link CommentRangeEnd} object associated with this comment.

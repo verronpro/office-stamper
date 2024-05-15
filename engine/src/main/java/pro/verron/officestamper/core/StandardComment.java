@@ -8,7 +8,6 @@ import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R.CommentReference;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -67,45 +66,6 @@ public class StandardComment
             endFound = endFound || DocumentUtil.depthElementSearch(getCommentRangeEnd(), element);
         }
         return elements;
-    }
-
-    /**
-     * Creates a new document containing only the elements between the comment range anchors.
-     *
-     * @param document the document from which to copy the elements.
-     *
-     * @return a new document containing only the elements between the comment range anchors.
-     *
-     * @throws Exception if the sub template could not be created.
-     * @deprecated use {@link CommentUtil#createSubWordDocument(Comment)} instead
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    @Override
-    public WordprocessingMLPackage getSubTemplate(WordprocessingMLPackage document)
-            throws Exception {
-        return CommentUtil.createSubWordDocument(this);
-    }
-
-    /**
-     * Creates a new document containing only the elements between the comment range anchors.
-     * If the sub template could not be created, a
-     * {@link OfficeStamperException} is thrown.
-     *
-     * @param document the document from which to copy the elements.
-     *
-     * @return a new document containing only the elements between the comment range anchors.
-     * @deprecated use {@link CommentUtil#createSubWordDocument(Comment)} instead
-     */
-    @Deprecated(since = "1.6.8", forRemoval = true)
-    @Override
-    public WordprocessingMLPackage tryBuildingSubtemplate(
-            WordprocessingMLPackage document
-    ) {
-        try {
-            return getSubTemplate(document);
-        } catch (Exception e) {
-            throw new OfficeStamperException(e);
-        }
     }
 
     /**

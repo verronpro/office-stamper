@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.util.walk;
+package pro.verron.officestamper.core;
 
 import org.docx4j.wml.*;
 

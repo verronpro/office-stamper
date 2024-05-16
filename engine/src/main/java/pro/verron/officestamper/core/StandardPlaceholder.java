@@ -1,7 +1,6 @@
 package pro.verron.officestamper.core;
 
 import pro.verron.officestamper.api.Placeholder;
-import pro.verron.officestamper.core.expression.Matcher;
 
 /**
  * Represents an expression with a configured Matcher.

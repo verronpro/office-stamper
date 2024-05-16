@@ -4,9 +4,9 @@ import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
-import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.PlaceholderReplacer;
@@ -15,7 +15,9 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.function.BiFunction;
 
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static org.docx4j.TextUtils.getText;
 
 /**
  * Repeats a table row for each element in a list.
@@ -121,15 +123,11 @@ public class RepeatProcessor
     /** {@inheritDoc} */
     @Override
     public void repeatTableRow(List<Object> objects) {
-        P pCoords = getParagraph();
-
-        if (pCoords.getParent() instanceof Tc tc
-                && tc.getParent() instanceof Tr tableRow) {
+        P p = getParagraph();
+        if (p.getParent() instanceof Tc tc && tc.getParent() instanceof Tr tableRow) {
             tableRowsToRepeat.put(tableRow, objects);
             tableRowsCommentsToRemove.put(tableRow, getCurrentCommentWrapper());
         }
-        else {
-            throw new CommentProcessingException("Paragraph is not within a table!", pCoords);
-        }
+        else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
     }
 }

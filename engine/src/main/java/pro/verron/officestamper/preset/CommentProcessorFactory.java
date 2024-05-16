@@ -9,7 +9,6 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
-import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.*;
@@ -34,7 +33,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.docx4j.TextUtils.getText;
-import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImportImages;
+import static pro.verron.officestamper.core.DocumentUtil.walkObjectsAndImportImages;
 
 /**
  * Factory class to create the correct comment processor for a given comment.

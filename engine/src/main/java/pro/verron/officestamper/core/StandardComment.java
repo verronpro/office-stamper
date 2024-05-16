@@ -6,7 +6,6 @@ import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R.CommentReference;
-import org.wickedsource.docxstamper.util.DocumentUtil;
 import pro.verron.officestamper.api.Comment;
 
 import java.util.ArrayList;

@@ -5,7 +5,7 @@ import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import org.wickedsource.docxstamper.util.DocumentUtil;
+import pro.verron.officestamper.core.DocumentUtil;
 
 /**
  * Walks through a document and calls the methods on each paragraph and run.

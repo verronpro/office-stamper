@@ -9,7 +9,6 @@ import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.PlaceholderReplacer;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -41,22 +40,6 @@ public class RepeatProcessor
     ) {
         super(placeholderReplacer);
         nullSupplier = nullSupplier1;
-    }
-
-    /**
-     * Creates a new RepeatProcessor.
-     *
-     * @param pr       The PlaceholderReplacer to use.
-     * @param document a {@link WordprocessingMLPackage} object
-     * @param row1     a {@link Tr} object
-     *
-     * @return A new RepeatProcessor.
-     */
-    public static List<Tr> stampEmptyContext(PlaceholderReplacer pr, WordprocessingMLPackage document, Tr row1) {
-        Tr rowClone = XmlUtils.deepCopy(row1);
-        Object emptyContext = new Object();
-        new ParagraphResolverDocumentWalker(rowClone, emptyContext, document, pr).walk();
-        return List.of(rowClone);
     }
 
     /**

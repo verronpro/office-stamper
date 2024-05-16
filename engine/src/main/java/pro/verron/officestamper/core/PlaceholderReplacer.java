@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
-import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;

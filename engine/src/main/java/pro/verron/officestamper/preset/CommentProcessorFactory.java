@@ -12,7 +12,6 @@ import org.springframework.lang.Nullable;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.ObjectDeleter;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
-import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseDocumentWalker;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.*;

@@ -3,7 +3,7 @@ package pro.verron.officestamper.api;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
-import org.wickedsource.docxstamper.util.RunUtil;
+import pro.verron.officestamper.core.RunUtil;
 
 /**
  * This is an abstract class that provides a generic implementation for

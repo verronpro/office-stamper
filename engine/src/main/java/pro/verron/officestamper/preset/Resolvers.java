@@ -3,11 +3,11 @@ package pro.verron.officestamper.preset;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
-import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Placeholder;
 import pro.verron.officestamper.api.StringResolver;
+import pro.verron.officestamper.core.RunUtil;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

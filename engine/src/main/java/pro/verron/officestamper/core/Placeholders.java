@@ -3,8 +3,6 @@ package pro.verron.officestamper.core;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
-import pro.verron.officestamper.core.expression.Matcher;
-import pro.verron.officestamper.core.expression.PlaceholderFinder;
 
 import java.util.List;
 import java.util.regex.Pattern;

@@ -1,7 +1,6 @@
-package pro.verron.officestamper.core.expression;
+package pro.verron.officestamper.core;
 
 import pro.verron.officestamper.api.Placeholder;
-import pro.verron.officestamper.core.StandardPlaceholder;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,6 +2,7 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
+import org.springframework.lang.Nullable;
 
 import java.util.Objects;
 
@@ -78,7 +79,7 @@ public abstract class AbstractCommentProcessor
      * {@inheritDoc}
      */
     @Override
-    public void setCurrentRun(R run) {
+    public void setCurrentRun(@Nullable R run) {
         this.currentRun = run;
     }
 }

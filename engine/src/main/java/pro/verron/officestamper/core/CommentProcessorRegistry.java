@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
-import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.wickedsource.docxstamper.util.RunUtil;
 import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.officestamper.api.Comment;
@@ -78,13 +78,13 @@ public class CommentProcessorRegistry {
 
         new BaseCoordinatesWalker() {
             @Override protected void onRun(R run, P paragraph) {
-                runProcessorsOnRunComment(document, comments, expressionContext, paragraph, run).ifPresent(
-                        proceedComments::add);
+                runProcessorsOnRunComment(document, comments, expressionContext, paragraph, run)
+                        .ifPresent(proceedComments::add);
             }
 
             @Override protected void onParagraph(P paragraph) {
-                runProcessorsOnParagraphComment(document, comments, expressionContext, paragraph).ifPresent(
-                        proceedComments::add);
+                runProcessorsOnParagraphComment(document, comments, expressionContext, paragraph)
+                        .ifPresent(proceedComments::add);
                 runProcessorsOnInlineContent(expressionContext, paragraph);
             }
 
@@ -99,53 +99,37 @@ public class CommentProcessorRegistry {
     }
 
     private <T> Optional<Comment> runProcessorsOnRunComment(
-            WordprocessingMLPackage document, Map<BigInteger, Comment> comments, T expressionContext, P paragraph, R run
-    ) {
-        var comment = CommentUtil.getCommentAround(run, document);
-        return comment.flatMap(c -> runCommentProcessors(comments, expressionContext, c, paragraph, run));
-    }
-
-    private <T> Optional<Comment> runCommentProcessors(
+            WordprocessingMLPackage document,
             Map<BigInteger, Comment> comments,
             T expressionContext,
-            @NonNull Comments.Comment comment,
             P paragraph,
             R run
     ) {
-        Comment commentWrapper = comments.get(comment.getId());
+        return CommentUtil
+                .getCommentAround(run, document)
+                .flatMap(c -> runCommentProcessors(comments, expressionContext, c, paragraph, run));
+    }
 
-        if (Objects.isNull(commentWrapper)) {
-            // no comment to process
-            return Optional.empty();
-        }
-
-        var commentExpression = getCommentString(comment);
-
-        for (final Object processor : commentProcessors.values()) {
-            ((CommentProcessor) processor).setParagraph(paragraph);
-            ((CommentProcessor) processor).setCurrentRun(run);
-            ((CommentProcessor) processor).setCurrentCommentWrapper(commentWrapper);
-        }
-
-        try {
-            expressionResolver.resolve(commentExpression, expressionContext);
-            comments.remove(comment.getId());
-            logger.debug("Comment {} has been successfully processed by a comment processor.", commentExpression);
-            return Optional.of(commentWrapper);
-        } catch (SpelEvaluationException | SpelParseException e) {
-            if (failOnUnresolvedExpression) {
-                throw new OfficeStamperException(commentExpression.toString(), e);
-            }
-            else {
-                logger.warn(String.format(
-                        "Skipping comment expression '%s' because it can not be resolved by any comment processor. "
-                                + "Reason: %s. Set log level to TRACE to view Stacktrace.",
-                        commentExpression,
-                        e.getMessage()));
-                logger.trace("Reason for skipping comment: ", e);
-            }
-        }
-        return Optional.empty();
+    /**
+     * Takes the first comment on the specified paragraph and tries to evaluate
+     * the string within the comment against all registered
+     * {@link CommentProcessor}s.
+     *
+     * @param document          the Word document.
+     * @param comments          the comments within the document.
+     * @param expressionContext the context root object
+     * @param paragraph         the paragraph whose comments to evaluate.
+     * @param <T>               the type of the context root object.
+     */
+    private <T> Optional<Comment> runProcessorsOnParagraphComment(
+            WordprocessingMLPackage document,
+            Map<BigInteger, Comment> comments,
+            T expressionContext,
+            P paragraph
+    ) {
+        return CommentUtil
+                .getCommentFor(paragraph, document)
+                .flatMap(c -> runCommentProcessors(comments, expressionContext, c, paragraph, null));
     }
 
     /**
@@ -185,27 +169,47 @@ public class CommentProcessorRegistry {
         }
     }
 
-    /**
-     * Takes the first comment on the specified paragraph and tries to evaluate
-     * the string within the comment against all registered
-     * {@link CommentProcessor}s.
-     *
-     * @param document          the Word document.
-     * @param comments          the comments within the document.
-     * @param expressionContext the context root object
-     * @param paragraph         the paragraph whose comments to evaluate.
-     * @param <T>               the type of the context root object.
-     */
-    private <T> Optional<Comment> runProcessorsOnParagraphComment(
-            WordprocessingMLPackage document, Map<BigInteger, Comment> comments, T expressionContext, P paragraph
+    private <T> Optional<Comment> runCommentProcessors(
+            Map<BigInteger, Comment> comments,
+            T expressionContext,
+            Comments.Comment comment,
+            P paragraph,
+            @Nullable R run
     ) {
-        return CommentUtil.getCommentFor(paragraph, document)
-                          .flatMap(c -> this.runCommentProcessors(comments,
-                                  expressionContext,
-                                  c,
-                                  paragraph,
-                                  null
-                          ));
+        Comment commentWrapper = comments.get(comment.getId());
+
+        if (Objects.isNull(commentWrapper)) {
+            // no comment to process
+            return Optional.empty();
+        }
+
+        var commentExpression = getCommentString(comment);
+
+        for (final Object processor : commentProcessors.values()) {
+            ((CommentProcessor) processor).setParagraph(paragraph);
+            ((CommentProcessor) processor).setCurrentRun(run);
+            ((CommentProcessor) processor).setCurrentCommentWrapper(commentWrapper);
+        }
+
+        try {
+            expressionResolver.resolve(commentExpression, expressionContext);
+            comments.remove(comment.getId());
+            logger.debug("Comment {} has been successfully processed by a comment processor.", commentExpression);
+            return Optional.of(commentWrapper);
+        } catch (SpelEvaluationException | SpelParseException e) {
+            if (failOnUnresolvedExpression) {
+                throw new OfficeStamperException(commentExpression.toString(), e);
+            }
+            else {
+                logger.warn(String.format(
+                        "Skipping comment expression '%s' because it can not be resolved by any comment processor. "
+                                + "Reason: %s. Set log level to TRACE to view Stacktrace.",
+                        commentExpression,
+                        e.getMessage()));
+                logger.trace("Reason for skipping comment: ", e);
+            }
+        }
+        return Optional.empty();
     }
 
     /**

@@ -1,11 +1,10 @@
-package org.wickedsource.docxstamper.util;
+package pro.verron.officestamper.core;
 
 import org.docx4j.jaxb.Context;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.core.RunUtil;
 
 /**
  * Utility class for creating paragraphs.

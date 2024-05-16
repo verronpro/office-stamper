@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.util;
+package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
@@ -11,8 +11,6 @@ import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.core.DocxImageExtractor;
-import pro.verron.officestamper.core.RunUtil;
 
 import java.util.*;
 import java.util.stream.Stream;

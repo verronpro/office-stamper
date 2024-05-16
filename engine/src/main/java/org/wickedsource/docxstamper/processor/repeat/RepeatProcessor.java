@@ -3,11 +3,7 @@ package org.wickedsource.docxstamper.processor.repeat;
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
-import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 
 import java.math.BigInteger;
@@ -27,7 +23,7 @@ import static org.docx4j.TextUtils.getText;
  * @since 1.0.0
  */
 public class RepeatProcessor
-        extends BaseCommentProcessor
+        extends AbstractCommentProcessor
         implements IRepeatProcessor {
 
     private final BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier;

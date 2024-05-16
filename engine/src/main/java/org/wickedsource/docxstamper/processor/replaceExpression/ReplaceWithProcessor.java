@@ -2,8 +2,8 @@ package org.wickedsource.docxstamper.processor.replaceExpression;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
-import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.RunUtil;
+import pro.verron.officestamper.api.AbstractCommentProcessor;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
@@ -23,7 +23,7 @@ import static java.lang.String.format;
  * @since 1.0.7
  */
 public class ReplaceWithProcessor
-        extends BaseCommentProcessor
+        extends AbstractCommentProcessor
         implements IReplaceWithProcessor {
 
     private final Function<R, List<Object>> nullSupplier;

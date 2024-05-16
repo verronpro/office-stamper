@@ -5,8 +5,8 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
-import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.ObjectDeleter;
+import pro.verron.officestamper.api.AbstractCommentProcessor;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
@@ -27,7 +27,7 @@ import static org.docx4j.TextUtils.getText;
  * @since 1.0.0
  */
 public class DisplayIfProcessor
-        extends BaseCommentProcessor
+        extends AbstractCommentProcessor
         implements IDisplayIfProcessor {
 
     private List<P> paragraphsToBeRemoved = new ArrayList<>();

@@ -4,8 +4,8 @@ import jakarta.xml.bind.JAXBElement;
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
+import pro.verron.officestamper.api.AbstractCommentProcessor;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
@@ -29,7 +29,7 @@ import static org.docx4j.TextUtils.getText;
  * @since 1.6.2
  */
 public class TableResolver
-        extends BaseCommentProcessor
+        extends AbstractCommentProcessor
         implements ITableResolver {
     private final Map<Tbl, StampTable> cols = new HashMap<>();
     private final Function<Tbl, List<Object>> nullSupplier;

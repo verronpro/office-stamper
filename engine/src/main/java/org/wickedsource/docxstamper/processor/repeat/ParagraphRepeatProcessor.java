@@ -3,12 +3,8 @@ package org.wickedsource.docxstamper.processor.repeat;
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.SectionUtil;
-import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.StandardParagraph;
 
@@ -28,7 +24,7 @@ import java.util.function.Supplier;
  * @since 1.2.2
  */
 public class ParagraphRepeatProcessor
-        extends BaseCommentProcessor
+        extends AbstractCommentProcessor
         implements IParagraphRepeatProcessor {
     private final Supplier<? extends List<? extends P>> nullSupplier;
     private Map<P, Paragraphs> pToRepeat = new HashMap<>();

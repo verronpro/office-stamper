@@ -6,7 +6,6 @@ import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
 import org.wickedsource.docxstamper.util.DocumentUtil;
 import org.wickedsource.docxstamper.util.SectionUtil;
 import pro.verron.officestamper.api.*;
@@ -41,7 +40,7 @@ import static org.wickedsource.docxstamper.util.DocumentUtil.walkObjectsAndImpor
  * @since 1.3.0
  */
 public class RepeatDocPartProcessor
-        extends BaseCommentProcessor
+        extends AbstractCommentProcessor
         implements IRepeatDocPartProcessor {
     private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
     private static final ObjectFactory objectFactory = Context.getWmlObjectFactory();

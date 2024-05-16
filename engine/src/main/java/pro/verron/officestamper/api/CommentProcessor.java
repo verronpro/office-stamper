@@ -3,6 +3,7 @@ package pro.verron.officestamper.api;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
+import org.springframework.lang.Nullable;
 
 /**
  * CommentProcessor is an interface that defines the methods for processing comments in a .docx template.
@@ -36,7 +37,7 @@ public interface CommentProcessor {
      *
      * @param run coordinates of the currently processed run within the template.
      */
-    void setCurrentRun(R run);
+    void setCurrentRun(@Nullable R run);
 
     /**
      * Passes the comment range wrapper that is currently being processed

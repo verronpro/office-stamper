@@ -54,7 +54,7 @@ public class CommentProcessorFactory {
 	}
 
 	private OfficeStamper<WordprocessingMLPackage> getStamper() {
-		return (template, context, output) -> new DocxStamper<>(configuration).stamp(template, context, output);
+		return (template, context, output) -> new DocxStamper(configuration).stamp(template, context, output);
 	}
 
 	/**

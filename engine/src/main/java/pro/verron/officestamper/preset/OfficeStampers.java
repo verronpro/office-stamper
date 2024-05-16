@@ -44,7 +44,7 @@ public class OfficeStampers {
     ) {
         return new StreamStamper<>(
                 OfficeStampers::loadWord,
-                new DocxStamper<Object>(config)
+                new DocxStamper(config)
         );
     }
 

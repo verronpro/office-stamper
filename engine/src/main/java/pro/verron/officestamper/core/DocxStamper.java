@@ -23,13 +23,12 @@ import java.util.function.Function;
  * interface that is used to stamp DOCX templates with a context object and
  * write the result to an output stream.
  *
- * @param <T> The type of the context that can be stamped
  * @author Tom Hombergs
  * @author Joseph Verron
  * @version ${version}
  * @since 1.0.0
  */
-public class DocxStamper<T>
+public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
     private final List<PreProcessor> preprocessors;
     private final PlaceholderReplacer placeholderReplacer;

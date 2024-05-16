@@ -1,6 +1,7 @@
 package org.wickedsource.docxstamper.util;
 
 import org.docx4j.wml.R;
+import pro.verron.officestamper.core.RunUtil;
 
 /**
  * Represents a run (i.e., a text fragment) in a paragraph. The run is indexed relative to the containing paragraph

@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.wickedsource.docxstamper.util.IndexedRun;
-import org.wickedsource.docxstamper.util.RunUtil;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
 

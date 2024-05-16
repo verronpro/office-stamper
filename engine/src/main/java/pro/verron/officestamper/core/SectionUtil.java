@@ -5,6 +5,7 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.wml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class SectionUtil {
 	 * @param parent      a {@link ContentAccessor} object
 	 * @return a new section break object.
 	 */
+	@Nullable
 	public static SectPr getPreviousSectionBreakIfPresent(Object firstObject, ContentAccessor parent) {
 		List<Object> parentContent = parent.getContent();
 		int pIndex = parentContent.indexOf(firstObject);
@@ -59,6 +61,7 @@ public class SectionUtil {
 	 * @return a new section break object.
 	 * @param p a {@link P} object
 	 */
+	@Nullable
 	public static SectPr getParagraphSectionBreak(P p) {
 		return p.getPPr() != null && p.getPPr().getSectPr() != null
 				? p.getPPr().getSectPr()

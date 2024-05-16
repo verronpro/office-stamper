@@ -5,6 +5,7 @@ import org.docx4j.wml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.core.TableCellUtil;
 
 import java.util.Iterator;
 

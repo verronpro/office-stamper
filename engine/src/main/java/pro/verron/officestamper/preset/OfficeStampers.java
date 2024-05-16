@@ -2,8 +2,6 @@ package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
-import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.StreamStamper;
@@ -25,7 +23,8 @@ public class OfficeStampers {
 
     /**
      * Creates a new DocxStamper with the default configuration.
-     * Also adds the {@link RemoveProofErrors} and {@link MergeSameStyleRuns} preprocessors.
+     * Also adds the {@link Preprocessors#removeLanguageProof()} and {@link Preprocessors#mergeSimilarRuns()}
+     * preprocessors.
      *
      * @return a new DocxStamper
      */

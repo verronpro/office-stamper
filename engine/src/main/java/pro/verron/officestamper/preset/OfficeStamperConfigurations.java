@@ -1,7 +1,5 @@
 package pro.verron.officestamper.preset;
 
-import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
-import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 
@@ -22,8 +20,8 @@ public class OfficeStamperConfigurations {
      */
     public static OfficeStamperConfiguration standardWithPreprocessing() {
         var configuration = standard();
-        configuration.addPreprocessor(new RemoveProofErrors());
-        configuration.addPreprocessor(new MergeSameStyleRuns());
+        configuration.addPreprocessor(Preprocessors.removeLanguageProof());
+        configuration.addPreprocessor(Preprocessors.mergeSimilarRuns());
         return configuration;
     }
 

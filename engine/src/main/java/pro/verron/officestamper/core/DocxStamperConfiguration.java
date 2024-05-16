@@ -4,12 +4,6 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.lang.NonNull;
 import org.wickedsource.docxstamper.el.DefaultEvaluationContextConfigurer;
-import org.wickedsource.docxstamper.processor.displayif.IDisplayIfProcessor;
-import org.wickedsource.docxstamper.processor.repeat.IParagraphRepeatProcessor;
-import org.wickedsource.docxstamper.processor.repeat.IRepeatDocPartProcessor;
-import org.wickedsource.docxstamper.processor.repeat.IRepeatProcessor;
-import org.wickedsource.docxstamper.processor.replaceExpression.IReplaceWithProcessor;
-import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.Resolvers;
@@ -51,13 +45,13 @@ public class DocxStamperConfiguration
      */
     public DocxStamperConfiguration() {
         CommentProcessorFactory pf = new CommentProcessorFactory(this);
-        commentProcessors.put(IRepeatProcessor.class, pf::repeat);
-        commentProcessors.put(IParagraphRepeatProcessor.class,
+        commentProcessors.put(CommentProcessorFactory.IRepeatProcessor.class, pf::repeat);
+        commentProcessors.put(CommentProcessorFactory.IParagraphRepeatProcessor.class,
                 pf::repeatParagraph);
-        commentProcessors.put(IRepeatDocPartProcessor.class, pf::repeatDocPart);
-        commentProcessors.put(ITableResolver.class, pf::tableResolver);
-        commentProcessors.put(IDisplayIfProcessor.class, pf::displayIf);
-        commentProcessors.put(IReplaceWithProcessor.class, pf::replaceWith);
+        commentProcessors.put(CommentProcessorFactory.IRepeatDocPartProcessor.class, pf::repeatDocPart);
+        commentProcessors.put(CommentProcessorFactory.ITableResolver.class, pf::tableResolver);
+        commentProcessors.put(CommentProcessorFactory.IDisplayIfProcessor.class, pf::displayIf);
+        commentProcessors.put(CommentProcessorFactory.IReplaceWithProcessor.class, pf::replaceWith);
 
         resolvers.addAll(List.of(Resolvers.image(),
                 Resolvers.legacyDate(),

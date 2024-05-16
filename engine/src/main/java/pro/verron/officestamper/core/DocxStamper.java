@@ -10,7 +10,6 @@ import org.wickedsource.docxstamper.el.ExpressionResolver;
 import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import org.wickedsource.docxstamper.processor.CommentProcessorRegistry;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.preset.OfficeStampers;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,12 +28,6 @@ import java.util.function.Function;
  * @author Joseph Verron
  * @version ${version}
  * @since 1.0.0
- * @deprecated since 1.6.8, This class has been deprecated in the effort
- * of the library modularization, because it
- * exposes too many implementation details to library users, and makes it
- * hard to extend the library comfortably.
- * It is recommended to use the {@link OfficeStampers} methods instead.
- * This class will not be exported in the future releases of the module.
  */
 public class DocxStamper<T>
         implements OfficeStamper<WordprocessingMLPackage> {

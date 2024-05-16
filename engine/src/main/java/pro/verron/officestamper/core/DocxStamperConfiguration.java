@@ -12,7 +12,6 @@ import org.wickedsource.docxstamper.processor.replaceExpression.IReplaceWithProc
 import org.wickedsource.docxstamper.processor.table.ITableResolver;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
 import java.util.ArrayList;
@@ -30,13 +29,6 @@ import java.util.function.Function;
  * @author Tom Hombergs
  * @version ${version}
  * @since 1.0.3
- * @deprecated since 1.6.8, This class has been deprecated in the effort
- * of the library modularization, because it
- * exposes too many implementation details to library users, and makes it
- * hard to extend the library comfortably.
- * It is recommended to use the  {@link OfficeStamperConfigurations#standard()} method and
- * {@link OfficeStamperConfiguration} interface instead.
- * This class will not be exported in the future releases of the module.
  */
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {

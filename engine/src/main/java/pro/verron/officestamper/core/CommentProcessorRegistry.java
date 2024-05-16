@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.processor;
+package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Comments;
@@ -15,9 +15,6 @@ import org.wickedsource.docxstamper.util.walk.BaseCoordinatesWalker;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.Placeholders;
-import pro.verron.officestamper.core.StandardParagraph;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

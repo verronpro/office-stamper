@@ -4,6 +4,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.Placeholder;
 
 /**
@@ -41,6 +42,7 @@ public class ExpressionResolver {
      * @param contextRoot  the context object against which to resolve the expression.
      * @return the resolved value of the expression.
      */
+    @Nullable
     public Object resolve(Placeholder placeholder, Object contextRoot) {
         evaluationContext.setRootObject(contextRoot);
         return parser.parseExpression(placeholder.content())

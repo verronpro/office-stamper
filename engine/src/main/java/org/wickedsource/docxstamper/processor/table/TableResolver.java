@@ -5,9 +5,9 @@ import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.wickedsource.docxstamper.processor.BaseCommentProcessor;
-import org.wickedsource.docxstamper.processor.CommentProcessingException;
 import org.wickedsource.docxstamper.util.ParagraphUtil;
 import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.core.PlaceholderReplacer;
 import pro.verron.officestamper.preset.StampTable;
@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
+import static java.lang.String.format;
+import static org.docx4j.TextUtils.getText;
 
 /**
  * <p>TableResolver class.</p>
@@ -56,12 +59,10 @@ public class TableResolver
     @Override
     public void resolveTable(StampTable givenTable) {
         P p = getParagraph();
-        if (p.getParent() instanceof Tc tc
-                && tc.getParent() instanceof Tr tr
-                && tr.getParent() instanceof Tbl table
-        ) cols.put(table, givenTable);
-        else throw new CommentProcessingException("Paragraph is not within a " +
-                "table!", p);
+        if (p.getParent() instanceof Tc tc && tc.getParent() instanceof Tr tr && tr.getParent() instanceof Tbl table) {
+            cols.put(table, givenTable);
+        }
+        else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.util;
+package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.dml.Graphic;

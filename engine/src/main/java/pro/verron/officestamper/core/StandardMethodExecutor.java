@@ -1,4 +1,4 @@
-package org.wickedsource.docxstamper.el;
+package pro.verron.officestamper.core;
 
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.MethodExecutor;

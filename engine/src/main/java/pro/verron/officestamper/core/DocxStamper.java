@@ -6,8 +6,6 @@ import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.lang.NonNull;
-import org.wickedsource.docxstamper.el.ExpressionResolver;
-import org.wickedsource.docxstamper.el.StandardMethodResolver;
 import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;

@@ -2,9 +2,15 @@ package pro.verron.officestamper.preset;
 
 
 import org.springframework.expression.EvaluationContext;
-import org.wickedsource.docxstamper.el.DefaultEvaluationContextConfigurer;
-import org.wickedsource.docxstamper.el.NoOpEvaluationContextConfigurer;
+import org.springframework.expression.TypeLocator;
+import org.springframework.expression.spel.SpelEvaluationException;
+import org.springframework.expression.spel.SpelMessage;
+import org.springframework.expression.spel.support.*;
 import pro.verron.officestamper.api.EvaluationContextConfigurer;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Utility class for configuring the EvaluationContext used by officestamper.
@@ -41,5 +47,68 @@ public class EvaluationContextConfigurers {
      */
     public static EvaluationContextConfigurer defaultConfigurer() {
         return new DefaultEvaluationContextConfigurer();
+    }
+
+    /**
+     * {@link EvaluationContextConfigurer} that does no customization.
+     * <p>
+     * The NoOpEvaluationContextConfigurer is a configuration placeholder used to indicate the
+     * intention to keep the standard powerful features provided by the
+     * Spring framework's StandardEvaluationContext class.
+     * <p>
+     * StandardEvaluationContext is a powerful class by default, which can lead to potential security risks
+     * if not properly managed. This might include potential dangerous injections in the template.
+     * <p>
+     * This configurer does nothing to the StandardEvaluationContext class, and therefore all the
+     * unfiltered features are accessible. It should be used when there is a need to use the
+     * powerful features of the aforementioned class, and there is a trust that the template won't
+     * contain any dangerous injections.
+     *
+     * @author Joseph Verron
+     * @author Mario Siegenthaler
+     * @version ${version}
+     * @since 1.0.13
+     */
+    private static class NoOpEvaluationContextConfigurer
+            implements EvaluationContextConfigurer {
+        /**
+         * Configures the provided StandardEvaluationContext.
+         *
+         * @param context the StandardEvaluationContext to be configured, not null
+         */
+        @Override
+        public void configureEvaluationContext(StandardEvaluationContext context) {
+            // DO NOTHING
+        }
+    }
+
+    /**
+     * {@link EvaluationContextConfigurer} that has better default security,
+     * especially doesn't allow especially known injections.
+     *
+     * @author Joseph Verron
+     * @version ${version}
+     * @since 1.6.5
+     */
+    private static class DefaultEvaluationContextConfigurer
+            implements EvaluationContextConfigurer {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void configureEvaluationContext(StandardEvaluationContext context) {
+            TypeLocator typeLocator = typeName -> {
+                throw new SpelEvaluationException(SpelMessage.TYPE_NOT_FOUND, typeName);
+            };
+            context.setPropertyAccessors(List.of(DataBindingPropertyAccessor.forReadWriteAccess()));
+            context.setConstructorResolvers(Collections.emptyList());
+            context.setMethodResolvers(new ArrayList<>(List.of(DataBindingMethodResolver.forInstanceMethodInvocation())));
+            //noinspection DataFlowIssue, ignore the warning since it is a workaround fixing potential security issues
+            context.setBeanResolver(null);
+            context.setTypeLocator(typeLocator);
+            context.setTypeConverter(new StandardTypeConverter());
+            context.setTypeComparator(new StandardTypeComparator());
+            context.setOperatorOverloader(new StandardOperatorOverloader());
+        }
     }
 }

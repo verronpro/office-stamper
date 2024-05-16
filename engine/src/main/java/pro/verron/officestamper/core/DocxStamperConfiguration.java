@@ -3,9 +3,9 @@ package pro.verron.officestamper.core;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.lang.NonNull;
-import org.wickedsource.docxstamper.el.DefaultEvaluationContextConfigurer;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.preset.EvaluationContextConfigurers;
 import pro.verron.officestamper.preset.Resolvers;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class DocxStamperConfiguration
     private final Map<Class<?>, Object> expressionFunctions = new HashMap<>();
     private final List<PreProcessor> preprocessors = new ArrayList<>();
     private String lineBreakPlaceholder = "\n";
-    private EvaluationContextConfigurer evaluationContextConfigurer = new DefaultEvaluationContextConfigurer();
+    private EvaluationContextConfigurer evaluationContextConfigurer = EvaluationContextConfigurers.defaultConfigurer();
     private boolean failOnUnresolvedExpression = true;
     private boolean leaveEmptyOnExpressionError = false;
     private boolean replaceUnresolvedExpressions = false;

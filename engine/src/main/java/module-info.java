@@ -58,7 +58,6 @@ module pro.verron.officestamper {
     // TODO_LATER: remove all the following exports in next version
     exports org.wickedsource.docxstamper.el;
     exports org.wickedsource.docxstamper.util;
-    exports org.wickedsource.docxstamper.processor;
     exports org.wickedsource.docxstamper.processor.table;
     exports pro.verron.officestamper.core;
 

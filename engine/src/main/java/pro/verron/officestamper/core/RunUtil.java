@@ -6,6 +6,7 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.model.styles.StyleUtil;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.*;
+import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.Objects;
@@ -147,7 +148,7 @@ public class RunUtil {
      * @return the run containing the image
      */
     public static R createRunWithImage(
-            Integer maxWidth,
+            @Nullable Integer maxWidth,
             BinaryPartAbstractImage abstractImage
     ) {
         // creating random ids assuming they are unique,
@@ -182,7 +183,7 @@ public class RunUtil {
     private static Inline tryCreateImageInline(
             String filenameHint,
             String altText,
-            Integer maxWidth,
+            @Nullable Integer maxWidth,
             BinaryPartAbstractImage abstractImage,
             int id1,
             int id2

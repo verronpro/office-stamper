@@ -594,19 +594,5 @@ public class Contexts {
     public static class EmptyContext {
     }
 
-    /**
-     * The {@code Context} class represents a context object that contains a {@code CustomType}.
-     * It is used in various contexts within the application.
-     *
-     * @param name The {@code CustomType} object.
-     */
-    public record Context(CustomType name) {}
-
-    /**
-     * CustomType is a static nested class that represents a custom type.
-     * It is used in various contexts within the application.
-     */
-    public static class CustomType {}
-
     public record TableContext(StampTable characters) {}
 }

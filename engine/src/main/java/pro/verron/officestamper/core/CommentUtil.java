@@ -402,23 +402,19 @@ public class CommentUtil {
      *
      * @throws InvalidFormatException TODO_LATER: remove this explicit exception from public signature
      */
-    public static WordprocessingMLPackage createSubWordDocument(Comment comment)
-            throws InvalidFormatException {
+    public static WordprocessingMLPackage createSubWordDocument(Comment comment) {
         var elements = comment.getElements();
 
-        var targetCommentsPart = new CommentsPart();
-
-        var target = WordprocessingMLPackage.createPackage();
-        var targetMainPart = target.getMainDocumentPart();
-        targetMainPart.addTargetPart(targetCommentsPart);
+        var target = createWordPackageWithCommentsPart();
 
         // copy the elements without comment range anchors
         var finalElements = elements.stream()
                                     .map(XmlUtils::deepCopy)
                                     .collect(Collectors.toList());
         deleteCommentFromElements(comment, finalElements);
-        targetMainPart.getContent()
-                      .addAll(finalElements);
+        target.getMainDocumentPart()
+              .getContent()
+              .addAll(finalElements);
 
         // copy the images from parent document using the original repeat elements
         var wmlObjectFactory = Context.getWmlObjectFactory();
@@ -428,8 +424,22 @@ public class CommentUtil {
         DocumentUtil.walkObjectsAndImportImages(fakeBody, comment.getDocument(), target);
 
         var comments = extractComments(comment.getChildren());
-        targetCommentsPart.setContents(comments);
+        target.getMainDocumentPart()
+              .getCommentsPart()
+              .setContents(comments);
         return target;
+    }
+
+    private static WordprocessingMLPackage createWordPackageWithCommentsPart() {
+        try {
+            CommentsPart targetCommentsPart = new CommentsPart();
+            var target = WordprocessingMLPackage.createPackage();
+            var mainDocumentPart = target.getMainDocumentPart();
+            mainDocumentPart.addTargetPart(targetCommentsPart);
+            return target;
+        } catch (InvalidFormatException e) {
+            throw new OfficeStamperException("Failed to create a Word package with comment Part", e);
+        }
     }
 
     private static Comments extractComments(Set<Comment> commentChildren) {

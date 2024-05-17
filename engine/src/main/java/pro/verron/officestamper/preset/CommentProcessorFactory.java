@@ -969,10 +969,17 @@ public class CommentProcessorFactory {
                 var wordprocessingMLPackage = WordprocessingMLPackage.load(is);
                 thread.join();
                 return wordprocessingMLPackage;
-            } catch (Docx4JException | IOException | InterruptedException e) {
+            } catch (Docx4JException | IOException e) {
                 OfficeStamperException exception = new OfficeStamperException(e);
                 exceptionHandler.exception()
                                 .ifPresent(exception::addSuppressed);
+                throw exception;
+            } catch (InterruptedException e) {
+                OfficeStamperException exception = new OfficeStamperException(e);
+                exceptionHandler.exception()
+                                .ifPresent(e::addSuppressed);
+                Thread.currentThread()
+                      .interrupt();
                 throw exception;
             }
         }

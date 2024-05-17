@@ -35,10 +35,10 @@ public class ResolutionTest {
                     "System.exit.docx,false,false,true,Unresolved,Unresolved",
                     "System.exit.docx,false,true,false,Unresolved,''",
                     "System.exit.docx,false,true,true,Unresolved,''",
-                    "System.exit.docx,true,false,false,Unresolved,Unresolved",
-                    "System.exit.docx,true,false,true,Unresolved,Unresolved",
-                    "System.exit.docx,true,true,false,Unresolved,Unresolved",
-                    "System.exit.docx,true,true,true,Unresolved,Unresolved",
+                    "System.exit.docx,true,false,false,Unresolved,Should fail",
+                    "System.exit.docx,true,false,true,Unresolved,Should fail",
+                    "System.exit.docx,true,true,false,Unresolved,Should fail",
+                    "System.exit.docx,true,true,true,Unresolved,Should fail",
             }
     )
     @ParameterizedTest

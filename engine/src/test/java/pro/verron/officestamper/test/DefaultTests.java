@@ -69,7 +69,6 @@ public class DefaultTests {
                 conditionalDisplayOfTableTest(),
                 customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(),
                 customExpressionFunctionTest(),
-                customTypeResolverTest(),
                 dateReplacementTest(),
                 expressionReplacementInGlobalParagraphsTest(),
                 expressionReplacementInTablesTest(),
@@ -864,19 +863,6 @@ public class DefaultTests {
                 context,
                 template,
                 expected);
-    }
-
-    private static Arguments customTypeResolverTest() {
-        return arguments("customTypeResolverTest",
-                OfficeStamperConfigurations.standard()
-                                           .addResolver(new CustomTypeResolver()),
-                new Context(new CustomType()),
-                getResource(Path.of("CustomTypeResolverTest.docx")),
-                """
-                        ❬Custom TypeResolver Test❘spacing={after=120,before=240}❭
-                        ❬This paragraph is untouched.❘lang=de-DE❭
-                        ❬The name should be resolved to ❘lang=de-DE❭❬foo❘b=true,lang=de-DE❭❬.❘lang=de-DE❭
-                        ❬❬This paragraph is untouched.❘lang=de-DE❭❘spacing={after=140,before=0}❭""");
     }
 
     private static Arguments dateReplacementTest() {

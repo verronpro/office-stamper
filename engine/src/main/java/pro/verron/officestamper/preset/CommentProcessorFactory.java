@@ -830,19 +830,13 @@ public class CommentProcessorFactory {
                 var expressionContexts = entry.getValue();
                 var gcp = requireNonNull(comment.getParent());
                 var repeatElements = comment.getElements();
-                WordprocessingMLPackage subTemplate = null;
-                //TODO: fix that explicit exception more sneakily
-                try {
-                    subTemplate = CommentUtil.createSubWordDocument(comment);
-                } catch (InvalidFormatException e) {
-                    throw new RuntimeException(e);
-                }
                 SectPr previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(
                         repeatElements.get(0), gcp);
                 boolean oddNumberOfBreaks = SectionUtil.isOddNumberOfSectionBreaks(
                         repeatElements);
 
                 List<?> changes = expressionContexts == null
+                var subTemplate = CommentUtil.createSubWordDocument(comment);
                         ? nullSupplier.get()
                         : stampSubDocuments(document,
                                 expressionContexts,

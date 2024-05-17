@@ -107,7 +107,10 @@ public class PlaceholderReplacer
                 var resolution = resolver.resolve(expression, context);
                 var replacement = registry.resolve(document, expression, resolution);
                 paragraph.replace(expression, replacement);
-            } catch (SpelEvaluationException e) {
+            } catch (SpelEvaluationException
+                     | SpelParseException
+                     | OfficeStamperException e
+            ) {
                 if (failOnUnresolvedExpression) {
                     var template = "Expression %s could not be resolved against context of type %s";
                     var message = template.formatted(expression, context.getClass());
@@ -131,16 +134,6 @@ public class PlaceholderReplacer
                     log.trace("Reason for skipping expression:", e);
                     paragraph.replace(expression, RunUtil.create(unresolvedExpressionsDefaultValue));
                 }
-            } catch (SpelParseException e) {
-                if (leaveEmptyOnExpressionError) {
-                    var template = "Expression {} seems erroneous when evaluating against root of type {}."
-                            + " Reason: {}."
-                            + " Set log level to TRACE to view Stacktrace.";
-                    log.warn(template, expression, context.getClass(), e.getMessage());
-                    log.trace("Reason for skipping expression:", e);
-                    paragraph.replace(expression, RunUtil.create(""));
-                }
-                else throw new OfficeStamperException(e);
             }
         }
         replaceLineBreaks(paragraph);

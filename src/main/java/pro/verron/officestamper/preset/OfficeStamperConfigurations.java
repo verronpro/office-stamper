@@ -5,6 +5,8 @@ import org.wickedsource.docxstamper.preprocessor.MergeSameStyleRuns;
 import org.wickedsource.docxstamper.preprocessor.RemoveProofErrors;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 
+import java.util.Collections;
+
 /**
  * The OfficeStamperConfigurations class provides static methods
  * to create different configurations for the OfficeStamper.
@@ -32,6 +34,17 @@ public class OfficeStamperConfigurations {
      */
     public static OfficeStamperConfiguration standard() {
         return new DocxStamperConfiguration();
+    }
+
+    /**
+     * Creates a new standard OfficeStamperConfiguration.
+     *
+     * @return the standard OfficeStamperConfiguration
+     */
+    public static OfficeStamperConfiguration raw() {
+        var configuration = new DocxStamperConfiguration();
+        configuration.setResolvers(Collections.emptyList());
+        return configuration;
     }
 
 }

@@ -1,20 +1,17 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.R;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.wickedsource.docxstamper.util.RunUtil;
-import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.StringResolver;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static pro.verron.officestamper.test.DefaultTests.getResource;
+import static pro.verron.officestamper.test.TestUtils.getResource;
 
 public class ResolutionTest {
 
@@ -161,13 +158,14 @@ public class ResolutionTest {
     private record CustomContext(CustomValue value) {}
 
     private static class CustomResolver
-            implements ObjectResolver {
-        @Override public boolean canResolve(Object object) {
-            return object instanceof CustomValue;
+            extends StringResolver<CustomValue> {
+
+        protected CustomResolver() {
+            super(CustomValue.class);
         }
 
-        @Override public R resolve(WordprocessingMLPackage document, String expression, Object object) {
-            return RunUtil.create("Custom");
+        @Override public String resolve(CustomValue ignored) {
+            return "Custom";
         }
     }
 }

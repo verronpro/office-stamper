@@ -4,7 +4,6 @@ import jakarta.xml.bind.JAXBElement;
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
@@ -830,13 +829,10 @@ public class CommentProcessorFactory {
                 var expressionContexts = entry.getValue();
                 var gcp = requireNonNull(comment.getParent());
                 var repeatElements = comment.getElements();
-                SectPr previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(
-                        repeatElements.get(0), gcp);
-                boolean oddNumberOfBreaks = SectionUtil.isOddNumberOfSectionBreaks(
-                        repeatElements);
-
-                List<?> changes = expressionContexts == null
                 var subTemplate = CommentUtil.createSubWordDocument(comment);
+                var previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(repeatElements.get(0), gcp);
+                var oddNumberOfBreaks = SectionUtil.isOddNumberOfSectionBreaks(repeatElements);
+                var changes = expressionContexts == null
                         ? nullSupplier.get()
                         : stampSubDocuments(document,
                                 expressionContexts,
@@ -844,9 +840,8 @@ public class CommentProcessorFactory {
                                 subTemplate,
                                 previousSectionBreak,
                                 oddNumberOfBreaks);
-
-                List<Object> gcpContent = gcp.getContent();
-                int index = gcpContent.indexOf(repeatElements.get(0));
+                var gcpContent = gcp.getContent();
+                var index = gcpContent.indexOf(repeatElements.get(0));
                 gcpContent.addAll(index, changes);
                 gcpContent.removeAll(repeatElements);
             }

@@ -35,11 +35,7 @@ public class CommentUtil {
     private static final Logger logger = LoggerFactory.getLogger(CommentUtil.class);
     private static final String WORD_COMMENTS_PART_NAME = "/word/comments.xml";
 
-    /**
-     * Utility class for handling comments in a DOCX document.
-     */
-    // TODO_LATER: Move to private for next version
-    protected CommentUtil() {
+    private CommentUtil() {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
@@ -51,9 +47,7 @@ public class CommentUtil {
      *
      * @return Optional of the comment, if found, Optional.empty() otherwise.
      */
-    public static Optional<Comments.Comment> getCommentAround(
-            R run, WordprocessingMLPackage document
-    ) {
+    public static Optional<Comments.Comment> getCommentAround(R run, WordprocessingMLPackage document) {
         ContentAccessor parent = (ContentAccessor) ((Child) run).getParent();
         if (parent == null) return Optional.empty();
 
@@ -65,7 +59,9 @@ public class CommentUtil {
     }
 
     private static Optional<Comments.Comment> getComment(
-            R run, WordprocessingMLPackage document, ContentAccessor parent
+            R run,
+            WordprocessingMLPackage document,
+            ContentAccessor parent
     )
             throws Docx4JException {
         CommentRangeStart possibleComment = null;
@@ -108,9 +104,7 @@ public class CommentUtil {
      *
      * @throws Docx4JException if an error occurs while searching for the comment
      */
-    public static Optional<Comments.Comment> findComment(
-            WordprocessingMLPackage document, BigInteger id
-    )
+    public static Optional<Comments.Comment> findComment(WordprocessingMLPackage document, BigInteger id)
             throws Docx4JException {
         var name = new PartName(WORD_COMMENTS_PART_NAME);
         var parts = document.getParts();
@@ -135,9 +129,7 @@ public class CommentUtil {
      * @return the concatenated string of all text paragraphs within the
      * comment or null if the specified object is not commented.
      */
-    public static Optional<Comments.Comment> getCommentFor(
-            ContentAccessor object, WordprocessingMLPackage document
-    ) {
+    public static Optional<Comments.Comment> getCommentFor(ContentAccessor object, WordprocessingMLPackage document) {
         for (Object contentObject : object.getContent()) {
             if (!(contentObject instanceof CommentRangeStart crs)) continue;
             BigInteger id = crs.getId();
@@ -218,9 +210,7 @@ public class CommentUtil {
      *
      * @return a map of all comments, with the key being the comment id.
      */
-    public static Map<BigInteger, Comment> getComments(
-            WordprocessingMLPackage document
-    ) {
+    public static Map<BigInteger, Comment> getComments(WordprocessingMLPackage document) {
         Map<BigInteger, Comment> rootComments = new HashMap<>();
         Map<BigInteger, Comment> allComments = new HashMap<>();
         collectCommentRanges(rootComments, allComments, document);
@@ -234,9 +224,7 @@ public class CommentUtil {
      * @param items     a {@link List} object
      * @param commentId a {@link BigInteger} object
      */
-    public static void deleteCommentFromElements(
-            List<Object> items, BigInteger commentId
-    ) {
+    public static void deleteCommentFromElements(List<Object> items, BigInteger commentId) {
         List<Object> elementsToRemove = new ArrayList<>();
         for (Object item : items) {
             Object unwrapped = unwrap(item);
@@ -270,9 +258,8 @@ public class CommentUtil {
 
         rootComments.forEach((key, comment) -> {
             if (isCommentMalformed(comment)) {
-                logger.error(
-                        "Skipping malformed comment, missing range start and/or range end : {}",
-                        getCommentContent(comment));
+                var commentContent = getCommentContent(comment);
+                logger.error("Skipping malformed comment, missing range start and/or range end : {}", commentContent);
             }
             else {
                 filteredCommentEntries.put(key, comment);
@@ -283,30 +270,34 @@ public class CommentUtil {
     }
 
     private static Set<Comment> cleanMalformedComments(Set<Comment> children) {
-        return children.stream()
-                       .filter(comment -> {
-                           if (isCommentMalformed(comment)) {
-                               logger.error(
-                                       "Skipping malformed comment, missing range start and/or range end : {}",
-                                       getCommentContent(comment));
-                               return false;
-                           }
-                           comment.setChildren(cleanMalformedComments(comment.getChildren()));
-                           return true;
-                       })
-                       .collect(toSet());
+        return children
+                .stream()
+                .filter(comment -> {
+                    if (isCommentMalformed(comment)) {
+                        var commentContent = getCommentContent(comment);
+                        logger.error("Skipping malformed comment, missing range start and/or range end : {}",
+                                commentContent);
+                        return false;
+                    }
+                    comment.setChildren(cleanMalformedComments(comment.getChildren()));
+                    return true;
+                })
+                .collect(toSet());
     }
 
     private static String getCommentContent(Comment comment) {
-        return comment.getComment() != null ? comment.getComment()
-                                                     .getContent()
-                                                     .stream()
-                                                     .map(TextUtils::getText)
-                                                     .collect(Collectors.joining("")) : "<no content>";
+        return comment.getComment() == null
+                ? "<no content>"
+                : comment.getComment()
+                         .getContent()
+                         .stream()
+                         .map(TextUtils::getText)
+                         .collect(Collectors.joining(""));
     }
 
     private static boolean isCommentMalformed(Comment comment) {
-        return comment.getCommentRangeStart() == null || comment.getCommentRangeEnd() == null
+        return comment.getCommentRangeStart() == null
+                || comment.getCommentRangeEnd() == null
                 || comment.getComment() == null;
     }
 
@@ -399,8 +390,6 @@ public class CommentUtil {
      * @param comment The comment to be extracted from the original document.
      *
      * @return The sub Word document containing the content of the specified comment.
-     *
-     * @throws InvalidFormatException TODO_LATER: remove this explicit exception from public signature
      */
     public static WordprocessingMLPackage createSubWordDocument(Comment comment) {
         var elements = comment.getElements();

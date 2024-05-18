@@ -1,5 +1,6 @@
 package pro.verron.officestamper.core;
 
+import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.P;
@@ -14,10 +15,7 @@ import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static pro.verron.officestamper.core.CommentUtil.getCommentString;
 import static pro.verron.officestamper.core.CommentUtil.getComments;
@@ -74,19 +72,23 @@ public class CommentProcessorRegistry {
         var comments = getComments(document);
         var proceedComments = new ArrayList<Comment>();
 
-        new BaseCoordinatesWalker() {
-            @Override protected void onRun(R run, P paragraph) {
-                runProcessorsOnRunComment(document, comments, expressionContext, paragraph, run)
-                        .ifPresent(proceedComments::add);
-            }
-
-            @Override protected void onParagraph(P paragraph) {
-                runProcessorsOnParagraphComment(document, comments, expressionContext, paragraph)
-                        .ifPresent(proceedComments::add);
-                runProcessorsOnInlineContent(expressionContext, paragraph);
-            }
-
-        }.walk(document);
+        DocumentUtil.streamParagraphs(document)
+                    .map(P::getContent)
+                    .flatMap(List::stream)
+                    .map(XmlUtils::unwrap)
+                    .filter(R.class::isInstance)
+                    .map(R.class::cast)
+                    .forEach(run -> runProcessorsOnRunComment(document, comments, expressionContext, run)
+                            .ifPresent(proceedComments::add));
+        // we run the paragraph afterward so that the comments inside work before the whole paragraph comments
+        DocumentUtil.streamParagraphs(document)
+                    .forEach(paragraph -> runProcessorsOnParagraphComment(document,
+                            comments,
+                            expressionContext,
+                            paragraph)
+                            .ifPresent(proceedComments::add));
+        DocumentUtil.streamParagraphs(document)
+                    .forEach(paragraph -> runProcessorsOnInlineContent(expressionContext, paragraph));
 
         for (Object processor : commentProcessors.values()) {
             ((CommentProcessor) processor).commitChanges(document);
@@ -100,12 +102,11 @@ public class CommentProcessorRegistry {
             WordprocessingMLPackage document,
             Map<BigInteger, Comment> comments,
             T expressionContext,
-            P paragraph,
             R run
     ) {
         return CommentUtil
                 .getCommentAround(run, document)
-                .flatMap(c -> runCommentProcessors(comments, expressionContext, c, paragraph, run));
+                .flatMap(c -> runCommentProcessors(comments, expressionContext, c, (P) run.getParent(), run));
     }
 
     /**

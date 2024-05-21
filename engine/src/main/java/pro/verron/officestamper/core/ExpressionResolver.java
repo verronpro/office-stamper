@@ -32,17 +32,24 @@ public class ExpressionResolver {
         this.evaluationContext = standardEvaluationContext;
     }
 
+
     /**
-     * Resolves the given expression against the provided context object.
+     * Resolves the content of a placeholder by evaluating the expression against the evaluation context.
      *
-     * @param placeholder the expression to resolve.
-     * @param contextRoot the context object against which to resolve the expression.
-     *
-     * @return the resolved value of the expression.
+     * @param placeholder the placeholder to resolve
+     * @return the resolved value of the placeholder
      */
-    @Nullable public Object resolve(Placeholder placeholder, Object contextRoot) {
-        evaluationContext.setRootObject(contextRoot);
+    @Nullable public Object resolve(Placeholder placeholder) {
         return parser.parseExpression(placeholder.content())
                      .getValue(evaluationContext);
+    }
+
+    /**
+     * Sets the context object against which expressions will be resolved.
+     *
+     * @param contextRoot the context object to set as the root.
+     */
+    public void setContext(Object contextRoot) {
+        evaluationContext.setRootObject(contextRoot);
     }
 }

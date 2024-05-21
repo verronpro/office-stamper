@@ -100,7 +100,8 @@ public class PlaceholderReplacer
         var expressions = Placeholders.findVariables(paragraph);
         for (var expression : expressions) {
             try {
-                var resolution = resolver.resolve(expression, context);
+                resolver.setContext(context);
+                var resolution = resolver.resolve(expression);
                 var replacement = registry.resolve(document, expression, resolution);
                 paragraph.replace(expression, replacement);
             } catch (SpelEvaluationException

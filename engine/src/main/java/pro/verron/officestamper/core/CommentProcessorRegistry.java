@@ -12,13 +12,13 @@ import org.springframework.expression.spel.SpelParseException;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.math.BigInteger;
 import java.util.*;
 
 import static pro.verron.officestamper.core.CommentUtil.getCommentString;
 import static pro.verron.officestamper.core.CommentUtil.getComments;
+import static pro.verron.officestamper.core.ExceptionUtil.treatException;
 
 /**
  * Allows registration of {@link CommentProcessor} objects. Each registered
@@ -34,7 +34,6 @@ import static pro.verron.officestamper.core.CommentUtil.getComments;
 public class CommentProcessorRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentProcessorRegistry.class);
-
     private final Map<Class<?>, Object> commentProcessors;
     private final boolean failOnUnresolvedExpression;
     private final ExpressionResolver expressionResolver;
@@ -87,6 +86,7 @@ public class CommentProcessorRegistry {
                             expressionContext,
                             paragraph)
                             .ifPresent(proceedComments::add));
+
         DocumentUtil.streamParagraphs(document)
                     .forEach(paragraph -> runProcessorsOnInlineContent(expressionContext, paragraph));
 
@@ -135,42 +135,36 @@ public class CommentProcessorRegistry {
      * Finds all processor expressions within the specified paragraph and tries
      * to evaluate it against all registered {@link CommentProcessor}s.
      *
-     * @param expressionContext a builder for a proxy around the context root object to customize its interface
-     * @param paragraph         the paragraph to process.
-     * @param <T>               type of the context root object
+     * @param context   the context root object against which evaluation is done
+     * @param paragraph the paragraph to process.
+     * @param <T>       type of the context root object
      */
-    private <T> void runProcessorsOnInlineContent(
-            T expressionContext, P paragraph
-    ) {
+    private <T> void runProcessorsOnInlineContent(T context, P paragraph) {
         var paragraphWrapper = new StandardParagraph(paragraph);
-        String text = paragraphWrapper.asString();
-        var expressions = Placeholders.findProcessors(text);
+        var text = paragraphWrapper.asString();
+        var placeholders = Placeholders.findProcessors(text);
 
-        for (var expression : expressions) {
+        for (var placeholder : placeholders) {
             for (final Object processor : commentProcessors.values()) {
                 ((CommentProcessor) processor).setParagraph(paragraph);
             }
 
             try {
-                expressionResolver.resolve(expression, expressionContext);
-                paragraphWrapper.replace(expression, RunUtil.create(""));
-                logger.debug("Processor expression '{}' has been successfully processed by a comment processor.",
-                        expression);
+                expressionResolver.setContext(context);
+                expressionResolver.resolve(placeholder);
+                paragraphWrapper.replace(placeholder, RunUtil.create(""));
+                logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
             } catch (SpelEvaluationException | SpelParseException e) {
-                String msg = "Expression '%s' failed since no processor solves it".formatted(expression);
-                if (failOnUnresolvedExpression) {
-                    throw new OfficeStamperException(msg, e);
-                }
-                else {
-                    logger.warn(msg, e);
-                }
+                treatException(e,
+                        failOnUnresolvedExpression,
+                        "Placeholder '%s' failed to process.".formatted(placeholder));
             }
         }
     }
 
     private <T> Optional<Comment> runCommentProcessors(
             Map<BigInteger, Comment> comments,
-            T expressionContext,
+            T context,
             Comments.Comment comment,
             P paragraph,
             @Nullable R run
@@ -182,7 +176,7 @@ public class CommentProcessorRegistry {
             return Optional.empty();
         }
 
-        var commentExpression = getCommentString(comment);
+        var placeholder = getCommentString(comment);
 
         for (final Object processor : commentProcessors.values()) {
             ((CommentProcessor) processor).setParagraph(paragraph);
@@ -191,24 +185,16 @@ public class CommentProcessorRegistry {
         }
 
         try {
-            expressionResolver.resolve(commentExpression, expressionContext);
+            expressionResolver.setContext(context);
+            expressionResolver.resolve(placeholder);
             comments.remove(comment.getId());
-            logger.debug("Comment {} has been successfully processed by a comment processor.", commentExpression);
+            logger.debug("Comment '{}' successfully processed by a comment processor.", placeholder);
             return Optional.of(commentWrapper);
         } catch (SpelEvaluationException | SpelParseException e) {
-            if (failOnUnresolvedExpression) {
-                throw new OfficeStamperException(commentExpression.toString(), e);
-            }
-            else {
-                logger.warn(String.format(
-                        "Skipping comment expression '%s' because it can not be resolved by any comment processor. "
-                                + "Reason: %s. Set log level to TRACE to view Stacktrace.",
-                        commentExpression,
-                        e.getMessage()));
-                logger.trace("Reason for skipping comment: ", e);
-            }
+            var msg = "Comment '%s' failed to process.".formatted(placeholder);
+            treatException(e, failOnUnresolvedExpression, msg);
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     /**

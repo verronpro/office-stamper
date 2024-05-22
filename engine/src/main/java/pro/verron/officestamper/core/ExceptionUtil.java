@@ -8,14 +8,21 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ExceptionUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExceptionUtil.class);
+    private static final Logger logger;
     private static final Map<Boolean, Map<Boolean, BiConsumer<Exception, String>>> EXCEPTION_HANDLERS;
+    private static final BiConsumer<Exception, String> stacktraceLogger;
+    private static final Consumer<String> simpleLogger;
 
     static {
+        logger = LoggerFactory.getLogger(ExceptionUtil.class);
+        stacktraceLogger = (Exception e, String msg) -> logger.warn(msg, e);
+        simpleLogger = logger::warn;
+
         EXCEPTION_HANDLERS = new HashMap<>();
         var verboseHandlers = new HashMap<Boolean, BiConsumer<Exception, String>>();
         verboseHandlers.put(true, ExceptionUtil::throwStacktrace); // TRACE ON - THROW WITH STACKTRACE
@@ -25,6 +32,7 @@ public class ExceptionUtil {
         quietHandlers.put(true, ExceptionUtil::throwSimple); // TRACE OFF - THROW W/O STACKTRACE
         quietHandlers.put(false, ExceptionUtil::logSimple); // TRACE OFF - LOG W/O STACKTRACE
         EXCEPTION_HANDLERS.put(false, quietHandlers);
+
     }
 
     static void treatException(ExpressionException exception, boolean shouldThrow, String msg) {
@@ -40,7 +48,7 @@ public class ExceptionUtil {
                 .get(shouldThrow)
                 .accept(exception, msg);
         if (!logger.isTraceEnabled())
-            logger.info("Set log level to TRACE to view Stacktrace.");
+            simpleLogger.accept("Set log level to TRACE to view Stacktrace.");
         return supplier.get();
     }
 
@@ -49,7 +57,7 @@ public class ExceptionUtil {
     }
 
     private static void logStacktrace(Exception e, String msg) {
-        logger.warn(msg, e);
+        stacktraceLogger.accept(e, msg);
     }
 
     private static void throwSimple(Exception e, String msg) {
@@ -57,6 +65,6 @@ public class ExceptionUtil {
     }
 
     private static void logSimple(Exception e, String msg) {
-        logger.warn(msg);
+        simpleLogger.accept(msg);
     }
 }

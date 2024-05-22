@@ -155,9 +155,8 @@ public class CommentProcessorRegistry {
                 paragraphWrapper.replace(placeholder, RunUtil.create(""));
                 logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
             } catch (SpelEvaluationException | SpelParseException e) {
-                treatException(e,
-                        failOnUnresolvedExpression,
-                        "Placeholder '%s' failed to process.".formatted(placeholder));
+                var msg = "Placeholder '%s' failed to process.".formatted(placeholder);
+                treatException(e, failOnUnresolvedExpression, msg);
             }
         }
     }

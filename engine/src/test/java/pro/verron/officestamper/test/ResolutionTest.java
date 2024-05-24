@@ -28,14 +28,14 @@ public class ResolutionTest {
      */
     @CsvSource(
             {
-                    "System.exit.docx,false,false,false,Unresolved,${#{T(java.lang.System).exit(0)}",
-                    "System.exit.docx,false,false,true,Unresolved,Unresolved",
-                    "System.exit.docx,false,true,false,Unresolved,''",
-                    "System.exit.docx,false,true,true,Unresolved,''",
-                    "System.exit.docx,true,false,false,Unresolved,Should fail",
-                    "System.exit.docx,true,false,true,Unresolved,Should fail",
-                    "System.exit.docx,true,true,false,Unresolved,Should fail",
-                    "System.exit.docx,true,true,true,Unresolved,Should fail",
+                    "system.exit.docx,false,false,false,Unresolved,${T(java.lang.System).exit(0)}",
+                    "system.exit.docx,false,false,true,Unresolved,Unresolved",
+                    "system.exit.docx,false,true,false,Unresolved,''",
+                    "system.exit.docx,false,true,true,Unresolved,''",
+                    "system.exit.docx,true,false,false,Unresolved,Should fail",
+                    "system.exit.docx,true,false,true,Unresolved,Should fail",
+                    "system.exit.docx,true,true,false,Unresolved,Should fail",
+                    "system.exit.docx,true,true,true,Unresolved,Should fail",
             }
     )
     @ParameterizedTest

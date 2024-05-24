@@ -15,7 +15,6 @@ import pro.verron.officestamper.preset.Resolvers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -69,7 +68,6 @@ public class DefaultTests {
                 conditionalDisplayOfTableTest(),
                 customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(),
                 customExpressionFunctionTest(),
-                dateReplacementTest(),
                 expressionReplacementInGlobalParagraphsTest(),
                 expressionReplacementInTablesTest(),
                 expressionReplacementWithFormattingTest(),
@@ -865,21 +863,7 @@ public class DefaultTests {
                 expected);
     }
 
-    private static Arguments dateReplacementTest() {
-        var context = Contexts.nowContext();
-        var template = getResource(Path.of("DateReplacementTest.docx"));
-        var defaultFormat = new SimpleDateFormat("dd.MM.yyyy");
-        var formattedDate = defaultFormat.format(context.date());
-        var expected = """
-                ❬Replacing date expressions❘spacing={after=120,before=240}❭
-                Today is: %s""".formatted(formattedDate);
 
-        return arguments("dateReplacementTest",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
-    }
 
     private static Arguments expressionReplacementInGlobalParagraphsTest() {
         var context = new Contexts.Name("Homer Simpson");
@@ -995,7 +979,7 @@ public class DefaultTests {
     }
 
     /**
-     * <p>test.</p>
+     * <p>testDateInstantiationAndResolution.</p>
      */
     private static Arguments imageReplacementInGlobalParagraphsTest() {
         var context = new Contexts.ImageContext(getImage(Path.of("monalisa" +

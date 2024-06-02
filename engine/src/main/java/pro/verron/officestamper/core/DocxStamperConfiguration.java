@@ -360,4 +360,22 @@ public class DocxStamperConfiguration
         resolvers.add(0, resolver);
         return this;
     }
+
+    /**
+     * Resets all the comment processors in the configuration. This method clears the
+     * map of comment processors, effectively removing all registered comment processors.
+     * Comment processors are used to process comments within the document.
+     */
+    public void resetCommentProcessors() {
+        this.commentProcessors.clear();
+    }
+
+    /**
+     * Resets all the resolvers in the DocxStamperConfiguration object.
+     * This method clears the list of resolvers, effectively removing all registered resolvers.
+     * Resolvers are used to resolve objects during the stamping process.
+     */
+    public void resetResolvers() {
+        this.resolvers.clear();
+    }
 }

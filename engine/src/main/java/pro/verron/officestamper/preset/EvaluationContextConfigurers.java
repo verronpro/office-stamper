@@ -36,7 +36,7 @@ public class EvaluationContextConfigurers {
      * Returns a default {@link EvaluationContextConfigurer} instance.
      * <p>
      * The default configurer provides better default security for the
-     * {@link EvaluationContext} used by office stamper.
+     * {@link EvaluationContext} used by OfficeStamper.
      * It sets up the context with enhanced security measures, such as
      * limited property accessors, constructor resolvers, and method resolvers.
      * It also sets a type locator, type converter, type comparator, and operator overloader.

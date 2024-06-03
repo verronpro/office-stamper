@@ -1,18 +1,18 @@
 :proj: https://github.com/verronpro/docx-stamper
 :repo: https://github.com/verronpro/docx-stamper/tree/master
 
-= Office-Stamper
+= OfficeStamper
 
 == Introduction
 
-Office-Stamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of docx documents at runtime.
-You design a template using your preferred Word processor; and Office-Stamper will generate documents based on that template.
+OfficeStamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of docx documents at runtime.
+You design a template using your preferred Word processor; and OfficeStamper will generate documents based on that template.
 
 image:{proj}/actions/workflows/integrate.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate.yml] image:{proj}/actions/workflows/analyze.yml/badge.svg[Build Status,link={proj}/actions/workflows/analyze.yml] image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/actions/workflows/pages.yml]
 
 == Project Update
 
-The project name has changed from Docx-Stamper to Office-Stamper to better signify its functionality and scope.
+The project name has changed from Docx-Stamper to OfficeStamper to better signify its functionality and scope.
 
 == Release Notes
 
@@ -41,7 +41,7 @@ Please feel free to contribute or share your thoughts with us.
 
 == Usage
 
-Here is a simple code snippet exemplifying how to use Office-Stamper:
+Here is a simple code snippet exemplifying how to use OfficeStamper:
 
 [source,java]
 ----
@@ -69,11 +69,11 @@ class Example {
 
 == Template Expressions and Their Usage
 
-The foundation of Office-Stamper lies in its ability to *replace expressions* within the text of a .docx template document.
+The foundation of OfficeStamper lies in its ability to *replace expressions* within the text of a .docx template document.
 Conveniently, add expressions such as `${person.name}` or `${person.name.equals(&quot;Homer&quot;) ? &quot;Duff&quot; :
 &quot;Budweiser&quot;}` in the text of the .docx file you're using as a template.
 Then, provide a context object to resolve the placeholder.
-Don't worry about formatting, Office-Stamper will maintain the original text's formatting in the template.
+Don't worry about formatting, OfficeStamper will maintain the original text's formatting in the template.
 You have full access to the extensive feature set of [Spring Expression Language (SpEL)](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html).
 
 Each placeholder's resolution corresponds to the following types:
@@ -91,7 +91,7 @@ Each placeholder's resolution corresponds to the following types:
 | `link:{repo}/src/main/java/org/wickedsource/docxstamper/replace/typeresolver/image/Image.java[org.wickedsource...Image]` |The placeholder is replaced with an inline image.
 |===
 
-If a placeholder fails to resolve successfully, Office-Stamper will skip it, the placeholder in the document remains the same as its initial state in the template.
+If a placeholder fails to resolve successfully, OfficeStamper will skip it, the placeholder in the document remains the same as its initial state in the template.
 You can expand this resolution functionality by implementing your `link:{repo}/src/main/java/pro/verron/docxstamper/api/ObjectResolver.java[ObjectResolver]`.
 
 Here's a code snippet on how to proceed:
@@ -117,7 +117,7 @@ class Main {
 == Refining SpEL Evaluation Context
 
 At times, you might want to exert more control over how expressions are evaluated.
-With Office-Stamper, there's provision for such scenarios.
+With OfficeStamper, there's provision for such scenarios.
 Here’s how:
 
 Implement your own `link:{repo}/src/main/java/org/wickedsource/docxstamper/api/EvaluationContextConfigurer.java[EvaluationContextConfigurer]`.
@@ -140,11 +140,11 @@ class Main {
 In this code, `NoOpEvaluationContextConfigurer` is your custom implementation of `EvaluationContextConfigurer`.
 Substitute it with the actual name of your implementation as you use the code above.
 
-This feature empowers you with greater flexibility and enhanced control over the expression evaluation process, fitting Office-Stamper seamlessly into complex scenarios and requirements.
+This feature empowers you with greater flexibility and enhanced control over the expression evaluation process, fitting OfficeStamper seamlessly into complex scenarios and requirements.
 
 == Enhancing the Expression Language with Custom Functions
 
-Office-Stamper lets you add custom functions to the tool’s expression language.
+OfficeStamper lets you add custom functions to the tool’s expression language.
 For example, if you need specific formats for numbers or dates, you can register such functions which can then be used in the placeholders throughout your template.
 
 Below is a sample code demonstrating how to extend the expression language with a custom function.
@@ -165,11 +165,11 @@ class Main {
 }
 ----
 
-Chains of such custom functions can enhance the versatility of Office-Stamper, making it capable of handling complex and unique templating situations.
+Chains of such custom functions can enhance the versatility of OfficeStamper, making it capable of handling complex and unique templating situations.
 
 == Processing Comments for Enhanced Functionality
 
-Alongside expression replacement, Office-Stamper presents the feature of *processing comments* associated with paragraphs in your .docx template.
+Alongside expression replacement, OfficeStamper presents the feature of *processing comments* associated with paragraphs in your .docx template.
 These comments act as directives for manipulating the template.
 As a standard, the following expressions can be used within comments:
 
@@ -220,7 +220,7 @@ For an in-depth description of how to create a comment processor, see the javado
 == Conditional and Repetitive Displays within Headers and Footers
 
 The .docx file format does not permit comments within headers or footers.
-But there's a workaround in Office-Stamper.
+But there's a workaround in OfficeStamper.
 If you want to display contents within headers or footers conditionally, or require repetitive elements, all you got to do is :
 
 1. Craft the expression as you would in a comment.

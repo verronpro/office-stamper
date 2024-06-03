@@ -3,8 +3,6 @@ package pro.verron.officestamper.preset;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 
-import java.util.Collections;
-
 /**
  * The OfficeStamperConfigurations class provides static methods
  * to create different configurations for the OfficeStamper.
@@ -41,8 +39,9 @@ public class OfficeStamperConfigurations {
      */
     public static OfficeStamperConfiguration raw() {
         var configuration = new DocxStamperConfiguration();
-        configuration.setResolvers(Collections.emptyList());
+        configuration.resetResolvers();
+        configuration.setEvaluationContextConfigurer(EvaluationContextConfigurers.defaultConfigurer());
+        configuration.resetCommentProcessors();
         return configuration;
     }
-
 }

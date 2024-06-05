@@ -14,6 +14,16 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 
 == Release Notes
 
+- {proj}/releases/tag/v2.1.0[v2.1.0]:
+** Update Readme howto to document the last API changes
+** Update the mechanism to walk through a Word document
+** First step to the separation of resolvers in two: the future 'engine resolver' (that will wrap the template features) and 'context resolver' (that will wrap the actual stamped data)
+** Update exception management and messages
+** The raw stamper does not carry any comment processors by default
+** Bump dependencies org.springframework:spring-expression to 6.1.8
+** Update documentation to be more Github-friendly
+- {proj}/releases/tag/v2.0.0[v2.0.1]:
+** fix dependency issue of v2.0
 - {proj}/releases/tag/v2.0.0[v2.0.0]:
 ** remove legacy APIs,
 ** rename `pro.verron:docx-stamper` to `pro.verron.office-stamper:engine`

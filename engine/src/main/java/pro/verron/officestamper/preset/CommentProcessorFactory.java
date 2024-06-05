@@ -322,7 +322,7 @@ public class CommentProcessorFactory {
         public void resolveTable(StampTable givenTable) {
             P p = getParagraph();
             if (p.getParent() instanceof Tc tc && tc.getParent() instanceof Tr tr
-                    && tr.getParent() instanceof Tbl table) {
+                && tr.getParent() instanceof Tbl table) {
                 cols.put(table, givenTable);
             }
             else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
@@ -540,19 +540,15 @@ public class CommentProcessorFactory {
             toRepeat.comment = getCurrentCommentWrapper();
             toRepeat.data = new ArrayDeque<>(objects);
             toRepeat.paragraphs = paragraphs;
-            toRepeat.sectionBreakBefore = SectionUtil.getPreviousSectionBreakIfPresent(
-                    paragraph,
+            toRepeat.sectionBreakBefore = SectionUtil.getPreviousSectionBreakIfPresent(paragraph,
                     (ContentAccessor) paragraph.getParent());
-            toRepeat.firstParagraphSectionBreak = SectionUtil.getParagraphSectionBreak(
-                    paragraph);
-            toRepeat.hasOddSectionBreaks = SectionUtil.isOddNumberOfSectionBreaks(
-                    new ArrayList<>(toRepeat.paragraphs));
+            toRepeat.firstParagraphSectionBreak = SectionUtil.getParagraphSectionBreak(paragraph);
+            toRepeat.hasOddSectionBreaks = SectionUtil.isOddNumberOfSectionBreaks(new ArrayList<>(toRepeat.paragraphs));
 
-            if (paragraph.getPPr() != null && paragraph.getPPr()
-                                                       .getSectPr() != null) {
+            var paragraphPPr = paragraph.getPPr();
+            if (paragraphPPr != null && paragraphPPr.getSectPr() != null) {
                 // we need to clear the first paragraph's section break to be able to control how to repeat it
-                paragraph.getPPr()
-                         .setSectPr(null);
+                paragraphPPr.setSectPr(null);
             }
             pToRepeat.put(paragraph, toRepeat);
         }
@@ -655,12 +651,11 @@ public class CommentProcessorFactory {
                     P pClone = XmlUtils.deepCopy(paragraphToClone);
 
                     if (paragraphs.sectionBreakBefore != null
-                            && paragraphs.hasOddSectionBreaks
-                            && expressionContext != lastExpressionContext
-                            && paragraphToClone == lastParagraph
+                        && paragraphs.hasOddSectionBreaks
+                        && expressionContext != lastExpressionContext
+                        && paragraphToClone == lastParagraph
                     ) {
-                        SectionUtil.applySectionBreakToParagraph(paragraphs.sectionBreakBefore,
-                                pClone);
+                        SectionUtil.applySectionBreakToParagraph(paragraphs.sectionBreakBefore, pClone);
                     }
 
                     CommentUtil.deleteCommentFromElements(pClone.getContent(),
@@ -853,7 +848,7 @@ public class CommentProcessorFactory {
                 List<Object> expressionContexts,
                 ContentAccessor gcp,
                 WordprocessingMLPackage subTemplate,
-                SectPr previousSectionBreak,
+                @Nullable SectPr previousSectionBreak,
                 boolean oddNumberOfBreaks
         ) {
             var subDocuments = stampSubDocuments(expressionContexts, subTemplate);
@@ -896,22 +891,19 @@ public class CommentProcessorFactory {
         private static List<Object> documentAsInsertableElements(
                 WordprocessingMLPackage subDocument,
                 boolean oddNumberOfBreaks,
-                SectPr previousSectionBreak
+                @Nullable SectPr previousSectionBreak
         ) {
-            List<Object> inserts = new ArrayList<>(
-                    DocumentUtil.allElements(subDocument));
+            List<Object> inserts = new ArrayList<>(DocumentUtil.allElements(subDocument));
             // make sure we replicate the previous section break before each repeated doc part
             if (oddNumberOfBreaks && previousSectionBreak != null) {
                 if (DocumentUtil.lastElement(subDocument) instanceof P p) {
-                    SectionUtil.applySectionBreakToParagraph(previousSectionBreak,
-                            p);
+                    SectionUtil.applySectionBreakToParagraph(previousSectionBreak, p);
                 }
                 else {
                     // when the last element to be repeated is not a paragraph, we need to add a new
                     // one right after to carry the section break to have a valid xml
                     P p = objectFactory.createP();
-                    SectionUtil.applySectionBreakToParagraph(previousSectionBreak,
-                            p);
+                    SectionUtil.applySectionBreakToParagraph(previousSectionBreak, p);
                     inserts.add(p);
                 }
             }
@@ -927,8 +919,8 @@ public class CommentProcessorFactory {
             while (!q.isEmpty()) {
                 ContentAccessor run = q.remove();
                 if (replacements.containsKey(run)
-                        && run instanceof Child child
-                        && child.getParent() instanceof ContentAccessor parent) {
+                    && run instanceof Child child
+                    && child.getParent() instanceof ContentAccessor parent) {
                     List<Object> parentContent = parent.getContent();
                     parentContent.add(parentContent.indexOf(run),
                             replacements.get(run));
@@ -1300,8 +1292,8 @@ public class CommentProcessorFactory {
 
             P p = getParagraph();
             if (p.getParent() instanceof Tc tc
-                    && tc.getParent() instanceof Tr tr
-                    && tr.getParent() instanceof Tbl tbl
+                && tc.getParent() instanceof Tr tr
+                && tr.getParent() instanceof Tbl tbl
             ) {
                 tablesToBeRemoved.add(tbl);
             }

@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Br;
-import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,11 +80,9 @@ public class PlaceholderReplacer
     public void resolveExpressions(
             final WordprocessingMLPackage document, Object expressionContext
     ) {
-        new BaseCoordinatesWalker() {
-            @Override protected void onParagraph(P paragraph) {
-                resolveExpressionsForParagraph(new StandardParagraph(paragraph), expressionContext, document);
-            }
-        }.walk(document);
+        DocumentUtil.streamParagraphs(document)
+                    .map(StandardParagraph::new)
+                    .forEach(paragraph -> resolveExpressionsForParagraph(paragraph, expressionContext, document));
     }
 
     /**
@@ -96,12 +93,15 @@ public class PlaceholderReplacer
      * @param document  the document in which to replace all expressions.
      */
     @Override public void resolveExpressionsForParagraph(
-            Paragraph paragraph, Object context, WordprocessingMLPackage document
+            Paragraph paragraph,
+            Object context,
+            WordprocessingMLPackage document
     ) {
         var expressions = Placeholders.findVariables(paragraph);
         for (var expression : expressions) {
             try {
-                var resolution = resolver.resolve(expression, context);
+                resolver.setContext(context);
+                var resolution = resolver.resolve(expression);
                 var replacement = registry.resolve(document, expression, resolution);
                 paragraph.replace(expression, replacement);
             } catch (SpelEvaluationException

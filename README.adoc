@@ -1,5 +1,7 @@
 :proj: https://github.com/verronpro/docx-stamper
-:repo: https://github.com/verronpro/docx-stamper/tree/master
+:repo: https://github.com/verronpro/docx-stamper/blob/main
+:module: pro.verron.officestamper
+:engine: https://github.com/verronpro/docx-stamper/blob/main/engine/src/main/java/pro/verron/officestamper/
 
 = OfficeStamper
 
@@ -8,36 +10,37 @@
 OfficeStamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of docx documents at runtime.
 You design a template using your preferred Word processor; and OfficeStamper will generate documents based on that template.
 
-image:{proj}/actions/workflows/integrate.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate.yml] image:{proj}/actions/workflows/analyze.yml/badge.svg[Build Status,link={proj}/actions/workflows/analyze.yml] image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/actions/workflows/pages.yml]
-
-== Project Update
-
-The project name has changed from Docx-Stamper to OfficeStamper to better signify its functionality and scope.
+image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-os.yml] image:{proj}/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-docx4j.yml] image:{proj}/actions/workflows/analyze.yml/badge.svg[Build Status,link={proj}/actions/workflows/analyze.yml] image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/actions/workflows/pages.yml]
 
 == Release Notes
 
-=== Version 1.6.8
+- {proj}/releases/tag/v2.1.0[v2.1.0]:
+** Update Readme howto to document the last API changes
+** Update the mechanism to walk through a Word document
+** First step to the separation of resolvers in two: the future 'engine resolver' (that will wrap the template features) and 'context resolver' (that will wrap the actual stamped data)
+** Update exception management and messages
+** The raw stamper does not carry any comment processors by default
+** Bump dependencies org.springframework:spring-expression to 6.1.8
+** Update documentation to be more Github-friendly
+- {proj}/releases/tag/v2.0.0[v2.0.1]:
+** fix dependency issue of v2.0
+- {proj}/releases/tag/v2.0.0[v2.0.0]:
+** remove legacy APIs,
+** rename `pro.verron:docx-stamper` to `pro.verron.office-stamper:engine`
+** implements modularization
 
-This release marks an important milestone in our plans to transition to version 2.0.
-It introduces new APIs and deprecates some legacy ones.
-We recommend all users to start using the new APIs to reduce disruption in the future.
+- {proj}/releases/tag/v1.6.9[v1.6.9]: regression fix
 
-=== Transition to Java 9 Modularization
+- {proj}/releases/tag/v1.6.8[v1.6.8]:
+** new APIs,
+** move toward modularization
+** new `experimental` namespace for beta features
 
-We are transitioning to Java 9 Modularization for added efficiency and developer-friendliness.
-It aids in separating the project's core details from the interfaces that developers work with.
-
-=== Upcoming in Version 2.0
-
-Our upcoming release, version 2.0, is set to be a significant update with major improvements over the preceding versions.
-Please note the following changes:
-
-1. Discontinuation of legacy APIs and complete adoption of new ones.
-2. Full embrace of Java 9 modularization.
-3. Other improvements and optimizations which will be detailed in the release notes.
-
-We appreciate your input and suggestions.
-Please feel free to contribute or share your thoughts with us.
+- {proj}/releases/tag/v1.6.7[v1.6.7]:
+** `ObjectResolver` to replace `ITypeResolver`,
+** `null` stamping behavior become a standard behavior managed by specific `ObjectResolver` implementations,
+** introduce the `preset` namespace to hold default configurations of the engine
+** engine can now run without a default resolver, in that case it will throw an exception when it needs to find a resolver.
 
 == Usage
 
@@ -50,16 +53,14 @@ class Example {
         // your own POJO against which expressions found in the template will be resolved
         var context = new YourPojoContext(_, _ , _);
 
-        // Path to your .docx template file
-        var templatePath = Paths.get("your/docx/template/file.docx");
-        // Path to write the resulting .docx document
-        var outputPath = Paths.get("your/desired/output/path.docx");
-
-        var stamper = new DocxStamper();
+        // an instance of the stamper
+        var stamper = OfficeStampers.docxStamper();
 
         try(
-            var template = Files.newInputStream(templatePath);
-            var output = Files.newOutputStream(outputPath)
+            // Path to your .docx template file
+            var template = Files.newInputStream(Paths.get("your/docx/template/file.docx"));
+            // Path to write the resulting .docx document
+            var output = Files.newOutputStream(Paths.get("your/desired/output/path.docx"))
         ) {
             stamper.stamp(template, context, output);
         }
@@ -74,25 +75,52 @@ Conveniently, add expressions such as `${person.name}` or `${person.name.equals(
 &quot;Budweiser&quot;}` in the text of the .docx file you're using as a template.
 Then, provide a context object to resolve the placeholder.
 Don't worry about formatting, OfficeStamper will maintain the original text's formatting in the template.
-You have full access to the extensive feature set of [Spring Expression Language (SpEL)](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html).
+You have full access to the extensive feature set of link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[Spring Expression Language (SpEL)].
 
-Each placeholder's resolution corresponds to the following types:
+=== Resolvers Order
 
-.Type that can be resolved to an element in the .docx document
-[cols=">1,3"]
+[cols="1,2,2",options="header"]
 |===
-| Type of placeholder value  | Effect
-| `java.lang.Object`        | The placeholder is replaced by the String representation of the object (`String.valueOf()`).
-| `java.lang.String`          | The placeholder is replaced with the String value.
-| `java.util.Date`            | The placeholder is replaced by a formatted Date string (by default "dd.MM.yyyy"). You can change the format string by registering your own `link:{repo}/src/main/java/org/wickedsource/docxstamper/replace/typeresolver/DateResolver.java[DateResolver]`.
-| `java.time.LocalDate`       | The placeholder is replaced by a formatted Date string (by default DateTimeFormatter.ISO_LOCAL_DATE). You can change the format string by registering your own.
-| `java.time.LocalDateTime`   | The placeholder is replaced by a formatted Date string (by default DateTimeFormatter.ISO_LOCAL_DATE_TIME). You can change the format string by registering your own.
-| `java.time.LocalTime`       | The placeholder is replaced by a formatted Date string (by default DateTimeFormatter.ISO_LOCAL_TIME). You can change the format string by registering your own.
-| `link:{repo}/src/main/java/org/wickedsource/docxstamper/replace/typeresolver/image/Image.java[org.wickedsource...Image]` |The placeholder is replaced with an inline image.
+| Default Resolvers         | When the placeholder resolves to a | It will be replaced in the document with
+| `Resolvers.image()`       | `link:{engine}preset/Image.java[{module}.preset.Image]` | an inline image
+| `Resolvers.legacyDate()`  | `java.util.Date`                   | a formatted Date string (default "dd.MM.yyyy")
+| `Resolvers.isoDate()`     | `java.time.LocalDate`              | a formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE)
+| `Resolvers.isoTime()`     | `java.time.LocalTime`              | a formatted Date string (default DateTimeFormatter.ISO_LOCAL_TIME)
+| `Resolvers.isoDateTime()` | `java.time.LocalDateTime`          | a formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+| `Resolvers.nullToEmpty()` | `null`                             | an empty string
+| `Resolvers.fallback()`    | `Object`                           | the result of the call to `String.valueOf()` method on the object
 |===
 
 If a placeholder fails to resolve successfully, OfficeStamper will skip it, the placeholder in the document remains the same as its initial state in the template.
-You can expand this resolution functionality by implementing your `link:{repo}/src/main/java/pro/verron/docxstamper/api/ObjectResolver.java[ObjectResolver]`.
+
+=== Comment Processors
+
+Alongside expression replacement, Office-Stamper presents the feature of *processing comments* associated with paragraphs in your .docx template.
+These comments act as directives for manipulating the template.
+As a standard, the following expressions can be used within comments:
+
+.Default activated comment processors
+[cols=">1,4"]
+|===
+| Expression in .docx comment           | Effect on the commented paragraph/paragraphs
+| `displayParagraphIf(boolean)`         | It is only displayed if condition resolves to `true`.
+| `displayTableRowIf(boolean)`          | The table row around it is only displayed if condition resolves to `true`.
+| `displayTableIf(boolean)`             | The whole table around it is only displayed if condition resolves to `true`.
+| `repeatParagraph(List&lt;Object&gt;)` | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list.
+| `repeatTableRow(List&lt;Object&gt;)`  | The table row around it is copied once for each object in the passed-in list. Expressions found in the cells of the table row are evaluated against the object from the list.
+| `repeatDocPart(List&lt;Object&gt;)`   | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
+| `replaceWordWith(expression)`         | Replace the commented word with the value of the given expression.
+| `resolveTable(StampTable)`            | Replace a table (that must have one column and two rows) with the values given by the StampTable. The StampTable contains a list of headers for columns, and a 2-level list of rows containing values for each column.
+|===
+
+By default, an exception is thrown if a comment fails to process.
+However, successfully processed comments are wiped from the document.
+
+== Custom settings
+
+=== Custom resolvers
+
+You can expand the resolution functionality by implementing custom `link:{engine}api/ObjectResolver.java[ObjectResolver]`.
 
 Here's a code snippet on how to proceed:
 
@@ -101,48 +129,21 @@ Here's a code snippet on how to proceed:
 class Main {
     public static void main(String... args) {
         // instance of your own ObjectResolver implementation
-        var resolver = new StringResolver(YourCustomType.class){
+        var customResolver = new StringResolver(YourCustomType.class){
             @Override public String resolve(YourCustomType object){
-                return custom.yourCustomProperty(); // or any convoluted method
+                return doYourStuffHere(); // this is your implementation detail
             }
         };
 
-        var configuration = new DocxStamperConfiguration();
+        var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
         configuration.addResolver(resolver);
-        var stamper = new DocxStamper<>(configuration);
+
+        var stamper = OfficeStampers.docxStamper(configuration);
     }
 }
 ----
 
-== Refining SpEL Evaluation Context
-
-At times, you might want to exert more control over how expressions are evaluated.
-With OfficeStamper, there's provision for such scenarios.
-Here’s how:
-
-Implement your own `link:{repo}/src/main/java/org/wickedsource/docxstamper/api/EvaluationContextConfigurer.java[EvaluationContextConfigurer]`.
-This allows you to customize Springs `StandardEvaluationContext` according to your requirements.
-
-Use the following code snippet to register your `link:{repo}/src/main/java/org/wickedsource/docxstamper/api/EvaluationContextConfigurer.java[EvaluationContextConfigurer]`:
-
-[source,java ]
-----
-class Main {
-    public static void main(String... args) {
-        var evalContextConfigurer = new NoOpEvaluationContextConfigurer();
-        var configuration = new DocxStamperConfiguration()
-            .setEvaluationContextConfigurer(configurer);
-        var stamper = new DocxStamper<>(configuration);
-    }
-}
-----
-
-In this code, `NoOpEvaluationContextConfigurer` is your custom implementation of `EvaluationContextConfigurer`.
-Substitute it with the actual name of your implementation as you use the code above.
-
-This feature empowers you with greater flexibility and enhanced control over the expression evaluation process, fitting OfficeStamper seamlessly into complex scenarios and requirements.
-
-== Enhancing the Expression Language with Custom Functions
+=== Custom functions
 
 OfficeStamper lets you add custom functions to the tool’s expression language.
 For example, if you need specific formats for numbers or dates, you can register such functions which can then be used in the placeholders throughout your template.
@@ -158,37 +159,17 @@ class Main {
             String toUppercase(String string);
         }
 
-        var configuration = new DocxStamperConfiguration()
-            .exposeInterfaceToExpressionLanguage(UppercaseFunction.class, String::toUppercase);
-        var stamper = new DocxStamper<>(configuration);
+        var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+        configuration.exposeInterfaceToExpressionLanguage(UppercaseFunction.class, String::toUppercase);
+        var stamper = OfficeStampers.docxStamper(configuration);
     }
 }
 ----
 
 Chains of such custom functions can enhance the versatility of OfficeStamper, making it capable of handling complex and unique templating situations.
 
-== Processing Comments for Enhanced Functionality
+=== Custom Comment Processors
 
-Alongside expression replacement, OfficeStamper presents the feature of *processing comments* associated with paragraphs in your .docx template.
-These comments act as directives for manipulating the template.
-As a standard, the following expressions can be used within comments:
-
-.Default activated comment processors
-[cols=">1,4"]
-|===
-|Expression in .docx comment |Effect
-
-|`displayParagraphIf(boolean)` |The commented paragraph is only displayed in the resulting .docx document if the boolean condition resolves to `true`.
-|`displayTableRowIf(boolean)` | The table row surrounding the commented paragraph is only displayed in the resulting .docx document if the boolean condition resolves to `true`.
-|`displayTableIf(boolean)` | The whole table surrounding the commented paragraph is only displayed in the resulting .docx document if the boolean condition resolves to `true`.
-|`repeatTableRow(List&lt;Object&gt;)` | The table row surrounding the commented paragraph is copied once for each object in the passed-in list. Expressions found in the cells of the table row are evaluated against the object from the list.
-|`repeatDocPart(List&lt;Object&gt;)` | Repeat the part of the document surrounded by the comment. The document part is copied once for each object in the passed-in list. Expressions found in the elements of the document part are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
-|`replaceWordWith(expression)` | Replaces the commented word (must be a single word) with the value of the given placeholder.
-|`resolveTable(StampTable)` | Replace a table (that must have one column and two rows) with the values given by the StampTable. The StampTable contains a list of headers for columns, and a 2-level list of rows containing values for each column.
-|===
-
-By default, an exception is thrown if a comment fails to process.
-However, successfully processed comments are wiped from the document.
 For additional flexibility, create your own expression within comments by implementing your `link:{repo}/src/main/java/org/wickedsource/docxstamper/api/commentprocessor/ICommentProcessor.java[ICommentProcessor]`.
 
 Here's an example of how to create and register a custom comment processor:
@@ -209,13 +190,44 @@ class Main {
         var commentProcessor = new YourCommentProcessor();
         var configuration = new DocxStamperConfiguration()
                 .addCommentProcessor(IYourCommentProcessor.class, commentProcessor);
-        var stamper = new DocxStamper<>(configuration);
-
+        var stamper = OfficeStampers.docxStamper(configuration);
     }
 }
 ----
 
-For an in-depth description of how to create a comment processor, see the javadoc of link:{repo}/src/main/java/org/wickedsource/docxstamper/api/commentprocessor/ICommentProcessor.java[ICommentProcessor].
+=== Custom SpEL Evaluation Context
+
+At times, you might want to exert more control over how expressions are evaluated.
+With Office-Stamper, there's provision for such scenarios.
+Here’s how:
+
+Implement your own `link:{engine}api/EvaluationContextConfigurer.java[EvaluationContextConfigurer]`.
+This allows you to customize Springs `StandardEvaluationContext` according to your requirements.
+
+Here's a code snippet on how to proceed:
+
+[source,java ]
+----
+import org.springframework.context.expression.MapAccessor;
+class Main {
+    public static void main(String... args) {
+        var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+
+        // explicitly set the default configurer, that only allows a subset of SpEL features
+        configuration.setEvaluationContextConfigurer(EvaluationContextConfigurers.defaultConfigurer());
+
+        // or choose the more full-featured but potentially unsafe noopConfigurer
+        configuration.setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer());
+
+        // or call other sources, like MapAccessor from org.springframework.context, that allow resolving Map objects
+        configuration.setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+
+        var stamper = OfficeStampers.docxStamper(configuration);
+    }
+}
+----
+
+This feature empowers you with greater flexibility and enhanced control over the expression evaluation process, fitting Office-Stamper seamlessly into complex scenarios and requirements.
 
 == Conditional and Repetitive Displays within Headers and Footers
 
@@ -233,19 +245,19 @@ Remember, this workaround unlocks the power of conditional display and repetitio
 
 == Graceful Error Handling
 
-In general, DocxStamper employs an `UnresolvedExpressionException`
+In general, DocxStamper employs an `OfficeStamperException`
 if there's a failure in resolving an expression within a document or the associated comments.
 However, you can modify this behavior.
 
-Follow the given example to silence the exception and keep DocxStamper from failing even when it encounters unresolved expressions:
+Follow the given example to silence the exception and keep OfficeStamper from failing even when it encounters unresolved expressions:
 
 [source,java]
 ----
 class Main {
     public static void main(String... args) {
-        var configuration = new DocxStamperConfiguration()
-                            .setFailOnUnresolvedExpression(false);
-        var stamper = new DocxStamper<>(configuration);
+        var configuration = OfficeStamperConfiguration.standardWithPreprocessing()
+                .setFailOnUnresolvedExpression(false);
+        var stamper = OfficeStampers.docxStamper(configuration);
     }
 }
 ----
@@ -265,7 +277,7 @@ If you want to have a look at the .docx templates used in the tests, have a look
 == Maven coordinates
 
 To include docx-stamper in your project, you can use the following maven coordinates in your dependency management system:
-https://verronpro.github.io/docx-stamper/dependency-info.html[go to last documented version]
+link:https://verronpro.github.io/docx-stamper/dependency-info.html[go to last documented version]
 
 Note that as of version 1.4.0, you have to provide the dependency to your version of Docx4J yourself:
 
@@ -274,13 +286,13 @@ Note that as of version 1.4.0, you have to provide the dependency to your versio
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j</artifactId>
-    <version>6.1.2</version>
+    <version>11.4.11</version>
 </dependency>
 ----
 
 This way, you can choose which version of Docx4J you want to use instead of having it dictated by docx-stamper.
 
-Status of compatibility available here -> https://github.com/verronpro/docx-stamper/actions/workflows/integrate-docx4j.yml)
+The list of actively integrated docx4j is listed here -> link:{repo}/.github/workflows/integrate-docx4j.yml[Docx4J integration matrix]]
 
 == Contribute
 

@@ -4,6 +4,7 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.lang.NonNull;
 import pro.verron.officestamper.api.*;
@@ -81,9 +82,10 @@ public class DocxStamper
         evaluationContext.addMethodResolver(methodResolver);
 
 
+        var expressionParser = new SpelExpressionParser(spelParserConfiguration);
         var expressionResolver = new ExpressionResolver(
                 evaluationContext,
-                spelParserConfiguration
+                expressionParser
         );
 
         var typeResolverRegistry = new ObjectResolverRegistry(resolvers);

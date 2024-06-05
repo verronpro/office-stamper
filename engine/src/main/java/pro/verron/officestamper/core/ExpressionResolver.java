@@ -1,8 +1,6 @@
 package pro.verron.officestamper.core;
 
 import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.SpelParserConfiguration;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.Placeholder;
@@ -24,28 +22,34 @@ public class ExpressionResolver {
     /**
      * Creates a new ExpressionResolver with the given SpEL parser configuration.
      *
-     * @param spelParserConfiguration   the configuration for the SpEL parser.
      * @param standardEvaluationContext a {@link StandardEvaluationContext} object
      */
     public ExpressionResolver(
             StandardEvaluationContext standardEvaluationContext,
-            SpelParserConfiguration spelParserConfiguration
+            ExpressionParser expressionParser
     ) {
-        this.parser = new SpelExpressionParser(spelParserConfiguration);
+        this.parser = expressionParser;
         this.evaluationContext = standardEvaluationContext;
     }
 
+
     /**
-     * Resolves the given expression against the provided context object.
+     * Resolves the content of a placeholder by evaluating the expression against the evaluation context.
      *
-     * @param placeholder   the expression to resolve.
-     * @param contextRoot  the context object against which to resolve the expression.
-     * @return the resolved value of the expression.
+     * @param placeholder the placeholder to resolve
+     * @return the resolved value of the placeholder
      */
-    @Nullable
-    public Object resolve(Placeholder placeholder, Object contextRoot) {
-        evaluationContext.setRootObject(contextRoot);
+    @Nullable public Object resolve(Placeholder placeholder) {
         return parser.parseExpression(placeholder.content())
-                .getValue(evaluationContext);
+                     .getValue(evaluationContext);
+    }
+
+    /**
+     * Sets the context object against which expressions will be resolved.
+     *
+     * @param contextRoot the context object to set as the root.
+     */
+    public void setContext(Object contextRoot) {
+        evaluationContext.setRootObject(contextRoot);
     }
 }

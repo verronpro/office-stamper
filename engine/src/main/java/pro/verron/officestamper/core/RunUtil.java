@@ -6,11 +6,15 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.model.styles.StyleUtil;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.Objects;
 import java.util.Random;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * Utility class to handle runs.
@@ -25,6 +29,7 @@ public class RunUtil {
 
     private static final String PRESERVE = "preserve";
     private static final ObjectFactory factory = Context.getWmlObjectFactory();
+    private static final Logger log = LoggerFactory.getLogger(RunUtil.class);
 
     private RunUtil() {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
@@ -38,24 +43,23 @@ public class RunUtil {
      * @return {@link String} representation of the run.
      */
     public static String getText(R run) {
-        StringBuilder result = new StringBuilder();
-        for (Object content : run.getContent()) {
-            if (content instanceof JAXBElement) {
-                result.append(getText((JAXBElement<?>) content));
-            }
-            else if (content instanceof Text text) {
-                result.append(getText(text));
-            }
-        }
-        return result.toString();
+        return run.getContent()
+                  .stream()
+                  .map(RunUtil::getText)
+                  .collect(joining());
     }
 
-    private static CharSequence getText(JAXBElement<?> content) {
-        Object elementValue = content.getValue();
-        if (elementValue instanceof Text text)
+    private static CharSequence getText(Object content) {
+        if (content instanceof JAXBElement<?> jaxbElement)
+            return getText(jaxbElement.getValue());
+
+        if (content instanceof Text text)
             return getText(text);
-        if (elementValue instanceof R.Tab)
+
+        if (content instanceof R.Tab)
             return "\t";
+
+        log.debug("Unhandled object type: {}", content.getClass());
         return "";
     }
 
@@ -66,18 +70,16 @@ public class RunUtil {
                 ? value // keeps spaces if spaces are to be preserved (LibreOffice seems to ignore the "space" property)
                 : value.trim(); // trimming value if spaces are not to be preserved (simulates behavior of Word;)
     }
-
     /**
      * Creates a new run with the specified text and inherits the style of the parent paragraph.
      *
-     * @param text            the initial text of the run.
-     * @param parentParagraph the parent paragraph whose style to inherit.
+     * @param text the initial text of the run.
      *
      * @return the newly created run.
      */
-    public static R create(String text, P parentParagraph) {
+    public static R create(String text, PPr paragraphPr) {
         R run = create(text);
-        applyParagraphStyle(parentParagraph, run);
+        applyParagraphStyle(run, paragraphPr);
         return run;
     }
 
@@ -97,17 +99,15 @@ public class RunUtil {
     /**
      * Applies the style of the given paragraph to the given content object (if the content object is a Run).
      *
-     * @param p   the paragraph whose style to use.
      * @param run the Run to which the style should be applied.
      */
-    public static void applyParagraphStyle(P p, R run) {
-        if (p.getPPr() != null && p.getPPr()
-                                   .getRPr() != null) {
-            RPr runProperties = new RPr();
-            StyleUtil.apply(p.getPPr()
-                             .getRPr(), runProperties);
-            run.setRPr(runProperties);
-        }
+    public static void applyParagraphStyle(R run, @Nullable PPr paragraphPr) {
+        if (paragraphPr == null) return;
+        var runPr = paragraphPr.getRPr();
+        if (runPr == null) return;
+        RPr runProperties = new RPr();
+        StyleUtil.apply(runPr, runProperties);
+        run.setRPr(runProperties);
     }
 
     /**
@@ -195,5 +195,20 @@ public class RunUtil {
         } catch (Exception e) {
             throw new OfficeStamperException(e);
         }
+    }
+
+    static int getLength(R run) {
+        return getText(run)
+                .length();
+    }
+
+    static String getSubstring(R run, int beginIndex) {
+        return getText(run)
+                .substring(beginIndex);
+    }
+
+    static String getSubstring(R run, int beginIndex, int endIndex) {
+        return getText(run)
+                .substring(beginIndex, endIndex);
     }
 }

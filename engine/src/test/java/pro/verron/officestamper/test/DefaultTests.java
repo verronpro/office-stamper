@@ -80,7 +80,8 @@ public class DefaultTests {
                 mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(),
                 nullPointerResolutionTest_testWithDefaultSpel(),
                 nullPointerResolutionTest_testWithCustomSpel(),
-                customCommentProcessor());
+                customCommentProcessor(),
+                controls());
     }
 
     private static Arguments tabulations() {
@@ -1157,6 +1158,17 @@ public class DefaultTests {
                         Visited""");
     }
 
+    private static Arguments controls() {
+        return of("From controls should be replaced as well",
+                OfficeStamperConfigurations.standard(),
+                name("Homer"),
+                getResource(Path.of("form-controls.docx")),
+                """
+                        Expression Replacement in Form Controls
+                        A form control where the expression to be replaced is within a paragraph under the <w:sdtContent> element and hence replaced:
+                        Homer
+                        A form control within a paragraph. The expression to be replaced is not within a paragraph under the <w:sdtContent> element and hence not replaced:Homer""");
+    }
 
     private static Image getImage(Path path) {
         try {

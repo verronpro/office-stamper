@@ -17,6 +17,30 @@ import org.docx4j.wml.R;
  */
 public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run) {
 
+    public int length() {
+        return getText().length();
+    }
+
+    public String getText() {
+        return RunUtil.getText(run());
+    }
+
+    public String substring(int endIndex) {
+        return getText().substring(endIndex);
+    }
+
+    public String substring(int beginIndex, int endIndex) {
+        return getText().substring(beginIndex, endIndex);
+    }
+
+    public int indexOf(String full) {
+        return getText().indexOf(full);
+    }
+
+    public RPr getPr() {
+        return run.getRPr();
+    }
+
     /**
      * Determines whether the specified range of start and end index touches this run.
      * <p>
@@ -33,9 +57,11 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
      * @return true, if the range touches this run, false otherwise.
      */
     public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
-        return ((startIndex >= globalStartIndex) && (startIndex <= globalEndIndex))
-               || ((endIndex >= globalStartIndex) && (endIndex <= globalEndIndex))
-               || ((startIndex <= globalStartIndex) && (endIndex >= globalEndIndex));
+        var startBetweenIndices = (globalStartIndex < startIndex) && (startIndex <= globalEndIndex);
+        var endBetweenIndices = (globalStartIndex < endIndex) && (endIndex <= globalEndIndex);
+        return startBetweenIndices
+               || endBetweenIndices
+               || ((startIndex <= globalStartIndex) && (globalEndIndex <= endIndex));
 
     }
 
@@ -53,25 +79,18 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
     ) {
         int localStartIndex = globalIndexToLocalIndex(globalStartIndex);
         int localEndIndex = globalIndexToLocalIndex(globalEndIndex);
-        String text = RunUtil.getText(run);
-        text = text.substring(0, localStartIndex);
+        var text = RunUtil.getSubstring(run, 0, localStartIndex);
         text += replacement;
         String runText = RunUtil.getText(run);
         if (!runText.isEmpty()) {
-            text += RunUtil.getText(run)
-                    .substring(localEndIndex + 1);
+            text += RunUtil.getSubstring(run, localEndIndex);
         }
         RunUtil.setText(run, text);
     }
 
     private int globalIndexToLocalIndex(int globalIndex) {
-        if (globalIndex < startIndex) {
-            return 0;
-        } else if (globalIndex > endIndex) {
-            return RunUtil.getText(run)
-                           .length() - 1;
-        } else {
-            return globalIndex - startIndex;
-        }
+        if (globalIndex < startIndex) return 0;
+        else if (globalIndex > endIndex) return RunUtil.getLength(run);
+        else return globalIndex - startIndex;
     }
 }

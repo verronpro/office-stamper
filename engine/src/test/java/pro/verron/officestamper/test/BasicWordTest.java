@@ -7,9 +7,9 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 
-public class BasicWordTest {
+class BasicWordTest {
     @Test
-    public void testStamper() {
+    void testStamper() {
         var stamperConfiguration = standardWithPreprocessing();
         var stamper = new TestDocxStamper<>(stamperConfiguration);
         var templateStream = TestUtils.getResource(Path.of("word-base.docx"));

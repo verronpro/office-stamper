@@ -16,8 +16,7 @@ public class BasicWordTest {
 
         record Person(String name) {}
         var context = new Person("Bart");
-        var actual = stamper.stampAndLoadAndExtract(templateStream
-                , context);
+        var actual = stamper.stampAndLoadAndExtract(templateStream, context);
         var expected = "Hello, Bart!";
         assertEquals(expected, actual);
     }

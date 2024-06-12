@@ -77,9 +77,7 @@ public class PlaceholderReplacer
      * @param document          the document in which to replace all expressions.
      * @param expressionContext the context root
      */
-    public void resolveExpressions(
-            final WordprocessingMLPackage document, Object expressionContext
-    ) {
+    public void resolveExpressions(WordprocessingMLPackage document, Object expressionContext) {
         DocumentUtil.streamParagraphs(document)
                     .map(StandardParagraph::new)
                     .forEach(paragraph -> resolveExpressionsForParagraph(paragraph, expressionContext, document));
@@ -115,16 +113,16 @@ public class PlaceholderReplacer
                 }
                 else if (leaveEmptyOnExpressionError) {
                     var template = "Expression {} seems erroneous when evaluating against root of type {}."
-                            + " Reason: {}."
-                            + " Set log level to TRACE to view Stacktrace.";
+                                   + " Reason: {}."
+                                   + " Set log level to TRACE to view Stacktrace.";
                     log.warn(template, expression, context.getClass(), e.getMessage());
                     log.trace("Reason for skipping expression:", e);
                     paragraph.replace(expression, RunUtil.create(""));
                 }
                 else if (replaceUnresolvedExpressions) {
                     log.warn("Expression {} could not be resolved against context root of type {}."
-                                    + " Reason: {}. "
-                                    + "Set log level to TRACE to view Stacktrace.",
+                             + " Reason: {}. "
+                             + "Set log level to TRACE to view Stacktrace.",
                             expression,
                             context.getClass(),
                             e.getMessage());

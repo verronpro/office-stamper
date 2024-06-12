@@ -1,6 +1,7 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.wml.R;
+import org.docx4j.wml.RPr;
 
 /**
  * Represents a run (i.e., a text fragment) in a paragraph. The run is indexed relative to the containing paragraph
@@ -10,6 +11,7 @@ import org.docx4j.wml.R;
  * @param endIndex      the end index of the run relative to the containing paragraph.
  * @param indexInParent the index of the run relative to the containing document.
  * @param run           the run itself.
+ *
  * @author Joseph Verron
  * @author Tom Hombergs
  * @version ${version}
@@ -52,8 +54,11 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
      * <p>
      * This method will return true, because the range touches the run at the indices 2, 3, 4 and 5.
      *
-     * @param globalStartIndex the global index (meaning the index relative to multiple aggregated runs) at which to start the range.
-     * @param globalEndIndex   the global index (meaning the index relative to multiple aggregated runs) at which to end the range.
+     * @param globalStartIndex the global index (meaning the index relative to multiple aggregated runs) at which to
+     *                         start the range.
+     * @param globalEndIndex   the global index (meaning the index relative to multiple aggregated runs) at which to end
+     *                         the range.
+     *
      * @return true, if the range touches this run, false otherwise.
      */
     public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
@@ -68,8 +73,10 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
     /**
      * Replaces the substring starting at the given index with the given replacement string.
      *
-     * @param globalStartIndex the global index (meaning the index relative to multiple aggregated runs) at which to start the replacement.
-     * @param globalEndIndex   the global index (meaning the index relative to multiple aggregated runs) at which to end the replacement.
+     * @param globalStartIndex the global index (meaning the index relative to multiple aggregated runs) at which to
+     *                         start the replacement.
+     * @param globalEndIndex   the global index (meaning the index relative to multiple aggregated runs) at which to end
+     *                         the replacement.
      * @param replacement      the string to replace the substring at the specified global index.
      */
     public void replace(

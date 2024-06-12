@@ -62,12 +62,11 @@ public class DocumentUtil {
             WordprocessingMLPackage document,
             Class<T> elementClass
     ) {
-        RelationshipsPart mainParts = document.getMainDocumentPart()
-                                              .getRelationshipsPart();
+        var mainDocumentPart = document.getMainDocumentPart();
+        var mainParts = mainDocumentPart.getRelationshipsPart();
         return Stream.of(
                              streamElements(mainParts, Namespaces.HEADER, elementClass),
-                             streamObjectElements(document.getMainDocumentPart(),
-                                     elementClass),
+                             streamObjectElements(mainDocumentPart, elementClass),
                              streamElements(mainParts, Namespaces.FOOTER, elementClass)
                      )
                      .reduce(Stream.empty(), Stream::concat);
@@ -248,7 +247,7 @@ public class DocumentUtil {
             for (Object object : contentAccessor.getContent()) {
                 Object unwrappedObject = XmlUtils.unwrap(object);
                 if (searchTarget.equals(unwrappedObject)
-                        || depthElementSearch(searchTarget, unwrappedObject)) {
+                    || depthElementSearch(searchTarget, unwrappedObject)) {
                     return true;
                 }
             }

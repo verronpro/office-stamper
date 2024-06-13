@@ -1,5 +1,7 @@
 package pro.verron.officestamper;
 
+import pro.verron.officestamper.api.OfficeStamperException;
+
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -8,6 +10,10 @@ import java.util.logging.Logger;
 import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
 
 public class Utils {
+
+    private Utils() {
+        throw new OfficeStamperException("Utils cannot be instantiated");
+    }
 
     public static final String LOGGING_FORMAT_KEY = "java.util.logging.SimpleFormatter.format";
     public static final String LOGGING_FORMAT_VAL = "[%1$tl:%1$tM:%1$tS] %2$s %4$-7s: %5$s %6$s %n";

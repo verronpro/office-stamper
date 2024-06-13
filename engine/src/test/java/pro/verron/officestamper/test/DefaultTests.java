@@ -272,8 +272,7 @@ public class DefaultTests {
         return of(
                 "repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
                 OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(
-                                                   (ctx) -> ctx.addPropertyAccessor(new MapAccessor())),
+                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Contexts.subDocPartContext(),
                 getResource(Path.of("RepeatDocPartWithImagesInSourceTest" +
                                     ".docx")),
@@ -519,7 +518,7 @@ public class DefaultTests {
 
         var config = OfficeStamperConfigurations.standard()
                                                 .setEvaluationContextConfigurer(
-                                                        (ctx) -> ctx.addPropertyAccessor(new MapAccessor()));
+                                                        ctx -> ctx.addPropertyAccessor(new MapAccessor()));
 
         return arguments(
                 "RepeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate",

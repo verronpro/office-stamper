@@ -399,7 +399,7 @@ public class CommentUtil {
         // copy the elements without comment range anchors
         var finalElements = elements.stream()
                                     .map(XmlUtils::deepCopy)
-                                    .collect(Collectors.toList());
+                                    .toList();
         deleteCommentFromElements(comment, finalElements);
         target.getMainDocumentPart()
               .getContent()

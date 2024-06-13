@@ -53,13 +53,13 @@ public class CommentProcessorFactory {
     }
 
     private static Tbl parentTable(P p) {
-        if (parentRow(p).getContent() instanceof Tbl table)
+        if (parentRow(p).getParent() instanceof Tbl table)
             return table;
         throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
     }
 
     private static Tr parentRow(P p) {
-        if (parentCell(p).getContent() instanceof Tr row)
+        if (parentCell(p).getParent() instanceof Tr row)
             return row;
         throw new OfficeStamperException(format("Paragraph is not within a row! : %s", getText(p)));
     }
@@ -338,9 +338,7 @@ public class CommentProcessorFactory {
          */
         @Override
         public void resolveTable(StampTable givenTable) {
-            P p = getParagraph();
-            var table = parentTable(p);
-            cols.put(table, givenTable);
+            cols.put(parentTable(getParagraph()), givenTable);
         }
 
         /**
@@ -1204,10 +1202,9 @@ public class CommentProcessorFactory {
         /** {@inheritDoc} */
         @Override
         public void repeatTableRow(List<Object> objects) {
-            P p = getParagraph();
-            var tableRow = parentRow(p);
-            tableRowsToRepeat.put(tableRow, objects);
-            tableRowsCommentsToRemove.put(tableRow, getCurrentCommentWrapper());
+            var row = parentRow(getParagraph());
+            tableRowsToRepeat.put(row, objects);
+            tableRowsCommentsToRemove.put(row, getCurrentCommentWrapper());
         }
     }
 
@@ -1301,11 +1298,9 @@ public class CommentProcessorFactory {
         /** {@inheritDoc} */
         @Override
         public void displayTableIf(Boolean condition) {
-            if (Boolean.TRUE.equals(condition)) return;
-
-            P p = getParagraph();
-            var tbl = parentTable(p);
-            tablesToBeRemoved.add(tbl);
+            if (Boolean.TRUE.equals(condition))
+                return;
+            tablesToBeRemoved.add(parentTable(getParagraph()));
         }
     }
 }

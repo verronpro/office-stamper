@@ -1,14 +1,7 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.TraversalUtil;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
-import org.docx4j.openpackaging.parts.relationships.Namespaces;
-import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
-import org.docx4j.relationships.Relationship;
-import org.docx4j.wml.P;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.StreamStamper;
 import pro.verron.officestamper.preset.OfficeStampers;
@@ -17,10 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * Common methods to interact with docx documents.
@@ -32,7 +21,6 @@ import static java.util.stream.Collectors.joining;
 public final class TestDocxStamper<T> {
 
     private final StreamStamper<WordprocessingMLPackage> stamper;
-    private WordprocessingMLPackage document;
 
     /**
      * <p>Constructor for TestDocxStamper.</p>
@@ -72,83 +60,27 @@ public final class TestDocxStamper<T> {
      *
      * @param template a {@link InputStream} object
      * @param context  a T object
-     * @return a {@link java.util.List} object
+     * @return a {@link List} object
      * @since 1.6.6
      */
     public String stampAndLoadAndExtract(InputStream template, T context) {
-        Stringifier stringifier = new Stringifier(() -> document);
-        return streamElements(template, context, P.class)
-                .map(stringifier::stringify)
-                .collect(joining("\n"));
+        var wordprocessingMLPackage = streamElements(template, context);
+        return new Stringifier(() -> wordprocessingMLPackage).stringify(wordprocessingMLPackage);
     }
 
-    private <C> Stream<C> streamElements(
+    private WordprocessingMLPackage streamElements(
             InputStream template,
-            T context,
-            Class<C> clazz
+            T context
     ) {
-        Stream<C> elements;
         try {
             var out = IOStreams.getOutputStream();
             stamper.stamp(template, context, out);
             var in = IOStreams.getInputStream(out);
-            document = WordprocessingMLPackage.load(in);
-            var visitor = newCollector(clazz);
-            getHeaderPart(document)
-                    .ifPresent(hp -> TraversalUtil.visit(hp, visitor));
-            TraversalUtil.visit(getMainPart(document), visitor);
-            getFooterPart(document)
-                    .ifPresent(hp -> TraversalUtil.visit(hp, visitor));
-            elements = visitor.elements();
+            return WordprocessingMLPackage.load(in);
         } catch (Docx4JException | IOException e) {
             throw new RuntimeException(e);
         }
-        return elements;
     }
 
-    private List<Object> getMainPart(WordprocessingMLPackage document) {
-        return document.getMainDocumentPart()
-                .getContent();
-    }
 
-    private Optional<HeaderPart> getHeaderPart(WordprocessingMLPackage document) {
-        RelationshipsPart relPart = document.getMainDocumentPart()
-                .getRelationshipsPart();
-        Relationship rel = relPart.getRelationshipByType(Namespaces.HEADER);
-        return Optional.ofNullable(rel)
-                .map(r -> (HeaderPart) relPart.getPart(r));
-    }
-
-    private Optional<FooterPart> getFooterPart(WordprocessingMLPackage document) {
-        RelationshipsPart relPart = document.getMainDocumentPart()
-                .getRelationshipsPart();
-        Relationship rel = relPart.getRelationshipByType(Namespaces.FOOTER);
-        return Optional.ofNullable(rel)
-                .map(r -> (FooterPart) relPart.getPart(r));
-    }
-
-    private <C> DocxCollector<C> newCollector(Class<C> type) {
-        return new DocxCollector<>(type);
-    }
-
-    /**
-     * <p>stampAndLoadAndExtract.</p>
-     *
-     * @param template a {@link InputStream} object
-     * @param context  a T object
-     * @param clazz    a {@link java.lang.Class} object
-     * @param <C>      a C class
-     * @return a {@link java.util.List} object
-     * @since 1.6.6
-     */
-    public <C> List<String> stampAndLoadAndExtract(
-            InputStream template,
-            T context,
-            Class<C> clazz
-    ) {
-        Stringifier stringifier = new Stringifier(() -> document);
-        return streamElements(template, context, clazz)
-                .map(stringifier::extractDocumentRuns)
-                .toList();
-    }
 }

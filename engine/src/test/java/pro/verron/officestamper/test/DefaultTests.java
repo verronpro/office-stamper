@@ -91,7 +91,8 @@ public class DefaultTests {
                 getResource(Path.of("TabsIndentationTest.docx")),
                 """
                         Tab|TAB|Homer Simpson
-                        Space Homer Simpson""");
+                        Space Homer Simpson
+                        """);
     }
 
     private static Arguments whitespaces() {
@@ -101,7 +102,8 @@ public class DefaultTests {
                 getResource(Path.of("TabsIndentationTest.docx")),
                 """
                         Tab|TAB|Homer Simpson
-                        Space Homer Simpson""");
+                        Space Homer Simpson
+                        """);
     }
 
     private static Arguments ternary() {
@@ -114,7 +116,8 @@ public class DefaultTests {
                         This paragraph is untouched.
                         Some replacement before the ternary operator: Homer.
                         Homer <-- this should read "Homer".
-                         <-- this should be empty.""");
+                         <-- this should be empty.
+                         """);
     }
 
     private static Arguments repeatingRows() {
@@ -145,7 +148,8 @@ public class DefaultTests {
                         Krusty the Clown
                         Dan Castellaneta
                                                 
-                        ❬There are ❬6❘lang=de-DE❭ characters in the above table.❘lang=de-DE,spacing={after=140,before=0}❭""");
+                        ❬There are ❬6❘lang=de-DE❭ characters in the above table.❘lang=de-DE,spacing={after=140,before=0}❭
+                        """);
     }
 
     private static Arguments replaceWordWithIntegrationTest() {
@@ -158,6 +162,7 @@ public class DefaultTests {
                         ReplaceWordWith Integration
                         ❬This variable ❬name❘b=true❭❬ ❘b=true❭should be resolved to the value Simpsons.❘b=true❭
                         This variable ❬name❘b=true❭ should be resolved to the value Simpsons.
+                                                
                         """);
     }
 
@@ -167,7 +172,9 @@ public class DefaultTests {
                                            .addResolver(Resolvers.nullToPlaceholder()),
                 name(null),
                 getResource(Path.of("ReplaceNullExpressionTest.docx")),
-                "I am ${name}.");
+                """
+                        I am ${name}.
+                        """);
     }
 
     private static Arguments repeatTableRowKeepsFormatTest() {
@@ -201,6 +208,7 @@ public class DefaultTests {
                         3❬rd❘vertAlign=superscript❭ Bart Simpson-❬Nancy Cartwright❘b=true❭
                         4❬th❘vertAlign=superscript❭ Lisa Simpson-❬Yeardley Smith❘b=true❭
                         5❬th❘vertAlign=superscript❭ Maggie Simpson-❬Julie Kavner❘b=true❭
+                                                
                         """);
     }
 
@@ -229,7 +237,8 @@ public class DefaultTests {
                 Krusty the Clown
                 Dan Castellaneta
                                 
-                ❬There are ❬6❘lang=de-DE❭ characters.❘spacing={after=140,before=0}❭""";
+                ❬There are ❬6❘lang=de-DE❭ characters.❘spacing={after=140,before=0}❭
+                """;
 
         return arguments("repeatParagraphTest",
                 OfficeStamperConfigurations.standard(),
@@ -255,6 +264,7 @@ public class DefaultTests {
                                 
                 Always rendered:
                 rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                                
                 """;
 
         var config = OfficeStamperConfigurations.standard()
@@ -284,7 +294,8 @@ public class DefaultTests {
                         This should be repeated : second doc part
                         rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
                         This should be repeated too
-                        This is not repeated""");
+                        This is not repeated
+                        """);
     }
 
     private static Arguments repeatDocPartTest() {
@@ -325,7 +336,8 @@ public class DefaultTests {
                         ❬Krusty the Clown❘jc=center❭
                         ❬Dan Castellaneta❘jc=center❭
                         ❬ |BR(PAGE)|❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        There are 6 characters.""");
+                        There are 6 characters.
+                        """);
     }
 
     private static Arguments repeatDocPartNestingTest() {
@@ -484,7 +496,8 @@ public class DefaultTests {
                         ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
                         ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
                         ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        There are 3 grades.""");
+                        There are 3 grades.
+                        """);
     }
 
     private static Arguments repeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate() {
@@ -514,7 +527,8 @@ public class DefaultTests {
                 secondTable value3
                 secondTable value4
                                 
-                This will stay untouched too.""";
+                This will stay untouched too.
+                """;
 
         var config = OfficeStamperConfigurations.standard()
                                                 .setEvaluationContextConfigurer(
@@ -549,7 +563,8 @@ public class DefaultTests {
                                                 
                         Without a section break changing the layout in between, but a page break instead.|BR(PAGE)|
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                        Fourth page is set to landscape again.""");
+                        Fourth page is set to landscape again.
+                        """);
     }
 
     private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithSectionBreakInsideComment() {
@@ -569,7 +584,8 @@ public class DefaultTests {
                 ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
                 With a page break changing the layout in between.
                 ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
-                Fourth page is set to portrait again.""";
+                Fourth page is set to portrait again.
+                """;
 
         var config = OfficeStamperConfigurations.standard()
                                                 .setEvaluationContextConfigurer(
@@ -605,7 +621,8 @@ public class DefaultTests {
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
                         ❬With a break setting the layout to portrait in between.❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                        Fourth page is set to landscape again.""");
+                        Fourth page is set to landscape again.
+                        """);
     }
 
     private static Arguments replaceNullExpressionTest2() {
@@ -614,7 +631,9 @@ public class DefaultTests {
                                            .addResolver(Resolvers.nullToEmpty()),
                 name(null),
                 getResource(Path.of("ReplaceNullExpressionTest.docx")),
-                "I am .");
+                """
+                        I am .
+                        """);
     }
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement() {
@@ -645,7 +664,8 @@ public class DefaultTests {
                                                 
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                        Fourth page is set to landscape again.""");
+                        Fourth page is set to landscape again.
+                        """);
     }
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment() {
@@ -669,7 +689,8 @@ public class DefaultTests {
                         |BR(PAGE)|
                         Without a break changing the layout in between (page break should be repeated).
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                        Fourth page is set to landscape again.""");
+                        Fourth page is set to landscape again.
+                        """);
     }
 
     private static Arguments conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved() {
@@ -677,16 +698,16 @@ public class DefaultTests {
         var template = getResource(Path.of(
                 "ConditionalDisplayOfParagraphsTest.docx"));
         var expected = """
-                ❬Conditional Display of Paragraphs❘spacing={after=120,before=240}❭
-                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE❭
-                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE,spacing={after=140,before=0}❭
-                ❬❬Conditional Display of paragraphs also works in tables❘b=true❭❘b=true❭
+                Conditional Display of Paragraphs
+                This paragraph stays untouched.
+                This paragraph stays untouched.
+                Conditional Display of paragraphs also works in tables
                 This paragraph stays untouched.
                                 
-                ❬❬Also works in nested tables❘b=true❭❘b=true❭
+                Also works in nested tables
                 This paragraph stays untouched.
                                 
-                ❬❘spacing={after=140,before=0}❭""";
+                """;
 
         return arguments(
                 "conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved",
@@ -757,8 +778,8 @@ public class DefaultTests {
                 This row stays untouched.
                 ❬❬Also works on nested Tables❘b=true❭❘b=true❭
                 This row stays untouched.
-                                
-                ❬❘spacing={after=140,before=0}❭""";
+                ❬❘spacing={after=140,before=0}❭
+                """;
         return arguments("conditionalDisplayOfTableRowsTest",
                 OfficeStamperConfigurations.standard(),
                 context,
@@ -782,7 +803,8 @@ public class DefaultTests {
                 ❬❬Also works on nested tables❘b=true❭❘b=true,widowControl=xxx❭
                 ❬❘b=true,widowControl=xxx❭
                                 
-                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘spacing={after=140,before=0}❭""";
+                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘spacing={after=140,before=0}❭
+                """;
         return arguments("conditionalDisplayOfTableBug32Test",
                 OfficeStamperConfigurations.standard(),
                 context,
@@ -806,7 +828,8 @@ public class DefaultTests {
                 ❬❬Also works on nested tables❘b=true❭❘b=true❭
                 ❬❘b=true❭
                                 
-                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE,spacing={after=140,before=0}❭""";
+                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE,spacing={after=140,before=0}❭
+                """;
         return arguments("conditionalDisplayOfTablesTest",
                 OfficeStamperConfigurations.standard(),
                 context,
@@ -821,7 +844,8 @@ public class DefaultTests {
         var expected = """
                 ❬Custom EvaluationContextConfigurer Test❘spacing={after=120,before=240}❭
                 ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE❭
-                ❬The variable foo has the value ❬bar❘lang=de-DE❭.❘spacing={after=140,before=0}❭""";
+                ❬The variable foo has the value ❬bar❘lang=de-DE❭.❘spacing={after=140,before=0}❭
+                """;
         var config = OfficeStamperConfigurations.standard()
                                                 .setEvaluationContextConfigurer(
                                                         evalContext -> evalContext.addPropertyAccessor(new SimpleGetter(
@@ -843,7 +867,8 @@ public class DefaultTests {
                 Custom Expression Function
                 This paragraph is untouched.
                 In this paragraph, a custom expression function is used to uppercase a String: ❬HOMER SIMPSON❘b=true❭❬.❘b=true❭
-                To test that custom functions work together with comment expressions, we toggle visibility of this paragraph with a comment expression.""";
+                To test that custom functions work together with comment expressions, we toggle visibility of this paragraph with a comment expression.
+                """;
         var config = OfficeStamperConfigurations.standard()
                                                 .exposeInterfaceToExpressionLanguage(
                                                         Functions.UppercaseFunction.class,
@@ -863,7 +888,8 @@ public class DefaultTests {
                 ❬Expression Replacement in global paragraphs❘spacing={after=120,before=240}❭
                 ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
                 ❬In this paragraph, the variable ❘lang=de-DE❭❬name❘b=true,lang=de-DE❭ should be resolved to the value ❬Homer Simpson❘lang=de-DE❭.
-                ❬❬In this paragraph, the variable ❘lang=de-DE❭❬foo❘b=true,lang=de-DE❭❬ should not be resolved: ${foo}.❘lang=de-DE❭❘spacing={after=140,before=0}❭""";
+                ❬❬In this paragraph, the variable ❘lang=de-DE❭❬foo❘b=true,lang=de-DE❭❬ should not be resolved: ${foo}.❘lang=de-DE❭❘spacing={after=140,before=0}❭
+                """;
         OfficeStamperConfiguration config = OfficeStamperConfigurations.standard()
                                                                        .setFailOnUnresolvedExpression(false);
         return arguments("expressionReplacementInGlobalParagraphsTest",
@@ -879,7 +905,7 @@ public class DefaultTests {
                                            ".docx"));
 
         var expected = """
-                ❬Expression Replacement in Tables❘spacing={after=120,before=240}❭
+                Expression Replacement in Tables
                 This should resolve to a name:
                 Bart Simpson
                 This should not resolve:
@@ -890,7 +916,7 @@ public class DefaultTests {
                 This should not resolve:
                 ${foo}
                                 
-                ❬❘spacing={after=140,before=0}❭""";
+                """;
         OfficeStamperConfiguration config = OfficeStamperConfigurations.standard()
                                                                        .setFailOnUnresolvedExpression(false);
         return arguments("expressionReplacementInTablesTest",
@@ -921,7 +947,8 @@ public class DefaultTests {
                 ❬It should be dot, dot and dash underlined: ❬Homer Simpson❘u=dotDotDash❭❘i=true❭
                 It should be highlighted yellow: ❬Homer Simpson❘highlight=yellow❭
                 ❬It should be white over darkblue: ❬Homer Simpson❘color=FFFFFF,highlight=darkBlue❭❘b=true❭
-                ❬It should be with header formatting: ❬Homer Simpson❘rStyle=TitreCar❭❘b=true❭""";
+                ❬It should be with header formatting: ❬Homer Simpson❘rStyle=TitreCar❭❘b=true❭
+                """;
         return arguments("expressionReplacementWithFormattingTest",
                 OfficeStamperConfigurations.standard(),
                 context,
@@ -942,7 +969,8 @@ public class DefaultTests {
                 Before Expression After.
                 Before Expression After.
                 Before Expression After.
-                ❬Before Expression After.❘spacing={after=140,before=0}❭""";
+                ❬Before Expression After.❘spacing={after=140,before=0}❭
+                """;
         return arguments("expressionWithSurroundingSpacesTest",
                 OfficeStamperConfigurations.standard(),
                 spacyContext,
@@ -952,13 +980,15 @@ public class DefaultTests {
 
     private static Arguments expressionReplacementWithCommentTest() {
         var context = new Contexts.Name("Homer Simpson");
-        var template = getResource(Path.of(
-                "ExpressionReplacementWithCommentsTest.docx"));
+        var template = getResource(Path.of("ExpressionReplacementWithCommentsTest.docx"));
         var expected = """
-                ❬Expression Replacement with comments❘spacing={after=120,before=240}❭
+                Expression Replacement with comments
                 This paragraph is untouched.
                 In this paragraph, the variable ❬name❘b=true❭ should be resolved to the value Homer Simpson.
-                ❬In this paragraph, the variable ❬foo❘b=true❭ should not be resolved: unresolvedValueWithCommentreplaceWordWith(foo).❘spacing={after=140,before=0,line=288,lineRule=AUTO}❭""";
+                In this paragraph, the variable ❬foo❘b=true❭ should not be resolved: unresolvedValueWithCommentreplaceWordWith(foo)
+                                
+                .
+                """;
         var config = OfficeStamperConfigurations.standard()
                                                 .setFailOnUnresolvedExpression(false);
         return arguments("expressionReplacementWithCommentsTest",
@@ -980,7 +1010,8 @@ public class DefaultTests {
                 ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
                 ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
                 ❬In this paragraph, an image of Mona Lisa is inserted: ❬rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭.❘lang=de-DE❭
-                ❬This paragraph has the image ❬rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭""";
+                ❬This paragraph has the image ❬rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
+                """;
         return arguments("imageReplacementInGlobalParagraphsTest",
                 OfficeStamperConfigurations.standard(),
                 context,
@@ -998,7 +1029,8 @@ public class DefaultTests {
                 ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
                 ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
                 ❬In this paragraph, an image of Mona Lisa is inserted: ❬rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭.❘lang=de-DE❭
-                ❬This paragraph has the image ❬rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭""";
+                ❬This paragraph has the image ❬rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
+                """;
         return arguments("imageReplacementInGlobalParagraphsTestWithMaxWidth",
                 OfficeStamperConfigurations.standard(),
                 context,
@@ -1012,7 +1044,8 @@ public class DefaultTests {
                                            ".docx"));
         var expected = """
                 Leave me empty .
-                ❬❘u=single❭""";
+                ❬❘u=single❭
+                """;
         var config = OfficeStamperConfigurations.standard()
                                                 .setFailOnUnresolvedExpression(false)
                                                 .leaveEmptyOnExpressionError(true);
@@ -1032,7 +1065,8 @@ public class DefaultTests {
                 Line Break Replacement
                 This paragraph is untouched.
                 This paragraph should be |BR(null)| split in |BR(null)| three lines.
-                This paragraph is untouched.""";
+                This paragraph is untouched.
+                """;
         return arguments("lineBreakReplacementTest",
                 config,
                 context,
@@ -1048,12 +1082,8 @@ public class DefaultTests {
                 Flat string : Flat string has been resolved
                                 
                 Values
-                                
                 first value
-                                
-                                
                 second value
-                                
                                 
                                 
                 Paragraph start
@@ -1062,6 +1092,7 @@ public class DefaultTests {
                 Paragraph start
                 second value
                 Paragraph end
+                                
                 """;
 
         var config = OfficeStamperConfigurations.standard()
@@ -1096,6 +1127,7 @@ public class DefaultTests {
                 Deal with: ${nullish.value ?: "Nullish value!!"}
                 Deal with: ${nullish.li[0] ?: "Nullish value!!"}
                 Deal with: ${nullish.li[2] ?: "Nullish value!!"}
+                                
                 """;
 
         var config = OfficeStamperConfigurations.standard()
@@ -1123,6 +1155,7 @@ public class DefaultTests {
                 Deal with: Nullish value!!
                 Deal with: Nullish value!!
                 Deal with: Nullish value!!
+                                
                 """;
 
         // Beware, this configuration only autogrows pojos and java beans,
@@ -1154,19 +1187,24 @@ public class DefaultTests {
                         Custom CommentProcessor Test
                         Visited
                         This paragraph is untouched.
-                        Visited""");
+                        Visited
+                        """);
     }
 
     private static Arguments controls() {
-        return of("From controls should be replaced as well",
+        return of("Form controls should be replaced as well",
                 OfficeStamperConfigurations.standard(),
                 name("Homer"),
                 getResource(Path.of("form-controls.docx")),
                 """
                         Expression Replacement in Form Controls
-                        A form control where the expression to be replaced is within a paragraph under the <w:sdtContent> element and hence replaced:
-                        Homer
-                        A form control within a paragraph. The expression to be replaced is not within a paragraph under the <w:sdtContent> element and hence not replaced:Homer""");
+                        [Rich text control line Homer]
+                        Rich text control inlined [Homer]
+                        [Raw text control line Homer]
+                        Raw text control inlined [Homer]
+                        [Homer]
+                                                
+                        """);
     }
 
     private static Image getImage(Path path) {

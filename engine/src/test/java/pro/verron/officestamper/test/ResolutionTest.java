@@ -62,7 +62,7 @@ class ResolutionTest {
         }
         else {
             ThrowingSupplier<String> supplier = () -> stamper.stampAndLoadAndExtract(resource, new Object());
-            assertEquals(expected, assertDoesNotThrow(supplier));
+            assertEquals(expected + "\n", assertDoesNotThrow(supplier));
         }
     }
 
@@ -149,7 +149,7 @@ class ResolutionTest {
         }
         else {
             ThrowingSupplier<String> supplier = () -> stamper.stampAndLoadAndExtract(resource, customContext);
-            assertEquals(expected, assertDoesNotThrow(supplier));
+            assertEquals(expected + "\n", assertDoesNotThrow(supplier));
         }
     }
 

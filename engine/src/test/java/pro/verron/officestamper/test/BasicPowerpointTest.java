@@ -14,9 +14,9 @@ import static pro.verron.officestamper.preset.ExperimentalStampers.pptxStamper;
 import static pro.verron.officestamper.test.IOStreams.getInputStream;
 import static pro.verron.officestamper.test.IOStreams.getOutputStream;
 
-public class BasicPowerpointTest {
+class BasicPowerpointTest {
     @Test
-    public void testStamper()
+    void testStamper()
             throws IOException, Docx4JException {
         var stamper = pptxStamper();
         var templateStream = TestUtils.getResource(Path.of("powerpoint-base.pptx"));

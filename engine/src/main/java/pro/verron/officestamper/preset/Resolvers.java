@@ -29,6 +29,10 @@ import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstract
  */
 public class Resolvers {
 
+    private Resolvers() {
+        throw new OfficeStamperException("Resolvers cannot be instantiated");
+    }
+
     /**
      * Returns an instance of {@link ObjectResolver} that can act as a fallback
      * resolver. Will call the {@link Object#toString()} method on every type

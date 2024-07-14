@@ -13,9 +13,10 @@ import static pro.verron.officestamper.test.IOStreams.getInputStream;
 import static pro.verron.officestamper.test.IOStreams.getOutputStream;
 import static pro.verron.officestamper.test.Stringifier.stringifyExcel;
 
-public class BasicExcelTest {
+class BasicExcelTest {
+
     @Test
-    public void testStamper()
+    void testStamper()
             throws IOException, Docx4JException {
 
         var stamper = xlsxStamper();

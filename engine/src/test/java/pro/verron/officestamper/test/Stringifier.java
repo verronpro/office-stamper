@@ -2,17 +2,22 @@ package pro.verron.officestamper.test;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TextUtils;
-import org.docx4j.TraversalUtil;
 import org.docx4j.dml.*;
 import org.docx4j.dml.picture.Pic;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
+import org.docx4j.mce.AlternateContent;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
-import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.*;
+import org.docx4j.openpackaging.parts.relationships.Namespaces;
+import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
+import org.docx4j.relationships.Relationship;
+import org.docx4j.vml.CTShape;
+import org.docx4j.vml.CTShapetype;
+import org.docx4j.vml.CTTextbox;
 import org.docx4j.wml.*;
 import org.docx4j.wml.Comments.Comment;
 import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
@@ -138,16 +143,8 @@ public class Stringifier {
         return documentSupplier.get();
     }
 
-    private String stringify(R.LastRenderedPageBreak ignored) {
-        return ""; // do not render
-    }
-
     private String stringify(Br br) {
         return "|BR(" + br.getType() + ")|";
-    }
-
-    private String stringify(R.Tab ignored) {
-        return "|TAB|";
     }
 
     /**
@@ -219,9 +216,29 @@ public class Stringifier {
      */
     public String stringify(Object o) {
         if (o instanceof JAXBElement<?> jaxb) return stringify(jaxb.getValue());
+        if (o instanceof WordprocessingMLPackage mlPackage) {
+            var header = getHeaderPart(mlPackage)
+                    .map(this::stringify)
+                    .map(s -> s + "===\n")
+                    .orElse("");
+            var body = stringify(mlPackage.getMainDocumentPart());
+            var footer = getFooterPart(mlPackage)
+                    .map(this::stringify)
+                    .map(s -> "===\n" + s)
+                    .orElse("");
+            return header + body + footer;
+        }
+        if (o instanceof Tbl tbl) return stringify(tbl.getContent());
+        if (o instanceof Tr tr) return stringify(tr.getContent());
+        if (o instanceof Tc tc) return stringify(tc.getContent()).trim() + "\n";
+        if (o instanceof MainDocumentPart mainDocumentPart) return stringify(mainDocumentPart.getContent());
+        if (o instanceof HeaderPart headerPart) return stringify(headerPart.getContent());
+        if (o instanceof FooterPart footerPart) return stringify(footerPart.getContent());
+        if (o instanceof Body body) return stringify(body.getContent());
         if (o instanceof List<?> list) return stringify(list);
         if (o instanceof Text text) return stringify(text);
-        if (o instanceof P p) return stringify(p);
+        if (o instanceof P p) return stringify(p) + "\n";
+        if (o instanceof R r) return stringify(r);
         if (o instanceof Drawing drawing) return stringify(drawing);
         if (o instanceof Inline inline) return stringify(inline);
         if (o instanceof Graphic graphic) return getStringify(graphic);
@@ -229,12 +246,42 @@ public class Stringifier {
         if (o instanceof Pic pic) return stringify(pic);
         if (o instanceof CTBlipFillProperties bfp) return stringify(bfp);
         if (o instanceof CTBlip blip) return stringify(blip);
-        if (o instanceof R.LastRenderedPageBreak lrpb) return stringify(lrpb);
+        if (o instanceof R.LastRenderedPageBreak) return ""; // do not render
         if (o instanceof Br br) return stringify(br);
-        if (o instanceof R.Tab tab) return stringify(tab);
+        if (o instanceof R.Tab) return "|TAB|";
         if (o instanceof R.CommentReference cr) return stringify(cr);
+        if (o instanceof CTMarkupRange) return "";
+        if (o instanceof ProofErr) return "";
+        if (o instanceof CommentRangeStart) return "";
+        if (o instanceof CommentRangeEnd) return "";
+        if (o instanceof SdtBlock block) return stringify(block.getSdtContent()) + "\n";
+        if (o instanceof AlternateContent) return "";
+        if (o instanceof Pict pict) return stringify(pict.getAnyAndAny());
+        if (o instanceof CTShapetype) return "";
+        if (o instanceof CTShape ctShape) return "[" + stringify(ctShape.getEGShapeElements()).trim() + "]\n";
+        if (o instanceof CTTextbox ctTextbox) return stringify(ctTextbox.getTxbxContent());
+        if (o instanceof CTTxbxContent content) return stringify(content.getContent());
+        if (o instanceof SdtRun run) return stringify(run.getSdtContent());
+        if (o instanceof SdtContent content) return "[" + stringify(content.getContent()).trim() + "]";
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
+    }
+
+
+    private Optional<HeaderPart> getHeaderPart(WordprocessingMLPackage document) {
+        RelationshipsPart relPart = document.getMainDocumentPart()
+                                            .getRelationshipsPart();
+        Relationship rel = relPart.getRelationshipByType(Namespaces.HEADER);
+        return Optional.ofNullable(rel)
+                       .map(r -> (HeaderPart) relPart.getPart(r));
+    }
+
+    private Optional<FooterPart> getFooterPart(WordprocessingMLPackage document) {
+        RelationshipsPart relPart = document.getMainDocumentPart()
+                                            .getRelationshipsPart();
+        Relationship rel = relPart.getRelationshipByType(Namespaces.FOOTER);
+        return Optional.ofNullable(rel)
+                       .map(r -> (FooterPart) relPart.getPart(r));
     }
 
     private String stringify(Pic pic) {
@@ -318,31 +365,10 @@ public class Stringifier {
      * @since 1.6.6
      */
     private String stringify(P p) {
-        String runs = extractDocumentRuns(p);
-        return ofNullable(p.getPPr())
-                .flatMap(this::stringify)
+        var runs = stringify(p.getContent());
+        return stringify(p.getPPr())
                 .map(ppr -> "❬%s❘%s❭".formatted(runs, ppr))
                 .orElse(runs);
-    }
-
-    /**
-     * <p>extractDocumentRuns.</p>
-     *
-     * @param p a {@link java.lang.Object} object
-     *
-     * @return a {@link java.lang.String} object
-     *
-     * @since 1.6.6
-     */
-    public String extractDocumentRuns(Object p) {
-        var runCollector = new RunCollector();
-        TraversalUtil.visit(p, runCollector);
-        return runCollector
-                .runs()
-                .filter(r -> !r.getContent()
-                               .isEmpty())
-                .map(this::stringify)
-                .collect(joining());
     }
 
     private Optional<String> stringify(PPr pPr) {

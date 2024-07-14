@@ -35,6 +35,10 @@ public class ExceptionUtil {
 
     }
 
+    private ExceptionUtil() {
+        throw new OfficeStamperException("ExceptionUtil cannot be instantiated");
+    }
+
     static void treatException(ExpressionException exception, boolean shouldThrow, String msg) {
         treatException(exception, shouldThrow, msg, () -> "Do not expect a return");
     }

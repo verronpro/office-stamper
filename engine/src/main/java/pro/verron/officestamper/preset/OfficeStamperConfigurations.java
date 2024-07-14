@@ -1,6 +1,7 @@
 package pro.verron.officestamper.preset;
 
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 
 /**
@@ -8,6 +9,11 @@ import pro.verron.officestamper.core.DocxStamperConfiguration;
  * to create different configurations for the OfficeStamper.
  */
 public class OfficeStamperConfigurations {
+
+
+    private OfficeStamperConfigurations() {
+        throw new OfficeStamperException("OfficeStamperConfigurations cannot be instantiated");
+    }
 
     /**
      * Creates a new OfficeStamperConfiguration with the standard configuration and additional preprocessors.

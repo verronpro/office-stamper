@@ -22,7 +22,8 @@ class MultiSectionTest {
                 Homer
                                 
                 ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                Marge""";
+                Marge
+                """;
         assertEquals(expected, actual);
     }
 

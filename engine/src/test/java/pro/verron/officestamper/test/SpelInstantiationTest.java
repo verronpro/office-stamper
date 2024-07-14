@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.EvaluationContextConfigurers.noopConfigurer;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 
-public class SpelInstantiationTest {
+class SpelInstantiationTest {
     @Test
-    public void testDateInstantiationAndResolution() {
+    void testDateInstantiationAndResolution() {
         var stamperConfiguration = standardWithPreprocessing()
                 .setEvaluationContextConfigurer(noopConfigurer());
         var stamper = new TestDocxStamper<>(stamperConfiguration);
@@ -21,7 +21,8 @@ public class SpelInstantiationTest {
                 01.01.1970
                 2000-01-01
                 12:00:00
-                2000-01-01T12:00:00""";
+                2000-01-01T12:00:00
+                """;
         assertEquals(expected, actual);
     }
 }

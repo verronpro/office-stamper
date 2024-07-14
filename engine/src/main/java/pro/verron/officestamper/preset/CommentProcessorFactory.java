@@ -52,6 +52,24 @@ public class CommentProcessorFactory {
         this.configuration = configuration;
     }
 
+    private static Tbl parentTable(P p) {
+        if (parentRow(p).getParent() instanceof Tbl table)
+            return table;
+        throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+    }
+
+    private static Tr parentRow(P p) {
+        if (parentCell(p).getParent() instanceof Tr row)
+            return row;
+        throw new OfficeStamperException(format("Paragraph is not within a row! : %s", getText(p)));
+    }
+
+    private static Tc parentCell(P p) {
+        if (p.getParent() instanceof Tc cell)
+            return cell;
+        throw new OfficeStamperException(format("Paragraph is not within a cell! : %s", getText(p)));
+    }
+
     /**
      * Creates a new CommentProcessorFactory with default configuration.
      *
@@ -320,12 +338,7 @@ public class CommentProcessorFactory {
          */
         @Override
         public void resolveTable(StampTable givenTable) {
-            P p = getParagraph();
-            if (p.getParent() instanceof Tc tc && tc.getParent() instanceof Tr tr
-                && tr.getParent() instanceof Tbl table) {
-                cols.put(table, givenTable);
-            }
-            else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+            cols.put(parentTable(getParagraph()), givenTable);
         }
 
         /**
@@ -398,10 +411,9 @@ public class CommentProcessorFactory {
         }
 
         private void setCellText(Tc tableCell, String content) {
-            tableCell.getContent()
-                     .clear();
-            tableCell.getContent()
-                     .add(ParagraphUtil.create(content));
+            var tableCellContent = tableCell.getContent();
+            tableCellContent.clear();
+            tableCellContent.add(ParagraphUtil.create(content));
         }
 
         /**
@@ -572,33 +584,26 @@ public class CommentProcessorFactory {
             for (Object object : paragraph.getContent()) {
                 if (object instanceof CommentRangeStart crs)
                     commentId = crs.getId();
-                if (object instanceof CommentRangeEnd cre && Objects.equals(
-                        commentId,
-                        cre.getId())) foundEnd = true;
+                if (object instanceof CommentRangeEnd cre && Objects.equals(commentId, cre.getId()))
+                    foundEnd = true;
             }
             if (foundEnd || commentId == null) return paragraphs;
 
             Object parent = paragraph.getParent();
             if (parent instanceof ContentAccessor contentAccessor) {
-                int index = contentAccessor.getContent()
-                                           .indexOf(paragraph);
-                for (int i = index + 1; i < contentAccessor.getContent()
-                                                           .size() && !foundEnd; i++) {
-                    Object next = contentAccessor.getContent()
-                                                 .get(i);
-
-                    if (next instanceof CommentRangeEnd cre && cre.getId()
-                                                                  .equals(commentId)) {
+                var accessorContent = contentAccessor.getContent();
+                int index = accessorContent.indexOf(paragraph);
+                for (int i = index + 1; i < accessorContent.size() && !foundEnd; i++) {
+                    var next = accessorContent.get(i);
+                    if (next instanceof CommentRangeEnd cre && Objects.equals(commentId, cre.getId()))
                         foundEnd = true;
-                    }
                     else {
                         if (next instanceof P p) {
                             paragraphs.add(p);
                         }
                         if (next instanceof ContentAccessor childContent) {
                             for (Object child : childContent.getContent()) {
-                                if (child instanceof CommentRangeEnd cre && cre.getId()
-                                                                               .equals(commentId)) {
+                                if (child instanceof CommentRangeEnd cre && Objects.equals(commentId, cre.getId())) {
                                     foundEnd = true;
                                     break;
                                 }
@@ -854,8 +859,7 @@ public class CommentProcessorFactory {
             var subDocuments = stampSubDocuments(expressionContexts, subTemplate);
             var replacements = subDocuments
                     .stream()
-                    .map(p -> walkObjectsAndImportImages(p,
-                            document)) // TODO_LATER: move the side effect somewhere else
+                    .map(p -> walkObjectsAndImportImages(p, document)) //TODO_LATER: move side effect somewhere else
                     .map(Map::entrySet)
                     .flatMap(Set::stream)
                     .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -1198,12 +1202,9 @@ public class CommentProcessorFactory {
         /** {@inheritDoc} */
         @Override
         public void repeatTableRow(List<Object> objects) {
-            P p = getParagraph();
-            if (p.getParent() instanceof Tc tc && tc.getParent() instanceof Tr tableRow) {
-                tableRowsToRepeat.put(tableRow, objects);
-                tableRowsCommentsToRemove.put(tableRow, getCurrentCommentWrapper());
-            }
-            else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+            var row = parentRow(getParagraph());
+            tableRowsToRepeat.put(row, objects);
+            tableRowsCommentsToRemove.put(row, getCurrentCommentWrapper());
         }
     }
 
@@ -1287,28 +1288,19 @@ public class CommentProcessorFactory {
 
         /** {@inheritDoc} */
         @Override
-        public void displayTableIf(Boolean condition) {
+        public void displayTableRowIf(Boolean condition) {
             if (Boolean.TRUE.equals(condition)) return;
-
             P p = getParagraph();
-            if (p.getParent() instanceof Tc tc
-                && tc.getParent() instanceof Tr tr
-                && tr.getParent() instanceof Tbl tbl
-            ) {
-                tablesToBeRemoved.add(tbl);
-            }
-            else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+            var tr = parentRow(p);
+            tableRowsToBeRemoved.add(tr);
         }
 
         /** {@inheritDoc} */
         @Override
-        public void displayTableRowIf(Boolean condition) {
-            if (Boolean.TRUE.equals(condition)) return;
-            P p = getParagraph();
-            if (p.getParent() instanceof Tc tc && tc.getParent() instanceof Tr tr) {
-                tableRowsToBeRemoved.add(tr);
-            }
-            else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+        public void displayTableIf(Boolean condition) {
+            if (Boolean.TRUE.equals(condition))
+                return;
+            tablesToBeRemoved.add(parentTable(getParagraph()));
         }
     }
 }

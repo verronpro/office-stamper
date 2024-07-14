@@ -1,11 +1,8 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.dml.wordprocessingDrawing.Anchor;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
@@ -22,12 +19,15 @@ class PlaceholderReplacementInTextBoxesTest {
         var configuration = standard()
                 .setFailOnUnresolvedExpression(false);
         var stamper = new TestDocxStamper<Name>(configuration);
-        var actual = stamper.stampAndLoadAndExtract(template, context, Anchor.class);
-        List<String> expected = List.of(
-                "❬Bart Simpson❘color=auto❭",
-                "❬${foo}❘color=auto❭"
-        );
-        assertIterableEquals(expected, actual);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        String expected = """
+                Expression Replacement in TextBoxes
+                [❬Bart Simpson❘color=auto❭]
+                This should resolve to a name:\s
+                [❬${foo}❘color=auto❭]
+                This should not resolve:\s
+                """;
+        assertEquals(expected, actual);
     }
 
     public record Name(String name) {

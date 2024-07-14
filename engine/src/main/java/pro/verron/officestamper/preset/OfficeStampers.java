@@ -21,6 +21,11 @@ import java.io.InputStream;
  */
 public class OfficeStampers {
 
+
+    private OfficeStampers() {
+        throw new OfficeStamperException("OfficeStampers cannot be instantiated");
+    }
+
     /**
      * Creates a new DocxStamper with the default configuration.
      * Also adds the {@link Preprocessors#removeLanguageProof()} and {@link Preprocessors#mergeSimilarRuns()}

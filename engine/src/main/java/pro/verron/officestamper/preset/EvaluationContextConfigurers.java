@@ -7,6 +7,7 @@ import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelMessage;
 import org.springframework.expression.spel.support.*;
 import pro.verron.officestamper.api.EvaluationContextConfigurer;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +17,10 @@ import java.util.List;
  * Utility class for configuring the EvaluationContext used by officestamper.
  */
 public class EvaluationContextConfigurers {
+
+    private EvaluationContextConfigurers() {
+        throw new OfficeStamperException("EvaluationContextConfigurers cannot be instantiated");
+    }
 
     /**
      * Returns a {@link EvaluationContextConfigurer} instance that does no customization.

@@ -44,7 +44,7 @@ public class ExcelStamper
         try {
             template.save(outputStream);
         } catch (Docx4JException e) {
-            throw new RuntimeException(e);
+            throw new OfficeStamperException(e);
         }
     }
 }

@@ -33,7 +33,7 @@ public class ParagraphUtil {
 	public static P create(String... texts) {
 		P p = objectFactory.createP();
 		for (String text : texts) {
-			R r = RunUtil.create(text, p);
+			R r = RunUtil.create(text, p.getPPr());
 			p.getContent().add(r);
 		}
 		return p;

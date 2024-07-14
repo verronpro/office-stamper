@@ -3,6 +3,7 @@ package pro.verron.officestamper.preset;
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.experimental.ExcelStamper;
 import pro.verron.officestamper.experimental.PowerpointStamper;
 
@@ -14,6 +15,11 @@ import pro.verron.officestamper.experimental.PowerpointStamper;
  * @since 1.6.8
  */
 public class ExperimentalStampers {
+
+    private ExperimentalStampers() {
+        throw new OfficeStamperException("ExperimentalStampers cannot be instantiated");
+    }
+
     /**
      * Returns a new instance of the OfficeStamper implementation
      * for stamping PowerPoint presentations with context and writing

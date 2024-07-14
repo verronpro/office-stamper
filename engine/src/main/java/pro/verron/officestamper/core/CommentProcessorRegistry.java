@@ -145,7 +145,7 @@ public class CommentProcessorRegistry {
         var placeholders = Placeholders.findProcessors(text);
 
         for (var placeholder : placeholders) {
-            for (final Object processor : commentProcessors.values()) {
+            for (var processor : commentProcessors.values()) {
                 ((CommentProcessor) processor).setParagraph(paragraph);
             }
 

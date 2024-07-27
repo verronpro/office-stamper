@@ -1,5 +1,10 @@
 package pro.verron.officestamper.test;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.wml.P;
+import org.docx4j.wml.R;
+import org.docx4j.wml.Text;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,6 +17,8 @@ import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -40,7 +47,8 @@ public class DefaultTests {
      *
      * @return a {@link java.util.stream.Stream} object
      */
-    public static Stream<Arguments> tests() {
+    public static Stream<Arguments> tests()
+            throws Docx4JException {
         return Stream.of(tabulations(),
                 whitespaces(),
                 ternary(),
@@ -84,11 +92,15 @@ public class DefaultTests {
                 controls());
     }
 
-    private static Arguments tabulations() {
+    private static Arguments tabulations()
+            throws Docx4JException {
         return of("Tabulation should be preserved",
                 OfficeStamperConfigurations.standard(),
                 name("Homer Simpson"),
-                getResource(Path.of("TabsIndentationTest.docx")),
+                makeResource("""
+                        Tab|TAB|Homer Simpson
+                        Space Homer Simpson
+                        """),
                 """
                         Tab|TAB|Homer Simpson
                         Space Homer Simpson
@@ -1204,6 +1216,47 @@ public class DefaultTests {
                                                 
                         """);
     }
+
+    private static InputStream makeResource(String content)
+            throws Docx4JException {
+        var aPackage = WordprocessingMLPackage.createPackage();
+        var mainDocumentPart = aPackage.getMainDocumentPart();
+        content.lines()
+               .forEach(line -> {
+                   var split = line.split("\\|TAB\\|");
+                   var value = split[0];
+                   var run = initRun(value);
+                   int i = 1;
+                   while (i < split.length) {
+                       var s = split[i];
+                       var text = new Text();
+                       text.setValue(s);
+                       run.getContent()
+                          .add(new R.Tab());
+                       run.getContent()
+                          .add(text);
+                       i++;
+                   }
+                   var p1 = new P();
+                   p1.getContent()
+                     .add(run);
+                   mainDocumentPart.addObject(p1);
+               });
+        var outputStream = new ByteArrayOutputStream();
+        aPackage.save(outputStream);
+        return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
+    private static R initRun(String value) {
+        var r = new R();
+        var text = new Text();
+        text.setValue(value);
+        r.getContent()
+         .add(text);
+        return r;
+    }
+
+    private record Result(R r, Text text) {}
 
     private static Image getImage(Path path) {
         try {

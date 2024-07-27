@@ -156,8 +156,7 @@ public class DefaultTests {
         return of("replaceWordWithIntegrationTest",
                 OfficeStamperConfigurations.standard(),
                 name("Simpsons"),
-                getResource(Path.of("integration",
-                        "ReplaceWordWithIntegrationTest.docx")),
+                getResource(Path.of("ReplaceWordWithIntegrationTest.docx")),
                 """
                         ReplaceWordWith Integration
                         ❬This variable ❬name❘b=true❭❬ ❘b=true❭should be resolved to the value Simpsons.❘b=true❭
@@ -200,8 +199,7 @@ public class DefaultTests {
                                 "th",
                                 "Maggie Simpson",
                                 "Julie Kavner"))),
-                getResource(Path.of("integration",
-                        "RepeatTableRowKeepsFormatTest.docx")),
+                getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
                 """
                         1❬st❘vertAlign=superscript❭ Homer Simpson-❬Dan Castellaneta❘b=true❭
                         2❬nd❘vertAlign=superscript❭ Marge Simpson-❬Julie Kavner❘b=true❭

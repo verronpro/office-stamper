@@ -111,7 +111,10 @@ public class DefaultTests {
         return of("White spaces should be preserved",
                 OfficeStamperConfigurations.standard(),
                 name("Homer Simpson"),
-                getResource(Path.of("TabsIndentationTest.docx")),
+                makeResource("""
+                        Tab|TAB|Homer Simpson
+                        Space Homer Simpson
+                        """),
                 """
                         Tab|TAB|Homer Simpson
                         Space Homer Simpson

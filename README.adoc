@@ -229,6 +229,12 @@ class Main {
 
 This feature empowers you with greater flexibility and enhanced control over the expression evaluation process, fitting Office-Stamper seamlessly into complex scenarios and requirements.
 
+== Linebreak Replacement
+
+ The `setLineBreakPlaceholder(String lineBreakPlaceholder)` method is used to replace the provided placeholder with a line break while stamping the document.
+
+ Please note that by default `\n` is provided.
+
 == Conditional and Repetitive Displays within Headers and Footers
 
 The .docx file format does not permit comments within headers or footers.

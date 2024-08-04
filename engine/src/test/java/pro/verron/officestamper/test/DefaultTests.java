@@ -47,6 +47,7 @@ public class DefaultTests {
                 whitespaces(),
                 ternary(),
                 repeatingRows(),
+                repeatingRowsWithLineBreak(),
                 replaceWordWithIntegrationTest(),
                 replaceNullExpressionTest(),
                 repeatTableRowKeepsFormatTest(),
@@ -157,6 +158,39 @@ public class DefaultTests {
                         Hank Azaria
                         Krusty the Clown
                         Dan Castellaneta
+                                                
+                        ❬There are ❬6❘lang=de-DE❭ characters in the above table.❘lang=de-DE,spacing={after=140,before=0}❭
+                        """);
+    }
+
+    private static Arguments repeatingRowsWithLineBreak() {
+        return of("Repeating table rows should be possible",
+                OfficeStamperConfigurations.standard()
+                                           .setLineBreakPlaceholder("\n"),
+                roles(role("Homer Simpson", "Dan\n\nCastellaneta"),
+                        role("Marge Simpson", "Julie\n\nKavner"),
+                        role("Bart Simpson", "Nancy\n\nCartwright"),
+                        role("Kent Brockman", "Harry\n\nShearer"),
+                        role("Disco Stu", "Hank\n\nAzaria"),
+                        role("Krusty the Clown", "Dan\n\nCastellaneta")),
+                getResource(Path.of("RepeatTableRowTest.docx")),
+                """
+                        ❬Repeating Table Rows❘spacing={after=120,before=240}❭
+                        ❬❬List of Simpsons characters❘b=true❭❘b=true,spacing={after=120,before=240}❭
+                        ❬❬Character name❘b=true❭❘b=true❭
+                        ❬❬Voice ❘b=true❭❬Actor❘b=true❭❘b=true❭
+                        Homer Simpson
+                        Dan|BR(null)||BR(null)|Castellaneta
+                        Marge Simpson
+                        Julie|BR(null)||BR(null)|Kavner
+                        Bart Simpson
+                        Nancy|BR(null)||BR(null)|Cartwright
+                        Kent Brockman
+                        Harry|BR(null)||BR(null)|Shearer
+                        Disco Stu
+                        Hank|BR(null)||BR(null)|Azaria
+                        Krusty the Clown
+                        Dan|BR(null)||BR(null)|Castellaneta
                                                 
                         ❬There are ❬6❘lang=de-DE❭ characters in the above table.❘lang=de-DE,spacing={after=140,before=0}❭
                         """);

@@ -256,8 +256,7 @@ public class DefaultTests {
     }
 
     private static Arguments repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument() {
-        var context = Map.of("units", Stream.of(getImage(Path.of("butterfly" +
-                                                                 ".png")),
+        var context = Map.of("units", Stream.of(getImage(Path.of("butterfly.png")),
                                                     getImage(Path.of("map.jpg")))
                                             .map(image -> Map.of("coverImage", image))
                                             .map(map -> Map.of("productionFacility", map))

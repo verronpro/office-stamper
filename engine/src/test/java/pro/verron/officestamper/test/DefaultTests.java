@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -8,7 +9,6 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.EvaluationContextConfigurers;
-import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.test.Contexts.*;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.*;
 
 /**
  * <p>DefaultTests class.</p>
@@ -40,11 +40,14 @@ public class DefaultTests {
      *
      * @return a {@link java.util.stream.Stream} object
      */
-    public static Stream<Arguments> tests() {
-        return Stream.of(tabulations(),
+    public static Stream<Arguments> tests()
+            throws Docx4JException, IOException {
+        return Stream.of(
+                tabulations(),
                 whitespaces(),
                 ternary(),
                 repeatingRows(),
+                repeatingRowsWithLineBreak(),
                 replaceWordWithIntegrationTest(),
                 replaceNullExpressionTest(),
                 repeatTableRowKeepsFormatTest(),
@@ -84,22 +87,30 @@ public class DefaultTests {
                 controls());
     }
 
-    private static Arguments tabulations() {
+    private static Arguments tabulations()
+            throws Docx4JException, IOException {
         return of("Tabulation should be preserved",
                 OfficeStamperConfigurations.standard(),
                 name("Homer Simpson"),
-                getResource(Path.of("TabsIndentationTest.docx")),
+                makeResource("""
+                        Tab|TAB|Homer Simpson
+                        Space Homer Simpson
+                        """),
                 """
                         Tab|TAB|Homer Simpson
                         Space Homer Simpson
                         """);
     }
 
-    private static Arguments whitespaces() {
+    private static Arguments whitespaces()
+            throws Docx4JException, IOException {
         return of("White spaces should be preserved",
                 OfficeStamperConfigurations.standard(),
                 name("Homer Simpson"),
-                getResource(Path.of("TabsIndentationTest.docx")),
+                makeResource("""
+                        Tab|TAB|Homer Simpson
+                        Space Homer Simpson
+                        """),
                 """
                         Tab|TAB|Homer Simpson
                         Space Homer Simpson
@@ -152,12 +163,44 @@ public class DefaultTests {
                         """);
     }
 
+    private static Arguments repeatingRowsWithLineBreak() {
+        return of("Repeating table rows should be possible",
+                OfficeStamperConfigurations.standard()
+                                           .setLineBreakPlaceholder("\n"),
+                roles(role("Homer Simpson", "Dan\n\nCastellaneta"),
+                        role("Marge Simpson", "Julie\n\nKavner"),
+                        role("Bart Simpson", "Nancy\n\nCartwright"),
+                        role("Kent Brockman", "Harry\n\nShearer"),
+                        role("Disco Stu", "Hank\n\nAzaria"),
+                        role("Krusty the Clown", "Dan\n\nCastellaneta")),
+                getResource(Path.of("RepeatTableRowTest.docx")),
+                """
+                        ❬Repeating Table Rows❘spacing={after=120,before=240}❭
+                        ❬❬List of Simpsons characters❘b=true❭❘b=true,spacing={after=120,before=240}❭
+                        ❬❬Character name❘b=true❭❘b=true❭
+                        ❬❬Voice ❘b=true❭❬Actor❘b=true❭❘b=true❭
+                        Homer Simpson
+                        Dan|BR(null)||BR(null)|Castellaneta
+                        Marge Simpson
+                        Julie|BR(null)||BR(null)|Kavner
+                        Bart Simpson
+                        Nancy|BR(null)||BR(null)|Cartwright
+                        Kent Brockman
+                        Harry|BR(null)||BR(null)|Shearer
+                        Disco Stu
+                        Hank|BR(null)||BR(null)|Azaria
+                        Krusty the Clown
+                        Dan|BR(null)||BR(null)|Castellaneta
+                                                
+                        ❬There are ❬6❘lang=de-DE❭ characters in the above table.❘lang=de-DE,spacing={after=140,before=0}❭
+                        """);
+    }
+
     private static Arguments replaceWordWithIntegrationTest() {
         return of("replaceWordWithIntegrationTest",
                 OfficeStamperConfigurations.standard(),
                 name("Simpsons"),
-                getResource(Path.of("integration",
-                        "ReplaceWordWithIntegrationTest.docx")),
+                getResource(Path.of("ReplaceWordWithIntegrationTest.docx")),
                 """
                         ReplaceWordWith Integration
                         ❬This variable ❬name❘b=true❭❬ ❘b=true❭should be resolved to the value Simpsons.❘b=true❭
@@ -200,8 +243,7 @@ public class DefaultTests {
                                 "th",
                                 "Maggie Simpson",
                                 "Julie Kavner"))),
-                getResource(Path.of("integration",
-                        "RepeatTableRowKeepsFormatTest.docx")),
+                getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
                 """
                         1❬st❘vertAlign=superscript❭ Homer Simpson-❬Dan Castellaneta❘b=true❭
                         2❬nd❘vertAlign=superscript❭ Marge Simpson-❬Julie Kavner❘b=true❭
@@ -222,22 +264,28 @@ public class DefaultTests {
                 new Contexts.Role("Krusty the Clown", "Dan Castellaneta")));
         var template = getResource(Path.of("RepeatParagraphTest.docx"));
         var expected = """
-                ❬Repeating Paragraphs❘spacing={after=120,before=240}❭
-                ❬❬List of Simpsons characters❘b=true❭❘spacing={after=120,before=240}❭
+                Characters 1 line
+                Homer Simpson: Dan Castellaneta
+                Marge Simpson: Julie Kavner
+                Bart Simpson: Nancy Cartwright
+                Kent Brockman: Harry Shearer
+                Disco Stu: Hank Azaria
+                Krusty the Clown: Dan Castellaneta
+                There are 6 characters.
+                Characters multi-line
                 Homer Simpson
-                Dan Castellaneta
+                Actor: Dan Castellaneta
                 Marge Simpson
-                Julie Kavner
+                Actor: Julie Kavner
                 Bart Simpson
-                Nancy Cartwright
+                Actor: Nancy Cartwright
                 Kent Brockman
-                Harry Shearer
+                Actor: Harry Shearer
                 Disco Stu
-                Hank Azaria
+                Actor: Hank Azaria
                 Krusty the Clown
-                Dan Castellaneta
-                                
-                ❬There are ❬6❘lang=de-DE❭ characters.❘spacing={after=140,before=0}❭
+                Actor: Dan Castellaneta
+                There are 6 characters.
                 """;
 
         return arguments("repeatParagraphTest",
@@ -248,8 +296,7 @@ public class DefaultTests {
     }
 
     private static Arguments repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument() {
-        var context = Map.of("units", Stream.of(getImage(Path.of("butterfly" +
-                                                                 ".png")),
+        var context = Map.of("units", Stream.of(getImage(Path.of("butterfly.png")),
                                                     getImage(Path.of("map.jpg")))
                                             .map(image -> Map.of("coverImage", image))
                                             .map(map -> Map.of("productionFacility", map))
@@ -257,13 +304,13 @@ public class DefaultTests {
         var template = getResource(Path.of("RepeatDocPartWithImageTest.docx"));
         var expected = """
                                 
-                rId11:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
-                rId12:image/jpeg:407.5kB:sha1=Ujo3UzL8WmeZN/1K6weBydaI73I=:cy=$d:6120130
+                /word/media/document_image_rId11.png:rId11:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                /word/media/document_image_rId12.jpeg:rId12:image/jpeg:407.5kB:sha1=Ujo3UzL8WmeZN/1K6weBydaI73I=:cy=$d:6120130
                                 
                                 
                                 
                 Always rendered:
-                rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                /word/media/document_image_rId13.png:rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
                                 
                 """;
 
@@ -289,10 +336,10 @@ public class DefaultTests {
                 """
                         This is not repeated
                         This should be repeated : first doc part
-                        rId12:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
+                        /word/media/document_image_rId12.png:rId12:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
                         This should be repeated too
                         This should be repeated : second doc part
-                        rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
+                        /word/media/document_image_rId13.png:rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
                         This should be repeated too
                         This is not repeated
                         """);
@@ -719,22 +766,19 @@ public class DefaultTests {
 
     private static Arguments conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved() {
         var context = new Contexts.Name("Homer");
-        var template = getResource(
-                Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest" +
-                        ".docx"));
+        var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
         var expected = """
                 Conditional Display of Paragraphs
-                This paragraph stays untouched.
-                This paragraph stays untouched.
-                ❬❬Conditional Display of paragraphs also works in tables❘b=true❭❘b=true❭
-                This paragraph stays untouched.
+                Paragraph 1 stays untouched.
+                Paragraph 3 stays untouched.
+                Conditional Display of paragraphs also works in tables
+                Paragraph 4 in cell 2,1 stays untouched.
                                 
-                ❬❬Also works in nested tables❘b=true❭❘b=true❭
-                This paragraph stays untouched.
+                Also works in nested tables
+                Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
                                 
                 """;
-        return arguments(
-                "conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved",
+        return arguments("conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved",
                 OfficeStamperConfigurations.standard(),
                 context,
                 template,
@@ -743,24 +787,21 @@ public class DefaultTests {
 
     private static Arguments conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved() {
         var context = new Contexts.Name("Bart");
-        var template = getResource(
-                Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest" +
-                        ".docx"));
+        var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
         var expected = """
                 Conditional Display of Paragraphs
-                This paragraph stays untouched.
-                This paragraph is only included in the resulting document if the variable „name“ has the value „Bart“.
-                This paragraph stays untouched.
-                ❬❬Conditional Display of paragraphs also works in tables❘b=true❭❘b=true❭
-                This paragraph stays untouched.
-                This paragraph is only included if the name is „Bart“.
-                ❬❬Also works in nested tables❘b=true❭❘b=true❭
-                This paragraph stays untouched.
-                This paragraph is only included if the name is „Bart“.
+                Paragraph 1 stays untouched.
+                Paragraph 2 is only included if the “name” is “Bart”.
+                Paragraph 3 stays untouched.
+                Conditional Display of paragraphs also works in tables
+                Paragraph 4 in cell 2,1 stays untouched.
+                Paragraph 5 in cell 2,2 is only included if the “name” is “Bart”.
+                Also works in nested tables
+                Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
+                Paragraph 7  in cell 2,1 in cell 3,1 is only included if the “name” is “Bart”.
                                 
                 """;
-        return arguments(
-                "conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved",
+        return arguments("conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved",
                 OfficeStamperConfigurations.standard(),
                 context,
                 template,
@@ -1009,8 +1050,8 @@ public class DefaultTests {
         var expected = """
                 ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
                 ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
-                ❬In this paragraph, an image of Mona Lisa is inserted: ❬rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭.❘lang=de-DE❭
-                ❬This paragraph has the image ❬rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
+                ❬In this paragraph, an image of Mona Lisa is inserted: ❬/word/media/document_image_rId4.jpeg:rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭.❘lang=de-DE❭
+                ❬This paragraph has the image ❬/word/media/document_image_rId5.jpeg:rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
                 """;
         return arguments("imageReplacementInGlobalParagraphsTest",
                 OfficeStamperConfigurations.standard(),
@@ -1028,8 +1069,8 @@ public class DefaultTests {
         var expected = """
                 ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
                 ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
-                ❬In this paragraph, an image of Mona Lisa is inserted: ❬rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭.❘lang=de-DE❭
-                ❬This paragraph has the image ❬rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
+                ❬In this paragraph, an image of Mona Lisa is inserted: ❬/word/media/document_image_rId4.jpeg:rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭.❘lang=de-DE❭
+                ❬This paragraph has the image ❬/word/media/document_image_rId5.jpeg:rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
                 """;
         return arguments("imageReplacementInGlobalParagraphsTestWithMaxWidth",
                 OfficeStamperConfigurations.standard(),
@@ -1205,22 +1246,6 @@ public class DefaultTests {
                         [Homer]
                                                 
                         """);
-    }
-
-    private static Image getImage(Path path) {
-        try {
-            return new Image(getResource(path));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Image getImage(Path path, int size) {
-        try {
-            return new Image(getResource(path), size);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @MethodSource("tests")

@@ -6,10 +6,9 @@ import org.docx4j.XmlUtils;
 import org.docx4j.finders.ClassFinder;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
-import org.docx4j.openpackaging.parts.relationships.Namespaces;
-import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.*;
@@ -30,68 +29,14 @@ public class DocumentUtil {
     }
 
 
-    /**
-     * Retrieve all the elements of a given class from an object.
-     *
-     * @param object       the object to get the elements from
-     * @param elementClass the class of the elements to get
-     * @param <T>          the type of the elements to get
-     *
-     * @return a stream of the elements
-     */
-    public static <T> Stream<T> streamElements(
-            Object object,
-            Class<T> elementClass
-    ) {
-        return object instanceof WordprocessingMLPackage document
-                ? streamDocumentElements(document, elementClass)
-                : streamObjectElements(object, elementClass);
-    }
-
-    /**
-     * we handle full documents slightly differently as they have headers and footers,
-     * and we want to get all the elements from them as well
-     *
-     * @param document     the document to get the elements from
-     * @param elementClass the class of the elements to get
-     * @param <T>          the type of the elements to get
-     *
-     * @return a stream of the elements
-     */
-    private static <T> Stream<T> streamDocumentElements(
-            WordprocessingMLPackage document,
-            Class<T> elementClass
-    ) {
-        var mainDocumentPart = document.getMainDocumentPart();
-        var mainParts = mainDocumentPart.getRelationshipsPart();
-        return Stream.of(
-                             streamElements(mainParts, Namespaces.HEADER, elementClass),
-                             streamObjectElements(mainDocumentPart, elementClass),
-                             streamElements(mainParts, Namespaces.FOOTER, elementClass)
-                     )
-                     .reduce(Stream.empty(), Stream::concat);
-    }
-
-    private static <T> Stream<T> streamObjectElements(
-            Object obj,
+    public static <T> Stream<T> streamObjectElements(
+            DocxPart source,
             Class<T> elementClass
     ) {
         ClassFinder finder = new ClassFinder(elementClass);
-        TraversalUtil.visit(obj, finder);
+        TraversalUtil.visit(source.part(), finder);
         return finder.results.stream()
                              .map(elementClass::cast);
-    }
-
-    private static <T> Stream<T> streamElements(
-            RelationshipsPart mainParts,
-            String namespace,
-            Class<T> elementClass
-    ) {
-        return mainParts
-                .getRelationshipsByType(namespace)
-                .stream()
-                .map(mainParts::getPart)
-                .flatMap(part -> streamObjectElements(part, elementClass));
     }
 
     /**
@@ -125,7 +70,7 @@ public class DocumentUtil {
      * @param source source document containing image files.
      * @param target target document to add image files to.
      *
-     * @return a {@link java.util.Map} object
+     * @return a {@link Map} object
      */
     public static Map<R, R> walkObjectsAndImportImages(
             WordprocessingMLPackage source,
@@ -143,7 +88,7 @@ public class DocumentUtil {
      * @param source    source document containing image files.
      * @param target    target document to add image files to.
      *
-     * @return a {@link java.util.Map} object
+     * @return a {@link Map} object
      */
     public static Map<R, R> walkObjectsAndImportImages(
             ContentAccessor container,
@@ -198,17 +143,6 @@ public class DocumentUtil {
         } catch (Exception e) {
             throw new OfficeStamperException(e);
         }
-    }
-
-    /**
-     * Retrieve all the runs from a document.
-     *
-     * @param document the document to get the runs from
-     *
-     * @return the runs
-     */
-    public static Stream<P> streamParagraphs(WordprocessingMLPackage document) {
-        return streamElements(document, P.class);
     }
 
     /**

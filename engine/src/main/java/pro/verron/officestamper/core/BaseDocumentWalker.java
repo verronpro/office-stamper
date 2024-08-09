@@ -1,6 +1,7 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.wml.*;
+import pro.verron.officestamper.api.DocxPart;
 
 /**
  * This class is an abstract implementation of the {@link DocumentWalker} interface.
@@ -18,9 +19,8 @@ public abstract class BaseDocumentWalker extends DocumentWalker {
     /**
      * Creates a new document walker that walks through the given document.
      *
-     * @param contentAccessor the document to walk through.
      */
-    protected BaseDocumentWalker(ContentAccessor contentAccessor) {
+    protected BaseDocumentWalker(DocxPart contentAccessor) {
         super(contentAccessor);
     }
 

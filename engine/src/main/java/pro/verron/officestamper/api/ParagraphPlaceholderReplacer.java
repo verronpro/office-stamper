@@ -10,11 +10,31 @@ public interface ParagraphPlaceholderReplacer {
 
     /**
      * Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.
+     * <p>
+     * Replace the previous {@link #resolveExpressionsForParagraph(Paragraph, Object, WordprocessingMLPackage)}
+     *
+     * @param docxPart  the docxPart in which to replace all expressions
+     * @param paragraph the paragraph in which to replace expressions
+     * @param context   the context root
+     */
+    default void resolveExpressionsForParagraph(
+            DocxPart docxPart,
+            Paragraph paragraph,
+            Object context
+    ) {
+        resolveExpressionsForParagraph(paragraph, context, docxPart.document());
+    }
+
+    /**
+     * Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.
      *
      * @param paragraph the paragraph in which to replace expressions
      * @param context   the context root
      * @param document  the document in which to replace all expressions
+     *
+     * @deprecated replaced by {@link #resolveExpressionsForParagraph(DocxPart, Paragraph, Object)}
      */
+    @Deprecated(since = "2.3", forRemoval = true)
     void resolveExpressionsForParagraph(
             Paragraph paragraph,
             Object context,

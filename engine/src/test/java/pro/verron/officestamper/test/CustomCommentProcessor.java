@@ -1,13 +1,9 @@
 package pro.verron.officestamper.test;
 
 import org.docx4j.jaxb.Context;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import pro.verron.officestamper.api.AbstractCommentProcessor;
-import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.api.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +58,7 @@ public class CustomCommentProcessor
      * {@inheritDoc}
      */
     @Override
-    public void commitChanges(WordprocessingMLPackage document) {
+    public void commitChanges(DocxPart document) {
         visitedParagraphs.forEach(p -> {
             var content = p.getContent();
             content.clear();

@@ -26,7 +26,7 @@ public abstract class AbstractCommentProcessor
      *
      * @param placeholderReplacer the ParagraphPlaceholderReplacer used to replace expressions in the comment text
      */
-    public AbstractCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
+    protected AbstractCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
         this.placeholderReplacer = placeholderReplacer;
     }
 

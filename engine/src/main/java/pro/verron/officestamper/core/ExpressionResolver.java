@@ -37,11 +37,13 @@ public class ExpressionResolver {
      * Resolves the content of a placeholder by evaluating the expression against the evaluation context.
      *
      * @param placeholder the placeholder to resolve
+     *
      * @return the resolved value of the placeholder
      */
     @Nullable public Object resolve(Placeholder placeholder) {
-        return parser.parseExpression(placeholder.content())
-                     .getValue(evaluationContext);
+        var expressionString = placeholder.content();
+        var expression = parser.parseExpression(expressionString);
+        return expression.getValue(evaluationContext);
     }
 
     /**

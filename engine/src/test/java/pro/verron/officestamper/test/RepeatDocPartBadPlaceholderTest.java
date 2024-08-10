@@ -22,13 +22,13 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @version ${version}
  * @since 1.6.6
  */
-public class RepeatDocPartBadPlaceholderTest {
+class RepeatDocPartBadPlaceholderTest {
     private static final Logger logger =
             LoggerFactory.getLogger(RepeatDocPartBadPlaceholderTest.class);
 
     @Test
     @Timeout(10) // in the case of pipe lock because of unknown exceptions
-    public void testBadExpressionShouldNotBlockCallerThread() {
+    void testBadExpressionShouldNotBlockCallerThread() {
         var template = getResource("RepeatDocPartBadExpressionTest.docx");
         var context = new Characters(
                 List.of(new Role("Homer Simpson", "Dan Castellaneta"),

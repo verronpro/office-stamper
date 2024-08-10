@@ -1,9 +1,13 @@
 package pro.verron.officestamper.test;
 
 import org.junit.jupiter.api.Test;
+import pro.verron.officestamper.preset.Image;
+
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.test.TestUtils.getImage;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 
@@ -14,24 +18,36 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
 class PlaceholderReplacementInHeaderAndFooterTest {
     @Test
     void expressionReplacementInHeaderAndFooterTest() {
-        var context = new Name("Homer Simpson");
+        var context = new Name("Homer Simpson", getImage(Path.of("butterfly.png")));
         var template = getResource("ExpressionReplacementInHeaderAndFooterTest.docx");
         var configuration = standard()
                 .setFailOnUnresolvedExpression(false);
         var stamper = new TestDocxStamper<Name>(configuration);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals("""
-                        ❬❬This ❘lang=de-DE❭❬header ❘lang=de-DE❭❬paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
-                        ❬❬In this paragraph, the variable ❘lang=de-DE❭❬name❘b=true,lang=de-DE❭ should be resolved to the value ❬Homer Simpson❘lang=de-DE❭.❘lang=de-DE❭
-                        ❬❬In this paragraph, the variable ❘lang=de-DE❭❬foo❘b=true,lang=de-DE❭❬ should not be resolved: ${foo}.❘lang=de-DE❭❘lang=de-DE,spacing={after=140,before=0}❭
-                        ❬Expression Replacement in header and footer❘spacing={after=120,before=240}❭
-                        ❬❘spacing={after=140,before=0}❭
-                        ❬❬This ❘lang=de-DE❭❬footer ❘lang=de-DE❭❬paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
-                        ❬❬In this paragraph, the variable ❘lang=de-DE❭❬name❘b=true,lang=de-DE❭ should be resolved to the value ❬Homer Simpson❘lang=de-DE❭.❘lang=de-DE❭
-                        ❬❬In this paragraph, the variable ❘lang=de-DE❭❬foo❘b=true,lang=de-DE❭❬ should not be resolved: ${foo}.❘lang=de-DE❭❘lang=de-DE,spacing={after=140,before=0}❭""",
+                        [header, name="/word/header2.xml"]
+                        ----
+                        This header paragraph is untouched.
+                        In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                        In this paragraph, the variable foo should not be resolved: ${foo}.
+                        Here, the picture should be resolved /word/media/header2_image_rId1.png:rId1:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720.
+                                                
+                        ----
+                                                
+                        Expression Replacement in header and footer
+                                                
+                        [footer, name="/word/footer2.xml"]
+                        ----
+                        This footer paragraph is untouched.
+                        In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                        In this paragraph, the variable foo should not be resolved: ${foo}.
+                        Here, the picture should be resolved /word/media/header2_image_rId1.png:rId1:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720.
+                                                
+                        ----
+                        """,
                 actual);
     }
 
-    public record Name(String name) {
+    public record Name(String name, Image butterfly) {
     }
 }

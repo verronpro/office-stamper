@@ -2,17 +2,21 @@ package pro.verron.officestamper.test;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TextUtils;
-import org.docx4j.TraversalUtil;
 import org.docx4j.dml.*;
 import org.docx4j.dml.picture.Pic;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
+import org.docx4j.mce.AlternateContent;
+import org.docx4j.model.structure.HeaderFooterPolicy;
+import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
-import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.*;
+import org.docx4j.vml.CTShape;
+import org.docx4j.vml.CTShapetype;
+import org.docx4j.vml.CTTextbox;
 import org.docx4j.wml.*;
 import org.docx4j.wml.Comments.Comment;
 import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
@@ -32,6 +36,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
@@ -118,12 +123,9 @@ public class Stringifier {
     }
 
     private static void extract(
-            Map<String, Object> map,
-            String key,
-            Object value
+            Map<String, Object> map, String key, Object value
     ) {
-        if (value != null)
-            map.put(key, value);
+        if (value != null) map.put(key, value);
     }
 
     private static Function<Entry<?, ?>, String> format(String format) {
@@ -138,16 +140,8 @@ public class Stringifier {
         return documentSupplier.get();
     }
 
-    private String stringify(R.LastRenderedPageBreak ignored) {
-        return ""; // do not render
-    }
-
     private String stringify(Br br) {
         return "|BR(" + br.getType() + ")|";
-    }
-
-    private String stringify(R.Tab ignored) {
-        return "|TAB|";
     }
 
     /**
@@ -160,20 +154,19 @@ public class Stringifier {
      * @since 1.6.6
      */
     private String stringify(CTBlip blip) {
-        var image = document()
-                .getParts()
-                .getParts()
-                .entrySet()
-                .stream()
-                .filter(e -> e.getKey()
-                              .getName()
-                              .contains(blip.getEmbed()))
-                .map(Entry::getValue)
-                .findFirst()
-                .map(BinaryPartAbstractImage.class::cast)
-                .orElseThrow();
+        var image = document().getParts()
+                              .getParts()
+                              .entrySet()
+                              .stream()
+                              .filter(e -> e.getKey()
+                                            .getName()
+                                            .contains(blip.getEmbed()))
+                              .map(Entry::getValue)
+                              .findFirst()
+                              .map(BinaryPartAbstractImage.class::cast)
+                              .orElseThrow();
         byte[] imageBytes = image.getBytes();
-        return "%s:%s:%s:sha1=%s:cy=$d".formatted(
+        return "%s:%s:%s:%s:sha1=%s:cy=$d".formatted(image.getPartName(),
                 blip.getEmbed(),
                 image.getContentType(),
                 humanReadableByteCountSI(imageBytes.length),
@@ -197,8 +190,7 @@ public class Stringifier {
             bytes /= 1000;
             ci.next();
         }
-        return String.format(Locale.US, "%.1f%cB", bytes / 1000.0,
-                ci.current());
+        return String.format(Locale.US, "%.1f%cB", bytes / 1000.0, ci.current());
     }
 
     private String sha1b64(byte[] imageBytes) {
@@ -219,9 +211,25 @@ public class Stringifier {
      */
     public String stringify(Object o) {
         if (o instanceof JAXBElement<?> jaxb) return stringify(jaxb.getValue());
+        if (o instanceof WordprocessingMLPackage mlPackage) {
+            var header = stringifyHeaders(getHeaderPart(mlPackage));
+            var body = stringify(mlPackage.getMainDocumentPart());
+            var footer = stringifyFooters(getFooterPart(mlPackage));
+            var hStr = header.map(h -> h + "\n\n")
+                             .orElse("");
+            var fStr = footer.map(f -> "\n" + f + "\n")
+                             .orElse("");
+            return hStr + body + fStr;
+        }
+        if (o instanceof Tbl tbl) return stringify(tbl.getContent());
+        if (o instanceof Tr tr) return stringify(tr.getContent());
+        if (o instanceof Tc tc) return stringify(tc.getContent()).trim() + "\n";
+        if (o instanceof MainDocumentPart mainDocumentPart) return stringify(mainDocumentPart.getContent());
+        if (o instanceof Body body) return stringify(body.getContent());
         if (o instanceof List<?> list) return stringify(list);
         if (o instanceof Text text) return stringify(text);
-        if (o instanceof P p) return stringify(p);
+        if (o instanceof P p) return stringify(p) + "\n";
+        if (o instanceof R r) return stringify(r);
         if (o instanceof Drawing drawing) return stringify(drawing);
         if (o instanceof Inline inline) return stringify(inline);
         if (o instanceof Graphic graphic) return getStringify(graphic);
@@ -229,12 +237,106 @@ public class Stringifier {
         if (o instanceof Pic pic) return stringify(pic);
         if (o instanceof CTBlipFillProperties bfp) return stringify(bfp);
         if (o instanceof CTBlip blip) return stringify(blip);
-        if (o instanceof R.LastRenderedPageBreak lrpb) return stringify(lrpb);
+        if (o instanceof R.LastRenderedPageBreak) return ""; // do not render
         if (o instanceof Br br) return stringify(br);
-        if (o instanceof R.Tab tab) return stringify(tab);
+        if (o instanceof R.Tab) return "|TAB|";
         if (o instanceof R.CommentReference cr) return stringify(cr);
+        if (o instanceof CTMarkupRange) return "";
+        if (o instanceof ProofErr) return "";
+        if (o instanceof CommentRangeStart) return "";
+        if (o instanceof CommentRangeEnd) return "";
+        if (o instanceof SdtBlock block) return stringify(block.getSdtContent()) + "\n";
+        if (o instanceof AlternateContent) return "";
+        if (o instanceof Pict pict) return stringify(pict.getAnyAndAny());
+        if (o instanceof CTShapetype) return "";
+        if (o instanceof CTShape ctShape) return "[" + stringify(ctShape.getEGShapeElements()).trim() + "]\n";
+        if (o instanceof CTTextbox ctTextbox) return stringify(ctTextbox.getTxbxContent());
+        if (o instanceof CTTxbxContent content) return stringify(content.getContent());
+        if (o instanceof SdtRun run) return stringify(run.getSdtContent());
+        if (o instanceof SdtContent content) return "[" + stringify(content.getContent()).trim() + "]";
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
+    }
+
+    private Optional<String> stringifyFooters(Stream<FooterPart> footerPart) {
+        return footerPart.map(this::stringify)
+                         .flatMap(Optional::stream)
+                         .reduce((a, b) -> a + "\n\n" + b);
+    }
+
+    private Optional<String> stringifyHeaders(Stream<HeaderPart> headerPart) {
+        return headerPart.map(this::stringify)
+                         .flatMap(Optional::stream)
+                         .reduce((a, b) -> a + "\n\n" + b);
+    }
+
+    private Optional<String> stringify(HeaderPart part) {
+        var content = stringify(part.getContent());
+        if (content.isEmpty()) return Optional.empty();
+        return Optional.of("""
+                [header, name="%s"]
+                ----
+                %s
+                ----""".formatted(part.getPartName(), content));
+    }
+
+    private Optional<String> stringify(FooterPart part) {
+        var content = stringify(part.getContent());
+        if (content.isEmpty()) return Optional.empty();
+        return Optional.of("""
+                [footer, name="%s"]
+                ----
+                %s
+                ----""".formatted(part.getPartName(), content));
+    }
+
+
+    private Stream<HeaderPart> getHeaderPart(WordprocessingMLPackage document) {
+        var sections = document.getDocumentModel()
+                               .getSections();
+
+        var set = new LinkedHashSet<HeaderPart>();
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getFirstHeader)
+                           .filter(Objects::nonNull)
+                           .toList());
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getDefaultHeader)
+                           .filter(Objects::nonNull)
+                           .toList());
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getEvenHeader)
+                           .filter(Objects::nonNull)
+                           .toList());
+
+        return set.stream();
+    }
+
+    private Stream<FooterPart> getFooterPart(WordprocessingMLPackage document) {
+        var sections = document.getDocumentModel()
+                               .getSections();
+
+        var set = new LinkedHashSet<FooterPart>();
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getFirstFooter)
+                           .filter(Objects::nonNull)
+                           .toList());
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getDefaultFooter)
+                           .filter(Objects::nonNull)
+                           .toList());
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getEvenFooter)
+                           .filter(Objects::nonNull)
+                           .toList());
+
+        return set.stream();
     }
 
     private String stringify(Pic pic) {
@@ -247,10 +349,8 @@ public class Stringifier {
 
     private String stringify(R.CommentReference commentReference) {
         try {
-            return findComment(document(),
-                    commentReference.getId())
-                    .map(c -> stringify(c.getContent()))
-                    .orElseThrow();
+            return findComment(document(), commentReference.getId()).map(c -> stringify(c.getContent()))
+                                                                    .orElseThrow();
         } catch (Docx4JException e) {
             throw new RuntimeException(e);
         }
@@ -267,9 +367,7 @@ public class Stringifier {
     private String stringify(Inline inline) {
         var graphic = inline.getGraphic();
         var extent = inline.getExtent();
-        return "%s:%d".formatted(
-                stringify(graphic),
-                extent.getCx());
+        return "%s:%d".formatted(stringify(graphic), extent.getCx());
     }
 
     private String stringify(Drawing drawing) {
@@ -318,36 +416,13 @@ public class Stringifier {
      * @since 1.6.6
      */
     private String stringify(P p) {
-        String runs = extractDocumentRuns(p);
-        return ofNullable(p.getPPr())
-                .flatMap(this::stringify)
-                .map(ppr -> "❬%s❘%s❭".formatted(runs, ppr))
-                .orElse(runs);
-    }
-
-    /**
-     * <p>extractDocumentRuns.</p>
-     *
-     * @param p a {@link java.lang.Object} object
-     *
-     * @return a {@link java.lang.String} object
-     *
-     * @since 1.6.6
-     */
-    public String extractDocumentRuns(Object p) {
-        var runCollector = new RunCollector();
-        TraversalUtil.visit(p, runCollector);
-        return runCollector
-                .runs()
-                .filter(r -> !r.getContent()
-                               .isEmpty())
-                .map(this::stringify)
-                .collect(joining());
+        var runs = stringify(p.getContent());
+        return stringify(p.getPPr()).map(ppr -> "❬%s❘%s❭".formatted(runs, ppr))
+                                    .orElse(runs);
     }
 
     private Optional<String> stringify(PPr pPr) {
-        if (pPr == null)
-            return Optional.empty();
+        if (pPr == null) return Optional.empty();
         var set = new TreeSet<String>();
         if (pPr.getJc() != null) set.add("jc=" + pPr.getJc()
                                                     .getVal()
@@ -355,31 +430,23 @@ public class Stringifier {
         if (pPr.getInd() != null) set.add("ind=" + pPr.getInd()
                                                       .getLeft()
                                                       .intValue());
-        if (pPr.getKeepLines() != null)
-            set.add("keepLines=" + pPr.getKeepLines()
-                                      .isVal());
+        if (pPr.getKeepLines() != null) set.add("keepLines=" + pPr.getKeepLines()
+                                                                  .isVal());
         if (pPr.getKeepNext() != null) set.add("keepNext=" + pPr.getKeepNext()
                                                                 .isVal());
-        if (pPr.getOutlineLvl() != null)
-            set.add("outlineLvl=" + pPr.getOutlineLvl()
-                                       .getVal()
-                                       .intValue());
-        if (pPr.getPageBreakBefore() != null)
-            set.add("pageBreakBefore=" + pPr.getPageBreakBefore()
-                                            .isVal());
+        if (pPr.getOutlineLvl() != null) set.add("outlineLvl=" + pPr.getOutlineLvl()
+                                                                    .getVal()
+                                                                    .intValue());
+        if (pPr.getPageBreakBefore() != null) set.add("pageBreakBefore=" + pPr.getPageBreakBefore()
+                                                                              .isVal());
         if (pPr.getPBdr() != null) set.add("pBdr=xxx");
         if (pPr.getPPrChange() != null) set.add("pPrChange=xxx");
-        stringify(pPr.getRPr())
-                .ifPresent(set::add);
-        stringify(pPr.getSectPr())
-                .ifPresent(set::add);
+        stringify(pPr.getRPr()).ifPresent(set::add);
+        stringify(pPr.getSectPr()).ifPresent(set::add);
         if (pPr.getShd() != null) set.add("shd=xxx");
-        stringify(pPr.getSpacing())
-                .ifPresent(spacing -> set.add("spacing=" + spacing));
-        if (pPr.getSuppressAutoHyphens() != null)
-            set.add("suppressAutoHyphens=xxx");
-        if (pPr.getSuppressLineNumbers() != null)
-            set.add("suppressLineNumbers=xxx");
+        stringify(pPr.getSpacing()).ifPresent(spacing -> set.add("spacing=" + spacing));
+        if (pPr.getSuppressAutoHyphens() != null) set.add("suppressAutoHyphens=xxx");
+        if (pPr.getSuppressLineNumbers() != null) set.add("suppressLineNumbers=xxx");
         if (pPr.getSuppressOverlap() != null) set.add("suppressOverlap=xxx");
         if (pPr.getTabs() != null) set.add("tabs=xxx");
         if (pPr.getTextAlignment() != null) set.add("textAlignment=xxx");
@@ -390,8 +457,7 @@ public class Stringifier {
         if (pPr.getFramePr() != null) set.add("framePr=xxx");
         if (pPr.getDivId() != null) set.add("divId=xxx");
         if (pPr.getCnfStyle() != null) set.add("cnfStyle=xxx");
-        if (set.isEmpty())
-            return Optional.empty();
+        if (set.isEmpty()) return Optional.empty();
         return Optional.of(String.join(",", set));
     }
 
@@ -406,12 +472,10 @@ public class Stringifier {
      */
     private String stringify(R run) {
         String serialized = stringify(run.getContent());
-        if (serialized.isEmpty())
-            return "";
-        return ofNullable(run.getRPr())
-                .flatMap(this::stringify)
-                .map(rPr -> "❬%s❘%s❭".formatted(serialized, rPr))
-                .orElse(serialized);
+        if (serialized.isEmpty()) return "";
+        return ofNullable(run.getRPr()).flatMap(this::stringify)
+                                       .map(rPr -> "❬%s❘%s❭".formatted(serialized, rPr))
+                                       .orElse(serialized);
     }
 
     /**
@@ -424,8 +488,7 @@ public class Stringifier {
      * @since 1.6.6
      */
     private Optional<String> stringify(RPrAbstract rPr) {
-        if (rPr == null)
-            return Optional.empty();
+        if (rPr == null) return Optional.empty();
         var set = new TreeSet<String>();
         if (rPr.getB() != null) set.add("b=" + rPr.getB()
                                                   .isVal());
@@ -443,7 +506,7 @@ public class Stringifier {
                                                         .intValue());
         if (rPr.getLang() != null) set.add("lang=" + rPr.getLang()
                                                         .getVal());
-        //if (rPr.getRFonts() != null) set.add("rFonts=xxx:" + rPr.getRFonts().getHint().value());
+        if (rPr.getRFonts() != null) {/* DO NOTHING */}
         if (rPr.getRPrChange() != null) set.add("rPrChange=xxx");
         if (rPr.getRStyle() != null) set.add("rStyle=" + rPr.getRStyle()
                                                             .getVal());
@@ -453,13 +516,11 @@ public class Stringifier {
                                                             .isVal());
         if (rPr.getShd() != null) set.add("shd=" + rPr.getShd()
                                                       .getColor());
-        if (rPr.getSmallCaps() != null)
-            set.add("smallCaps=" + rPr.getSmallCaps()
-                                      .isVal());
-        if (rPr.getVertAlign() != null)
-            set.add("vertAlign=" + rPr.getVertAlign()
-                                      .getVal()
-                                      .value());
+        if (rPr.getSmallCaps() != null) set.add("smallCaps=" + rPr.getSmallCaps()
+                                                                  .isVal());
+        if (rPr.getVertAlign() != null) set.add("vertAlign=" + rPr.getVertAlign()
+                                                                  .getVal()
+                                                                  .value());
         if (rPr.getSpacing() != null) set.add("spacing=" + rPr.getSpacing()
                                                               .getVal()
                                                               .intValue());
@@ -473,9 +534,8 @@ public class Stringifier {
                                                               .isVal());
         if (rPr.getNoProof() != null) set.add("noProof=" + rPr.getNoProof()
                                                               .isVal());
-        if (rPr.getSpecVanish() != null)
-            set.add("specVanish=" + rPr.getSpecVanish()
-                                       .isVal());
+        if (rPr.getSpecVanish() != null) set.add("specVanish=" + rPr.getSpecVanish()
+                                                                    .isVal());
         if (rPr.getU() != null) set.add("u=" + rPr.getU()
                                                   .getVal()
                                                   .value());
@@ -483,28 +543,22 @@ public class Stringifier {
                                                             .isVal());
         if (rPr.getW() != null) set.add("w=" + rPr.getW()
                                                   .getVal());
-        if (rPr.getWebHidden() != null)
-            set.add("webHidden=" + rPr.getWebHidden()
-                                      .isVal());
-        if (rPr.getHighlight() != null)
-            set.add("highlight=" + rPr.getHighlight()
-                                      .getVal());
+        if (rPr.getWebHidden() != null) set.add("webHidden=" + rPr.getWebHidden()
+                                                                  .isVal());
+        if (rPr.getHighlight() != null) set.add("highlight=" + rPr.getHighlight()
+                                                                  .getVal());
         if (rPr.getEffect() != null) set.add("effect=" + rPr.getEffect()
                                                             .getVal()
                                                             .value());
-        if (set.isEmpty())
-            return Optional.empty();
+        if (set.isEmpty()) return Optional.empty();
         return Optional.of(String.join(",", set));
     }
 
     private Optional<String> stringify(SectPr sectPr) {
-        if (sectPr == null)
-            return Optional.empty();
+        if (sectPr == null) return Optional.empty();
         var set = new TreeSet<String>();
-        if (sectPr.getEGHdrFtrReferences() != null)
-            set.add("eGHdrFtrReferences=xxx");
-        if (sectPr.getPgSz() != null)
-            set.add("pgSz={" + stringify(sectPr.getPgSz()) + "}");
+        if (sectPr.getEGHdrFtrReferences() != null) set.add("eGHdrFtrReferences=xxx");
+        if (sectPr.getPgSz() != null) set.add("pgSz={" + stringify(sectPr.getPgSz()) + "}");
         if (sectPr.getPgMar() != null) set.add("pgMar=xxx");
         if (sectPr.getPaperSrc() != null) set.add("paperSrc=xxx");
         if (sectPr.getBidi() != null) set.add("bidi=xxx");

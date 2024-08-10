@@ -13,6 +13,7 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Placeholder;
 
@@ -32,8 +33,16 @@ import static org.docx4j.XmlUtils.unwrap;
  * @since 1.0.0
  */
 public class CommentUtil {
+    public static final PartName WORD_COMMENTS_PART_NAME;
     private static final Logger logger = LoggerFactory.getLogger(CommentUtil.class);
-    private static final String WORD_COMMENTS_PART_NAME = "/word/comments.xml";
+
+    static {
+        try {
+            WORD_COMMENTS_PART_NAME = new PartName("/word/comments.xml");
+        } catch (InvalidFormatException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
 
     private CommentUtil() {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
@@ -106,9 +115,8 @@ public class CommentUtil {
      */
     public static Optional<Comments.Comment> findComment(WordprocessingMLPackage document, BigInteger id)
             throws Docx4JException {
-        var name = new PartName(WORD_COMMENTS_PART_NAME);
         var parts = document.getParts();
-        var wordComments = (CommentsPart) parts.get(name);
+        var wordComments = (CommentsPart) parts.get(WORD_COMMENTS_PART_NAME);
         var comments = wordComments.getContents();
         return comments.getComment()
                        .stream()
@@ -133,15 +141,8 @@ public class CommentUtil {
         for (Object contentObject : object.getContent()) {
             if (!(contentObject instanceof CommentRangeStart crs)) continue;
             BigInteger id = crs.getId();
-            PartName partName;
-            try {
-                partName = new PartName(WORD_COMMENTS_PART_NAME);
-            } catch (InvalidFormatException e) {
-                String message = String.format("Error while searching comment. Skipping object %s.", object);
-                throw new OfficeStamperException(message, e);
-            }
             CommentsPart commentsPart = (CommentsPart) document.getParts()
-                                                               .get(partName);
+                                                               .get(WORD_COMMENTS_PART_NAME);
             Comments comments;
             try {
                 comments = commentsPart.getContents();
@@ -206,15 +207,13 @@ public class CommentUtil {
     /**
      * Extracts all comments from the given document.
      *
-     * @param document the document to extract comments from.
-     *
      * @return a map of all comments, with the key being the comment id.
      */
-    public static Map<BigInteger, Comment> getComments(WordprocessingMLPackage document) {
+    public static Map<BigInteger, Comment> getComments(DocxPart document) {
         Map<BigInteger, Comment> rootComments = new HashMap<>();
         Map<BigInteger, Comment> allComments = new HashMap<>();
         collectCommentRanges(rootComments, allComments, document);
-        collectComments(allComments, document);
+        collectComments(allComments, document.getCommentsPart());
         return cleanMalformedComments(rootComments);
     }
 
@@ -295,24 +294,18 @@ public class CommentUtil {
                          .collect(Collectors.joining(""));
     }
 
-    private static boolean isCommentMalformed(Comment comment) {
-        return comment.getCommentRangeStart() == null
-                || comment.getCommentRangeEnd() == null
-                || comment.getComment() == null;
-    }
-
     private static void collectCommentRanges(
             Map<BigInteger, Comment> rootComments,
             Map<BigInteger, Comment> allComments,
-            WordprocessingMLPackage document
+            DocxPart document
     ) {
         Queue<Comment> stack = Collections.asLifoQueue(new ArrayDeque<>());
-        DocumentWalker documentWalker = new BaseDocumentWalker(document.getMainDocumentPart()) {
+        DocumentWalker documentWalker = new BaseDocumentWalker(document) {
             @Override
             protected void onCommentRangeStart(CommentRangeStart commentRangeStart) {
                 Comment comment = allComments.get(commentRangeStart.getId());
                 if (comment == null) {
-                    comment = new StandardComment(document);
+                    comment = new StandardComment(document.document());
                     allComments.put(commentRangeStart.getId(), comment);
                     if (stack.isEmpty()) {
                         rootComments.put(commentRangeStart.getId(),
@@ -347,8 +340,10 @@ public class CommentUtil {
             @Override
             protected void onCommentReference(R.CommentReference commentReference) {
                 Comment comment = allComments.get(commentReference.getId());
-                if (comment == null)
-                    throw new OfficeStamperException("Found a comment reference before the comment range start !");
+                if (comment == null) {
+                    comment = new StandardComment(document.document());
+                    allComments.put(commentReference.getId(), comment);
+                }
                 comment.setCommentReference(commentReference);
             }
         };
@@ -357,21 +352,26 @@ public class CommentUtil {
 
     private static void collectComments(
             Map<BigInteger, Comment> allComments,
-            WordprocessingMLPackage document
+            CommentsPart commentsPart
     ) {
+        if (commentsPart == null) return;
+        Comments commentsPartContents = null;
         try {
-            var documentParts = document.getParts();
-            var commentsPart = (CommentsPart) documentParts.get(new PartName(WORD_COMMENTS_PART_NAME));
-            if (commentsPart == null) return;
-            var commentsPartContents = commentsPart.getContents();
-            for (var comment : commentsPartContents.getComment()) {
-                var commentWrapper = allComments.get(comment.getId());
-                if (commentWrapper != null)
-                    commentWrapper.setComment(comment);
-            }
+            commentsPartContents = commentsPart.getContents();
         } catch (Docx4JException e) {
-            throw new IllegalStateException(e);
+            throw new OfficeStamperException(e);
         }
+        for (var comment : commentsPartContents.getComment()) {
+            var commentWrapper = allComments.get(comment.getId());
+            if (commentWrapper != null)
+                commentWrapper.setComment(comment);
+        }
+    }
+
+    private static boolean isCommentMalformed(Comment comment) {
+        return comment.getCommentRangeStart() == null
+               || comment.getCommentRangeEnd() == null
+               || comment.getComment() == null;
     }
 
     static void deleteCommentFromElements(
@@ -399,7 +399,7 @@ public class CommentUtil {
         // copy the elements without comment range anchors
         var finalElements = elements.stream()
                                     .map(XmlUtils::deepCopy)
-                                    .collect(Collectors.toList());
+                                    .collect(Collectors.toCollection(ArrayList::new));
         deleteCommentFromElements(comment, finalElements);
         target.getMainDocumentPart()
               .getContent()

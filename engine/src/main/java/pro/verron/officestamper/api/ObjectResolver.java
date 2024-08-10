@@ -29,7 +29,7 @@ public interface ObjectResolver {
      * @throws OfficeStamperException if no resolver is found for the object
      */
     default R resolve(
-            WordprocessingMLPackage document,
+            DocxPart document,
             Placeholder placeholder,
             Object object
     ) {
@@ -41,18 +41,11 @@ public interface ObjectResolver {
     }
 
     /**
-     * Checks if the given object can be resolved.
-     *
-     * @param object the object to be resolved
-     *
-     * @return true if the object can be resolved, false otherwise
-     */
-    boolean canResolve(@Nullable Object object);
-
-    /**
      * Resolves the expression in the given document with the provided object.
+     * <p>
+     * Replace the previous {@link #resolve(WordprocessingMLPackage, String, Object)}
      *
-     * @param document   the {@link WordprocessingMLPackage} document in
+     * @param docxPart   the {@link DocxPart} document in
      *                   which to resolve the expression
      * @param expression the expression value to be replaced
      * @param object     the object to be used for resolving the expression
@@ -61,10 +54,33 @@ public interface ObjectResolver {
      *
      * @throws OfficeStamperException if no resolver is found for the object
      */
-    R resolve(
+    default R resolve(
+            DocxPart docxPart,
+            String expression,
+            Object object
+    ) {
+        return resolve(docxPart.document(), expression, object);
+    }
+
+    /**
+     * @deprecated replaced by {@link #resolve(DocxPart, String, Object)}
+     */
+    @Deprecated(since = "2.3", forRemoval = true)
+    default R resolve(
             WordprocessingMLPackage document,
             String expression,
             Object object
-    );
+    ) {
+        throw new OfficeStamperException("Should not be called, only legacy implementation might still override this");
+    }
+
+    /**
+     * Checks if the given object can be resolved.
+     *
+     * @param object the object to be resolved
+     *
+     * @return true if the object can be resolved, false otherwise
+     */
+    boolean canResolve(@Nullable Object object);
 
 }

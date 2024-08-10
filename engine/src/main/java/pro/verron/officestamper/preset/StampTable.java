@@ -2,10 +2,7 @@ package pro.verron.officestamper.preset;
 
 import org.springframework.lang.NonNull;
 
-import java.util.AbstractSequentialList;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 import static java.util.Collections.singletonList;
 
@@ -20,6 +17,18 @@ public class StampTable
         extends AbstractSequentialList<List<String>> {
     private final List<String> headers;
     private final List<List<String>> records;
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        StampTable lists = (StampTable) o;
+        return Objects.equals(headers, lists.headers) && Objects.equals(records, lists.records);
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(super.hashCode(), headers, records);
+    }
 
     /**
      * Instantiate an empty table

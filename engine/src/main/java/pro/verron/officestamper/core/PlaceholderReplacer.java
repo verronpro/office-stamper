@@ -8,10 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.Paragraph;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.officestamper.api.Placeholder;
+import pro.verron.officestamper.api.*;
 
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
@@ -74,35 +71,32 @@ public class PlaceholderReplacer
      * Finds expressions in a document and resolves them against the specified context object.
      * The resolved values will then replace the expressions in the document.
      *
-     * @param document          the document in which to replace all expressions.
      * @param expressionContext the context root
      */
-    public void resolveExpressions(
-            final WordprocessingMLPackage document, Object expressionContext
-    ) {
-        DocumentUtil.streamParagraphs(document)
-                    .map(StandardParagraph::new)
-                    .forEach(paragraph -> resolveExpressionsForParagraph(paragraph, expressionContext, document));
+    public void resolveExpressions(DocxPart document, Object expressionContext) {
+        document.streamParagraphs()
+                .map(StandardParagraph::new)
+                .forEach(paragraph -> resolveExpressionsForParagraph(document, paragraph, expressionContext));
     }
 
     /**
      * Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.
      *
+     * @param docxPart  the document in which to replace all expressions.
      * @param paragraph the paragraph in which to replace expressions.
      * @param context   the context root
-     * @param document  the document in which to replace all expressions.
      */
     @Override public void resolveExpressionsForParagraph(
-            Paragraph paragraph,
-            Object context,
-            WordprocessingMLPackage document
+            DocxPart docxPart, Paragraph paragraph,
+            Object context
     ) {
+
         var expressions = Placeholders.findVariables(paragraph);
         for (var expression : expressions) {
             try {
                 resolver.setContext(context);
                 var resolution = resolver.resolve(expression);
-                var replacement = registry.resolve(document, expression, resolution);
+                var replacement = registry.resolve(docxPart, expression, resolution);
                 paragraph.replace(expression, replacement);
             } catch (SpelEvaluationException
                      | SpelParseException
@@ -115,16 +109,16 @@ public class PlaceholderReplacer
                 }
                 else if (leaveEmptyOnExpressionError) {
                     var template = "Expression {} seems erroneous when evaluating against root of type {}."
-                            + " Reason: {}."
-                            + " Set log level to TRACE to view Stacktrace.";
+                                   + " Reason: {}."
+                                   + " Set log level to TRACE to view Stacktrace.";
                     log.warn(template, expression, context.getClass(), e.getMessage());
                     log.trace("Reason for skipping expression:", e);
                     paragraph.replace(expression, RunUtil.create(""));
                 }
                 else if (replaceUnresolvedExpressions) {
                     log.warn("Expression {} could not be resolved against context root of type {}."
-                                    + " Reason: {}. "
-                                    + "Set log level to TRACE to view Stacktrace.",
+                             + " Reason: {}. "
+                             + "Set log level to TRACE to view Stacktrace.",
                             expression,
                             context.getClass(),
                             e.getMessage());
@@ -134,6 +128,11 @@ public class PlaceholderReplacer
             }
         }
         replaceLineBreaks(paragraph);
+    }
+
+    @Override
+    public void resolveExpressionsForParagraph(Paragraph paragraph, Object context, WordprocessingMLPackage document) {
+        throw new OfficeStamperException("Should not be called, since deprecated");
     }
 
     private void replaceLineBreaks(Paragraph paragraph) {

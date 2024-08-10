@@ -2,6 +2,7 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -30,7 +31,7 @@ public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
     private final List<PreProcessor> preprocessors;
     private final PlaceholderReplacer placeholderReplacer;
-    private final CommentProcessorRegistry commentProcessorRegistry;
+    private final Function<DocxPart, CommentProcessorRegistry> commentProcessorRegistrySupplier;
 
     /**
      * Creates a new DocxStamper with the given configuration.
@@ -38,8 +39,7 @@ public class DocxStamper
      * @param configuration the configuration to use for this DocxStamper.
      */
     public DocxStamper(OfficeStamperConfiguration configuration) {
-        this(
-                configuration.isFailOnUnresolvedExpression(),
+        this(configuration.isFailOnUnresolvedExpression(),
                 configuration.isReplaceUnresolvedExpressions(),
                 configuration.isLeaveEmptyOnExpressionError(),
                 configuration.getUnresolvedExpressionsDefaultValue(),
@@ -49,8 +49,7 @@ public class DocxStamper
                 configuration.getResolvers(),
                 configuration.getCommentProcessors(),
                 configuration.getPreprocessors(),
-                configuration.getSpelParserConfiguration()
-        );
+                configuration.getSpelParserConfiguration());
     }
 
     private DocxStamper(
@@ -72,8 +71,7 @@ public class DocxStamper
                 ? DocxStamper::throwException
                 : exception -> new TypedValue(null);
 
-        final StandardMethodResolver methodResolver = new StandardMethodResolver(
-                commentProcessors,
+        final StandardMethodResolver methodResolver = new StandardMethodResolver(commentProcessors,
                 expressionFunctions,
                 onResolutionFail);
 
@@ -83,22 +81,17 @@ public class DocxStamper
 
 
         var expressionParser = new SpelExpressionParser(spelParserConfiguration);
-        var expressionResolver = new ExpressionResolver(
-                evaluationContext,
-                expressionParser
-        );
+        var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
 
         var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
 
-        var placeholderReplacer = new PlaceholderReplacer(
-                typeResolverRegistry,
+        this.placeholderReplacer = new PlaceholderReplacer(typeResolverRegistry,
                 expressionResolver,
                 failOnUnresolvedExpression,
                 replaceUnresolvedExpressions,
                 unresolvedExpressionsDefaultValue,
                 leaveEmptyOnExpressionError,
-                Placeholders.raw(lineBreakPlaceholder)
-        );
+                Placeholders.raw(lineBreakPlaceholder));
 
         for (var entry : configurationCommentProcessors.entrySet()) {
             Class<?> aClass = entry.getKey();
@@ -108,16 +101,13 @@ public class DocxStamper
         }
 
 
-        var commentProcessorRegistryInstance = new CommentProcessorRegistry(
+        this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(source,
                 expressionResolver,
                 commentProcessors,
-                failOnUnresolvedExpression
-        );
+                failOnUnresolvedExpression);
 
-        this.placeholderReplacer = placeholderReplacer;
-        this.commentProcessorRegistry = commentProcessorRegistryInstance;
         this.preprocessors = preprocessors.stream()
-                .toList();
+                                          .toList();
     }
 
     private static TypedValue throwException(ReflectiveOperationException exception) {
@@ -135,7 +125,8 @@ public class DocxStamper
      * In the .docx template you have the following options to influence the "stamping" process:
      * </p>
      * <ul>
-     * <li>Use expressions like ${name} or ${person.isOlderThan(18)} in the template's text. These expressions are resolved
+     * <li>Use expressions like ${name} or ${person.isOlderThan(18)} in the template's text. These expressions are
+     * resolved
      * against the contextRoot object you pass into this method and are replaced by the results.</li>
      * <li>Use comments within the .docx template to mark certain paragraphs to be manipulated. </li>
      * </ul>
@@ -146,7 +137,8 @@ public class DocxStamper
      * <li><em>displayParagraphIf(boolean)</em> to conditionally display paragraphs or not</li>
      * <li><em>displayTableRowIf(boolean)</em> to conditionally display table rows or not</li>
      * <li><em>displayTableIf(boolean)</em> to conditionally display whole tables or not</li>
-     * <li><em>repeatTableRow(List&lt;Object&gt;)</em> to create a new table row for each object in the list and resolve expressions
+     * <li><em>repeatTableRow(List&lt;Object&gt;)</em> to create a new table row for each object in the list and
+     * resolve expressions
      * within the table cells against one of the objects within the list.</li>
      * </ul>
      * <p>
@@ -155,13 +147,10 @@ public class DocxStamper
      * </p>
      */
     public void stamp(
-            InputStream template,
-            Object contextRoot,
-            OutputStream out
+            InputStream template, Object contextRoot, OutputStream out
     ) {
         try {
-            WordprocessingMLPackage document = WordprocessingMLPackage.load(
-                    template);
+            WordprocessingMLPackage document = WordprocessingMLPackage.load(template);
             stamp(document, contextRoot, out);
         } catch (Docx4JException e) {
             throw new OfficeStamperException(e);
@@ -176,18 +165,15 @@ public class DocxStamper
      * may pass in a DOCX4J document as a template instead
      * of an InputStream.
      */
-    @Override
-    public void stamp(
-            WordprocessingMLPackage document,
-            Object contextRoot,
-            OutputStream out
+    @Override public void stamp(
+            WordprocessingMLPackage document, Object contextRoot, OutputStream out
     ) {
         try {
+            var source = new DocxPart(document);
             preprocess(document);
-            processComments(document, contextRoot);
-            replaceExpressions(document, contextRoot);
+            processComments(source, contextRoot);
+            replaceExpressions(source, contextRoot);
             document.save(out);
-            commentProcessorRegistry.reset();
         } catch (Docx4JException e) {
             throw new OfficeStamperException(e);
         }
@@ -200,16 +186,31 @@ public class DocxStamper
     }
 
     private void processComments(
-            final WordprocessingMLPackage document,
+            DocxPart document,
             Object contextObject
     ) {
-        commentProcessorRegistry.runProcessors(document, contextObject);
+        document.getParts(Namespaces.HEADER)
+                .forEach(header -> runProcessors(header, contextObject));
+
+        runProcessors(document, contextObject);
+
+        document.getParts(Namespaces.FOOTER)
+                .forEach(footer -> runProcessors(footer, contextObject));
     }
 
     private void replaceExpressions(
-            WordprocessingMLPackage document,
+            DocxPart document,
             Object contextObject
     ) {
+        document.getParts(Namespaces.HEADER)
+                .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
         placeholderReplacer.resolveExpressions(document, contextObject);
+        document.getParts(Namespaces.FOOTER)
+                .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
+    }
+
+    private void runProcessors(DocxPart source, Object contextObject) {
+        var processors = commentProcessorRegistrySupplier.apply(source);
+        processors.runProcessors(contextObject);
     }
 }

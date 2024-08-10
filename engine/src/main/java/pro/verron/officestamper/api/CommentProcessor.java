@@ -9,15 +9,44 @@ import org.springframework.lang.Nullable;
  * CommentProcessor is an interface that defines the methods for processing comments in a .docx template.
  */
 public interface CommentProcessor {
+
+
     /**
      * This method is called after all comments in the .docx template have been passed to the comment processor.
-     * All manipulations of the .docx document SHOULD BE done in this method. If certain manipulations are already done
-     * within the custom methods of a comment processor, the ongoing iteration over the paragraphs in the document
+     * All manipulations of the .docx document SHOULD BE done in this method.
+     * If certain manipulations are already done
+     * within the custom methods of a comment processor,
+     * the ongoing iteration over the paragraphs in the document
      * may be disturbed.
+     * <p>
+     * This method replaces the previous {@link #commitChanges(WordprocessingMLPackage)} and called with a DocxPart
+     * as the parameter.
      *
-     * @param document The Word document that can be manipulated by using the DOCX4J api.
+     * @param docxPart The DocxPart that can be manipulated by using the DOCX4J api.
      */
-    void commitChanges(WordprocessingMLPackage document);
+    default void commitChanges(DocxPart docxPart) {
+        commitChanges(docxPart.document());
+    }
+
+    /**
+     * This method is called after all comments in the .docx template have been passed to the comment processor.
+     * All manipulations of the .docx document SHOULD BE done in this method.
+     * If certain manipulations are already done
+     * within the custom methods of a comment processor,
+     * the ongoing iteration over the paragraphs in the document
+     * may be disturbed.
+     * <p>
+     * This method replaces the previous {@link #commitChanges(DocxPart)} and called with a DocxPart
+     * as the parameter.
+     *
+     * @param document The document that can be manipulated by using the DOCX4J api.
+     *
+     * @deprecated replaced by {@link #commitChanges(DocxPart)}
+     */
+    @Deprecated(since = "2.3", forRemoval = true) default void commitChanges(WordprocessingMLPackage document) {
+        throw new OfficeStamperException("Should not be called since deprecation, only legacy implementations have a "
+                                         + "reason to keep implementing this");
+    }
 
     /**
      * Passes the paragraph that is currently being processed (i.e., the paragraph that is commented in the

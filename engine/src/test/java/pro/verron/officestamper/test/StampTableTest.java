@@ -53,7 +53,8 @@ class StampTableTest {
                         Krusty the Clown
                         Dan Castellaneta
                                                 
-                        There are 6 characters in the above table.""",
+                        There are 6 characters in the above table.
+                        """,
                 string);
     }
 }

@@ -7,6 +7,8 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.*;
@@ -41,6 +43,7 @@ import static pro.verron.officestamper.core.DocumentUtil.walkObjectsAndImportIma
  * @since 1.6.4
  */
 public class CommentProcessorFactory {
+    private static final Logger log = LoggerFactory.getLogger(CommentProcessorFactory.class);
     private final OfficeStamperConfiguration configuration;
 
     /**
@@ -50,6 +53,24 @@ public class CommentProcessorFactory {
      */
     public CommentProcessorFactory(OfficeStamperConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+    private static Tbl parentTable(P p) {
+        if (parentRow(p).getParent() instanceof Tbl table)
+            return table;
+        throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+    }
+
+    private static Tr parentRow(P p) {
+        if (parentCell(p).getParent() instanceof Tr row)
+            return row;
+        throw new OfficeStamperException(format("Paragraph is not within a row! : %s", getText(p)));
+    }
+
+    private static Tc parentCell(P p) {
+        if (p.getParent() instanceof Tc cell)
+            return cell;
+        throw new OfficeStamperException(format("Paragraph is not within a cell! : %s", getText(p)));
     }
 
     /**
@@ -318,21 +339,15 @@ public class CommentProcessorFactory {
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void resolveTable(StampTable givenTable) {
-            P p = getParagraph();
-            if (p.getParent() instanceof Tc tc && tc.getParent() instanceof Tr tr
-                && tr.getParent() instanceof Tbl table) {
-                cols.put(table, givenTable);
-            }
-            else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+        @Override public void resolveTable(StampTable givenTable) {
+            cols.put(parentTable(getParagraph()), givenTable);
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void commitChanges(WordprocessingMLPackage document) {
+        public void commitChanges(DocxPart document) {
             for (Map.Entry<Tbl, StampTable> entry : cols.entrySet()) {
                 Tbl wordTable = entry.getKey();
 
@@ -350,6 +365,17 @@ public class CommentProcessorFactory {
             }
         }
 
+        @Override public void commitChanges(WordprocessingMLPackage document) {
+            throw new OfficeStamperException("Should not be called, since deprecation");
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override public void reset() {
+            cols.clear();
+        }
+
         private void replaceTableInplace(Tbl wordTable, StampTable stampedTable) {
             var headers = stampedTable.headers();
 
@@ -359,8 +385,7 @@ public class CommentProcessorFactory {
 
             growAndFillRow(headerRow, headers);
 
-            if (stampedTable.isEmpty())
-                rows.remove(firstDataRow);
+            if (stampedTable.isEmpty()) rows.remove(firstDataRow);
             else {
                 growAndFillRow(firstDataRow, stampedTable.get(0));
                 for (var rowContent : stampedTable.subList(1, stampedTable.size()))
@@ -398,18 +423,9 @@ public class CommentProcessorFactory {
         }
 
         private void setCellText(Tc tableCell, String content) {
-            tableCell.getContent()
-                     .clear();
-            tableCell.getContent()
-                     .add(ParagraphUtil.create(content));
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void reset() {
-            cols.clear();
+            var tableCellContent = tableCell.getContent();
+            tableCellContent.clear();
+            tableCellContent.add(ParagraphUtil.create(content));
         }
     }
 
@@ -429,8 +445,7 @@ public class CommentProcessorFactory {
         private final Function<R, List<Object>> nullSupplier;
 
         private ReplaceWithProcessor(
-                ParagraphPlaceholderReplacer placeholderReplacer,
-                Function<R, List<Object>> nullSupplier
+                ParagraphPlaceholderReplacer placeholderReplacer, Function<R, List<Object>> nullSupplier
         ) {
             super(placeholderReplacer);
             this.nullSupplier = nullSupplier;
@@ -451,26 +466,26 @@ public class CommentProcessorFactory {
          * {@inheritDoc}
          */
         @Override
-        public void commitChanges(WordprocessingMLPackage document) {
+        public void commitChanges(DocxPart document) {
             // nothing to commit
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void reset() {
+        @Override public void reset() {
             // nothing to reset
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void replaceWordWith(@Nullable String expression) {
+        @Override public void replaceWordWith(@Nullable String expression) {
             R run = this.getCurrentRun();
-            if (run == null)
-                throw new OfficeStamperException(format("Impossible to put expression %s in a null run", expression));
+            if (run == null) {
+                log.info(format("Impossible to put expression %s in a null run", expression));
+                return;
+            }
 
             List<Object> target;
             if (expression != null) {
@@ -523,15 +538,13 @@ public class CommentProcessorFactory {
          * @return a new instance of ParagraphRepeatProcessor
          */
         public static CommentProcessor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
-            return new ParagraphRepeatProcessor(placeholderReplacer,
-                    Collections::emptyList);
+            return new ParagraphRepeatProcessor(placeholderReplacer, Collections::emptyList);
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void repeatParagraph(List<Object> objects) {
+        @Override public void repeatParagraph(List<Object> objects) {
             P paragraph = getParagraph();
 
             Deque<P> paragraphs = getParagraphsInsideComment(paragraph);
@@ -570,35 +583,25 @@ public class CommentProcessorFactory {
             paragraphs.add(paragraph);
 
             for (Object object : paragraph.getContent()) {
-                if (object instanceof CommentRangeStart crs)
-                    commentId = crs.getId();
-                if (object instanceof CommentRangeEnd cre && Objects.equals(
-                        commentId,
-                        cre.getId())) foundEnd = true;
+                if (object instanceof CommentRangeStart crs) commentId = crs.getId();
+                if (object instanceof CommentRangeEnd cre && Objects.equals(commentId, cre.getId())) foundEnd = true;
             }
             if (foundEnd || commentId == null) return paragraphs;
 
             Object parent = paragraph.getParent();
             if (parent instanceof ContentAccessor contentAccessor) {
-                int index = contentAccessor.getContent()
-                                           .indexOf(paragraph);
-                for (int i = index + 1; i < contentAccessor.getContent()
-                                                           .size() && !foundEnd; i++) {
-                    Object next = contentAccessor.getContent()
-                                                 .get(i);
-
-                    if (next instanceof CommentRangeEnd cre && cre.getId()
-                                                                  .equals(commentId)) {
-                        foundEnd = true;
-                    }
+                var accessorContent = contentAccessor.getContent();
+                int index = accessorContent.indexOf(paragraph);
+                for (int i = index + 1; i < accessorContent.size() && !foundEnd; i++) {
+                    var next = accessorContent.get(i);
+                    if (next instanceof CommentRangeEnd cre && Objects.equals(commentId, cre.getId())) foundEnd = true;
                     else {
                         if (next instanceof P p) {
                             paragraphs.add(p);
                         }
                         if (next instanceof ContentAccessor childContent) {
                             for (Object child : childContent.getContent()) {
-                                if (child instanceof CommentRangeEnd cre && cre.getId()
-                                                                               .equals(commentId)) {
+                                if (child instanceof CommentRangeEnd cre && Objects.equals(commentId, cre.getId())) {
                                     foundEnd = true;
                                     break;
                                 }
@@ -614,7 +617,7 @@ public class CommentProcessorFactory {
          * {@inheritDoc}
          */
         @Override
-        public void commitChanges(WordprocessingMLPackage document) {
+        public void commitChanges(DocxPart document) {
             for (Map.Entry<P, Paragraphs> entry : pToRepeat.entrySet()) {
                 P currentP = entry.getKey();
                 ContentAccessor parent = (ContentAccessor) currentP.getParent();
@@ -623,13 +626,11 @@ public class CommentProcessorFactory {
                 if (index < 0) throw new OfficeStamperException("Impossible");
 
                 Paragraphs paragraphsToRepeat = entry.getValue();
-                Deque<Object> expressionContexts = Objects.requireNonNull(
-                        paragraphsToRepeat).data;
+                Deque<Object> expressionContexts = Objects.requireNonNull(paragraphsToRepeat).data;
+
                 Deque<P> collection = expressionContexts == null
                         ? new ArrayDeque<>(nullSupplier.get())
-                        : generateParagraphsToAdd(document,
-                                paragraphsToRepeat,
-                                expressionContexts);
+                        : generateParagraphsToAdd(document, paragraphsToRepeat, expressionContexts);
                 restoreFirstSectionBreakIfNeeded(paragraphsToRepeat, collection);
                 parentContent.addAll(index, collection);
                 parentContent.removeAll(paragraphsToRepeat.paragraphs);
@@ -637,7 +638,7 @@ public class CommentProcessorFactory {
         }
 
         private Deque<P> generateParagraphsToAdd(
-                WordprocessingMLPackage document,
+                DocxPart document,
                 Paragraphs paragraphs,
                 Deque<Object> expressionContexts
         ) {
@@ -650,22 +651,19 @@ public class CommentProcessorFactory {
                 for (P paragraphToClone : paragraphs.paragraphs) {
                     P pClone = XmlUtils.deepCopy(paragraphToClone);
 
-                    if (paragraphs.sectionBreakBefore != null
-                        && paragraphs.hasOddSectionBreaks
+                    if (paragraphs.sectionBreakBefore != null && paragraphs.hasOddSectionBreaks
                         && expressionContext != lastExpressionContext
-                        && paragraphToClone == lastParagraph
-                    ) {
+                        && paragraphToClone == lastParagraph) {
                         SectionUtil.applySectionBreakToParagraph(paragraphs.sectionBreakBefore, pClone);
                     }
 
-                    CommentUtil.deleteCommentFromElements(pClone.getContent(),
-                            paragraphs.comment.getComment()
-                                              .getId());
-                    placeholderReplacer.resolveExpressionsForParagraph(
-                            new StandardParagraph(pClone),
-                            expressionContext,
-                            document
-                    );
+                    var pCloneContent = pClone.getContent();
+                    var commentId = paragraphs.comment
+                            .getComment()
+                            .getId();
+                    CommentUtil.deleteCommentFromElements(pCloneContent, commentId);
+                    var paragraph = new StandardParagraph(pClone);
+                    placeholderReplacer.resolveExpressionsForParagraph(document, paragraph, expressionContext);
                     paragraphsToAdd.add(pClone);
                 }
             }
@@ -673,21 +671,18 @@ public class CommentProcessorFactory {
         }
 
         private static void restoreFirstSectionBreakIfNeeded(
-                Paragraphs paragraphs,
-                Deque<P> paragraphsToAdd
+                Paragraphs paragraphs, Deque<P> paragraphsToAdd
         ) {
             if (paragraphs.firstParagraphSectionBreak != null) {
                 P breakP = paragraphsToAdd.getLast();
-                SectionUtil.applySectionBreakToParagraph(paragraphs.firstParagraphSectionBreak,
-                        breakP);
+                SectionUtil.applySectionBreakToParagraph(paragraphs.firstParagraphSectionBreak, breakP);
             }
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void reset() {
+        @Override public void reset() {
             pToRepeat = new HashMap<>();
         }
 
@@ -717,7 +712,7 @@ public class CommentProcessorFactory {
     private static class ParagraphResolverDocumentWalker
             extends BaseDocumentWalker {
         private final Object expressionContext;
-        private final WordprocessingMLPackage document;
+        private final DocxPart document;
         private final ParagraphPlaceholderReplacer placeholderReplacer;
 
         /**
@@ -725,16 +720,15 @@ public class CommentProcessorFactory {
          *
          * @param rowClone          The row to start with
          * @param expressionContext The context of the expressions to resolve
-         * @param document          The document to walk through
          * @param replacer          The placeholderReplacer to use for resolving
          */
         public ParagraphResolverDocumentWalker(
+                DocxPart document,
                 Tr rowClone,
                 Object expressionContext,
-                WordprocessingMLPackage document,
                 ParagraphPlaceholderReplacer replacer
         ) {
-            super(rowClone);
+            super(new DocxPart(document.document(), document.part(), rowClone));
             this.expressionContext = expressionContext;
             this.document = document;
             this.placeholderReplacer = replacer;
@@ -743,11 +737,9 @@ public class CommentProcessorFactory {
         /**
          * {@inheritDoc}
          */
-        @Override
-        protected void onParagraph(P paragraph) {
-            placeholderReplacer.resolveExpressionsForParagraph(
-                    new StandardParagraph(paragraph),
-                    expressionContext, document
+        @Override protected void onParagraph(P paragraph) {
+            placeholderReplacer.resolveExpressionsForParagraph(document, new StandardParagraph(paragraph),
+                    expressionContext
             );
         }
     }
@@ -792,8 +784,7 @@ public class CommentProcessorFactory {
          * @return a new instance of this processor
          */
         public static CommentProcessor newInstance(
-                ParagraphPlaceholderReplacer pr,
-                OfficeStamper<WordprocessingMLPackage> stamper
+                ParagraphPlaceholderReplacer pr, OfficeStamper<WordprocessingMLPackage> stamper
         ) {
             return new RepeatDocPartProcessor(pr, stamper, Collections::emptyList);
         }
@@ -801,10 +792,8 @@ public class CommentProcessorFactory {
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void repeatDocPart(@Nullable List<Object> contexts) {
-            if (contexts == null)
-                contexts = Collections.emptyList();
+        @Override public void repeatDocPart(@Nullable List<Object> contexts) {
+            if (contexts == null) contexts = Collections.emptyList();
 
             Comment currentComment = getCurrentCommentWrapper();
             List<Object> elements = currentComment.getElements();
@@ -817,8 +806,7 @@ public class CommentProcessorFactory {
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void commitChanges(WordprocessingMLPackage document) {
+        @Override public void commitChanges(DocxPart source) {
             for (Map.Entry<Comment, List<Object>> entry : this.contexts.entrySet()) {
                 var comment = entry.getKey();
                 var expressionContexts = entry.getValue();
@@ -829,7 +817,7 @@ public class CommentProcessorFactory {
                 var oddNumberOfBreaks = SectionUtil.isOddNumberOfSectionBreaks(repeatElements);
                 var changes = expressionContexts == null
                         ? nullSupplier.get()
-                        : stampSubDocuments(document,
+                        : stampSubDocuments(source.document(),
                                 expressionContexts,
                                 gcp,
                                 subTemplate,
@@ -852,19 +840,16 @@ public class CommentProcessorFactory {
                 boolean oddNumberOfBreaks
         ) {
             var subDocuments = stampSubDocuments(expressionContexts, subTemplate);
-            var replacements = subDocuments
-                    .stream()
-                    .map(p -> walkObjectsAndImportImages(p,
-                            document)) // TODO_LATER: move the side effect somewhere else
-                    .map(Map::entrySet)
-                    .flatMap(Set::stream)
-                    .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+            var replacements = subDocuments.stream()
+                                           //TODO_LATER: move side effect somewhere else
+                                           .map(p -> walkObjectsAndImportImages(p, document))
+                                           .map(Map::entrySet)
+                                           .flatMap(Set::stream)
+                                           .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 
             var changes = new ArrayList<>();
             for (WordprocessingMLPackage subDocument : subDocuments) {
-                var os = documentAsInsertableElements(subDocument,
-                        oddNumberOfBreaks,
-                        previousSectionBreak);
+                var os = documentAsInsertableElements(subDocument, oddNumberOfBreaks, previousSectionBreak);
                 os.stream()
                   .filter(ContentAccessor.class::isInstance)
                   .map(ContentAccessor.class::cast)
@@ -876,8 +861,7 @@ public class CommentProcessorFactory {
         }
 
         private List<WordprocessingMLPackage> stampSubDocuments(
-                List<Object> subContexts,
-                WordprocessingMLPackage subTemplate
+                List<Object> subContexts, WordprocessingMLPackage subTemplate
         ) {
             var subDocuments = new ArrayList<WordprocessingMLPackage>();
             for (Object subContext : subContexts) {
@@ -889,9 +873,7 @@ public class CommentProcessorFactory {
         }
 
         private static List<Object> documentAsInsertableElements(
-                WordprocessingMLPackage subDocument,
-                boolean oddNumberOfBreaks,
-                @Nullable SectPr previousSectionBreak
+                WordprocessingMLPackage subDocument, boolean oddNumberOfBreaks, @Nullable SectPr previousSectionBreak
         ) {
             List<Object> inserts = new ArrayList<>(DocumentUtil.allElements(subDocument));
             // make sure we replicate the previous section break before each repeated doc part
@@ -911,19 +893,16 @@ public class CommentProcessorFactory {
         }
 
         private static void recursivelyReplaceImages(
-                ContentAccessor r,
-                Map<R, R> replacements
+                ContentAccessor r, Map<R, R> replacements
         ) {
             Queue<ContentAccessor> q = new ArrayDeque<>();
             q.add(r);
             while (!q.isEmpty()) {
                 ContentAccessor run = q.remove();
-                if (replacements.containsKey(run)
-                    && run instanceof Child child
+                if (replacements.containsKey(run) && run instanceof Child child
                     && child.getParent() instanceof ContentAccessor parent) {
                     List<Object> parentContent = parent.getContent();
-                    parentContent.add(parentContent.indexOf(run),
-                            replacements.get(run));
+                    parentContent.add(parentContent.indexOf(run), replacements.get(run));
                     parentContent.remove(run);
                 }
                 else {
@@ -937,18 +916,15 @@ public class CommentProcessorFactory {
         }
 
         private static void setParentIfPossible(
-                Object object,
-                ContentAccessor parent
+                Object object, ContentAccessor parent
         ) {
-            if (object instanceof Child child)
-                child.setParent(parent);
+            if (object instanceof Child child) child.setParent(parent);
         }
 
         private WordprocessingMLPackage outputWord(Consumer<OutputStream> outputter) {
             var exceptionHandler = new ProcessorExceptionHandler();
             try (
-                    PipedOutputStream os = new PipedOutputStream();
-                    PipedInputStream is = new PipedInputStream(os)
+                    PipedOutputStream os = new PipedOutputStream(); PipedInputStream is = new PipedInputStream(os)
             ) {
                 // closing on exception to not block the pipe infinitely
                 // TODO_LATER: model both PipedxxxStream as 1 class for only 1 close()
@@ -977,8 +953,7 @@ public class CommentProcessorFactory {
         }
 
         private void copy(
-                WordprocessingMLPackage aPackage,
-                OutputStream outputStream
+                WordprocessingMLPackage aPackage, OutputStream outputStream
         ) {
             try {
                 aPackage.save(outputStream);
@@ -988,9 +963,7 @@ public class CommentProcessorFactory {
         }
 
         private void stamp(
-                Object context,
-                WordprocessingMLPackage template,
-                OutputStream outputStream
+                Object context, WordprocessingMLPackage template, OutputStream outputStream
         ) {
             stamper.stamp(template, context, outputStream);
         }
@@ -998,8 +971,7 @@ public class CommentProcessorFactory {
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void reset() {
+        @Override public void reset() {
             contexts.clear();
         }
 
@@ -1082,8 +1054,7 @@ public class CommentProcessorFactory {
              * Captures and stores an uncaught exception from a thread run
              * and executes all defined routines on occurrence of the exception.
              */
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
+            @Override public void uncaughtException(Thread t, Throwable e) {
                 exception.set(e);
                 onException.forEach(Runnable::run);
             }
@@ -1146,19 +1117,11 @@ public class CommentProcessorFactory {
         }
 
         /** {@inheritDoc} */
-        @Override
-        public void commitChanges(WordprocessingMLPackage document) {
-            repeatRows(document);
+        @Override public void commitChanges(DocxPart source) {
+            repeatRows(source);
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public void reset() {
-            this.tableRowsToRepeat = new HashMap<>();
-            this.tableRowsCommentsToRemove = new HashMap<>();
-        }
-
-        private void repeatRows(final WordprocessingMLPackage document) {
+        private void repeatRows(DocxPart source) {
             for (Map.Entry<Tr, List<Object>> entry : tableRowsToRepeat.entrySet()) {
                 Tr row = entry.getKey();
                 List<Object> expressionContexts = entry.getValue();
@@ -1170,20 +1133,19 @@ public class CommentProcessorFactory {
 
                 List<Tr> changes;
                 if (expressionContexts == null) {
-                    changes = nullSupplier.apply(document, row);
+                    changes = nullSupplier.apply(source.document(), row);
                 }
                 else {
                     changes = new ArrayList<>();
                     for (Object expressionContext : expressionContexts) {
                         Tr rowClone = XmlUtils.deepCopy(row);
-                        Comment commentWrapper = requireNonNull(
-                                tableRowsCommentsToRemove.get(row));
+                        Comment commentWrapper = requireNonNull(tableRowsCommentsToRemove.get(row));
                         Comments.Comment comment = requireNonNull(commentWrapper.getComment());
                         BigInteger commentId = comment.getId();
                         CommentUtil.deleteCommentFromElements(rowClone.getContent(), commentId);
-                        new ParagraphResolverDocumentWalker(rowClone,
+                        new ParagraphResolverDocumentWalker(source,
+                                rowClone,
                                 expressionContext,
-                                document,
                                 this.placeholderReplacer).walk();
                         changes.add(rowClone);
                     }
@@ -1196,14 +1158,16 @@ public class CommentProcessorFactory {
         }
 
         /** {@inheritDoc} */
-        @Override
-        public void repeatTableRow(List<Object> objects) {
-            P p = getParagraph();
-            if (p.getParent() instanceof Tc tc && tc.getParent() instanceof Tr tableRow) {
-                tableRowsToRepeat.put(tableRow, objects);
-                tableRowsCommentsToRemove.put(tableRow, getCurrentCommentWrapper());
-            }
-            else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+        @Override public void reset() {
+            this.tableRowsToRepeat = new HashMap<>();
+            this.tableRowsCommentsToRemove = new HashMap<>();
+        }
+
+        /** {@inheritDoc} */
+        @Override public void repeatTableRow(List<Object> objects) {
+            var row = parentRow(getParagraph());
+            tableRowsToRepeat.put(row, objects);
+            tableRowsCommentsToRemove.put(row, getCurrentCommentWrapper());
         }
     }
 
@@ -1239,19 +1203,10 @@ public class CommentProcessorFactory {
         }
 
         /** {@inheritDoc} */
-        @Override
-        public void commitChanges(WordprocessingMLPackage document) {
+        @Override public void commitChanges(DocxPart source) {
             removeParagraphs();
             removeTables();
             removeTableRows();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void reset() {
-            paragraphsToBeRemoved = new ArrayList<>();
-            tablesToBeRemoved = new ArrayList<>();
-            tableRowsToBeRemoved = new ArrayList<>();
         }
 
         private void removeParagraphs() {
@@ -1273,42 +1228,35 @@ public class CommentProcessorFactory {
         }
 
         /** {@inheritDoc} */
-        @Override
-        public void displayParagraphIf(Boolean condition) {
+        @Override public void reset() {
+            paragraphsToBeRemoved = new ArrayList<>();
+            tablesToBeRemoved = new ArrayList<>();
+            tableRowsToBeRemoved = new ArrayList<>();
+        }
+
+        /** {@inheritDoc} */
+        @Override public void displayParagraphIf(Boolean condition) {
             if (Boolean.TRUE.equals(condition)) return;
             paragraphsToBeRemoved.add(getParagraph());
         }
 
         /** {@inheritDoc} */
-        @Override
-        public void displayParagraphIfPresent(@Nullable Object condition) {
+        @Override public void displayParagraphIfPresent(@Nullable Object condition) {
             displayParagraphIf(condition != null);
         }
 
         /** {@inheritDoc} */
-        @Override
-        public void displayTableIf(Boolean condition) {
+        @Override public void displayTableRowIf(Boolean condition) {
             if (Boolean.TRUE.equals(condition)) return;
-
             P p = getParagraph();
-            if (p.getParent() instanceof Tc tc
-                && tc.getParent() instanceof Tr tr
-                && tr.getParent() instanceof Tbl tbl
-            ) {
-                tablesToBeRemoved.add(tbl);
-            }
-            else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+            var tr = parentRow(p);
+            tableRowsToBeRemoved.add(tr);
         }
 
         /** {@inheritDoc} */
-        @Override
-        public void displayTableRowIf(Boolean condition) {
+        @Override public void displayTableIf(Boolean condition) {
             if (Boolean.TRUE.equals(condition)) return;
-            P p = getParagraph();
-            if (p.getParent() instanceof Tc tc && tc.getParent() instanceof Tr tr) {
-                tableRowsToBeRemoved.add(tr);
-            }
-            else throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(p)));
+            tablesToBeRemoved.add(parentTable(getParagraph()));
         }
     }
 }

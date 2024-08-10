@@ -7,6 +7,7 @@ import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.ProofErr;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PreProcessor;
 
 import java.util.ArrayList;
@@ -18,6 +19,10 @@ import java.util.Objects;
  * A helper class that provides pre-processing functionality for WordprocessingMLPackage documents.
  */
 public class Preprocessors {
+
+    private Preprocessors() {
+        throw new OfficeStamperException("Preprocessors cannot be instantiated");
+    }
 
     /**
      * Returns a PreProcessor object that merges same style runs that are next to each other in a

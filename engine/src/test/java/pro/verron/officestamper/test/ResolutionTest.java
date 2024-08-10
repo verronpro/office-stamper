@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.*;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
-public class ResolutionTest {
+class ResolutionTest {
 
     /**
      * This method is a unit test for the `testStaticResolution` method. It uses parameterized testing with a CSV source
@@ -62,7 +62,7 @@ public class ResolutionTest {
         }
         else {
             ThrowingSupplier<String> supplier = () -> stamper.stampAndLoadAndExtract(resource, new Object());
-            assertEquals(expected, assertDoesNotThrow(supplier));
+            assertEquals(expected + "\n", assertDoesNotThrow(supplier));
         }
     }
 
@@ -149,7 +149,7 @@ public class ResolutionTest {
         }
         else {
             ThrowingSupplier<String> supplier = () -> stamper.stampAndLoadAndExtract(resource, customContext);
-            assertEquals(expected, assertDoesNotThrow(supplier));
+            assertEquals(expected + "\n", assertDoesNotThrow(supplier));
         }
     }
 

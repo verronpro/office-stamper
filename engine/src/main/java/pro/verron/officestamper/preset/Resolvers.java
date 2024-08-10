@@ -3,10 +3,7 @@ package pro.verron.officestamper.preset;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.Placeholder;
-import pro.verron.officestamper.api.StringResolver;
+import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.RunUtil;
 
 import java.text.SimpleDateFormat;
@@ -28,6 +25,10 @@ import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstract
  * @since 1.6.7
  */
 public class Resolvers {
+
+    private Resolvers() {
+        throw new OfficeStamperException("Resolvers cannot be instantiated");
+    }
 
     /**
      * Returns an instance of {@link ObjectResolver} that can act as a fallback
@@ -246,7 +247,7 @@ public class Resolvers {
 
         @Override
         public R resolve(
-                WordprocessingMLPackage document,
+                DocxPart document,
                 String expression,
                 Object object
         ) {
@@ -260,20 +261,19 @@ public class Resolvers {
          * Resolves an image and adds it to a {@link WordprocessingMLPackage}
          * document.
          *
-         * @param document The WordprocessingMLPackage document
-         * @param image    The image to be resolved and added
+         * @param image The image to be resolved and added
          *
          * @return The run containing the added image
          *
          * @throws OfficeStamperException If an error occurs while adding the image to the document
          */
-        public R resolve(WordprocessingMLPackage document, Image image) {
+        private R resolve(DocxPart document, Image image) {
             try {
                 // TODO_LATER: adding the same image twice will put the image twice into the docx-zip file. make the
-                // second
-                //       addition of the same image a reference instead.
-                return RunUtil.createRunWithImage(image.getMaxWidth(),
-                        createImagePart(document, image.getImageBytes()));
+                // second addition of the same image a reference instead.
+                var imageWidth = image.getMaxWidth();
+                var imagePart = createImagePart(document.document(), document.part(), image.getImageBytes());
+                return RunUtil.createRunWithImage(imageWidth, imagePart);
             } catch (Exception e) {
                 throw new OfficeStamperException("Error while adding image to document!", e);
             }
@@ -420,7 +420,7 @@ public class Resolvers {
 
         @Override
         public R resolve(
-                WordprocessingMLPackage document,
+                DocxPart document,
                 String expression,
                 Object object
         ) {
@@ -455,7 +455,7 @@ public class Resolvers {
 
         @Override
         public R resolve(
-                WordprocessingMLPackage document,
+                DocxPart document,
                 Placeholder placeholder,
                 Object object
         ) {
@@ -469,7 +469,7 @@ public class Resolvers {
 
         @Override
         public R resolve(
-                WordprocessingMLPackage document,
+                DocxPart document,
                 String expression,
                 Object object
         ) {
@@ -496,7 +496,7 @@ public class Resolvers {
 
         @Override
         public R resolve(
-                WordprocessingMLPackage document,
+                DocxPart document,
                 String expression,
                 Object object
         ) {

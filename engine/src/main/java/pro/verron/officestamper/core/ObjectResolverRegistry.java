@@ -1,8 +1,8 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
+import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Placeholder;
@@ -40,7 +40,7 @@ public final class ObjectResolverRegistry {
      * @throws OfficeStamperException if no resolver is found for the object
      */
     public R resolve(
-            WordprocessingMLPackage document,
+            DocxPart document,
             Placeholder placeholder,
             @Nullable Object object
     ) {

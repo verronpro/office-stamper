@@ -1,142 +1,66 @@
 package pro.verron.officestamper.test;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 
 class TestBug52 {
 
-    @Test
-    void test_empty() {
-        var stamperConfiguration = standardWithPreprocessing();
-        var stamper = new TestDocxStamper<>(stamperConfiguration);
-        var templateStream = TestUtils.getResource(Path.of("#52.docx"));
+    private static final Path TEMPLATE_52 = Path.of("#52.docx");
 
-        record Element(boolean condition) {}
-        record Context(List<Element> elements) {}
-        var context = new Context(Collections.emptyList());
-        var actual = stamper.stampAndLoadAndExtract(templateStream, context);
-        assertEquals("", actual);
+    public static Stream<Arguments> source() {
+        return Stream.of(arguments(Conditions.values(), ""),
+                arguments(Conditions.values(true), "Start\nHello, World!\nEnd\n"),
+                arguments(Conditions.values(false), "Start\nEnd\n"),
+                arguments(Conditions.values(true, true), "Start\nHello, World!\nEnd\nStart\nHello, World!\nEnd\n"),
+                arguments(Conditions.values(true, false), "Start\nHello, World!\nEnd\nStart\nEnd\n"),
+                arguments(Conditions.values(false, true), "Start\nEnd\nStart\nHello, World!\nEnd\n"),
+                arguments(Conditions.values(false, false), "Start\nEnd\nStart\nEnd\n"));
     }
 
-
-    @Test
-    void test_repeat_once_true() {
-        var stamperConfiguration = standardWithPreprocessing();
-        var stamper = new TestDocxStamper<>(stamperConfiguration);
-        var templateStream = TestUtils.getResource(Path.of("#52.docx"));
-
-        record Element(boolean condition) {}
-        record Context(List<Element> elements) {}
-        var context = new Context(List.of(new Element(true)));
-        var actual = stamper.stampAndLoadAndExtract(templateStream, context);
-        var expected = """
-                Start
-                Hello, World!
-                End
-                """;
+    @MethodSource("source")
+    @ParameterizedTest
+    void test(Conditions conditions, String expected) {
+        var stamper = givenStamper();
+        var template = givenTemplate();
+        var actual = stamper.stampAndLoadAndExtract(template, conditions);
         assertEquals(expected, actual);
     }
 
-
-    @Test
-    void test_repeat_once_false() {
-        var stamperConfiguration = standardWithPreprocessing();
-        var stamper = new TestDocxStamper<>(stamperConfiguration);
-        var templateStream = TestUtils.getResource(Path.of("#52.docx"));
-        var expected = """
-                Start
-                End
-                """;
-        record Element(boolean condition) {}
-        record Context(List<Element> elements) {}
-        var context = new Context(List.of(new Element(false)));
-        var actual = stamper.stampAndLoadAndExtract(templateStream, context);
-        assertEquals(expected, actual);
+    private static TestDocxStamper<Object> givenStamper() {
+        return new TestDocxStamper<>(standardWithPreprocessing());
     }
 
-    @Test
-    void test_repeat_twice_true_true() {
-        var stamperConfiguration = standardWithPreprocessing();
-        var stamper = new TestDocxStamper<>(stamperConfiguration);
-        var templateStream = TestUtils.getResource(Path.of("#52.docx"));
-
-        var expected = """
-                Start
-                Hello, World!
-                End
-                Start
-                Hello, World!
-                End
-                """;
-        record Element(boolean condition) {}
-        record Context(List<Element> elements) {}
-        var context = new Context(List.of(new Element(true), new Element(true)));
-        var actual = stamper.stampAndLoadAndExtract(templateStream, context);
-        assertEquals(expected, actual);
+    private static InputStream givenTemplate() {
+        return TestUtils.getResource(TEMPLATE_52);
     }
 
-    @Test
-    void test_repeat_twice_true_false() {
-        var stamperConfiguration = standardWithPreprocessing();
-        var stamper = new TestDocxStamper<>(stamperConfiguration);
-        var templateStream = TestUtils.getResource(Path.of("#52.docx"));
+    record Condition(boolean condition) {}
 
-        var expected = """
-                Start
-                Hello, World!
-                End
-                Start
-                End
-                """;
-        record Element(boolean condition) {}
-        record Context(List<Element> elements) {}
-        var context = new Context(List.of(new Element(true), new Element(false)));
-        var actual = stamper.stampAndLoadAndExtract(templateStream, context);
-        assertEquals(expected, actual);
-    }
+    record Conditions(List<Condition> conditions) {
+        private static Conditions values(boolean... bits) {
+            var elements = new ArrayList<Condition>(bits.length);
+            for (var bit : bits) elements.add(new Condition(bit));
+            return new Conditions(elements);
+        }
 
-    @Test
-    void test_repeat_twice_false_true() {
-        var stamperConfiguration = standardWithPreprocessing();
-        var stamper = new TestDocxStamper<>(stamperConfiguration);
-        var templateStream = TestUtils.getResource(Path.of("#52.docx"));
-
-        var expected = """
-                Start
-                End
-                Start
-                Hello, World!
-                End
-                """;
-        record Element(boolean condition) {}
-        record Context(List<Element> elements) {}
-        var context = new Context(List.of(new Element(false), new Element(true)));
-        var actual = stamper.stampAndLoadAndExtract(templateStream, context);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void test_repeat_twice_false_false() {
-        var stamperConfiguration = standardWithPreprocessing();
-        var stamper = new TestDocxStamper<>(stamperConfiguration);
-        var templateStream = TestUtils.getResource(Path.of("#52.docx"));
-
-        var expected = """
-                Start
-                End
-                Start
-                End
-                """;
-        record Element(boolean condition) {}
-        record Context(List<Element> elements) {}
-        var context = new Context(List.of(new Element(false), new Element(false)));
-        var actual = stamper.stampAndLoadAndExtract(templateStream, context);
-        assertEquals(expected, actual);
+        @Override public String toString() {
+            return conditions.stream()
+                             .map(Condition::condition)
+                             .map(Objects::toString)
+                             .collect(joining(",", "(", ")"));
+        }
     }
 }

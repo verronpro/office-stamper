@@ -14,33 +14,31 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 
 == Release Notes
 
-- {proj}/releases/tag/v2.1.0[v2.1.0]:
-** Update Readme howto to document the last API changes
-** Update the mechanism to walk through a Word document
-** First step to the separation of resolvers in two: the future 'engine resolver' (that will wrap the template features) and 'context resolver' (that will wrap the actual stamped data)
-** Update exception management and messages
-** The raw stamper does not carry any comment processors by default
-** Bump dependencies org.springframework:spring-expression to 6.1.8
-** Update documentation to be more Github-friendly
-- {proj}/releases/tag/v2.0.0[v2.0.1]:
-** fix dependency issue of v2.0
-- {proj}/releases/tag/v2.0.0[v2.0.0]:
-** remove legacy APIs,
-** rename `pro.verron:docx-stamper` to `pro.verron.office-stamper:engine`
-** implements modularization
+=== {proj}/releases/tag/v2.3.0[v2.3.0]
 
-- {proj}/releases/tag/v1.6.9[v1.6.9]: regression fix
+==== dependencies
 
-- {proj}/releases/tag/v1.6.8[v1.6.8]:
-** new APIs,
-** move toward modularization
-** new `experimental` namespace for beta features
+* bump org.springframework:spring-expression & org.springframework:spring-context from 6.1.10 to 6.1.11
 
-- {proj}/releases/tag/v1.6.7[v1.6.7]:
-** `ObjectResolver` to replace `ITypeResolver`,
-** `null` stamping behavior become a standard behavior managed by specific `ObjectResolver` implementations,
-** introduce the `preset` namespace to hold default configurations of the engine
-** engine can now run without a default resolver, in that case it will throw an exception when it needs to find a resolver.
+==== features
+
+* office-stamper can now resolve images inside footers and header (issue #53)
+** introduced the DocxPart type to wrap the docx4j WordprocessingMLPackage and specify a working subpart
+** *MAY BREAK.* updated references to WordprocessingMLPackage by DocxPart in API, a default implementation has been made to try to support existing implementations, but switching to the last version is recommended
+** *MAY BREAK.* the order of resolution has been modified, nothing should have broken, but please check if you had specific expectations in your custom implementations
+
+==== documentation
+
+* added linebreak replacement feature mentioned in readme
+
+==== tests
+
+* added a test for linebreak replacement feature inside tables
+* introduce the makeResource method that allows generating a Word document directly from textual representation
+* removed integration subfolder in test and moved content to the main test folder
+* fixed a conf error in log level settings for tests
+
+=== Previous releases notes link:RELEASE_NOTES.adoc[here]
 
 == Usage
 

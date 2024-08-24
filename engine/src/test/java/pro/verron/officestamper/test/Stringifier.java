@@ -141,15 +141,20 @@ public class Stringifier {
     }
 
     private String stringify(Br br) {
-        return "|BR(" + br.getType() + ")|";
+        var type = br.getType();
+        if (type == STBrType.PAGE) return "<break page>\n";
+        else if (type == STBrType.COLUMN) return "<break column>\n";
+        else if (type == STBrType.TEXT_WRAPPING) return "<break line>\n";
+        else if (type == null) return "<break line>\n";
+        else throw new OfficeStamperException("Unexpected type: " + type);
     }
 
     /**
      * <p>stringify.</p>
      *
-     * @param blip a {@link org.docx4j.dml.CTBlip} object
+     * @param blip a {@link CTBlip} object
      *
-     * @return a {@link java.lang.String} object
+     * @return a {@link String} object
      *
      * @since 1.6.6
      */
@@ -178,7 +183,7 @@ public class Stringifier {
      *
      * @param bytes a long
      *
-     * @return a {@link java.lang.String} object
+     * @return a {@link String} object
      *
      * @since 1.6.6
      */
@@ -203,9 +208,9 @@ public class Stringifier {
     /**
      * <p>stringify.</p>
      *
-     * @param o a {@link java.lang.Object} object
+     * @param o a {@link Object} object
      *
-     * @return a {@link java.lang.String} object
+     * @return a {@link String} object
      *
      * @since 1.6.6
      */
@@ -239,7 +244,8 @@ public class Stringifier {
         if (o instanceof CTBlip blip) return stringify(blip);
         if (o instanceof R.LastRenderedPageBreak) return ""; // do not render
         if (o instanceof Br br) return stringify(br);
-        if (o instanceof R.Tab) return "|TAB|";
+        if (o instanceof R.Tab) return "\t";
+        if (o instanceof R.Cr) return "<carriage return>\n";
         if (o instanceof R.CommentReference cr) return stringify(cr);
         if (o instanceof CTMarkupRange) return "";
         if (o instanceof ProofErr) return "";
@@ -383,9 +389,9 @@ public class Stringifier {
     /**
      * <p>stringify.</p>
      *
-     * @param spacing a {@link org.docx4j.wml.PPrBase.Spacing} object
+     * @param spacing a {@link PPrBase.Spacing} object
      *
-     * @return a {@link java.util.Optional} object
+     * @return a {@link Optional} object
      *
      * @since 1.6.6
      */
@@ -409,9 +415,9 @@ public class Stringifier {
     /**
      * <p>stringify.</p>
      *
-     * @param p a {@link org.docx4j.wml.P} object
+     * @param p a {@link P} object
      *
-     * @return a {@link java.lang.String} object
+     * @return a {@link String} object
      *
      * @since 1.6.6
      */
@@ -464,26 +470,27 @@ public class Stringifier {
     /**
      * <p>stringify.</p>
      *
-     * @param run a {@link org.docx4j.wml.R} object
+     * @param run a {@link R} object
      *
-     * @return a {@link java.lang.String} object
+     * @return a {@link String} object
      *
      * @since 1.6.6
      */
     private String stringify(R run) {
         String serialized = stringify(run.getContent());
         if (serialized.isEmpty()) return "";
-        return ofNullable(run.getRPr()).flatMap(this::stringify)
-                                       .map(rPr -> "❬%s❘%s❭".formatted(serialized, rPr))
-                                       .orElse(serialized);
+        return ofNullable(run.getRPr())
+                .flatMap(this::stringify)
+                .map(rPr -> "❬%s❘%s❭".formatted(serialized, rPr))
+                .orElse(serialized);
     }
 
     /**
      * <p>stringify.</p>
      *
-     * @param rPr a {@link org.docx4j.wml.RPrAbstract} object
+     * @param rPr a {@link RPrAbstract} object
      *
-     * @return a {@link java.lang.String} object
+     * @return a {@link String} object
      *
      * @since 1.6.6
      */

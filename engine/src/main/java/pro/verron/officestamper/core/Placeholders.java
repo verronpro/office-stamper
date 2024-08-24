@@ -23,7 +23,7 @@ public class Placeholders {
      * The pattern search for expressions starting with '#{' and ending with
      * '}'.
      */
-    private static final Pattern PROC_PATTERN = Pattern.compile("#\\{(.*?)}");
+    private static final Pattern PROC_PATTERN = Pattern.compile("#\\{(.*?)}", Pattern.DOTALL);
     /**
      * A Matcher matching processor expressions.
      * The matcher checks for expressions starting with '#{' and ending with
@@ -42,7 +42,7 @@ public class Placeholders {
      * The pattern search for expressions starting with '${' and ending with
      * '}'.
      */
-    private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\{(.*?)}");
+    private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\{(.*?)}", Pattern.DOTALL);
     /**
      * A Matcher matching processor expressions.
      * The matcher checks for expressions starting with '${' and ending with

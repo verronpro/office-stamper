@@ -14,29 +14,27 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 
 == Release Notes
 
-=== {proj}/releases/tag/v2.3.0[v2.3.0]
+=== {proj}/releases/tag/v2.4.0[v2.4.0]
 
-==== dependencies
+=== Features
 
-* bump org.springframework:spring-expression & org.springframework:spring-context from 6.1.10 to 6.1.11
+* Office-stamper can now resolve multiline placeholders (not multi paragraph, just with linebreaks).
+* Office-stamper proven can resolve custom function inside comments expressions (issue #56)
+* Office-stamper proven can resolve displayParagraphIf inside table with repeatTableRow (issue #52)
 
-==== features
+=== Dependencies
 
-* office-stamper can now resolve images inside footers and header (issue #53)
-** introduced the DocxPart type to wrap the docx4j WordprocessingMLPackage and specify a working subpart
-** *MAY BREAK.* updated references to WordprocessingMLPackage by DocxPart in API, a default implementation has been made to try to support existing implementations, but switching to the last version is recommended
-** *MAY BREAK.* the order of resolution has been modified, nothing should have broken, but please check if you had specific expectations in your custom implementations
+* Bumped `org.springframework:spring-expression` from version 6.1.11 to 6.1.12.
 
-==== documentation
+=== Documentation
 
-* added linebreak replacement feature mentioned in readme
+* The release notes have been separated into their own file for better organization and easier access.
+* Deprecated Paragraph#replaceAll and Paragraph#contains from api package as it was a remnant of a core fix.
 
-==== tests
+=== Tests
 
-* added a test for linebreak replacement feature inside tables
-* introduce the makeResource method that allows generating a Word document directly from textual representation
-* removed integration subfolder in test and moved content to the main test folder
-* fixed a conf error in log level settings for tests
+* Tests can now better differentiate types of breaks in word documents
+* Fixed a regression in tests about whitespaces manipulation
 
 === Previous releases notes link:RELEASE_NOTES.adoc[here]
 

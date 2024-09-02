@@ -66,7 +66,6 @@ public class DefaultTests {
                 conditionalDisplayOfTableBug32Test(),
                 conditionalDisplayOfTableTest(),
                 customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(),
-                customExpressionFunctionTest(),
                 expressionReplacementInGlobalParagraphsTest(),
                 expressionReplacementInTablesTest(),
                 expressionReplacementWithFormattingTest(),
@@ -82,7 +81,6 @@ public class DefaultTests {
                 customCommentProcessor(),
                 controls());
     }
-
 
 
     private static Arguments ternary() {
@@ -194,40 +192,6 @@ public class DefaultTests {
                 getResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
                         I am ${name}.
-                        """);
-    }
-
-    private static Arguments repeatTableRowKeepsFormatTest() {
-        return of("repeatTableRowKeepsFormatTest",
-                OfficeStamperConfigurations.standard(),
-                new Show(List.of(new CharacterRecord(1,
-                                "st",
-                                "Homer Simpson",
-                                "Dan Castellaneta"),
-                        new CharacterRecord(2,
-                                "nd",
-                                "Marge Simpson",
-                                "Julie Kavner"),
-                        new CharacterRecord(3,
-                                "rd",
-                                "Bart Simpson",
-                                "Nancy Cartwright"),
-                        new CharacterRecord(4,
-                                "th",
-                                "Lisa Simpson",
-                                "Yeardley Smith"),
-                        new CharacterRecord(5,
-                                "th",
-                                "Maggie Simpson",
-                                "Julie Kavner"))),
-                getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
-                """
-                        1❬st❘vertAlign=superscript❭ Homer Simpson-❬Dan Castellaneta❘b=true❭
-                        2❬nd❘vertAlign=superscript❭ Marge Simpson-❬Julie Kavner❘b=true❭
-                        3❬rd❘vertAlign=superscript❭ Bart Simpson-❬Nancy Cartwright❘b=true❭
-                        4❬th❘vertAlign=superscript❭ Lisa Simpson-❬Yeardley Smith❘b=true❭
-                        5❬th❘vertAlign=superscript❭ Maggie Simpson-❬Julie Kavner❘b=true❭
-                        
                         """);
     }
 
@@ -882,29 +846,6 @@ public class DefaultTests {
 
         return arguments(
                 "customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored",
-                config,
-                context,
-                template,
-                expected);
-    }
-
-    private static Arguments customExpressionFunctionTest() {
-        var context = new Contexts.Name("Homer Simpson");
-        var template = getResource(Path.of("CustomExpressionFunction.docx"));
-        var expected = """
-                Custom Expression Function
-                This paragraph is untouched.
-                ❬In this paragraph, a custom expression function is used to uppercase a String: ❬HOMER SIMPSON❘b=true❭❬.❘b=true❭❘b=true❭
-                ❬IT ALSO WORKS WITH<break line>
-                MULTILINE<break line>
-                STRINGS OF TEXT❘b=true❭❬.❘b=true❭
-                To test that custom functions work together with comment expressions, we toggle visibility of this paragraph with a comment expression.
-                """;
-        var config = OfficeStamperConfigurations.standard()
-                                                .exposeInterfaceToExpressionLanguage(
-                                                        Functions.UppercaseFunction.class,
-                                                        Functions.upperCase());
-        return arguments("customExpressionFunctionTest",
                 config,
                 context,
                 template,

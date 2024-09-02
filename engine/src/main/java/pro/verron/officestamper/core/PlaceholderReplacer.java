@@ -1,9 +1,9 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Br;
-import org.docx4j.wml.R;
+import org.docx4j.wml.STBrType;
+import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
@@ -127,7 +127,7 @@ public class PlaceholderReplacer
                 }
             }
         }
-        replaceLineBreaks(paragraph);
+        paragraph.replace(lineBreakPlaceholder, getBr());
     }
 
     @Override
@@ -135,25 +135,10 @@ public class PlaceholderReplacer
         throw new OfficeStamperException("Should not be called, since deprecated");
     }
 
-    private void replaceLineBreaks(Paragraph paragraph) {
-        var lineBreak = getBr();
-        var run = getR(lineBreak);
-        paragraph.replaceAll(lineBreakPlaceholder, run);
+    private static Child getBr() {
+        var br = new Br();
+        br.setType(STBrType.TEXT_WRAPPING);
+        br.setClear(null);
+        return br;
     }
-
-    private static Br getBr() {
-        var factory = Context.getWmlObjectFactory();
-        var lineBreak = factory.createBr();
-        lineBreak.setType(null);
-        return lineBreak;
-    }
-
-    private static R getR(Br lineBreak) {
-        var factory = Context.getWmlObjectFactory();
-        var run = factory.createR();
-        run.getContent()
-           .add(lineBreak);
-        return run;
-    }
-
 }

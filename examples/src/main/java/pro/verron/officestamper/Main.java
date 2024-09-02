@@ -21,7 +21,7 @@ public class Main {
     private static OutputStream createOutStream(String prefix)
             throws IOException {
         var outputPath = Files.createTempFile(prefix, ".docx");
-        logger.log(Level.INFO, "Stamping to file: " + outputPath);
+        logger.log(Level.INFO, "Stamping to file: ", outputPath);
         return Files.newOutputStream(outputPath);
     }
 

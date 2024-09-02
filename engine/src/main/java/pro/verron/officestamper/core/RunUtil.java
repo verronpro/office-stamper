@@ -49,15 +49,25 @@ public class RunUtil {
                   .collect(joining());
     }
 
-    private static CharSequence getText(Object content) {
-        if (content instanceof JAXBElement<?> jaxbElement)
-            return getText(jaxbElement.getValue());
-
-        if (content instanceof Text text)
-            return getText(text);
-
-        if (content instanceof R.Tab)
-            return "\t";
+    /**
+     * Returns the textual representation of a run child
+     *
+     * @param content the run child to represent textually
+     *
+     * @return {@link String} representation of run child
+     */
+    public static CharSequence getText(Object content) {
+        if (content instanceof JAXBElement<?> jaxbElement) return getText(jaxbElement.getValue());
+        if (content instanceof Text text) return getText(text);
+        if (content instanceof R.Tab) return "\t";
+        if (content instanceof R.Cr) return "\n";
+        if (content instanceof Br br && br.getType() == null) return "\n";
+        if (content instanceof Br br && br.getType() == STBrType.TEXT_WRAPPING) return "\n";
+        if (content instanceof Br br && br.getType() == STBrType.PAGE) return "\n";
+        if (content instanceof Br br && br.getType() == STBrType.COLUMN) return "\n";
+        if (content instanceof R.NoBreakHyphen) return "‑";
+        if (content instanceof R.SoftHyphen) return "\u00AD";
+        if (content instanceof R.Sym sym) return "<sym(" + sym.getFont() + ", " + sym.getChar() + ")>";
 
         log.debug("Unhandled object type: {}", content.getClass());
         return "";
@@ -70,6 +80,7 @@ public class RunUtil {
                 ? value // keeps spaces if spaces are to be preserved (LibreOffice seems to ignore the "space" property)
                 : value.trim(); // trimming value if spaces are not to be preserved (simulates behavior of Word;)
     }
+
     /**
      * Creates a new run with the specified text and inherits the style of the parent paragraph.
      *
@@ -166,6 +177,7 @@ public class RunUtil {
                 abstractImage,
                 id1,
                 id2);
+
 
         // Now add the inline in w:p/w:r/w:drawing
         ObjectFactory factory = new ObjectFactory();

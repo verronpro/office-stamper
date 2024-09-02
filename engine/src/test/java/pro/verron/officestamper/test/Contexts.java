@@ -1,9 +1,16 @@
 package pro.verron.officestamper.test;
 
+import org.junit.jupiter.params.provider.Arguments;
+import org.springframework.lang.NonNull;
 import pro.verron.officestamper.preset.Image;
+import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.StampTable;
 
+import java.nio.file.Path;
 import java.util.*;
+
+import static org.junit.jupiter.params.provider.Arguments.of;
+import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**
  * <p>Contexts class.</p>
@@ -22,6 +29,7 @@ public class Contexts {
      * <p>empty.</p>
      *
      * @return a {@link java.lang.Object} object
+     *
      * @since 1.6.6
      */
     public static Object empty() {
@@ -34,7 +42,9 @@ public class Contexts {
      * <p>name.</p>
      *
      * @param name a {@link java.lang.String} object
+     *
      * @return a {@link java.lang.Object} object
+     *
      * @since 1.6.6
      */
     public static Object name(String name) {
@@ -46,15 +56,17 @@ public class Contexts {
      * <p>names.</p>
      *
      * @param names a {@link java.lang.String} object
+     *
      * @return a {@link java.lang.Object} object
+     *
      * @since 1.6.6
      */
     public static Object names(String... names) {
         record Name(String name) {}
         record Names(List<Name> names) {}
         return new Names(Arrays.stream(names)
-                                 .map(Name::new)
-                                 .toList());
+                               .map(Name::new)
+                               .toList());
     }
 
     /**
@@ -62,7 +74,9 @@ public class Contexts {
      *
      * @param character a {@link java.lang.String} object
      * @param actor     a {@link java.lang.String} object
+     *
      * @return a {@link Contexts.Role} object
+     *
      * @since 1.6.6
      */
     public static Role role(String character, String actor) {
@@ -73,7 +87,9 @@ public class Contexts {
      * <p>roles.</p>
      *
      * @param roles a {@link Contexts.Role} object
+     *
      * @return a {@link Contexts.Characters} object
+     *
      * @since 1.6.6
      */
     public static Characters roles(Role... roles) {
@@ -84,6 +100,7 @@ public class Contexts {
      * <p>subDocPartContext.</p>
      *
      * @return a {@link java.util.HashMap} object
+     *
      * @since 1.6.6
      */
     public static HashMap<String, Object> subDocPartContext() {
@@ -106,6 +123,7 @@ public class Contexts {
      * <p>schoolContext.</p>
      *
      * @return a {@link Contexts.SchoolContext} object
+     *
      * @since 1.6.6
      */
     public static SchoolContext schoolContext() {
@@ -128,6 +146,7 @@ public class Contexts {
      * <p>tableContext.</p>
      *
      * @return a {@link java.util.HashMap} object
+     *
      * @since 1.6.6
      */
     public static HashMap<String, Object> tableContext() {
@@ -158,6 +177,7 @@ public class Contexts {
      * <p>coupleContext.</p>
      *
      * @return a {@link java.util.Map} object
+     *
      * @since 1.6.6
      */
     public static Map<String, Object> coupleContext() {
@@ -178,6 +198,7 @@ public class Contexts {
      * <p>nowContext.</p>
      *
      * @return a {@link Contexts.DateContext} object
+     *
      * @since 1.6.6
      */
     public static DateContext nowContext() {
@@ -189,6 +210,7 @@ public class Contexts {
      * <p>mapAndReflectiveContext.</p>
      *
      * @return a {@link java.util.HashMap} object
+     *
      * @since 1.6.6
      */
     public static HashMap<String, Object> mapAndReflectiveContext() {
@@ -206,6 +228,7 @@ public class Contexts {
      * <p>nullishContext.</p>
      *
      * @return a {@link Contexts.NullishContext} object
+     *
      * @since 1.6.6
      */
     public static NullishContext nullishContext() {
@@ -232,6 +255,30 @@ public class Contexts {
                 headers,
                 records
         ));
+    }
+
+    static Arguments repeatTableRowKeepsFormatTest() {
+        return of("repeatTableRowKeepsFormatTest",
+                OfficeStamperConfigurations.standard(),
+                show(),
+                getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
+                """
+                        1❬st❘vertAlign=superscript❭ Homer Simpson-❬Dan Castellaneta❘b=true❭
+                        2❬nd❘vertAlign=superscript❭ Marge Simpson-❬Julie Kavner❘b=true❭
+                        3❬rd❘vertAlign=superscript❭ Bart Simpson-❬Nancy Cartwright❘b=true❭
+                        4❬th❘vertAlign=superscript❭ Lisa Simpson-❬Yeardley Smith❘b=true❭
+                        5❬th❘vertAlign=superscript❭ Maggie Simpson-❬Julie Kavner❘b=true❭
+                        
+                        """);
+    }
+
+    public static @NonNull Show show() {
+        return new Show("The Simpsons", List.of(
+                new CharacterRecord(1, "st", "Homer Simpson", "Dan Castellaneta"),
+                new CharacterRecord(2, "nd", "Marge Simpson", "Julie Kavner"),
+                new CharacterRecord(3, "rd", "Bart Simpson", "Nancy Cartwright"),
+                new CharacterRecord(4, "th", "Lisa Simpson", "Yeardley Smith"),
+                new CharacterRecord(5, "th", "Maggie Simpson", "Julie Kavner")));
     }
 
     /**
@@ -551,7 +598,7 @@ public class Contexts {
      *
      * @param characters The list of CharacterRecords in the Show.
      */
-    public record Show(List<CharacterRecord> characters) {}
+    public record Show(String name, List<CharacterRecord> characters) {}
 
     /**
      * Represents a character record.

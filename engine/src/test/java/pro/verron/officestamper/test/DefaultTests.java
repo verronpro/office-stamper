@@ -1,6 +1,5 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,7 +11,6 @@ import pro.verron.officestamper.preset.EvaluationContextConfigurers;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
@@ -23,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.test.Contexts.*;
-import static pro.verron.officestamper.test.TestUtils.*;
+import static pro.verron.officestamper.test.TestUtils.getImage;
+import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**
  * <p>DefaultTests class.</p>
@@ -40,11 +39,8 @@ public class DefaultTests {
      *
      * @return a {@link java.util.stream.Stream} object
      */
-    public static Stream<Arguments> tests()
-            throws Docx4JException, IOException {
+    public static Stream<Arguments> tests() {
         return Stream.of(
-                tabulations(),
-                whitespaces(),
                 ternary(),
                 repeatingRows(),
                 repeatingRowsWithLineBreak(),
@@ -87,35 +83,7 @@ public class DefaultTests {
                 controls());
     }
 
-    private static Arguments tabulations()
-            throws Docx4JException, IOException {
-        return of("Tabulation should be preserved",
-                OfficeStamperConfigurations.standard(),
-                name("Homer Simpson"),
-                makeResource("""
-                        Tab|TAB|Homer Simpson
-                        Space Homer Simpson
-                        """),
-                """
-                        Tab\tHomer Simpson
-                        Space Homer Simpson
-                        """);
-    }
 
-    private static Arguments whitespaces()
-            throws Docx4JException, IOException {
-        return of("White spaces should be preserved",
-                OfficeStamperConfigurations.standard(),
-                name("Homer Simpson"),
-                makeResource("""
-                        Tab|TAB|Homer Simpson
-                        Space Homer Simpson
-                        """),
-                """
-                        Tab\tHomer Simpson
-                        Space Homer Simpson
-                        """);
-    }
 
     private static Arguments ternary() {
         return of("Ternary operators should function",

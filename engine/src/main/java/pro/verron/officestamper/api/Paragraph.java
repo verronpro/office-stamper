@@ -13,7 +13,11 @@ public interface Paragraph {
      *
      * @param placeholder The placeholder to be replaced.
      * @param replacement The replacement value for the placeholder.
+     *
+     * @deprecated was used by the core to deal with multiline paragraphs, users should fallback to
+     * {@link #replace(Placeholder, Object)} only
      */
+    @Deprecated(since = "2.4", forRemoval = true)
     default void replaceAll(Placeholder placeholder, R replacement) {
         while (contains(placeholder.expression())) {
             replace(placeholder, replacement);
@@ -26,7 +30,10 @@ public interface Paragraph {
      * @param expression The string to search for within the paragraph.
      *
      * @return true if the given expression is found within the paragraph, otherwise false.
+     *
+     * @deprecated was used by the core to deal with multiline paragraphs
      */
+    @Deprecated(since = "2.4", forRemoval = true)
     default boolean contains(String expression) {
         return asString().contains(expression);
     }

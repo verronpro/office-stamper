@@ -464,6 +464,11 @@ public class Contexts {
         }
 
         @Override
+        public int hashCode() {
+            return Objects.hash(fullish_value, fullish, nullish_value, nullish);
+        }
+
+        @Override
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
@@ -472,11 +477,6 @@ public class Contexts {
                    Objects.equals(this.fullish, that.fullish) &&
                    Objects.equals(this.nullish_value, that.nullish_value) &&
                    Objects.equals(this.nullish, that.nullish);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(fullish_value, fullish, nullish_value, nullish);
         }
 
         @Override
@@ -555,17 +555,17 @@ public class Contexts {
         }
 
         @Override
+        public int hashCode() {
+            return Objects.hash(value, li);
+        }
+
+        @Override
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
             var that = (SubContext) obj;
             return Objects.equals(this.value, that.value) &&
                    Objects.equals(this.li, that.li);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(value, li);
         }
 
         @Override

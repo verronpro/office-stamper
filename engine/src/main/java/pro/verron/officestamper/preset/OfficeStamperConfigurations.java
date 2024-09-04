@@ -4,6 +4,7 @@ import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 
+
 /**
  * The OfficeStamperConfigurations class provides static methods
  * to create different configurations for the OfficeStamper.
@@ -35,7 +36,9 @@ public class OfficeStamperConfigurations {
      * @return the standard OfficeStamperConfiguration
      */
     public static OfficeStamperConfiguration standard() {
-        return new DocxStamperConfiguration();
+        var configuration = new DocxStamperConfiguration();
+        configuration.exposeInterfaceToExpressionLanguage(IStamperDateFormatter.class, new StamperDateFormatter());
+        return configuration;
     }
 
     /**
@@ -50,4 +53,5 @@ public class OfficeStamperConfigurations {
         configuration.resetCommentProcessors();
         return configuration;
     }
+
 }

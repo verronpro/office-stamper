@@ -18,7 +18,8 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 
 === Features
 
-* Office-stamper can now resolve multiline placeholders (not multi paragraph, just with linebreaks).
+* Office-stamper can now format all  `java.time` objects directly from standard configuration (issue #411), see `engine/src/test/java/pro/verron/officestamper/test/DateFormatTests.java`
+* Office-stamper can now resolve multiline placeholders (not multi paragraph, just with linebreaks)(issue #422)
 * Office-stamper proven can resolve custom function inside comments expressions (issue #56)
 * Office-stamper proven can resolve displayParagraphIf inside table with repeatTableRow (issue #52)
 
@@ -111,6 +112,37 @@ As a standard, the following expressions can be used within comments:
 
 By default, an exception is thrown if a comment fails to process.
 However, successfully processed comments are wiped from the document.
+
+=== SpEL functions
+
+Office-stamper provides some function already added to the standard configuration, notably to format date & time objects.
+
+.Default activated comment processors
+[cols=">1,4"]
+|===
+| Function in .docx           | Effect on the January 1st, 2000 at the 23h34m45s 567 nano, and from zone UTC+2 in Korean Locale
+| `fdate(date)`               | ISO: 2000-01-12+02:00
+| `fdatetime(date)`           | ISO: 2000-01-12T23:34:45.000000567+02:00[UTC+02:00]
+| `ftime(date)`               | ISO: 23:34:45.000000567+02:00
+| `finstant(date)`            | ISO: 2000-01-12T21:34:45.000000567Z
+| `fbasicdate(date)`          | ISO: 20000112+0200
+| `fordinaldate(date)`        | ISO: 2000-012+02:00
+| `fweekdate(date)`           | ISO: 2000-W02-3+02:00
+| `f1123datetime(date)`       | Wed, 12 Jan 2000 23:34:45 +0200
+| `foffsetdate(date)`         | ISO: 2000-01-12+02:00
+| `foffsetdatetime(date)`     | ISO: 2000-01-12T23:34:45.000000567+02:00
+| `foffsettime(date)`         | ISO: 23:34:45.000000567+02:00
+| `fzoneddatetime(date)`      | ISO: 2000-01-12T23:34:45.000000567+02:00[UTC+02:00]
+| `flocaldate(date)`          | ISO: 2000-01-12
+| `flocaldate(date, style)`   | Style can be FULL, LONG, MEDIUM or SHORT: 2000년 1월 12일 수요일 to 00. 1. 12.
+| `flocaltime(date)`          | 23:34:45.000000567
+| `flocaltime(date, String)`  | Style can be FULL, LONG, MEDIUM or SHORT: 오후 11시 34분 45초 UTC+02:00 to 오후 11:34
+| `flocaldatetime(date)`      | 2000-01-12T23:34:45.000000567
+| `flocaldatetime(date, style)` | Style can be FULL, LONG, MEDIUM or SHORT for the same effect as flocaldate or flocaltime
+| `flocaldatetime(date, dateStyle, timeStyle)`  | Style can be FULL, LONG, MEDIUM or SHORT for the same effect as flocaldate or flocaltime
+| `fpattern(date, pattern)`            | run your own datetime pattern
+| `fpattern(date, pattern, locale)`            | run your own datetime pattern with a specified locale
+|===
 
 == Custom settings
 

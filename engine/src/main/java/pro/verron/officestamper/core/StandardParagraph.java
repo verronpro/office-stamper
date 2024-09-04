@@ -6,6 +6,7 @@ import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -103,11 +104,21 @@ public class StandardParagraph
      */
     @Override
     public void replace(Placeholder placeholder, Object replacement) {
-        if (!(replacement instanceof R replacementRun))
+        if (replacement instanceof R run) {
+            replaceWithRun(placeholder, run);
+        }
+        else if (replacement instanceof Br br) {
+            replaceWithBr(placeholder, br);
+        }
+        else {
             throw new AssertionError("replacement must be a R");
+        }
+    }
 
-        String text = asString();
+    private void replaceWithRun(Placeholder placeholder, R replacement) {
+        var text = asString();
         String full = placeholder.expression();
+
         int matchStartIndex = text.indexOf(full);
         if (matchStartIndex == -1) {
             // nothing to replace
@@ -126,7 +137,7 @@ public class StandardParagraph
             boolean expressionAtEndOfRun = matchEndIndex == run.endIndex();
             boolean expressionWithinRun = matchStartIndex > run.startIndex() && matchEndIndex <= run.endIndex();
 
-            replacementRun.setRPr(run.getPr());
+            replacement.setRPr(run.getPr());
 
             if (expressionSpansCompleteRun) {
                 contents.remove(run.run());
@@ -160,7 +171,7 @@ public class StandardParagraph
                              .getParent() == paragraph) {
             IndexedRun firstRun = affectedRuns.get(0);
             IndexedRun lastRun = affectedRuns.get(affectedRuns.size() - 1);
-            replacementRun.setRPr(firstRun.getPr());
+            replacement.setRPr(firstRun.getPr());
             // remove the expression from first and last run
             firstRun.replace(matchStartIndex, matchEndIndex, "");
             lastRun.replace(matchStartIndex, matchEndIndex, "");
@@ -177,13 +188,14 @@ public class StandardParagraph
             contents.add(firstRun.indexInParent() + 1, replacement);
 
             recalculateRuns();
-        } else {
+        }
+        else {
             IndexedRun firstRun = affectedRuns.get(0);
             IndexedRun lastRun = affectedRuns.get(affectedRuns.size() - 1);
 
             var siblings = ((ContentAccessor) firstRun.run()
                                                       .getParent()).getContent();
-            replacementRun.setRPr(firstRun.getPr());
+            replacement.setRPr(firstRun.getPr());
             // remove the expression from first and last run
             firstRun.replace(matchStartIndex, matchEndIndex, "");
             lastRun.replace(matchStartIndex, matchEndIndex, "");
@@ -200,6 +212,37 @@ public class StandardParagraph
             siblings.add(siblings.indexOf(firstRun) + 1, replacement);
 
             recalculateRuns();
+        }
+    }
+
+    private void replaceWithBr(Placeholder placeholder, Br br) {
+        for (IndexedRun indexedRun : runs) {
+            var run = indexedRun.run();
+            var content = run.getContent();
+            var iterator = content.listIterator();
+            while (iterator.hasNext()) {
+                Object element = iterator.next();
+                if (element instanceof JAXBElement<?> jaxbElement) {
+                    element = jaxbElement.getValue();
+                }
+                if (element instanceof Text text) {
+                    var value = text.getValue();
+                    if (value.contains(placeholder.expression())) {
+                        iterator.remove();
+                        var iterator1 = Arrays.stream(value.split(placeholder.expression()))
+
+                                              .iterator();
+                        while (iterator1.hasNext()) {
+                            var next = iterator1.next();
+                            var text1 = new Text();
+                            text1.setValue(next);
+                            iterator.add(text1);
+                            if (iterator1.hasNext())
+                                iterator.add(br);
+                        }
+                    }
+                }
+            }
         }
     }
 

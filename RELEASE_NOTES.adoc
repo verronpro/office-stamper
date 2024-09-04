@@ -3,9 +3,25 @@
 
 == {proj}/v2.4.0[v2.4.0]
 
-== Documentation
+=== Features
+
+* Office-stamper can now resolve multiline placeholders (not multi paragraph, just with linebreaks).
+* Office-stamper proven can resolve custom function inside comments expressions (issue #56)
+* Office-stamper proven can resolve displayParagraphIf inside table with repeatTableRow (issue #52)
+
+=== Dependencies
+
+* Bumped `org.springframework:spring-expression` from version 6.1.11 to 6.1.12.
+
+=== Documentation
 
 * The release notes have been separated into their own file for better organization and easier access.
+* Deprecated Paragraph#replaceAll and Paragraph#contains from api package as it was a remnant of a core fix.
+
+=== Tests
+
+* Tests can now better differentiate types of breaks in word documents
+* Fixed a regression in tests about whitespaces manipulation
 
 == {proj}/v2.3.0[v2.3.0]
 

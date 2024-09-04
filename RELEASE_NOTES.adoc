@@ -1,0 +1,172 @@
+= Release Notes
+:proj: https://github.com/verronpro/docx-stamper/releases/tag
+
+== {proj}/v2.4.0[v2.4.0]
+
+=== Features
+
+* Office-stamper can now format all  `java.time` objects directly from standard configuration (issue #411), see `engine/src/test/java/pro/verron/officestamper/test/DateFormatTests.java`
+* Office-stamper can now resolve multiline placeholders (not multi paragraph, just with linebreaks)(issue #422)
+* Office-stamper proven can resolve custom function inside comments expressions (issue #56)
+* Office-stamper proven can resolve displayParagraphIf inside table with repeatTableRow (issue #52)
+
+=== Dependencies
+
+* Bumped `org.springframework:spring-expression` from version 6.1.11 to 6.1.12.
+
+=== Documentation
+
+* The release notes have been separated into their own file for better organization and easier access.
+* Deprecated Paragraph#replaceAll and Paragraph#contains from api package as it was a remnant of a core fix.
+
+=== Tests
+
+* Tests can now better differentiate types of breaks in word documents
+* Fixed a regression in tests about whitespaces manipulation
+
+== {proj}/v2.3.0[v2.3.0]
+
+=== Features
+
+* Office-stamper can now resolve images inside footers and headers (issue #53).
+** Added the `DocxPart` type to wrap the `docx4j.WordprocessingMLPackage` and specify a working subpart.
+** **Breaking Change:** Updated references to `WordprocessingMLPackage` by `DocxPart` in API.
+A default implementation is provided to support existing implementations, but upgrading to the latest version is recommended.
+** **Breaking Change:** The order of resolution has been modified.
+Please check if you had specific expectations in your custom implementations, though nothing should have broken.
+
+=== Dependencies
+
+* Bumped `org.springframework:spring-expression` and `org.springframework:spring-context` from version 6.1.10 to 6.1.11.
+
+=== Documentation
+
+* Added linebreak replacement feature mentioned in README.
+
+=== Tests
+
+* Added a test for the linebreak replacement feature inside tables.
+* Introduced the `makeResource` method that allows generating a Word document directly from textual representation.
+* Removed the `integration` subfolder in tests and moved its content to the main test folder.
+* Fixed a configuration error in log level settings for tests.
+
+== {proj}/v2.2.0[v2.2.0]
+
+=== Features
+
+* Office-stamper can now support forms control replacement from the proposal #286.
+
+=== Bugfixes
+
+* Fixed issues when computing DOCX run length, avoiding potential bugs.
+
+=== Dependencies
+
+* Bumped `org.springframework` from version 6.1.8 to 6.1.10.
+
+=== Continuous Integration
+
+* Added a new Maven extension for caching the build by @caring-coder in https://github.com/verronpro/docx-stamper/pull/389.
+
+=== Tests
+
+* Stringification in tests now supports headers and footers.
+* Simplified templates.
+
+=== Refactorings
+
+* `StampTable` are now `Value` objects.
+
+== {proj}/v2.1.0[v2.1.0]
+
+=== Features
+
+* The raw stamper does not carry any comment processors by default.
+
+=== Dependencies
+
+* Bumped `org.springframework:spring-expression` to version 6.1.8.
+
+=== Documentation
+
+* Updated README howto to document recent API changes.
+* Updated documentation to be more GitHub-friendly.
+
+=== Refactorings
+
+* Updated the mechanism to walk through a Word document.
+* Prepared to separate resolvers into two: the future 'engine resolver' (encapsulates template features) and 'context resolver' (encapsulates stamped data).
+* Updated exception management and messages.
+
+== {proj}/v2.0.0[v2.0.1]
+
+=== Bugfixes
+
+* Fixed dependency issue of v2.0.
+
+== {proj}/v2.0.0[v2.0.0]
+
+=== Refactorings
+
+* Removed legacy APIs.
+* Renamed `pro.verron:docx-stamper` to `pro.verron.office-stamper:engine`.
+* Implemented modularization.
+
+== {proj}/v1.6.9[v1.6.9]
+
+=== Bugfixes
+
+* Regression fix.
+
+== {proj}/v1.6.8[v1.6.8]
+
+=== Features
+
+* Introduced new APIs.
+
+=== Refactorings
+
+* Introduced new `experimental` namespace for beta features.
+* Moved toward modularization.
+
+== {proj}/v1.6.7[v1.6.7]
+
+=== Features
+
+* Introduced the `preset` namespace to hold default configurations of the engine.
+* The engine can now run without a default resolver; it will throw an exception when it needs to find a resolver in that case.
+
+=== Refactorings
+
+* `ObjectResolver` to replace `ITypeResolver`.
+* `null` stamping behavior is now managed by specific `ObjectResolver` implementations.
+
+== {proj}/vX.X.X[vX.X.X]
+
+=== Features
+
+* lorem ipsum
+
+=== Bugfixes
+
+* lorem ipsum
+
+=== Dependencies
+
+* lorem ipsum
+
+=== Documentation
+
+* lorem ipsum
+
+=== Continuous Integration
+
+* lorem ipsum
+
+=== Tests
+
+* lorem ipsum
+
+=== Refactorings
+
+* lorem ipsum

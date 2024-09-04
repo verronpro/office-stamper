@@ -301,6 +301,9 @@ public class Contexts {
     public record DateContext(Date date) {
     }
 
+    public record ZonedDateContext(java.time.ZonedDateTime date) {
+    }
+
     /**
      * A static inner class representing a Spacy context.
      */

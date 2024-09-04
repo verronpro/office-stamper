@@ -5,7 +5,8 @@
 
 === Features
 
-* Office-stamper can now resolve multiline placeholders (not multi paragraph, just with linebreaks).
+* Office-stamper can now format all  `java.time` objects directly from standard configuration (issue #411), see `engine/src/test/java/pro/verron/officestamper/test/DateFormatTests.java`
+* Office-stamper can now resolve multiline placeholders (not multi paragraph, just with linebreaks)(issue #422)
 * Office-stamper proven can resolve custom function inside comments expressions (issue #56)
 * Office-stamper proven can resolve displayParagraphIf inside table with repeatTableRow (issue #52)
 

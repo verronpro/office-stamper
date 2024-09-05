@@ -29,4 +29,4 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_NAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASS }}
-          GPG_SECRET_PASS: ${{ secrets.env.GPG_SECRET_PASS }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.env.GPG_SECRET_PASS }}

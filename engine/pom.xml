@@ -40,7 +40,6 @@
                         <version>3.2.4</version>
                         <configuration>
                              <bestPractices>true</bestPractices>
-                             <passphraseEnvName>GPG_SECRET_PASS</passphraseEnvName>
                          </configuration>
                         <executions>
                             <execution>

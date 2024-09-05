@@ -25,7 +25,7 @@ jobs:
           cat <(echo -e "${{ secrets.GPG_SECRET_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
 
-      - run: mvn -B -ntp deploy -P gpg,!mut -Dgpg.passphrase=${{ secrets.GPG_SECRET_PASS }} -f engine/pom.xml
+      - run: mvn -B -ntp deploy -P gpg,!mut -f engine/pom.xml
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_NAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASS }}

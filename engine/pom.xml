@@ -38,6 +38,10 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>3.2.4</version>
+                        <configuration>
+                             <bestPractices>true</bestPractices>
+                             <passphraseEnvName>GPG_SECRET_PASS</passphraseEnvName>
+                         </configuration>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -47,12 +51,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <gpgArguments>
-                                <arg>--pinentry-mode</arg>
-                                <arg>loopback</arg>
-                            </gpgArguments>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

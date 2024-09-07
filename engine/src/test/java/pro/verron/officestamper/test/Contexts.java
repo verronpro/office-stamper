@@ -21,8 +21,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  */
 public class Contexts {
     private Contexts() {
-        throw new RuntimeException(
-                "Static utility class should not be instantiated");
+        throw new RuntimeException("Static utility class should not be instantiated");
     }
 
     /**
@@ -33,8 +32,7 @@ public class Contexts {
      * @since 1.6.6
      */
     public static Object empty() {
-        record EmptyContext() {
-        }
+        record EmptyContext() {}
         return new EmptyContext();
     }
 
@@ -232,29 +230,16 @@ public class Contexts {
      * @since 1.6.6
      */
     public static NullishContext nullishContext() {
-        return new NullishContext(
-                "Fullish1",
-                new SubContext(
-                        "Fullish2",
-                        List.of(
-                                "Fullish3",
-                                "Fullish4",
-                                "Fullish5"
-                        )
-                ),
+        return new NullishContext("Fullish1",
+                new SubContext("Fullish2", List.of("Fullish3", "Fullish4", "Fullish5")),
                 null,
-                null
-        );
+                null);
     }
 
     public static TableContext characterTable(
-            List<String> headers,
-            List<List<String>> records
+            List<String> headers, List<List<String>> records
     ) {
-        return new TableContext(new StampTable(
-                headers,
-                records
-        ));
+        return new TableContext(new StampTable(headers, records));
     }
 
     static Arguments repeatTableRowKeepsFormatTest() {
@@ -263,46 +248,50 @@ public class Contexts {
                 show(),
                 getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
                 """
-                        1❬st❘vertAlign=superscript❭ Homer Simpson-❬Dan Castellaneta❘b=true❭
-                        2❬nd❘vertAlign=superscript❭ Marge Simpson-❬Julie Kavner❘b=true❭
-                        3❬rd❘vertAlign=superscript❭ Bart Simpson-❬Nancy Cartwright❘b=true❭
-                        4❬th❘vertAlign=superscript❭ Lisa Simpson-❬Yeardley Smith❘b=true❭
-                        5❬th❘vertAlign=superscript❭ Maggie Simpson-❬Julie Kavner❘b=true❭
+                        |===
+                        |1❬st❘vertAlign=superscript❭ Homer Simpson-❬Dan Castellaneta❘b=true❭
+                        
+                        |2❬nd❘vertAlign=superscript❭ Marge Simpson-❬Julie Kavner❘b=true❭
+                        
+                        |3❬rd❘vertAlign=superscript❭ Bart Simpson-❬Nancy Cartwright❘b=true❭
+                        
+                        |4❬th❘vertAlign=superscript❭ Lisa Simpson-❬Yeardley Smith❘b=true❭
+                        
+                        |5❬th❘vertAlign=superscript❭ Maggie Simpson-❬Julie Kavner❘b=true❭
+                        
+                        
+                        |===
                         
                         """);
     }
 
     public static @NonNull Show show() {
-        return new Show("The Simpsons", List.of(
-                new CharacterRecord(1, "st", "Homer Simpson", "Dan Castellaneta"),
-                new CharacterRecord(2, "nd", "Marge Simpson", "Julie Kavner"),
-                new CharacterRecord(3, "rd", "Bart Simpson", "Nancy Cartwright"),
-                new CharacterRecord(4, "th", "Lisa Simpson", "Yeardley Smith"),
-                new CharacterRecord(5, "th", "Maggie Simpson", "Julie Kavner")));
+        return new Show("The Simpsons",
+                List.of(new CharacterRecord(1, "st", "Homer Simpson", "Dan Castellaneta"),
+                        new CharacterRecord(2, "nd", "Marge Simpson", "Julie Kavner"),
+                        new CharacterRecord(3, "rd", "Bart Simpson", "Nancy Cartwright"),
+                        new CharacterRecord(4, "th", "Lisa Simpson", "Yeardley Smith"),
+                        new CharacterRecord(5, "th", "Maggie Simpson", "Julie Kavner")));
     }
 
     /**
      * The Role class represents a role played by an actor.
      */
-    public record Role(String name, String actor) {
-    }
+    public record Role(String name, String actor) {}
 
     /**
      * The Characters class represents a list of characters played by actors.
      */
-    public record Characters(List<Role> characters) {
-    }
+    public record Characters(List<Role> characters) {}
 
     /**
      * Represents a Date context.
      *
      * @param date The Date value to be encapsulated in the context.
      */
-    public record DateContext(Date date) {
-    }
+    public record DateContext(Date date) {}
 
-    public record ZonedDateContext(java.time.ZonedDateTime date) {
-    }
+    public record ZonedDateContext(java.time.ZonedDateTime date) {}
 
     /**
      * A static inner class representing a Spacy context.
@@ -353,11 +342,9 @@ public class Contexts {
     /**
      * Represents the context for an image that will be inserted into a document.
      */
-    public record ImageContext(Image monalisa) {
-    }
+    public record ImageContext(Image monalisa) {}
 
-    record Container(String value) {
-    }
+    record Container(String value) {}
 
     /**
      * This class represents a NullishContext object.
@@ -383,10 +370,7 @@ public class Contexts {
          * @param nullish       An instance of the SubContext related to the nullish context.
          */
         public NullishContext(
-                String fullish_value,
-                SubContext fullish,
-                String nullish_value,
-                SubContext nullish
+                String fullish_value, SubContext fullish, String nullish_value, SubContext nullish
         ) {
             this.fullish_value = fullish_value;
             this.fullish = fullish;
@@ -466,29 +450,22 @@ public class Contexts {
             this.nullish = nullish;
         }
 
-        @Override
-        public int hashCode() {
+        @Override public int hashCode() {
             return Objects.hash(fullish_value, fullish, nullish_value, nullish);
         }
 
-        @Override
-        public boolean equals(Object obj) {
+        @Override public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
             var that = (NullishContext) obj;
-            return Objects.equals(this.fullish_value, that.fullish_value) &&
-                   Objects.equals(this.fullish, that.fullish) &&
-                   Objects.equals(this.nullish_value, that.nullish_value) &&
-                   Objects.equals(this.nullish, that.nullish);
+            return Objects.equals(this.fullish_value, that.fullish_value) && Objects.equals(this.fullish, that.fullish)
+                   && Objects.equals(this.nullish_value, that.nullish_value) && Objects.equals(this.nullish,
+                    that.nullish);
         }
 
-        @Override
-        public String toString() {
-            return "NullishContext[" +
-                   "fullish_value=" + fullish_value + ", " +
-                   "fullish=" + fullish + ", " +
-                   "nullish_value=" + nullish_value + ", " +
-                   "nullish=" + nullish + ']';
+        @Override public String toString() {
+            return "NullishContext[" + "fullish_value=" + fullish_value + ", " + "fullish=" + fullish + ", "
+                   + "nullish_value=" + nullish_value + ", " + "nullish=" + nullish + ']';
         }
 
     }
@@ -514,8 +491,7 @@ public class Contexts {
          * @param li    The list of strings for the SubContext.
          */
         public SubContext(
-                String value,
-                List<String> li
+                String value, List<String> li
         ) {
             this.value = value;
             this.li = li;
@@ -557,25 +533,19 @@ public class Contexts {
             this.li = li;
         }
 
-        @Override
-        public int hashCode() {
+        @Override public int hashCode() {
             return Objects.hash(value, li);
         }
 
-        @Override
-        public boolean equals(Object obj) {
+        @Override public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
             var that = (SubContext) obj;
-            return Objects.equals(this.value, that.value) &&
-                   Objects.equals(this.li, that.li);
+            return Objects.equals(this.value, that.value) && Objects.equals(this.li, that.li);
         }
 
-        @Override
-        public String toString() {
-            return "SubContext[" +
-                   "value=" + value + ", " +
-                   "li=" + li + ']';
+        @Override public String toString() {
+            return "SubContext[" + "value=" + value + ", " + "li=" + li + ']';
         }
 
     }
@@ -630,8 +600,7 @@ public class Contexts {
     /**
      * Represents a value in a table.
      */
-    record TableValue(String value) {
-    }
+    record TableValue(String value) {}
 
     /**
      * Represents a name.
@@ -641,8 +610,7 @@ public class Contexts {
     /**
      * Represents an empty context.
      */
-    public static class EmptyContext {
-    }
+    public static class EmptyContext {}
 
     public record TableContext(StampTable characters) {}
 }

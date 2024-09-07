@@ -34,17 +34,26 @@ class CustomFunctionTests {
                 To test that custom functions work together with comment expressions, we toggle it inside a repeated paragraph: BART SIMPSON.
                 To test that custom functions work together with comment expressions, we toggle it inside a repeated paragraph: LISA SIMPSON.
                 To test that custom functions work together with comment expressions, we toggle it inside a repeated paragraph: MAGGIE SIMPSON.
-                To test that custom functions work together with comment expressions, we toggle it inside a repeated row:
-                HOMER SIMPSON
-                DAN CASTELLANETA
-                MARGE SIMPSON
-                JULIE KAVNER
-                BART SIMPSON
-                NANCY CARTWRIGHT
-                LISA SIMPSON
-                YEARDLEY SMITH
-                MAGGIE SIMPSON
-                JULIE KAVNER
+                |===
+                |To test that custom functions work together with comment expressions, we toggle it inside a repeated row:
+                
+                |HOMER SIMPSON
+                |DAN CASTELLANETA
+                
+                |MARGE SIMPSON
+                |JULIE KAVNER
+                
+                |BART SIMPSON
+                |NANCY CARTWRIGHT
+                
+                |LISA SIMPSON
+                |YEARDLEY SMITH
+                
+                |MAGGIE SIMPSON
+                |JULIE KAVNER
+                
+                
+                |===
                 
                 """;
         var actual = stamper.stampAndLoadAndExtract(template, context);

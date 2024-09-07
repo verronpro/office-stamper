@@ -31,8 +31,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @version ${version}
  * @since 1.6.6
  */
-@DisplayName("Core Features")
-public class DefaultTests {
+@DisplayName("Core Features") public class DefaultTests {
 
     /**
      * <p>tests.</p>
@@ -40,8 +39,7 @@ public class DefaultTests {
      * @return a {@link java.util.stream.Stream} object
      */
     public static Stream<Arguments> tests() {
-        return Stream.of(
-                ternary(),
+        return Stream.of(ternary(),
                 repeatingRows(),
                 repeatingRowsWithLineBreak(),
                 replaceWordWithIntegrationTest(),
@@ -110,20 +108,30 @@ public class DefaultTests {
                 """
                         ❬Repeating Table Rows❘spacing={after=120,before=240}❭
                         ❬❬List of Simpsons characters❘b=true❭❘b=true,spacing={after=120,before=240}❭
-                        ❬❬Character name❘b=true❭❘b=true❭
-                        ❬❬Voice ❘b=true❭❬Actor❘b=true❭❘b=true❭
-                        Homer Simpson
-                        Dan Castellaneta
-                        Marge Simpson
-                        Julie Kavner
-                        Bart Simpson
-                        Nancy Cartwright
-                        Kent Brockman
-                        Harry Shearer
-                        Disco Stu
-                        Hank Azaria
-                        Krusty the Clown
-                        Dan Castellaneta
+                        |===
+                        |❬❬Character name❘b=true❭❘b=true❭
+                        |❬❬Voice ❘b=true❭❬Actor❘b=true❭❘b=true❭
+                        
+                        |Homer Simpson
+                        |Dan Castellaneta
+                        
+                        |Marge Simpson
+                        |Julie Kavner
+                        
+                        |Bart Simpson
+                        |Nancy Cartwright
+                        
+                        |Kent Brockman
+                        |Harry Shearer
+                        
+                        |Disco Stu
+                        |Hank Azaria
+                        
+                        |Krusty the Clown
+                        |Dan Castellaneta
+                        
+                        
+                        |===
                         
                         ❬There are ❬6❘lang=de-DE❭ characters in the above table.❘lang=de-DE,spacing={after=140,before=0}❭
                         """);
@@ -143,29 +151,39 @@ public class DefaultTests {
                 """
                         ❬Repeating Table Rows❘spacing={after=120,before=240}❭
                         ❬❬List of Simpsons characters❘b=true❭❘b=true,spacing={after=120,before=240}❭
-                        ❬❬Character name❘b=true❭❘b=true❭
-                        ❬❬Voice ❘b=true❭❬Actor❘b=true❭❘b=true❭
-                        Homer Simpson
-                        Dan Castellaneta
-                        Marge Simpson
-                        Julie<break line>
+                        |===
+                        |❬❬Character name❘b=true❭❘b=true❭
+                        |❬❬Voice ❘b=true❭❬Actor❘b=true❭❘b=true❭
+                        
+                        |Homer Simpson
+                        |Dan Castellaneta
+                        
+                        |Marge Simpson
+                        |Julie<break line>
                         Kavner
-                        Bart Simpson
-                        Nancy<break line>
+                        
+                        |Bart Simpson
+                        |Nancy<break line>
                         <break line>
                         Cartwright
-                        Kent Brockman
-                        Harry<break line>
+                        
+                        |Kent Brockman
+                        |Harry<break line>
                         <break line>
                         <break line>
                         Shearer
-                        Disco Stu
-                        Hank<break line>
+                        
+                        |Disco Stu
+                        |Hank<break line>
                         <break line>
                         Azaria
-                        Krusty the Clown
-                        Dan<break line>
+                        
+                        |Krusty the Clown
+                        |Dan<break line>
                         Castellaneta
+                        
+                        
+                        |===
                         
                         ❬There are ❬6❘lang=de-DE❭ characters in the above table.❘lang=de-DE,spacing={after=140,before=0}❭
                         """);
@@ -179,7 +197,11 @@ public class DefaultTests {
                 """
                         ReplaceWordWith Integration
                         ❬This variable ❬name❘b=true❭❬ ❘b=true❭should be resolved to the value Simpsons.❘b=true❭
-                        This variable ❬name❘b=true❭ should be resolved to the value Simpsons.
+                        |===
+                        |This variable ❬name❘b=true❭ should be resolved to the value Simpsons.
+                        
+                        
+                        |===
                         
                         """);
     }
@@ -196,8 +218,7 @@ public class DefaultTests {
     }
 
     private static Arguments repeatParagraphTest() {
-        var context = new Contexts.Characters(List.of(
-                new Contexts.Role("Homer Simpson", "Dan Castellaneta"),
+        var context = new Contexts.Characters(List.of(new Contexts.Role("Homer Simpson", "Dan Castellaneta"),
                 new Contexts.Role("Marge Simpson", "Julie Kavner"),
                 new Contexts.Role("Bart Simpson", "Nancy Cartwright"),
                 new Contexts.Role("Kent Brockman", "Harry Shearer"),
@@ -229,19 +250,15 @@ public class DefaultTests {
                 There are 6 characters.
                 """;
 
-        return arguments("repeatParagraphTest",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("repeatParagraphTest", OfficeStamperConfigurations.standard(), context, template, expected);
     }
 
     private static Arguments repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument() {
-        var context = Map.of("units", Stream.of(getImage(Path.of("butterfly.png")),
-                                                    getImage(Path.of("map.jpg")))
-                                            .map(image -> Map.of("coverImage", image))
-                                            .map(map -> Map.of("productionFacility", map))
-                                            .toList());
+        var context = Map.of("units",
+                Stream.of(getImage(Path.of("butterfly.png")), getImage(Path.of("map.jpg")))
+                      .map(image -> Map.of("coverImage", image))
+                      .map(map -> Map.of("productionFacility", map))
+                      .toList());
         var template = getResource(Path.of("RepeatDocPartWithImageTest.docx"));
         var expected = """
                 
@@ -256,10 +273,8 @@ public class DefaultTests {
                 """;
 
         var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(
-                                                        ctx -> ctx.addPropertyAccessor(new MapAccessor()));
-        return of(
-                "repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument",
+                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        return of("repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument",
                 config,
                 context,
                 template,
@@ -267,13 +282,11 @@ public class DefaultTests {
     }
 
     private static Arguments repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate() {
-        return of(
-                "repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
+        return of("repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
                 OfficeStamperConfigurations.standard()
                                            .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Contexts.subDocPartContext(),
-                getResource(Path.of("RepeatDocPartWithImagesInSourceTest" +
-                                    ".docx")),
+                getResource(Path.of("RepeatDocPartWithImagesInSourceTest" + ".docx")),
                 """
                         This is not repeated
                         This should be repeated : first doc part
@@ -289,8 +302,7 @@ public class DefaultTests {
     private static Arguments repeatDocPartTest() {
         return of("repeatDocPartTest",
                 OfficeStamperConfigurations.standard(),
-                new Characters(List.of(
-                        new Role("Homer Simpson", "Dan Castellaneta"),
+                new Characters(List.of(new Role("Homer Simpson", "Dan Castellaneta"),
                         new Role("Marge Simpson", "Julie Kavner"),
                         new Role("Bart Simpson", "Nancy Cartwright"),
                         new Role("Kent Brockman", "Harry Shearer"),
@@ -301,33 +313,57 @@ public class DefaultTests {
                         Repeating Doc Part
                         ❬❬List ❘b=true❭❬of❘b=true❭❬ Simpsons ❘b=true❭❬characters❘b=true❭❘b=true,spacing={after=120,before=240}❭
                         ❬Paragraph for test: Homer Simpson - Dan Castellaneta❘spacing={after=120,before=240}❭
-                        ❬Homer Simpson❘jc=center❭
-                        ❬Dan Castellaneta❘jc=center❭
+                        |===
+                        |❬Homer Simpson❘jc=center❭
+                        |❬Dan Castellaneta❘jc=center❭
+                        
+                        
+                        |===
                         ❬ <break page>
                         ❘suppressAutoHyphens=xxx,widowControl=xxx❭
                         ❬Paragraph for test: Marge Simpson - Julie Kavner❘spacing={after=120,before=240}❭
-                        ❬Marge Simpson❘jc=center❭
-                        ❬Julie Kavner❘jc=center❭
+                        |===
+                        |❬Marge Simpson❘jc=center❭
+                        |❬Julie Kavner❘jc=center❭
+                        
+                        
+                        |===
                         ❬ <break page>
                         ❘suppressAutoHyphens=xxx,widowControl=xxx❭
                         ❬Paragraph for test: Bart Simpson - Nancy Cartwright❘spacing={after=120,before=240}❭
-                        ❬Bart Simpson❘jc=center❭
-                        ❬Nancy Cartwright❘jc=center❭
+                        |===
+                        |❬Bart Simpson❘jc=center❭
+                        |❬Nancy Cartwright❘jc=center❭
+                        
+                        
+                        |===
                         ❬ <break page>
                         ❘suppressAutoHyphens=xxx,widowControl=xxx❭
                         ❬Paragraph for test: Kent Brockman - Harry Shearer❘spacing={after=120,before=240}❭
-                        ❬Kent Brockman❘jc=center❭
-                        ❬Harry Shearer❘jc=center❭
+                        |===
+                        |❬Kent Brockman❘jc=center❭
+                        |❬Harry Shearer❘jc=center❭
+                        
+                        
+                        |===
                         ❬ <break page>
                         ❘suppressAutoHyphens=xxx,widowControl=xxx❭
                         ❬Paragraph for test: Disco Stu - Hank Azaria❘spacing={after=120,before=240}❭
-                        ❬Disco Stu❘jc=center❭
-                        ❬Hank Azaria❘jc=center❭
+                        |===
+                        |❬Disco Stu❘jc=center❭
+                        |❬Hank Azaria❘jc=center❭
+                        
+                        
+                        |===
                         ❬ <break page>
                         ❘suppressAutoHyphens=xxx,widowControl=xxx❭
                         ❬Paragraph for test: Krusty the Clown - Dan Castellaneta❘spacing={after=120,before=240}❭
-                        ❬Krusty the Clown❘jc=center❭
-                        ❬Dan Castellaneta❘jc=center❭
+                        |===
+                        |❬Krusty the Clown❘jc=center❭
+                        |❬Dan Castellaneta❘jc=center❭
+                        
+                        
+                        |===
                         ❬ <break page>
                         ❘suppressAutoHyphens=xxx,widowControl=xxx❭
                         There are 6 characters.
@@ -345,164 +381,348 @@ public class DefaultTests {
                         ❬❬South Park Primary School❘lang=null❭❘lang=null,suppressAutoHyphens=xxx,widowControl=xxx❭
                         ❬❬Grade No.❘b=true,lang=null❭❬0❘b=true,lang=null❭❬ ❘b=true,lang=null❭❬t❘lang=null❭here are 3 classes❘b=true,lang=null,suppressAutoHyphens=xxx,widowControl=xxx❭
                         ❬Class No.0 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |===
+                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
                         ❬Class No.1 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |===
+                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
                         ❬Class No.2 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |===
+                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
                         ❬❬Grade No.❘b=true,lang=null❭❬1❘b=true,lang=null❭❬ ❘b=true,lang=null❭❬t❘lang=null❭here are 3 classes❘b=true,lang=null,suppressAutoHyphens=xxx,widowControl=xxx❭
                         ❬Class No.0 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |===
+                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
                         ❬Class No.1 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |===
+                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
                         ❬Class No.2 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |===
+                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
                         ❬❬Grade No.❘b=true,lang=null❭❬2❘b=true,lang=null❭❬ ❘b=true,lang=null❭❬t❘lang=null❭here are 3 classes❘b=true,lang=null,suppressAutoHyphens=xxx,widowControl=xxx❭
                         ❬Class No.0 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |===
+                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
                         ❬Class No.1 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |===
+                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
                         ❬Class No.2 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        ❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |===
+                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
+                        |===
+                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        
+                        
+                        |===
                         There are 3 grades.
                         """);
     }
 
     private static Arguments repeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate() {
         var context = Contexts.tableContext();
-        var template = getResource(
-                Path.of("RepeatDocPartAndCommentProcessorsIsolationTest.docx"));
+        var template = getResource(Path.of("RepeatDocPartAndCommentProcessorsIsolationTest.docx"));
         var expected = """
                 This will stay untouched.
                 
-                firstTable value1
-                firstTable value2
+                |===
+                |firstTable value1
+                
+                |firstTable value2
+                
+                
+                |===
                 
                 This will also stay untouched.
                 
@@ -516,17 +736,23 @@ public class DefaultTests {
                 
                 repeatDocPart value3
                 
-                secondTable value1
-                secondTable value2
-                secondTable value3
-                secondTable value4
+                |===
+                |secondTable value1
+                
+                |secondTable value2
+                
+                |secondTable value3
+                
+                |secondTable value4
+                
+                
+                |===
                 
                 This will stay untouched too.
                 """;
 
         var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(
-                                                        ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
 
         return arguments(
                 "RepeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate",
@@ -540,12 +766,9 @@ public class DefaultTests {
         return arguments(
                 "changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment",
                 OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(
-                                                   ctx -> ctx.addPropertyAccessor(new MapAccessor())),
-                Map.of("repeatValues",
-                        List.of(new Name("Homer"), new Name("Marge"))),
-                getResource(Path.of(
-                        "ChangingPageLayoutOutsideRepeatParagraphTest.docx")),
+                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
+                getResource(Path.of("ChangingPageLayoutOutsideRepeatParagraphTest.docx")),
                 """
                         First page is landscape.
                         
@@ -565,8 +788,7 @@ public class DefaultTests {
 
     private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithSectionBreakInsideComment() {
         var context = Contexts.coupleContext();
-        var template = getResource(
-                Path.of("ChangingPageLayoutInRepeatParagraphTest.docx"));
+        var template = getResource(Path.of("ChangingPageLayoutInRepeatParagraphTest.docx"));
         var expected = """
                 First page is landscape.
                 
@@ -584,8 +806,7 @@ public class DefaultTests {
                 """;
 
         var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(
-                                                        ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
         return arguments(
                 "changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithSectionBreakInsideComment",
                 config,
@@ -598,12 +819,9 @@ public class DefaultTests {
         return arguments(
                 "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment",
                 OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(
-                                                   ctx -> ctx.addPropertyAccessor(new MapAccessor())),
-                Map.of("repeatValues",
-                        List.of(new Name("Homer"), new Name("Marge"))),
-                getResource(Path.of("ChangingPageLayoutInRepeatDocPartTest" +
-                                    ".docx")),
+                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
+                getResource(Path.of("ChangingPageLayoutInRepeatDocPartTest.docx")),
                 """
                         First page is portrait.
                         
@@ -636,13 +854,9 @@ public class DefaultTests {
         return arguments(
                 "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement",
                 OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(
-                                                   ctx -> ctx.addPropertyAccessor(new MapAccessor())),
-                Map.of("repeatValues",
-                        List.of(new Name("Homer"), new Name("Marge"))),
-                getResource(
-                        Path.of(
-                                "ChangingPageLayoutInRepeatDocPartWithTableLastElementTest.docx")),
+                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
+                getResource(Path.of("ChangingPageLayoutInRepeatDocPartWithTableLastElementTest.docx")),
                 """
                         First page is portrait.
                         
@@ -651,13 +865,21 @@ public class DefaultTests {
                         
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
                         With a break setting the layout to portrait in between.
+                        |===
+                        |
                         
+                        
+                        |===
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
                         Second page is landscape, layout change should survive to repeatDocPart (Marge).
                         
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
                         With a break setting the layout to portrait in between.
+                        |===
+                        |
                         
+                        
+                        |===
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
                         ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
                         Fourth page is set to landscape again.
@@ -668,12 +890,9 @@ public class DefaultTests {
         return arguments(
                 "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment",
                 OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(
-                                                   ctx -> ctx.addPropertyAccessor(new MapAccessor())),
-                Map.of("repeatValues",
-                        List.of(new Name("Homer"), new Name("Marge"))),
-                getResource(Path.of(
-                        "ChangingPageLayoutOutsideRepeatDocPartTest.docx")),
+                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
+                getResource(Path.of("ChangingPageLayoutOutsideRepeatDocPartTest.docx")),
                 """
                         First page is landscape.
                         
@@ -693,22 +912,31 @@ public class DefaultTests {
 
     private static Arguments conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved() {
         var context = new Contexts.Name("Homer");
-        var template = getResource(Path.of(
-                "ConditionalDisplayOfParagraphsTest.docx"));
+        var template = getResource(Path.of("ConditionalDisplayOfParagraphsTest.docx"));
         var expected = """
                 Conditional Display of Paragraphs
                 This paragraph stays untouched.
                 This paragraph stays untouched.
-                Conditional Display of paragraphs also works in tables
-                This paragraph stays untouched.
+                |===
+                |Conditional Display of paragraphs also works in tables
                 
-                Also works in nested tables
-                This paragraph stays untouched.
+                |This paragraph stays untouched.
+                |
+                
+                ||===
+                |Also works in nested tables
+                
+                |This paragraph stays untouched.
+                
+                
+                |===
+                
+                
+                |===
                 
                 """;
 
-        return arguments(
-                "conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved",
+        return arguments("conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved",
                 OfficeStamperConfigurations.standard(),
                 context,
                 template,
@@ -722,11 +950,22 @@ public class DefaultTests {
                 Conditional Display of Paragraphs
                 Paragraph 1 stays untouched.
                 Paragraph 3 stays untouched.
-                Conditional Display of paragraphs also works in tables
-                Paragraph 4 in cell 2,1 stays untouched.
+                |===
+                |Conditional Display of paragraphs also works in tables
                 
-                Also works in nested tables
-                Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
+                |Paragraph 4 in cell 2,1 stays untouched.
+                |
+                
+                ||===
+                |Also works in nested tables
+                
+                |Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
+                
+                
+                |===
+                
+                
+                |===
                 
                 """;
         return arguments("conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved",
@@ -744,12 +983,23 @@ public class DefaultTests {
                 Paragraph 1 stays untouched.
                 Paragraph 2 is only included if the “name” is “Bart”.
                 Paragraph 3 stays untouched.
-                Conditional Display of paragraphs also works in tables
-                Paragraph 4 in cell 2,1 stays untouched.
-                Paragraph 5 in cell 2,2 is only included if the “name” is “Bart”.
-                Also works in nested tables
-                Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
+                |===
+                |Conditional Display of paragraphs also works in tables
+                
+                |Paragraph 4 in cell 2,1 stays untouched.
+                |Paragraph 5 in cell 2,2 is only included if the “name” is “Bart”.
+                
+                ||===
+                |Also works in nested tables
+                
+                |Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
                 Paragraph 7  in cell 2,1 in cell 3,1 is only included if the “name” is “Bart”.
+                
+                
+                |===
+                
+                
+                |===
                 
                 """;
         return arguments("conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved",
@@ -761,15 +1011,25 @@ public class DefaultTests {
 
     private static Arguments conditionalDisplayOfTableRowsTest() {
         var context = new Contexts.Name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfTableRowsTest" +
-                                           ".docx"));
+        var template = getResource(Path.of("ConditionalDisplayOfTableRowsTest" + ".docx"));
         var expected = """
                 ❬Conditional Display of Table Rows❘spacing={after=120,before=240}❭
                 ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE❭
-                This row stays untouched.
-                This row stays untouched.
-                ❬❬Also works on nested Tables❘b=true❭❘b=true❭
-                This row stays untouched.
+                |===
+                |This row stays untouched.
+                
+                |This row stays untouched.
+                
+                ||===
+                |❬❬Also works on nested Tables❘b=true❭❘b=true❭
+                
+                |This row stays untouched.
+                
+                
+                |===
+                
+                
+                |===
                 ❬❘spacing={after=140,before=0}❭
                 """;
         return arguments("conditionalDisplayOfTableRowsTest",
@@ -781,19 +1041,28 @@ public class DefaultTests {
 
     private static Arguments conditionalDisplayOfTableBug32Test() {
         var context = new Contexts.Name("Homer");
-        var template = getResource(Path.of(
-                "ConditionalDisplayOfTablesBug32Test.docx"));
+        var template = getResource(Path.of("ConditionalDisplayOfTablesBug32Test.docx"));
         var expected = """
                 ❬Conditional Display of Tables❘spacing={after=120,before=240}❭
                 ❬This paragraph stays untouched.❘lang=de-DE❭
                 
-                ❬This table stays untouched.❘widowControl=xxx❭
-                ❬❘widowControl=xxx❭
-                ❬❘widowControl=xxx❭
-                ❬❘widowControl=xxx❭
+                |===
+                |❬This table stays untouched.❘widowControl=xxx❭
+                |❬❘widowControl=xxx❭
                 
-                ❬❬Also works on nested tables❘b=true❭❘b=true,widowControl=xxx❭
-                ❬❘b=true,widowControl=xxx❭
+                |❬❘widowControl=xxx❭
+                |❬❘widowControl=xxx❭
+                
+                
+                |===
+                
+                |===
+                |❬❬Also works on nested tables❘b=true❭❘b=true,widowControl=xxx❭
+                
+                |❬❘b=true,widowControl=xxx❭
+                
+                
+                |===
                 
                 ❬❬This paragraph stays untouched.❘lang=de-DE❭❘spacing={after=140,before=0}❭
                 """;
@@ -806,19 +1075,28 @@ public class DefaultTests {
 
     private static Arguments conditionalDisplayOfTableTest() {
         var context = new Contexts.Name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfTablesTest" +
-                                           ".docx"));
+        var template = getResource(Path.of("ConditionalDisplayOfTablesTest" + ".docx"));
         var expected = """
                 ❬Conditional Display of Tables❘spacing={after=120,before=240}❭
                 ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE❭
                 
-                This table stays untouched.
+                |===
+                |This table stays untouched.
+                |
+                
+                |
+                |
                 
                 
+                |===
+                
+                |===
+                |❬❬Also works on nested tables❘b=true❭❘b=true❭
+                
+                |❬❘b=true❭
                 
                 
-                ❬❬Also works on nested tables❘b=true❭❘b=true❭
-                ❬❘b=true❭
+                |===
                 
                 ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE,spacing={after=140,before=0}❭
                 """;
@@ -831,21 +1109,17 @@ public class DefaultTests {
 
     private static Arguments customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored() {
         var context = new Contexts.EmptyContext();
-        var template = getResource(Path.of(
-                "CustomEvaluationContextConfigurerTest.docx"));
+        var template = getResource(Path.of("CustomEvaluationContextConfigurerTest.docx"));
         var expected = """
                 ❬Custom EvaluationContextConfigurer Test❘spacing={after=120,before=240}❭
                 ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE❭
                 ❬The variable foo has the value ❬bar❘lang=de-DE❭.❘spacing={after=140,before=0}❭
                 """;
         var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(
-                                                        evalContext -> evalContext.addPropertyAccessor(new SimpleGetter(
-                                                                "foo",
-                                                                "bar")));
+                                                .setEvaluationContextConfigurer(evalContext -> evalContext.addPropertyAccessor(
+                                                        new SimpleGetter("foo", "bar")));
 
-        return arguments(
-                "customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored",
+        return arguments("customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored",
                 config,
                 context,
                 template,
@@ -863,44 +1137,45 @@ public class DefaultTests {
                 """;
         OfficeStamperConfiguration config = OfficeStamperConfigurations.standard()
                                                                        .setFailOnUnresolvedExpression(false);
-        return arguments("expressionReplacementInGlobalParagraphsTest",
-                config,
-                context,
-                template,
-                expected);
+        return arguments("expressionReplacementInGlobalParagraphsTest", config, context, template, expected);
     }
 
     private static Arguments expressionReplacementInTablesTest() {
         var context = new Contexts.Name("Bart Simpson");
-        var template = getResource(Path.of("ExpressionReplacementInTablesTest" +
-                                           ".docx"));
+        var template = getResource(Path.of("ExpressionReplacementInTablesTest" + ".docx"));
 
         var expected = """
                 Expression Replacement in Tables
-                This should resolve to a name:
-                Bart Simpson
-                This should not resolve:
-                ${foo}
-                ❬❬Nested Table:❘b=true❭❘b=true❭
-                This should resolve to a name:
-                Bart Simpson
-                This should not resolve:
-                ${foo}
+                |===
+                |This should resolve to a name:
+                |Bart Simpson
+                
+                |This should not resolve:
+                |${foo}
+                
+                |❬❬Nested Table:❘b=true❭❘b=true❭
+                |===
+                |This should resolve to a name:
+                |Bart Simpson
+                
+                |This should not resolve:
+                |${foo}
+                
+                
+                |===
+                
+                
+                |===
                 
                 """;
         OfficeStamperConfiguration config = OfficeStamperConfigurations.standard()
                                                                        .setFailOnUnresolvedExpression(false);
-        return arguments("expressionReplacementInTablesTest",
-                config,
-                context,
-                template,
-                expected);
+        return arguments("expressionReplacementInTablesTest", config, context, template, expected);
     }
 
     private static Arguments expressionReplacementWithFormattingTest() {
         var context = new Contexts.Name("Homer Simpson");
-        var template = getResource(
-                Path.of("ExpressionReplacementWithFormattingTest.docx"));
+        var template = getResource(Path.of("ExpressionReplacementWithFormattingTest.docx"));
         var expected = """
                  Expression Replacement with text format
                 The text format should be kept intact when an expression is replaced.
@@ -929,8 +1204,7 @@ public class DefaultTests {
 
     private static Arguments expressionWithSurroundingSpacesTest() {
         var spacyContext = new Contexts.SpacyContext();
-        var template = getResource(Path.of(
-                "ExpressionWithSurroundingSpacesTest.docx"));
+        var template = getResource(Path.of("ExpressionWithSurroundingSpacesTest.docx"));
         var expected = """
                 ❬Expression Replacement when expression has leading and/or trailing spaces❘spacing={after=120,before=240}❭
                 When an expression within a paragraph is resolved, the spaces between the replacement and the surrounding text should be as expected. The following paragraphs should all look the same.
@@ -962,21 +1236,15 @@ public class DefaultTests {
                 """;
         var config = OfficeStamperConfigurations.standard()
                                                 .setFailOnUnresolvedExpression(false);
-        return arguments("expressionReplacementWithCommentsTest",
-                config,
-                context,
-                template,
-                expected);
+        return arguments("expressionReplacementWithCommentsTest", config, context, template, expected);
     }
 
     /**
      * <p>testDateInstantiationAndResolution.</p>
      */
     private static Arguments imageReplacementInGlobalParagraphsTest() {
-        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" +
-                                                                 ".jpg")));
-        var template = getResource(Path.of(
-                "ImageReplacementInGlobalParagraphsTest.docx"));
+        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" + ".jpg")));
+        var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
                 ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
                 ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
@@ -991,11 +1259,8 @@ public class DefaultTests {
     }
 
     private static Arguments imageReplacementInGlobalParagraphsTestWithMaxWidth() {
-        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" +
-                                                                 ".jpg"),
-                1000));
-        var template = getResource(Path.of(
-                "ImageReplacementInGlobalParagraphsTest.docx"));
+        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" + ".jpg"), 1000));
+        var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
                 ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
                 ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
@@ -1011,8 +1276,7 @@ public class DefaultTests {
 
     private static Arguments leaveEmptyOnExpressionErrorTest() {
         var context = new Contexts.Name("Homer Simpson");
-        var template = getResource(Path.of("LeaveEmptyOnExpressionErrorTest" +
-                                           ".docx"));
+        var template = getResource(Path.of("LeaveEmptyOnExpressionErrorTest" + ".docx"));
         var expected = """
                 Leave me empty .
                 ❬❘u=single❭
@@ -1020,11 +1284,7 @@ public class DefaultTests {
         var config = OfficeStamperConfigurations.standard()
                                                 .setFailOnUnresolvedExpression(false)
                                                 .leaveEmptyOnExpressionError(true);
-        return arguments("leaveEmptyOnExpressionErrorTest",
-                config,
-                context,
-                template,
-                expected);
+        return arguments("leaveEmptyOnExpressionErrorTest", config, context, template, expected);
     }
 
     private static Arguments lineBreakReplacementTest() {
@@ -1040,23 +1300,24 @@ public class DefaultTests {
                  three lines.
                 This paragraph is untouched.
                 """;
-        return arguments("lineBreakReplacementTest",
-                config,
-                context,
-                template,
-                expected);
+        return arguments("lineBreakReplacementTest", config, context, template, expected);
     }
 
     private static Arguments mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders() {
         var context = Contexts.mapAndReflectiveContext();
-        var template = getResource(
-                Path.of("MapAccessorAndReflectivePropertyAccessorTest.docx"));
+        var template = getResource(Path.of("MapAccessorAndReflectivePropertyAccessorTest.docx"));
         var expected = """
                 Flat string : Flat string has been resolved
                 
-                Values
-                first value
-                second value
+                |===
+                |Values
+                
+                |first value
+                
+                |second value
+                
+                
+                |===
                 
                 
                 Paragraph start
@@ -1074,11 +1335,9 @@ public class DefaultTests {
                                                 .addResolver(Resolvers.nullToDefault("N/C"))
                                                 .replaceUnresolvedExpressions(true)
                                                 .unresolvedExpressionsDefaultValue("N/C")
-                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(
-                                                        new MapAccessor()));
+                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
 
-        return arguments(
-                "mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders",
+        return arguments("mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders",
                 config,
                 context,
                 template,
@@ -1106,11 +1365,7 @@ public class DefaultTests {
         var config = OfficeStamperConfigurations.standard()
                                                 .setFailOnUnresolvedExpression(false);
 
-        return arguments("nullPointerResolutionTest_testWithDefaultSpel",
-                config,
-                context,
-                template,
-                expected);
+        return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
     }
 
     private static Arguments nullPointerResolutionTest_testWithCustomSpel() {
@@ -1135,24 +1390,17 @@ public class DefaultTests {
         // so it will not work if your type has no default constructor and no setters.
 
         var config = OfficeStamperConfigurations.standard()
-                                                .setSpelParserConfiguration(new SpelParserConfiguration(true,
-                                                        true))
+                                                .setSpelParserConfiguration(new SpelParserConfiguration(true, true))
                                                 .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
                                                 .addResolver(Resolvers.nullToDefault("Nullish value!!"));
 
-        return arguments("nullPointerResolutionTest_testWithCustomSpel",
-                config,
-                context,
-                template,
-                expected);
+        return arguments("nullPointerResolutionTest_testWithCustomSpel", config, context, template, expected);
     }
 
     private static Arguments customCommentProcessor() {
-        return arguments(
-                "customCommentProcessor",
+        return arguments("customCommentProcessor",
                 OfficeStamperConfigurations.standard()
-                                           .addCommentProcessor(
-                                                   ICustomCommentProcessor.class,
+                                           .addCommentProcessor(ICustomCommentProcessor.class,
                                                    CustomCommentProcessor::new),
                 Contexts.empty(),
                 getResource(Path.of("CustomCommentProcessorTest.docx")),
@@ -1180,14 +1428,8 @@ public class DefaultTests {
                         """);
     }
 
-    @MethodSource("tests")
-    @ParameterizedTest(name = "{0}")
-    void features(
-            String ignoredName,
-            OfficeStamperConfiguration config,
-            Object context,
-            InputStream template,
-            String expected
+    @MethodSource("tests") @ParameterizedTest(name = "{0}") void features(
+            String ignoredName, OfficeStamperConfiguration config, Object context, InputStream template, String expected
     ) {
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);

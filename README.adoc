@@ -14,28 +14,29 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 
 == Release Notes
 
-=== {proj}/releases/tag/v2.4.0[v2.4.0]
+=== {proj}/releases/tag/v2.5.0[v2.5.0]
 
-=== Features
+==== Dependencies
 
-* Office-stamper can now format all  `java.time` objects directly from standard configuration (issue #411), see `engine/src/test/java/pro/verron/officestamper/test/DateFormatTests.java`
-* Office-stamper can now resolve multiline placeholders (not multi paragraph, just with linebreaks)(issue #422)
-* Office-stamper proven can resolve custom function inside comments expressions (issue #56)
-* Office-stamper proven can resolve displayParagraphIf inside table with repeatTableRow (issue #52)
+* Bumped `org.docx4j:docx4j-core` from version 11.4.11 to 11.5.0
+* Bumped `org.springframework:spring-context` from version 6.1.11 to 6.1.12.
 
-=== Dependencies
+==== Continuous Integration
 
-* Bumped `org.springframework:spring-expression` from version 6.1.11 to 6.1.12.
+* Added Renovate settings, to improve over dependabot
+* Follow best practices for maven-gpg-plugin
+* Removed github devcontainer settings
+* Bumped `actions/configure-pages` to v5
+* Bumped `org.pitest:pitest-maven` to 1.16.3
+* Bumped `org.apache.maven.plugins:maven-javadoc-plugin` to 3.10.0
+* Bumped `org.apache.maven.plugins:maven-gpg-plugin` to 3.2.5
+* Bumped `org.apache.maven.plugins:maven-site-plugin` to 3.2.5
+* Bumped `org.apache.maven.plugins:maven-project-info-reports-plugin` to 3.7.0
+* Bumped `org.junit.jupiter:junit-jupiter` to 5.11.0
 
-=== Documentation
+==== Tests
 
-* The release notes have been separated into their own file for better organization and easier access.
-* Deprecated Paragraph#replaceAll and Paragraph#contains from api package as it was a remnant of a core fix.
-
-=== Tests
-
-* Tests can now better differentiate types of breaks in word documents
-* Fixed a regression in tests about whitespaces manipulation
+* Tests can now differentiate tables with a asciidoc-like representation
 
 === Previous releases notes link:RELEASE_NOTES.adoc[here]
 

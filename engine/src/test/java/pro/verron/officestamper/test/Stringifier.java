@@ -226,9 +226,9 @@ public class Stringifier {
                              .orElse("");
             return hStr + body + fStr;
         }
-        if (o instanceof Tbl tbl) return stringify(tbl.getContent());
-        if (o instanceof Tr tr) return stringify(tr.getContent());
-        if (o instanceof Tc tc) return stringify(tc.getContent()).trim() + "\n";
+        if (o instanceof Tbl tbl) return stringify(tbl);
+        if (o instanceof Tr tr) return stringify(tr);
+        if (o instanceof Tc tc) return stringify(tc);
         if (o instanceof MainDocumentPart mainDocumentPart) return stringify(mainDocumentPart.getContent());
         if (o instanceof Body body) return stringify(body.getContent());
         if (o instanceof List<?> list) return stringify(list);
@@ -262,6 +262,29 @@ public class Stringifier {
         if (o instanceof SdtContent content) return "[" + stringify(content.getContent()).trim() + "]";
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
+    }
+
+    private String stringify(Tc tc) {
+        var content = stringify(tc.getContent());
+        return """
+                |%s
+                """.formatted(content.trim());
+    }
+
+    private String stringify(Tr tr) {
+        var content = stringify(tr.getContent());
+        return """
+                %s
+                """.formatted(content);
+    }
+
+    private String stringify(Tbl tbl) {
+        var content = stringify(tbl.getContent());
+        return """
+                |===
+                %s
+                |===
+                """.formatted(content);
     }
 
     private Optional<String> stringifyFooters(Stream<FooterPart> footerPart) {

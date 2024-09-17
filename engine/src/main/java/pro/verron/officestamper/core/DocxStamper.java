@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
-import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -12,6 +11,7 @@ import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +49,8 @@ public class DocxStamper
                 configuration.getResolvers(),
                 configuration.getCommentProcessors(),
                 configuration.getPreprocessors(),
-                configuration.getSpelParserConfiguration());
+                configuration.getSpelParserConfiguration(),
+                OfficeStamperConfiguration.getUnresolvedExpressionHandler(configuration));
     }
 
     private DocxStamper(
@@ -63,22 +64,18 @@ public class DocxStamper
             List<ObjectResolver> resolvers,
             Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> configurationCommentProcessors,
             List<PreProcessor> preprocessors,
-            SpelParserConfiguration spelParserConfiguration
+            SpelParserConfiguration spelParserConfiguration,
+            UnresolvedExpressionHandler unresolvedExpressionHandler
     ) {
         var commentProcessors = new HashMap<Class<?>, Object>();
 
-        Function<ReflectiveOperationException, TypedValue> onResolutionFail = failOnUnresolvedExpression
-                ? DocxStamper::throwException
-                : exception -> new TypedValue(null);
-
         final StandardMethodResolver methodResolver = new StandardMethodResolver(commentProcessors,
                 expressionFunctions,
-                onResolutionFail);
+                unresolvedExpressionHandler);
 
         var evaluationContext = new StandardEvaluationContext();
         evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
         evaluationContext.addMethodResolver(methodResolver);
-
 
         var expressionParser = new SpelExpressionParser(spelParserConfiguration);
         var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
@@ -100,18 +97,12 @@ public class DocxStamper
             commentProcessors.put(aClass, value);
         }
 
-
         this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(source,
                 expressionResolver,
                 commentProcessors,
                 failOnUnresolvedExpression);
 
-        this.preprocessors = preprocessors.stream()
-                                          .toList();
-    }
-
-    private static TypedValue throwException(ReflectiveOperationException exception) {
-        throw new OfficeStamperException("Error calling method", exception);
+        this.preprocessors = new ArrayList<>(preprocessors);
     }
 
     /**

@@ -4,9 +4,9 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.TypedValue;
 import org.springframework.lang.NonNull;
+import pro.verron.officestamper.api.UnresolvedExpressionHandler;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.function.Function;
 
 /**
  * This class is a wrapper around a method call which can be executed by the Spring Expression Language.
@@ -19,7 +19,7 @@ import java.util.function.Function;
 public class StandardMethodExecutor implements MethodExecutor {
 
 	private final Invoker invoker;
-	private final Function<ReflectiveOperationException, TypedValue> onFail;
+	private final UnresolvedExpressionHandler onFail;
 
 	/**
 	 * <p>Constructor for StandardMethodExecutor.</p>
@@ -28,7 +28,7 @@ public class StandardMethodExecutor implements MethodExecutor {
 	 * @param onFail  a function that is called if the invoker throws an exception. The function may return a default
 	 *                value to be returned by the {@link #execute(EvaluationContext, Object, Object...)} method.
 	 */
-	public StandardMethodExecutor(Invoker invoker, Function<ReflectiveOperationException, TypedValue> onFail) {
+	public StandardMethodExecutor(Invoker invoker, UnresolvedExpressionHandler onFail) {
 		this.invoker = invoker;
 		this.onFail = onFail;
 	}
@@ -45,7 +45,7 @@ public class StandardMethodExecutor implements MethodExecutor {
 			Object value = invoker.invoke(arguments);
 			return new TypedValue(value);
 		} catch (InvocationTargetException | IllegalAccessException e) {
-			return onFail.apply(e);
+			return new TypedValue(onFail.resolve(e));
 		}
 	}
 

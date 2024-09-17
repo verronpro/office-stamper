@@ -87,7 +87,8 @@ public class PlaceholderReplacer
      * @param context   the context root
      */
     @Override public void resolveExpressionsForParagraph(
-            DocxPart docxPart, Paragraph paragraph,
+            DocxPart docxPart,
+            Paragraph paragraph,
             Object context
     ) {
 

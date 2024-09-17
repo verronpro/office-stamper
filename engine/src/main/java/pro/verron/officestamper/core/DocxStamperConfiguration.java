@@ -46,8 +46,7 @@ public class DocxStamperConfiguration
     public DocxStamperConfiguration() {
         CommentProcessorFactory pf = new CommentProcessorFactory(this);
         commentProcessors.put(CommentProcessorFactory.IRepeatProcessor.class, pf::repeat);
-        commentProcessors.put(CommentProcessorFactory.IParagraphRepeatProcessor.class,
-                pf::repeatParagraph);
+        commentProcessors.put(CommentProcessorFactory.IParagraphRepeatProcessor.class, pf::repeatParagraph);
         commentProcessors.put(CommentProcessorFactory.IRepeatDocPartProcessor.class, pf::repeatDocPart);
         commentProcessors.put(CommentProcessorFactory.ITableResolver.class, pf::tableResolver);
         commentProcessors.put(CommentProcessorFactory.IDisplayIfProcessor.class, pf::displayIf);

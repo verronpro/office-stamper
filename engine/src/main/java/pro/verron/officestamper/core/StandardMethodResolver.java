@@ -4,14 +4,13 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.MethodResolver;
-import org.springframework.expression.TypedValue;
 import org.springframework.lang.NonNull;
+import pro.verron.officestamper.api.UnresolvedExpressionHandler;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Resolves methods that are used as expression functions or comment processors.
@@ -23,7 +22,7 @@ import java.util.function.Function;
 public class StandardMethodResolver implements MethodResolver {
 	private final Map<Class<?>, Object> commentProcessors;
 	private final Map<Class<?>, Object> expressionFunctions;
-	private final Function<ReflectiveOperationException, TypedValue> onFail;
+	private final UnresolvedExpressionHandler onFail;
 
 	/**
 	 * <p>Constructor for StandardMethodResolver.</p>
@@ -35,7 +34,7 @@ public class StandardMethodResolver implements MethodResolver {
 	public StandardMethodResolver(
 			Map<Class<?>, Object> commentProcessors,
 			Map<Class<?>, Object> expressionFunctions,
-			Function<ReflectiveOperationException, TypedValue> onResolutionFail
+			UnresolvedExpressionHandler onResolutionFail
 	) {
 		this.commentProcessors = commentProcessors;
 		this.expressionFunctions = expressionFunctions;

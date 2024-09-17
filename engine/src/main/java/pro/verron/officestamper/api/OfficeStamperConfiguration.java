@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-/**
- * Represents the configuration for the OfficeStamper class.
- */
 public interface OfficeStamperConfiguration {
 
+    static UnresolvedExpressionHandler getUnresolvedExpressionHandler(OfficeStamperConfiguration configuration) {
+        return configuration.isFailOnUnresolvedExpression()
+                ? OfficeStamperException::sneakyThrow
+                : exception -> null;
+    }
 
     /**
      * Checks if the failOnUnresolvedExpression flag is set to true or false.

@@ -13,13 +13,13 @@ import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.ExceptionResolver;
 
 import java.math.BigInteger;
 import java.util.*;
 
 import static pro.verron.officestamper.core.CommentUtil.getCommentString;
 import static pro.verron.officestamper.core.CommentUtil.getComments;
-import static pro.verron.officestamper.core.ExceptionUtil.treatException;
 
 /**
  * Allows registration of {@link CommentProcessor} objects. Each registered
@@ -37,26 +37,27 @@ public class CommentProcessorRegistry {
     private static final Logger logger = LoggerFactory.getLogger(CommentProcessorRegistry.class);
     private final DocxPart source;
     private final Map<Class<?>, Object> commentProcessors;
-    private final boolean failOnUnresolvedExpression;
     private final ExpressionResolver expressionResolver;
+    private final ExceptionResolver exceptionResolver;
 
     /**
-     * Creates a new CommentProcessorRegistry.
+     * Constructs a new CommentProcessorRegistry.
      *
-     * @param expressionResolver         the expression resolver
-     * @param commentProcessors          the comment processors
-     * @param failOnUnresolvedExpression whether to fail on unresolved expressions
+     * @param source the source part of the Word document.
+     * @param expressionResolver the resolver for evaluating expressions.
+     * @param commentProcessors map of comment processor instances keyed by their respective class types.
+     * @param exceptionResolver the resolver for handling exceptions during processing.
      */
     public CommentProcessorRegistry(
             DocxPart source,
             ExpressionResolver expressionResolver,
             Map<Class<?>, Object> commentProcessors,
-            boolean failOnUnresolvedExpression
+            ExceptionResolver exceptionResolver
     ) {
         this.source = source;
         this.expressionResolver = expressionResolver;
         this.commentProcessors = commentProcessors;
-        this.failOnUnresolvedExpression = failOnUnresolvedExpression;
+        this.exceptionResolver = exceptionResolver;
     }
 
     public <T> void runProcessors(T expressionContext) {
@@ -142,7 +143,8 @@ public class CommentProcessorRegistry {
                         comments,
                         expressionContext,
                         c,
-                        paragraph, null
+                        paragraph,
+                        null
                 ));
     }
 
@@ -173,8 +175,8 @@ public class CommentProcessorRegistry {
                 paragraphWrapper.replace(placeholder, RunUtil.create(""));
                 logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
             } catch (SpelEvaluationException | SpelParseException e) {
-                var msg = "Placeholder '%s' failed to process.".formatted(placeholder);
-                treatException(e, failOnUnresolvedExpression, msg);
+                var message = "Placeholder '%s' failed to process.".formatted(placeholder);
+                exceptionResolver.resolve(placeholder, message, e);
             }
             for (var processor : commentProcessors.values()) {
                 ((CommentProcessor) processor).commitChanges(source);
@@ -211,8 +213,8 @@ public class CommentProcessorRegistry {
             logger.debug("Comment '{}' successfully processed by a comment processor.", placeholder);
             return Optional.of(commentWrapper);
         } catch (SpelEvaluationException | SpelParseException e) {
-            var msg = "Comment '%s' failed to process.".formatted(placeholder);
-            treatException(e, failOnUnresolvedExpression, msg);
+            var message = "Comment '%s' failed to process.".formatted(placeholder);
+            exceptionResolver.resolve(placeholder, message, e);
             return Optional.empty();
         }
     }
@@ -220,6 +222,7 @@ public class CommentProcessorRegistry {
     /**
      * Resets all registered ICommentProcessors.
      */
+    //TODO to remove
     public void reset() {
         for (Object processor : commentProcessors.values()) {
             ((CommentProcessor) processor).reset();

@@ -3,6 +3,8 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -29,6 +31,9 @@ import java.util.function.Function;
  */
 public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
+
+    private static final Logger logger = LoggerFactory.getLogger(DocxStamper.class);
+
     private final List<PreProcessor> preprocessors;
     private final PlaceholderReplacer placeholderReplacer;
     private final Function<DocxPart, CommentProcessorRegistry> commentProcessorRegistrySupplier;
@@ -39,10 +44,7 @@ public class DocxStamper
      * @param configuration the configuration to use for this DocxStamper.
      */
     public DocxStamper(OfficeStamperConfiguration configuration) {
-        this(configuration.isFailOnUnresolvedExpression(),
-                configuration.isReplaceUnresolvedExpressions(),
-                configuration.isLeaveEmptyOnExpressionError(),
-                configuration.getUnresolvedExpressionsDefaultValue(),
+        this(
                 configuration.getLineBreakPlaceholder(),
                 configuration.getEvaluationContextConfigurer(),
                 configuration.getExpressionFunctions(),
@@ -50,14 +52,10 @@ public class DocxStamper
                 configuration.getCommentProcessors(),
                 configuration.getPreprocessors(),
                 configuration.getSpelParserConfiguration(),
-                OfficeStamperConfiguration.getUnresolvedExpressionHandler(configuration));
+                configuration.getExceptionResolver(logger.isTraceEnabled()));
     }
 
     private DocxStamper(
-            boolean failOnUnresolvedExpression,
-            boolean replaceUnresolvedExpressions,
-            boolean leaveEmptyOnExpressionError,
-            String unresolvedExpressionsDefaultValue,
             @NonNull String lineBreakPlaceholder,
             EvaluationContextConfigurer evaluationContextConfigurer,
             Map<Class<?>, Object> expressionFunctions,
@@ -65,13 +63,11 @@ public class DocxStamper
             Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> configurationCommentProcessors,
             List<PreProcessor> preprocessors,
             SpelParserConfiguration spelParserConfiguration,
-            UnresolvedExpressionHandler unresolvedExpressionHandler
+            ExceptionResolver exceptionResolver
     ) {
         var commentProcessors = new HashMap<Class<?>, Object>();
 
-        final StandardMethodResolver methodResolver = new StandardMethodResolver(commentProcessors,
-                expressionFunctions,
-                unresolvedExpressionHandler);
+        var methodResolver = new StandardMethodResolver(commentProcessors, expressionFunctions);
 
         var evaluationContext = new StandardEvaluationContext();
         evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
@@ -84,11 +80,8 @@ public class DocxStamper
 
         this.placeholderReplacer = new PlaceholderReplacer(typeResolverRegistry,
                 expressionResolver,
-                failOnUnresolvedExpression,
-                replaceUnresolvedExpressions,
-                unresolvedExpressionsDefaultValue,
-                leaveEmptyOnExpressionError,
-                Placeholders.raw(lineBreakPlaceholder));
+                Placeholders.raw(lineBreakPlaceholder),
+                exceptionResolver);
 
         for (var entry : configurationCommentProcessors.entrySet()) {
             Class<?> aClass = entry.getKey();
@@ -100,7 +93,7 @@ public class DocxStamper
         this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(source,
                 expressionResolver,
                 commentProcessors,
-                failOnUnresolvedExpression);
+                exceptionResolver);
 
         this.preprocessors = new ArrayList<>(preprocessors);
     }

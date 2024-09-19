@@ -1,5 +1,7 @@
 package pro.verron.officestamper.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
 
 import java.util.List;
@@ -8,10 +10,15 @@ import java.util.function.Function;
 
 public interface OfficeStamperConfiguration {
 
-    static UnresolvedExpressionHandler getUnresolvedExpressionHandler(OfficeStamperConfiguration configuration) {
-        return configuration.isFailOnUnresolvedExpression()
-                ? OfficeStamperException::sneakyThrow
-                : exception -> null;
+    Logger logger = LoggerFactory.getLogger(OfficeStamperConfiguration.class);
+
+    default ExceptionResolver getExceptionResolver(boolean tracing) {
+        if (isFailOnUnresolvedExpression())
+            return new ThrowingResolver(tracing);
+        if (replaceWithDefaultOnError())
+            return new DefaultingResolver(replacementDefault(), tracing);
+        return new PassingResolver(tracing);
+
     }
 
     /**
@@ -20,6 +27,37 @@ public interface OfficeStamperConfiguration {
      * @return true if failOnUnresolvedExpression is set to true, false otherwise.
      */
     boolean isFailOnUnresolvedExpression();
+
+    default boolean replaceWithDefaultOnError() {
+        return isLeaveEmptyOnExpressionError() || isReplaceUnresolvedExpressions();
+    }
+
+    default String replacementDefault() {
+        return isLeaveEmptyOnExpressionError()
+                ? ""
+                : getUnresolvedExpressionsDefaultValue();
+    }
+
+    /**
+     * Determines whether to leave empty on expression error.
+     *
+     * @return true if expression errors are left empty, false otherwise
+     */
+    boolean isLeaveEmptyOnExpressionError();
+
+    /**
+     * Determines whether unresolved expressions in the OfficeStamper configuration should be replaced.
+     *
+     * @return true if unresolved expressions should be replaced, false otherwise.
+     */
+    boolean isReplaceUnresolvedExpressions();
+
+    /**
+     * Retrieves the default value for unresolved expressions.
+     *
+     * @return the default value for unresolved expressions
+     */
+    String getUnresolvedExpressionsDefaultValue();
 
     /**
      * Sets the failOnUnresolvedExpression flag to determine whether unresolved expressions should
@@ -96,27 +134,6 @@ public interface OfficeStamperConfiguration {
      * @param preprocessor the pre-processor to add
      */
     void addPreprocessor(PreProcessor preprocessor);
-
-    /**
-     * Determines whether unresolved expressions in the OfficeStamper configuration should be replaced.
-     *
-     * @return true if unresolved expressions should be replaced, false otherwise.
-     */
-    boolean isReplaceUnresolvedExpressions();
-
-    /**
-     * Determines whether to leave empty on expression error.
-     *
-     * @return true if expression errors are left empty, false otherwise
-     */
-    boolean isLeaveEmptyOnExpressionError();
-
-    /**
-     * Retrieves the default value for unresolved expressions.
-     *
-     * @return the default value for unresolved expressions
-     */
-    String getUnresolvedExpressionsDefaultValue();
 
     /**
      * Retrieves the line break placeholder used in the OfficeStamper configuration.
@@ -224,4 +241,5 @@ public interface OfficeStamperConfiguration {
     OfficeStamperConfiguration addResolver(
             ObjectResolver resolver
     );
+
 }

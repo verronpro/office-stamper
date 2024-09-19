@@ -5,6 +5,7 @@ package pro.verron.officestamper.api;
  * It provides methods to retrieve the content of the placeholder and the full expression.
  */
 public interface Placeholder {
+
     /**
      * Returns the content of the placeholder.
      *

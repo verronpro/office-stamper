@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -11,6 +12,7 @@ import pro.verron.officestamper.preset.EvaluationContextConfigurers;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
@@ -21,8 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.test.Contexts.*;
-import static pro.verron.officestamper.test.TestUtils.getImage;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.*;
 
 /**
  * <p>DefaultTests class.</p>
@@ -38,7 +39,8 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
      *
      * @return a {@link java.util.stream.Stream} object
      */
-    public static Stream<Arguments> tests() {
+    public static Stream<Arguments> tests()
+            throws IOException, Docx4JException {
         return Stream.of(ternary(),
                 repeatingRows(),
                 repeatingRowsWithLineBreak(),
@@ -106,34 +108,34 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
                         role("Krusty the Clown", "Dan Castellaneta")),
                 getResource(Path.of("RepeatTableRowTest.docx")),
                 """
-                        ❬Repeating Table Rows❘spacing={after=120,before=240}❭
-                        ❬❬List of Simpsons characters❘b=true❭❘b=true,spacing={after=120,before=240}❭
+                        Repeating Table Rows
+                        List of Simpsons characters
                         |===
-                        |❬❬Character name❘b=true❭❘b=true❭
-                        |❬❬Voice ❘b=true❭❬Actor❘b=true❭❘b=true❭
+                        |Character name
+                        |❬Voice Actor❘cnfStyle=100000000000❭
                         
                         |Homer Simpson
-                        |Dan Castellaneta
+                        |❬Dan Castellaneta❘cnfStyle=000000100000❭
                         
                         |Marge Simpson
-                        |Julie Kavner
+                        |❬Julie Kavner❘cnfStyle=000000100000❭
                         
                         |Bart Simpson
-                        |Nancy Cartwright
+                        |❬Nancy Cartwright❘cnfStyle=000000100000❭
                         
                         |Kent Brockman
-                        |Harry Shearer
+                        |❬Harry Shearer❘cnfStyle=000000100000❭
                         
                         |Disco Stu
-                        |Hank Azaria
+                        |❬Hank Azaria❘cnfStyle=000000100000❭
                         
                         |Krusty the Clown
-                        |Dan Castellaneta
+                        |❬Dan Castellaneta❘cnfStyle=000000100000❭
                         
                         
                         |===
                         
-                        ❬There are ❬6❘lang=de-DE❭ characters in the above table.❘lang=de-DE,spacing={after=140,before=0}❭
+                        There are 6 characters in the above table.
                         """);
     }
 
@@ -149,43 +151,43 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
                         role("Krusty the Clown", "Dan\nCastellaneta")),
                 getResource(Path.of("RepeatTableRowTest.docx")),
                 """
-                        ❬Repeating Table Rows❘spacing={after=120,before=240}❭
-                        ❬❬List of Simpsons characters❘b=true❭❘b=true,spacing={after=120,before=240}❭
+                        Repeating Table Rows
+                        List of Simpsons characters
                         |===
-                        |❬❬Character name❘b=true❭❘b=true❭
-                        |❬❬Voice ❘b=true❭❬Actor❘b=true❭❘b=true❭
+                        |Character name
+                        |❬Voice Actor❘cnfStyle=100000000000❭
                         
                         |Homer Simpson
-                        |Dan Castellaneta
+                        |❬Dan Castellaneta❘cnfStyle=000000100000❭
                         
                         |Marge Simpson
-                        |Julie<break line>
-                        Kavner
+                        |❬Julie<break line>
+                        Kavner❘cnfStyle=000000100000❭
                         
                         |Bart Simpson
-                        |Nancy<break line>
+                        |❬Nancy<break line>
                         <break line>
-                        Cartwright
+                        Cartwright❘cnfStyle=000000100000❭
                         
                         |Kent Brockman
-                        |Harry<break line>
+                        |❬Harry<break line>
                         <break line>
                         <break line>
-                        Shearer
+                        Shearer❘cnfStyle=000000100000❭
                         
                         |Disco Stu
-                        |Hank<break line>
+                        |❬Hank<break line>
                         <break line>
-                        Azaria
+                        Azaria❘cnfStyle=000000100000❭
                         
                         |Krusty the Clown
-                        |Dan<break line>
-                        Castellaneta
+                        |❬Dan<break line>
+                        Castellaneta❘cnfStyle=000000100000❭
                         
                         
                         |===
                         
-                        ❬There are ❬6❘lang=de-DE❭ characters in the above table.❘lang=de-DE,spacing={after=140,before=0}❭
+                        There are 6 characters in the above table.
                         """);
     }
 
@@ -1011,17 +1013,17 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
 
     private static Arguments conditionalDisplayOfTableRowsTest() {
         var context = new Contexts.Name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfTableRowsTest" + ".docx"));
+        var template = getResource(Path.of("ConditionalDisplayOfTableRowsTest.docx"));
         var expected = """
-                ❬Conditional Display of Table Rows❘spacing={after=120,before=240}❭
-                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE❭
+                Conditional Display of Table Rows
+                This paragraph stays untouched.
                 |===
                 |This row stays untouched.
                 
                 |This row stays untouched.
                 
                 ||===
-                |❬❬Also works on nested Tables❘b=true❭❘b=true❭
+                |Also works on nested Tables
                 
                 |This row stays untouched.
                 
@@ -1030,7 +1032,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
                 
                 
                 |===
-                ❬❘spacing={after=140,before=0}❭
+                
                 """;
         return arguments("conditionalDisplayOfTableRowsTest",
                 OfficeStamperConfigurations.standard(),
@@ -1043,28 +1045,28 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTablesBug32Test.docx"));
         var expected = """
-                ❬Conditional Display of Tables❘spacing={after=120,before=240}❭
-                ❬This paragraph stays untouched.❘lang=de-DE❭
+                Conditional Display of Tables
+                This paragraph stays untouched.
                 
                 |===
-                |❬This table stays untouched.❘widowControl=xxx❭
-                |❬❘widowControl=xxx❭
+                |This table stays untouched.
+                |❬❘cnfStyle=100000000000❭
                 
-                |❬❘widowControl=xxx❭
-                |❬❘widowControl=xxx❭
-                
-                
-                |===
-                
-                |===
-                |❬❬Also works on nested tables❘b=true❭❘b=true,widowControl=xxx❭
-                
-                |❬❘b=true,widowControl=xxx❭
+                |
+                |❬❘cnfStyle=000000100000❭
                 
                 
                 |===
                 
-                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘spacing={after=140,before=0}❭
+                |===
+                |Also works on nested tables
+                
+                |
+                
+                
+                |===
+                
+                This paragraph stays untouched.
                 """;
         return arguments("conditionalDisplayOfTableBug32Test",
                 OfficeStamperConfigurations.standard(),
@@ -1077,8 +1079,8 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTablesTest" + ".docx"));
         var expected = """
-                ❬Conditional Display of Tables❘spacing={after=120,before=240}❭
-                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE❭
+                Conditional Display of Tables
+                This paragraph stays untouched.
                 
                 |===
                 |This table stays untouched.
@@ -1091,14 +1093,14 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
                 |===
                 
                 |===
-                |❬❬Also works on nested tables❘b=true❭❘b=true❭
+                |Also works on nested tables
                 
-                |❬❘b=true❭
+                |
                 
                 
                 |===
                 
-                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE,spacing={after=140,before=0}❭
+                This paragraph stays untouched.
                 """;
         return arguments("conditionalDisplayOfTablesTest",
                 OfficeStamperConfigurations.standard(),
@@ -1107,13 +1109,18 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
                 expected);
     }
 
-    private static Arguments customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored() {
+    private static Arguments customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored()
+            throws IOException, Docx4JException {
         var context = new Contexts.EmptyContext();
-        var template = getResource(Path.of("CustomEvaluationContextConfigurerTest.docx"));
+        var template = makeResource("""
+                Custom EvaluationContextConfigurer Test
+                This paragraph stays untouched.
+                The variable foo has the value ${foo}.
+                """);
         var expected = """
-                ❬Custom EvaluationContextConfigurer Test❘spacing={after=120,before=240}❭
-                ❬❬This paragraph stays untouched.❘lang=de-DE❭❘lang=de-DE❭
-                ❬The variable foo has the value ❬bar❘lang=de-DE❭.❘spacing={after=140,before=0}❭
+                Custom EvaluationContextConfigurer Test
+                This paragraph stays untouched.
+                The variable foo has the value bar.
                 """;
         var config = OfficeStamperConfigurations.standard()
                                                 .setEvaluationContextConfigurer(evalContext -> evalContext.addPropertyAccessor(
@@ -1126,9 +1133,14 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
                 expected);
     }
 
-    private static Arguments expressionReplacementInGlobalParagraphsTest() {
+    private static Arguments expressionReplacementInGlobalParagraphsTest()
+            throws IOException, Docx4JException {
         var context = new Contexts.Name("Homer Simpson");
-        var template = getResource(Path.of("ExpressionReplacementInGlobalParagraphsTest.docx"));
+        var template = makeResource("""
+                Expression Replacement in global paragraphs
+                This paragraph is untouched.
+                In this paragraph, the variable name should be resolved to the value ${name}.
+                In this paragraph, the variable foo should not be resolved: ${foo}.""");
         var expected = """
                 Expression Replacement in global paragraphs
                 This paragraph is untouched.
@@ -1405,7 +1417,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
                 Contexts.empty(),
                 getResource(Path.of("CustomCommentProcessorTest.docx")),
                 """     
-                        Custom CommentProcessor Test
+                        Custom Comment Processor Test
                         Visited
                         This paragraph is untouched.
                         Visited

@@ -3,6 +3,9 @@ package pro.verron.officestamper.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import pro.verron.officestamper.preset.DefaultingResolver;
+import pro.verron.officestamper.preset.PassingResolver;
+import pro.verron.officestamper.preset.ThrowingResolver;
 
 import java.util.List;
 import java.util.Map;

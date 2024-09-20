@@ -712,7 +712,7 @@ public class CommentProcessorFactory {
     private static class ParagraphResolverDocumentWalker
             extends BaseDocumentWalker {
         private final Object expressionContext;
-        private final DocxPart document;
+        private final DocxPart docxPart;
         private final ParagraphPlaceholderReplacer placeholderReplacer;
 
         /**
@@ -723,14 +723,14 @@ public class CommentProcessorFactory {
          * @param replacer          The placeholderReplacer to use for resolving
          */
         public ParagraphResolverDocumentWalker(
-                DocxPart document,
+                DocxPart docxPart,
                 Tr rowClone,
                 Object expressionContext,
                 ParagraphPlaceholderReplacer replacer
         ) {
             super(new DocxPart(document.document(), document.part(), rowClone));
             this.expressionContext = expressionContext;
-            this.document = document;
+            this.docxPart = docxPart;
             this.placeholderReplacer = replacer;
         }
 
@@ -738,9 +738,8 @@ public class CommentProcessorFactory {
          * {@inheritDoc}
          */
         @Override protected void onParagraph(P paragraph) {
-            placeholderReplacer.resolveExpressionsForParagraph(document, new StandardParagraph(paragraph),
-                    expressionContext
-            );
+            var standardParagraph = new StandardParagraph(paragraph);
+            placeholderReplacer.resolveExpressionsForParagraph(docxPart, standardParagraph, expressionContext);
         }
     }
 

@@ -52,7 +52,7 @@ public class DocxStamper
                 configuration.getCommentProcessors(),
                 configuration.getPreprocessors(),
                 configuration.getSpelParserConfiguration(),
-                configuration.getExceptionResolver(logger.isTraceEnabled()));
+                configuration.getExceptionResolver());
     }
 
     private DocxStamper(

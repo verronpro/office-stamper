@@ -16,10 +16,21 @@ public class DefaultingResolver
     private final boolean tracing;
     private final Logger logger = LoggerFactory.getLogger(DefaultingResolver.class);
 
+    public DefaultingResolver() {
+        this("");
+    }
+
+    public DefaultingResolver(String defaultValue) {
+        this(defaultValue, false);
+    }
 
     public DefaultingResolver(String defaultValue, boolean tracing) {
         this.defaultValue = defaultValue;
         this.tracing = tracing;
+    }
+
+    public DefaultingResolver(boolean tracing) {
+        this("", tracing);
     }
 
     @Override public String resolve(Placeholder placeholder, String message, Exception cause) {

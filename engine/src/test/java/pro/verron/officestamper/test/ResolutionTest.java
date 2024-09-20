@@ -4,9 +4,13 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import pro.verron.officestamper.api.ExceptionResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.StringResolver;
+import pro.verron.officestamper.preset.DefaultingResolver;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.PassingResolver;
+import pro.verron.officestamper.preset.ThrowingResolver;
 
 import java.nio.file.Path;
 
@@ -50,10 +54,14 @@ class ResolutionTest {
         var resource = getResource(Path.of(template));
 
         var configuration = OfficeStamperConfigurations.standard();
-        configuration.setFailOnUnresolvedExpression(shouldFail);
-        configuration.leaveEmptyOnExpressionError(emptyOnError);
-        configuration.replaceUnresolvedExpressions(shouldReplace);
-        configuration.unresolvedExpressionsDefaultValue(replacementValue);
+        configuration.setExceptionResolver(
+                computeExceptionResolver(
+                        shouldFail,
+                        emptyOnError,
+                        shouldReplace,
+                        replacementValue
+                )
+        );
 
         var stamper = new TestDocxStamper<>(configuration);
         if (shouldFail) {
@@ -64,6 +72,18 @@ class ResolutionTest {
             ThrowingSupplier<String> supplier = () -> stamper.stampAndLoadAndExtract(resource, new Object());
             assertEquals(expected + "\n", assertDoesNotThrow(supplier));
         }
+    }
+
+    private ExceptionResolver computeExceptionResolver(
+            boolean shouldFail,
+            boolean emptyOnError,
+            boolean shouldReplace,
+            String replacementValue
+    ) {
+        if (shouldFail) return new ThrowingResolver();
+        if (emptyOnError) return new DefaultingResolver("");
+        if (shouldReplace) return new DefaultingResolver(replacementValue);
+        return new PassingResolver();
     }
 
     /**
@@ -135,12 +155,16 @@ class ResolutionTest {
         var resource = getResource(Path.of(template));
 
         var configuration = OfficeStamperConfigurations.raw();
-        configuration.setFailOnUnresolvedExpression(shouldFail);
-        configuration.leaveEmptyOnExpressionError(emptyOnError);
-        configuration.replaceUnresolvedExpressions(shouldReplace);
+        configuration.setExceptionResolver(
+                computeExceptionResolver(
+                        shouldFail,
+                        emptyOnError,
+                        shouldReplace,
+                        unresolvedReplacementValue
+                )
+        );
         if (withResolver) configuration.addResolver(new CustomResolver());
         CustomContext customContext = new CustomContext(withValue ? new CustomValue() : null);
-        configuration.unresolvedExpressionsDefaultValue(unresolvedReplacementValue);
 
         var stamper = new TestDocxStamper<>(configuration);
         if (expectedFail) {

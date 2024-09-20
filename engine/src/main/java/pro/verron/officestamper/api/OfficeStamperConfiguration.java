@@ -3,64 +3,21 @@ package pro.verron.officestamper.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
-import pro.verron.officestamper.preset.DefaultingResolver;
-import pro.verron.officestamper.preset.PassingResolver;
-import pro.verron.officestamper.preset.ThrowingResolver;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 public interface OfficeStamperConfiguration {
-
     Logger logger = LoggerFactory.getLogger(OfficeStamperConfiguration.class);
-
-    default ExceptionResolver getExceptionResolver(boolean tracing) {
-        if (isFailOnUnresolvedExpression())
-            return new ThrowingResolver(tracing);
-        if (replaceWithDefaultOnError())
-            return new DefaultingResolver(replacementDefault(), tracing);
-        return new PassingResolver(tracing);
-
-    }
 
     /**
      * Checks if the failOnUnresolvedExpression flag is set to true or false.
      *
      * @return true if failOnUnresolvedExpression is set to true, false otherwise.
      */
+    @Deprecated(since = "2.5", forRemoval = true)
     boolean isFailOnUnresolvedExpression();
-
-    default boolean replaceWithDefaultOnError() {
-        return isLeaveEmptyOnExpressionError() || isReplaceUnresolvedExpressions();
-    }
-
-    default String replacementDefault() {
-        return isLeaveEmptyOnExpressionError()
-                ? ""
-                : getUnresolvedExpressionsDefaultValue();
-    }
-
-    /**
-     * Determines whether to leave empty on expression error.
-     *
-     * @return true if expression errors are left empty, false otherwise
-     */
-    boolean isLeaveEmptyOnExpressionError();
-
-    /**
-     * Determines whether unresolved expressions in the OfficeStamper configuration should be replaced.
-     *
-     * @return true if unresolved expressions should be replaced, false otherwise.
-     */
-    boolean isReplaceUnresolvedExpressions();
-
-    /**
-     * Retrieves the default value for unresolved expressions.
-     *
-     * @return the default value for unresolved expressions
-     */
-    String getUnresolvedExpressionsDefaultValue();
 
     /**
      * Sets the failOnUnresolvedExpression flag to determine whether unresolved expressions should
@@ -70,7 +27,29 @@ public interface OfficeStamperConfiguration {
      *
      * @return the updated OfficeStamperConfiguration object
      */
+    @Deprecated(since = "2.5", forRemoval = true)
     OfficeStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression);
+
+    /**
+     * Determines whether to leave empty on expression error.
+     *
+     * @return true if expression errors are left empty, false otherwise
+     */
+    @Deprecated(since = "2.5", forRemoval = true) boolean isLeaveEmptyOnExpressionError();
+
+    /**
+     * Determines whether unresolved expressions in the OfficeStamper configuration should be replaced.
+     *
+     * @return true if unresolved expressions should be replaced, false otherwise.
+     */
+    @Deprecated(since = "2.5", forRemoval = true) boolean isReplaceUnresolvedExpressions();
+
+    /**
+     * Retrieves the default value for unresolved expressions.
+     *
+     * @return the default value for unresolved expressions
+     */
+    @Deprecated(since = "2.5", forRemoval = true) String getUnresolvedExpressionsDefaultValue();
 
     /**
      * Sets the default value for unresolved expressions in the OfficeStamperConfiguration object.
@@ -79,6 +58,7 @@ public interface OfficeStamperConfiguration {
      *
      * @return the updated OfficeStamperConfiguration object
      */
+    @Deprecated(since = "2.5", forRemoval = true)
     OfficeStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue);
 
     /**
@@ -88,6 +68,7 @@ public interface OfficeStamperConfiguration {
      *
      * @return the updated OfficeStamperConfiguration object
      */
+    @Deprecated(since = "2.5", forRemoval = true)
     OfficeStamperConfiguration replaceUnresolvedExpressions(
             boolean replaceUnresolvedExpressions
     );
@@ -99,9 +80,8 @@ public interface OfficeStamperConfiguration {
      *
      * @return the updated OfficeStamperConfiguration object
      */
-    OfficeStamperConfiguration leaveEmptyOnExpressionError(
-            boolean leaveEmpty
-    );
+    @Deprecated(since = "2.5", forRemoval = true)
+    OfficeStamperConfiguration leaveEmptyOnExpressionError(boolean leaveEmpty);
 
     /**
      * Exposes an interface to the expression language.
@@ -126,8 +106,7 @@ public interface OfficeStamperConfiguration {
      * @return the updated OfficeStamperConfiguration object
      */
     OfficeStamperConfiguration addCommentProcessor(
-            Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
+            Class<?> interfaceClass, Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
     );
 
     /**
@@ -152,9 +131,7 @@ public interface OfficeStamperConfiguration {
      *
      * @return the updated OfficeStamperConfiguration object
      */
-    OfficeStamperConfiguration setLineBreakPlaceholder(
-            String lineBreakPlaceholder
-    );
+    OfficeStamperConfiguration setLineBreakPlaceholder(String lineBreakPlaceholder);
 
     /**
      * Retrieves the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL) EvaluationContext
@@ -230,9 +207,7 @@ public interface OfficeStamperConfiguration {
      *
      * @return the updated OfficeStamperConfiguration instance
      */
-    OfficeStamperConfiguration setResolvers(
-            List<ObjectResolver> resolvers
-    );
+    OfficeStamperConfiguration setResolvers(List<ObjectResolver> resolvers);
 
     /**
      * Adds an ObjectResolver to the OfficeStamperConfiguration.
@@ -241,8 +216,9 @@ public interface OfficeStamperConfiguration {
      *
      * @return The updated OfficeStamperConfiguration.
      */
-    OfficeStamperConfiguration addResolver(
-            ObjectResolver resolver
-    );
+    OfficeStamperConfiguration addResolver(ObjectResolver resolver);
 
+    ExceptionResolver getExceptionResolver();
+
+    OfficeStamperConfiguration setExceptionResolver(ExceptionResolver exceptionResolver);
 }

@@ -8,9 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
-import pro.verron.officestamper.preset.EvaluationContextConfigurers;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
-import pro.verron.officestamper.preset.Resolvers;
+import pro.verron.officestamper.preset.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -1147,8 +1145,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 In this paragraph, the variable name should be resolved to the value Homer Simpson.
                 In this paragraph, the variable foo should not be resolved: ${foo}.
                 """;
-        OfficeStamperConfiguration config = OfficeStamperConfigurations.standard()
-                                                                       .setFailOnUnresolvedExpression(false);
+        OfficeStamperConfiguration config = OfficeStamperConfigurations
+                .standard()
+                .setExceptionResolver(new PassingResolver());
         return arguments("expressionReplacementInGlobalParagraphsTest", config, context, template, expected);
     }
 
@@ -1180,8 +1179,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-        OfficeStamperConfiguration config = OfficeStamperConfigurations.standard()
-                                                                       .setFailOnUnresolvedExpression(false);
+        var config = OfficeStamperConfigurations
+                .standard()
+                .setExceptionResolver(new PassingResolver());
         return arguments("expressionReplacementInTablesTest", config, context, template, expected);
     }
 
@@ -1246,8 +1246,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 .
                 """;
-        var config = OfficeStamperConfigurations.standard()
-                                                .setFailOnUnresolvedExpression(false);
+        var config = OfficeStamperConfigurations
+                .standard()
+                .setExceptionResolver(new PassingResolver());
         return arguments("expressionReplacementWithCommentsTest", config, context, template, expected);
     }
 
@@ -1293,9 +1294,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 Leave me empty .
                 ❬❘u=single❭
                 """;
-        var config = OfficeStamperConfigurations.standard()
-                                                .setFailOnUnresolvedExpression(false)
-                                                .leaveEmptyOnExpressionError(true);
+        var config = OfficeStamperConfigurations
+                .standard()
+                .setExceptionResolver(new DefaultingResolver());
         return arguments("leaveEmptyOnExpressionErrorTest", config, context, template, expected);
     }
 
@@ -1342,11 +1343,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """;
 
         var config = OfficeStamperConfigurations.standard()
-                                                .setFailOnUnresolvedExpression(false)
                                                 .setLineBreakPlaceholder("\n")
                                                 .addResolver(Resolvers.nullToDefault("N/C"))
-                                                .replaceUnresolvedExpressions(true)
-                                                .unresolvedExpressionsDefaultValue("N/C")
+                                                .setExceptionResolver(new DefaultingResolver("N/C"))
                                                 .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
 
         return arguments("mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders",
@@ -1374,8 +1373,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 """;
 
-        var config = OfficeStamperConfigurations.standard()
-                                                .setFailOnUnresolvedExpression(false);
+        var config = OfficeStamperConfigurations
+                .standard()
+                .setExceptionResolver(new PassingResolver());
 
         return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
     }

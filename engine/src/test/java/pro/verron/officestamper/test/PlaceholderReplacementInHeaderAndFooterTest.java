@@ -2,6 +2,8 @@ package pro.verron.officestamper.test;
 
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.preset.Image;
+import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.PassingResolver;
 
 import java.nio.file.Path;
 
@@ -20,9 +22,9 @@ class PlaceholderReplacementInHeaderAndFooterTest {
     void expressionReplacementInHeaderAndFooterTest() {
         var context = new Name("Homer Simpson", getImage(Path.of("butterfly.png")));
         var template = getResource("ExpressionReplacementInHeaderAndFooterTest.docx");
-        var configuration = standard()
-                .setFailOnUnresolvedExpression(false);
-        var stamper = new TestDocxStamper<Name>(configuration);
+        var config = standard()
+                .setExceptionResolver(new PassingResolver());
+        var stamper = new TestDocxStamper<Name>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals("""
                         [header, name="/word/header2.xml"]

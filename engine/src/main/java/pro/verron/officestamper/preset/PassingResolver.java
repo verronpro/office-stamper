@@ -15,6 +15,10 @@ public class PassingResolver
 
     private final boolean tracing;
 
+    public PassingResolver() {
+        this(false);
+    }
+
     public PassingResolver(boolean tracing) {this.tracing = tracing;}
 
     @Override public String resolve(Placeholder placeholder, String message, Exception cause) {

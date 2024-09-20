@@ -1,7 +1,9 @@
 package pro.verron.officestamper.api;
 
+import org.docx4j.TextUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 
@@ -16,6 +18,8 @@ import org.springframework.lang.Nullable;
  */
 public interface ObjectResolver {
 
+    Logger LOGGER = LoggerFactory.getLogger(ObjectResolver.class);
+
     /**
      * Resolves the expression in the given document with the provided object.
      *
@@ -28,15 +32,15 @@ public interface ObjectResolver {
      *
      * @throws OfficeStamperException if no resolver is found for the object
      */
-    default R resolve(
-            DocxPart document,
-            Placeholder placeholder,
-            Object object
-    ) {
+    default R resolve(DocxPart document, Placeholder placeholder, Object object) {
         R resolution = resolve(document, placeholder.content(), object);
-        var msg = "Expression '{}' replaced by '{}' with resolver {}";
-        LoggerFactory.getLogger(ObjectResolver.class)
-                     .debug(msg, placeholder, resolution, this);
+        if (LOGGER.isDebugEnabled()) {
+            var message = "Expression '{}' replaced by '{}' with resolver {}";
+            var expression = placeholder.expression();
+            var text = TextUtils.getText(resolution);
+            var resolverName = getClass().getSimpleName();
+            LOGGER.debug(message, expression, text, resolverName);
+        }
         return resolution;
     }
 
@@ -54,11 +58,7 @@ public interface ObjectResolver {
      *
      * @throws OfficeStamperException if no resolver is found for the object
      */
-    default R resolve(
-            DocxPart docxPart,
-            String expression,
-            Object object
-    ) {
+    default R resolve(DocxPart docxPart, String expression, Object object) {
         return resolve(docxPart.document(), expression, object);
     }
 
@@ -66,11 +66,7 @@ public interface ObjectResolver {
      * @deprecated replaced by {@link #resolve(DocxPart, String, Object)}
      */
     @Deprecated(since = "2.3", forRemoval = true)
-    default R resolve(
-            WordprocessingMLPackage document,
-            String expression,
-            Object object
-    ) {
+    default R resolve(WordprocessingMLPackage document, String expression, Object object) {
         throw new OfficeStamperException("Should not be called, only legacy implementation might still override this");
     }
 

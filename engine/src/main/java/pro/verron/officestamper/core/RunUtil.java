@@ -67,6 +67,7 @@ public class RunUtil {
         if (content instanceof Br br && br.getType() == STBrType.COLUMN) return "\n";
         if (content instanceof R.NoBreakHyphen) return "‑";
         if (content instanceof R.SoftHyphen) return "\u00AD";
+        if (content instanceof R.LastRenderedPageBreak) return "";
         if (content instanceof R.Sym sym) return "<sym(" + sym.getFont() + ", " + sym.getChar() + ")>";
 
         log.debug("Unhandled object type: {}", content.getClass());

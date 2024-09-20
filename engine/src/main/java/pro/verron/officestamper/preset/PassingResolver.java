@@ -1,7 +1,9 @@
-package pro.verron.officestamper.api;
+package pro.verron.officestamper.preset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pro.verron.officestamper.api.ExceptionResolver;
+import pro.verron.officestamper.api.Placeholder;
 
 /**
  * The PassingResolver class is an implementation of the ExceptionResolver interface

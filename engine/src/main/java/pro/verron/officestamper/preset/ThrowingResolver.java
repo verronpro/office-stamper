@@ -1,5 +1,9 @@
-package pro.verron.officestamper.api;
+package pro.verron.officestamper.preset;
 
+
+import pro.verron.officestamper.api.ExceptionResolver;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.Placeholder;
 
 /**
  * ThrowingResolver is an implementation of the ExceptionResolver interface designed to handle exceptions

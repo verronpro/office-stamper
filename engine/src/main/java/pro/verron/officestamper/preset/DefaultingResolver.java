@@ -1,7 +1,9 @@
-package pro.verron.officestamper.api;
+package pro.verron.officestamper.preset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pro.verron.officestamper.api.ExceptionResolver;
+import pro.verron.officestamper.api.Placeholder;
 
 /**
  * The DefaultingResolver class provides a mechanism to handle exceptions by returning a default value.

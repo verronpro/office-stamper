@@ -22,17 +22,6 @@
  * <p>
  * Additionally, it opens the "pro.verron.officestamper.core" package to the "pro.verron.officestamper.test" module,
  * and exports it for use by the same module.
- * <p>
- * WARNING: The module also opens and exports packages that should be innacessible in the next version.
- * These packages are:
- * - pro.verron.officestamper
- * - org.wickedsource.docxstamper
- * - org.wickedsource.docxstamper.api
- * - org.wickedsource.docxstamper.api.commentprocessor
- * - org.wickedsource.docxstamper.el
- * - org.wickedsource.docxstamper.util
- * - org.wickedsource.docxstamper.processor
- * - org.wickedsource.docxstamper.processor.table
  */
 module pro.verron.officestamper {
     requires spring.core;
@@ -52,5 +41,4 @@ module pro.verron.officestamper {
 
     opens pro.verron.officestamper.experimental to pro.verron.officestamper.test;
     exports pro.verron.officestamper.experimental to pro.verron.officestamper.test;
-
 }

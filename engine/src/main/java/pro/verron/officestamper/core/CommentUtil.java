@@ -209,11 +209,11 @@ public class CommentUtil {
      *
      * @return a map of all comments, with the key being the comment id.
      */
-    public static Map<BigInteger, Comment> getComments(DocxPart document) {
+    public static Map<BigInteger, Comment> getComments(DocxPart docxPart) {
         Map<BigInteger, Comment> rootComments = new HashMap<>();
         Map<BigInteger, Comment> allComments = new HashMap<>();
-        collectCommentRanges(rootComments, allComments, document);
-        collectComments(allComments, document.getCommentsPart());
+        collectCommentRanges(rootComments, allComments, docxPart);
+        collectComments(allComments, docxPart.commentsPart());
         return cleanMalformedComments(rootComments);
     }
 

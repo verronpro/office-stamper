@@ -153,7 +153,7 @@ public class DocxStamper
             WordprocessingMLPackage document, Object contextRoot, OutputStream out
     ) {
         try {
-            var source = new DocxPart(document);
+            var source = new TextualDocxPart(document);
             preprocess(document);
             processComments(source, contextRoot);
             replaceExpressions(source, contextRoot);
@@ -173,12 +173,12 @@ public class DocxStamper
             DocxPart document,
             Object contextObject
     ) {
-        document.getParts(Namespaces.HEADER)
+        document.streamParts(Namespaces.HEADER)
                 .forEach(header -> runProcessors(header, contextObject));
 
         runProcessors(document, contextObject);
 
-        document.getParts(Namespaces.FOOTER)
+        document.streamParts(Namespaces.FOOTER)
                 .forEach(footer -> runProcessors(footer, contextObject));
     }
 
@@ -186,10 +186,10 @@ public class DocxStamper
             DocxPart document,
             Object contextObject
     ) {
-        document.getParts(Namespaces.HEADER)
+        document.streamParts(Namespaces.HEADER)
                 .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
         placeholderReplacer.resolveExpressions(document, contextObject);
-        document.getParts(Namespaces.FOOTER)
+        document.streamParts(Namespaces.FOOTER)
                 .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
     }
 

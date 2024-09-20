@@ -728,7 +728,7 @@ public class CommentProcessorFactory {
                 Object expressionContext,
                 ParagraphPlaceholderReplacer replacer
         ) {
-            super(new DocxPart(document.document(), document.part(), rowClone));
+            super(docxPart.from(rowClone));
             this.expressionContext = expressionContext;
             this.docxPart = docxPart;
             this.placeholderReplacer = replacer;

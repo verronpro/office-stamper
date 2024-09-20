@@ -50,8 +50,7 @@ public abstract class DocumentWalker {
      * Starts the traversal of the document.
      */
     public void walk() {
-        for (Object content : source.contentAccessor()
-                                    .getContent()) {
+        for (Object content : source.content()) {
             Object ue = XmlUtils.unwrap(content);
             if (ue instanceof P o) walkParagraph(o);
             else if (ue instanceof R o) walkRun(o);

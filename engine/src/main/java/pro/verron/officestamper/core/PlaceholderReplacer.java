@@ -86,8 +86,8 @@ public class PlaceholderReplacer
         } catch (SpelEvaluationException
                  | SpelParseException
                  | OfficeStamperException e) {
-            var message = "Expression %s could not be resolved against context of type %s".formatted(placeholder,
-                    context.getClass());
+            var message = "Expression %s could not be resolved against context of type %s"
+                    .formatted(placeholder.expression(), context.getClass().getSimpleName());
             var resolution = exceptionResolver.resolve(placeholder, message, e);
             return RunUtil.create(resolution);
         }

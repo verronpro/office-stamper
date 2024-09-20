@@ -14,6 +14,10 @@ public class ThrowingResolver
         implements ExceptionResolver {
     private final boolean tracing;
 
+    public ThrowingResolver() {
+        this(false);
+    }
+
     public ThrowingResolver(boolean tracing) {this.tracing = tracing;}
 
     @Override public String resolve(Placeholder placeholder, String message, Exception cause) {

@@ -17,9 +17,15 @@ class NullPointerResolutionTest {
     @Test
     void nullPointerResolutionTest_testThrowingCase()
             throws IOException {
-        var subContext = new SubContext("Fullish2",
-                List.of("Fullish3", "Fullish4", "Fullish5"));
-        var context = new NullishContext("Fullish1", subContext, null, null);
+        var context = new NullishContext(
+                "Fullish1",
+                new SubContext(
+                        "Fullish2",
+                        List.of("Fullish3", "Fullish4", "Fullish5")
+                ),
+                null,
+                null
+        );
         try (var template = getResource("NullPointerResolution.docx")) {
             var configuration = OfficeStamperConfigurations.standard();
             var stamper = new TestDocxStamper<NullishContext>(configuration);

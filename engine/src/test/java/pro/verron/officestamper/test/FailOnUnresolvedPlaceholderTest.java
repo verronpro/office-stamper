@@ -2,6 +2,8 @@ package pro.verron.officestamper.test;
 
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.preset.PassingResolver;
+import pro.verron.officestamper.preset.ThrowingResolver;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +26,7 @@ class FailOnUnresolvedPlaceholderTest {
         var context = new Name("Homer");
         try (var template = getResource("FailOnUnresolvedExpressionTest.docx")) {
             var config = standard()
-                    .setFailOnUnresolvedExpression(true);
+                    .setExceptionResolver(new ThrowingResolver());
             var stamper = new TestDocxStamper<>(config);
             assertThrows(OfficeStamperException.class,
                     () -> stamper.stampAndLoad(template, context));
@@ -40,7 +42,7 @@ class FailOnUnresolvedPlaceholderTest {
                         "FailOnUnresolvedExpressionTest.docx"))
         ) {
             var config = standard()
-                    .setFailOnUnresolvedExpression(false);
+                    .setExceptionResolver(new PassingResolver());
             var stamper = new TestDocxStamper<>(config);
             assertDoesNotThrow(() -> stamper.stampAndLoad(template, context));
         }

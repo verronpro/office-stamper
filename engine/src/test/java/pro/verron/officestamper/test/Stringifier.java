@@ -485,7 +485,7 @@ public class Stringifier {
         if (pPr.getWordWrap() != null) set.add("wordWrap=xxx");
         if (pPr.getFramePr() != null) set.add("framePr=xxx");
         if (pPr.getDivId() != null) set.add("divId=xxx");
-        if (pPr.getCnfStyle() != null) set.add("cnfStyle=xxx");
+        ofNullable(pPr.getCnfStyle()).ifPresent(style -> set.add("cnfStyle=" + style.getVal()));
         if (set.isEmpty()) return Optional.empty();
         return Optional.of(String.join(",", set));
     }

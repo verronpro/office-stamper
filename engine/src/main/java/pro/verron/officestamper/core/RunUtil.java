@@ -68,6 +68,9 @@ public class RunUtil {
         if (content instanceof R.NoBreakHyphen) return "‑";
         if (content instanceof R.SoftHyphen) return "\u00AD";
         if (content instanceof R.LastRenderedPageBreak) return "";
+        if (content instanceof R.AnnotationRef) return "";
+        if (content instanceof R.CommentReference) return "";
+        if (content instanceof Drawing) return "";
         if (content instanceof R.Sym sym) return "<sym(" + sym.getFont() + ", " + sym.getChar() + ")>";
 
         log.debug("Unhandled object type: {}", content.getClass());

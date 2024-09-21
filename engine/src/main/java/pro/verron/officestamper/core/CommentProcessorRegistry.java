@@ -210,10 +210,10 @@ public class CommentProcessorRegistry {
             expressionResolver.setContext(context);
             expressionResolver.resolve(placeholder);
             comments.remove(comment.getId());
-            logger.debug("Comment '{}' successfully processed by a comment processor.", placeholder);
+            logger.debug("Comment '{}' successfully processed by a comment processor.", placeholder.expression());
             return Optional.of(commentWrapper);
         } catch (SpelEvaluationException | SpelParseException e) {
-            var message = "Comment '%s' failed to process.".formatted(placeholder);
+            var message = "Comment '%s' failed to process.".formatted(placeholder.expression());
             exceptionResolver.resolve(placeholder, message, e);
             return Optional.empty();
         }

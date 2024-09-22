@@ -1,12 +1,13 @@
 package pro.verron.officestamper.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.lang.NonNull;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.preset.*;
+import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.preset.EvaluationContextConfigurers;
+import pro.verron.officestamper.preset.ExceptionResolvers;
+import pro.verron.officestamper.preset.Resolvers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +27,6 @@ import java.util.function.Function;
  */
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(DocxStamperConfiguration.class);
     private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors =
             new HashMap<>();
     private final List<ObjectResolver> resolvers = new ArrayList<>();
@@ -85,8 +85,7 @@ public class DocxStamperConfiguration
      *
      * @return a boolean
      */
-    @Deprecated(since = "2.5", forRemoval = true) @Override
-    public boolean isFailOnUnresolvedExpression() {
+    @Deprecated(since = "2.5", forRemoval = true) @Override public boolean isFailOnUnresolvedExpression() {
         return failOnUnresolvedExpression;
     }
 
@@ -117,9 +116,7 @@ public class DocxStamperConfiguration
     }
 
     private String replacementDefault() {
-        return isLeaveEmptyOnExpressionError()
-                ? ""
-                : getUnresolvedExpressionsDefaultValue();
+        return isLeaveEmptyOnExpressionError() ? "" : getUnresolvedExpressionsDefaultValue();
     }
 
     /**
@@ -189,8 +186,9 @@ public class DocxStamperConfiguration
      *
      * @return a {@link DocxStamperConfiguration} object
      */
-    @Deprecated(since = "2.5", forRemoval = true) @Override
-    public DocxStamperConfiguration leaveEmptyOnExpressionError(boolean leaveEmpty) {
+    @Deprecated(since = "2.5", forRemoval = true) @Override public DocxStamperConfiguration leaveEmptyOnExpressionError(
+            boolean leaveEmpty
+    ) {
         this.leaveEmptyOnExpressionError = leaveEmpty;
         this.exceptionResolver = computeExceptionResolver();
         return this;

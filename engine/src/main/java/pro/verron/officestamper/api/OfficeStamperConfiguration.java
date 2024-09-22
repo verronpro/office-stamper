@@ -1,16 +1,16 @@
 package pro.verron.officestamper.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public interface OfficeStamperConfiguration {
-    Logger logger = LoggerFactory.getLogger(OfficeStamperConfiguration.class);
 
+/**
+ * Interface representing the configuration for the Office Stamper functionality.
+ */
+public interface OfficeStamperConfiguration {
     /**
      * Checks if the failOnUnresolvedExpression flag is set to true or false.
      *

@@ -1,9 +1,7 @@
 package pro.verron.officestamper.core;
 
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.MethodExecutor;
-import org.springframework.expression.MethodResolver;
+import org.springframework.expression.*;
 import org.springframework.lang.NonNull;
 
 import java.lang.reflect.Method;
@@ -73,18 +71,21 @@ public class StandardMethodResolver
     }
 
     private boolean methodEquals(Method actualMethod, String expectedName, List<TypeDescriptor> expectedArguments) {
-        if (!actualMethod.getName()
-                         .equals(expectedName)) return false;
-        if (actualMethod.getParameterTypes().length != expectedArguments.size()) return false;
+        var actualMethodName = actualMethod.getName();
+        if (!actualMethodName.equals(expectedName))
+            return false;
+
+        var actualMethodParameterTypes = actualMethod.getParameterTypes();
+        if (actualMethodParameterTypes.length != expectedArguments.size())
+            return false;
 
         for (int i = 0; i < expectedArguments.size(); i++) {
-            Class<?> expectedType = expectedArguments.get(i) != null ? expectedArguments.get(i)
-                                                                                        .getType() : null;
-            Class<?> actualType = actualMethod.getParameterTypes()[i];
-            // null is allowed in place of any argument type
-            if (expectedType != null && !actualType.isAssignableFrom(expectedType)) {
+            var expectedArgument = expectedArguments.get(i);
+            if (expectedArgument == null) return false;
+            Class<?> expectedType = expectedArgument.getType();
+            Class<?> actualType = actualMethodParameterTypes[i];
+            if (!actualType.isAssignableFrom(expectedType))
                 return false;
-            }
         }
         return true;
     }

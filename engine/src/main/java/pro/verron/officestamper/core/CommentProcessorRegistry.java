@@ -18,8 +18,8 @@ import pro.verron.officestamper.api.ExceptionResolver;
 import java.math.BigInteger;
 import java.util.*;
 
+import static pro.verron.officestamper.core.CommentCollectorWalker.collectComments;
 import static pro.verron.officestamper.core.CommentUtil.getCommentString;
-import static pro.verron.officestamper.core.CommentUtil.getComments;
 
 /**
  * Allows registration of {@link CommentProcessor} objects. Each registered
@@ -70,7 +70,7 @@ public class CommentProcessorRegistry {
               .filter(R.class::isInstance)
               .map(R.class::cast)
               .forEach(run -> {
-                  var comments = getComments(source);
+                  var comments = collectComments(source);
                   var runParent = (P) run.getParent();
                   var optional = runProcessorsOnRunComment(comments, expressionContext, run, runParent);
                   if (optional.isPresent()) {
@@ -87,7 +87,7 @@ public class CommentProcessorRegistry {
         source.streamParagraphs()
               .forEach(p -> {
                   var document = source.document();
-                  var comments = getComments(source);
+                  var comments = collectComments(source);
                   var optional = runProcessorsOnParagraphComment(document, comments, expressionContext, p);
                   if (optional.isPresent()) {
                       for (Object processor : commentProcessors.values()) {

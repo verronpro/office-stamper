@@ -1,8 +1,7 @@
 package pro.verron.officestamper.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
-import pro.verron.officestamper.preset.PassingResolver;
+import pro.verron.officestamper.preset.ExceptionResolvers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
@@ -19,7 +18,7 @@ class PlaceholderReplacementInTextBoxesTest {
         var context = new Name("Bart Simpson");
         var template = getResource("ExpressionReplacementInTextBoxesTest.docx");
         var config = standard()
-                .setExceptionResolver(new PassingResolver());
+                .setExceptionResolver(ExceptionResolvers.passing());
         var stamper = new TestDocxStamper<Name>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         String expected = """

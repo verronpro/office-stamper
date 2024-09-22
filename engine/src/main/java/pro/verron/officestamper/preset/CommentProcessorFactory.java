@@ -1126,9 +1126,9 @@ public class CommentProcessorFactory {
                 List<Object> expressionContexts = entry.getValue();
 
                 Tbl table = (Tbl) XmlUtils.unwrap(row.getParent());
-                int index = table.getContent()
-                                 .indexOf(row);
-
+                var content = table.getContent();
+                int index = content.indexOf(row);
+                content.remove(row);
 
                 List<Tr> changes;
                 if (expressionContexts == null) {
@@ -1149,10 +1149,7 @@ public class CommentProcessorFactory {
                         changes.add(rowClone);
                     }
                 }
-                table.getContent()
-                     .addAll(index + 1, changes);
-                table.getContent()
-                     .remove(row);
+                content.addAll(index, changes);
             }
         }
 

@@ -39,7 +39,7 @@ public class DocxStamperConfiguration
     private boolean replaceUnresolvedExpressions = false;
     private String unresolvedExpressionsDefaultValue = null;
     private SpelParserConfiguration spelParserConfiguration = new SpelParserConfiguration();
-    private ExceptionResolver exceptionResolver = computeExceptionResolver(logger.isTraceEnabled());
+    private ExceptionResolver exceptionResolver = computeExceptionResolver();
 
     /**
      * Creates a new configuration with default values.
@@ -102,14 +102,14 @@ public class DocxStamperConfiguration
     @Deprecated(since = "2.5", forRemoval = true) @Override
     public DocxStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression) {
         this.failOnUnresolvedExpression = failOnUnresolvedExpression;
-        this.exceptionResolver = computeExceptionResolver(logger.isTraceEnabled());
+        this.exceptionResolver = computeExceptionResolver();
         return this;
     }
 
-    private ExceptionResolver computeExceptionResolver(boolean tracing) {
-        if (failOnUnresolvedExpression) return new ExceptionResolvers.ThrowingResolver(tracing);
-        if (replaceWithDefaultOnError()) return new ExceptionResolvers.DefaultingResolver(replacementDefault(), tracing);
-        return new ExceptionResolvers.PassingResolver(tracing);
+    private ExceptionResolver computeExceptionResolver() {
+        if (failOnUnresolvedExpression) return ExceptionResolvers.throwing();
+        if (replaceWithDefaultOnError()) return ExceptionResolvers.defaulting(replacementDefault());
+        return ExceptionResolvers.passing();
     }
 
     private boolean replaceWithDefaultOnError() {
@@ -161,7 +161,7 @@ public class DocxStamperConfiguration
     @Deprecated(since = "2.5", forRemoval = true) @Override
     public DocxStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue) {
         this.unresolvedExpressionsDefaultValue = unresolvedExpressionsDefaultValue;
-        this.exceptionResolver = computeExceptionResolver(logger.isTraceEnabled());
+        this.exceptionResolver = computeExceptionResolver();
         return this;
     }
 
@@ -176,7 +176,7 @@ public class DocxStamperConfiguration
     @Deprecated(since = "2.5", forRemoval = true) @Override
     public DocxStamperConfiguration replaceUnresolvedExpressions(boolean replaceUnresolvedExpressions) {
         this.replaceUnresolvedExpressions = replaceUnresolvedExpressions;
-        this.exceptionResolver = computeExceptionResolver(logger.isTraceEnabled());
+        this.exceptionResolver = computeExceptionResolver();
         return this;
     }
 
@@ -192,7 +192,7 @@ public class DocxStamperConfiguration
     @Deprecated(since = "2.5", forRemoval = true) @Override
     public DocxStamperConfiguration leaveEmptyOnExpressionError(boolean leaveEmpty) {
         this.leaveEmptyOnExpressionError = leaveEmpty;
-        this.exceptionResolver = computeExceptionResolver(logger.isTraceEnabled());
+        this.exceptionResolver = computeExceptionResolver();
         return this;
     }
 

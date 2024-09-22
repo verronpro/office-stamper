@@ -218,14 +218,4 @@ public class CommentProcessorRegistry {
             return Optional.empty();
         }
     }
-
-    /**
-     * Resets all registered ICommentProcessors.
-     */
-    //TODO to remove
-    public void reset() {
-        for (Object processor : commentProcessors.values()) {
-            ((CommentProcessor) processor).reset();
-        }
-    }
 }

@@ -37,13 +37,13 @@ public final class TextualDocxPart
         return DocumentUtil.streamObjectElements(this, P.class);
     }
 
-    public Stream<DocxPart> streamParts(String namespace) {
+    public Stream<DocxPart> streamParts(String type) {
         return document.getMainDocumentPart()
                        .getRelationshipsPart()
-                       .getRelationshipsByType(namespace)
+                       .getRelationshipsByType(type)
                        .stream()
                        .map(this::getPart)
-                       .map(part -> new TextualDocxPart(this.document(), part, (ContentAccessor) part));
+                       .map(p -> new TextualDocxPart(document, p, (ContentAccessor) p));
     }
 
     public Part getPart(Relationship r) {
@@ -57,8 +57,7 @@ public final class TextualDocxPart
     }
 
     public CommentsPart commentsPart() {
-        var parts = document.getParts();
-        return (CommentsPart) parts.get(CommentUtil.WORD_COMMENTS_PART_NAME);
+        return CommentUtil.getCommentsPart(document.getParts());
     }
 
     @Override public DocxPart from(ContentAccessor accessor) {

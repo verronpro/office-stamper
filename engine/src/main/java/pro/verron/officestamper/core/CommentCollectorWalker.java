@@ -12,8 +12,8 @@ import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 
 class CommentCollectorWalker
@@ -99,7 +99,7 @@ class CommentCollectorWalker
                          .getContent()
                          .stream()
                          .map(TextUtils::getText)
-                         .collect(Collectors.joining(""));
+                         .collect(joining(""));
     }
 
     @Override
@@ -109,8 +109,7 @@ class CommentCollectorWalker
             comment = new StandardComment(document.document());
             allComments.put(commentRangeStart.getId(), comment);
             if (stack.isEmpty()) {
-                rootComments.put(commentRangeStart.getId(),
-                        comment);
+                rootComments.put(commentRangeStart.getId(), comment);
             }
             else {
                 stack.peek()

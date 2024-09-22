@@ -59,6 +59,7 @@ public class ExceptionResolvers {
         return new ThrowingResolver(logger.isTraceEnabled());
     }
 
+    @Deprecated(since="2.5", forRemoval = true)
     public static ExceptionResolver legacyBehavior(
             boolean shouldFail,
             boolean emptyOnError,

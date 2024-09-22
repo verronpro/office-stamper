@@ -15,6 +15,12 @@ public interface OfficeStamperConfiguration {
      * Checks if the failOnUnresolvedExpression flag is set to true or false.
      *
      * @return true if failOnUnresolvedExpression is set to true, false otherwise.
+     *
+     * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
+     * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
+     * complete customization over the behavior during resolution failures. The new method
+     * allows you to define how unresolved expressions are handled in a more flexible and
+     * comprehensive manner.
      */
     @Deprecated(since = "2.5", forRemoval = true)
     boolean isFailOnUnresolvedExpression();
@@ -26,6 +32,11 @@ public interface OfficeStamperConfiguration {
      * @param failOnUnresolvedExpression flag indicating whether to fail on unresolved expressions
      *
      * @return the updated OfficeStamperConfiguration object
+     * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
+     * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
+     * complete customization over the behavior during resolution failures. The new method
+     * allows you to define how unresolved expressions are handled in a more flexible and
+     * comprehensive manner.
      */
     @Deprecated(since = "2.5", forRemoval = true)
     OfficeStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression);
@@ -34,6 +45,11 @@ public interface OfficeStamperConfiguration {
      * Determines whether to leave empty on expression error.
      *
      * @return true if expression errors are left empty, false otherwise
+     * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
+     * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
+     * complete customization over the behavior during resolution failures. The new method
+     * allows you to define how unresolved expressions are handled in a more flexible and
+     * comprehensive manner.
      */
     @Deprecated(since = "2.5", forRemoval = true) boolean isLeaveEmptyOnExpressionError();
 
@@ -41,6 +57,11 @@ public interface OfficeStamperConfiguration {
      * Determines whether unresolved expressions in the OfficeStamper configuration should be replaced.
      *
      * @return true if unresolved expressions should be replaced, false otherwise.
+     * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
+     * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
+     * complete customization over the behavior during resolution failures. The new method
+     * allows you to define how unresolved expressions are handled in a more flexible and
+     * comprehensive manner.
      */
     @Deprecated(since = "2.5", forRemoval = true) boolean isReplaceUnresolvedExpressions();
 
@@ -48,6 +69,11 @@ public interface OfficeStamperConfiguration {
      * Retrieves the default value for unresolved expressions.
      *
      * @return the default value for unresolved expressions
+     * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
+     * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
+     * complete customization over the behavior during resolution failures. The new method
+     * allows you to define how unresolved expressions are handled in a more flexible and
+     * comprehensive manner.
      */
     @Deprecated(since = "2.5", forRemoval = true) String getUnresolvedExpressionsDefaultValue();
 
@@ -57,6 +83,11 @@ public interface OfficeStamperConfiguration {
      * @param unresolvedExpressionsDefaultValue the default value for unresolved expressions
      *
      * @return the updated OfficeStamperConfiguration object
+     * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
+     * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
+     * complete customization over the behavior during resolution failures. The new method
+     * allows you to define how unresolved expressions are handled in a more flexible and
+     * comprehensive manner.
      */
     @Deprecated(since = "2.5", forRemoval = true)
     OfficeStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue);
@@ -67,6 +98,11 @@ public interface OfficeStamperConfiguration {
      * @param replaceUnresolvedExpressions flag indicating whether to replace unresolved expressions
      *
      * @return the updated OfficeStamperConfiguration object
+     * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
+     * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
+     * complete customization over the behavior during resolution failures. The new method
+     * allows you to define how unresolved expressions are handled in a more flexible and
+     * comprehensive manner.
      */
     @Deprecated(since = "2.5", forRemoval = true)
     OfficeStamperConfiguration replaceUnresolvedExpressions(
@@ -79,6 +115,11 @@ public interface OfficeStamperConfiguration {
      * @param leaveEmpty boolean value indicating whether to leave empty on expression error
      *
      * @return the updated OfficeStamperConfiguration object
+     * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
+     * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
+     * complete customization over the behavior during resolution failures. The new method
+     * allows you to define how unresolved expressions are handled in a more flexible and
+     * comprehensive manner.
      */
     @Deprecated(since = "2.5", forRemoval = true)
     OfficeStamperConfiguration leaveEmptyOnExpressionError(boolean leaveEmpty);

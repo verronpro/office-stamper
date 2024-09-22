@@ -107,9 +107,9 @@ public class DocxStamperConfiguration
     }
 
     private ExceptionResolver computeExceptionResolver(boolean tracing) {
-        if (failOnUnresolvedExpression) return new ThrowingResolver(tracing);
-        if (replaceWithDefaultOnError()) return new DefaultingResolver(replacementDefault(), tracing);
-        return new PassingResolver(tracing);
+        if (failOnUnresolvedExpression) return new ExceptionResolvers.ThrowingResolver(tracing);
+        if (replaceWithDefaultOnError()) return new ExceptionResolvers.DefaultingResolver(replacementDefault(), tracing);
+        return new ExceptionResolvers.PassingResolver(tracing);
     }
 
     private boolean replaceWithDefaultOnError() {

@@ -1147,7 +1147,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """;
         OfficeStamperConfiguration config = OfficeStamperConfigurations
                 .standard()
-                .setExceptionResolver(new PassingResolver());
+                .setExceptionResolver(ExceptionResolvers.passing());
         return arguments("expressionReplacementInGlobalParagraphsTest", config, context, template, expected);
     }
 
@@ -1181,7 +1181,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """;
         var config = OfficeStamperConfigurations
                 .standard()
-                .setExceptionResolver(new PassingResolver());
+                .setExceptionResolver(ExceptionResolvers.passing());
         return arguments("expressionReplacementInTablesTest", config, context, template, expected);
     }
 
@@ -1248,7 +1248,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """;
         var config = OfficeStamperConfigurations
                 .standard()
-                .setExceptionResolver(new PassingResolver());
+                .setExceptionResolver(ExceptionResolvers.passing());
         return arguments("expressionReplacementWithCommentsTest", config, context, template, expected);
     }
 
@@ -1296,7 +1296,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """;
         var config = OfficeStamperConfigurations
                 .standard()
-                .setExceptionResolver(new DefaultingResolver());
+                .setExceptionResolver(ExceptionResolvers.defaulting());
         return arguments("leaveEmptyOnExpressionErrorTest", config, context, template, expected);
     }
 
@@ -1342,10 +1342,11 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 """;
 
+        var defaultValue = "N/C";
         var config = OfficeStamperConfigurations.standard()
                                                 .setLineBreakPlaceholder("\n")
-                                                .addResolver(Resolvers.nullToDefault("N/C"))
-                                                .setExceptionResolver(new DefaultingResolver("N/C"))
+                                                .addResolver(Resolvers.nullToDefault(defaultValue))
+                                                .setExceptionResolver(ExceptionResolvers.defaulting(defaultValue))
                                                 .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
 
         return arguments("mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders",
@@ -1375,7 +1376,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
         var config = OfficeStamperConfigurations
                 .standard()
-                .setExceptionResolver(new PassingResolver());
+                .setExceptionResolver(ExceptionResolvers.passing());
 
         return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
     }

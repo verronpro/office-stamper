@@ -306,8 +306,11 @@ Follow the given example to silence the exception and keep OfficeStamper from fa
 ----
 class Main {
     public static void main(String... args) {
-        var configuration = OfficeStamperConfiguration.standardWithPreprocessing()
-                .setFailOnUnresolvedExpression(false);
+        var configuration = OfficeStamperConfiguration
+            .standardWithPreprocessing()
+            .setExceptionResolver(ExceptionResolvers.throwing()); // to throw as soon as an error occurs (default)
+            // .setExceptionResolver(ExceptionResolvers.passing()); // to do nothing on error, leaving erroneous placeholders in place, and log the error
+            // .setExceptionResolver(ExceptionResolvers.defaulting("value")); // to replace erroneous placeholders by a default value, and log the error
         var stamper = OfficeStampers.docxStamper(configuration);
     }
 }

@@ -3,8 +3,6 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -19,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static pro.verron.officestamper.core.Invokers.streamInvokers;
+
 /**
  * The DocxStamper class is an implementation of the {@link OfficeStamper}
  * interface that is used to stamp DOCX templates with a context object and
@@ -31,8 +31,6 @@ import java.util.function.Function;
  */
 public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
-
-    private static final Logger logger = LoggerFactory.getLogger(DocxStamper.class);
 
     private final List<PreProcessor> preprocessors;
     private final PlaceholderReplacer placeholderReplacer;
@@ -65,30 +63,22 @@ public class DocxStamper
             SpelParserConfiguration spelParserConfiguration,
             ExceptionResolver exceptionResolver
     ) {
-        var commentProcessors = new HashMap<Class<?>, Object>();
-
-        var methodResolver = new StandardMethodResolver(commentProcessors, expressionFunctions);
+        var expressionParser = new SpelExpressionParser(spelParserConfiguration);
 
         var evaluationContext = new StandardEvaluationContext();
         evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
-        evaluationContext.addMethodResolver(methodResolver);
 
-        var expressionParser = new SpelExpressionParser(spelParserConfiguration);
         var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
-
         var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-
-        this.placeholderReplacer = new PlaceholderReplacer(typeResolverRegistry,
+        this.placeholderReplacer = new PlaceholderReplacer(
+                typeResolverRegistry,
                 expressionResolver,
                 Placeholders.raw(lineBreakPlaceholder),
                 exceptionResolver);
 
-        for (var entry : configurationCommentProcessors.entrySet()) {
-            Class<?> aClass = entry.getKey();
-            Function<ParagraphPlaceholderReplacer, CommentProcessor> processorFunction = entry.getValue();
-            CommentProcessor value = processorFunction.apply(placeholderReplacer);
-            commentProcessors.put(aClass, value);
-        }
+        var commentProcessors = buildCommentProcessors(configurationCommentProcessors);
+        evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
+        evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
 
         this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(source,
                 expressionResolver,
@@ -96,6 +86,18 @@ public class DocxStamper
                 exceptionResolver);
 
         this.preprocessors = new ArrayList<>(preprocessors);
+    }
+
+    private Map<Class<?>, CommentProcessor> buildCommentProcessors(Map<Class<?>,
+            Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors) {
+        var processors = new HashMap<Class<?>, CommentProcessor>();
+        for (var entry : commentProcessors.entrySet()) {
+            processors.put(
+                    entry.getKey(),
+                    entry.getValue()
+                         .apply(placeholderReplacer));
+        }
+        return processors;
     }
 
     /**

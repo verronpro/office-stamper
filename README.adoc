@@ -282,7 +282,7 @@ This feature empowers you with greater flexibility and enhanced control over the
 
 == Conditional and Repetitive Displays within Headers and Footers
 
-The .docx file format does not permit comments within headers or footers.
+The .docx file format doesn’t permit comments within headers or footers.
 But there's a workaround in OfficeStamper.
 If you want to display contents within headers or footers conditionally, or require repetitive elements, all you got to do is :
 

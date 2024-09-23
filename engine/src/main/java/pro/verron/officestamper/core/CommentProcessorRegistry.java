@@ -36,7 +36,7 @@ public class CommentProcessorRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentProcessorRegistry.class);
     private final DocxPart source;
-    private final Map<Class<?>, Object> commentProcessors;
+    private final Map<Class<?>, ?> commentProcessors;
     private final ExpressionResolver expressionResolver;
     private final ExceptionResolver exceptionResolver;
 
@@ -51,7 +51,7 @@ public class CommentProcessorRegistry {
     public CommentProcessorRegistry(
             DocxPart source,
             ExpressionResolver expressionResolver,
-            Map<Class<?>, Object> commentProcessors,
+            Map<Class<?>, ?> commentProcessors,
             ExceptionResolver exceptionResolver
     ) {
         this.source = source;

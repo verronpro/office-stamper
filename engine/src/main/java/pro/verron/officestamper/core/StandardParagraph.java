@@ -166,53 +166,40 @@ public class StandardParagraph
                 recalculateRuns();
             }
         }
-        else if (affectedRuns.get(0)
-                             .run()
-                             .getParent() == paragraph) {
-            IndexedRun firstRun = affectedRuns.get(0);
-            IndexedRun lastRun = affectedRuns.get(affectedRuns.size() - 1);
-            replacement.setRPr(firstRun.getPr());
-            // remove the expression from first and last run
-            firstRun.replace(matchStartIndex, matchEndIndex, "");
-            lastRun.replace(matchStartIndex, matchEndIndex, "");
-
-            // remove all runs between first and last
-            for (IndexedRun run : affectedRuns) {
-                if (!Objects.equals(run, firstRun)
-                    && !Objects.equals(run, lastRun)) {
-                    contents.remove(run.run());
-                }
-            }
-
-            // add replacement run between first and last run
-            contents.add(firstRun.indexInParent() + 1, replacement);
-
-            recalculateRuns();
-        }
         else {
             IndexedRun firstRun = affectedRuns.get(0);
             IndexedRun lastRun = affectedRuns.get(affectedRuns.size() - 1);
-
-            var siblings = ((ContentAccessor) firstRun.run()
-                                                      .getParent()).getContent();
+            List<Object> firstRunSiblings;
             replacement.setRPr(firstRun.getPr());
-            // remove the expression from first and last run
-            firstRun.replace(matchStartIndex, matchEndIndex, "");
-            lastRun.replace(matchStartIndex, matchEndIndex, "");
-
-            // remove all runs between first and last
-            for (IndexedRun run : affectedRuns) {
-                if (!Objects.equals(run, firstRun)
-                    && !Objects.equals(run, lastRun)) {
-                    siblings.remove(run.run());
-                }
-            }
-
+            removeExpression(firstRun, matchStartIndex, matchEndIndex, lastRun, affectedRuns);
+            firstRunSiblings = firstRun.isIn(paragraph)
+                    ? this.contents
+                    : firstRun.parent()
+                              .getContent();
             // add replacement run between first and last run
-            siblings.add(siblings.indexOf(firstRun) + 1, replacement);
-
+            firstRunSiblings.add(firstRun.indexInParent() + 1, replacement);
             recalculateRuns();
         }
+    }
+
+    private void removeExpression(
+            IndexedRun firstRun,
+            int matchStartIndex,
+            int matchEndIndex,
+            IndexedRun lastRun,
+            List<IndexedRun> affectedRuns
+    ) {
+        // remove the expression from first run
+        firstRun.replace(matchStartIndex, matchEndIndex, "");
+        // remove all runs between first and last
+        for (IndexedRun run : affectedRuns) {
+            if (!Objects.equals(run, firstRun)
+                && !Objects.equals(run, lastRun)) {
+                contents.remove(run.run());
+            }
+        }
+        // remove the expression from last run
+        lastRun.replace(matchStartIndex, matchEndIndex, "");
     }
 
     private void replaceWithBr(Placeholder placeholder, Br br) {

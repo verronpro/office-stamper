@@ -1,5 +1,7 @@
 package pro.verron.officestamper.core;
 
+import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 
@@ -18,6 +20,10 @@ import org.docx4j.wml.RPr;
  * @since 1.0.0
  */
 public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run) {
+
+    ContentAccessor parent() {
+        return (ContentAccessor) run().getParent();
+    }
 
     public int length() {
         return getText().length();
@@ -64,9 +70,8 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
     public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
         var startBetweenIndices = (globalStartIndex < startIndex) && (startIndex <= globalEndIndex);
         var endBetweenIndices = (globalStartIndex < endIndex) && (endIndex <= globalEndIndex);
-        return startBetweenIndices
-               || endBetweenIndices
-               || ((startIndex <= globalStartIndex) && (globalEndIndex <= endIndex));
+        return startBetweenIndices || endBetweenIndices || ((startIndex <= globalStartIndex) && (globalEndIndex
+                                                                                                 <= endIndex));
 
     }
 
@@ -80,9 +85,7 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
      * @param replacement      the string to replace the substring at the specified global index.
      */
     public void replace(
-            int globalStartIndex,
-            int globalEndIndex,
-            String replacement
+            int globalStartIndex, int globalEndIndex, String replacement
     ) {
         int localStartIndex = globalIndexToLocalIndex(globalStartIndex);
         int localEndIndex = globalIndexToLocalIndex(globalEndIndex);
@@ -99,5 +102,9 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
         if (globalIndex < startIndex) return 0;
         else if (globalIndex > endIndex) return RunUtil.getLength(run);
         else return globalIndex - startIndex;
+    }
+
+    boolean isIn(P paragraph) {
+        return run.getParent() == paragraph;
     }
 }

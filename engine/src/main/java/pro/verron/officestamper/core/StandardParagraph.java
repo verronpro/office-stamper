@@ -115,6 +115,19 @@ public class StandardParagraph
         }
     }
 
+    /**
+     * Returns the aggregated text over all runs.
+     *
+     * @return the text of all runs.
+     */
+    @Override
+    public String asString() {
+        return runs.stream()
+                   .map(IndexedRun::run)
+                   .map(RunUtil::getText)
+                   .collect(joining());
+    }
+
     private void replaceWithRun(Placeholder placeholder, R replacement) {
         var text = asString();
         String full = placeholder.expression();
@@ -231,19 +244,6 @@ public class StandardParagraph
                 }
             }
         }
-    }
-
-    /**
-     * Returns the aggregated text over all runs.
-     *
-     * @return the text of all runs.
-     */
-    @Override
-    public String asString() {
-        return runs.stream()
-                   .map(IndexedRun::run)
-                   .map(RunUtil::getText)
-                   .collect(joining());
     }
 
     private List<IndexedRun> getAffectedRuns(int startIndex, int endIndex) {

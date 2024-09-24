@@ -65,7 +65,7 @@
                     <plugin>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-maven</artifactId>
-                        <version>1.16.3</version>
+                        <version>1.17.0</version>
                         <configuration>
                             <jvmArgs>
                                 <jvmArg>--add-opens</jvmArg>
@@ -104,7 +104,7 @@
                     <plugin>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-maven</artifactId>
-                        <version>1.16.3</version>
+                        <version>1.17.0</version>
                     </plugin>
                 </plugins>
             </reporting>

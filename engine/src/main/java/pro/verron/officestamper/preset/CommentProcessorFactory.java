@@ -480,7 +480,7 @@ public class CommentProcessorFactory {
         @Override public void replaceWordWith(@Nullable String expression) {
             R run = this.getCurrentRun();
             if (run == null) {
-                log.info(format("Impossible to put expression %s in a null run", expression));
+                log.info("Impossible to put expression {} in a null run", expression);
                 return;
             }
 

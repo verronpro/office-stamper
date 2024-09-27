@@ -227,4 +227,10 @@ public class RunUtil {
         return getText(run)
                 .substring(beginIndex, endIndex);
     }
+
+    static R create(String text, RPr rPr) {
+        R newStartRun = create(text);
+        newStartRun.setRPr(rPr);
+        return newStartRun;
+    }
 }

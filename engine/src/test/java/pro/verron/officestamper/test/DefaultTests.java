@@ -1256,7 +1256,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
      * <p>testDateInstantiationAndResolution.</p>
      */
     private static Arguments imageReplacementInGlobalParagraphsTest() {
-        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" + ".jpg")));
+        var context = new Contexts.ImageContext(getImage(Path.of("monalisa.jpg")));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
                 ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
@@ -1272,7 +1272,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments imageReplacementInGlobalParagraphsTestWithMaxWidth() {
-        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" + ".jpg"), 1000));
+        var context = new Contexts.ImageContext(getImage(Path.of("monalisa.jpg"), 1000));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
                 ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭

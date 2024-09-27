@@ -112,8 +112,7 @@ public class CommentUtil {
         var comments = wordComments.getContents();
         return comments.getComment()
                        .stream()
-                       .filter(comment -> comment.getId()
-                                                 .equals(id))
+                       .filter(comment -> id.equals(comment.getId()))
                        .findFirst();
     }
 

@@ -659,7 +659,7 @@ public class CommentProcessorFactory {
                             .getComment()
                             .getId();
                     CommentUtil.deleteCommentFromElements(pCloneContent, commentId);
-                    var paragraph = new StandardParagraph(pClone);
+                    var paragraph = StandardParagraph.from(pClone);
                     placeholderReplacer.resolveExpressionsForParagraph(document, paragraph, expressionContext);
                     paragraphsToAdd.add(pClone);
                 }
@@ -735,7 +735,7 @@ public class CommentProcessorFactory {
          * {@inheritDoc}
          */
         @Override protected void onParagraph(P paragraph) {
-            var standardParagraph = new StandardParagraph(paragraph);
+            var standardParagraph = StandardParagraph.from(paragraph);
             placeholderReplacer.resolveExpressionsForParagraph(docxPart, standardParagraph, expressionContext);
         }
     }

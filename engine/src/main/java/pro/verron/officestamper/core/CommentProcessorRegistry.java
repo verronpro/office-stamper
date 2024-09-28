@@ -160,7 +160,7 @@ public class CommentProcessorRegistry {
             T context,
             P paragraph
     ) {
-        var paragraphWrapper = new StandardParagraph(paragraph);
+        var paragraphWrapper = StandardParagraph.from(paragraph);
         var text = paragraphWrapper.asString();
         var placeholders = Placeholders.findProcessors(text);
 

@@ -24,9 +24,7 @@ public final class TextualDocxPart
     }
 
     public TextualDocxPart(
-            WordprocessingMLPackage document,
-            Part part,
-            ContentAccessor contentAccessor
+            WordprocessingMLPackage document, Part part, ContentAccessor contentAccessor
     ) {
         this.document = document;
         this.part = part;
@@ -68,19 +66,17 @@ public final class TextualDocxPart
 
     @Override public List<Object> content() {return contentAccessor.getContent();}
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         return Objects.hash(document, part, contentAccessor);
     }
 
-    @Override
-    public boolean equals(Object obj) {
+    @Override public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (TextualDocxPart) obj;
-        return Objects.equals(this.document, that.document) &&
-               Objects.equals(this.part, that.part) &&
-               Objects.equals(this.contentAccessor, that.contentAccessor);
+        return Objects.equals(this.document, that.document)
+               && Objects.equals(this.part, that.part)
+               && Objects.equals(this.contentAccessor, that.contentAccessor);
     }
 
     @Override public String toString() {

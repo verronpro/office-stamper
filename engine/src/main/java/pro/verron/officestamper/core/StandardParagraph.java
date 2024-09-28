@@ -18,8 +18,8 @@ import static java.util.stream.Collectors.joining;
  * runs a word or a string of words is spread.</p>
  * <p>This class aggregates multiple runs so they can be treated as a single text, no matter how many runs the text
  * spans.
- * Call {@link #add(R, int)} to add all runs that should be aggregated. Then, call
- * methods to modify the aggregated text. Finally, call {@link #asString()} to get the modified text.
+ * Create a {@link StandardParagraph} then, call methods to modify the aggregated text.
+ * Finally, call {@link #asString()} to get the modified text.
  *
  * @author Joseph Verron
  * @author Tom Hombergs
@@ -111,7 +111,7 @@ public class StandardParagraph
             replaceWithBr(placeholder, br);
         }
         else {
-            throw new AssertionError("replacement must be a R");
+            throw new AssertionError("Replacement must be a R or Br, but was a " + replacement.getClass());
         }
     }
 
@@ -202,7 +202,7 @@ public class StandardParagraph
             IndexedRun lastRun,
             List<IndexedRun> affectedRuns
     ) {
-        // remove the expression from first run
+        // remove the expression from the first run
         firstRun.replace(matchStartIndex, matchEndIndex, "");
         // remove all runs between first and last
         for (IndexedRun run : affectedRuns) {
@@ -211,7 +211,7 @@ public class StandardParagraph
                 contents.remove(run.run());
             }
         }
-        // remove the expression from last run
+        // remove the expression from the last run
         lastRun.replace(matchStartIndex, matchEndIndex, "");
     }
 

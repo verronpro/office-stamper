@@ -1,13 +1,12 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.Br;
-import org.docx4j.wml.R;
-import org.docx4j.wml.STBrType;
+import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.utils.WmlFactory;
 
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
@@ -54,7 +53,6 @@ public class PlaceholderReplacer
      */
     public void resolveExpressions(DocxPart document, Object expressionContext) {
         document.streamParagraphs()
-                .map(StandardParagraph::new)
                 .forEach(paragraph -> resolveExpressionsForParagraph(document, paragraph, expressionContext));
     }
 
@@ -89,7 +87,7 @@ public class PlaceholderReplacer
             var message = "Expression %s could not be resolved against context of type %s"
                     .formatted(placeholder.expression(), context.getClass().getSimpleName());
             var resolution = exceptionResolver.resolve(placeholder, message, e);
-            return RunUtil.create(resolution);
+            return WmlFactory.newRun(resolution);
         }
     }
 

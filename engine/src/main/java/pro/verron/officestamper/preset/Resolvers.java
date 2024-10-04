@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage.createImagePart;
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
 /**
  * This class provides static methods to create different types of
@@ -424,7 +425,7 @@ public class Resolvers {
                 String expression,
                 Object object
         ) {
-            return RunUtil.create(text);
+            return newRun(text);
         }
 
         /**
@@ -459,7 +460,7 @@ public class Resolvers {
                 Placeholder placeholder,
                 Object object
         ) {
-            return RunUtil.create(placeholder.expression());
+            return newRun(placeholder.expression());
         }
 
         @Override
@@ -500,7 +501,7 @@ public class Resolvers {
                 String expression,
                 Object object
         ) {
-            return RunUtil.create(String.valueOf(object));
+            return newRun(String.valueOf(object));
         }
     }
 }

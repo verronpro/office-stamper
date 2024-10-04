@@ -12,7 +12,7 @@ import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
 public class Utils {
 
     private Utils() {
-        throw new OfficeStamperException("Utils cannot be instantiated");
+        throw new OfficeStamperException("Utility class");
     }
 
     public static final String LOGGING_FORMAT_KEY = "java.util.logging.SimpleFormatter.format";

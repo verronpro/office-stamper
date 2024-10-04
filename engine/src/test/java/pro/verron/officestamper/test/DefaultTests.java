@@ -775,7 +775,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """
                         First page is landscape.
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
                         Second page is portrait, layout change should survive to repeatParagraph processor (Homer).
                         
                         Without a section break changing the layout in between, but a page break instead.<break page>
@@ -784,7 +784,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         
                         Without a section break changing the layout in between, but a page break instead.<break page>
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
                         Fourth page is set to landscape again.
                         """);
     }
@@ -795,16 +795,16 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var expected = """
                 First page is landscape.
                 
-                ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
                 Second page is portrait, layout change should survive to repeatParagraph processor (Homer).
                 
-                ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                ❬With a page break changing the layout in between.❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
+                ❬With a page break changing the layout in between.❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
                 Second page is portrait, layout change should survive to repeatParagraph processor (Marge).
                 
-                ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
                 With a page break changing the layout in between.
-                ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
                 Fourth page is set to portrait again.
                 """;
 
@@ -828,16 +828,16 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """
                         First page is portrait.
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
                         Second page is landscape, layout change should survive to repeatDocPart (Homer).
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
-                        ❬With a break setting the layout to portrait in between.❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
+                        ❬With a break setting the layout to portrait in between.❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
                         Second page is landscape, layout change should survive to repeatDocPart (Marge).
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
-                        ❬With a break setting the layout to portrait in between.❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
+                        ❬With a break setting the layout to portrait in between.❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
                         Fourth page is set to landscape again.
                         """);
     }
@@ -863,28 +863,28 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """
                         First page is portrait.
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
                         Second page is landscape, layout change should survive to repeatDocPart (Homer).
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
                         With a break setting the layout to portrait in between.
                         |===
                         |
                         
                         
                         |===
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
                         Second page is landscape, layout change should survive to repeatDocPart (Marge).
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
                         With a break setting the layout to portrait in between.
                         |===
                         |
                         
                         
                         |===
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
                         Fourth page is set to landscape again.
                         """);
     }
@@ -899,7 +899,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """
                         First page is landscape.
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
                         Second page is portrait, layout change should survive to repeatDocPart (Homer).
                         <break page>
                         
@@ -908,7 +908,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         <break page>
                         
                         Without a break changing the layout in between (page break should be repeated).
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
                         Fourth page is set to landscape again.
                         """);
     }

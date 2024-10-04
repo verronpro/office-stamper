@@ -58,8 +58,8 @@ public class StandardComment
         List<Object> elements = new ArrayList<>();
         boolean startFound = false;
         boolean endFound = false;
-        var parentElements = getParent().getContent();
-        for (Object element : parentElements) {
+        var siblings = getParent().getContent();
+        for (Object element : siblings) {
             startFound = startFound || DocumentUtil.depthElementSearch(getCommentRangeStart(), element);
             if (startFound && !endFound) elements.add(element);
             endFound = endFound || DocumentUtil.depthElementSearch(getCommentRangeEnd(), element);

@@ -767,7 +767,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment() {
         return arguments(
-                "changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment",
+                "In multiple layouts, keeps section orientations outside RepeatParagraph comments",
                 OfficeStamperConfigurations.standard()
                                            .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
@@ -811,7 +811,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var config = OfficeStamperConfigurations.standard()
                                                 .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
         return arguments(
-                "changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithSectionBreakInsideComment",
+                "In multiple layouts, keeps section orientations inside RepeatParagraph comments",
                 config,
                 context,
                 template,
@@ -820,7 +820,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment() {
         return arguments(
-                "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment",
+                "In multiple layouts, keeps section orientations outside RepeatDocPart comments",
                 OfficeStamperConfigurations.standard()
                                            .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
@@ -855,7 +855,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement() {
         return arguments(
-                "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement",
+                "In multiple layouts, keeps section orientations inside RepeatDocPart comments with a table as last element",
                 OfficeStamperConfigurations.standard()
                                            .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
@@ -891,7 +891,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment() {
         return arguments(
-                "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment",
+                "In multiple layouts, keeps section orientation outside RepeatDocPart comment",
                 OfficeStamperConfigurations.standard()
                                            .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
@@ -1352,7 +1352,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                                                 .setExceptionResolver(ExceptionResolvers.defaulting(defaultValue))
                                                 .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
 
-        return arguments("mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders",
+        return arguments("Should be able to stamp from a Map<String, Object> context",
                 config,
                 context,
                 template,
@@ -1444,9 +1444,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    @MethodSource("tests") @ParameterizedTest(name = "{0}") void features(
-            String ignoredName, OfficeStamperConfiguration config, Object context, InputStream template, String expected
-    ) {
+    @MethodSource("tests") @ParameterizedTest(name = "{0}") void features(String ignoredName, OfficeStamperConfiguration config, Object context, InputStream template, String expected) {
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);

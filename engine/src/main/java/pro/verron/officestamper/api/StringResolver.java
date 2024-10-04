@@ -2,7 +2,8 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.core.RunUtil;
+
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
 /**
  * This is an abstract class that provides a generic implementation for
@@ -46,7 +47,7 @@ public abstract class StringResolver<T>
             String expression,
             Object object
     ) {
-        return RunUtil.create(resolve(type.cast(object)));
+        return newRun(resolve(type.cast(object)));
     }
 
     /**

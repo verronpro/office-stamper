@@ -1,8 +1,6 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.TextUtils;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.CommentRangeEnd;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.Comments;
@@ -46,7 +44,7 @@ class CommentCollectorWalker
 
         var sourceDocument = docxPart.document();
         CommentUtil.getCommentsPart(sourceDocument.getParts())
-                   .map(CommentCollectorWalker::extractContent)
+                   .map(CommentUtil::extractContent)
                    .map(Comments::getComment)
                    .stream()
                    .flatMap(Collection::stream)
@@ -102,14 +100,6 @@ class CommentCollectorWalker
                          .stream()
                          .map(TextUtils::getText)
                          .collect(joining(""));
-    }
-
-    private static Comments extractContent(CommentsPart commentsPart1) {
-        try {
-            return commentsPart1.getContents();
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
     }
 
     @Override

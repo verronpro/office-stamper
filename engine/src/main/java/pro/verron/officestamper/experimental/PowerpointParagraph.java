@@ -3,8 +3,10 @@ package pro.verron.officestamper.experimental;
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
+import org.docx4j.wml.P;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
+import pro.verron.officestamper.utils.WmlFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -190,6 +192,20 @@ public class PowerpointParagraph
                    .map(PowerpointRun::run)
                    .map(CTRegularTextRun::getT)
                    .collect(joining()) + "\n";
+    }
+
+    @Override public List<Object> paragraphContent() {
+        return paragraph.getEGTextRun();
+    }
+
+    @Override public P getP() {
+        var p = WmlFactory.newParagraph(paragraph.getEGTextRun());
+        p.setParent(paragraph.getParent());
+        return p;
+    }
+
+    @Override public Object parent() {
+        return paragraph.getParent();
     }
 
     private List<PowerpointRun> getAffectedRuns(int startIndex, int endIndex) {

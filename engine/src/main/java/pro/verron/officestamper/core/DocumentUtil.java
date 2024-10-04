@@ -28,7 +28,6 @@ public class DocumentUtil {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
     }
 
-
     public static <T> Stream<T> streamObjectElements(
             DocxPart source,
             Class<T> elementClass

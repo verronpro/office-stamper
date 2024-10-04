@@ -5,9 +5,13 @@ import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
+import org.docx4j.wml.CTSdtContentRun;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
+import org.docx4j.wml.SdtRun;
 import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.utils.WmlFactory;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,8 +35,14 @@ public final class TextualDocxPart
         this.contentAccessor = contentAccessor;
     }
 
-    public Stream<P> streamParagraphs() {
-        return DocumentUtil.streamObjectElements(this, P.class);
+    public Stream<Paragraph> streamParagraphs() {
+        return Stream.concat(DocumentUtil.streamObjectElements(this, P.class)
+                                         .map(StandardParagraph::from),
+                DocumentUtil.streamObjectElements(this, SdtRun.class)
+                            .map(SdtRun::getSdtContent)
+                            .filter(CTSdtContentRun.class::isInstance)
+                            .map(CTSdtContentRun.class::cast)
+                            .map(StandardParagraph::from));
     }
 
     public Stream<DocxPart> streamParts(String type) {
@@ -74,9 +84,9 @@ public final class TextualDocxPart
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (TextualDocxPart) obj;
-        return Objects.equals(this.document, that.document)
-               && Objects.equals(this.part, that.part)
-               && Objects.equals(this.contentAccessor, that.contentAccessor);
+        return Objects.equals(this.document, that.document) && Objects.equals(this.part, that.part) && Objects.equals(
+                this.contentAccessor,
+                that.contentAccessor);
     }
 
     @Override public String toString() {

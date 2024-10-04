@@ -2,7 +2,6 @@ package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
-import org.docx4j.jaxb.Context;
 import org.docx4j.model.styles.StyleUtil;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.*;
@@ -10,11 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.WmlFactory;
 
 import java.util.Objects;
 import java.util.Random;
 
 import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
+import static pro.verron.officestamper.utils.WmlFactory.newText;
 
 /**
  * Utility class to handle runs.
@@ -28,7 +30,6 @@ public class RunUtil {
     private static final Random random = new Random();
 
     private static final String PRESERVE = "preserve";
-    private static final ObjectFactory factory = Context.getWmlObjectFactory();
     private static final Logger log = LoggerFactory.getLogger(RunUtil.class);
 
     private RunUtil() {
@@ -93,21 +94,8 @@ public class RunUtil {
      * @return the newly created run.
      */
     public static R create(String text, PPr paragraphPr) {
-        R run = create(text);
+        R run = newRun(text);
         applyParagraphStyle(run, paragraphPr);
-        return run;
-    }
-
-    /**
-     * Creates a new run with the specified text.
-     *
-     * @param text the initial text of the run.
-     *
-     * @return the newly created run.
-     */
-    public static R create(String text) {
-        R run = factory.createR();
-        setText(run, text);
         return run;
     }
 
@@ -134,23 +122,9 @@ public class RunUtil {
     public static void setText(R run, String text) {
         run.getContent()
            .clear();
-        Text textObj = createText(text);
+        Text textObj = newText(text);
         run.getContent()
            .add(textObj);
-    }
-
-    /**
-     * Creates a text object with the given text.
-     *
-     * @param text the text to set.
-     *
-     * @return the newly created text object.
-     */
-    public static Text createText(String text) {
-        Text textObj = factory.createText();
-        textObj.setValue(text);
-        textObj.setSpace(PRESERVE); // make the text preserve spaces
-        return textObj;
     }
 
 
@@ -229,7 +203,7 @@ public class RunUtil {
     }
 
     static R create(String text, RPr rPr) {
-        R newStartRun = create(text);
+        R newStartRun = newRun(text);
         newStartRun.setRPr(rPr);
         return newStartRun;
     }

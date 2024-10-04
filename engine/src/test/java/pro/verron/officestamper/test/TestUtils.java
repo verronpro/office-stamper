@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static pro.verron.officestamper.utils.WmlFactory.*;
+
 
 /**
  * A utility class for testing.
@@ -49,7 +51,7 @@ public class TestUtils {
         }
     }
 
-    static InputStream makeResource(String content)
+    public static InputStream makeResource(String content)
             throws Docx4JException, IOException {
         var aPackage = WordprocessingMLPackage.createPackage();
         var mainDocumentPart = aPackage.getMainDocumentPart();
@@ -57,7 +59,7 @@ public class TestUtils {
                .forEach(line -> {
                    var split = line.split("\\|TAB\\|");
                    var value = split[0];
-                   var run = initRun(value);
+                   var run = newRun(value);
                    int i = 1;
                    while (i < split.length) {
                        var s = split[i];
@@ -69,23 +71,14 @@ public class TestUtils {
                           .add(text);
                        i++;
                    }
-                   var p1 = new P();
-                   p1.getContent()
-                     .add(run);
-                   mainDocumentPart.addObject(p1);
+                       var p1 = new P();
+        p1.getContent()
+          .add(run);
+        mainDocumentPart.addObject(p1);
                });
         var outputStream = IOStreams.getOutputStream();
         aPackage.save(outputStream);
         return IOStreams.getInputStream(outputStream);
-    }
-
-    private static R initRun(String value) {
-        var r = new R();
-        var text = new Text();
-        text.setValue(value);
-        r.getContent()
-         .add(text);
-        return r;
     }
 
     static Image getImage(Path path) {

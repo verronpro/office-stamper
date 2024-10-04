@@ -65,7 +65,8 @@ public final class TextualDocxPart
     }
 
     public CommentsPart commentsPart() {
-        return CommentUtil.getCommentsPart(document.getParts());
+        return CommentUtil.getCommentsPart(document.getParts())
+                          .orElse(WmlFactory.newCommentsPart());
     }
 
     @Override public DocxPart from(ContentAccessor accessor) {

@@ -1,12 +1,17 @@
 package pro.verron.officestamper.api;
 
+import org.docx4j.wml.P;
 import org.docx4j.wml.R;
+
+import java.util.List;
 
 /**
  * The Paragraph interface represents a paragraph in a text document.
  * It provides methods for replacing a placeholder within the paragraph and retrieving the paragraph as a string.
  */
 public interface Paragraph {
+
+    P getP(); // TODO replace with API not exposing the docx4j  wrapper
 
     /**
      * Replaces all occurrences of a placeholder with a specified replacement value within a paragraph.
@@ -17,8 +22,7 @@ public interface Paragraph {
      * @deprecated was used by the core to deal with multiline paragraphs, users should fallback to
      * {@link #replace(Placeholder, Object)} only
      */
-    @Deprecated(since = "2.4", forRemoval = true)
-    default void replaceAll(Placeholder placeholder, R replacement) {
+    @Deprecated(since = "2.4", forRemoval = true) default void replaceAll(Placeholder placeholder, R replacement) {
         while (contains(placeholder.expression())) {
             replace(placeholder, replacement);
         }
@@ -33,8 +37,7 @@ public interface Paragraph {
      *
      * @deprecated was used by the core to deal with multiline paragraphs
      */
-    @Deprecated(since = "2.4", forRemoval = true)
-    default boolean contains(String expression) {
+    @Deprecated(since = "2.4", forRemoval = true) default boolean contains(String expression) {
         return asString().contains(expression);
     }
 
@@ -52,4 +55,8 @@ public interface Paragraph {
      * @return the paragraph as a string
      */
     String asString();
+
+    List<Object> paragraphContent(); // TODO replace with API not exposing the docx4j  wrapper
+
+    Object parent(); // TODO replace with API not exposing the docx4j  wrapper
 }

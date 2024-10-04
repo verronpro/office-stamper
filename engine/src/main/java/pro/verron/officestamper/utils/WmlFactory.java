@@ -1,8 +1,10 @@
 package pro.verron.officestamper.utils;
 
 import org.docx4j.dml.wordprocessingDrawing.Inline;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
+import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -178,6 +180,7 @@ public class WmlFactory {
      * Creates a new Drawing object containing the provided Inline object.
      *
      * @param inline The Inline object to be contained within the new Drawing.
+     *
      * @return A new Drawing object encapsulating the provided inline object.
      */
     public static Drawing newDrawing(Inline inline) {
@@ -193,7 +196,9 @@ public class WmlFactory {
      * @param imagePart    The binary part abstract image to be used.
      * @param filenameHint A hint for the filename of the image.
      * @param altText      Alternative text for the image.
+     *
      * @return A new Inline object containing the specified image information.
+     *
      * @throws OfficeStamperException If there is an error creating the image inline.
      */
     public static Inline newInline(BinaryPartAbstractImage imagePart, String filenameHint, String altText) {
@@ -209,9 +214,10 @@ public class WmlFactory {
     /**
      * Creates a new BinaryPartAbstractImage using the provided document, main document part, and image bytes.
      *
-     * @param document       The WordprocessingMLPackage document to which the image will be added.
+     * @param document         The WordprocessingMLPackage document to which the image will be added.
      * @param mainDocumentPart The MainDocumentPart of the document where the image will be inserted.
-     * @param imageBytes     The byte array representing the image data to be added.
+     * @param imageBytes       The byte array representing the image data to be added.
+     *
      * @return A new BinaryPartAbstractImage object containing the image data.
      */
     public static BinaryPartAbstractImage newBinaryPartAbstractImage(
@@ -228,6 +234,7 @@ public class WmlFactory {
      * Creates a new Comments object and populates it with a list of Comment objects.
      *
      * @param list A list of Comments.Comment objects to be added to the new Comments object.
+     *
      * @return A new Comments object containing the provided Comment objects.
      */
     public static Comments newComments(List<Comments.Comment> list) {
@@ -235,5 +242,21 @@ public class WmlFactory {
         List<Comments.Comment> commentList = comments.getComment();
         commentList.addAll(list);
         return comments;
+    }
+
+    /**
+     * Creates a new CommentsPart object.
+     * This method attempts to create a new instance of CommentsPart.
+     * If an InvalidFormatException occurs during the creation process, it wraps the exception in an
+     * OfficeStamperException and throws it.
+     *
+     * @return A new instance of CommentsPart.
+     */
+    public static CommentsPart newCommentsPart() {
+        try {
+            return new CommentsPart();
+        } catch (InvalidFormatException e) {
+            throw new OfficeStamperException(e);
+        }
     }
 }

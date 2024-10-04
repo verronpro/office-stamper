@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.WmlFactory;
 
 import java.util.List;
 
@@ -83,17 +84,15 @@ public class SectionUtil {
 		return count % 2 != 0;
 	}
 
-	/**
-	 * Creates a new section break object.
-	 *
-	 * @param sectPr a {@link SectPr} object
-	 * @param paragraph a {@link P} object
-	 */
-	public static void applySectionBreakToParagraph(SectPr sectPr, P paragraph) {
-		PPr nextPPr = ofNullable(paragraph.getPPr())
-				.orElseGet(factory::createPPr);
-		nextPPr.setSectPr(XmlUtils.deepCopy(sectPr));
-		paragraph.setPPr(nextPPr);
-	}
-
+    /**
+     * Creates a new section break object.
+     *
+     * @param sectPr    a {@link SectPr} object
+     * @param paragraph a {@link P} object
+     */
+    public static void applySectionBreakToParagraph(SectPr sectPr, P paragraph) {
+        PPr nextPPr = ofNullable(paragraph.getPPr()).orElseGet(WmlFactory::newPPr);
+        nextPPr.setSectPr(XmlUtils.deepCopy(sectPr));
+        paragraph.setPPr(nextPPr);
+    }
 }

@@ -4,7 +4,6 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.core.RunUtil;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -270,15 +269,12 @@ public class Resolvers {
          */
         private R resolve(DocxPart document, Image image) {
             try {
-                // TODO_LATER: adding the same image twice will put the image twice into the docx-zip file. make the
-                // second addition of the same image a reference instead.
-                var imageWidth = image.getMaxWidth();
-                var imagePart = createImagePart(document.document(), document.part(), image.getImageBytes());
-                return RunUtil.createRunWithImage(imageWidth, imagePart);
+                return image.newRun(document, "dummyFileName", "dummyAltText");
             } catch (Exception e) {
                 throw new OfficeStamperException("Error while adding image to document!", e);
             }
         }
+
     }
 
     /**

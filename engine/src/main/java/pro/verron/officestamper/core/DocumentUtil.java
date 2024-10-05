@@ -14,6 +14,8 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
+
 /**
  * Utility class to retrieve elements from a document.
  *
@@ -107,7 +109,7 @@ public class DocumentUtil {
                     var imageData = docxImageExtractor.getRunDrawingData(currentR);
                     var maxWidth = docxImageExtractor.getRunDrawingMaxWidth(currentR);
                     var imagePart = tryCreateImagePart(target, imageData);
-                    var runWithImage = RunUtil.createRunWithImage(maxWidth, imagePart);
+                    var runWithImage = newRun(maxWidth, imagePart, "dummyFileName", "dummyAltText");
                     replacements.put(currentR, runWithImage);
                 }
                 else if (currentObj instanceof ContentAccessor contentAccessor)

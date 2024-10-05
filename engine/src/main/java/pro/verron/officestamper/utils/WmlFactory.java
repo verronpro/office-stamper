@@ -2,11 +2,10 @@ package pro.verron.officestamper.utils;
 
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.*;
+import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.Arrays;
@@ -177,60 +176,6 @@ public class WmlFactory {
     }
 
     /**
-     * Creates a new Drawing object containing the provided Inline object.
-     *
-     * @param inline The Inline object to be contained within the new Drawing.
-     *
-     * @return A new Drawing object encapsulating the provided inline object.
-     */
-    public static Drawing newDrawing(Inline inline) {
-        var drawing = new Drawing();
-        var anchorOrInline = drawing.getAnchorOrInline();
-        anchorOrInline.add(inline);
-        return drawing;
-    }
-
-    /**
-     * Creates a new Inline object for the given image part, filename hint, and alt text.
-     *
-     * @param imagePart    The binary part abstract image to be used.
-     * @param filenameHint A hint for the filename of the image.
-     * @param altText      Alternative text for the image.
-     *
-     * @return A new Inline object containing the specified image information.
-     *
-     * @throws OfficeStamperException If there is an error creating the image inline.
-     */
-    public static Inline newInline(BinaryPartAbstractImage imagePart, String filenameHint, String altText) {
-        try {
-            var id1 = RANDOM.nextLong(100_000L);
-            var id2 = RANDOM.nextInt(100_000);
-            return imagePart.createImageInline(filenameHint, altText, id1, id2, false);
-        } catch (Exception e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
-    /**
-     * Creates a new BinaryPartAbstractImage using the provided document, main document part, and image bytes.
-     *
-     * @param document         The WordprocessingMLPackage document to which the image will be added.
-     * @param mainDocumentPart The MainDocumentPart of the document where the image will be inserted.
-     * @param imageBytes       The byte array representing the image data to be added.
-     *
-     * @return A new BinaryPartAbstractImage object containing the image data.
-     */
-    public static BinaryPartAbstractImage newBinaryPartAbstractImage(
-            WordprocessingMLPackage document, MainDocumentPart mainDocumentPart, byte[] imageBytes
-    ) {
-        try {
-            return BinaryPartAbstractImage.createImagePart(document, mainDocumentPart, imageBytes);
-        } catch (Exception e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
-    /**
      * Creates a new Comments object and populates it with a list of Comment objects.
      *
      * @param list A list of Comments.Comment objects to be added to the new Comments object.
@@ -258,5 +203,67 @@ public class WmlFactory {
         } catch (InvalidFormatException e) {
             throw new OfficeStamperException(e);
         }
+    }
+
+    /**
+     * Creates a new run containing an image with the specified attributes.
+     *
+     * @param maxWidth      the maximum width of the image, it can be null
+     * @param abstractImage the binary part abstract image to be included in the run
+     * @param filenameHint  the filename hint for the image
+     * @param altText       the alternative text for the image
+     *
+     * @return a new run element containing the image
+     */
+    public static R newRun(
+            @Nullable Integer maxWidth, BinaryPartAbstractImage abstractImage, String filenameHint, String altText
+    ) {
+        var inline = newInline(abstractImage, filenameHint, altText, maxWidth);
+        return newRun(newDrawing(inline));
+    }
+
+    /**
+     * Creates a new Inline object for the given image part, filename hint, and alt text.
+     *
+     * @param imagePart    The binary part abstract image to be used.
+     * @param filenameHint A hint for the filename of the image.
+     * @param altText      Alternative text for the image.
+     *
+     * @return A new Inline object containing the specified image information.
+     *
+     * @throws OfficeStamperException If there is an error creating the image inline.
+     */
+    public static Inline newInline(
+            BinaryPartAbstractImage imagePart,
+            String filenameHint,
+            String altText,
+            @Nullable Integer maxWidth
+    ) {
+        // creating random ids assuming they are unique,
+        // id must not be too large
+        // otherwise Word cannot open the document
+        var id1 = RANDOM.nextLong(100_000L);
+        var id2 = RANDOM.nextInt(100_000);
+        try {
+            return maxWidth == null
+                    ? imagePart.createImageInline(filenameHint, altText, id1, id2, false)
+                    : imagePart.createImageInline(filenameHint, altText, id1, id2, false, maxWidth);
+        } catch (Exception e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    /**
+     * Creates a new Drawing object containing the provided Inline object.
+     *
+     * @param inline The Inline object to be contained within the new Drawing.
+     *
+     * @return A new Drawing object encapsulating the provided inline object.
+     */
+    public static Drawing newDrawing(Inline inline) {
+        var drawing = new Drawing();
+        var anchorOrInline = drawing.getAnchorOrInline();
+        anchorOrInline.add(inline);
+        return drawing;
     }
 }

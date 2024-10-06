@@ -8,6 +8,7 @@ import org.docx4j.wml.*;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -74,8 +75,9 @@ public class WmlFactory {
      *
      * @return A new Comments.Comment object containing the provided value.
      */
-    public static Comments.Comment newComment(String value) {
+    public static Comments.Comment newComment(BigInteger id, String value) {
         var comment = new Comments.Comment();
+        comment.setId(id);
         var commentContent = comment.getContent();
         commentContent.add(newParagraph(value));
         return comment;
@@ -234,10 +236,7 @@ public class WmlFactory {
      * @throws OfficeStamperException If there is an error creating the image inline.
      */
     public static Inline newInline(
-            BinaryPartAbstractImage imagePart,
-            String filenameHint,
-            String altText,
-            @Nullable Integer maxWidth
+            BinaryPartAbstractImage imagePart, String filenameHint, String altText, @Nullable Integer maxWidth
     ) {
         // creating random ids assuming they are unique,
         // id must not be too large
@@ -265,5 +264,26 @@ public class WmlFactory {
         var anchorOrInline = drawing.getAnchorOrInline();
         anchorOrInline.add(inline);
         return drawing;
+    }
+
+    public static CommentRangeStart newCommentRangeStart(BigInteger id, P parent) {
+        var commentRangeStart = new CommentRangeStart();
+        commentRangeStart.setId(id);
+        commentRangeStart.setParent(parent);
+        return commentRangeStart;
+    }
+
+    public static CommentRangeEnd newCommentRangeEnd(BigInteger id, P parent) {
+        var commentRangeEnd = new CommentRangeEnd();
+        commentRangeEnd.setId(id);
+        commentRangeEnd.setParent(parent);
+        return commentRangeEnd;
+    }
+
+    public static R.CommentReference newCommentReference(BigInteger id, P parent) {
+        var commentReference = new R.CommentReference();
+        commentReference.setId(id);
+        commentReference.setParent(parent);
+        return commentReference;
     }
 }

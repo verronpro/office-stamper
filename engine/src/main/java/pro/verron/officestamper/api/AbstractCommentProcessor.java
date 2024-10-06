@@ -42,6 +42,12 @@ public abstract class AbstractCommentProcessor
         this.currentComment = currentComment;
     }
 
+    @Override public void setProcessorContext(ProcessorContext processorContext) {
+        setParagraph(processorContext.paragraph());
+        setCurrentRun(processorContext.run());
+        setCurrentCommentWrapper(processorContext.comment());
+    }
+
     public R getCurrentRun() {
         return currentRun;
     }
@@ -50,25 +56,25 @@ public abstract class AbstractCommentProcessor
         this.currentRun = run;
     }
 
-    /**
-     *
-     * @param paragraph coordinates of the currently processed paragraph within the template.
-     * @deprecated use {@link #setParagraph(Paragraph)} instead
-     */
-    @Deprecated(since = "2.6", forRemoval = true) public void setParagraph(P paragraph) {
-        this.paragraph = StandardParagraph.from(paragraph);
-    }
-
-    @Override public void setParagraph(Paragraph paragraph) {
-        this.paragraph = paragraph;
+    //TODO replace api
+    @Override public Object getParent() {
+        return paragraph.parent();
     }
 
     public Paragraph getParagraph() {
         return paragraph;
     }
 
-    @Override public Object getParent() {
-        return paragraph.getP()
-                        .getParent();
+    /**
+     * @param paragraph coordinates of the currently processed paragraph within the template.
+     *
+     * @deprecated use {@link #setParagraph(Paragraph)} instead
+     */
+    @Deprecated(since = "2.6", forRemoval = true) public void setParagraph(P paragraph) {
+        this.paragraph = StandardParagraph.from(paragraph);
+    }
+
+    public void setParagraph(Paragraph paragraph) {
+        this.paragraph = paragraph;
     }
 }

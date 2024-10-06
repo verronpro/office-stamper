@@ -10,13 +10,7 @@ import org.springframework.lang.Nullable;
  */
 public interface CommentProcessor {
 
-    default void setProcessorContext(
-            Paragraph paragraph, @Nullable R run, @Nullable Comment comment
-    ) {
-        setParagraph(paragraph);
-        setCurrentRun(run);
-        setCurrentCommentWrapper(comment);
-    }
+    void setProcessorContext(ProcessorContext processorContext);
 
     /**
      * Passes the run that is currently being processed (i.e., the run that is commented in the
@@ -69,10 +63,6 @@ public interface CommentProcessor {
 
     Paragraph getParagraph();
 
-    default void setParagraph(Paragraph paragraph) {
-        setParagraph(paragraph.getP());
-    }
-
     /**
      * Passes the paragraph that is currently being processed (i.e., the paragraph that is commented in the
      * .docx template). This method is always called BEFORE the custom
@@ -81,7 +71,7 @@ public interface CommentProcessor {
      *
      * @param paragraph coordinates of the currently processed paragraph within the template.
      *
-     * @deprecated use {@link #setParagraph(Paragraph)} instead
+     * @deprecated use {@link #setProcessorContext(ProcessorContext)} instead
      */
     @Deprecated(since = "2.6", forRemoval = true)
     void setParagraph(P paragraph);

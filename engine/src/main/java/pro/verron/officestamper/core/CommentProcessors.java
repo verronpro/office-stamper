@@ -1,7 +1,5 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.wml.*;
-import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 
 import java.math.BigInteger;
@@ -36,9 +34,9 @@ public class CommentProcessors
         return commentWrapper;
     }
 
-    public void setContext(Paragraph paragraph, @Nullable R run, Comment comment) {
+    public void setContext(ProcessorContext context) {
         for (var processor : processors.values()) {
-            processor.setProcessorContext(paragraph, run, comment);
+            processor.setProcessorContext(context);
         }
     }
 

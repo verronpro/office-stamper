@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static pro.verron.officestamper.core.CommentCollectorWalker.collectComments;
+import static pro.verron.officestamper.core.Placeholders.findProcessors;
 
 /**
  * Allows registration of {@link CommentProcessor} objects. Each registered
@@ -89,7 +90,8 @@ public class CommentProcessorRegistry {
         return CommentUtil.getCommentAround(run, source.document())
                           .flatMap(c -> Optional.ofNullable(comments.get(c.getId())))
                           .flatMap(c -> {
-                              commentProcessors.setContext(paragraph, run, c);
+                              var context = new ProcessorContext(paragraph, run, c, c.asPlaceholder());
+                              commentProcessors.setContext(context);
                               var comment = runCommentProcessors(expressionContext, c);
                               comments.remove(c.getComment()
                                                .getId());
@@ -115,7 +117,8 @@ public class CommentProcessorRegistry {
         return CommentUtil.getCommentFor(paragraphContent, source.document())
                           .flatMap(c -> Optional.ofNullable(comments.get(c.getId())))
                           .flatMap(c -> {
-                              commentProcessors.setContext(paragraph, null, c);
+                              var context = new ProcessorContext(paragraph, null, c, c.asPlaceholder());
+                              commentProcessors.setContext(context);
                               var comment = runCommentProcessors(expressionContext, c);
                               comments.remove(c.getComment()
                                                .getId());
@@ -132,11 +135,13 @@ public class CommentProcessorRegistry {
      * @param <T>       type of the context root object
      */
     private <T> void runProcessorsOnInlineContent(T context, Paragraph paragraph) {
-        var text = paragraph.asString();
-        var placeholders = Placeholders.findProcessors(text);
-
-        for (var placeholder : placeholders) {
-            commentProcessors.setContext(source, paragraph, placeholder);
+        var processorContexts = findProcessors(paragraph.asString())
+                .stream()
+                .map(p -> newProcessorContext(paragraph, p))
+                .toList();
+        for (var processorContext : processorContexts) {
+            commentProcessors.setContext(processorContext);
+            var placeholder = processorContext.placeholder();
             try {
                 expressionResolver.setContext(context);
                 expressionResolver.resolve(placeholder);
@@ -150,9 +155,7 @@ public class CommentProcessorRegistry {
         }
     }
 
-    private <T> Optional<Comment> runCommentProcessors(
-            T context, Comment comment
-    ) {
+    private <T> Optional<Comment> runCommentProcessors(T context, Comment comment) {
         var placeholder = comment.asPlaceholder();
         try {
             expressionResolver.setContext(context);
@@ -164,5 +167,11 @@ public class CommentProcessorRegistry {
             exceptionResolver.resolve(placeholder, message, e);
             return Optional.empty();
         }
+    }
+
+    private ProcessorContext newProcessorContext(Paragraph paragraph, Placeholder placeholder) {
+        var firstRun = paragraph.firstRun();
+        var fakedComment = CommentProcessors.fakeComment(source, paragraph, placeholder);
+        return new ProcessorContext(paragraph, firstRun, fakedComment, placeholder);
     }
 }

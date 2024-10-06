@@ -124,6 +124,11 @@ public class StandardParagraph
         return contents;
     }
 
+    @Override public R firstRun() {
+        return (R) paragraphContent()
+                .get(0);
+    }
+
     /**
      * Retrieves the P object associated with this StandardParagraph.
      *

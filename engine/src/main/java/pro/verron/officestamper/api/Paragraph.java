@@ -2,6 +2,7 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
+import pro.verron.officestamper.core.StandardComment;
 
 import java.util.List;
 
@@ -10,6 +11,8 @@ import java.util.List;
  * It provides methods for replacing a placeholder within the paragraph and retrieving the paragraph as a string.
  */
 public interface Paragraph {
+
+    StandardComment fakeComment(DocxPart source, Placeholder placeholder);
 
     R firstRun(); // TODO replace with API not exposing the docx4j API directly
 

@@ -171,7 +171,7 @@ public class CommentProcessorRegistry {
 
     private ProcessorContext newProcessorContext(Paragraph paragraph, Placeholder placeholder) {
         var firstRun = paragraph.firstRun();
-        var fakedComment = CommentProcessors.fakeComment(source, paragraph, placeholder);
+        var fakedComment = paragraph.fakeComment(source, placeholder);
         return new ProcessorContext(paragraph, firstRun, fakedComment, placeholder);
     }
 }

@@ -32,10 +32,9 @@ public class StandardParagraph
         implements Paragraph {
 
     private static final Random RANDOM = new Random();
-
-    private List<IndexedRun> runs;
     private final List<Object> contents;
     private final P p;
+    private List<IndexedRun> runs;
 
     private StandardParagraph(List<Object> paragraphContent, P p) {
         this.contents = paragraphContent;
@@ -93,6 +92,22 @@ public class StandardParagraph
         return commentWrapper;
     }
 
+    @Override public R firstRun() {
+        return (R) paragraphContent().get(0);
+    }
+
+    /**
+     * Retrieves the P object associated with this StandardParagraph.
+     *
+     * @return the P object of this paragraph.
+     *
+     * @deprecated Not recommended, as will be replaced by other API
+     */
+    @Deprecated(since = "2.6", forRemoval = true)
+    @Override public P getP() {
+        return p;
+    }
+
     /**
      * Replaces the given expression with the replacement object within
      * the paragraph.
@@ -132,21 +147,6 @@ public class StandardParagraph
      */
     @Override public List<Object> paragraphContent() {
         return contents;
-    }
-
-    @Override public R firstRun() {
-        return (R) paragraphContent().get(0);
-    }
-
-    /**
-     * Retrieves the P object associated with this StandardParagraph.
-     *
-     * @return the P object of this paragraph.
-
-     * @deprecated Not recommended, as will be replaced by other API
-     */
-    @Deprecated(since = "2.6", forRemoval = true) @Override public P getP() {
-        return p;
     }
 
     /**
@@ -230,6 +230,12 @@ public class StandardParagraph
         }
     }
 
+    private List<IndexedRun> getAffectedRuns(int startIndex, int endIndex) {
+        return runs.stream()
+                   .filter(run -> run.isTouchedByRange(startIndex, endIndex))
+                   .toList();
+    }
+
     private void removeExpression(
             IndexedRun firstRun,
             int matchStartIndex,
@@ -260,12 +266,6 @@ public class StandardParagraph
             runContentIterator.add(subText);
             if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
         }
-    }
-
-    private List<IndexedRun> getAffectedRuns(int startIndex, int endIndex) {
-        return runs.stream()
-                   .filter(run -> run.isTouchedByRange(startIndex, endIndex))
-                   .toList();
     }
 
     /**

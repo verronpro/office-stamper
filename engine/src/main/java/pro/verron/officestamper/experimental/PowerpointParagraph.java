@@ -4,6 +4,7 @@ import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
 import org.docx4j.wml.P;
+import org.docx4j.wml.R;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
 import pro.verron.officestamper.utils.WmlFactory;
@@ -196,6 +197,11 @@ public class PowerpointParagraph
 
     @Override public List<Object> paragraphContent() {
         return paragraph.getEGTextRun();
+    }
+
+    @Override public R firstRun() {
+        return (R) paragraphContent()
+                .get(0);
     }
 
     @Override public P getP() {

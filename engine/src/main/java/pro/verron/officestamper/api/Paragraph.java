@@ -11,7 +11,9 @@ import java.util.List;
  */
 public interface Paragraph {
 
-    P getP(); // TODO replace with API not exposing the docx4j  wrapper
+    R firstRun(); // TODO replace with API not exposing the docx4j API directly
+
+    P getP(); // TODO replace with API not exposing the docx4j API directly
 
     /**
      * Replaces all occurrences of a placeholder with a specified replacement value within a paragraph.
@@ -56,7 +58,7 @@ public interface Paragraph {
      */
     String asString();
 
-    List<Object> paragraphContent(); // TODO replace with API not exposing the docx4j  wrapper
+    List<Object> paragraphContent(); // TODO replace with API not exposing the docx4j API directly
 
-    Object parent(); // TODO replace with API not exposing the docx4j  wrapper
+    Object parent(); // TODO replace with API not exposing the docx4j API directly
 }

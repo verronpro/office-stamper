@@ -30,7 +30,8 @@ import static pro.verron.officestamper.core.SectionUtil.hasOddNumberOfSectionBre
 public class ParagraphRepeatProcessor
         extends AbstractCommentProcessor
         implements CommentProcessorFactory.IParagraphRepeatProcessor {
-    private Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>();
+    private Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>(); // TODO replace the mapping by a Paragraphs to
+    // List<Object> mapping to better reflect the change
 
     /**
      * @param placeholderReplacer replaces placeholders with values

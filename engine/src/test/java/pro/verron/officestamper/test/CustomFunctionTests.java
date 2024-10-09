@@ -23,34 +23,35 @@ class CustomFunctionTests {
         var context = Contexts.show();
         var stamper = new TestDocxStamper<>(config);
         var expected = """
-                Custom Expression Function
-                ❬In this paragraph, we uppercase a variable: THE SIMPSONS.❘b=true❭
-                In this paragraph, we uppercase some multiline text: IT ALSO WORKS WITH<break line>
-                MULTILINE<break line>
+                == Custom Expression Function
+                
+                In this paragraph, we uppercase a variable: THE SIMPSONS.
+                In this paragraph, we uppercase some multiline text: IT ALSO WORKS WITH<br/>
+                MULTILINE<br/>
                 STRINGS OF TEXT.
-                To test that custom functions work together with comment expressions, we toggle visibility of this paragraph with a comment expression.
-                To test that custom functions work together with comment expressions, we toggle it inside a repeated paragraph: HOMER SIMPSON.
-                To test that custom functions work together with comment expressions, we toggle it inside a repeated paragraph: MARGE SIMPSON.
-                To test that custom functions work together with comment expressions, we toggle it inside a repeated paragraph: BART SIMPSON.
-                To test that custom functions work together with comment expressions, we toggle it inside a repeated paragraph: LISA SIMPSON.
-                To test that custom functions work together with comment expressions, we toggle it inside a repeated paragraph: MAGGIE SIMPSON.
+                We toggle this paragraph display with a processor using the custom function.
+                We check custom functions runs in placeholders after processing: HOMER SIMPSON.
+                We check custom functions runs in placeholders after processing: MARGE SIMPSON.
+                We check custom functions runs in placeholders after processing: BART SIMPSON.
+                We check custom functions runs in placeholders after processing: LISA SIMPSON.
+                We check custom functions runs in placeholders after processing: MAGGIE SIMPSON.
                 |===
-                |To test that custom functions work together with comment expressions, we toggle it inside a repeated row:
+                |We check custom functions runs in placeholders after processing:
                 
                 |HOMER SIMPSON
-                |DAN CASTELLANETA
+                |DAN CASTELLANETA<cnfStyle=000000100000>
                 
                 |MARGE SIMPSON
-                |JULIE KAVNER
+                |JULIE KAVNER<cnfStyle=000000100000>
                 
                 |BART SIMPSON
-                |NANCY CARTWRIGHT
+                |NANCY CARTWRIGHT<cnfStyle=000000100000>
                 
                 |LISA SIMPSON
-                |YEARDLEY SMITH
+                |YEARDLEY SMITH<cnfStyle=000000100000>
                 
                 |MAGGIE SIMPSON
-                |JULIE KAVNER
+                |JULIE KAVNER<cnfStyle=000000100000>
                 
                 
                 |===

@@ -73,7 +73,8 @@ public class CommentUtil {
             }
             // else restart
             else {
-                possibleComment = null;
+                possibleComment = null;// TODO There is  bug here when looking for a commented run and the run has
+                // ProofErr issues
                 foundChild = false;
             }
         }

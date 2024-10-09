@@ -250,15 +250,15 @@ public class Contexts {
                 getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
                 """
                         |===
-                        |1❬st❘vertAlign=superscript❭ Homer Simpson-❬Dan Castellaneta❘b=true❭
+                        |1❬st❘{vertAlign=superscript}❭ Homer Simpson-❬Dan Castellaneta❘{b=true}❭
                         
-                        |2❬nd❘vertAlign=superscript❭ Marge Simpson-❬Julie Kavner❘b=true❭
+                        |2❬nd❘{vertAlign=superscript}❭ Marge Simpson-❬Julie Kavner❘{b=true}❭
                         
-                        |3❬rd❘vertAlign=superscript❭ Bart Simpson-❬Nancy Cartwright❘b=true❭
+                        |3❬rd❘{vertAlign=superscript}❭ Bart Simpson-❬Nancy Cartwright❘{b=true}❭
                         
-                        |4❬th❘vertAlign=superscript❭ Lisa Simpson-❬Yeardley Smith❘b=true❭
+                        |4❬th❘{vertAlign=superscript}❭ Lisa Simpson-❬Yeardley Smith❘{b=true}❭
                         
-                        |5❬th❘vertAlign=superscript❭ Maggie Simpson-❬Julie Kavner❘b=true❭
+                        |5❬th❘{vertAlign=superscript}❭ Maggie Simpson-❬Julie Kavner❘{b=true}❭
                         
                         
                         |===

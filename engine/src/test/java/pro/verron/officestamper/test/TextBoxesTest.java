@@ -22,15 +22,15 @@ class TextBoxesTest {
         var stamper = new TestDocxStamper<Name>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         String expected = """
-                Expression Replacement in TextBoxes
-                [❬Bart Simpson❘color=auto❭]
+                == Expression Replacement in TextBoxes
+                
+                [Bart Simpson]
                 This should resolve to a name:\s
-                [❬${foo}❘color=auto❭]
+                [${foo}]
                 This should not resolve:\s
                 """;
         assertEquals(expected, actual);
     }
 
-    public record Name(String name) {
-    }
+    public record Name(String name) {}
 }

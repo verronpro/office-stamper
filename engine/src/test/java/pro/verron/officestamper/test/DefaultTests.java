@@ -193,8 +193,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments replaceWordWithIntegrationTest() {
-        return of("replaceWordWithIntegrationTest",
-                OfficeStamperConfigurations.standard(),
+        return of("Replace Word With integration test",
+                OfficeStamperConfigurations.standardWithPreprocessing(),
                 name("Simpsons"),
                 getResource(Path.of("ReplaceWordWithIntegrationTest.docx")),
                 """
@@ -253,7 +253,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 There are 6 characters.
                 """;
 
-        return arguments("repeatParagraphTest", OfficeStamperConfigurations.standard(), context, template, expected);
+        return arguments("Repeat Paragraph Integration test", standard(), context, template, expected);
     }
 
     private static Arguments repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument() {
@@ -303,8 +303,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments repeatDocPartTest() {
-        return of("repeatDocPartTest",
                 OfficeStamperConfigurations.standard(),
+        return of("Repeat Doc Part Integration test",
                 new Characters(List.of(new Role("Homer Simpson", "Dan Castellaneta"),
                         new Role("Marge Simpson", "Julie Kavner"),
                         new Role("Bart Simpson", "Nancy Cartwright"),
@@ -374,8 +374,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments repeatDocPartNestingTest() {
-        return of("repeatDocPartNestingTest",
                 OfficeStamperConfigurations.standard(),
+        return of("Repeat Doc Part Integration Test, with nested comments",
                 Contexts.schoolContext(),
                 getResource(Path.of("RepeatDocPartNestingTest.docx")),
                 """
@@ -939,11 +939,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 """;
 
-        return arguments("conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Display Paragraph If Integration test", standard(), context, template, expected);
     }
 
     private static Arguments conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved() {
@@ -971,8 +967,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-        return arguments("conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved",
-                OfficeStamperConfigurations.standard(),
+        return arguments("Display Paragraph If Integration test (off case) + Inline processors Integration test",
+                standard(),
                 context,
                 template,
                 expected);
@@ -1005,8 +1001,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-        return arguments("conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved",
                 OfficeStamperConfigurations.standard(),
+        return arguments("Display Paragraph If Integration test (on case) + Inline processors Integration test",
                 context,
                 template,
                 expected);
@@ -1035,11 +1031,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-        return arguments("conditionalDisplayOfTableRowsTest",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Display Table Row If Integration test",
+                standard(),
+                context, template, expected);
     }
 
     private static Arguments conditionalDisplayOfTableBug32Test() {
@@ -1069,11 +1063,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 This paragraph stays untouched.
                 """;
-        return arguments("conditionalDisplayOfTableBug32Test",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Display Table If Bug32 Regression test",
+                standard(), context, template, expected);
     }
 
     private static Arguments conditionalDisplayOfTableTest() {
@@ -1103,11 +1094,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 This paragraph stays untouched.
                 """;
-        return arguments("conditionalDisplayOfTablesTest",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Display Table If Integration test",
+                standard(), context, template, expected);
     }
 
     private static Arguments customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored()
@@ -1185,7 +1173,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var config = OfficeStamperConfigurations
                 .standard()
                 .setExceptionResolver(ExceptionResolvers.passing());
-        return arguments("expressionReplacementInTablesTest", config, context, template, expected);
+        return arguments("Placeholder replacement in tables", config, context, template, expected);
     }
 
     private static Arguments expressionReplacementWithFormattingTest() {
@@ -1210,8 +1198,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 ❬It should be white over darkblue: ❬Homer Simpson❘color=FFFFFF,highlight=darkBlue❭❘b=true❭
                 ❬It should be with header formatting: ❬Homer Simpson❘rStyle=TitreCar❭❘b=true❭
                 """;
-        return arguments("expressionReplacementWithFormattingTest",
                 OfficeStamperConfigurations.standard(),
+        return arguments("Placeholder replacement integration test (keep formatting)",
                 context,
                 template,
                 expected);
@@ -1231,8 +1219,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 Before Expression After.
                 ❬Before Expression After.❘spacing={after=140,before=0}❭
                 """;
-        return arguments("expressionWithSurroundingSpacesTest",
-                OfficeStamperConfigurations.standard(),
+        return arguments("Placeholder replacement test, spaces management",
+                standard(),
                 spacyContext,
                 template,
                 expected);
@@ -1252,7 +1240,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var config = OfficeStamperConfigurations
                 .standard()
                 .setExceptionResolver(ExceptionResolvers.passing());
-        return arguments("expressionReplacementWithCommentsTest", config, context, template, expected);
+        return arguments("Replace Word With Integration test", config, context, template, expected);
     }
 
     /**
@@ -1267,11 +1255,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350.
                 This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350 in the middle.
                 """;
-        return arguments("imageReplacementInGlobalParagraphsTest",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Image Type resolver integration test", standard(), context, template, expected);
     }
 
     private static Arguments imageReplacementInGlobalParagraphsTestWithMaxWidth() {
@@ -1283,8 +1267,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000.
                 This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000 in the middle.
                 """;
-        return arguments("imageReplacementInGlobalParagraphsTestWithMaxWidth",
-                OfficeStamperConfigurations.standard(),
+        return arguments("Image Type resolver integration test (with max width)",
+                standard(),
                 context,
                 template,
                 expected);
@@ -1292,15 +1276,14 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments leaveEmptyOnExpressionErrorTest() {
         var context = new Contexts.Name("Homer Simpson");
-        var template = getResource(Path.of("LeaveEmptyOnExpressionErrorTest" + ".docx"));
-        var expected = """
-                Leave me empty .
-                ❬❘u=single❭
-                """;
-        var config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.defaulting());
-        return arguments("leaveEmptyOnExpressionErrorTest", config, context, template, expected);
+        var template = getResource(Path.of("LeaveEmptyOnExpressionErrorTest.docx"));
+        var expected = "Leave me empty .\n";
+        var config = standard().setExceptionResolver(ExceptionResolvers.defaulting());
+        return arguments("Default Exception Resolver Integration test, with empty value",
+                config,
+                context,
+                template,
+                expected);
     }
 
     private static Arguments lineBreakReplacementTest() {
@@ -1414,10 +1397,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments customCommentProcessor() {
-        return arguments("customCommentProcessor",
-                OfficeStamperConfigurations.standard()
-                                           .addCommentProcessor(ICustomCommentProcessor.class,
-                                                   CustomCommentProcessor::new),
+        return arguments("Custom processor Integration test",
+                standard().addCommentProcessor(ICustomCommentProcessor.class, CustomCommentProcessor::new),
                 Contexts.empty(),
                 getResource(Path.of("CustomCommentProcessorTest.docx")),
                 """     
@@ -1444,7 +1425,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    @MethodSource("tests") @ParameterizedTest(name = "{0}") void features(String ignoredName, OfficeStamperConfiguration config, Object context, InputStream template, String expected) {
+    @MethodSource("tests") @ParameterizedTest(name = "{0}") void features(
+            String name, OfficeStamperConfiguration config, Object context, InputStream template, String expected
+    ) {
+        log.info(name);
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);

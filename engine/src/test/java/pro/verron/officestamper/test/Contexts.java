@@ -244,7 +244,7 @@ public class Contexts {
     }
 
     static Arguments repeatTableRowKeepsFormatTest() {
-        return of("repeatTableRowKeepsFormatTest",
+        return of("Repeat Table row Integration test (keeps formatting)",
                 OfficeStamperConfigurations.standard(),
                 show(),
                 getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),

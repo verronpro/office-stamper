@@ -78,16 +78,15 @@ public class ParagraphRepeatProcessor
                     .filter(P.class::isInstance)
                     .map(P.class::cast)
                     .toList(), toAdd.stream()
-                                    .map(paragraph -> paragraph.getP())
                                     .toList());
         }
     }
 
-    private Deque<Paragraph> generateParagraphsToAdd(
+    private List<P> generateParagraphsToAdd(
             DocxPart document,
             Paragraphs paragraphs
     ) {
-        Deque<Paragraph> paragraphsToAdd = new ArrayDeque<>();
+        var paragraphsToAdd = new LinkedList<P>();
         var last = paragraphs.data()
                              .peekLast();
         for (Object expressionContext : paragraphs.data()) {
@@ -102,17 +101,15 @@ public class ParagraphRepeatProcessor
                 if (clone instanceof P p) {
                     var paragraph = StandardParagraph.from(p);
                     placeholderReplacer.resolveExpressionsForParagraph(document, paragraph, expressionContext);
-                    paragraphsToAdd.add(paragraph);
+                    paragraphsToAdd.add(p);
                 }
             }
             var sectPr = paragraphs.previousSectionBreak();
             if (paragraphs.oddNumberOfBreaks() && sectPr.isPresent() && expressionContext != last) {
+                assert paragraphsToAdd.peekLast() != null : "There should be at least one ";
                 SectionUtil.applySectionBreakToParagraph(sectPr.get(),
-                        paragraphsToAdd.peekLast()
-                                       .getP());
-
+                        paragraphsToAdd.peekLast());
             }
-
         }
         return paragraphsToAdd;
     }

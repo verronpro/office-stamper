@@ -4,8 +4,8 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import pro.verron.officestamper.core.StandardComment;
 
-import java.util.Deque;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The Paragraph interface represents a paragraph in a text document.
@@ -69,4 +69,6 @@ public interface Paragraph {
     List<Object> paragraphContent(); // TODO replace with API not exposing the docx4j API directly
 
     Object parent(); // TODO replace with API not exposing the docx4j API directly
+
+    void apply(Consumer<P> pConsumer);
 }

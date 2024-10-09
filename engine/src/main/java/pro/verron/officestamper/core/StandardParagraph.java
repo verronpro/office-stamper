@@ -10,6 +10,7 @@ import pro.verron.officestamper.utils.WmlFactory;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
@@ -174,6 +175,10 @@ public class StandardParagraph
      */
     @Override public Object parent() {
         return p.getParent();
+    }
+
+    @Override public void apply(Consumer<P> pConsumer) {
+        pConsumer.accept(p);
     }
 
     private void replaceWithRun(Placeholder placeholder, R replacement) {

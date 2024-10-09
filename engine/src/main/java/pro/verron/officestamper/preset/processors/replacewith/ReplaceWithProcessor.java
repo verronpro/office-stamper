@@ -14,6 +14,8 @@ import pro.verron.officestamper.utils.WmlFactory;
 import java.util.List;
 import java.util.function.Function;
 
+import static pro.verron.officestamper.utils.WmlFactory.newText;
+
 /**
  * Processor that replaces the current run with the provided expression.
  * This is useful for replacing an expression in a comment with the result of the expression.
@@ -73,13 +75,10 @@ public class ReplaceWithProcessor
             return;
         }
 
-        List<Object> target;
-        if (expression != null) {
-            target = List.of(WmlFactory.newText(expression));
-        }
-        else {
-            target = nullSupplier.apply(run);
-        }
+        var target = expression != null ?
+                List.of(newText(expression)) :
+                nullSupplier.apply(run);
+
         run.getContent()
            .clear();
         run.getContent()

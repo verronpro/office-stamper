@@ -4,6 +4,7 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import pro.verron.officestamper.core.StandardComment;
 
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -11,6 +12,8 @@ import java.util.List;
  * It provides methods for replacing a placeholder within the paragraph and retrieving the paragraph as a string.
  */
 public interface Paragraph {
+
+    void replace(List<P> toRemove, List<P> toAdd);
 
     void remove();
 

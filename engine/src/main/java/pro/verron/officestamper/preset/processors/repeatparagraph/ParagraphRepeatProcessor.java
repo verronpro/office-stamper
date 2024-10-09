@@ -69,22 +69,16 @@ public class ParagraphRepeatProcessor
      */
     @Override public void commitChanges(DocxPart document) {
         for (Map.Entry<Paragraph, Paragraphs> entry : pToRepeat.entrySet()) {
-            Paragraph currentP = entry.getKey();
-            ContentAccessor parent = (ContentAccessor) currentP.parent();
-            List<Object> siblings = parent.getContent();
-            int index = siblings.indexOf(currentP.getP());
-            if (index < 0) throw new OfficeStamperException("Impossible");
-
-            var toAdd = generateParagraphsToAdd(document, entry.getValue());
-
-            siblings.addAll(index, toAdd.stream()
-                                        .map(Paragraph::getP)
-                                        .toList());
-            siblings.removeAll(entry.getValue()
-                                    .elements()
-                                    .stream()
-                                    .filter(P.class::isInstance)
-                                    .map(P.class::cast)
+            var current = entry.getKey();
+            var replacement = entry.getValue();
+            var toAdd = generateParagraphsToAdd(document, replacement);
+            current.replace(replacement
+                    .elements()
+                    .stream()
+                    .filter(P.class::isInstance)
+                    .map(P.class::cast)
+                    .toList(), toAdd.stream()
+                                    .map(paragraph -> paragraph.getP())
                                     .toList());
         }
     }

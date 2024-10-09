@@ -3,6 +3,7 @@ package pro.verron.officestamper.core;
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
 import pro.verron.officestamper.utils.WmlFactory;
@@ -82,6 +83,20 @@ public class StandardParagraph
         return new StandardParagraph(paragraph.getContent(), p);
     }
 
+    @Override public void replace(List<P> toRemove, List<P> toAdd) {
+        int index = siblings().indexOf(p);
+        if (index < 0) throw new OfficeStamperException("Impossible");
+
+
+        siblings().addAll(index, toAdd);
+        siblings().removeAll(toRemove);
+    }
+
+    private List<Object> siblings() {
+        ContentAccessor parent = (ContentAccessor) parent();
+        return parent.getContent();
+    }
+
     @Override public void remove() {
         ObjectDeleter.deleteParagraph(p);
     }
@@ -107,8 +122,7 @@ public class StandardParagraph
      *
      * @deprecated Not recommended, as will be replaced by other API
      */
-    @Deprecated(since = "2.6", forRemoval = true)
-    @Override public P getP() {
+    @Deprecated(since = "2.6", forRemoval = true) @Override public P getP() {
         return p;
     }
 

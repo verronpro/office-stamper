@@ -82,6 +82,10 @@ public class StandardParagraph
         return new StandardParagraph(paragraph.getContent(), p);
     }
 
+    @Override public void remove() {
+        ObjectDeleter.deleteParagraph(p);
+    }
+
     @Override public StandardComment fakeComment(DocxPart source, Placeholder placeholder) {
         var id = new BigInteger(16, RANDOM);
         var commentWrapper = new StandardComment(source.document());

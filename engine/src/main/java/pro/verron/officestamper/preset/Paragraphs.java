@@ -14,4 +14,11 @@ public record Paragraphs(
         Optional<SectPr> previousSectionBreak,
         boolean oddNumberOfBreaks
 ) {
+    public <T> List<T> elements(Class<T> aClass) {
+        return elements()
+                .stream()
+                .filter(aClass::isInstance)
+                .map(aClass::cast)
+                .toList();
+    }
 }

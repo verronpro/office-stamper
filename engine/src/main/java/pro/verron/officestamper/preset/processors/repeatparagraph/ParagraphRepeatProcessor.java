@@ -58,7 +58,7 @@ public class ParagraphRepeatProcessor
         var comment = getCurrentCommentWrapper();
         var data = new ArrayDeque<>(objects);
         var elements = comment.getElements();
-        var previousSectionBreak = getPreviousSectionBreakIfPresent((Child) elements.get(0), comment.getParent());
+        var previousSectionBreak = getPreviousSectionBreakIfPresent(elements.get(0), comment.getParent());
         var oddNumberOfBreaks = hasOddNumberOfSectionBreaks(elements);
         var toRepeat = new Paragraphs(comment, data, elements, previousSectionBreak, oddNumberOfBreaks);
         pToRepeat.put(paragraph, toRepeat);
@@ -71,14 +71,9 @@ public class ParagraphRepeatProcessor
         for (Map.Entry<Paragraph, Paragraphs> entry : pToRepeat.entrySet()) {
             var current = entry.getKey();
             var replacement = entry.getValue();
+            var toRemove = replacement.elements(P.class);
             var toAdd = generateParagraphsToAdd(document, replacement);
-            current.replace(replacement
-                    .elements()
-                    .stream()
-                    .filter(P.class::isInstance)
-                    .map(P.class::cast)
-                    .toList(), toAdd.stream()
-                                    .toList());
+            current.replace(toRemove, toAdd);
         }
     }
 

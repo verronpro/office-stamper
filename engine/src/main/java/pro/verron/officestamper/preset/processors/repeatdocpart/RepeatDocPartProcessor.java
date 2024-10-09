@@ -2,7 +2,10 @@ package pro.verron.officestamper.preset.processors.repeatdocpart;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.*;
+import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.P;
+import org.docx4j.wml.R;
+import org.docx4j.wml.SectPr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
@@ -124,7 +127,7 @@ public class RepeatDocPartProcessor
     ) {
         var subDocuments = stampSubDocuments(expressionContexts, subTemplate);
         var replacements = subDocuments.stream()
-                                       //TODO_LATER: move side effect somewhere else
+                                       //TODO: move side effect somewhere else
                                        .map(p -> walkObjectsAndImportImages(p, document))
                                        .map(Map::entrySet)
                                        .flatMap(Set::stream)
@@ -206,11 +209,9 @@ public class RepeatDocPartProcessor
 
     private WordprocessingMLPackage outputWord(Consumer<OutputStream> outputter) {
         var exceptionHandler = new ProcessorExceptionHandler();
-        try (
-                PipedOutputStream os = new PipedOutputStream(); PipedInputStream is = new PipedInputStream(os)
-        ) {
+        try (var os = new PipedOutputStream(); var is = new PipedInputStream(os)) {
             // closing on exception to not block the pipe infinitely
-            // TODO_LATER: model both PipedxxxStream as 1 class for only 1 close()
+            // TODO: model both PipedxxxStream as 1 class for only 1 close()
             exceptionHandler.onException(is::close); // I know it's redundant,
             exceptionHandler.onException(os::close); // but symmetry
 

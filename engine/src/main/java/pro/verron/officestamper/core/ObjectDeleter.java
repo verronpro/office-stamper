@@ -66,7 +66,7 @@ public class ObjectDeleter {
 		if (TableCellUtil.hasNoParagraphOrTable(cell)) {
 			TableCellUtil.addEmptyParagraph(cell);
 		}
-		// TODO_LATER: find out why border lines are removed in some cells after having deleted a paragraph
+		// TODO: find out why border lines are removed in some cells after having deleted a paragraph
     }
 
     private static void deleteFromCell(Tc cell, Object obj) {
@@ -77,7 +77,7 @@ public class ObjectDeleter {
 		if (TableCellUtil.hasNoParagraphOrTable(cell)) {
 			TableCellUtil.addEmptyParagraph(cell);
 		}
-		// TODO_LATER: find out why border lines are removed in some cells after having deleted a paragraph
+		// TODO: find out why border lines are removed in some cells after having deleted a paragraph
     }
 
     /**

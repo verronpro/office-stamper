@@ -1,19 +1,17 @@
 package pro.verron.officestamper.preset.processors.displayif;
 
-import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.AbstractCommentProcessor;
-import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.ObjectDeleter;
 import pro.verron.officestamper.core.PlaceholderReplacer;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static pro.verron.officestamper.preset.CommentProcessorFactory.*;
 
 /**
  * Processor for the {@link CommentProcessorFactory.IDisplayIfProcessor} comment.
@@ -27,7 +25,7 @@ public class DisplayIfProcessor
         extends AbstractCommentProcessor
         implements CommentProcessorFactory.IDisplayIfProcessor {
 
-    private List<P> paragraphsToBeRemoved = new ArrayList<>();
+    private List<Paragraph> paragraphsToBeRemoved = new ArrayList<>();
     private List<Tbl> tablesToBeRemoved = new ArrayList<>();
     private List<Tr> tableRowsToBeRemoved = new ArrayList<>();
 
@@ -54,8 +52,8 @@ public class DisplayIfProcessor
     }
 
     private void removeParagraphs() {
-        for (P p : paragraphsToBeRemoved) {
-            ObjectDeleter.deleteParagraph(p);
+        for (Paragraph p : paragraphsToBeRemoved) {
+            p.remove();
         }
     }
 
@@ -81,7 +79,7 @@ public class DisplayIfProcessor
     /** {@inheritDoc} */
     @Override public void displayParagraphIf(Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        paragraphsToBeRemoved.add(getParagraph().getP());
+        paragraphsToBeRemoved.add(getParagraph());
     }
 
     /** {@inheritDoc} */
@@ -92,17 +90,17 @@ public class DisplayIfProcessor
     /** {@inheritDoc} */
     @Override public void displayTableRowIf(Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var tr = CommentProcessorFactory.assertTableRow(CommentProcessorFactory.assertTableCell(getParent())
-                                                                               .getParent());
+        var tc = assertTableCell(getParent());
+        var tr = assertTableRow(tc.getParent());
         tableRowsToBeRemoved.add(tr);
     }
 
     /** {@inheritDoc} */
     @Override public void displayTableIf(Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        tablesToBeRemoved.add(CommentProcessorFactory.assertTable(CommentProcessorFactory.assertTableRow(
-                                                                                                 CommentProcessorFactory.assertTableCell(getParent())
-                                                                                                                        .getParent())
-                                                                                         .getParent()));
+        var tc = assertTableCell(getParent());
+        var tr = assertTableRow(tc.getParent());
+        var tbl = assertTable(tr.getParent());
+        tablesToBeRemoved.add(tbl);
     }
 }

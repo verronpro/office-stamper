@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface Paragraph {
 
+    void remove();
+
     StandardComment fakeComment(DocxPart source, Placeholder placeholder);
 
     R firstRun(); // TODO replace with API not exposing the docx4j API directly

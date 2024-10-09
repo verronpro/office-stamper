@@ -8,6 +8,7 @@ import org.docx4j.wml.R;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
+import pro.verron.officestamper.core.ObjectDeleter;
 import pro.verron.officestamper.core.StandardComment;
 import pro.verron.officestamper.utils.WmlFactory;
 
@@ -205,6 +206,10 @@ public class PowerpointParagraph
 
     @Override public List<Object> paragraphContent() {
         return paragraph.getEGTextRun();
+    }
+
+    @Override public void remove() {
+        ObjectDeleter.deleteParagraph(getP());
     }
 
     @Override public StandardComment fakeComment(DocxPart source, Placeholder placeholder) {

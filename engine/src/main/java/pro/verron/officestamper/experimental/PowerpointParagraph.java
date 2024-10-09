@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.WmlFactory.*;
@@ -242,6 +243,10 @@ public class PowerpointParagraph
 
     @Override public Object parent() {
         return paragraph.getParent();
+    }
+
+    @Override public void apply(Consumer<P> pConsumer) {
+        pConsumer.accept(getP());
     }
 
     private List<PowerpointRun> getAffectedRuns(int startIndex, int endIndex) {

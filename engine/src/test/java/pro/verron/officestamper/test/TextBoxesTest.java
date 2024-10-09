@@ -18,8 +18,7 @@ class TextBoxesTest {
     void placeholders() {
         var context = new Name("Bart Simpson");
         var template = getResource("ExpressionReplacementInTextBoxesTest.docx");
-        var config = standard()
-                .setExceptionResolver(ExceptionResolvers.passing());
+        var config = standard().setExceptionResolver(passing());
         var stamper = new TestDocxStamper<Name>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         String expected = """

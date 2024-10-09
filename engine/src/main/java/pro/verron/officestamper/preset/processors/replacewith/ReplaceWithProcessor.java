@@ -68,7 +68,7 @@ public class ReplaceWithProcessor
      */
     @Override public void replaceWordWith(@Nullable String expression) {
         R run = this.getCurrentRun();
-        if (run == null) {
+        if (run == null) { // TODO Find a way to never call this method when not on a run comment
             log.info("Impossible to put expression {} in a null run", expression);
             return;
         }

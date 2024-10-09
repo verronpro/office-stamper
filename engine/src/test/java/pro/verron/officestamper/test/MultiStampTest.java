@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
@@ -12,7 +13,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @author Tom Hombergs
  */
 class MultiStampTest {
-    @Test void expressionsAreResolvedOnMultiStamp() {
+    @Test @DisplayName("The same stamper instance can stamp several times") void repeatDocPart() {
         var config = OfficeStamperConfigurations.standard();
         var context = names("Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamper = new TestDocxStamper<>(config);

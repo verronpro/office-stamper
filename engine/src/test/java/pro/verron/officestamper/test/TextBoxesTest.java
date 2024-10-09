@@ -1,9 +1,10 @@
 package pro.verron.officestamper.test;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import pro.verron.officestamper.preset.ExceptionResolvers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static pro.verron.officestamper.preset.ExceptionResolvers.passing;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
@@ -12,9 +13,9 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @author Joseph Verron
  * @author Thomas Oster
  */
-class PlaceholderReplacementInTextBoxesTest {
-    @Test
-    void expressionReplacementInTextBoxesTest() {
+class TextBoxesTest {
+    @DisplayName("Placeholders in text boxes should be replaced") @Test
+    void placeholders() {
         var context = new Name("Bart Simpson");
         var template = getResource("ExpressionReplacementInTextBoxesTest.docx");
         var config = standard()

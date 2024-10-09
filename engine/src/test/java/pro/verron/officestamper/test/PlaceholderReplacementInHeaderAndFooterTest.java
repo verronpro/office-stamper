@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Image;
@@ -16,9 +17,8 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @author Joseph Verron
  * @author Tom Hombergs
  */
-class PlaceholderReplacementInHeaderAndFooterTest {
-    @Test
-    void expressionReplacementInHeaderAndFooterTest() {
+class HeaderAndFooterTest {
+    @Test @DisplayName("Placeholders in headers and footers should be replaced") void placeholders() {
         var context = new Name("Homer Simpson", getImage(Path.of("butterfly.png")));
         var template = getResource("ExpressionReplacementInHeaderAndFooterTest.docx");
         var config = standard()

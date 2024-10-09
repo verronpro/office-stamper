@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
@@ -23,6 +25,8 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 import static pro.verron.officestamper.test.Contexts.*;
 import static pro.verron.officestamper.test.TestUtils.*;
 
@@ -34,6 +38,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
  * @since 1.6.6
  */
 @DisplayName("Core Features") public class DefaultTests {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
 
     /**
      * <p>tests.</p>
@@ -86,7 +92,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments ternary() {
         return of("Ternary operators should function",
-                OfficeStamperConfigurations.standard(),
+                standard(),
                 name("Homer"),
                 getResource(Path.of("TernaryOperatorTest.docx")),
                 """
@@ -100,7 +106,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments repeatingRows() {
         return of("Repeating table rows should be possible",
-                OfficeStamperConfigurations.standard(),
+                standard(),
                 roles(role("Homer Simpson", "Dan Castellaneta"),
                         role("Marge Simpson", "Julie Kavner"),
                         role("Bart Simpson", "Nancy Cartwright"),
@@ -211,8 +217,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments replaceNullExpressionTest() {
         return of("Do not replace 'null' values",
-                OfficeStamperConfigurations.standard()
-                                           .addResolver(Resolvers.nullToPlaceholder()),
+                standard().addResolver(Resolvers.nullToPlaceholder()),
                 name(null),
                 getResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
@@ -275,8 +280,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 """;
 
-        var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        var config = standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
         return of("repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument",
                 config,
                 context,
@@ -286,8 +290,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate() {
         return of("repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Contexts.subDocPartContext(),
                 getResource(Path.of("RepeatDocPartWithImagesInSourceTest" + ".docx")),
                 """
@@ -303,8 +306,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments repeatDocPartTest() {
-                OfficeStamperConfigurations.standard(),
         return of("Repeat Doc Part Integration test",
+                standard(),
                 new Characters(List.of(new Role("Homer Simpson", "Dan Castellaneta"),
                         new Role("Marge Simpson", "Julie Kavner"),
                         new Role("Bart Simpson", "Nancy Cartwright"),
@@ -374,8 +377,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments repeatDocPartNestingTest() {
-                OfficeStamperConfigurations.standard(),
         return of("Repeat Doc Part Integration Test, with nested comments",
+                OfficeStamperConfigurations.standardWithPreprocessing(),
                 Contexts.schoolContext(),
                 getResource(Path.of("RepeatDocPartNestingTest.docx")),
                 """
@@ -754,8 +757,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 This will stay untouched too.
                 """;
 
-        var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        var config = standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
 
         return arguments(
                 "RepeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate",
@@ -766,10 +768,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment() {
-        return arguments(
-                "In multiple layouts, keeps section orientations outside RepeatParagraph comments",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+        return arguments("In multiple layouts, keeps section orientations outside RepeatParagraph comments",
+                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutOutsideRepeatParagraphTest.docx")),
                 """
@@ -808,10 +808,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 Fourth page is set to portrait again.
                 """;
 
-        var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
-        return arguments(
-                "In multiple layouts, keeps section orientations inside RepeatParagraph comments",
+        var config = standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        return arguments("In multiple layouts, keeps section orientations inside RepeatParagraph comments",
                 config,
                 context,
                 template,
@@ -819,10 +817,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment() {
-        return arguments(
-                "In multiple layouts, keeps section orientations outside RepeatDocPart comments",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+        return arguments("In multiple layouts, keeps section orientations outside RepeatDocPart comments",
+                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutInRepeatDocPartTest.docx")),
                 """
@@ -844,8 +840,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments replaceNullExpressionTest2() {
         return of("Do replace 'null' values",
-                OfficeStamperConfigurations.standard()
-                                           .addResolver(Resolvers.nullToEmpty()),
+                standard().addResolver(Resolvers.nullToEmpty()),
                 name(null),
                 getResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
@@ -856,44 +851,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement() {
         return arguments(
                 "In multiple layouts, keeps section orientations inside RepeatDocPart comments with a table as last element",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
-                Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
-                getResource(Path.of("ChangingPageLayoutInRepeatDocPartWithTableLastElementTest.docx")),
-                """
-                        First page is portrait.
-                        
-                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
-                        Second page is landscape, layout change should survive to repeatDocPart (Homer).
-                        
-                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
-                        With a break setting the layout to portrait in between.
-                        |===
-                        |
-                        
-                        
-                        |===
-                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
-                        Second page is landscape, layout change should survive to repeatDocPart (Marge).
-                        
-                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}❭
-                        With a break setting the layout to portrait in between.
-                        |===
-                        |
-                        
-                        
-                        |===
-                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
-                        ❬❘docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}❭
-                        Fourth page is set to landscape again.
-                        """);
-    }
+                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
 
-    private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment() {
-        return arguments(
-                "In multiple layouts, keeps section orientation outside RepeatDocPart comment",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutOutsideRepeatDocPartTest.docx")),
                 """
@@ -1001,8 +960,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-                OfficeStamperConfigurations.standard(),
         return arguments("Display Paragraph If Integration test (on case) + Inline processors Integration test",
+                standard(),
                 context,
                 template,
                 expected);
@@ -1111,9 +1070,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 This paragraph stays untouched.
                 The variable foo has the value bar.
                 """;
-        var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(evalContext -> evalContext.addPropertyAccessor(
-                                                        new SimpleGetter("foo", "bar")));
+        var config = standard().setEvaluationContextConfigurer(evalContext -> evalContext.addPropertyAccessor(new SimpleGetter(
+                        "foo",
+                        "bar")));
 
         return arguments("customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored",
                 config,
@@ -1136,9 +1095,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 In this paragraph, the variable name should be resolved to the value Homer Simpson.
                 In this paragraph, the variable foo should not be resolved: ${foo}.
                 """;
-        OfficeStamperConfiguration config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.passing());
+        OfficeStamperConfiguration config = standard().setExceptionResolver(ExceptionResolvers.passing());
         return arguments("expressionReplacementInGlobalParagraphsTest", config, context, template, expected);
     }
 
@@ -1170,9 +1127,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-        var config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.passing());
+        var config = standard().setExceptionResolver(ExceptionResolvers.passing());
         return arguments("Placeholder replacement in tables", config, context, template, expected);
     }
 
@@ -1198,8 +1153,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 ❬It should be white over darkblue: ❬Homer Simpson❘color=FFFFFF,highlight=darkBlue❭❘b=true❭
                 ❬It should be with header formatting: ❬Homer Simpson❘rStyle=TitreCar❭❘b=true❭
                 """;
-                OfficeStamperConfigurations.standard(),
         return arguments("Placeholder replacement integration test (keep formatting)",
+                standard(),
                 context,
                 template,
                 expected);
@@ -1237,9 +1192,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 .
                 """;
-        var config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.passing());
+        var config = standardWithPreprocessing().setExceptionResolver(ExceptionResolvers.passing());
         return arguments("Replace Word With Integration test", config, context, template, expected);
     }
 
@@ -1287,8 +1240,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments lineBreakReplacementTest() {
-        var config = OfficeStamperConfigurations.standard()
-                                                .setLineBreakPlaceholder("#");
+        var config = standard().setLineBreakPlaceholder("#");
         var context = new Contexts.Name(null);
         var template = getResource(Path.of("LineBreakReplacementTest.docx"));
         var expected = """
@@ -1360,9 +1312,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 """;
 
-        var config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.passing());
+        var config = standard().setExceptionResolver(ExceptionResolvers.passing());
 
         return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
     }
@@ -1388,10 +1338,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
         // Beware, this configuration only autogrows pojos and java beans,
         // so it will not work if your type has no default constructor and no setters.
 
-        var config = OfficeStamperConfigurations.standard()
-                                                .setSpelParserConfiguration(new SpelParserConfiguration(true, true))
-                                                .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
-                                                .addResolver(Resolvers.nullToDefault("Nullish value!!"));
+        var config = standard().setSpelParserConfiguration(new SpelParserConfiguration(true, true))
+                               .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
+                               .addResolver(Resolvers.nullToDefault("Nullish value!!"));
 
         return arguments("nullPointerResolutionTest_testWithCustomSpel", config, context, template, expected);
     }
@@ -1411,7 +1360,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments controls() {
         return of("Form controls should be replaced as well",
-                OfficeStamperConfigurations.standard(),
+                standard(),
                 name("Homer"),
                 getResource(Path.of("form-controls.docx")),
                 """

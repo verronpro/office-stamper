@@ -1,5 +1,7 @@
 package pro.verron.officestamper.api;
 
+import java.util.function.Supplier;
+
 /**
  * OfficeStamperException is a subclass of RuntimeException that represents an exception that can be thrown during the
  * processing of an Office document using the OfficeStamper library.
@@ -51,4 +53,7 @@ public class OfficeStamperException
         super("Unexpected exception");
     }
 
+    public static Supplier<OfficeStamperException> throwing(String message) {
+        return () -> new OfficeStamperException(message);
+    }
 }

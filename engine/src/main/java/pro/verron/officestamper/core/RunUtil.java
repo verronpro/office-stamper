@@ -1,22 +1,17 @@
 package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
-import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.model.styles.StyleUtil;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.utils.WmlFactory;
 
 import java.util.Objects;
-import java.util.Random;
 
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
-import static pro.verron.officestamper.utils.WmlFactory.newText;
+import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /**
  * Utility class to handle runs.
@@ -27,7 +22,7 @@ import static pro.verron.officestamper.utils.WmlFactory.newText;
  * @since 1.0.0
  */
 public class RunUtil {
-    private static final Random random = new Random();
+
 
     private static final String PRESERVE = "preserve";
     private static final Logger log = LoggerFactory.getLogger(RunUtil.class);
@@ -125,66 +120,6 @@ public class RunUtil {
         Text textObj = newText(text);
         run.getContent()
            .add(textObj);
-    }
-
-
-    /**
-     * Creates a run containing the given image.
-     *
-     * @param maxWidth      max width of the image
-     * @param abstractImage the image
-     *
-     * @return the run containing the image
-     */
-    public static R createRunWithImage(
-            @Nullable Integer maxWidth,
-            BinaryPartAbstractImage abstractImage
-    ) {
-        // creating random ids assuming they are unique,
-        // id must not be too large;
-        // otherwise Word cannot open the document
-        int id1 = random.nextInt(100000);
-        int id2 = random.nextInt(100000);
-        var filenameHint = "dummyFileName";
-        var altText = "dummyAltText";
-
-        Inline inline = tryCreateImageInline(
-                filenameHint,
-                altText,
-                maxWidth,
-                abstractImage,
-                id1,
-                id2);
-
-
-        // Now add the inline in w:p/w:r/w:drawing
-        ObjectFactory factory = new ObjectFactory();
-        R run = factory.createR();
-        Drawing drawing = factory.createDrawing();
-        run.getContent()
-           .add(drawing);
-        drawing.getAnchorOrInline()
-               .add(inline);
-
-        return run;
-
-    }
-
-    private static Inline tryCreateImageInline(
-            String filenameHint,
-            String altText,
-            @Nullable Integer maxWidth,
-            BinaryPartAbstractImage abstractImage,
-            int id1,
-            int id2
-    ) {
-        try {
-            return maxWidth == null
-                    ? abstractImage.createImageInline(filenameHint, altText, id1, id2, false)
-                    : abstractImage.createImageInline(filenameHint, altText, id1, id2, false, maxWidth);
-        } catch (Exception e) {
-            throw new OfficeStamperException(e);
-        }
     }
 
     static int getLength(R run) {

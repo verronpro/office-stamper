@@ -2,6 +2,8 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
+import pro.verron.officestamper.core.Placeholders;
+import pro.verron.officestamper.core.StandardParagraph;
 
 import java.util.List;
 import java.util.Set;
@@ -10,6 +12,13 @@ import java.util.Set;
  * The Comment interface provides methods for managing comments in a document.
  */
 public interface Comment {
+
+    /**
+     * Converts the comment to a Placeholder representation.
+     *
+     * @return the Placeholder representation of the comment
+     */
+    Placeholder asPlaceholder();
 
     /**
      * Retrieves the parent of the comment.

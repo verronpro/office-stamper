@@ -3,14 +3,23 @@ package pro.verron.officestamper.experimental;
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
+import org.docx4j.wml.P;
+import org.docx4j.wml.R;
+import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
+import pro.verron.officestamper.core.StandardComment;
+import pro.verron.officestamper.utils.WmlFactory;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.utils.WmlFactory.*;
+import static pro.verron.officestamper.utils.WmlFactory.newCommentReference;
 
 /**
  * <p>A "Run" defines a region of text within a docx document with a common set of properties. Word processors are
@@ -26,6 +35,9 @@ import static java.util.stream.Collectors.joining;
  */
 public class PowerpointParagraph
         implements Paragraph {
+
+    private static final Random RANDOM = new Random();
+
     private final List<PowerpointRun> runs = new ArrayList<>();
     private final CTTextParagraph paragraph;
     private int currentPosition = 0;
@@ -98,7 +110,6 @@ public class PowerpointParagraph
         List<Object> runs = this.paragraph.getEGTextRun();
         if (singleRun) {
             PowerpointRun run = affectedRuns.get(0);
-
 
             boolean expressionSpansCompleteRun =
                     full.length() == run.run()
@@ -190,6 +201,36 @@ public class PowerpointParagraph
                    .map(PowerpointRun::run)
                    .map(CTRegularTextRun::getT)
                    .collect(joining()) + "\n";
+    }
+
+    @Override public List<Object> paragraphContent() {
+        return paragraph.getEGTextRun();
+    }
+
+    @Override public StandardComment fakeComment(DocxPart source, Placeholder placeholder) {
+        var parent = getP();
+        var id = new BigInteger(16, RANDOM);
+        var commentWrapper = new StandardComment(source.document());
+        commentWrapper.setComment(newComment(id, placeholder.content()));
+        commentWrapper.setCommentRangeStart(newCommentRangeStart(id, parent));
+        commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
+        commentWrapper.setCommentReference(newCommentReference(id, parent));
+        return commentWrapper;
+    }
+
+    @Override public R firstRun() {
+        return (R) paragraphContent()
+                .get(0);
+    }
+
+    @Override public P getP() {
+        var p = WmlFactory.newParagraph(paragraph.getEGTextRun());
+        p.setParent(paragraph.getParent());
+        return p;
+    }
+
+    @Override public Object parent() {
+        return paragraph.getParent();
     }
 
     private List<PowerpointRun> getAffectedRuns(int startIndex, int endIndex) {

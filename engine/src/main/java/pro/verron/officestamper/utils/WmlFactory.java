@@ -1,0 +1,262 @@
+package pro.verron.officestamper.utils;
+
+import org.docx4j.dml.wordprocessingDrawing.Inline;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
+import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.docx4j.wml.*;
+import pro.verron.officestamper.api.OfficeStamperException;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
+/**
+ * WmlFactory is a utility class that provides methods to create and manipulate WordML objects.
+ * It includes methods for creating paragraphs, runs, text elements, comments, bodies, and drawings.
+ * This factory encapsulates the complexity of creating WordML elements and simplifies the process of working with them.
+ */
+public class WmlFactory {
+    private static final Random RANDOM = new Random();
+
+    private WmlFactory() {
+        throw new OfficeStamperException("Utility class");
+    }
+
+    /**
+     * Creates a new paragraph containing a single drawing.
+     *
+     * @param drawing The Drawing object to be included in the new paragraph.
+     *
+     * @return A new paragraph encapsulating the provided drawing.
+     */
+    public static P newParagraph(Drawing drawing) {
+        return newParagraph(List.of(newRun(drawing)));
+    }
+
+    /**
+     * Creates a new paragraph containing the provided values.
+     *
+     * @param values A list of objects to be added to the new paragraph.
+     *
+     * @return A new paragraph containing the provided values.
+     */
+    public static P newParagraph(List<?> values) {
+        var paragraph = new P();
+        var paragraphContent = paragraph.getContent();
+        paragraphContent.addAll(values);
+        return paragraph;
+    }
+
+    /**
+     * Creates a new run containing a single drawing.
+     *
+     * @param value The Drawing object to be included in the new run.
+     *
+     * @return A new run encapsulating the provided drawing.
+     */
+    public static R newRun(Drawing value) {
+        return newRun(List.of(value));
+    }
+
+    private static R newRun(List<Object> values) {
+        var run = new R();
+        var runContent = run.getContent();
+        runContent.addAll(values);
+        return run;
+    }
+
+    /**
+     * Creates a new comment with the provided value.
+     *
+     * @param value The string value to be included in the comment.
+     *
+     * @return A new Comments.Comment object containing the provided value.
+     */
+    public static Comments.Comment newComment(String value) {
+        var comment = new Comments.Comment();
+        var commentContent = comment.getContent();
+        commentContent.add(newParagraph(value));
+        return comment;
+    }
+
+    /**
+     * Creates a new paragraph containing the provided string value.
+     *
+     * @param value The string value to be added to the new paragraph.
+     *
+     * @return A new paragraph containing the provided string value.
+     */
+    public static P newParagraph(String value) {
+        return newParagraph(newRun(value));
+    }
+
+    /**
+     * Creates a new paragraph containing the provided run.
+     *
+     * @param run The R object (run) to be included in the new paragraph.
+     *
+     * @return A new paragraph containing the provided run.
+     */
+    public static P newParagraph(R run) {
+        return newParagraph(List.of(run));
+    }
+
+    /**
+     * Creates a new run containing the provided string value.
+     *
+     * @param value The string value to be included in the new run.
+     *
+     * @return A new run containing the provided string value.
+     */
+    public static R newRun(String value) {
+        return newRun(newText(value));
+    }
+
+    /**
+     * Creates a new run containing a single text object.
+     *
+     * @param value The Text object to be included in the new run.
+     *
+     * @return A new run encapsulating the provided text object.
+     */
+    public static R newRun(Text value) {
+        return newRun(List.of(value));
+    }
+
+    /**
+     * Creates a new Text object with the specified value, preserving spaces.
+     *
+     * @param value The string value to be set in the new Text object.
+     *
+     * @return A new Text object containing the provided value with space preserved.
+     */
+    public static Text newText(String value) {
+        var text = new Text();
+        text.setValue(value);
+        text.setSpace("preserve");
+        return text;
+    }
+
+    /**
+     * Creates a new Body object containing the provided elements.
+     *
+     * @param elements A list of objects to be added to the new Body.
+     *
+     * @return A new Body containing the provided elements.
+     */
+    public static Body newBody(List<Object> elements) {
+        Body body = new Body();
+        var bodyContent = body.getContent();
+        bodyContent.addAll(elements);
+        return body;
+    }
+
+    /**
+     * Creates a new paragraph containing the provided text values.
+     *
+     * @param texts The array of string values to be included in the new paragraph.
+     *
+     * @return A new paragraph containing the provided text values.
+     */
+    public static P newParagraph(String... texts) {
+        return newParagraph(Arrays.stream(texts)
+                                  .map(WmlFactory::newRun)
+                                  .toList());
+    }
+
+    /**
+     * Creates a new PPr (paragraph properties) object.
+     *
+     * @return A new PPr object.
+     */
+    public static PPr newPPr() {
+        return new PPr();
+    }
+
+    /**
+     * Creates a new Drawing object containing the provided Inline object.
+     *
+     * @param inline The Inline object to be contained within the new Drawing.
+     *
+     * @return A new Drawing object encapsulating the provided inline object.
+     */
+    public static Drawing newDrawing(Inline inline) {
+        var drawing = new Drawing();
+        var anchorOrInline = drawing.getAnchorOrInline();
+        anchorOrInline.add(inline);
+        return drawing;
+    }
+
+    /**
+     * Creates a new Inline object for the given image part, filename hint, and alt text.
+     *
+     * @param imagePart    The binary part abstract image to be used.
+     * @param filenameHint A hint for the filename of the image.
+     * @param altText      Alternative text for the image.
+     *
+     * @return A new Inline object containing the specified image information.
+     *
+     * @throws OfficeStamperException If there is an error creating the image inline.
+     */
+    public static Inline newInline(BinaryPartAbstractImage imagePart, String filenameHint, String altText) {
+        try {
+            var id1 = RANDOM.nextLong(100_000L);
+            var id2 = RANDOM.nextInt(100_000);
+            return imagePart.createImageInline(filenameHint, altText, id1, id2, false);
+        } catch (Exception e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    /**
+     * Creates a new BinaryPartAbstractImage using the provided document, main document part, and image bytes.
+     *
+     * @param document         The WordprocessingMLPackage document to which the image will be added.
+     * @param mainDocumentPart The MainDocumentPart of the document where the image will be inserted.
+     * @param imageBytes       The byte array representing the image data to be added.
+     *
+     * @return A new BinaryPartAbstractImage object containing the image data.
+     */
+    public static BinaryPartAbstractImage newBinaryPartAbstractImage(
+            WordprocessingMLPackage document, MainDocumentPart mainDocumentPart, byte[] imageBytes
+    ) {
+        try {
+            return BinaryPartAbstractImage.createImagePart(document, mainDocumentPart, imageBytes);
+        } catch (Exception e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    /**
+     * Creates a new Comments object and populates it with a list of Comment objects.
+     *
+     * @param list A list of Comments.Comment objects to be added to the new Comments object.
+     *
+     * @return A new Comments object containing the provided Comment objects.
+     */
+    public static Comments newComments(List<Comments.Comment> list) {
+        Comments comments = new Comments();
+        List<Comments.Comment> commentList = comments.getComment();
+        commentList.addAll(list);
+        return comments;
+    }
+
+    /**
+     * Creates a new CommentsPart object.
+     * This method attempts to create a new instance of CommentsPart.
+     * If an InvalidFormatException occurs during the creation process, it wraps the exception in an
+     * OfficeStamperException and throws it.
+     *
+     * @return A new instance of CommentsPart.
+     */
+    public static CommentsPart newCommentsPart() {
+        try {
+            return new CommentsPart();
+        } catch (InvalidFormatException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+}

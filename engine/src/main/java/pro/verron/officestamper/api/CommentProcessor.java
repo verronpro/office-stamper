@@ -10,6 +10,25 @@ import org.springframework.lang.Nullable;
  */
 public interface CommentProcessor {
 
+    default void setProcessorContext(
+            Paragraph paragraph, @Nullable R run, @Nullable Comment comment
+    ) {
+        setParagraph(paragraph);
+        setCurrentRun(run);
+        setCurrentCommentWrapper(comment);
+    }
+
+    /**
+     * Passes the run that is currently being processed (i.e., the run that is commented in the
+     * .docx template). This method is always called BEFORE the custom
+     * methods of the custom comment processor interface
+     * are called.
+     *
+     * @param run coordinates of the currently processed run within the template.
+     */
+    void setCurrentRun(@Nullable R run);
+
+    Object getParent();
 
     /**
      * This method is called after all comments in the .docx template have been passed to the comment processor.
@@ -48,6 +67,12 @@ public interface CommentProcessor {
                                          + "reason to keep implementing this");
     }
 
+    Paragraph getParagraph();
+
+    default void setParagraph(Paragraph paragraph) {
+        setParagraph(paragraph.getP());
+    }
+
     /**
      * Passes the paragraph that is currently being processed (i.e., the paragraph that is commented in the
      * .docx template). This method is always called BEFORE the custom
@@ -55,18 +80,11 @@ public interface CommentProcessor {
      * are called.
      *
      * @param paragraph coordinates of the currently processed paragraph within the template.
-     */
-    void setParagraph(P paragraph);
-
-    /**
-     * Passes the run that is currently being processed (i.e., the run that is commented in the
-     * .docx template). This method is always called BEFORE the custom
-     * methods of the custom comment processor interface
-     * are called.
      *
-     * @param run coordinates of the currently processed run within the template.
+     * @deprecated use {@link #setParagraph(Paragraph)} instead
      */
-    void setCurrentRun(@Nullable R run);
+    @Deprecated(since = "2.6", forRemoval = true)
+    void setParagraph(P paragraph);
 
     /**
      * Passes the comment range wrapper that is currently being processed

@@ -3,6 +3,7 @@ package pro.verron.officestamper.api;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
+import pro.verron.officestamper.core.StandardParagraph;
 
 import java.util.Objects;
 
@@ -13,11 +14,12 @@ import java.util.Objects;
  */
 public abstract class AbstractCommentProcessor
         implements CommentProcessor {
+
     /**
      * PlaceholderReplacer used to replace expressions in the comment text.
      */
     protected final ParagraphPlaceholderReplacer placeholderReplacer;
-    private P paragraph;
+    private Paragraph paragraph;
     private R currentRun;
     private Comment currentComment;
 
@@ -30,56 +32,43 @@ public abstract class AbstractCommentProcessor
         this.placeholderReplacer = placeholderReplacer;
     }
 
-    /**
-     * <p>Getter for the field <code>currentCommentWrapper</code>.</p>
-     *
-     * @return a {@link Comment} object
-     */
     public Comment getCurrentCommentWrapper() {
         return currentComment;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setCurrentCommentWrapper(Comment currentComment) {
+    @Override public void setCurrentCommentWrapper(Comment currentComment) {
         Objects.requireNonNull(currentComment.getCommentRangeStart());
         Objects.requireNonNull(currentComment.getCommentRangeEnd());
         this.currentComment = currentComment;
     }
 
-    /**
-     * <p>Getter for the field <code>paragraph</code>.</p>
-     *
-     * @return a {@link P} object
-     */
-    public P getParagraph() {
-        return paragraph;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setParagraph(P paragraph) {
-        this.paragraph = paragraph;
-    }
-
-    /**
-     * <p>Getter for the field <code>currentRun</code>.</p>
-     *
-     * @return a {@link R} object
-     */
     public R getCurrentRun() {
         return currentRun;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setCurrentRun(@Nullable R run) {
+    @Override public void setCurrentRun(@Nullable R run) {
         this.currentRun = run;
+    }
+
+    /**
+     *
+     * @param paragraph coordinates of the currently processed paragraph within the template.
+     * @deprecated use {@link #setParagraph(Paragraph)} instead
+     */
+    @Deprecated(since = "2.6", forRemoval = true) public void setParagraph(P paragraph) {
+        this.paragraph = StandardParagraph.from(paragraph);
+    }
+
+    @Override public void setParagraph(Paragraph paragraph) {
+        this.paragraph = paragraph;
+    }
+
+    public Paragraph getParagraph() {
+        return paragraph;
+    }
+
+    @Override public Object getParent() {
+        return paragraph.getP()
+                        .getParent();
     }
 }

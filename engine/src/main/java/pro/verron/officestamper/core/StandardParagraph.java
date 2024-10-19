@@ -94,8 +94,9 @@ public class StandardParagraph
     }
 
     private List<Object> siblings() {
-        ContentAccessor parent = (ContentAccessor) parent();
-        return parent.getContent();
+        return this.parent(ContentAccessor.class, 1)
+                   .orElseThrow(throwing("This paragraph direct parent is not a classic parent object"))
+                   .getContent();
     }
 
     @Override public void remove() {

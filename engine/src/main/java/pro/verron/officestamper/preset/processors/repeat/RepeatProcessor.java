@@ -100,9 +100,10 @@ public class RepeatProcessor
 
     /** {@inheritDoc} */
     @Override public void repeatTableRow(List<Object> objects) {
-        var row = CommentProcessorFactory.assertTableRow(CommentProcessorFactory.assertTableCell(getParent())
-                                                                                .getParent());
-        tableRowsToRepeat.put(row, objects);
-        tableRowsCommentsToRemove.put(row, getCurrentCommentWrapper());
+        var tr = this.getParagraph()
+                      .parent(Tr.class)
+                      .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));
+        tableRowsToRepeat.put(tr, objects);
+        tableRowsCommentsToRemove.put(tr, getCurrentCommentWrapper());
     }
 }

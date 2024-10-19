@@ -1,7 +1,5 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 
@@ -20,10 +18,6 @@ import org.docx4j.wml.RPr;
  * @since 1.0.0
  */
 public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run) {
-
-    ContentAccessor parent() {
-        return (ContentAccessor) run().getParent();
-    }
 
     public int length() {
         return getText().length();
@@ -70,23 +64,22 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
     public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
         var startBetweenIndices = (globalStartIndex < startIndex) && (startIndex <= globalEndIndex);
         var endBetweenIndices = (globalStartIndex < endIndex) && (endIndex <= globalEndIndex);
-        return startBetweenIndices || endBetweenIndices || ((startIndex <= globalStartIndex) && (globalEndIndex
-                                                                                                 <= endIndex));
-
+        return startBetweenIndices
+               || endBetweenIndices
+               || ((startIndex <= globalStartIndex)
+                   && (globalEndIndex <= endIndex));
     }
 
     /**
      * Replaces the substring starting at the given index with the given replacement string.
      *
-     * @param globalStartIndex the global index (meaning the index relative to multiple aggregated runs) at which to
+     * @param globalStartIndex the global index at which to
      *                         start the replacement.
-     * @param globalEndIndex   the global index (meaning the index relative to multiple aggregated runs) at which to end
+     * @param globalEndIndex   the global index at which to end
      *                         the replacement.
      * @param replacement      the string to replace the substring at the specified global index.
      */
-    public void replace(
-            int globalStartIndex, int globalEndIndex, String replacement
-    ) {
+    public void replace(int globalStartIndex, int globalEndIndex, String replacement) {
         int localStartIndex = globalIndexToLocalIndex(globalStartIndex);
         int localEndIndex = globalIndexToLocalIndex(globalEndIndex);
         var text = RunUtil.getSubstring(run, 0, localStartIndex);
@@ -98,13 +91,17 @@ public record IndexedRun(int startIndex, int endIndex, int indexInParent, R run)
         RunUtil.setText(run, text);
     }
 
+    /**
+     * Converts a global index to a local index within the context of this run.
+     * (meaning the index relative to multiple aggregated runs)
+     *
+     * @param globalIndex the global index to convert.
+     *
+     * @return the local index corresponding to the given global index.
+     */
     private int globalIndexToLocalIndex(int globalIndex) {
         if (globalIndex < startIndex) return 0;
         else if (globalIndex > endIndex) return RunUtil.getLength(run);
         else return globalIndex - startIndex;
-    }
-
-    boolean isIn(P paragraph) {
-        return run.getParent() == paragraph;
     }
 }

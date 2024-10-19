@@ -112,8 +112,7 @@ public class CommentUtil {
         var comments = wordComments.getContents();
         return comments.getComment()
                        .stream()
-                       .filter(comment -> comment.getId()
-                                                 .equals(id))
+                       .filter(comment -> id.equals(comment.getId()))
                        .findFirst();
     }
 
@@ -170,7 +169,8 @@ public class CommentUtil {
         StringBuilder builder = new StringBuilder();
         for (Object commentChildObject : comment.getContent()) {
             if (commentChildObject instanceof P p) {
-                builder.append(new StandardParagraph(p).asString());
+                builder.append(StandardParagraph.from(p)
+                                                .asString());
             }
         }
         String string = builder.toString();

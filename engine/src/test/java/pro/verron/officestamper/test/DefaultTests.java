@@ -8,7 +8,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
-import pro.verron.officestamper.preset.*;
+import pro.verron.officestamper.preset.EvaluationContextConfigurers;
+import pro.verron.officestamper.preset.ExceptionResolvers;
+import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.Resolvers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -1256,13 +1259,13 @@ import static pro.verron.officestamper.test.TestUtils.*;
      * <p>testDateInstantiationAndResolution.</p>
      */
     private static Arguments imageReplacementInGlobalParagraphsTest() {
-        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" + ".jpg")));
+        var context = new Contexts.ImageContext(getImage(Path.of("monalisa.jpg")));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
-                ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
-                ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
-                ❬In this paragraph, an image of Mona Lisa is inserted: ❬/word/media/document_image_rId4.jpeg:rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭.❘lang=de-DE❭
-                ❬This paragraph has the image ❬/word/media/document_image_rId5.jpeg:rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
+                Image Replacement in global paragraphs
+                This paragraph is untouched.
+                In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350.
+                This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350 in the middle.
                 """;
         return arguments("imageReplacementInGlobalParagraphsTest",
                 OfficeStamperConfigurations.standard(),
@@ -1272,13 +1275,13 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments imageReplacementInGlobalParagraphsTestWithMaxWidth() {
-        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" + ".jpg"), 1000));
+        var context = new Contexts.ImageContext(getImage(Path.of("monalisa.jpg"), 1000));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
-                ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
-                ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
-                ❬In this paragraph, an image of Mona Lisa is inserted: ❬/word/media/document_image_rId4.jpeg:rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭.❘lang=de-DE❭
-                ❬This paragraph has the image ❬/word/media/document_image_rId5.jpeg:rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
+                Image Replacement in global paragraphs
+                This paragraph is untouched.
+                In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000.
+                This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000 in the middle.
                 """;
         return arguments("imageReplacementInGlobalParagraphsTestWithMaxWidth",
                 OfficeStamperConfigurations.standard(),

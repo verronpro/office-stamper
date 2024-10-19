@@ -56,11 +56,6 @@ public abstract class AbstractCommentProcessor
         this.currentRun = run;
     }
 
-    //TODO replace api
-    @Override public Object getParent() {
-        return paragraph.parent();
-    }
-
     public Paragraph getParagraph() {
         return paragraph;
     }
@@ -71,7 +66,7 @@ public abstract class AbstractCommentProcessor
      * @deprecated use {@link #setParagraph(Paragraph)} instead
      */
     @Deprecated(since = "2.6", forRemoval = true) public void setParagraph(P paragraph) {
-        this.paragraph = StandardParagraph.from(paragraph);
+        this.paragraph = StandardParagraph.from((DocxPart) paragraph.getParent(), paragraph);
     }
 
     public void setParagraph(Paragraph paragraph) {

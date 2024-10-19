@@ -135,7 +135,7 @@ public class CommentProcessorFactory {
          *
          * @param table the table to resolve.
          */
-        void resolveTable(StampTable table);
+        void resolveTable(@Nullable StampTable table);
     }
 
     /**
@@ -224,7 +224,7 @@ public class CommentProcessorFactory {
          *
          * @param objects the objects which serve as context root for expressions found in the template table row.
          */
-        void repeatTableRow(List<Object> objects);
+        void repeatTableRow(@Nullable List<Object> objects);
 
     }
 
@@ -246,7 +246,7 @@ public class CommentProcessorFactory {
          *                  paragraph
          *                  will be deleted at stamping.
          */
-        void displayParagraphIf(Boolean condition);
+        void displayParagraphIf(@Nullable Boolean condition);
 
         /**
          * May be called to delete the commented paragraph or not, depending on the presence of the given data.
@@ -265,7 +265,7 @@ public class CommentProcessorFactory {
          *                  false, the table row
          *                  will be deleted at stamping.
          */
-        void displayTableRowIf(Boolean condition);
+        void displayTableRowIf(@Nullable Boolean condition);
 
         /**
          * May be called to delete the table surrounding the commented paragraph, depending on the given boolean
@@ -275,8 +275,7 @@ public class CommentProcessorFactory {
          *                  false, the table
          *                  will be deleted at stamping.
          */
-        void displayTableIf(Boolean condition);
-
+        void displayTableIf(@Nullable Boolean condition);
     }
 
 }

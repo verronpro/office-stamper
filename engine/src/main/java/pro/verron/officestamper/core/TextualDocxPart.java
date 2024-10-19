@@ -1,18 +1,17 @@
 package pro.verron.officestamper.core;
 
+import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
-import org.docx4j.wml.CTSdtContentRun;
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
-import org.docx4j.wml.SdtRun;
+import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.utils.WmlFactory;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -43,6 +42,15 @@ public final class TextualDocxPart
                             .filter(CTSdtContentRun.class::isInstance)
                             .map(CTSdtContentRun.class::cast)
                             .map(StandardParagraph::from));
+    }
+
+    @Override public Stream<R> streamRun() {
+        return streamParagraphs()
+                .map(Paragraph::paragraphContent)
+                .flatMap(Collection::stream)
+                .map(XmlUtils::unwrap)
+                .filter(R.class::isInstance)
+                .map(R.class::cast);
     }
 
     public Stream<DocxPart> streamParts(String type) {

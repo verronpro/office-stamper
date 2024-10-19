@@ -2,17 +2,17 @@ package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
+import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
 import pro.verron.officestamper.utils.WmlFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
+import java.math.BigInteger;
+import java.util.*;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /**
  * <p>A "Run" defines a region of text within a docx document with a common set of properties. Word processors are
@@ -31,9 +31,10 @@ import static java.util.stream.Collectors.joining;
 public class StandardParagraph
         implements Paragraph {
 
-    private List<IndexedRun> runs;
+    private static final Random RANDOM = new Random();
     private final List<Object> contents;
     private final P p;
+    private List<IndexedRun> runs;
 
     private StandardParagraph(List<Object> paragraphContent, P p) {
         this.contents = paragraphContent;
@@ -72,6 +73,7 @@ public class StandardParagraph
      * Constructs a StandardParagraph from a given CTSdtContentRun paragraph.
      *
      * @param paragraph a CTSdtContentRun object representing the content run of the paragraph
+     *
      * @return a new instance of StandardParagraph based on the provided CTSdtContentRun
      */
     public static StandardParagraph from(CTSdtContentRun paragraph) {
@@ -80,6 +82,31 @@ public class StandardParagraph
         return new StandardParagraph(paragraph.getContent(), p);
     }
 
+    @Override public StandardComment fakeComment(DocxPart source, Placeholder placeholder) {
+        var id = new BigInteger(16, RANDOM);
+        var commentWrapper = new StandardComment(source.document());
+        commentWrapper.setComment(newComment(id, placeholder.content()));
+        commentWrapper.setCommentRangeStart(newCommentRangeStart(id, p));
+        commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, p));
+        commentWrapper.setCommentReference(newCommentReference(id, p));
+        return commentWrapper;
+    }
+
+    @Override public R firstRun() {
+        return (R) paragraphContent().get(0);
+    }
+
+    /**
+     * Retrieves the P object associated with this StandardParagraph.
+     *
+     * @return the P object of this paragraph.
+     *
+     * @deprecated Not recommended, as will be replaced by other API
+     */
+    @Deprecated(since = "2.6", forRemoval = true)
+    @Override public P getP() {
+        return p;
+    }
 
     /**
      * Replaces the given expression with the replacement object within
@@ -89,8 +116,7 @@ public class StandardParagraph
      * @param placeholder the expression to be replaced.
      * @param replacement the object to replace the expression.
      */
-    @Override
-    public void replace(Placeholder placeholder, Object replacement) {
+    @Override public void replace(Placeholder placeholder, Object replacement) {
         if (replacement instanceof R run) {
             replaceWithRun(placeholder, run);
         }
@@ -107,8 +133,7 @@ public class StandardParagraph
      *
      * @return the text of all runs.
      */
-    @Override
-    public String asString() {
+    @Override public String asString() {
         return runs.stream()
                    .map(IndexedRun::run)
                    .map(RunUtil::getText)
@@ -122,17 +147,6 @@ public class StandardParagraph
      */
     @Override public List<Object> paragraphContent() {
         return contents;
-    }
-
-    /**
-     * Retrieves the P object associated with this StandardParagraph.
-     *
-     * @return the P object of this paragraph.
-     * @deprecated Not recommended, as will be replaced by other API
-     */
-    @Deprecated(since = "2.6", forRemoval = true)
-    @Override public P getP() {
-        return p;
     }
 
     /**
@@ -210,12 +224,16 @@ public class StandardParagraph
                                                .listIterator();
             while (runContentIterator.hasNext()) {
                 Object element = runContentIterator.next();
-                if (element instanceof JAXBElement<?> jaxbElement)
-                    element = jaxbElement.getValue();
-                if (element instanceof Text text)
-                    replaceWithBr(placeholder, br, text, runContentIterator);
+                if (element instanceof JAXBElement<?> jaxbElement) element = jaxbElement.getValue();
+                if (element instanceof Text text) replaceWithBr(placeholder, br, text, runContentIterator);
             }
         }
+    }
+
+    private List<IndexedRun> getAffectedRuns(int startIndex, int endIndex) {
+        return runs.stream()
+                   .filter(run -> run.isTouchedByRange(startIndex, endIndex))
+                   .toList();
     }
 
     private void removeExpression(
@@ -229,8 +247,7 @@ public class StandardParagraph
         firstRun.replace(matchStartIndex, matchEndIndex, "");
         // remove all runs between first and last
         for (IndexedRun run : affectedRuns) {
-            if (!Objects.equals(run, firstRun)
-                && !Objects.equals(run, lastRun)) {
+            if (!Objects.equals(run, firstRun) && !Objects.equals(run, lastRun)) {
                 contents.remove(run.run());
             }
         }
@@ -239,10 +256,7 @@ public class StandardParagraph
     }
 
     private static void replaceWithBr(
-            Placeholder placeholder,
-            Br br,
-            Text text,
-            ListIterator<Object> runContentIterator
+            Placeholder placeholder, Br br, Text text, ListIterator<Object> runContentIterator
     ) {
         var value = text.getValue();
         runContentIterator.remove();
@@ -254,17 +268,10 @@ public class StandardParagraph
         }
     }
 
-    private List<IndexedRun> getAffectedRuns(int startIndex, int endIndex) {
-        return runs.stream()
-                   .filter(run -> run.isTouchedByRange(startIndex, endIndex))
-                   .toList();
-    }
-
     /**
      * {@inheritDoc}
      */
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return asString();
     }
 

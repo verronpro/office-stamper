@@ -90,17 +90,18 @@ public class DisplayIfProcessor
     /** {@inheritDoc} */
     @Override public void displayTableRowIf(Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var tc = assertTableCell(getParent());
-        var tr = assertTableRow(tc.getParent());
+        var tr = this.getParagraph()
+                    .parent(Tr.class)
+                    .orElseThrow(throwing("Paragraph is not within a row!"));
         tableRowsToBeRemoved.add(tr);
     }
 
     /** {@inheritDoc} */
     @Override public void displayTableIf(Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var tc = assertTableCell(getParent());
-        var tr = assertTableRow(tc.getParent());
-        var tbl = assertTable(tr.getParent());
+        var tbl = this.getParagraph()
+                      .parent(Tbl.class)
+                      .orElseThrow(throwing("Paragraph is not within a table!"));
         tablesToBeRemoved.add(tbl);
     }
 }

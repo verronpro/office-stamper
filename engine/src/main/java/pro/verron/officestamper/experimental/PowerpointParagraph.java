@@ -96,6 +96,10 @@ public class PowerpointParagraph
     private List<Object> siblings() {
         ContentAccessor parent = (ContentAccessor) parent();
         return parent.getContent();
+        return this.parent(ContentAccessor.class, 1)
+                   .orElseThrow(throwing("Not a standard Child with common parent"))
+                   .getContent();
+    }
     }
 
     @Override public void remove() {

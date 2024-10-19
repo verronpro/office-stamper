@@ -1,10 +1,13 @@
 package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.*;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.core.*;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.core.DocxStamper;
+import pro.verron.officestamper.core.PlaceholderReplacer;
 import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
 import pro.verron.officestamper.preset.processors.repeat.RepeatProcessor;
 import pro.verron.officestamper.preset.processors.repeatdocpart.RepeatDocPartProcessor;
@@ -12,10 +15,7 @@ import pro.verron.officestamper.preset.processors.repeatparagraph.ParagraphRepea
 import pro.verron.officestamper.preset.processors.replacewith.ReplaceWithProcessor;
 import pro.verron.officestamper.preset.processors.table.TableResolver;
 
-import java.util.*;
-
-import static java.lang.String.format;
-import static org.docx4j.TextUtils.getText;
+import java.util.List;
 
 /**
  * Factory class to create the correct comment processor for a given comment.
@@ -34,21 +34,6 @@ public class CommentProcessorFactory {
      */
     public CommentProcessorFactory(OfficeStamperConfiguration configuration) {
         this.configuration = configuration;
-    }
-
-    public static Tbl assertTable(Object obj) {
-        if (obj instanceof Tbl table) return table;
-        throw new OfficeStamperException(format("Paragraph is not within a table! : %s", getText(obj)));
-    }
-
-    public static Tr assertTableRow(Object obj) {
-        if (obj instanceof Tr row) return row;
-        throw new OfficeStamperException(format("Paragraph is not within a row! : %s", getText(obj)));
-    }
-
-    public static Tc assertTableCell(Object obj) {
-        if (obj instanceof Tc cell) return cell;
-        throw new OfficeStamperException(format("Paragraph is not within a cell! : %s", getText(obj)));
     }
 
     /**

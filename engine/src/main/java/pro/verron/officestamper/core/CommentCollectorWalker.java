@@ -1,12 +1,9 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.TextUtils;
 import org.docx4j.wml.CommentRangeEnd;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.R;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -14,12 +11,8 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import java.math.BigInteger;
 import java.util.*;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
-
 class CommentCollectorWalker
         extends BaseDocumentWalker {
-    private static final Logger logger = LoggerFactory.getLogger(CommentCollectorWalker.class);
     private final DocxPart document;
     private final Map<BigInteger, Comment> allComments;
     private final Queue<Comment> stack;
@@ -51,56 +44,9 @@ class CommentCollectorWalker
                    .filter(comment -> allComments.containsKey(comment.getId()))
                    .forEach(comment -> allComments.get(comment.getId())
                                                   .setComment(comment));
-        return cleanMalformedComments(rootComments);
+        return new HashMap<>(rootComments);
     }
 
-    private static Map<BigInteger, Comment> cleanMalformedComments(Map<BigInteger, Comment> rootComments) {
-        Map<BigInteger, Comment> filteredCommentEntries = new HashMap<>();
-
-        rootComments.forEach((key, comment) -> {
-            if (isCommentMalformed(comment)) {
-                var commentContent = getCommentContent(comment);
-                logger.error("Skipping malformed comment, missing range start and/or range end : {}", commentContent);
-            }
-            else {
-                filteredCommentEntries.put(key, comment);
-                comment.setChildren(cleanMalformedComments(comment.getChildren()));
-            }
-        });
-        return filteredCommentEntries;
-    }
-
-    private static Set<Comment> cleanMalformedComments(Set<Comment> children) {
-        return children
-                .stream()
-                .filter(comment -> {
-                    if (isCommentMalformed(comment)) {
-                        var commentContent = getCommentContent(comment);
-                        logger.error("Skipping malformed comment, missing range start and/or range end : {}",
-                                commentContent);
-                        return false;
-                    }
-                    comment.setChildren(cleanMalformedComments(comment.getChildren()));
-                    return true;
-                })
-                .collect(toSet());
-    }
-
-    private static boolean isCommentMalformed(Comment comment) {
-        return comment.getCommentRangeStart() == null
-               || comment.getCommentRangeEnd() == null
-               || comment.getComment() == null;
-    }
-
-    private static String getCommentContent(Comment comment) {
-        return comment.getComment() == null
-                ? "<no content>"
-                : comment.getComment()
-                         .getContent()
-                         .stream()
-                         .map(TextUtils::getText)
-                         .collect(joining(""));
-    }
 
     @Override
     protected void onCommentRangeStart(CommentRangeStart commentRangeStart) {

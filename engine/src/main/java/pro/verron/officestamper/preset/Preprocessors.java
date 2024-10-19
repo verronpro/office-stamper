@@ -1,19 +1,11 @@
 package pro.verron.officestamper.preset;
 
-import org.docx4j.TraversalUtil;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.utils.TraversalUtilVisitor;
-import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.ProofErr;
-import org.docx4j.wml.R;
-import org.docx4j.wml.RPr;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PreProcessor;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
+import pro.verron.officestamper.preset.preprocessors.malformedcomments.RemoveMalformedComments;
+import pro.verron.officestamper.preset.preprocessors.prooferror.RemoveProofErrors;
+import pro.verron.officestamper.preset.preprocessors.similarrun.MergeSameStyleRuns;
 
 /**
  * A helper class that provides pre-processing functionality for WordprocessingMLPackage documents.
@@ -44,5 +36,7 @@ public class Preprocessors {
         return new RemoveProofErrors();
     }
 
+    public static PreProcessor removeMalformedComments() {
+        return new RemoveMalformedComments();
     }
 }

@@ -90,8 +90,7 @@ public class DocxStamper
     }
 
     private CommentProcessors buildCommentProcessors(
-            Map<Class<?>,
-                    Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors
+            Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors
     ) {
         var processors = new HashMap<Class<?>, CommentProcessor>();
         for (var entry : commentProcessors.entrySet()) {

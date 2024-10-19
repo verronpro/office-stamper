@@ -1,10 +1,11 @@
 package pro.verron.officestamper.api;
 
+import org.docx4j.wml.Comments;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import pro.verron.officestamper.core.StandardComment;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -13,14 +14,38 @@ import java.util.function.Consumer;
  */
 public interface Paragraph {
 
+    /**
+     * Creates a processor context for the given placeholder within this paragraph.
+     *
+     * @param placeholder The placeholder to create a context for.
+     * @return The processor context for the specified placeholder.
+     */
+    ProcessorContext processorContext(Placeholder placeholder);
+
+    /**
+     * Replaces specified contiguous elements within the paragraph with new elements.
+     *
+     * @param toRemove The list of elements to be removed from the paragraph.
+     * @param toAdd The list of elements to be added to the paragraph.
+     */
     void replace(List<P> toRemove, List<P> toAdd);
 
+    /**
+     * Removes the paragraph from the document.
+     * This method is intended to be used when a paragraph needs to be deleted.
+     */
     void remove();
 
-    StandardComment fakeComment(DocxPart source, Placeholder placeholder);
-
-    R firstRun(); // TODO replace with API not exposing the docx4j API directly
-
+    /**
+     * Retrieves the paragraph associated with this object.
+     * TODO replace with API not exposing the docx4j API directly
+     *
+     * @return the paragraph object
+     *
+     * @deprecated As of version 2.6, due to its direct exposure of the docx4j API. It is scheduled for removal in
+     * the future.
+     */
+    @Deprecated(since = "2.6", forRemoval = true)
     P getP(); // TODO replace with API not exposing the docx4j API directly
 
     /**
@@ -66,9 +91,21 @@ public interface Paragraph {
      */
     String asString();
 
-    List<Object> paragraphContent(); // TODO replace with API not exposing the docx4j API directly
-
-    Object parent(); // TODO replace with API not exposing the docx4j API directly
-
+    /**
+     * Applies the specified consumer function to the paragraph content.
+     *
+     * @param pConsumer The consumer function to apply to the paragraph content.
+     */
     void apply(Consumer<P> pConsumer);
+
+    /**
+     * Retrieves the parent of the current paragraph that matches the specified class type.
+     *
+     * @param aClass The class type to match for the parent element.
+     * @param <T> The type of the parent element to be returned.
+     * @return An {@code Optional} containing the matched parent element if found, otherwise an empty {@code Optional}.
+     */
+    <T> Optional<T> parent(Class<T> aClass);
+
+    Optional<Comments.Comment> getComment();
 }

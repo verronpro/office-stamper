@@ -3,6 +3,7 @@ package pro.verron.officestamper.experimental;
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
+import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
@@ -14,13 +15,11 @@ import pro.verron.officestamper.core.StandardComment;
 import pro.verron.officestamper.utils.WmlFactory;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /**
@@ -85,6 +84,12 @@ public class PowerpointParagraph
         currentPosition = endIndex + 1;
     }
 
+    @Override public ProcessorContext processorContext(Placeholder placeholder) {
+        var comment = comment(placeholder);
+        var firstRun = (R) paragraph.getEGTextRun().get(0);
+        return new ProcessorContext(this, firstRun, comment, placeholder);
+    }
+
     @Override public void replace(List<P> toRemove, List<P> toAdd) {
         int index = siblings().indexOf(getP());
         if (index < 0) throw new OfficeStamperException("Impossible");
@@ -98,13 +103,27 @@ public class PowerpointParagraph
                    .orElseThrow(throwing("Not a standard Child with common parent"))
                    .getContent();
     }
+
+    private <T> Optional<T> parent(Class<T> aClass, int depth) {
+        var current = getP().getParent();
+        var currentDepth = 1;
+        while (current != null && currentDepth <= depth) {
+            if (aClass.isInstance(current)) {
+                return Optional.of(aClass.cast(current));
+            }
+            else if (current instanceof Child child) {
+                current = child.getParent();
+                currentDepth++;
+            }
+        }
+        return Optional.empty();
     }
 
     @Override public void remove() {
         ObjectDeleter.deleteParagraph(getP());
     }
 
-    @Override public StandardComment fakeComment(DocxPart source, Placeholder placeholder) {
+    private Comment comment(Placeholder placeholder) {
         var parent = getP();
         var id = new BigInteger(16, RANDOM);
         var commentWrapper = new StandardComment(source.document());
@@ -113,10 +132,6 @@ public class PowerpointParagraph
         commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
         commentWrapper.setCommentReference(newCommentReference(id, parent));
         return commentWrapper;
-    }
-
-    @Override public R firstRun() {
-        return (R) paragraphContent().get(0);
     }
 
     @Override public P getP() {
@@ -228,16 +243,16 @@ public class PowerpointParagraph
                    .collect(joining()) + "\n";
     }
 
-    @Override public List<Object> paragraphContent() {
-        return paragraph.getEGTextRun();
-    }
-
-    @Override public Object parent() {
-        return paragraph.getParent();
-    }
-
     @Override public void apply(Consumer<P> pConsumer) {
         pConsumer.accept(getP());
+    }
+
+    @Override public <T> Optional<T> parent(Class<T> aClass) {
+        return parent(aClass, Integer.MAX_VALUE);
+    }
+
+    @Override public Optional<Comments.Comment> getComment() {
+        return CommentUtil.getCommentFor(paragraph.getEGTextRun(), source.document());
     }
 
     private List<PowerpointRun> getAffectedRuns(int startIndex, int endIndex) {

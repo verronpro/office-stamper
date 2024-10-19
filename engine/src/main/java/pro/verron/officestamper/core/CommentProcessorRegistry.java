@@ -11,7 +11,6 @@ import pro.verron.officestamper.utils.WmlFactory;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -73,9 +72,12 @@ public class CommentProcessorRegistry {
         source.streamParagraphs()
               .forEach(p -> {
                   var comments = collectComments(source);
-                  var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, p.paragraphContent());
-                  commentProcessors.commitChanges(source);
-                  optional.ifPresent(proceedComments::add);
+                  var paragraphComment = p.getComment();
+                  paragraphComment.ifPresent((pc -> {
+                      var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
+                      commentProcessors.commitChanges(source);
+                      optional.ifPresent(proceedComments::add);
+                  }));
               });
 
         source.streamParagraphs()
@@ -112,18 +114,18 @@ public class CommentProcessorRegistry {
             Map<BigInteger, Comment> comments,
             T expressionContext,
             Paragraph paragraph,
-            List<Object> paragraphContent
+            BigInteger paragraphCommentId
     ) {
-        return CommentUtil.getCommentFor(paragraphContent, source.document())
-                          .flatMap(c -> Optional.ofNullable(comments.get(c.getId())))
-                          .flatMap(c -> {
-                              var context = new ProcessorContext(paragraph, null, c, c.asPlaceholder());
-                              commentProcessors.setContext(context);
-                              var comment = runCommentProcessors(expressionContext, c);
-                              comments.remove(c.getComment()
-                                               .getId());
-                              return comment;
-                          });
+        if (!comments.containsKey(paragraphCommentId)) return Optional.empty();
+
+        var c = comments.get(paragraphCommentId);
+        var cPlaceholder = c.asPlaceholder();
+        var cComment = c.getComment();
+        var context = new ProcessorContext(paragraph, null, c, cPlaceholder);
+        commentProcessors.setContext(context);
+        var comment = runCommentProcessors(expressionContext, c);
+        comments.remove(cComment.getId());
+        return comment;
     }
 
     /**
@@ -135,10 +137,9 @@ public class CommentProcessorRegistry {
      * @param <T>       type of the context root object
      */
     private <T> void runProcessorsOnInlineContent(T context, Paragraph paragraph) {
-        var processorContexts = findProcessors(paragraph.asString())
-                .stream()
-                .map(p -> newProcessorContext(paragraph, p))
-                .toList();
+        var processorContexts = findProcessors(paragraph.asString()).stream()
+                                                                    .map(paragraph::processorContext)
+                                                                    .toList();
         for (var processorContext : processorContexts) {
             commentProcessors.setContext(processorContext);
             var placeholder = processorContext.placeholder();
@@ -160,7 +161,7 @@ public class CommentProcessorRegistry {
         try {
             expressionResolver.setContext(context);
             expressionResolver.resolve(placeholder);
-            logger.debug("Comment '{}' successfully processed by a comment processor.", placeholder.expression());
+            logger.debug("Comment '{}' successfully processed by a comment processor.", placeholder);
             return Optional.of(comment);
         } catch (SpelEvaluationException | SpelParseException e) {
             var message = "Comment '%s' failed to process.".formatted(placeholder.expression());
@@ -169,9 +170,4 @@ public class CommentProcessorRegistry {
         }
     }
 
-    private ProcessorContext newProcessorContext(Paragraph paragraph, Placeholder placeholder) {
-        var firstRun = paragraph.firstRun();
-        var fakedComment = paragraph.fakeComment(source, placeholder);
-        return new ProcessorContext(paragraph, firstRun, fakedComment, placeholder);
-    }
 }

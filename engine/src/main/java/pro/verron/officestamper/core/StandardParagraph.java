@@ -2,10 +2,8 @@ package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.Paragraph;
-import pro.verron.officestamper.api.Placeholder;
+import org.jvnet.jaxb2_commons.ppp.Child;
+import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
 
 import java.math.BigInteger;
@@ -14,6 +12,7 @@ import java.util.function.Consumer;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /**
@@ -95,8 +94,6 @@ public class StandardParagraph
     @Override public void replace(List<P> toRemove, List<P> toAdd) {
         int index = siblings().indexOf(p);
         if (index < 0) throw new OfficeStamperException("Impossible");
-
-
         siblings().addAll(index, toAdd);
         siblings().removeAll(toRemove);
     }
@@ -126,7 +123,7 @@ public class StandardParagraph
         ObjectDeleter.deleteParagraph(p);
     }
 
-    @Override public StandardComment fakeComment(DocxPart source, Placeholder placeholder) {
+    private Comment comment(Placeholder placeholder) {
         var id = new BigInteger(16, RANDOM);
         var commentWrapper = new StandardComment(source.document());
         commentWrapper.setComment(newComment(id, placeholder.content()));
@@ -134,10 +131,6 @@ public class StandardParagraph
         commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, p));
         commentWrapper.setCommentReference(newCommentReference(id, p));
         return commentWrapper;
-    }
-
-    @Override public R firstRun() {
-        return (R) paragraphContent().get(0);
     }
 
     /**
@@ -183,26 +176,16 @@ public class StandardParagraph
                    .collect(joining());
     }
 
-    /**
-     * Retrieves the content of the paragraph.
-     *
-     * @return a list of objects representing the content of the paragraph
-     */
-    @Override public List<Object> paragraphContent() {
-        return contents;
-    }
-
-    /**
-     * Retrieves the parent object of the current paragraph.
-     *
-     * @return the parent object of the paragraph.
-     */
-    @Override public Object parent() {
-        return p.getParent();
-    }
-
     @Override public void apply(Consumer<P> pConsumer) {
         pConsumer.accept(p);
+    }
+
+    @Override public <T> Optional<T> parent(Class<T> aClass) {
+        return parent(aClass, Integer.MAX_VALUE);
+    }
+
+    @Override public Optional<Comments.Comment> getComment() {
+        return CommentUtil.getCommentFor(contents, source.document());
     }
 
     private void replaceWithRun(Placeholder placeholder, R replacement) {

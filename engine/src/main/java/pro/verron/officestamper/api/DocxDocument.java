@@ -8,5 +8,4 @@ import java.util.stream.Stream;
 public interface DocxDocument {
     WordprocessingMLPackage document();
     Stream<DocxPart> streamParts(String type);
-    CommentsPart commentsPart();
 }

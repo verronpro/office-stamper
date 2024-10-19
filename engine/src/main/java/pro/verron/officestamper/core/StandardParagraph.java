@@ -2,16 +2,17 @@ package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Paragraph;
-import pro.verron.officestamper.api.Placeholder;
+import org.jvnet.jaxb2_commons.ppp.Child;
+import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /**
@@ -32,11 +33,13 @@ public class StandardParagraph
         implements Paragraph {
 
     private static final Random RANDOM = new Random();
+    private final DocxPart source;
     private final List<Object> contents;
     private final P p;
     private List<IndexedRun> runs;
 
-    private StandardParagraph(List<Object> paragraphContent, P p) {
+    private StandardParagraph(DocxPart source, List<Object> paragraphContent, P p) {
+        this.source = source;
         this.contents = paragraphContent;
         this.p = p;
         this.runs = initializeRunList(contents);
@@ -65,8 +68,8 @@ public class StandardParagraph
     /**
      * Constructs a new ParagraphWrapper for the given paragraph.
      */
-    public static StandardParagraph from(P paragraph) {
-        return new StandardParagraph(paragraph.getContent(), paragraph);
+    public static StandardParagraph from(DocxPart source, P paragraph) {
+        return new StandardParagraph(source, paragraph.getContent(), paragraph);
     }
 
     /**
@@ -76,13 +79,51 @@ public class StandardParagraph
      *
      * @return a new instance of StandardParagraph based on the provided CTSdtContentRun
      */
-    public static StandardParagraph from(CTSdtContentRun paragraph) {
+    public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
         var p = WmlFactory.newParagraph(paragraph.getContent());
         p.setParent(paragraph.getParent());
-        return new StandardParagraph(paragraph.getContent(), p);
+        return new StandardParagraph(source, paragraph.getContent(), p);
     }
 
-    @Override public StandardComment fakeComment(DocxPart source, Placeholder placeholder) {
+    @Override public ProcessorContext processorContext(Placeholder placeholder) {
+        var comment = comment(placeholder);
+        var firstRun = (R) contents.get(0);
+        return new ProcessorContext(this, firstRun, comment, placeholder);
+    }
+
+    @Override public void replace(List<P> toRemove, List<P> toAdd) {
+        int index = siblings().indexOf(p);
+        if (index < 0) throw new OfficeStamperException("Impossible");
+        siblings().addAll(index, toAdd);
+        siblings().removeAll(toRemove);
+    }
+
+    private List<Object> siblings() {
+        return this.parent(ContentAccessor.class, 1)
+                   .orElseThrow(throwing("This paragraph direct parent is not a classic parent object"))
+                   .getContent();
+    }
+
+    private <T> Optional<T> parent(Class<T> aClass, int depth) {
+        var current = p.getParent();
+        var currentDepth = 1;
+        while (current != null && currentDepth <= depth) {
+            if (aClass.isInstance(current)) {
+                return Optional.of(aClass.cast(current));
+            }
+            else if (current instanceof Child child) {
+                current = child.getParent();
+                currentDepth++;
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override public void remove() {
+        ObjectDeleter.deleteParagraph(p);
+    }
+
+    private Comment comment(Placeholder placeholder) {
         var id = new BigInteger(16, RANDOM);
         var commentWrapper = new StandardComment(source.document());
         commentWrapper.setComment(newComment(id, placeholder.content()));
@@ -92,10 +133,6 @@ public class StandardParagraph
         return commentWrapper;
     }
 
-    @Override public R firstRun() {
-        return (R) paragraphContent().get(0);
-    }
-
     /**
      * Retrieves the P object associated with this StandardParagraph.
      *
@@ -103,8 +140,7 @@ public class StandardParagraph
      *
      * @deprecated Not recommended, as will be replaced by other API
      */
-    @Deprecated(since = "2.6", forRemoval = true)
-    @Override public P getP() {
+    @Deprecated(since = "2.6", forRemoval = true) @Override public P getP() {
         return p;
     }
 
@@ -140,22 +176,16 @@ public class StandardParagraph
                    .collect(joining());
     }
 
-    /**
-     * Retrieves the content of the paragraph.
-     *
-     * @return a list of objects representing the content of the paragraph
-     */
-    @Override public List<Object> paragraphContent() {
-        return contents;
+    @Override public void apply(Consumer<P> pConsumer) {
+        pConsumer.accept(p);
     }
 
-    /**
-     * Retrieves the parent object of the current paragraph.
-     *
-     * @return the parent object of the paragraph.
-     */
-    @Override public Object parent() {
-        return p.getParent();
+    @Override public <T> Optional<T> parent(Class<T> aClass) {
+        return parent(aClass, Integer.MAX_VALUE);
+    }
+
+    @Override public Optional<Comments.Comment> getComment() {
+        return CommentUtil.getCommentFor(contents, source.document());
     }
 
     private void replaceWithRun(Placeholder placeholder, R replacement) {

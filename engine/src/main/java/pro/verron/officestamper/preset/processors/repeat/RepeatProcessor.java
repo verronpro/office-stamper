@@ -5,6 +5,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
+import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
@@ -99,10 +100,12 @@ public class RepeatProcessor
     }
 
     /** {@inheritDoc} */
-    @Override public void repeatTableRow(List<Object> objects) {
-        var row = CommentProcessorFactory.assertTableRow(CommentProcessorFactory.assertTableCell(getParent())
-                                                                                .getParent());
-        tableRowsToRepeat.put(row, objects);
-        tableRowsCommentsToRemove.put(row, getCurrentCommentWrapper());
+    @Override public void repeatTableRow(@Nullable List<Object> objects) {
+        var tr = this.getParagraph()
+                      .parent(Tr.class)
+                      .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));
+        tableRowsToRepeat.put(tr, objects);
+        tableRowsCommentsToRemove.put(tr, getCurrentCommentWrapper());
     }
+
 }

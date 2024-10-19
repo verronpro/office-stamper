@@ -3,7 +3,6 @@ package pro.verron.officestamper.preset.processors.repeatparagraph;
 import org.docx4j.XmlUtils;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.SectionUtil;
@@ -30,7 +29,8 @@ import static pro.verron.officestamper.core.SectionUtil.hasOddNumberOfSectionBre
 public class ParagraphRepeatProcessor
         extends AbstractCommentProcessor
         implements CommentProcessorFactory.IParagraphRepeatProcessor {
-    private Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>();
+    private Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>(); // TODO replace the mapping by a Paragraphs to
+    // List<Object> mapping to better reflect the change
 
     /**
      * @param placeholderReplacer replaces placeholders with values
@@ -54,11 +54,11 @@ public class ParagraphRepeatProcessor
      * {@inheritDoc}
      */
     @Override public void repeatParagraph(List<Object> objects) {
-        var paragraph = getParagraph();
+        var paragraph = this.getParagraph();
         var comment = getCurrentCommentWrapper();
         var data = new ArrayDeque<>(objects);
         var elements = comment.getElements();
-        var previousSectionBreak = getPreviousSectionBreakIfPresent((Child) elements.get(0), comment.getParent());
+        var previousSectionBreak = getPreviousSectionBreakIfPresent(elements.get(0), comment.getParent());
         var oddNumberOfBreaks = hasOddNumberOfSectionBreaks(elements);
         var toRepeat = new Paragraphs(comment, data, elements, previousSectionBreak, oddNumberOfBreaks);
         pToRepeat.put(paragraph, toRepeat);
@@ -69,31 +69,19 @@ public class ParagraphRepeatProcessor
      */
     @Override public void commitChanges(DocxPart document) {
         for (Map.Entry<Paragraph, Paragraphs> entry : pToRepeat.entrySet()) {
-            Paragraph currentP = entry.getKey();
-            ContentAccessor parent = (ContentAccessor) currentP.parent();
-            List<Object> siblings = parent.getContent();
-            int index = siblings.indexOf(currentP.getP());
-            if (index < 0) throw new OfficeStamperException("Impossible");
-
-            var toAdd = generateParagraphsToAdd(document, entry.getValue());
-
-            siblings.addAll(index, toAdd.stream()
-                                        .map(Paragraph::getP)
-                                        .toList());
-            siblings.removeAll(entry.getValue()
-                                    .elements()
-                                    .stream()
-                                    .filter(P.class::isInstance)
-                                    .map(P.class::cast)
-                                    .toList());
+            var current = entry.getKey();
+            var replacement = entry.getValue();
+            var toRemove = replacement.elements(P.class);
+            var toAdd = generateParagraphsToAdd(document, replacement);
+            current.replace(toRemove, toAdd);
         }
     }
 
-    private Deque<Paragraph> generateParagraphsToAdd(
+    private List<P> generateParagraphsToAdd(
             DocxPart document,
             Paragraphs paragraphs
     ) {
-        Deque<Paragraph> paragraphsToAdd = new ArrayDeque<>();
+        var paragraphsToAdd = new LinkedList<P>();
         var last = paragraphs.data()
                              .peekLast();
         for (Object expressionContext : paragraphs.data()) {
@@ -106,19 +94,17 @@ public class ParagraphRepeatProcessor
                     CommentUtil.deleteCommentFromElements(contentAccessor.getContent(), commentId);
                 }
                 if (clone instanceof P p) {
-                    var paragraph = StandardParagraph.from(p);
+                    var paragraph = StandardParagraph.from(document, p);
                     placeholderReplacer.resolveExpressionsForParagraph(document, paragraph, expressionContext);
-                    paragraphsToAdd.add(paragraph);
+                    paragraphsToAdd.add(p);
                 }
             }
             var sectPr = paragraphs.previousSectionBreak();
             if (paragraphs.oddNumberOfBreaks() && sectPr.isPresent() && expressionContext != last) {
+                assert paragraphsToAdd.peekLast() != null : "There should be at least one ";
                 SectionUtil.applySectionBreakToParagraph(sectPr.get(),
-                        paragraphsToAdd.peekLast()
-                                       .getP());
-
+                        paragraphsToAdd.peekLast());
             }
-
         }
         return paragraphsToAdd;
     }

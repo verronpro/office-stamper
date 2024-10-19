@@ -34,11 +34,13 @@ public class StandardParagraph
         implements Paragraph {
 
     private static final Random RANDOM = new Random();
+    private final DocxPart source;
     private final List<Object> contents;
     private final P p;
     private List<IndexedRun> runs;
 
-    private StandardParagraph(List<Object> paragraphContent, P p) {
+    private StandardParagraph(DocxPart source, List<Object> paragraphContent, P p) {
+        this.source = source;
         this.contents = paragraphContent;
         this.p = p;
         this.runs = initializeRunList(contents);
@@ -67,8 +69,8 @@ public class StandardParagraph
     /**
      * Constructs a new ParagraphWrapper for the given paragraph.
      */
-    public static StandardParagraph from(P paragraph) {
-        return new StandardParagraph(paragraph.getContent(), paragraph);
+    public static StandardParagraph from(DocxPart source, P paragraph) {
+        return new StandardParagraph(source, paragraph.getContent(), paragraph);
     }
 
     /**
@@ -78,10 +80,16 @@ public class StandardParagraph
      *
      * @return a new instance of StandardParagraph based on the provided CTSdtContentRun
      */
-    public static StandardParagraph from(CTSdtContentRun paragraph) {
+    public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
         var p = WmlFactory.newParagraph(paragraph.getContent());
         p.setParent(paragraph.getParent());
-        return new StandardParagraph(paragraph.getContent(), p);
+        return new StandardParagraph(source, paragraph.getContent(), p);
+    }
+
+    @Override public ProcessorContext processorContext(Placeholder placeholder) {
+        var comment = comment(placeholder);
+        var firstRun = (R) contents.get(0);
+        return new ProcessorContext(this, firstRun, comment, placeholder);
     }
 
     @Override public void replace(List<P> toRemove, List<P> toAdd) {
@@ -97,6 +105,21 @@ public class StandardParagraph
         return this.parent(ContentAccessor.class, 1)
                    .orElseThrow(throwing("This paragraph direct parent is not a classic parent object"))
                    .getContent();
+    }
+
+    private <T> Optional<T> parent(Class<T> aClass, int depth) {
+        var current = p.getParent();
+        var currentDepth = 1;
+        while (current != null && currentDepth <= depth) {
+            if (aClass.isInstance(current)) {
+                return Optional.of(aClass.cast(current));
+            }
+            else if (current instanceof Child child) {
+                current = child.getParent();
+                currentDepth++;
+            }
+        }
+        return Optional.empty();
     }
 
     @Override public void remove() {

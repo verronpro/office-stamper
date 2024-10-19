@@ -95,7 +95,7 @@ public class ParagraphRepeatProcessor
                     CommentUtil.deleteCommentFromElements(contentAccessor.getContent(), commentId);
                 }
                 if (clone instanceof P p) {
-                    var paragraph = StandardParagraph.from(p);
+                    var paragraph = StandardParagraph.from(document, p);
                     placeholderReplacer.resolveExpressionsForParagraph(document, paragraph, expressionContext);
                     paragraphsToAdd.add(p);
                 }

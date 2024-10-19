@@ -56,7 +56,7 @@ public class StandardComment
                             .stream()
                             .filter(P.class::isInstance)
                             .map(P.class::cast)
-                            .map(StandardParagraph::from)
+                            .map(p -> StandardParagraph.from(new TextualDocxPart(document), p))
                             .map(StandardParagraph::asString)
                             .collect(joining());
         return Placeholders.raw(string);

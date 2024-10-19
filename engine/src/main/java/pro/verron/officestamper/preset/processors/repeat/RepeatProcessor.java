@@ -99,7 +99,7 @@ public class RepeatProcessor
     }
 
     /** {@inheritDoc} */
-    @Override public void repeatTableRow(List<Object> objects) {
+    @Override public void repeatTableRow(@Nullable List<Object> objects) {
         var tr = this.getParagraph()
                       .parent(Tr.class)
                       .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));

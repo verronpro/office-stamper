@@ -6,10 +6,9 @@ import org.docx4j.dml.CTTextParagraph;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.Paragraph;
-import pro.verron.officestamper.api.Placeholder;
+import org.jvnet.jaxb2_commons.ppp.Child;
+import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.ObjectDeleter;
 import pro.verron.officestamper.core.StandardComment;
 import pro.verron.officestamper.utils.WmlFactory;
@@ -40,7 +39,7 @@ public class PowerpointParagraph
         implements Paragraph {
 
     private static final Random RANDOM = new Random();
-
+    private final DocxPart source;
     private final List<PowerpointRun> runs = new ArrayList<>();
     private final CTTextParagraph paragraph;
     private int currentPosition = 0;
@@ -50,7 +49,8 @@ public class PowerpointParagraph
      *
      * @param paragraph the paragraph to wrap.
      */
-    public PowerpointParagraph(CTTextParagraph paragraph) {
+    public PowerpointParagraph(PptxPart source, CTTextParagraph paragraph) {
+        this.source = source;
         this.paragraph = paragraph;
         recalculateRuns();
     }
@@ -94,8 +94,6 @@ public class PowerpointParagraph
     }
 
     private List<Object> siblings() {
-        ContentAccessor parent = (ContentAccessor) parent();
-        return parent.getContent();
         return this.parent(ContentAccessor.class, 1)
                    .orElseThrow(throwing("Not a standard Child with common parent"))
                    .getContent();

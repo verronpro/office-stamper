@@ -26,6 +26,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.experimental.ExcelCollector;
 import pro.verron.officestamper.experimental.PowerpointCollector;
 import pro.verron.officestamper.experimental.PowerpointParagraph;
+import pro.verron.officestamper.experimental.PptxPart;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -74,7 +75,7 @@ public class Stringifier {
 
         var powerpoint = new StringBuilder();
         for (CTTextParagraph paragraph : collected) {
-            powerpoint.append(new PowerpointParagraph(paragraph).asString());
+            powerpoint.append(new PowerpointParagraph(new PptxPart(), paragraph).asString());
         }
         return powerpoint.toString();
     }

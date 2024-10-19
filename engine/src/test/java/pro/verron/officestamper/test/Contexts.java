@@ -212,13 +212,14 @@ public class Contexts {
      * @since 1.6.6
      */
     public static HashMap<String, Object> mapAndReflectiveContext() {
+        var context = new HashMap<String, Object>();
+        context.put("FLAT_STRING", "Flat string has been resolved");
+
         var listProp = new ArrayList<Container>();
         listProp.add(new Container("first value"));
         listProp.add(new Container("second value"));
-
-        var context = new HashMap<String, Object>();
-        context.put("FLAT_STRING", "Flat string has been resolved");
         context.put("OBJECT_LIST_PROP", listProp);
+
         return context;
     }
 

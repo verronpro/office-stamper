@@ -4,6 +4,7 @@ import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Placeholder;
+import pro.verron.officestamper.utils.WmlFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +33,11 @@ public class StandardParagraph
 
     private List<IndexedRun> runs;
     private final List<Object> contents;
+    private final P p;
 
-    private StandardParagraph(List<Object> paragraphContent) {
+    private StandardParagraph(List<Object> paragraphContent, P p) {
         this.contents = paragraphContent;
+        this.p = p;
         this.runs = initializeRunList(contents);
     }
 
@@ -62,11 +65,19 @@ public class StandardParagraph
      * Constructs a new ParagraphWrapper for the given paragraph.
      */
     public static StandardParagraph from(P paragraph) {
-        return new StandardParagraph(paragraph.getContent());
+        return new StandardParagraph(paragraph.getContent(), paragraph);
     }
 
+    /**
+     * Constructs a StandardParagraph from a given CTSdtContentRun paragraph.
+     *
+     * @param paragraph a CTSdtContentRun object representing the content run of the paragraph
+     * @return a new instance of StandardParagraph based on the provided CTSdtContentRun
+     */
     public static StandardParagraph from(CTSdtContentRun paragraph) {
-        return new StandardParagraph(paragraph.getContent());
+        var p = WmlFactory.newParagraph(paragraph.getContent());
+        p.setParent(paragraph.getParent());
+        return new StandardParagraph(paragraph.getContent(), p);
     }
 
 
@@ -102,6 +113,35 @@ public class StandardParagraph
                    .map(IndexedRun::run)
                    .map(RunUtil::getText)
                    .collect(joining());
+    }
+
+    /**
+     * Retrieves the content of the paragraph.
+     *
+     * @return a list of objects representing the content of the paragraph
+     */
+    @Override public List<Object> paragraphContent() {
+        return contents;
+    }
+
+    /**
+     * Retrieves the P object associated with this StandardParagraph.
+     *
+     * @return the P object of this paragraph.
+     * @deprecated Not recommended, as will be replaced by other API
+     */
+    @Deprecated(since = "2.6", forRemoval = true)
+    @Override public P getP() {
+        return p;
+    }
+
+    /**
+     * Retrieves the parent object of the current paragraph.
+     *
+     * @return the parent object of the paragraph.
+     */
+    @Override public Object parent() {
+        return p.getParent();
     }
 
     private void replaceWithRun(Placeholder placeholder, R replacement) {
@@ -208,16 +248,10 @@ public class StandardParagraph
         runContentIterator.remove();
         var runLinebreakIterator = stream(value.split(placeholder.expression())).iterator();
         while (runLinebreakIterator.hasNext()) {
-            var subText = createText(runLinebreakIterator.next());
+            var subText = WmlFactory.newText(runLinebreakIterator.next());
             runContentIterator.add(subText);
             if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
         }
-    }
-
-    private static Text createText(String next) {
-        var replacement = new Text();
-        replacement.setValue(next);
-        return replacement;
     }
 
     private List<IndexedRun> getAffectedRuns(int startIndex, int endIndex) {

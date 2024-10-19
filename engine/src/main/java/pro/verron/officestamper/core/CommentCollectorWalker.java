@@ -3,6 +3,7 @@ package pro.verron.officestamper.core;
 import org.docx4j.TextUtils;
 import org.docx4j.wml.CommentRangeEnd;
 import org.docx4j.wml.CommentRangeStart;
+import org.docx4j.wml.Comments;
 import org.docx4j.wml.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +42,15 @@ class CommentCollectorWalker
         var allComments = new HashMap<BigInteger, Comment>();
         new CommentCollectorWalker(docxPart, rootComments, allComments).walk();
 
-        var commentsPart = docxPart.commentsPart();
-        if (commentsPart == null)
-            return rootComments;
-        var comments = CommentUtil.getComments(commentsPart);
-
-        for (var comment : comments) {
-            var commentWrapper = allComments.get(comment.getId());
-            if (commentWrapper != null)
-                commentWrapper.setComment(comment);
-        }
+        var sourceDocument = docxPart.document();
+        CommentUtil.getCommentsPart(sourceDocument.getParts())
+                   .map(CommentUtil::extractContent)
+                   .map(Comments::getComment)
+                   .stream()
+                   .flatMap(Collection::stream)
+                   .filter(comment -> allComments.containsKey(comment.getId()))
+                   .forEach(comment -> allComments.get(comment.getId())
+                                                  .setComment(comment));
         return cleanMalformedComments(rootComments);
     }
 

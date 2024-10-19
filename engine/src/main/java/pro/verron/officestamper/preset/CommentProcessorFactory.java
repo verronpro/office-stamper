@@ -226,11 +226,8 @@ public class CommentProcessorFactory {
          * Within each copy of the row, all expressions are evaluated against one of the objects in the list.
          *
          * @param objects the objects which serve as context root for expressions found in the template table row.
-         *
-         * @throws Exception if the processing fails.
          */
-        void repeatDocPart(@Nullable List<Object> objects)
-                throws Exception;
+        void repeatDocPart(@Nullable List<Object> objects);
     }
 
     /**
@@ -483,7 +480,7 @@ public class CommentProcessorFactory {
         @Override public void replaceWordWith(@Nullable String expression) {
             R run = this.getCurrentRun();
             if (run == null) {
-                log.info(format("Impossible to put expression %s in a null run", expression));
+                log.info("Impossible to put expression {} in a null run", expression);
                 return;
             }
 
@@ -662,7 +659,7 @@ public class CommentProcessorFactory {
                             .getComment()
                             .getId();
                     CommentUtil.deleteCommentFromElements(pCloneContent, commentId);
-                    var paragraph = new StandardParagraph(pClone);
+                    var paragraph = StandardParagraph.from(pClone);
                     placeholderReplacer.resolveExpressionsForParagraph(document, paragraph, expressionContext);
                     paragraphsToAdd.add(pClone);
                 }
@@ -738,7 +735,7 @@ public class CommentProcessorFactory {
          * {@inheritDoc}
          */
         @Override protected void onParagraph(P paragraph) {
-            var standardParagraph = new StandardParagraph(paragraph);
+            var standardParagraph = StandardParagraph.from(paragraph);
             placeholderReplacer.resolveExpressionsForParagraph(docxPart, standardParagraph, expressionContext);
         }
     }

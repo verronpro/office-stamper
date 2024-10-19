@@ -29,7 +29,7 @@ public class CustomCommentProcessor
         extends AbstractCommentProcessor
         implements ICustomCommentProcessor {
 
-    private static final List<P> visitedParagraphs = new ArrayList<>();
+    private static final List<Paragraph> visitedParagraphs = new ArrayList<>();
 
     /**
      * <p>Constructor for CustomCommentProcessor.</p>
@@ -45,11 +45,11 @@ public class CustomCommentProcessor
      */
     @Override
     public void commitChanges(DocxPart document) {
-        visitedParagraphs.forEach(p -> {
+        visitedParagraphs.forEach(para -> para.apply((P p)->{
             var content = p.getContent();
             content.clear();
             content.add(newRun("Visited"));
-        });
+        }));
     }
 
     /**
@@ -82,6 +82,6 @@ public class CustomCommentProcessor
      */
     @Override
     public void visitParagraph() {
-        visitedParagraphs.add(getParagraph().getP());
+        visitedParagraphs.add(getParagraph());
     }
 }

@@ -22,4 +22,8 @@ public record StandardPlaceholder(
                 ? matcher.strip(expression)
                 : expression;
     }
+
+    @Override public String toString() {
+        return "[%s]".formatted(expression);
+    }
 }

@@ -1,15 +1,12 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
-import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
-import pro.verron.officestamper.utils.WmlFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,24 +31,25 @@ public final class TextualDocxPart
         this.contentAccessor = contentAccessor;
     }
 
+
     public Stream<Paragraph> streamParagraphs() {
         return Stream.concat(DocumentUtil.streamObjectElements(this, P.class)
-                                         .map(StandardParagraph::from),
+                                         .map(p -> StandardParagraph.from(this, p)),
                 DocumentUtil.streamObjectElements(this, SdtRun.class)
-                            .map(SdtRun::getSdtContent)
-                            .filter(CTSdtContentRun.class::isInstance)
-                            .map(CTSdtContentRun.class::cast)
-                            .map(StandardParagraph::from));
+                                    .map(SdtRun::getSdtContent)
+                                    .filter(CTSdtContentRun.class::isInstance)
+                                    .map(CTSdtContentRun.class::cast)
+                                    .map(paragraph -> StandardParagraph.from(this, paragraph)));
     }
 
     @Override public Stream<R> streamRun() {
-        return streamParagraphs()
-                .map(Paragraph::paragraphContent)
-                .flatMap(Collection::stream)
-                .map(XmlUtils::unwrap)
-                .filter(R.class::isInstance)
-                .map(R.class::cast);
+        return DocumentUtil.streamObjectElements(this, P.class)
+                           .map(P::getContent)
+                           .flatMap(Collection::stream)
+                           .filter(R.class::isInstance)
+                           .map(R.class::cast);
     }
+
 
     public Stream<DocxPart> streamParts(String type) {
         return document.getMainDocumentPart()
@@ -67,15 +65,11 @@ public final class TextualDocxPart
     }
 
     public WordprocessingMLPackage document() {return document;}
-
     private RelationshipsPart getRelationshipsPart() {
         return part().getRelationshipsPart();
     }
 
-    public CommentsPart commentsPart() {
-        return CommentUtil.getCommentsPart(document.getParts())
-                          .orElse(WmlFactory.newCommentsPart());
-    }
+
 
     @Override public DocxPart from(ContentAccessor accessor) {
         return new TextualDocxPart(document, part, accessor);
@@ -84,6 +78,7 @@ public final class TextualDocxPart
     @Override public Part part() {return part;}
 
     @Override public List<Object> content() {return contentAccessor.getContent();}
+
 
     @Override public int hashCode() {
         return Objects.hash(document, part, contentAccessor);

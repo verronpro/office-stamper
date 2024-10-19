@@ -22,8 +22,6 @@ public interface CommentProcessor {
      */
     void setCurrentRun(@Nullable R run);
 
-    Object getParent();
-
     /**
      * This method is called after all comments in the .docx template have been passed to the comment processor.
      * All manipulations of the .docx document SHOULD BE done in this method.

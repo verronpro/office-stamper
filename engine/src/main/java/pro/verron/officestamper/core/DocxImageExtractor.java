@@ -58,7 +58,7 @@ public class DocxImageExtractor {
 	}
 
 	private String getImageRelPartName(String imageRelId) {
-		// TODO_LATER: find a better way to find image rel part name in source part store
+		// TODO: find a better way to find image rel part name in source part store
 		return wordprocessingMLPackage
 				.getMainDocumentPart()
 				.getRelationshipsPart()

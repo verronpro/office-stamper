@@ -3,7 +3,11 @@ package pro.verron.officestamper.preset.processors.table;
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.*;
+import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.Tbl;
+import org.docx4j.wml.Tc;
+import org.docx4j.wml.Tr;
+import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.PlaceholderReplacer;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
@@ -15,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
+import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
 /**
  * TableResolver class.
@@ -50,10 +56,10 @@ public class TableResolver
     /**
      * {@inheritDoc}
      */
-    @Override public void resolveTable(StampTable givenTable) {
-        var tc = CommentProcessorFactory.assertTableCell(getParent());
-        var tr = CommentProcessorFactory.assertTableRow(tc.getParent());
-        var tbl = CommentProcessorFactory.assertTable(tr.getParent());
+    @Override public void resolveTable(@Nullable StampTable givenTable) {
+        var tbl = this.getParagraph()
+                      .parent(Tbl.class)
+                      .orElseThrow(throwing("Paragraph is not within a table!"));
         cols.put(tbl, givenTable);
     }
 

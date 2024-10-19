@@ -21,7 +21,9 @@ class MultiSectionTest {
         String expected = """
                 Homer
                 
-                ❬❘docGrid={linePitch=360},pgMar={bottom=1417,footer=708,gutter=0,header=708,left=1417,right=1417,top=1417},pgSz={h=16838,w=11906}❭
+                
+                [section-break, docGrid={linePitch=360},pgMar={bottom=1417,footer=708,gutter=0,header=708,left=1417,right=1417,top=1417},pgSz={h=16838,w=11906}]
+                <<<
                 Marge
                 """;
         assertEquals(expected, actual);

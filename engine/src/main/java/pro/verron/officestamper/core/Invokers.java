@@ -30,17 +30,13 @@ public class Invokers
     private final Map<String, Map<Args, MethodExecutor>> map;
 
     public Invokers(Stream<Invoker> invokerStream) {
-        map = invokerStream.collect(groupingBy(
-                Invoker::name,
-                toMap(Invoker::args, Invoker::executor)
-        ));
+        map = invokerStream.collect(groupingBy(Invoker::name, toMap(Invoker::args, Invoker::executor)));
     }
 
     static Stream<Invoker> streamInvokers(Map<Class<?>, ?> interfaces2implementations) {
-        return interfaces2implementations
-                .entrySet()
-                .stream()
-                .flatMap(Invokers::streamInvokers);
+        return interfaces2implementations.entrySet()
+                                         .stream()
+                                         .flatMap(Invokers::streamInvokers);
     }
 
     private static Stream<Invoker> streamInvokers(Entry<Class<?>, ?> interface2implementation) {
@@ -48,13 +44,11 @@ public class Invokers
     }
 
     private static Stream<Invoker> streamInvokers(Class<?> key, Object obj) {
-        return stream(key.getDeclaredMethods())
-                .map(method -> new Invoker(obj, method));
+        return stream(key.getDeclaredMethods()).map(method -> new Invoker(obj, method));
     }
 
     /** {@inheritDoc} */
-    @Override
-    public MethodExecutor resolve(
+    @Override public MethodExecutor resolve(
             @NonNull EvaluationContext context,
             @NonNull Object targetObject,
             @NonNull String name,
@@ -66,7 +60,7 @@ public class Invokers
                   .entrySet()
                   .stream()
                   .filter(entry -> entry.getKey()
-                                            .validate(argumentClasses))
+                                        .validate(argumentClasses))
                   .map(Entry::getValue)
                   .findFirst()
                   .orElse(null);
@@ -74,8 +68,7 @@ public class Invokers
 
     public record Args(List<Class<?>> sourceTypes) {
         public boolean validate(List<Class<?>> searchedTypes) {
-            if (searchedTypes.size() != sourceTypes.size())
-                return false;
+            if (searchedTypes.size() != sourceTypes.size()) return false;
 
             var sourceTypesQ = new ArrayDeque<>(sourceTypes);
             var searchedTypesQ = new ArrayDeque<>(searchedTypes);

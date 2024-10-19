@@ -42,7 +42,7 @@ class ParagraphResolverDocumentWalker
      * {@inheritDoc}
      */
     @Override protected void onParagraph(P paragraph) {
-        var standardParagraph = StandardParagraph.from(paragraph);
+        var standardParagraph = StandardParagraph.from(docxPart, paragraph);
         placeholderReplacer.resolveExpressionsForParagraph(docxPart, standardParagraph, expressionContext);
     }
 }

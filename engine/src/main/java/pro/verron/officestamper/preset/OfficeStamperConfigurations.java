@@ -37,6 +37,7 @@ public class OfficeStamperConfigurations {
      */
     public static OfficeStamperConfiguration standard() {
         var configuration = new DocxStamperConfiguration();
+        configuration.addPreprocessor(Preprocessors.removeMalformedComments());
         configuration.exposeInterfaceToExpressionLanguage(IStamperDateFormatter.class, new StamperDateFormatter());
         return configuration;
     }

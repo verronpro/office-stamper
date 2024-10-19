@@ -33,8 +33,7 @@ public class PowerpointStamper
         List<CTTextParagraph> ctTextParagraphs = PowerpointCollector.collect(template,
                 ctTextParagraphClass);
         for (CTTextParagraph paragraph : ctTextParagraphs) {
-            PowerpointParagraph paragraph1 = new PowerpointParagraph(
-                    paragraph);
+            PowerpointParagraph paragraph1 = new PowerpointParagraph(new PptxPart(), paragraph);
             String string = paragraph1.asString();
             for (var variable : Placeholders.findVariables(string)) {
                 var replacement = new CTRegularTextRun();
@@ -55,6 +54,4 @@ public class PowerpointStamper
             throw new OfficeStamperException(e);
         }
     }
-
-
 }

@@ -1,19 +1,17 @@
 package pro.verron.officestamper.preset.processors.displayif;
 
-import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.AbstractCommentProcessor;
-import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.ObjectDeleter;
 import pro.verron.officestamper.core.PlaceholderReplacer;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
 /**
  * Processor for the {@link CommentProcessorFactory.IDisplayIfProcessor} comment.
@@ -27,7 +25,7 @@ public class DisplayIfProcessor
         extends AbstractCommentProcessor
         implements CommentProcessorFactory.IDisplayIfProcessor {
 
-    private List<P> paragraphsToBeRemoved = new ArrayList<>();
+    private List<Paragraph> paragraphsToBeRemoved = new ArrayList<>();
     private List<Tbl> tablesToBeRemoved = new ArrayList<>();
     private List<Tr> tableRowsToBeRemoved = new ArrayList<>();
 
@@ -54,21 +52,15 @@ public class DisplayIfProcessor
     }
 
     private void removeParagraphs() {
-        for (P p : paragraphsToBeRemoved) {
-            ObjectDeleter.deleteParagraph(p);
-        }
+        paragraphsToBeRemoved.forEach(Paragraph::remove);
     }
 
     private void removeTables() {
-        for (Tbl table : tablesToBeRemoved) {
-            ObjectDeleter.deleteTable(table);
-        }
+        tablesToBeRemoved.forEach(ObjectDeleter::deleteTable);
     }
 
     private void removeTableRows() {
-        for (Tr row : tableRowsToBeRemoved) {
-            ObjectDeleter.deleteTableRow(row);
-        }
+        tableRowsToBeRemoved.forEach(ObjectDeleter::deleteTableRow);
     }
 
     /** {@inheritDoc} */
@@ -79,9 +71,9 @@ public class DisplayIfProcessor
     }
 
     /** {@inheritDoc} */
-    @Override public void displayParagraphIf(Boolean condition) {
+    @Override public void displayParagraphIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        paragraphsToBeRemoved.add(getParagraph().getP());
+        paragraphsToBeRemoved.add(this.getParagraph());
     }
 
     /** {@inheritDoc} */
@@ -90,19 +82,20 @@ public class DisplayIfProcessor
     }
 
     /** {@inheritDoc} */
-    @Override public void displayTableRowIf(Boolean condition) {
+    @Override public void displayTableRowIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var tr = CommentProcessorFactory.assertTableRow(CommentProcessorFactory.assertTableCell(getParent())
-                                                                               .getParent());
+        var tr = this.getParagraph()
+                    .parent(Tr.class)
+                    .orElseThrow(throwing("Paragraph is not within a row!"));
         tableRowsToBeRemoved.add(tr);
     }
 
     /** {@inheritDoc} */
     @Override public void displayTableIf(Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        tablesToBeRemoved.add(CommentProcessorFactory.assertTable(CommentProcessorFactory.assertTableRow(
-                                                                                                 CommentProcessorFactory.assertTableCell(getParent())
-                                                                                                                        .getParent())
-                                                                                         .getParent()));
+        var tbl = this.getParagraph()
+                      .parent(Tbl.class)
+                      .orElseThrow(throwing("Paragraph is not within a table!"));
+        tablesToBeRemoved.add(tbl);
     }
 }

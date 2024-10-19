@@ -3,7 +3,6 @@ package pro.verron.officestamper.preset.processors.repeatparagraph;
 import org.docx4j.XmlUtils;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.SectionUtil;
@@ -55,7 +54,7 @@ public class ParagraphRepeatProcessor
      * {@inheritDoc}
      */
     @Override public void repeatParagraph(List<Object> objects) {
-        var paragraph = getParagraph();
+        var paragraph = this.getParagraph();
         var comment = getCurrentCommentWrapper();
         var data = new ArrayDeque<>(objects);
         var elements = comment.getElements();

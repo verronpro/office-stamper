@@ -5,6 +5,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
+import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
@@ -106,4 +107,5 @@ public class RepeatProcessor
         tableRowsToRepeat.put(tr, objects);
         tableRowsCommentsToRemove.put(tr, getCurrentCommentWrapper());
     }
+
 }

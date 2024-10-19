@@ -11,7 +11,7 @@ import pro.verron.officestamper.preset.CommentProcessorFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pro.verron.officestamper.preset.CommentProcessorFactory.*;
+import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
 /**
  * Processor for the {@link CommentProcessorFactory.IDisplayIfProcessor} comment.
@@ -52,21 +52,15 @@ public class DisplayIfProcessor
     }
 
     private void removeParagraphs() {
-        for (Paragraph p : paragraphsToBeRemoved) {
-            p.remove();
-        }
+        paragraphsToBeRemoved.forEach(Paragraph::remove);
     }
 
     private void removeTables() {
-        for (Tbl table : tablesToBeRemoved) {
-            ObjectDeleter.deleteTable(table);
-        }
+        tablesToBeRemoved.forEach(ObjectDeleter::deleteTable);
     }
 
     private void removeTableRows() {
-        for (Tr row : tableRowsToBeRemoved) {
-            ObjectDeleter.deleteTableRow(row);
-        }
+        tableRowsToBeRemoved.forEach(ObjectDeleter::deleteTableRow);
     }
 
     /** {@inheritDoc} */

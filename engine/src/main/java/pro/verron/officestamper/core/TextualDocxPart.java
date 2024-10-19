@@ -45,12 +45,11 @@ public final class TextualDocxPart
     }
 
     @Override public Stream<R> streamRun() {
-        return streamParagraphs()
-                .map(Paragraph::paragraphContent)
-                .flatMap(Collection::stream)
-                .map(XmlUtils::unwrap)
-                .filter(R.class::isInstance)
-                .map(R.class::cast);
+        return DocumentUtil.streamObjectElements(this, P.class)
+                           .map(P::getContent)
+                           .flatMap(Collection::stream)
+                           .filter(R.class::isInstance)
+                           .map(R.class::cast);
     }
 
     public Stream<DocxPart> streamParts(String type) {

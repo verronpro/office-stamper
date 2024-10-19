@@ -587,13 +587,21 @@ public class Stringifier {
     private Optional<String> stringify(SectPr sectPr) {
         if (sectPr == null) return Optional.empty();
         var set = new TreeSet<String>();
-        if (sectPr.getEGHdrFtrReferences() != null) set.add("eGHdrFtrReferences=xxx");
+        if (sectPr.getEGHdrFtrReferences() != null && !sectPr.getEGHdrFtrReferences()
+                                                             .isEmpty())
+            set.add("eGHdrFtrReferences=%s".formatted(sectPr.getEGHdrFtrReferences()
+                                                            .stream()
+                                                            .map(this::stringify)
+                                                            .collect(joining(",",
+                                                                    "[",
+                                                                    "]"))));
         if (sectPr.getPgSz() != null) set.add("pgSz={" + stringify(sectPr.getPgSz()) + "}");
-        if (sectPr.getPgMar() != null) set.add("pgMar=xxx");
+        if (sectPr.getPgMar() != null) set.add("pgMar={" + stringify(sectPr.getPgMar()) + "}");
         if (sectPr.getPaperSrc() != null) set.add("paperSrc=xxx");
         if (sectPr.getBidi() != null) set.add("bidi=xxx");
         if (sectPr.getRtlGutter() != null) set.add("rtlGutter=xxx");
-        if (sectPr.getDocGrid() != null) set.add("docGrid=xxx");
+        if (sectPr.getDocGrid() != null) set.add("docGrid={"
+                                                 + stringify(sectPr.getDocGrid()) + "}");
         if (sectPr.getFormProt() != null) set.add("formProt=xxx");
         if (sectPr.getVAlign() != null) set.add("vAlign=xxx");
         if (sectPr.getNoEndnote() != null) set.add("noEndnote=xxx");
@@ -604,16 +612,39 @@ public class Stringifier {
         return Optional.of(String.join(",", set));
     }
 
+    private String stringify(CTDocGrid ctDocGrid) {
+        var set = new TreeSet<String>();
+        if (ctDocGrid.getCharSpace() != null) set.add("charSpace=" + ctDocGrid.getCharSpace());
+        if (ctDocGrid.getLinePitch() != null) set.add("linePitch=" + ctDocGrid.getLinePitch()
+                                                                              .intValue());
+        if (ctDocGrid.getType() != null) set.add("type=" + ctDocGrid.getType());
+        return String.join(",", set);
+    }
+
+    private String stringify(CTRel ctRel) {
+        var set = new TreeSet<String>();
+        if (ctRel.getId() != null) set.add("id=" + ctRel.getId());
+        return String.join(",", set);
+    }
+
+    private String stringify(SectPr.PgMar pgMar) {
+        var set = new TreeSet<String>();
+        if (pgMar.getHeader() != null) set.add("header=" + pgMar.getHeader());
+        if (pgMar.getFooter() != null) set.add("footer=" + pgMar.getFooter());
+        if (pgMar.getGutter() != null) set.add("gutter=" + pgMar.getGutter());
+        if (pgMar.getTop() != null) set.add("top=" + pgMar.getTop());
+        if (pgMar.getLeft() != null) set.add("left=" + pgMar.getLeft());
+        if (pgMar.getBottom() != null) set.add("bottom=" + pgMar.getBottom());
+        if (pgMar.getRight() != null) set.add("right=" + pgMar.getRight());
+        return String.join(",", set);
+    }
+
     private String stringify(SectPr.PgSz pgSz) {
         var set = new TreeSet<String>();
-        if (pgSz.getOrient() != null) set.add("orient=" + pgSz.getOrient()
-                                                              .value());
-        if (pgSz.getW() != null) set.add("w=" + pgSz.getW()
-                                                    .intValue());
-        if (pgSz.getH() != null) set.add("h=" + pgSz.getH()
-                                                    .intValue());
-        if (pgSz.getCode() != null) set.add("code=" + pgSz.getCode()
-                                                          .intValue());
+        if (pgSz.getOrient() != null) set.add("orient=" + pgSz.getOrient());
+        if (pgSz.getW() != null) set.add("w=" + pgSz.getW());
+        if (pgSz.getH() != null) set.add("h=" + pgSz.getH());
+        if (pgSz.getCode() != null) set.add("code=" + pgSz.getCode());
         return String.join(",", set);
     }
 }

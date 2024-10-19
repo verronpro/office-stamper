@@ -116,8 +116,14 @@ public class CommentUtil {
                        .findFirst();
     }
 
-    static CommentsPart getCommentsPart(Parts parts) {
-        return (CommentsPart) parts.get(WORD_COMMENTS_PART_NAME);
+    /**
+     * Retrieves the CommentsPart from the given Parts object.
+     *
+     * @param parts the Parts object containing the various parts of the document.
+     * @return an Optional containing the CommentsPart if found, or an empty Optional if not found.
+     */
+    public static Optional<CommentsPart> getCommentsPart(Parts parts) {
+        return Optional.ofNullable((CommentsPart) parts.get(WORD_COMMENTS_PART_NAME));
     }
 
     /**

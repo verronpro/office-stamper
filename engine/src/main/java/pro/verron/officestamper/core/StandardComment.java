@@ -1,5 +1,6 @@
 package pro.verron.officestamper.core;
 
+import org.docx4j.TextUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.CommentRangeEnd;
 import org.docx4j.wml.CommentRangeStart;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>CommentWrapper class.</p>
@@ -23,7 +25,6 @@ import java.util.Set;
  */
 public class StandardComment
         implements Comment {
-
     private final Set<Comment> children = new HashSet<>();
     private final WordprocessingMLPackage document;
     private Comments.Comment comment;
@@ -38,6 +39,13 @@ public class StandardComment
      */
     public StandardComment(WordprocessingMLPackage document) {
         this.document = document;
+    }
+
+    @Override public String toString() {
+        return "StandardComment{comment={id=%s, content=%s, children=%s}}}".formatted(
+                comment.getId(),
+                comment.getContent().stream().map(TextUtils::getText).collect(Collectors.joining(",")),
+                children.size());
     }
 
     /**

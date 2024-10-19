@@ -80,7 +80,8 @@ public class DocxStamper
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
 
-        this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(source,
+        this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(
+                source,
                 expressionResolver,
                 commentProcessors,
                 exceptionResolver);
@@ -88,8 +89,10 @@ public class DocxStamper
         this.preprocessors = new ArrayList<>(preprocessors);
     }
 
-    private Map<Class<?>, CommentProcessor> buildCommentProcessors(Map<Class<?>,
-            Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors) {
+    private CommentProcessors buildCommentProcessors(
+            Map<Class<?>,
+                    Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors
+    ) {
         var processors = new HashMap<Class<?>, CommentProcessor>();
         for (var entry : commentProcessors.entrySet()) {
             processors.put(
@@ -97,7 +100,7 @@ public class DocxStamper
                     entry.getValue()
                          .apply(placeholderReplacer));
         }
-        return processors;
+        return new CommentProcessors(processors);
     }
 
     /**
@@ -132,9 +135,7 @@ public class DocxStamper
      * and register it via {@link OfficeStamperConfiguration#addCommentProcessor(Class, Function)}.
      * </p>
      */
-    public void stamp(
-            InputStream template, Object contextRoot, OutputStream out
-    ) {
+    public void stamp(InputStream template, Object contextRoot, OutputStream out) {
         try {
             WordprocessingMLPackage document = WordprocessingMLPackage.load(template);
             stamp(document, contextRoot, out);
@@ -151,9 +152,7 @@ public class DocxStamper
      * may pass in a DOCX4J document as a template instead
      * of an InputStream.
      */
-    @Override public void stamp(
-            WordprocessingMLPackage document, Object contextRoot, OutputStream out
-    ) {
+    @Override public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
         try {
             var source = new TextualDocxPart(document);
             preprocess(document);
@@ -171,23 +170,15 @@ public class DocxStamper
         }
     }
 
-    private void processComments(
-            DocxPart document,
-            Object contextObject
-    ) {
+    private void processComments(DocxPart document, Object contextObject) {
         document.streamParts(Namespaces.HEADER)
                 .forEach(header -> runProcessors(header, contextObject));
-
         runProcessors(document, contextObject);
-
         document.streamParts(Namespaces.FOOTER)
                 .forEach(footer -> runProcessors(footer, contextObject));
     }
 
-    private void replaceExpressions(
-            DocxPart document,
-            Object contextObject
-    ) {
+    private void replaceExpressions(DocxPart document, Object contextObject) {
         document.streamParts(Namespaces.HEADER)
                 .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
         placeholderReplacer.resolveExpressions(document, contextObject);

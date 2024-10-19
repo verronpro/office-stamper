@@ -222,17 +222,6 @@ public class PowerpointParagraph
      * @return the text of all runs.
      */
     @Override public String asString() {
-        /*StringBuilder builder = new StringBuilder();
-        List<Object> egTextRun = paragraph.getEGTextRun();
-        for (Object object : egTextRun) {
-            if (object instanceof CTRegularTextRun run)
-                builder.append(run.getT());
-            else if (object instanceof CTTextField text)
-                builder.append(text.getT());
-            else if (object instanceof CTTextLineBreak)
-                builder.append("\n");
-        }
-        return builder.toString();*/
         return runs.stream()
                    .map(PowerpointRun::run)
                    .map(CTRegularTextRun::getT)

@@ -77,9 +77,9 @@ public class DisplayIfProcessor
     }
 
     /** {@inheritDoc} */
-    @Override public void displayParagraphIf(Boolean condition) {
+    @Override public void displayParagraphIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        paragraphsToBeRemoved.add(getParagraph());
+        paragraphsToBeRemoved.add(this.getParagraph());
     }
 
     /** {@inheritDoc} */
@@ -88,7 +88,7 @@ public class DisplayIfProcessor
     }
 
     /** {@inheritDoc} */
-    @Override public void displayTableRowIf(Boolean condition) {
+    @Override public void displayTableRowIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
         var tr = this.getParagraph()
                     .parent(Tr.class)

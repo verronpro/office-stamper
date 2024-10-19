@@ -63,7 +63,7 @@ public class CommentProcessorRegistry {
         source.streamRun()
               .forEach(run -> {
                   var comments = collectComments(source);
-                  var runParent = StandardParagraph.from((P) run.getParent());
+                  var runParent = StandardParagraph.from(source, (P) run.getParent());
                   var optional = runProcessorsOnRunComment(comments, expressionContext, run, runParent);
                   commentProcessors.commitChanges(source);
                   optional.ifPresent(proceedComments::add);

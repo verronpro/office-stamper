@@ -53,7 +53,7 @@ public class ObjectDeleter {
 			for (Iterator<Object> iterator = ((ContentAccessor) table.getParent()).getContent()
 																				  .listIterator(); iterator.hasNext(); ) {
 				Object next = iterator.next();
-				if (next instanceof JAXBElement element && element.getValue().equals(table)) {
+				if (next instanceof JAXBElement<?> element && element.getValue().equals(table)) {
 					iterator.remove();
 					break;
                 }

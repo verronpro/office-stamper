@@ -106,7 +106,7 @@ public class TableResolver
 
         if (stampedTable.isEmpty()) rows.remove(firstDataRow);
         else {
-            growAndFillRow(firstDataRow, stampedTable.get(0));
+            growAndFillRow(firstDataRow, stampedTable.getFirst());
             for (var rowContent : stampedTable.subList(1, stampedTable.size()))
                 rows.add(copyRowFromTemplate(firstDataRow, rowContent));
         }
@@ -116,9 +116,9 @@ public class TableResolver
         List<Object> cellRowContent = row.getContent();
 
         //Replace text in first cell
-        JAXBElement<Tc> cell0 = (JAXBElement<Tc>) cellRowContent.get(0);
+        JAXBElement<Tc> cell0 = (JAXBElement<Tc>) cellRowContent.getFirst();
         Tc cell0tc = cell0.getValue();
-        setCellText(cell0tc, values.isEmpty() ? "" : values.get(0));
+        setCellText(cell0tc, values.isEmpty() ? "" : values.getFirst());
 
         if (values.size() > 1) {
             //Copy the first cell and replace content for each remaining value

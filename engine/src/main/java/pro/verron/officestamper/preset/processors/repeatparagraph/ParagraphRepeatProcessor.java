@@ -58,7 +58,7 @@ public class ParagraphRepeatProcessor
         var comment = getCurrentCommentWrapper();
         var data = new ArrayDeque<>(objects);
         var elements = comment.getElements();
-        var previousSectionBreak = getPreviousSectionBreakIfPresent(elements.get(0), comment.getParent());
+        var previousSectionBreak = getPreviousSectionBreakIfPresent(elements.getFirst(), comment.getParent());
         var oddNumberOfBreaks = hasOddNumberOfSectionBreaks(elements);
         var toRepeat = new Paragraphs(comment, data, elements, previousSectionBreak, oddNumberOfBreaks);
         pToRepeat.put(paragraph, toRepeat);

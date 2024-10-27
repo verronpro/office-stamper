@@ -110,7 +110,7 @@ public class RepeatDocPartProcessor
                             previousSectionBreak,
                             oddNumberOfBreaks);
             var gcpContent = gcp.getContent();
-            var index = gcpContent.indexOf(repeatElements.get(0));
+            var index = gcpContent.indexOf(repeatElements.getFirst());
             gcpContent.addAll(index, changes);
             gcpContent.removeAll(repeatElements);
         }

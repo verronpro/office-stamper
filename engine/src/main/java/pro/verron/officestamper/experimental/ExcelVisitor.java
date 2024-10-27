@@ -34,13 +34,12 @@ abstract class ExcelVisitor {
     private static final Logger logger = LoggerFactory.getLogger(ExcelVisitor.class);
 
     private static void unexpectedVisit(Object object) {
+        assert object != null : "Cannot visit a null object";
         var env = System.getenv();
         var throwOnUnexpectedVisit = Boolean.parseBoolean(env.getOrDefault("throw-on-unexpected-visit", "false"));
         var message = "Unknown case : %s %s".formatted(object, object.getClass());
-        if (throwOnUnexpectedVisit)
-            throw new OfficeStamperException(message);
-        else
-            logger.debug(message);
+        if (throwOnUnexpectedVisit) throw new OfficeStamperException(message);
+        else logger.debug(message);
     }
 
     private static void ignore(@Nullable Object ignored1) {
@@ -55,37 +54,36 @@ abstract class ExcelVisitor {
     public final void visit(@Nullable Object object) {
         before(object);
         try {
-            if (object instanceof SpreadsheetMLPackage element) visit(element.getParts());
-
-            else if (object instanceof Parts element) visit(element.getParts());
-            else if (object instanceof WorksheetPart element) visit(element.getContents());
-            else if (object instanceof WorkbookPart element) visit(element.getContents());
-            else if (object instanceof DocPropsCorePart ignored) ignore(ignored);
-            else if (object instanceof DocPropsExtendedPart ignored) ignore(ignored);
-            else if (object instanceof Styles ignored) ignore(ignored);
-            else if (object instanceof SharedStrings element) visit(element.getContents());
-            else if (object instanceof ThemePart ignored) ignore(ignored);
-
-            else if (object instanceof Workbook element) visit(element.getSheets());
-            else if (object instanceof Sheets element) visit(element.getSheet());
-            else if (object instanceof Worksheet element) visit(element.getSheetData());
-            else if (object instanceof SheetData element) visit(element.getRow());
-            else if (object instanceof Row element) visit(element.getC());
-            else if (object instanceof Cell element) visit(element.getIs());
-            else if (object instanceof CTRst element) visit(element.getR());
-            else if (object instanceof CTSst element) visit(element.getSi());
-            else if (object instanceof CTRElt element) visit(element.getT());
-            else if (object instanceof CTXstringWhitespace ignored) ignore(ignored);
-            else if (object instanceof JAXBElement<?> element) visit(element.getValue());
-            else if (object instanceof Sheet element) visit(element.getState());
-            else if (object instanceof STSheetState ignored) ignore(ignored);
-
-            else if (object instanceof List<?> element) element.forEach(this::visit);
-            else if (object instanceof Set<?> element) element.forEach(this::visit);
-            else if (object instanceof Map<?, ?> element) visit(element.entrySet());
-            else if (object instanceof Entry<?, ?> element) visit(element.getKey(), element.getValue());
-            else if (object == null) ignore(null);
-            else unexpectedVisit(object);
+            switch (object) {
+                case SpreadsheetMLPackage element -> visit(element.getParts());
+                case Parts element -> visit(element.getParts());
+                case WorksheetPart element -> visit(element.getContents());
+                case WorkbookPart element -> visit(element.getContents());
+                case DocPropsCorePart ignored -> ignore(ignored);
+                case DocPropsExtendedPart ignored -> ignore(ignored);
+                case Styles ignored -> ignore(ignored);
+                case SharedStrings element -> visit(element.getContents());
+                case ThemePart ignored -> ignore(ignored);
+                case Workbook element -> visit(element.getSheets());
+                case Sheets element -> visit(element.getSheet());
+                case Worksheet element -> visit(element.getSheetData());
+                case SheetData element -> visit(element.getRow());
+                case Row element -> visit(element.getC());
+                case Cell element -> visit(element.getIs());
+                case CTRst element -> visit(element.getR());
+                case CTSst element -> visit(element.getSi());
+                case CTRElt element -> visit(element.getT());
+                case CTXstringWhitespace ignored -> ignore(ignored);
+                case JAXBElement<?> element -> visit(element.getValue());
+                case Sheet element -> visit(element.getState());
+                case STSheetState ignored -> ignore(ignored);
+                case List<?> element -> element.forEach(this::visit);
+                case Set<?> element -> element.forEach(this::visit);
+                case Map<?, ?> element -> visit(element.entrySet());
+                case Entry<?, ?> element -> visit(element.getKey(), element.getValue());
+                case null -> ignore(null);
+                default -> unexpectedVisit(object);
+            }
         } catch (Docx4JException e) {
             throw new OfficeStamperException(e);
         }

@@ -53,24 +53,27 @@ public class RunUtil {
      * @return {@link String} representation of run child
      */
     public static CharSequence getText(Object content) {
-        if (content instanceof JAXBElement<?> jaxbElement) return getText(jaxbElement.getValue());
-        if (content instanceof Text text) return getText(text);
-        if (content instanceof R.Tab) return "\t";
-        if (content instanceof R.Cr) return "\n";
-        if (content instanceof Br br && br.getType() == null) return "\n";
-        if (content instanceof Br br && br.getType() == STBrType.TEXT_WRAPPING) return "\n";
-        if (content instanceof Br br && br.getType() == STBrType.PAGE) return "\n";
-        if (content instanceof Br br && br.getType() == STBrType.COLUMN) return "\n";
-        if (content instanceof R.NoBreakHyphen) return "‑";
-        if (content instanceof R.SoftHyphen) return "\u00AD";
-        if (content instanceof R.LastRenderedPageBreak) return "";
-        if (content instanceof R.AnnotationRef) return "";
-        if (content instanceof R.CommentReference) return "";
-        if (content instanceof Drawing) return "";
-        if (content instanceof R.Sym sym) return "<sym(" + sym.getFont() + ", " + sym.getChar() + ")>";
-
-        log.debug("Unhandled object type: {}", content.getClass());
-        return "";
+        return switch (content) {
+            case JAXBElement<?> jaxbElement -> getText(jaxbElement.getValue());
+            case Text text -> getText(text);
+            case R.Tab ignored -> "\t";
+            case R.Cr ignored -> "\n";
+            case Br br when br.getType() == null -> "\n";
+            case Br br when br.getType() == STBrType.TEXT_WRAPPING -> "\n";
+            case Br br when br.getType() == STBrType.PAGE -> "\n";
+            case Br br when br.getType() == STBrType.COLUMN -> "\n";
+            case R.NoBreakHyphen ignored -> "‑";
+            case R.SoftHyphen ignored -> "\u00AD";
+            case R.LastRenderedPageBreak ignored -> "";
+            case R.AnnotationRef ignored -> "";
+            case R.CommentReference ignored -> "";
+            case Drawing ignored -> "";
+            case R.Sym sym -> "<sym(%s, %s)>".formatted(sym.getFont(), sym.getChar());
+            default -> {
+                log.debug("Unhandled object type: {}", content.getClass());
+                yield "";
+            }
+        };
     }
 
     private static CharSequence getText(Text text) {

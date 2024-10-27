@@ -178,13 +178,11 @@ public class DocumentUtil {
     }
 
     private static ContentAccessor findInsertableParent(Object searchFrom) {
-        if (searchFrom instanceof Tc tc)
-            return tc;
-        else if (searchFrom instanceof Body body)
-            return body;
-        else if (searchFrom instanceof Child child)
-            return findInsertableParent(child.getParent());
-        else
-            throw new OfficeStamperException();
+        return switch (searchFrom) {
+            case Tc tc -> tc;
+            case Body body -> body;
+            case Child child -> findInsertableParent(child.getParent());
+            default -> throw new OfficeStamperException("Unexpected parent " + searchFrom.getClass());
+        };
     }
 }

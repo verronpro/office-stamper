@@ -93,8 +93,7 @@ public class RemoveMalformedComments
     private static List<Child> getCommentElements(WordprocessingMLPackage document) {
         var commentFinder = new CommentFinder();
         TraversalUtil.visit(document, true, commentFinder);
-        var commentElements = commentFinder.getCommentElements();
-        return commentElements;
+        return commentFinder.getCommentElements();
     }
 
     private static Comments tryGetCommentsPart(CommentsPart commentsPart) {

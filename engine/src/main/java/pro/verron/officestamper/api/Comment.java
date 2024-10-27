@@ -2,8 +2,6 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import pro.verron.officestamper.core.Placeholders;
-import pro.verron.officestamper.core.StandardParagraph;
 
 import java.util.List;
 import java.util.Set;

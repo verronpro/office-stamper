@@ -9,7 +9,6 @@ import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
-import pro.verron.officestamper.utils.WmlFactory;
 
 import java.util.List;
 import java.util.function.Function;

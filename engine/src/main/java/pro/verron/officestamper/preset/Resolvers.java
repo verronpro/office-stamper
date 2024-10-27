@@ -13,7 +13,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage.createImagePart;
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
 /**

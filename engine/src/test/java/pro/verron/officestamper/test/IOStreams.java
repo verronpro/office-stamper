@@ -24,7 +24,7 @@ public class IOStreams {
      */
     private static final boolean KEEP_OUTPUT_FILE;
     private static final Map<OutputStream, Supplier<InputStream>> streams = new HashMap<>();
-    private static final Logger logger = LoggerFactory.getLogger(TestDocxStamper.class);
+    private static final Logger logger = LoggerFactory.getLogger(IOStreams.class);
 
     static {
         var env = System.getenv();

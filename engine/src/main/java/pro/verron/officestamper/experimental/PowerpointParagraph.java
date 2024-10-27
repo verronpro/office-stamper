@@ -86,7 +86,7 @@ public class PowerpointParagraph
     @Override public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
         var firstRun = (R) paragraph.getEGTextRun()
-                                    .get(0);
+                                    .getFirst();
         return new ProcessorContext(this, firstRun, comment, placeholder);
     }
 
@@ -143,7 +143,7 @@ public class PowerpointParagraph
 
         List<Object> runs = this.paragraph.getEGTextRun();
         if (singleRun) {
-            PowerpointRun run = affectedRuns.get(0);
+            PowerpointRun run = affectedRuns.getFirst();
 
             boolean expressionSpansCompleteRun = full.length() == run.run()
                                                                      .getT()
@@ -187,8 +187,8 @@ public class PowerpointParagraph
             }
         }
         else {
-            PowerpointRun firstRun = affectedRuns.get(0);
-            PowerpointRun lastRun = affectedRuns.get(affectedRuns.size() - 1);
+            PowerpointRun firstRun = affectedRuns.getFirst();
+            PowerpointRun lastRun = affectedRuns.getLast();
             replacementRun.setRPr(firstRun.run()
                                           .getRPr());
             // remove the expression from first and last run

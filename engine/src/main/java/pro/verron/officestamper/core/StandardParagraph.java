@@ -86,7 +86,7 @@ public class StandardParagraph
 
     @Override public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
-        var firstRun = (R) contents.get(0);
+        var firstRun = (R) contents.getFirst();
         return new ProcessorContext(this, firstRun, comment, placeholder);
     }
 
@@ -181,7 +181,7 @@ public class StandardParagraph
         boolean singleRun = affectedRuns.size() == 1;
 
         if (singleRun) {
-            IndexedRun run = affectedRuns.get(0);
+            IndexedRun run = affectedRuns.getFirst();
 
             boolean expressionSpansCompleteRun = full.length() == run.length();
             boolean expressionAtStartOfRun = matchStartIndex == run.startIndex();
@@ -215,8 +215,8 @@ public class StandardParagraph
             }
         }
         else {
-            IndexedRun firstRun = affectedRuns.get(0);
-            IndexedRun lastRun = affectedRuns.get(affectedRuns.size() - 1);
+            IndexedRun firstRun = affectedRuns.getFirst();
+            IndexedRun lastRun = affectedRuns.getLast();
             replacement.setRPr(firstRun.getPr());
             removeExpression(firstRun, matchStartIndex, matchEndIndex, lastRun, affectedRuns);
             // add replacement run between first and last run

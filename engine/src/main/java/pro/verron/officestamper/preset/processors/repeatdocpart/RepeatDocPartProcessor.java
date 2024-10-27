@@ -26,10 +26,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static pro.verron.officestamper.core.DocumentUtil.walkObjectsAndImportImages;
+import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakIfPresent;
 
 /**
  * This class is responsible for processing the &lt;ds: repeat&gt; tag.
@@ -99,22 +101,37 @@ public class RepeatDocPartProcessor
             var gcp = requireNonNull(comment.getParent());
             var repeatElements = comment.getElements();
             var subTemplate = CommentUtil.createSubWordDocument(comment);
-            var previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(repeatElements.get(0), gcp);
             var oddNumberOfBreaks = SectionUtil.hasOddNumberOfSectionBreaks(repeatElements);
+            var sectionBreakInserter = getPreviousSectionBreakIfPresent(repeatElements.getFirst(), gcp)
+                    .map(psb -> (UnaryOperator<List<Object>>) objs -> insertSectionBreak(objs, psb, oddNumberOfBreaks))
+                    .orElse(UnaryOperator.identity());
             var changes = expressionContexts == null
                     ? nullSupplier.get()
-                    : stampSubDocuments(source.document(),
-                            expressionContexts,
-                            gcp,
-                            subTemplate,
-                            previousSectionBreak,
-                            oddNumberOfBreaks);
+                    : stampSubDocuments(source.document(), expressionContexts, gcp, subTemplate, sectionBreakInserter);
             var gcpContent = gcp.getContent();
             var index = gcpContent.indexOf(repeatElements.getFirst());
             gcpContent.addAll(index, changes);
             gcpContent.removeAll(repeatElements);
         }
+    }
 
+    private static List<Object> insertSectionBreak(
+            List<Object> elements, SectPr previousSectionBreak, boolean oddNumberOfBreaks
+    ) {
+        var inserts = new ArrayList<>(elements);
+        if (oddNumberOfBreaks) {
+            if (inserts.getLast() instanceof P p) {
+                SectionUtil.applySectionBreakToParagraph(previousSectionBreak, p);
+            }
+            else {
+                // when the last repeated element is not a paragraph,
+                // it is necessary to add one carrying the section break.
+                P p = WmlFactory.newParagraph(List.of());
+                SectionUtil.applySectionBreakToParagraph(previousSectionBreak, p);
+                inserts.add(p);
+            }
+        }
+        return inserts;
     }
 
     private List<Object> stampSubDocuments(
@@ -122,8 +139,7 @@ public class RepeatDocPartProcessor
             List<Object> expressionContexts,
             ContentAccessor gcp,
             WordprocessingMLPackage subTemplate,
-            Optional<SectPr> previousSectionBreak,
-            boolean oddNumberOfBreaks
+            UnaryOperator<List<Object>> sectionBreakInserter
     ) {
         var subDocuments = stampSubDocuments(expressionContexts, subTemplate);
         var replacements = subDocuments.stream()
@@ -135,7 +151,7 @@ public class RepeatDocPartProcessor
 
         var changes = new ArrayList<>();
         for (WordprocessingMLPackage subDocument : subDocuments) {
-            var os = documentAsInsertableElements(subDocument, oddNumberOfBreaks, previousSectionBreak);
+            var os = sectionBreakInserter.apply(DocumentUtil.allElements(subDocument));
             os.stream()
               .filter(ContentAccessor.class::isInstance)
               .map(ContentAccessor.class::cast)
@@ -156,26 +172,6 @@ public class RepeatDocPartProcessor
             subDocuments.add(subDocument);
         }
         return subDocuments;
-    }
-
-    private static List<Object> documentAsInsertableElements(
-            WordprocessingMLPackage subDocument, boolean oddNumberOfBreaks, Optional<SectPr> previousSectionBreak
-    ) {
-        List<Object> inserts = new ArrayList<>(DocumentUtil.allElements(subDocument));
-        // make sure we replicate the previous section break before each repeated doc part
-        if (oddNumberOfBreaks && previousSectionBreak.isPresent()) {
-            if (DocumentUtil.lastElement(subDocument) instanceof P p) {
-                SectionUtil.applySectionBreakToParagraph(previousSectionBreak.get(), p);
-            }
-            else {
-                // when the last element to be repeated is not a paragraph, we need to add a new
-                // one right after to carry the section break to have a valid xml
-                P p = WmlFactory.newParagraph(List.of());
-                SectionUtil.applySectionBreakToParagraph(previousSectionBreak.get(), p);
-                inserts.add(p);
-            }
-        }
-        return inserts;
     }
 
     private static void recursivelyReplaceImages(

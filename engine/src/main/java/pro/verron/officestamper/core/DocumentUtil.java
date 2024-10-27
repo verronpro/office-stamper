@@ -41,19 +41,6 @@ public class DocumentUtil {
     }
 
     /**
-     * Retrieve the first element from an object.
-     *
-     * @param subDocument the object to get the first element from
-     *
-     * @return the first element
-     */
-    public static Object lastElement(WordprocessingMLPackage subDocument) {
-        var mainDocumentPart = subDocument.getMainDocumentPart();
-        var mainDocumentPartContent = mainDocumentPart.getContent();
-        return mainDocumentPartContent.get(mainDocumentPartContent.size() - 1);
-    }
-
-    /**
      * Retrieve the last element from an object.
      *
      * @param subDocument the object to get the last element from

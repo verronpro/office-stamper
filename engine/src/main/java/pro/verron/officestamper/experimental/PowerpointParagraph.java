@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
-import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /**
  * <p>A "Run" defines a region of text within a docx document with a common set of properties. Word processors are
@@ -86,7 +85,8 @@ public class PowerpointParagraph
 
     @Override public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
-        var firstRun = (R) paragraph.getEGTextRun().get(0);
+        var firstRun = (R) paragraph.getEGTextRun()
+                                    .get(0);
         return new ProcessorContext(this, firstRun, comment, placeholder);
     }
 
@@ -110,17 +110,6 @@ public class PowerpointParagraph
 
     @Override public void remove() {
         ObjectDeleter.deleteParagraph(getP());
-    }
-
-    private Comment comment(Placeholder placeholder) {
-        var parent = getP();
-        var id = new BigInteger(16, RANDOM);
-        var commentWrapper = new StandardComment(source.document());
-        commentWrapper.setComment(newComment(id, placeholder.content()));
-        commentWrapper.setCommentRangeStart(newCommentRangeStart(id, parent));
-        commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
-        commentWrapper.setCommentReference(newCommentReference(id, parent));
-        return commentWrapper;
     }
 
     @Override public P getP() {
@@ -309,6 +298,12 @@ public class PowerpointParagraph
         if (source.getULnTx() != null) destination.setULnTx(source.getULnTx());
         if (source.getULnTx() != null) destination.setULnTx(source.getULnTx());
         return destination;
+    }
+
+    private Comment comment(Placeholder placeholder) {
+        var parent = getP();
+        var id = new BigInteger(16, RANDOM);
+        return StandardComment.create(source.document(), parent, placeholder, id);
     }
 
     /**

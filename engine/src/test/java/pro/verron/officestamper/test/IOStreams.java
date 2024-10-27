@@ -44,7 +44,7 @@ public class IOStreams {
             throws IOException {
         if (KEEP_OUTPUT_FILE) {
             Path temporaryFile = Files.createTempFile(TestDocxStamper.class.getSimpleName(), ".docx");
-            logger.info("Saving DocxStamper output to temporary file %s".formatted(temporaryFile));
+            logger.info("Saving DocxStamper output to temporary file {}", temporaryFile);
             OutputStream out = Files.newOutputStream(temporaryFile);
             ThrowingSupplier<InputStream> in = () -> Files.newInputStream(temporaryFile);
             streams.put(out, in);

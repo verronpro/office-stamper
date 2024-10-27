@@ -386,18 +386,16 @@ public class Resolvers {
     }
 
     /**
-     * The Null2DefaultResolver class is an implementation of the
-     * {@link ObjectResolver} interface
-     * that resolves null objects by creating a run with a default text value.
-     *
-     * @author Joseph Verron
-     * @version ${version}
-     * @since 1.6.7
-     */
-    private static class Null2DefaultResolver
-            implements ObjectResolver {
-
-        private final String text;
+         * The Null2DefaultResolver class is an implementation of the
+         * {@link ObjectResolver} interface
+         * that resolves null objects by creating a run with a default text value.
+         *
+         * @author Joseph Verron
+         * @version ${version}
+         * @since 1.6.7
+         */
+        private record Null2DefaultResolver(String text)
+                implements ObjectResolver {
 
         /**
          * The Null2DefaultResolver class is an implementation of the ObjectResolver interface
@@ -406,33 +404,32 @@ public class Resolvers {
          * @param text The default text value to be used when the resolved object is null
          */
         /* package */
-        public Null2DefaultResolver(String text) {
-            this.text = text;
+        private Null2DefaultResolver {
         }
 
-        @Override
-        public boolean canResolve(@Nullable Object object) {
-            return object == null;
-        }
+            @Override
+            public boolean canResolve(@Nullable Object object) {
+                return object == null;
+            }
 
-        @Override
-        public R resolve(
-                DocxPart document,
-                String expression,
-                Object object
-        ) {
-            return newRun(text);
-        }
+            @Override
+            public R resolve(
+                    DocxPart document,
+                    String expression,
+                    Object object
+            ) {
+                return newRun(text);
+            }
 
-        /**
-         * Retrieves the default value of the {@link Null2DefaultResolver} object.
-         *
-         * @return the default value of the {@link Null2DefaultResolver} object as a String
-         */
-        public String defaultValue() {
-            return text;
+            /**
+             * Retrieves the default value of the {@link Null2DefaultResolver} object.
+             *
+             * @return the default value of the {@link Null2DefaultResolver} object as a String
+             */
+            public String defaultValue() {
+                return text;
+            }
         }
-    }
 
     /**
      * The {@link Null2PlaceholderResolver} class is an implementation of the ObjectResolver interface.

@@ -21,7 +21,7 @@ public class MergeSameStyleRuns
         var visitor = new SimilarRunVisitor();
         TraversalUtil.visit(mainDocumentPart, visitor);
         for (List<R> similarStyleRuns : visitor.getSimilarStyleRuns()) {
-            R firstRun = similarStyleRuns.get(0);
+            R firstRun = similarStyleRuns.getFirst();
             var runContent = firstRun.getContent();
             var firstRunContent = new LinkedHashSet<>(runContent);
             var firstRunParentContent = ((ContentAccessor) firstRun.getParent()).getContent();

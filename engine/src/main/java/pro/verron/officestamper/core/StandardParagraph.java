@@ -4,7 +4,6 @@ import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
-import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -13,7 +12,6 @@ import java.util.function.Consumer;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
-import static pro.verron.officestamper.utils.WmlFactory.*;
 import static pro.verron.officestamper.utils.WmlUtils.getFirstParentWithClass;
 
 /**
@@ -111,16 +109,6 @@ public class StandardParagraph
 
     @Override public void remove() {
         ObjectDeleter.deleteParagraph(p);
-    }
-
-    private Comment comment(Placeholder placeholder) {
-        var id = new BigInteger(16, RANDOM);
-        var commentWrapper = new StandardComment(source.document());
-        commentWrapper.setComment(newComment(id, placeholder.content()));
-        commentWrapper.setCommentRangeStart(newCommentRangeStart(id, p));
-        commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, p));
-        commentWrapper.setCommentReference(newCommentReference(id, p));
-        return commentWrapper;
     }
 
     /**
@@ -286,6 +274,11 @@ public class StandardParagraph
             runContentIterator.add(subText);
             if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
         }
+    }
+
+    private Comment comment(Placeholder placeholder) {
+        var id = new BigInteger(16, RANDOM);
+        return StandardComment.create(source.document(), p, placeholder, id);
     }
 
     /**

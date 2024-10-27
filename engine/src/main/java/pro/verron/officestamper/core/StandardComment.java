@@ -7,6 +7,7 @@ import org.docx4j.wml.R.CommentReference;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.Placeholder;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /**
  * <p>CommentWrapper class.</p>
@@ -39,6 +41,20 @@ public class StandardComment
      */
     public StandardComment(WordprocessingMLPackage document) {
         this.document = document;
+    }
+
+    public static StandardComment create(
+            WordprocessingMLPackage document,
+            P parent,
+            Placeholder placeholder,
+            BigInteger id
+    ) {
+        var commentWrapper = new StandardComment(document);
+        commentWrapper.setComment(newComment(id, placeholder.content()));
+        commentWrapper.setCommentRangeStart(newCommentRangeStart(id, parent));
+        commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
+        commentWrapper.setCommentReference(newCommentReference(id, parent));
+        return commentWrapper;
     }
 
     @Override public String toString() {

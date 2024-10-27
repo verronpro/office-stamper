@@ -68,25 +68,17 @@ public class DocxImageExtractor {
 				.substring(1);
 	}
 
-	/**
-	 * Extract an inline graphic from a drawing.
-	 *
-	 * @param drawing the drawing containing the graphic.
-	 */
-	private static Graphic getInlineGraphic(Drawing drawing) {
-		if (drawing.getAnchorOrInline()
-				   .isEmpty()) {
-			throw new OfficeStamperException("Anchor or Inline is empty !");
-		}
-		Object anchorOrInline = drawing.getAnchorOrInline()
-									   .get(0);
-		if (anchorOrInline instanceof Inline inline) {
-			return inline.getGraphic();
-		}
-		else {
-			throw new OfficeStamperException("Don't know how to process anchor !");
-		}
-	}
+    /**
+     * Extract an inline graphic from a drawing.
+     *
+     * @param drawing the drawing containing the graphic.
+     */
+    private static Graphic getInlineGraphic(Drawing drawing) {
+        var anchorOrInline = drawing.getAnchorOrInline();
+        if (anchorOrInline.isEmpty()) throw new OfficeStamperException("Anchor or Inline is empty !");
+        if (anchorOrInline.getFirst() instanceof Inline inline) return inline.getGraphic();
+        throw new OfficeStamperException("Don't know how to process anchor !");
+    }
 
 	/**
 	 * Converts an InputStream to a byte array.

@@ -2,9 +2,9 @@ package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
-import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
+import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -14,6 +14,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 import static pro.verron.officestamper.utils.WmlFactory.*;
+import static pro.verron.officestamper.utils.WmlUtils.getFirstParentWithClass;
 
 /**
  * <p>A "Run" defines a region of text within a docx document with a common set of properties. Word processors are
@@ -105,18 +106,7 @@ public class StandardParagraph
     }
 
     private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        var current = p.getParent();
-        var currentDepth = 1;
-        while (current != null && currentDepth <= depth) {
-            if (aClass.isInstance(current)) {
-                return Optional.of(aClass.cast(current));
-            }
-            else if (current instanceof Child child) {
-                current = child.getParent();
-                currentDepth++;
-            }
-        }
-        return Optional.empty();
+        return getFirstParentWithClass(p, aClass, depth);
     }
 
     @Override public void remove() {

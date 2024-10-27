@@ -7,12 +7,12 @@ import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.ObjectDeleter;
 import pro.verron.officestamper.core.StandardComment;
 import pro.verron.officestamper.utils.WmlFactory;
+import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -105,18 +105,7 @@ public class PowerpointParagraph
     }
 
     private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        var current = getP().getParent();
-        var currentDepth = 1;
-        while (current != null && currentDepth <= depth) {
-            if (aClass.isInstance(current)) {
-                return Optional.of(aClass.cast(current));
-            }
-            else if (current instanceof Child child) {
-                current = child.getParent();
-                currentDepth++;
-            }
-        }
-        return Optional.empty();
+        return WmlUtils.getFirstParentWithClass(getP(), aClass, depth);
     }
 
     @Override public void remove() {

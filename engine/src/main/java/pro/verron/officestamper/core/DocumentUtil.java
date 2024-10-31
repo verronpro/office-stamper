@@ -14,6 +14,8 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
+
 /**
  * Utility class to retrieve elements from a document.
  *
@@ -28,7 +30,6 @@ public class DocumentUtil {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
     }
 
-
     public static <T> Stream<T> streamObjectElements(
             DocxPart source,
             Class<T> elementClass
@@ -37,19 +38,6 @@ public class DocumentUtil {
         TraversalUtil.visit(source.part(), finder);
         return finder.results.stream()
                              .map(elementClass::cast);
-    }
-
-    /**
-     * Retrieve the first element from an object.
-     *
-     * @param subDocument the object to get the first element from
-     *
-     * @return the first element
-     */
-    public static Object lastElement(WordprocessingMLPackage subDocument) {
-        var mainDocumentPart = subDocument.getMainDocumentPart();
-        var mainDocumentPartContent = mainDocumentPart.getContent();
-        return mainDocumentPartContent.get(mainDocumentPartContent.size() - 1);
     }
 
     /**
@@ -108,7 +96,7 @@ public class DocumentUtil {
                     var imageData = docxImageExtractor.getRunDrawingData(currentR);
                     var maxWidth = docxImageExtractor.getRunDrawingMaxWidth(currentR);
                     var imagePart = tryCreateImagePart(target, imageData);
-                    var runWithImage = RunUtil.createRunWithImage(maxWidth, imagePart);
+                    var runWithImage = newRun(maxWidth, imagePart, "dummyFileName", "dummyAltText");
                     replacements.put(currentR, runWithImage);
                 }
                 else if (currentObj instanceof ContentAccessor contentAccessor)
@@ -190,13 +178,11 @@ public class DocumentUtil {
     }
 
     private static ContentAccessor findInsertableParent(Object searchFrom) {
-        if (searchFrom instanceof Tc tc)
-            return tc;
-        else if (searchFrom instanceof Body body)
-            return body;
-        else if (searchFrom instanceof Child child)
-            return findInsertableParent(child.getParent());
-        else
-            throw new OfficeStamperException();
+        return switch (searchFrom) {
+            case Tc tc -> tc;
+            case Body body -> body;
+            case Child child -> findInsertableParent(child.getParent());
+            default -> throw new OfficeStamperException("Unexpected parent " + searchFrom.getClass());
+        };
     }
 }

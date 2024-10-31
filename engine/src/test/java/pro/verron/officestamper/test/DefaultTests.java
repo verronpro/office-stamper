@@ -5,10 +5,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
-import pro.verron.officestamper.preset.*;
+import pro.verron.officestamper.preset.EvaluationContextConfigurers;
+import pro.verron.officestamper.preset.ExceptionResolvers;
+import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.Resolvers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +25,8 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 import static pro.verron.officestamper.test.Contexts.*;
 import static pro.verron.officestamper.test.TestUtils.*;
 
@@ -31,6 +38,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
  * @since 1.6.6
  */
 @DisplayName("Core Features") public class DefaultTests {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
 
     /**
      * <p>tests.</p>
@@ -83,7 +92,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments ternary() {
         return of("Ternary operators should function",
-                OfficeStamperConfigurations.standard(),
+                standard(),
                 name("Homer"),
                 getResource(Path.of("TernaryOperatorTest.docx")),
                 """
@@ -97,7 +106,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments repeatingRows() {
         return of("Repeating table rows should be possible",
-                OfficeStamperConfigurations.standard(),
+                standard(),
                 roles(role("Homer Simpson", "Dan Castellaneta"),
                         role("Marge Simpson", "Julie Kavner"),
                         role("Bart Simpson", "Nancy Cartwright"),
@@ -110,25 +119,25 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         List of Simpsons characters
                         |===
                         |Character name
-                        |❬Voice Actor❘cnfStyle=100000000000❭
+                        |Voice Actor<cnfStyle=100000000000>
                         
                         |Homer Simpson
-                        |❬Dan Castellaneta❘cnfStyle=000000100000❭
+                        |Dan Castellaneta<cnfStyle=000000100000>
                         
                         |Marge Simpson
-                        |❬Julie Kavner❘cnfStyle=000000100000❭
+                        |Julie Kavner<cnfStyle=000000100000>
                         
                         |Bart Simpson
-                        |❬Nancy Cartwright❘cnfStyle=000000100000❭
+                        |Nancy Cartwright<cnfStyle=000000100000>
                         
                         |Kent Brockman
-                        |❬Harry Shearer❘cnfStyle=000000100000❭
+                        |Harry Shearer<cnfStyle=000000100000>
                         
                         |Disco Stu
-                        |❬Hank Azaria❘cnfStyle=000000100000❭
+                        |Hank Azaria<cnfStyle=000000100000>
                         
                         |Krusty the Clown
-                        |❬Dan Castellaneta❘cnfStyle=000000100000❭
+                        |Dan Castellaneta<cnfStyle=000000100000>
                         
                         
                         |===
@@ -139,8 +148,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments repeatingRowsWithLineBreak() {
         return of("Repeating table rows should be possible while replacing various linebreaks",
-                OfficeStamperConfigurations.standard()
-                                           .setLineBreakPlaceholder("\n"),
+                standard().setLineBreakPlaceholder("\n"),
                 roles(role("Homer Simpson", "Dan Castellaneta"),
                         role("Marge Simpson", "Julie\nKavner"),
                         role("Bart Simpson", "Nancy\n\nCartwright"),
@@ -153,34 +161,34 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         List of Simpsons characters
                         |===
                         |Character name
-                        |❬Voice Actor❘cnfStyle=100000000000❭
+                        |Voice Actor<cnfStyle=100000000000>
                         
                         |Homer Simpson
-                        |❬Dan Castellaneta❘cnfStyle=000000100000❭
+                        |Dan Castellaneta<cnfStyle=000000100000>
                         
                         |Marge Simpson
-                        |❬Julie<break line>
-                        Kavner❘cnfStyle=000000100000❭
+                        |Julie<br/>
+                        Kavner<cnfStyle=000000100000>
                         
                         |Bart Simpson
-                        |❬Nancy<break line>
-                        <break line>
-                        Cartwright❘cnfStyle=000000100000❭
+                        |Nancy<br/>
+                        <br/>
+                        Cartwright<cnfStyle=000000100000>
                         
                         |Kent Brockman
-                        |❬Harry<break line>
-                        <break line>
-                        <break line>
-                        Shearer❘cnfStyle=000000100000❭
+                        |Harry<br/>
+                        <br/>
+                        <br/>
+                        Shearer<cnfStyle=000000100000>
                         
                         |Disco Stu
-                        |❬Hank<break line>
-                        <break line>
-                        Azaria❘cnfStyle=000000100000❭
+                        |Hank<br/>
+                        <br/>
+                        Azaria<cnfStyle=000000100000>
                         
                         |Krusty the Clown
-                        |❬Dan<break line>
-                        Castellaneta❘cnfStyle=000000100000❭
+                        |Dan<br/>
+                        Castellaneta<cnfStyle=000000100000>
                         
                         
                         |===
@@ -190,15 +198,16 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments replaceWordWithIntegrationTest() {
-        return of("replaceWordWithIntegrationTest",
-                OfficeStamperConfigurations.standard(),
+        return of("Replace Word With integration test",
+                OfficeStamperConfigurations.standardWithPreprocessing(),
                 name("Simpsons"),
                 getResource(Path.of("ReplaceWordWithIntegrationTest.docx")),
                 """
-                        ReplaceWordWith Integration
-                        ❬This variable ❬name❘b=true❭❬ ❘b=true❭should be resolved to the value Simpsons.❘b=true❭
+                        == ReplaceWordWith Integration
+                        
+                        This variable name should be resolved to the value Simpsons.
                         |===
-                        |This variable ❬name❘b=true❭ should be resolved to the value Simpsons.
+                        |This variable name should be resolved to the value Simpsons.
                         
                         
                         |===
@@ -208,8 +217,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments replaceNullExpressionTest() {
         return of("Do not replace 'null' values",
-                OfficeStamperConfigurations.standard()
-                                           .addResolver(Resolvers.nullToPlaceholder()),
+                standard().addResolver(Resolvers.nullToPlaceholder()),
                 name(null),
                 getResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
@@ -226,7 +234,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 new Contexts.Role("Krusty the Clown", "Dan Castellaneta")));
         var template = getResource(Path.of("RepeatParagraphTest.docx"));
         var expected = """
-                Characters 1 line
+                == Characters 1 line
+                
                 Homer Simpson: Dan Castellaneta
                 Marge Simpson: Julie Kavner
                 Bart Simpson: Nancy Cartwright
@@ -234,23 +243,30 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 Disco Stu: Hank Azaria
                 Krusty the Clown: Dan Castellaneta
                 There are 6 characters.
-                Characters multi-line
-                Homer Simpson
+                == Characters multi-line
+                
+                === Homer Simpson
+                
                 Actor: Dan Castellaneta
-                Marge Simpson
+                === Marge Simpson
+                
                 Actor: Julie Kavner
-                Bart Simpson
+                === Bart Simpson
+                
                 Actor: Nancy Cartwright
-                Kent Brockman
+                === Kent Brockman
+                
                 Actor: Harry Shearer
-                Disco Stu
+                === Disco Stu
+                
                 Actor: Hank Azaria
-                Krusty the Clown
+                === Krusty the Clown
+                
                 Actor: Dan Castellaneta
                 There are 6 characters.
                 """;
 
-        return arguments("repeatParagraphTest", OfficeStamperConfigurations.standard(), context, template, expected);
+        return arguments("Repeat Paragraph Integration test", standard(), context, template, expected);
     }
 
     private static Arguments repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument() {
@@ -272,8 +288,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 """;
 
-        var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        var config = standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
         return of("repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument",
                 config,
                 context,
@@ -283,8 +298,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate() {
         return of("repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Contexts.subDocPartContext(),
                 getResource(Path.of("RepeatDocPartWithImagesInSourceTest" + ".docx")),
                 """
@@ -300,8 +314,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments repeatDocPartTest() {
-        return of("repeatDocPartTest",
-                OfficeStamperConfigurations.standard(),
+        return of("Repeat Doc Part Integration test",
+                standard(),
                 new Characters(List.of(new Role("Homer Simpson", "Dan Castellaneta"),
                         new Role("Marge Simpson", "Julie Kavner"),
                         new Role("Bart Simpson", "Nancy Cartwright"),
@@ -310,403 +324,336 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         new Role("Krusty the Clown", "Dan Castellaneta"))),
                 getResource(Path.of("RepeatDocPartTest.docx")),
                 """
-                        Repeating Doc Part
-                        ❬❬List ❘b=true❭❬of❘b=true❭❬ Simpsons ❘b=true❭❬characters❘b=true❭❘b=true,spacing={after=120,before=240}❭
-                        ❬Paragraph for test: Homer Simpson - Dan Castellaneta❘spacing={after=120,before=240}❭
+                        = Repeating Doc Part
+                        
+                        == List of Simpsons characters
+                        
+                        Paragraph for test: Homer Simpson - Dan Castellaneta
                         |===
-                        |❬Homer Simpson❘jc=center❭
-                        |❬Dan Castellaneta❘jc=center❭
+                        |Homer Simpson
+                        |Dan Castellaneta
                         
                         
                         |===
-                        ❬ <break page>
-                        ❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬Paragraph for test: Marge Simpson - Julie Kavner❘spacing={after=120,before=240}❭
+                        \s
+                        [page-break]
+                        <<<
+                        
+                        Paragraph for test: Marge Simpson - Julie Kavner
                         |===
-                        |❬Marge Simpson❘jc=center❭
-                        |❬Julie Kavner❘jc=center❭
+                        |Marge Simpson
+                        |Julie Kavner
                         
                         
                         |===
-                        ❬ <break page>
-                        ❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬Paragraph for test: Bart Simpson - Nancy Cartwright❘spacing={after=120,before=240}❭
+                        \s
+                        [page-break]
+                        <<<
+                        
+                        Paragraph for test: Bart Simpson - Nancy Cartwright
                         |===
-                        |❬Bart Simpson❘jc=center❭
-                        |❬Nancy Cartwright❘jc=center❭
+                        |Bart Simpson
+                        |Nancy Cartwright
                         
                         
                         |===
-                        ❬ <break page>
-                        ❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬Paragraph for test: Kent Brockman - Harry Shearer❘spacing={after=120,before=240}❭
+                        \s
+                        [page-break]
+                        <<<
+                        
+                        Paragraph for test: Kent Brockman - Harry Shearer
                         |===
-                        |❬Kent Brockman❘jc=center❭
-                        |❬Harry Shearer❘jc=center❭
+                        |Kent Brockman
+                        |Harry Shearer
                         
                         
                         |===
-                        ❬ <break page>
-                        ❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬Paragraph for test: Disco Stu - Hank Azaria❘spacing={after=120,before=240}❭
+                        \s
+                        [page-break]
+                        <<<
+                        
+                        Paragraph for test: Disco Stu - Hank Azaria
                         |===
-                        |❬Disco Stu❘jc=center❭
-                        |❬Hank Azaria❘jc=center❭
+                        |Disco Stu
+                        |Hank Azaria
                         
                         
                         |===
-                        ❬ <break page>
-                        ❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬Paragraph for test: Krusty the Clown - Dan Castellaneta❘spacing={after=120,before=240}❭
+                        \s
+                        [page-break]
+                        <<<
+                        
+                        Paragraph for test: Krusty the Clown - Dan Castellaneta
                         |===
-                        |❬Krusty the Clown❘jc=center❭
-                        |❬Dan Castellaneta❘jc=center❭
+                        |Krusty the Clown
+                        |Dan Castellaneta
                         
                         
                         |===
-                        ❬ <break page>
-                        ❘suppressAutoHyphens=xxx,widowControl=xxx❭
+                        \s
+                        [page-break]
+                        <<<
+                        
                         There are 6 characters.
                         """);
     }
 
     private static Arguments repeatDocPartNestingTest() {
-        return of("repeatDocPartNestingTest",
-                OfficeStamperConfigurations.standard(),
+        return of("Repeat Doc Part Integration Test, with nested comments",
+                OfficeStamperConfigurations.standardWithPreprocessing(),
                 Contexts.schoolContext(),
                 getResource(Path.of("RepeatDocPartNestingTest.docx")),
                 """
-                        ❬Repeating ❬N❘lang=en-US❭ested Doc Part ❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬List of All the s❬tu❘lang=en-US❭❬dent’s of all grades❘lang=null❭❘lang=null,suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬❬South Park Primary School❘lang=null❭❘lang=null,suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬❬Grade No.❘b=true,lang=null❭❬0❘b=true,lang=null❭❬ ❘b=true,lang=null❭❬t❘lang=null❭here are 3 classes❘b=true,lang=null,suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬Class No.0 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        |===
-                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
-                        
-                        |===
-                        |===
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
-                        
-                        |===
-                        |===
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
-                        
-                        |===
-                        |===
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
-                        
-                        |===
-                        |===
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
-                        
-                        |===
-                        ❬Class No.1 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        |===
-                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
-                        
-                        |===
-                        |===
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
-                        
-                        |===
-                        |===
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        = Repeating Doc Part
                         
+                        [Subtitle] Nested doc parts
+                        == List the students of all grades.
                         
-                        |===
-                        |===
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
-                        
-                        |===
-                        |===
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        South Park Primary School
+                        === Grade No.0
                         
+                        Grade No.0 have 3 classes
+                        ==== Class No.0
                         
+                        Class No.0 have 5 students
                         |===
-                        ❬Class No.2 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        |===
-                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |0
+                        |Bruce·No0
+                        |1
                         
+                        |1
+                        |Bruce·No1
+                        |2
                         
-                        |===
-                        |===
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |2
+                        |Bruce·No2
+                        |3
                         
+                        |3
+                        |Bruce·No3
+                        |4
                         
-                        |===
-                        |===
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |4
+                        |Bruce·No4
+                        |5
                         
                         
-                        |===
                         |===
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        ==== Class No.1
                         
-                        
+                        Class No.1 have 5 students
                         |===
-                        |===
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |0
+                        |Bruce·No0
+                        |1
                         
+                        |1
+                        |Bruce·No1
+                        |2
                         
-                        |===
-                        ❬❬Grade No.❘b=true,lang=null❭❬1❘b=true,lang=null❭❬ ❘b=true,lang=null❭❬t❘lang=null❭here are 3 classes❘b=true,lang=null,suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬Class No.0 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        |===
-                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |2
+                        |Bruce·No2
+                        |3
                         
+                        |3
+                        |Bruce·No3
+                        |4
                         
-                        |===
-                        |===
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |4
+                        |Bruce·No4
+                        |5
                         
                         
                         |===
-                        |===
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
+                        ==== Class No.2
                         
+                        Class No.2 have 5 students
                         |===
-                        |===
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |0
+                        |Bruce·No0
+                        |1
                         
+                        |1
+                        |Bruce·No1
+                        |2
                         
-                        |===
-                        |===
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |2
+                        |Bruce·No2
+                        |3
                         
+                        |3
+                        |Bruce·No3
+                        |4
                         
-                        |===
-                        ❬Class No.1 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        |===
-                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |4
+                        |Bruce·No4
+                        |5
                         
                         
-                        |===
                         |===
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        === Grade No.1
                         
+                        Grade No.1 have 3 classes
+                        ==== Class No.0
                         
+                        Class No.0 have 5 students
                         |===
-                        |===
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |0
+                        |Bruce·No0
+                        |1
                         
+                        |1
+                        |Bruce·No1
+                        |2
                         
-                        |===
-                        |===
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |2
+                        |Bruce·No2
+                        |3
                         
+                        |3
+                        |Bruce·No3
+                        |4
                         
-                        |===
-                        |===
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |4
+                        |Bruce·No4
+                        |5
                         
                         
-                        |===
-                        ❬Class No.2 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
                         |===
-                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        ==== Class No.1
                         
-                        
+                        Class No.1 have 5 students
                         |===
-                        |===
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |0
+                        |Bruce·No0
+                        |1
                         
+                        |1
+                        |Bruce·No1
+                        |2
                         
-                        |===
-                        |===
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |2
+                        |Bruce·No2
+                        |3
                         
+                        |3
+                        |Bruce·No3
+                        |4
                         
-                        |===
-                        |===
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |4
+                        |Bruce·No4
+                        |5
                         
                         
                         |===
-                        |===
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        ==== Class No.2
                         
-                        
-                        |===
-                        ❬❬Grade No.❘b=true,lang=null❭❬2❘b=true,lang=null❭❬ ❘b=true,lang=null❭❬t❘lang=null❭here are 3 classes❘b=true,lang=null,suppressAutoHyphens=xxx,widowControl=xxx❭
-                        ❬Class No.0 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
+                        Class No.2 have 5 students
                         |===
-                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |0
+                        |Bruce·No0
+                        |1
                         
+                        |1
+                        |Bruce·No1
+                        |2
                         
-                        |===
-                        |===
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |2
+                        |Bruce·No2
+                        |3
                         
+                        |3
+                        |Bruce·No3
+                        |4
                         
-                        |===
-                        |===
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |4
+                        |Bruce·No4
+                        |5
                         
                         
                         |===
-                        |===
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        === Grade No.2
                         
+                        Grade No.2 have 3 classes
+                        ==== Class No.0
                         
-                        |===
+                        Class No.0 have 5 students
                         |===
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |0
+                        |Bruce·No0
+                        |1
                         
+                        |1
+                        |Bruce·No1
+                        |2
                         
-                        |===
-                        ❬Class No.1 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        |===
-                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |2
+                        |Bruce·No2
+                        |3
                         
+                        |3
+                        |Bruce·No3
+                        |4
                         
-                        |===
-                        |===
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |4
+                        |Bruce·No4
+                        |5
                         
                         
                         |===
-                        |===
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        
+                        ==== Class No.1
                         
+                        Class No.1 have 5 students
                         |===
-                        |===
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |0
+                        |Bruce·No0
+                        |1
                         
+                        |1
+                        |Bruce·No1
+                        |2
                         
-                        |===
-                        |===
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |2
+                        |Bruce·No2
+                        |3
                         
+                        |3
+                        |Bruce·No3
+                        |4
                         
-                        |===
-                        ❬Class No.2 ❬t❘lang=null❭here are 5 students❘suppressAutoHyphens=xxx,widowControl=xxx❭
-                        |===
-                        |❬0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No0❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |4
+                        |Bruce·No4
+                        |5
                         
                         
-                        |===
                         |===
-                        |❬1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No1❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        ==== Class No.2
                         
-                        
+                        Class No.2 have 5 students
                         |===
-                        |===
-                        |❬2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No2❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |0
+                        |Bruce·No0
+                        |1
                         
+                        |1
+                        |Bruce·No1
+                        |2
                         
-                        |===
-                        |===
-                        |❬3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No3❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |2
+                        |Bruce·No2
+                        |3
                         
+                        |3
+                        |Bruce·No3
+                        |4
                         
-                        |===
-                        |===
-                        |❬4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬Bruce·No4❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
-                        |❬5❘ind=0,jc=left,keepLines=false,keepNext=true,outlineLvl=9,pageBreakBefore=false,spacing={after=120,before=240,line=15,lineRule=AUTO},suppressAutoHyphens=xxx,textAlignment=xxx,topLinePunct=xxx,widowControl=xxx,wordWrap=xxx❭
+                        |4
+                        |Bruce·No4
+                        |5
                         
                         
                         |===
-                        There are 3 grades.
+                        ❬There are ❘{rStyle=lev}❭❬3❘{rStyle=lev}❭❬ grades.❘{rStyle=lev}❭<rPr={rStyle=lev}>
                         """);
     }
 
@@ -751,8 +698,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 This will stay untouched too.
                 """;
 
-        var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        var config = standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
 
         return arguments(
                 "RepeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate",
@@ -763,25 +709,31 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment() {
-        return arguments(
-                "changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+        return arguments("In multiple layouts, keeps section orientations outside RepeatParagraph comments",
+                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutOutsideRepeatParagraphTest.docx")),
                 """
                         First page is landscape.
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}]
+                        <<<
                         Second page is portrait, layout change should survive to repeatParagraph processor (Homer).
                         
-                        Without a section break changing the layout in between, but a page break instead.<break page>
+                        Without a section break changing the layout in between, but a page break instead.
+                        [page-break]
+                        <<<
                         
                         Second page is portrait, layout change should survive to repeatParagraph processor (Marge).
                         
-                        Without a section break changing the layout in between, but a page break instead.<break page>
+                        Without a section break changing the layout in between, but a page break instead.
+                        [page-break]
+                        <<<
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
                         Fourth page is set to landscape again.
                         """);
     }
@@ -792,23 +744,31 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var expected = """
                 First page is landscape.
                 
-                ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                
+                [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}]
+                <<<
                 Second page is portrait, layout change should survive to repeatParagraph processor (Homer).
                 
-                ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                ❬With a page break changing the layout in between.❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                
+                [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                <<<
+                With a page break changing the layout in between.
+                [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}]
+                <<<
                 Second page is portrait, layout change should survive to repeatParagraph processor (Marge).
                 
-                ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                
+                [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                <<<
                 With a page break changing the layout in between.
-                ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                
+                [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}]
+                <<<
                 Fourth page is set to portrait again.
                 """;
 
-        var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
-        return arguments(
-                "changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithSectionBreakInsideComment",
+        var config = standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        return arguments("In multiple layouts, keeps section orientations inside RepeatParagraph comments",
                 config,
                 context,
                 template,
@@ -816,33 +776,42 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment() {
-        return arguments(
-                "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+        return arguments("In multiple layouts, keeps section orientations outside RepeatDocPart comments",
+                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutInRepeatDocPartTest.docx")),
                 """
                         First page is portrait.
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
                         Second page is landscape, layout change should survive to repeatDocPart (Homer).
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
-                        ❬With a break setting the layout to portrait in between.❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}]
+                        <<<
+                        With a break setting the layout to portrait in between.
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
                         Second page is landscape, layout change should survive to repeatDocPart (Marge).
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
-                        ❬With a break setting the layout to portrait in between.❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}]
+                        <<<
+                        With a break setting the layout to portrait in between.
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
                         Fourth page is set to landscape again.
                         """);
     }
 
     private static Arguments replaceNullExpressionTest2() {
         return of("Do replace 'null' values",
-                OfficeStamperConfigurations.standard()
-                                           .addResolver(Resolvers.nullToEmpty()),
+                standard().addResolver(Resolvers.nullToEmpty()),
                 name(null),
                 getResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
@@ -852,60 +821,78 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement() {
         return arguments(
-                "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                "In multiple layouts, keeps section orientations inside RepeatDocPart comments with a table as last element",
+                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutInRepeatDocPartWithTableLastElementTest.docx")),
                 """
                         First page is portrait.
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
                         Second page is landscape, layout change should survive to repeatDocPart (Homer).
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}]
+                        <<<
                         With a break setting the layout to portrait in between.
                         |===
                         |
                         
                         
                         |===
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
                         Second page is landscape, layout change should survive to repeatDocPart (Marge).
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}]
+                        <<<
                         With a break setting the layout to portrait in between.
                         |===
                         |
                         
                         
                         |===
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
                         Fourth page is set to landscape again.
                         """);
     }
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment() {
-        return arguments(
-                "changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment",
-                OfficeStamperConfigurations.standard()
-                                           .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+        return arguments("In multiple layouts, keeps section orientation outside RepeatDocPart comment",
+                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
                 Map.of("repeatValues", List.of(new Name("Homer"), new Name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutOutsideRepeatDocPartTest.docx")),
                 """
                         First page is landscape.
                         
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=11906,orient=landscape,w=16838}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}]
+                        <<<
                         Second page is portrait, layout change should survive to repeatDocPart (Homer).
-                        <break page>
+                        
+                        [page-break]
+                        <<<
                         
                         Without a break changing the layout in between (page break should be repeated).
                         Second page is portrait, layout change should survive to repeatDocPart (Marge).
-                        <break page>
+                        
+                        [page-break]
+                        <<<
                         
                         Without a break changing the layout in between (page break should be repeated).
-                        ❬❘docGrid=xxx,eGHdrFtrReferences=xxx,pgMar=xxx,pgSz={h=16838,w=11906}❭
+                        
+                        [section-break, docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}]
+                        <<<
                         Fourth page is set to landscape again.
                         """);
     }
@@ -914,17 +901,18 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfParagraphsTest.docx"));
         var expected = """
-                Conditional Display of Paragraphs
+                == Conditional Display of Paragraphs
+                
                 This paragraph stays untouched.
                 This paragraph stays untouched.
                 |===
-                |Conditional Display of paragraphs also works in tables
+                |=== Conditional Display of paragraphs also works in tables
                 
                 |This paragraph stays untouched.
                 |
                 
                 ||===
-                |Also works in nested tables
+                |=== Also works in nested tables
                 
                 |This paragraph stays untouched.
                 
@@ -936,28 +924,25 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 """;
 
-        return arguments("conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Display Paragraph If Integration test", standard(), context, template, expected);
     }
 
     private static Arguments conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved() {
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
         var expected = """
-                Conditional Display of Paragraphs
+                == Conditional Display of Paragraphs
+                
                 Paragraph 1 stays untouched.
                 Paragraph 3 stays untouched.
                 |===
-                |Conditional Display of paragraphs also works in tables
+                |=== Conditional Display of paragraphs also works in tables
                 
                 |Paragraph 4 in cell 2,1 stays untouched.
                 |
                 
                 ||===
-                |Also works in nested tables
+                |=== Also works in nested tables
                 
                 |Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
                 
@@ -968,8 +953,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-        return arguments("conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved",
-                OfficeStamperConfigurations.standard(),
+        return arguments("Display Paragraph If Integration test (off case) + Inline processors Integration test",
+                standard(),
                 context,
                 template,
                 expected);
@@ -979,18 +964,19 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var context = new Contexts.Name("Bart");
         var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
         var expected = """
-                Conditional Display of Paragraphs
+                == Conditional Display of Paragraphs
+                
                 Paragraph 1 stays untouched.
                 Paragraph 2 is only included if the “name” is “Bart”.
                 Paragraph 3 stays untouched.
                 |===
-                |Conditional Display of paragraphs also works in tables
+                |=== Conditional Display of paragraphs also works in tables
                 
                 |Paragraph 4 in cell 2,1 stays untouched.
                 |Paragraph 5 in cell 2,2 is only included if the “name” is “Bart”.
                 
                 ||===
-                |Also works in nested tables
+                |=== Also works in nested tables
                 
                 |Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
                 Paragraph 7  in cell 2,1 in cell 3,1 is only included if the “name” is “Bart”.
@@ -1002,8 +988,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-        return arguments("conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved",
-                OfficeStamperConfigurations.standard(),
+        return arguments("Display Paragraph If Integration test (on case) + Inline processors Integration test",
+                standard(),
                 context,
                 template,
                 expected);
@@ -1013,7 +999,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTableRowsTest.docx"));
         var expected = """
-                Conditional Display of Table Rows
+                == Conditional Display of Table Rows
+                
                 This paragraph stays untouched.
                 |===
                 |This row stays untouched.
@@ -1032,26 +1019,25 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-        return arguments("conditionalDisplayOfTableRowsTest",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Display Table Row If Integration test",
+                standard(),
+                context, template, expected);
     }
 
     private static Arguments conditionalDisplayOfTableBug32Test() {
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTablesBug32Test.docx"));
         var expected = """
-                Conditional Display of Tables
+                == Conditional Display of Tables
+                
                 This paragraph stays untouched.
                 
                 |===
                 |This table stays untouched.
-                |❬❘cnfStyle=100000000000❭
+                |<cnfStyle=100000000000>
                 
                 |
-                |❬❘cnfStyle=000000100000❭
+                |<cnfStyle=000000100000>
                 
                 
                 |===
@@ -1066,18 +1052,16 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 This paragraph stays untouched.
                 """;
-        return arguments("conditionalDisplayOfTableBug32Test",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Display Table If Bug32 Regression test",
+                standard(), context, template, expected);
     }
 
     private static Arguments conditionalDisplayOfTableTest() {
         var context = new Contexts.Name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTablesTest" + ".docx"));
         var expected = """
-                Conditional Display of Tables
+                == Conditional Display of Tables
+                
                 This paragraph stays untouched.
                 
                 |===
@@ -1100,11 +1084,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 This paragraph stays untouched.
                 """;
-        return arguments("conditionalDisplayOfTablesTest",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Display Table If Integration test",
+                standard(), context, template, expected);
     }
 
     private static Arguments customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored()
@@ -1120,9 +1101,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 This paragraph stays untouched.
                 The variable foo has the value bar.
                 """;
-        var config = OfficeStamperConfigurations.standard()
-                                                .setEvaluationContextConfigurer(evalContext -> evalContext.addPropertyAccessor(
-                                                        new SimpleGetter("foo", "bar")));
+        var config = standard().setEvaluationContextConfigurer(evalContext -> evalContext.addPropertyAccessor(new SimpleGetter(
+                        "foo",
+                        "bar")));
 
         return arguments("customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored",
                 config,
@@ -1145,18 +1126,17 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 In this paragraph, the variable name should be resolved to the value Homer Simpson.
                 In this paragraph, the variable foo should not be resolved: ${foo}.
                 """;
-        OfficeStamperConfiguration config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.passing());
+        OfficeStamperConfiguration config = standard().setExceptionResolver(ExceptionResolvers.passing());
         return arguments("expressionReplacementInGlobalParagraphsTest", config, context, template, expected);
     }
 
     private static Arguments expressionReplacementInTablesTest() {
         var context = new Contexts.Name("Bart Simpson");
-        var template = getResource(Path.of("ExpressionReplacementInTablesTest" + ".docx"));
+        var template = getResource(Path.of("ExpressionReplacementInTablesTest.docx"));
 
         var expected = """
-                Expression Replacement in Tables
+                == Expression Replacement in Tables
+                
                 |===
                 |This should resolve to a name:
                 |Bart Simpson
@@ -1164,7 +1144,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |This should not resolve:
                 |${foo}
                 
-                |❬❬Nested Table:❘b=true❭❘b=true❭
+                |Nested Table:
                 |===
                 |This should resolve to a name:
                 |Bart Simpson
@@ -1179,36 +1159,35 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 |===
                 
                 """;
-        var config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.passing());
-        return arguments("expressionReplacementInTablesTest", config, context, template, expected);
+        var config = standard().setExceptionResolver(ExceptionResolvers.passing());
+        return arguments("Placeholder replacement in tables", config, context, template, expected);
     }
 
     private static Arguments expressionReplacementWithFormattingTest() {
         var context = new Contexts.Name("Homer Simpson");
         var template = getResource(Path.of("ExpressionReplacementWithFormattingTest.docx"));
         var expected = """
-                 Expression Replacement with text format
+                == Expression Replacement with text format
+                
                 The text format should be kept intact when an expression is replaced.
-                ❬It should be bold: ❬Homer Simpson❘b=true❭❘b=true❭
-                ❬It should be italic: ❬Homer Simpson❘i=true❭❘i=true❭
-                ❬It should be superscript: ❬Homer Simpson❘vertAlign=superscript❭❘i=true❭
-                ❬It should be subscript: ❬Homer Simpson❘vertAlign=subscript❭❘vertAlign=subscript❭
-                ❬It should be striked: ❬Homer Simpson❘strike=true❭❘i=true❭
-                ❬It should be underlined: ❬Homer Simpson❘u=single❭❘i=true❭
-                ❬It should be doubly underlined: ❬Homer Simpson❘u=double❭❘i=true❭
-                ❬It should be thickly underlined: ❬Homer Simpson❘u=thick❭❘i=true❭
-                ❬It should be dot underlined: ❬Homer Simpson❘u=dotted❭❘i=true❭
-                ❬It should be dash underlined: ❬Homer Simpson❘u=dash❭❘i=true❭
-                ❬It should be dot and dash underlined: ❬Homer Simpson❘u=dotDash❭❘i=true❭
-                ❬It should be dot, dot and dash underlined: ❬Homer Simpson❘u=dotDotDash❭❘i=true❭
-                It should be highlighted yellow: ❬Homer Simpson❘highlight=yellow❭
-                ❬It should be white over darkblue: ❬Homer Simpson❘color=FFFFFF,highlight=darkBlue❭❘b=true❭
-                ❬It should be with header formatting: ❬Homer Simpson❘rStyle=TitreCar❭❘b=true❭
+                It should be bold: ❬Homer Simpson❘{b=true}❭.
+                It should be italic: ❬Homer Simpson❘{i=true}❭.
+                It should be superscript: ❬Homer Simpson❘{vertAlign=superscript}❭.
+                It should be subscript: ❬Homer Simpson❘{vertAlign=subscript}❭.
+                It should be striked: ❬Homer Simpson❘{strike=true}❭.
+                It should be underlined: ❬Homer Simpson❘{u=single}❭.
+                It should be doubly underlined: ❬Homer Simpson❘{u=double}❭.
+                It should be thickly underlined: ❬Homer Simpson❘{u=thick}❭.
+                It should be dot underlined: ❬Homer Simpson❘{u=dotted}❭.
+                It should be dash underlined: ❬Homer Simpson❘{u=dash}❭.
+                It should be dot and dash underlined: ❬Homer Simpson❘{u=dotDash}❭.
+                It should be dot, dot and dash underlined: ❬Homer Simpson❘{u=dotDotDash}❭.
+                It should be highlighted yellow: ❬Homer Simpson❘{highlight=yellow}❭.
+                It should be white over darkblue: ❬Homer Simpson❘{color=FFFFFF,highlight=darkBlue}❭.
+                It should be with header formatting: ❬Homer Simpson❘{rStyle=TitreCar}❭.
                 """;
-        return arguments("expressionReplacementWithFormattingTest",
-                OfficeStamperConfigurations.standard(),
+        return arguments("Placeholder replacement integration test (keep formatting)",
+                standard(),
                 context,
                 template,
                 expected);
@@ -1218,7 +1197,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var spacyContext = new Contexts.SpacyContext();
         var template = getResource(Path.of("ExpressionWithSurroundingSpacesTest.docx"));
         var expected = """
-                ❬Expression Replacement when expression has leading and/or trailing spaces❘spacing={after=120,before=240}❭
+                == Expression Replacement when expression has leading and/or trailing spaces
+                
                 When an expression within a paragraph is resolved, the spaces between the replacement and the surrounding text should be as expected. The following paragraphs should all look the same.
                 Before Expression After.
                 Before Expression After.
@@ -1226,10 +1206,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 Before Expression After.
                 Before Expression After.
                 Before Expression After.
-                ❬Before Expression After.❘spacing={after=140,before=0}❭
+                Before Expression After.
                 """;
-        return arguments("expressionWithSurroundingSpacesTest",
-                OfficeStamperConfigurations.standard(),
+        return arguments("Placeholder replacement test, spaces management",
+                standard(),
                 spacyContext,
                 template,
                 expected);
@@ -1239,49 +1219,46 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var context = new Contexts.Name("Homer Simpson");
         var template = getResource(Path.of("ExpressionReplacementWithCommentsTest.docx"));
         var expected = """
-                Expression Replacement with comments
+                == Expression Replacement with comments
+                
                 This paragraph is untouched.
-                In this paragraph, the variable ❬name❘b=true❭ should be resolved to the value Homer Simpson.
-                In this paragraph, the variable ❬foo❘b=true❭ should not be resolved: unresolvedValueWithCommentreplaceWordWith(foo)
+                In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                In this paragraph, the variable foo should not be resolved: unresolvedValueWithCommentreplaceWordWith(foo)
                 
                 .
                 """;
-        var config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.passing());
-        return arguments("expressionReplacementWithCommentsTest", config, context, template, expected);
+        var config = standardWithPreprocessing().setExceptionResolver(ExceptionResolvers.passing());
+        return arguments("Replace Word With Integration test", config, context, template, expected);
     }
 
     /**
      * <p>testDateInstantiationAndResolution.</p>
      */
     private static Arguments imageReplacementInGlobalParagraphsTest() {
-        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" + ".jpg")));
+        var context = new Contexts.ImageContext(getImage(Path.of("monalisa.jpg")));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
-                ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
-                ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
-                ❬In this paragraph, an image of Mona Lisa is inserted: ❬/word/media/document_image_rId4.jpeg:rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭.❘lang=de-DE❭
-                ❬This paragraph has the image ❬/word/media/document_image_rId5.jpeg:rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
+                == Image Replacement in global paragraphs
+                
+                This paragraph is untouched.
+                In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350.
+                This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350 in the middle.
                 """;
-        return arguments("imageReplacementInGlobalParagraphsTest",
-                OfficeStamperConfigurations.standard(),
-                context,
-                template,
-                expected);
+        return arguments("Image Type resolver integration test", standard(), context, template, expected);
     }
 
     private static Arguments imageReplacementInGlobalParagraphsTestWithMaxWidth() {
-        var context = new Contexts.ImageContext(getImage(Path.of("monalisa" + ".jpg"), 1000));
+        var context = new Contexts.ImageContext(getImage(Path.of("monalisa.jpg"), 1000));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
-                ❬Image Replacement in global paragraphs❘spacing={after=120,before=240}❭
-                ❬❬This paragraph is untouched.❘lang=de-DE❭❘lang=de-DE❭
-                ❬In this paragraph, an image of Mona Lisa is inserted: ❬/word/media/document_image_rId4.jpeg:rId4:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭.❘lang=de-DE❭
-                ❬This paragraph has the image ❬/word/media/document_image_rId5.jpeg:rId5:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000❘lang=de-DE❭ in the middle.❘lang=de-DE,spacing={after=140,before=0}❭
+                == Image Replacement in global paragraphs
+                
+                This paragraph is untouched.
+                In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000.
+                This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000 in the middle.
                 """;
-        return arguments("imageReplacementInGlobalParagraphsTestWithMaxWidth",
-                OfficeStamperConfigurations.standard(),
+        return arguments("Image Type resolver integration test (with max width)",
+                standard(),
                 context,
                 template,
                 expected);
@@ -1289,27 +1266,25 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments leaveEmptyOnExpressionErrorTest() {
         var context = new Contexts.Name("Homer Simpson");
-        var template = getResource(Path.of("LeaveEmptyOnExpressionErrorTest" + ".docx"));
-        var expected = """
-                Leave me empty .
-                ❬❘u=single❭
-                """;
-        var config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.defaulting());
-        return arguments("leaveEmptyOnExpressionErrorTest", config, context, template, expected);
+        var template = getResource(Path.of("LeaveEmptyOnExpressionErrorTest.docx"));
+        var expected = "Leave me empty .\n";
+        var config = standard().setExceptionResolver(ExceptionResolvers.defaulting());
+        return arguments("Default Exception Resolver Integration test, with empty value",
+                config,
+                context,
+                template,
+                expected);
     }
 
     private static Arguments lineBreakReplacementTest() {
-        var config = OfficeStamperConfigurations.standard()
-                                                .setLineBreakPlaceholder("#");
+        var config = standard().setLineBreakPlaceholder("#");
         var context = new Contexts.Name(null);
         var template = getResource(Path.of("LineBreakReplacementTest.docx"));
         var expected = """
                 Line Break Replacement
                 This paragraph is untouched.
-                This paragraph should be <break line>
-                 split in <break line>
+                This paragraph should be <br/>
+                 split in <br/>
                  three lines.
                 This paragraph is untouched.
                 """;
@@ -1343,13 +1318,12 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """;
 
         var defaultValue = "N/C";
-        var config = OfficeStamperConfigurations.standard()
-                                                .setLineBreakPlaceholder("\n")
-                                                .addResolver(Resolvers.nullToDefault(defaultValue))
-                                                .setExceptionResolver(ExceptionResolvers.defaulting(defaultValue))
-                                                .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        var config = standard().setLineBreakPlaceholder("\n")
+                               .addResolver(Resolvers.nullToDefault(defaultValue))
+                               .setExceptionResolver(ExceptionResolvers.defaulting(defaultValue))
+                               .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
 
-        return arguments("mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders",
+        return arguments("Should be able to stamp from a Map<String, Object> context",
                 config,
                 context,
                 template,
@@ -1374,9 +1348,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 """;
 
-        var config = OfficeStamperConfigurations
-                .standard()
-                .setExceptionResolver(ExceptionResolvers.passing());
+        var config = standard().setExceptionResolver(ExceptionResolvers.passing());
 
         return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
     }
@@ -1402,23 +1374,21 @@ import static pro.verron.officestamper.test.TestUtils.*;
         // Beware, this configuration only autogrows pojos and java beans,
         // so it will not work if your type has no default constructor and no setters.
 
-        var config = OfficeStamperConfigurations.standard()
-                                                .setSpelParserConfiguration(new SpelParserConfiguration(true, true))
-                                                .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
-                                                .addResolver(Resolvers.nullToDefault("Nullish value!!"));
+        var config = standard().setSpelParserConfiguration(new SpelParserConfiguration(true, true))
+                               .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
+                               .addResolver(Resolvers.nullToDefault("Nullish value!!"));
 
         return arguments("nullPointerResolutionTest_testWithCustomSpel", config, context, template, expected);
     }
 
     private static Arguments customCommentProcessor() {
-        return arguments("customCommentProcessor",
-                OfficeStamperConfigurations.standard()
-                                           .addCommentProcessor(ICustomCommentProcessor.class,
-                                                   CustomCommentProcessor::new),
+        return arguments("Custom processor Integration test",
+                standard().addCommentProcessor(ICustomCommentProcessor.class, CustomCommentProcessor::new),
                 Contexts.empty(),
                 getResource(Path.of("CustomCommentProcessorTest.docx")),
                 """     
-                        Custom Comment Processor Test
+                        == Custom Comment Processor Test
+                        
                         Visited
                         This paragraph is untouched.
                         Visited
@@ -1427,11 +1397,12 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments controls() {
         return of("Form controls should be replaced as well",
-                OfficeStamperConfigurations.standard(),
+                standard(),
                 name("Homer"),
                 getResource(Path.of("form-controls.docx")),
                 """
-                        Expression Replacement in Form Controls
+                        == Expression Replacement in Form Controls
+                        
                         [Rich text control line Homer]
                         Rich text control inlined [Homer]
                         [Raw text control line Homer]
@@ -1442,8 +1413,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     @MethodSource("tests") @ParameterizedTest(name = "{0}") void features(
-            String ignoredName, OfficeStamperConfiguration config, Object context, InputStream template, String expected
+            String name, OfficeStamperConfiguration config, Object context, InputStream template, String expected
     ) {
+        log.info(name);
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);

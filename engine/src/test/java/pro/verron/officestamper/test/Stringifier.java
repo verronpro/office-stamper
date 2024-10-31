@@ -14,9 +14,10 @@ import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.*;
-import org.docx4j.vml.CTShape;
+import org.docx4j.vml.CTShadow;
 import org.docx4j.vml.CTShapetype;
 import org.docx4j.vml.CTTextbox;
+import org.docx4j.vml.VmlShapeElements;
 import org.docx4j.wml.*;
 import org.docx4j.wml.Comments.Comment;
 import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
@@ -25,6 +26,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.experimental.ExcelCollector;
 import pro.verron.officestamper.experimental.PowerpointCollector;
 import pro.verron.officestamper.experimental.PowerpointParagraph;
+import pro.verron.officestamper.experimental.PptxPart;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -51,6 +53,7 @@ import static java.util.stream.Collectors.joining;
 public class Stringifier {
 
     private final Supplier<WordprocessingMLPackage> documentSupplier;
+    private final Supplier<StyleDefinitionsPart> styleDefinitionsPartSupplier;
 
     /**
      * <p>Constructor for Stringifier.</p>
@@ -59,6 +62,10 @@ public class Stringifier {
      */
     public Stringifier(Supplier<WordprocessingMLPackage> documentSupplier) {
         this.documentSupplier = documentSupplier;
+        this.styleDefinitionsPartSupplier =
+                () -> documentSupplier.get()
+                                      .getMainDocumentPart()
+                                      .getStyleDefinitionsPart(true);
     }
 
     public static String stringifyPowerpoint(PresentationMLPackage presentation) {
@@ -68,7 +75,7 @@ public class Stringifier {
 
         var powerpoint = new StringBuilder();
         for (CTTextParagraph paragraph : collected) {
-            powerpoint.append(new PowerpointParagraph(paragraph).asString());
+            powerpoint.append(new PowerpointParagraph(new PptxPart(), paragraph).asString());
         }
         return powerpoint.toString();
     }
@@ -140,12 +147,17 @@ public class Stringifier {
         return documentSupplier.get();
     }
 
+    private String styleID(String name) {
+        return styleDefinitionsPartSupplier.get()
+                                           .getNameForStyleID(name);
+    }
+
     private String stringify(Br br) {
         var type = br.getType();
-        if (type == STBrType.PAGE) return "<break page>\n";
-        else if (type == STBrType.COLUMN) return "<break column>\n";
-        else if (type == STBrType.TEXT_WRAPPING) return "<break line>\n";
-        else if (type == null) return "<break line>\n";
+        if (type == STBrType.PAGE) return "\n[page-break]\n<<<\n";
+        else if (type == STBrType.COLUMN) return "\n[col-break]\n<<<\n";
+        else if (type == STBrType.TEXT_WRAPPING) return "<br/>\n";
+        else if (type == null) return "<br/>\n";
         else throw new OfficeStamperException("Unexpected type: " + type);
     }
 
@@ -255,9 +267,11 @@ public class Stringifier {
         if (o instanceof AlternateContent) return "";
         if (o instanceof Pict pict) return stringify(pict.getAnyAndAny());
         if (o instanceof CTShapetype) return "";
-        if (o instanceof CTShape ctShape) return "[" + stringify(ctShape.getEGShapeElements()).trim() + "]\n";
+        if (o instanceof VmlShapeElements vmlShapeElements)
+            return "[" + stringify(vmlShapeElements.getEGShapeElements()).trim() + "]\n";
         if (o instanceof CTTextbox ctTextbox) return stringify(ctTextbox.getTxbxContent());
         if (o instanceof CTTxbxContent content) return stringify(content.getContent());
+        if (o instanceof CTShadow) return "";
         if (o instanceof SdtRun run) return stringify(run.getSdtContent());
         if (o instanceof SdtContent content) return "[" + stringify(content.getContent()).trim() + "]";
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
@@ -446,48 +460,68 @@ public class Stringifier {
      */
     private String stringify(P p) {
         var runs = stringify(p.getContent());
-        return stringify(p.getPPr()).map(ppr -> "❬%s❘%s❭".formatted(runs, ppr))
-                                    .orElse(runs);
+        var ppr = stringify(p.getPPr());
+        return ppr.apply(runs);
     }
 
-    private Optional<String> stringify(PPr pPr) {
-        if (pPr == null) return Optional.empty();
-        var set = new TreeSet<String>();
-        if (pPr.getJc() != null) set.add("jc=" + pPr.getJc()
-                                                    .getVal()
-                                                    .value());
-        if (pPr.getInd() != null) set.add("ind=" + pPr.getInd()
-                                                      .getLeft()
-                                                      .intValue());
-        if (pPr.getKeepLines() != null) set.add("keepLines=" + pPr.getKeepLines()
-                                                                  .isVal());
-        if (pPr.getKeepNext() != null) set.add("keepNext=" + pPr.getKeepNext()
-                                                                .isVal());
-        if (pPr.getOutlineLvl() != null) set.add("outlineLvl=" + pPr.getOutlineLvl()
-                                                                    .getVal()
-                                                                    .intValue());
-        if (pPr.getPageBreakBefore() != null) set.add("pageBreakBefore=" + pPr.getPageBreakBefore()
-                                                                              .isVal());
-        if (pPr.getPBdr() != null) set.add("pBdr=xxx");
-        if (pPr.getPPrChange() != null) set.add("pPrChange=xxx");
-        stringify(pPr.getRPr()).ifPresent(set::add);
-        stringify(pPr.getSectPr()).ifPresent(set::add);
-        if (pPr.getShd() != null) set.add("shd=xxx");
-        stringify(pPr.getSpacing()).ifPresent(spacing -> set.add("spacing=" + spacing));
-        if (pPr.getSuppressAutoHyphens() != null) set.add("suppressAutoHyphens=xxx");
-        if (pPr.getSuppressLineNumbers() != null) set.add("suppressLineNumbers=xxx");
-        if (pPr.getSuppressOverlap() != null) set.add("suppressOverlap=xxx");
-        if (pPr.getTabs() != null) set.add("tabs=xxx");
-        if (pPr.getTextAlignment() != null) set.add("textAlignment=xxx");
-        if (pPr.getTextDirection() != null) set.add("textDirection=xxx");
-        if (pPr.getTopLinePunct() != null) set.add("topLinePunct=xxx");
-        if (pPr.getWidowControl() != null) set.add("widowControl=xxx");
-        if (pPr.getWordWrap() != null) set.add("wordWrap=xxx");
-        if (pPr.getFramePr() != null) set.add("framePr=xxx");
-        if (pPr.getDivId() != null) set.add("divId=xxx");
-        ofNullable(pPr.getCnfStyle()).ifPresent(style -> set.add("cnfStyle=" + style.getVal()));
-        if (set.isEmpty()) return Optional.empty();
-        return Optional.of(String.join(",", set));
+    private Function<String, String> stringify(PPr pPr) {
+        if (pPr == null) return Function.identity();
+        var set = new TreeMap<String, String>();
+        ofNullable(pPr.getPStyle()).ifPresent(element -> set.put("pStyle", styleID(element.getVal())));
+        ofNullable(pPr.getJc()).ifPresent(element -> set.put("jc",
+                element.getVal()
+                       .toString()));
+        ofNullable(pPr.getInd()).ifPresent(element -> set.put("ind",
+                element.getLeft()
+                       .toString()));
+        ofNullable(pPr.getKeepLines()).ifPresent(element -> set.put("keepLines", String.valueOf(element.isVal())));
+        ofNullable(pPr.getKeepNext()).ifPresent(element -> set.put("keepNext", String.valueOf(element.isVal())));
+        ofNullable(pPr.getOutlineLvl()).ifPresent(element -> set.put("outlineLvl",
+                element.getVal()
+                       .toString()));
+        ofNullable(pPr.getPageBreakBefore()).ifPresent(element -> set.put("pageBreakBefore",
+                String.valueOf(element.isVal())));
+        ofNullable(pPr.getPBdr()).ifPresent(element -> set.put("pBdr", "xxx"));
+        ofNullable(pPr.getPPrChange()).ifPresent(element -> set.put("pPrChange", "xxx"));
+        stringify(pPr.getRPr()).ifPresent(key -> set.put("rPr", key));
+        stringify(pPr.getSectPr()).ifPresent(key -> set.put("sectPr", key));
+        ofNullable(pPr.getShd()).ifPresent(element -> set.put("shd", "xxx"));
+        stringify(pPr.getSpacing()).ifPresent(spacing -> set.put("spacing", spacing));
+        ofNullable(pPr.getSuppressAutoHyphens()).ifPresent(element -> set.put("suppressAutoHyphens", "xxx"));
+        ofNullable(pPr.getSuppressLineNumbers()).ifPresent(element -> set.put("suppressLineNumbers", "xxx"));
+        ofNullable(pPr.getSuppressOverlap()).ifPresent(element -> set.put("suppressOverlap", "xxx"));
+        ofNullable(pPr.getTabs()).ifPresent(element -> set.put("tabs", "xxx"));
+        ofNullable(pPr.getTextAlignment()).ifPresent(element -> set.put("textAlignment", "xxx"));
+        ofNullable(pPr.getTextDirection()).ifPresent(element -> set.put("textDirection", "xxx"));
+        ofNullable(pPr.getTopLinePunct()).ifPresent(element -> set.put("topLinePunct", "xxx"));
+        ofNullable(pPr.getWidowControl()).ifPresent(element -> set.put("widowControl", "xxx"));
+        ofNullable(pPr.getFramePr()).ifPresent(element -> set.put("framePr", "xxx"));
+        ofNullable(pPr.getWordWrap()).ifPresent(element -> set.put("wordWrap", "xxx"));
+        ofNullable(pPr.getDivId()).ifPresent(element -> set.put("divId", "xxx"));
+        ofNullable(pPr.getCnfStyle()).ifPresent(style -> set.put("cnfStyle", style.getVal()));
+        return set.entrySet()
+                  .stream()
+                  .reduce(Function.identity(),
+                          (f, entry) -> switch (entry.getKey()) {
+                              case "pStyle" -> f.compose(decorateWithStyle(entry.getValue()));
+                              case "sectPr" -> f.compose(str -> str+"\n[section-break, " + entry.getValue() +"]\n<<<");
+                              default -> f.andThen(s -> s + "<%s=%s>".formatted(entry.getKey(), entry.getValue()));
+                          },
+                          Function::andThen);
+    }
+
+    private Function<? super String, String> decorateWithStyle(String value) {
+        return switch (value) {
+            case "Title" -> "= %s\n"::formatted;
+            case "heading 1" -> "== %s\n"::formatted;
+            case "heading 2" -> "=== %s\n"::formatted;
+            case "heading 3" -> "==== %s\n"::formatted;
+            case "heading 4" -> "===== %s\n"::formatted;
+            case "heading 5" -> "====== %s\n"::formatted;
+            case "heading 6" -> "======= %s\n"::formatted;
+            case "caption" -> ".%s"::formatted;
+            default -> "[%s] %%s".formatted(value)::formatted;
+        };
     }
 
     /**
@@ -502,10 +536,9 @@ public class Stringifier {
     private String stringify(R run) {
         String serialized = stringify(run.getContent());
         if (serialized.isEmpty()) return "";
-        return ofNullable(run.getRPr())
-                .flatMap(this::stringify)
-                .map(rPr -> "❬%s❘%s❭".formatted(serialized, rPr))
-                .orElse(serialized);
+        return ofNullable(run.getRPr()).flatMap(this::stringify)
+                                       .map(rPr -> "❬%s❘%s❭".formatted(serialized, rPr))
+                                       .orElse(serialized);
     }
 
     /**
@@ -581,19 +614,24 @@ public class Stringifier {
                                                             .getVal()
                                                             .value());
         if (set.isEmpty()) return Optional.empty();
-        return Optional.of(String.join(",", set));
+        return Optional.of("{" + String.join(",", set) + "}");
     }
 
     private Optional<String> stringify(SectPr sectPr) {
         if (sectPr == null) return Optional.empty();
         var set = new TreeSet<String>();
-        if (sectPr.getEGHdrFtrReferences() != null) set.add("eGHdrFtrReferences=xxx");
+        if (sectPr.getEGHdrFtrReferences() != null && !sectPr.getEGHdrFtrReferences()
+                                                             .isEmpty())
+            set.add("eGHdrFtrReferences=%s".formatted(sectPr.getEGHdrFtrReferences()
+                                                            .stream()
+                                                            .map(this::stringify)
+                                                            .collect(joining(",", "[", "]"))));
         if (sectPr.getPgSz() != null) set.add("pgSz={" + stringify(sectPr.getPgSz()) + "}");
-        if (sectPr.getPgMar() != null) set.add("pgMar=xxx");
+        if (sectPr.getPgMar() != null) set.add("pgMar={" + stringify(sectPr.getPgMar()) + "}");
         if (sectPr.getPaperSrc() != null) set.add("paperSrc=xxx");
         if (sectPr.getBidi() != null) set.add("bidi=xxx");
         if (sectPr.getRtlGutter() != null) set.add("rtlGutter=xxx");
-        if (sectPr.getDocGrid() != null) set.add("docGrid=xxx");
+        if (sectPr.getDocGrid() != null) set.add("docGrid={" + stringify(sectPr.getDocGrid()) + "}");
         if (sectPr.getFormProt() != null) set.add("formProt=xxx");
         if (sectPr.getVAlign() != null) set.add("vAlign=xxx");
         if (sectPr.getNoEndnote() != null) set.add("noEndnote=xxx");
@@ -604,16 +642,39 @@ public class Stringifier {
         return Optional.of(String.join(",", set));
     }
 
+    private String stringify(CTDocGrid ctDocGrid) {
+        var set = new TreeSet<String>();
+        if (ctDocGrid.getCharSpace() != null) set.add("charSpace=" + ctDocGrid.getCharSpace());
+        if (ctDocGrid.getLinePitch() != null) set.add("linePitch=" + ctDocGrid.getLinePitch()
+                                                                              .intValue());
+        if (ctDocGrid.getType() != null) set.add("type=" + ctDocGrid.getType());
+        return String.join(",", set);
+    }
+
+    private String stringify(CTRel ctRel) {
+        var set = new TreeSet<String>();
+        if (ctRel.getId() != null) set.add("id=" + ctRel.getId());
+        return String.join(",", set);
+    }
+
+    private String stringify(SectPr.PgMar pgMar) {
+        var set = new TreeSet<String>();
+        if (pgMar.getHeader() != null) set.add("header=" + pgMar.getHeader());
+        if (pgMar.getFooter() != null) set.add("footer=" + pgMar.getFooter());
+        if (pgMar.getGutter() != null) set.add("gutter=" + pgMar.getGutter());
+        if (pgMar.getTop() != null) set.add("top=" + pgMar.getTop());
+        if (pgMar.getLeft() != null) set.add("left=" + pgMar.getLeft());
+        if (pgMar.getBottom() != null) set.add("bottom=" + pgMar.getBottom());
+        if (pgMar.getRight() != null) set.add("right=" + pgMar.getRight());
+        return String.join(",", set);
+    }
+
     private String stringify(SectPr.PgSz pgSz) {
         var set = new TreeSet<String>();
-        if (pgSz.getOrient() != null) set.add("orient=" + pgSz.getOrient()
-                                                              .value());
-        if (pgSz.getW() != null) set.add("w=" + pgSz.getW()
-                                                    .intValue());
-        if (pgSz.getH() != null) set.add("h=" + pgSz.getH()
-                                                    .intValue());
-        if (pgSz.getCode() != null) set.add("code=" + pgSz.getCode()
-                                                          .intValue());
+        if (pgSz.getOrient() != null) set.add("orient=" + pgSz.getOrient());
+        if (pgSz.getW() != null) set.add("w=" + pgSz.getW());
+        if (pgSz.getH() != null) set.add("h=" + pgSz.getH());
+        if (pgSz.getCode() != null) set.add("code=" + pgSz.getCode());
         return String.join(",", set);
     }
 }

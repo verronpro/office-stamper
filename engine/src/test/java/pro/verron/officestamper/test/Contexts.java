@@ -7,6 +7,7 @@ import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.StampTable;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.params.provider.Arguments.of;
@@ -193,18 +194,6 @@ public class Contexts {
     }
 
     /**
-     * <p>nowContext.</p>
-     *
-     * @return a {@link Contexts.DateContext} object
-     *
-     * @since 1.6.6
-     */
-    public static DateContext nowContext() {
-        var now = new Date();
-        return new DateContext(now);
-    }
-
-    /**
      * <p>mapAndReflectiveContext.</p>
      *
      * @return a {@link java.util.HashMap} object
@@ -212,13 +201,14 @@ public class Contexts {
      * @since 1.6.6
      */
     public static HashMap<String, Object> mapAndReflectiveContext() {
+        var context = new HashMap<String, Object>();
+        context.put("FLAT_STRING", "Flat string has been resolved");
+
         var listProp = new ArrayList<Container>();
         listProp.add(new Container("first value"));
         listProp.add(new Container("second value"));
-
-        var context = new HashMap<String, Object>();
-        context.put("FLAT_STRING", "Flat string has been resolved");
         context.put("OBJECT_LIST_PROP", listProp);
+
         return context;
     }
 
@@ -243,21 +233,21 @@ public class Contexts {
     }
 
     static Arguments repeatTableRowKeepsFormatTest() {
-        return of("repeatTableRowKeepsFormatTest",
+        return of("Repeat Table row Integration test (keeps formatting)",
                 OfficeStamperConfigurations.standard(),
                 show(),
                 getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
                 """
                         |===
-                        |1❬st❘vertAlign=superscript❭ Homer Simpson-❬Dan Castellaneta❘b=true❭
+                        |1❬st❘{vertAlign=superscript}❭ Homer Simpson-❬Dan Castellaneta❘{b=true}❭
                         
-                        |2❬nd❘vertAlign=superscript❭ Marge Simpson-❬Julie Kavner❘b=true❭
+                        |2❬nd❘{vertAlign=superscript}❭ Marge Simpson-❬Julie Kavner❘{b=true}❭
                         
-                        |3❬rd❘vertAlign=superscript❭ Bart Simpson-❬Nancy Cartwright❘b=true❭
+                        |3❬rd❘{vertAlign=superscript}❭ Bart Simpson-❬Nancy Cartwright❘{b=true}❭
                         
-                        |4❬th❘vertAlign=superscript❭ Lisa Simpson-❬Yeardley Smith❘b=true❭
+                        |4❬th❘{vertAlign=superscript}❭ Lisa Simpson-❬Yeardley Smith❘{b=true}❭
                         
-                        |5❬th❘vertAlign=superscript❭ Maggie Simpson-❬Julie Kavner❘b=true❭
+                        |5❬th❘{vertAlign=superscript}❭ Maggie Simpson-❬Julie Kavner❘{b=true}❭
                         
                         
                         |===
@@ -283,13 +273,6 @@ public class Contexts {
      * The Characters class represents a list of characters played by actors.
      */
     public record Characters(List<Role> characters) {}
-
-    /**
-     * Represents a Date context.
-     *
-     * @param date The Date value to be encapsulated in the context.
-     */
-    public record DateContext(Date date) {}
 
     public record ZonedDateContext(java.time.ZonedDateTime date) {}
 
@@ -613,4 +596,8 @@ public class Contexts {
     public static class EmptyContext {}
 
     public record TableContext(StampTable characters) {}
+
+    public record DateContext(LocalDate date) {
+
+    }
 }

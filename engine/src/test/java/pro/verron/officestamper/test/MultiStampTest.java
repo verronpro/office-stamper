@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
@@ -12,7 +13,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @author Tom Hombergs
  */
 class MultiStampTest {
-    @Test void expressionsAreResolvedOnMultiStamp() {
+    @Test @DisplayName("The same stamper instance can stamp several times") void repeatDocPart() {
         var config = OfficeStamperConfigurations.standard();
         var context = names("Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamper = new TestDocxStamper<>(config);
@@ -21,41 +22,47 @@ class MultiStampTest {
         var template1 = getResource(filename);
         var document1 = stamper.stampAndLoadAndExtract(template1, context);
         assertEquals("""
-                ❬Multi-Stamp-Test❘spacing={after=120,before=240}❭
-                |===
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Homer.
-                
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Marge.
-                
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Bart.
-                
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Lisa.
-                
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Maggie.
-                
+                == Multi-Stamp-Test
                 
                 |===
-                ❬❘spacing={after=140,before=0}❭
+                |The next row will repeat multiple times with a different name:
+                
+                |Homer
+                
+                |Marge
+                
+                |Bart
+                
+                |Lisa
+                
+                |Maggie
+                
+                
+                |===
+                
                 """, document1);
 
         var template2 = getResource(filename);
         var document2 = stamper.stampAndLoadAndExtract(template2, context);
         assertEquals("""
-                ❬Multi-Stamp-Test❘spacing={after=120,before=240}❭
-                |===
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Homer.
-                
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Marge.
-                
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Bart.
-                
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Lisa.
-                
-                |This table row should be expanded to multiple rows each with a different name each time the document is stamped: Maggie.
-                
+                == Multi-Stamp-Test
                 
                 |===
-                ❬❘spacing={after=140,before=0}❭
+                |The next row will repeat multiple times with a different name:
+                
+                |Homer
+                
+                |Marge
+                
+                |Bart
+                
+                |Lisa
+                
+                |Maggie
+                
+                
+                |===
+                
                 """, document2);
     }
 }

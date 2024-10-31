@@ -1,9 +1,15 @@
 package pro.verron.officestamper.core;
 
+
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.lang.NonNull;
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
+import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
+import pro.verron.officestamper.core.functions.BiFunctionBuilder;
+import pro.verron.officestamper.core.functions.FunctionBuilder;
+import pro.verron.officestamper.core.functions.TriFunctionBuilder;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.EvaluationContextConfigurers;
 import pro.verron.officestamper.preset.ExceptionResolvers;
@@ -14,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * The {@link DocxStamperConfiguration} class represents the configuration for
@@ -32,6 +39,7 @@ public class DocxStamperConfiguration
     private final List<ObjectResolver> resolvers = new ArrayList<>();
     private final Map<Class<?>, Object> expressionFunctions = new HashMap<>();
     private final List<PreProcessor> preprocessors = new ArrayList<>();
+    private final List<CustomFunction> functions = new ArrayList<>();
     private String lineBreakPlaceholder = "\n";
     private EvaluationContextConfigurer evaluationContextConfigurer = EvaluationContextConfigurers.defaultConfigurer();
     private boolean failOnUnresolvedExpression = true;
@@ -374,7 +382,7 @@ public class DocxStamperConfiguration
      * resolver list.
      */
     @Override public DocxStamperConfiguration addResolver(ObjectResolver resolver) {
-        resolvers.add(0, resolver);
+        resolvers.addFirst(resolver);
         return this;
     }
 
@@ -387,5 +395,32 @@ public class DocxStamperConfiguration
         return this;
     }
 
+    public void addCustomFunction(CustomFunction function) {
+        this.functions.add(function);
+    }
 
+    @Override public List<CustomFunction> customFunctions() {
+        return functions;
+    }
+
+
+    @Override public void addCustomFunction(String name, Supplier<?> implementation) {
+        this.addCustomFunction(new CustomFunction(name, List.of(), args -> implementation.get()));
+    }
+
+
+    @Override public <T> NeedsFunctionImpl<T> addCustomFunction(String name, Class<T> class0) {
+        return new FunctionBuilder<>(this, name, class0);
+    }
+
+    @Override public <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1) {
+        return new BiFunctionBuilder<>(this, name, class0, class1);
+    }
+
+    @Override public <T, U, V> CustomFunction.NeedsTriFunctionImpl<T, U, V> addCustomFunction(
+            String name,
+            Class<T> class0, Class<U> class1, Class<V> class2
+    ) {
+        return new TriFunctionBuilder<>(this, name, class0, class1,class2);
+    }
 }

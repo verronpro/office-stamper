@@ -1,6 +1,9 @@
 package pro.verron.officestamper.api;
 
 import org.springframework.expression.spel.SpelParserConfiguration;
+import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
+import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
+import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,7 @@ public interface OfficeStamperConfiguration {
      * @param failOnUnresolvedExpression flag indicating whether to fail on unresolved expressions
      *
      * @return the updated OfficeStamperConfiguration object
+     *
      * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
      * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
      * complete customization over the behavior during resolution failures. The new method
@@ -45,6 +49,7 @@ public interface OfficeStamperConfiguration {
      * Determines whether to leave empty on expression error.
      *
      * @return true if expression errors are left empty, false otherwise
+     *
      * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
      * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
      * complete customization over the behavior during resolution failures. The new method
@@ -57,6 +62,7 @@ public interface OfficeStamperConfiguration {
      * Determines whether unresolved expressions in the OfficeStamper configuration should be replaced.
      *
      * @return true if unresolved expressions should be replaced, false otherwise.
+     *
      * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
      * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
      * complete customization over the behavior during resolution failures. The new method
@@ -69,6 +75,7 @@ public interface OfficeStamperConfiguration {
      * Retrieves the default value for unresolved expressions.
      *
      * @return the default value for unresolved expressions
+     *
      * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
      * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
      * complete customization over the behavior during resolution failures. The new method
@@ -83,6 +90,7 @@ public interface OfficeStamperConfiguration {
      * @param unresolvedExpressionsDefaultValue the default value for unresolved expressions
      *
      * @return the updated OfficeStamperConfiguration object
+     *
      * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
      * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
      * complete customization over the behavior during resolution failures. The new method
@@ -98,6 +106,7 @@ public interface OfficeStamperConfiguration {
      * @param replaceUnresolvedExpressions flag indicating whether to replace unresolved expressions
      *
      * @return the updated OfficeStamperConfiguration object
+     *
      * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
      * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
      * complete customization over the behavior during resolution failures. The new method
@@ -115,6 +124,7 @@ public interface OfficeStamperConfiguration {
      * @param leaveEmpty boolean value indicating whether to leave empty on expression error
      *
      * @return the updated OfficeStamperConfiguration object
+     *
      * @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
      * It is replaced by {@link #setExceptionResolver(ExceptionResolver)} , which provides
      * complete customization over the behavior during resolution failures. The new method
@@ -262,4 +272,17 @@ public interface OfficeStamperConfiguration {
     ExceptionResolver getExceptionResolver();
 
     OfficeStamperConfiguration setExceptionResolver(ExceptionResolver exceptionResolver);
+
+    List<CustomFunction> customFunctions();
+
+    <T> NeedsFunctionImpl<T> addCustomFunction(String name, Class<T> class0);
+
+    <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1);
+
+    <T, U, V> NeedsTriFunctionImpl<T, U, V> addCustomFunction(
+            String name,
+            Class<T> class0,
+            Class<U> class1,
+            Class<V> class2
+    );
 }

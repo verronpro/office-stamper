@@ -3,6 +3,7 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
+import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -11,10 +12,7 @@ import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static pro.verron.officestamper.core.Invokers.streamInvokers;
@@ -46,6 +44,7 @@ public class DocxStamper
                 configuration.getLineBreakPlaceholder(),
                 configuration.getEvaluationContextConfigurer(),
                 configuration.getExpressionFunctions(),
+                configuration.customFunctions(),
                 configuration.getResolvers(),
                 configuration.getCommentProcessors(),
                 configuration.getPreprocessors(),
@@ -57,6 +56,7 @@ public class DocxStamper
             @NonNull String lineBreakPlaceholder,
             EvaluationContextConfigurer evaluationContextConfigurer,
             Map<Class<?>, Object> expressionFunctions,
+            List<CustomFunction> functions,
             List<ObjectResolver> resolvers,
             Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> configurationCommentProcessors,
             List<PreProcessor> preprocessors,
@@ -79,6 +79,9 @@ public class DocxStamper
         var commentProcessors = buildCommentProcessors(configurationCommentProcessors);
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
+        evaluationContext.addMethodResolver(new Invokers(functions.stream().map(cf -> new Invoker(cf.name(),
+                new Invokers.Args(cf.parameterTypes()),
+                (context, target, arguments) -> new TypedValue(cf.function().apply(Arrays.asList(arguments)))))));
 
         this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(
                 source,

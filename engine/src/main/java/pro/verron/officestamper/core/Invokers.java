@@ -1,15 +1,10 @@
 package pro.verron.officestamper.core;
 
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.MethodExecutor;
-import org.springframework.expression.MethodResolver;
+import org.springframework.expression.*;
 import org.springframework.lang.NonNull;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 

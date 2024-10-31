@@ -16,7 +16,7 @@ import static java.util.Arrays.asList;
 public record Invoker(String name, Invokers.Args args, MethodExecutor executor) {
 
     /**
-     * @param obj the target object on which the method is to be invoked
+     * @param obj    the target object on which the method is to be invoked
      * @param method the method to be invoked on the target object
      */
     public Invoker(Object obj, Method method) {

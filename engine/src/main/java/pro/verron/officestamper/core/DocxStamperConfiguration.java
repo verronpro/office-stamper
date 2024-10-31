@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * The {@link DocxStamperConfiguration} class represents the configuration for
@@ -400,6 +401,11 @@ public class DocxStamperConfiguration
 
     @Override public List<CustomFunction> customFunctions() {
         return functions;
+    }
+
+
+    @Override public void addCustomFunction(String name, Supplier<?> implementation) {
+        this.addCustomFunction(new CustomFunction(name, List.of(), args -> implementation.get()));
     }
 
 

@@ -1,17 +1,21 @@
 package pro.verron.officestamper.core;
 
+import org.docx4j.TextUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.CommentRangeEnd;
-import org.docx4j.wml.CommentRangeStart;
-import org.docx4j.wml.Comments;
-import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.Placeholder;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /**
  * <p>CommentWrapper class.</p>
@@ -23,7 +27,6 @@ import java.util.Set;
  */
 public class StandardComment
         implements Comment {
-
     private final Set<Comment> children = new HashSet<>();
     private final WordprocessingMLPackage document;
     private Comments.Comment comment;
@@ -40,26 +43,59 @@ public class StandardComment
         this.document = document;
     }
 
+    public static StandardComment create(
+            WordprocessingMLPackage document,
+            P parent,
+            Placeholder placeholder,
+            BigInteger id
+    ) {
+        var commentWrapper = new StandardComment(document);
+        commentWrapper.setComment(newComment(id, placeholder.content()));
+        commentWrapper.setCommentRangeStart(newCommentRangeStart(id, parent));
+        commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
+        commentWrapper.setCommentReference(newCommentReference(id, parent));
+        return commentWrapper;
+    }
+
+    @Override public String toString() {
+        return "StandardComment{comment={id=%s, content=%s, children=%s}}}".formatted(comment.getId(),
+                comment.getContent()
+                       .stream()
+                       .map(TextUtils::getText)
+                       .collect(Collectors.joining(",")),
+                children.size());
+    }
+
+    @Override public Placeholder asPlaceholder() {
+        String string = this.getComment()
+                            .getContent()
+                            .stream()
+                            .filter(P.class::isInstance)
+                            .map(P.class::cast)
+                            .map(p -> StandardParagraph.from(new TextualDocxPart(document), p))
+                            .map(StandardParagraph::asString)
+                            .collect(joining());
+        return Placeholders.raw(string);
+    }
+
     /**
      * <p>getParent.</p>
      *
      * @return the comment's author.
      */
-    @Override
-    public ContentAccessor getParent() {
+    @Override public ContentAccessor getParent() {
         return DocumentUtil.findSmallestCommonParent(getCommentRangeStart(), getCommentRangeEnd());
     }
 
     /**
      * @return the elements in the document that are between the comment range anchors.
      */
-    @Override
-    public List<Object> getElements() {
+    @Override public List<Object> getElements() {
         List<Object> elements = new ArrayList<>();
         boolean startFound = false;
         boolean endFound = false;
-        var parentElements = getParent().getContent();
-        for (Object element : parentElements) {
+        var siblings = getParent().getContent();
+        for (Object element : siblings) {
             startFound = startFound || DocumentUtil.depthElementSearch(getCommentRangeStart(), element);
             if (startFound && !endFound) elements.add(element);
             endFound = endFound || DocumentUtil.depthElementSearch(getCommentRangeEnd(), element);
@@ -72,8 +108,7 @@ public class StandardComment
      *
      * @return a {@link CommentRangeEnd} object
      */
-    @Override
-    public CommentRangeEnd getCommentRangeEnd() {
+    @Override public CommentRangeEnd getCommentRangeEnd() {
         return commentRangeEnd;
     }
 
@@ -86,8 +121,7 @@ public class StandardComment
      *
      * @return a {@link CommentRangeStart} object
      */
-    @Override
-    public CommentRangeStart getCommentRangeStart() {
+    @Override public CommentRangeStart getCommentRangeStart() {
         return commentRangeStart;
     }
 
@@ -100,8 +134,7 @@ public class StandardComment
      *
      * @return a {@link CommentReference} object
      */
-    @Override
-    public CommentReference getCommentReference() {
+    @Override public CommentReference getCommentReference() {
         return commentReference;
     }
 
@@ -114,8 +147,7 @@ public class StandardComment
      *
      * @return a {@link Set} object
      */
-    @Override
-    public Set<Comment> getChildren() {
+    @Override public Set<Comment> getChildren() {
         return children;
     }
 
@@ -128,8 +160,7 @@ public class StandardComment
      *
      * @return a {@link Comments.Comment} object
      */
-    @Override
-    public Comments.Comment getComment() {
+    @Override public Comments.Comment getComment() {
         return comment;
     }
 

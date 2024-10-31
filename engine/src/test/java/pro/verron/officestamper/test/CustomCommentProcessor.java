@@ -1,12 +1,13 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.jaxb.Context;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import pro.verron.officestamper.api.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
 /**
  * This is an example of a custom {@link CommentProcessor} implementation.
@@ -28,9 +29,7 @@ public class CustomCommentProcessor
         extends AbstractCommentProcessor
         implements ICustomCommentProcessor {
 
-    private static final List<P> visitedParagraphs = new ArrayList<>();
-
-    private P currentParagraph;
+    private static final List<Paragraph> visitedParagraphs = new ArrayList<>();
 
     /**
      * <p>Constructor for CustomCommentProcessor.</p>
@@ -41,29 +40,16 @@ public class CustomCommentProcessor
         super(placeholderReplacer);
     }
 
-    public static R create(String string) {
-        var factory = Context.getWmlObjectFactory();
-
-        var text = factory.createText();
-        text.setValue(string);
-
-        var run = factory.createR();
-        var runContent = run.getContent();
-        runContent.add(text);
-
-        return run;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
     public void commitChanges(DocxPart document) {
-        visitedParagraphs.forEach(p -> {
+        visitedParagraphs.forEach(para -> para.apply((P p)->{
             var content = p.getContent();
             content.clear();
-            content.add(create("Visited"));
-        });
+            content.add(newRun("Visited"));
+        }));
     }
 
     /**
@@ -77,6 +63,17 @@ public class CustomCommentProcessor
      * {@inheritDoc}
      */
     @Override
+    public void setCurrentCommentWrapper(Comment comment) {
+    }
+
+    @Override public void setParagraph(Paragraph paragraph) {
+        super.setParagraph(paragraph);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setCurrentRun(R run) {
     }
 
@@ -84,22 +81,7 @@ public class CustomCommentProcessor
      * {@inheritDoc}
      */
     @Override
-    public void setParagraph(P paragraph) {
-        currentParagraph = paragraph;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setCurrentCommentWrapper(Comment comment) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void visitParagraph() {
-        visitedParagraphs.add(currentParagraph);
+        visitedParagraphs.add(getParagraph());
     }
 }

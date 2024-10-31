@@ -10,6 +10,17 @@ import org.springframework.lang.Nullable;
  */
 public interface CommentProcessor {
 
+    void setProcessorContext(ProcessorContext processorContext);
+
+    /**
+     * Passes the run that is currently being processed (i.e., the run that is commented in the
+     * .docx template). This method is always called BEFORE the custom
+     * methods of the custom comment processor interface
+     * are called.
+     *
+     * @param run coordinates of the currently processed run within the template.
+     */
+    void setCurrentRun(@Nullable R run);
 
     /**
      * This method is called after all comments in the .docx template have been passed to the comment processor.
@@ -48,6 +59,8 @@ public interface CommentProcessor {
                                          + "reason to keep implementing this");
     }
 
+    Paragraph getParagraph();
+
     /**
      * Passes the paragraph that is currently being processed (i.e., the paragraph that is commented in the
      * .docx template). This method is always called BEFORE the custom
@@ -55,18 +68,11 @@ public interface CommentProcessor {
      * are called.
      *
      * @param paragraph coordinates of the currently processed paragraph within the template.
-     */
-    void setParagraph(P paragraph);
-
-    /**
-     * Passes the run that is currently being processed (i.e., the run that is commented in the
-     * .docx template). This method is always called BEFORE the custom
-     * methods of the custom comment processor interface
-     * are called.
      *
-     * @param run coordinates of the currently processed run within the template.
+     * @deprecated use {@link #setProcessorContext(ProcessorContext)} instead
      */
-    void setCurrentRun(@Nullable R run);
+    @Deprecated(since = "2.6", forRemoval = true)
+    void setParagraph(P paragraph);
 
     /**
      * Passes the comment range wrapper that is currently being processed

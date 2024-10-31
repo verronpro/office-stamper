@@ -53,7 +53,7 @@ public class ObjectDeleter {
 			for (Iterator<Object> iterator = ((ContentAccessor) table.getParent()).getContent()
 																				  .listIterator(); iterator.hasNext(); ) {
 				Object next = iterator.next();
-				if (next instanceof JAXBElement element && element.getValue().equals(table)) {
+				if (next instanceof JAXBElement<?> element && element.getValue().equals(table)) {
 					iterator.remove();
 					break;
                 }
@@ -66,7 +66,7 @@ public class ObjectDeleter {
 		if (TableCellUtil.hasNoParagraphOrTable(cell)) {
 			TableCellUtil.addEmptyParagraph(cell);
 		}
-		// TODO_LATER: find out why border lines are removed in some cells after having deleted a paragraph
+		// TODO: find out why border lines are removed in some cells after having deleted a paragraph
     }
 
     private static void deleteFromCell(Tc cell, Object obj) {
@@ -77,7 +77,7 @@ public class ObjectDeleter {
 		if (TableCellUtil.hasNoParagraphOrTable(cell)) {
 			TableCellUtil.addEmptyParagraph(cell);
 		}
-		// TODO_LATER: find out why border lines are removed in some cells after having deleted a paragraph
+		// TODO: find out why border lines are removed in some cells after having deleted a paragraph
     }
 
     /**

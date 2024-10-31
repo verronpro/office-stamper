@@ -12,6 +12,13 @@ import java.util.Set;
 public interface Comment {
 
     /**
+     * Converts the comment to a Placeholder representation.
+     *
+     * @return the Placeholder representation of the comment
+     */
+    Placeholder asPlaceholder();
+
+    /**
      * Retrieves the parent of the comment.
      *
      * @return the parent of the comment
@@ -37,7 +44,7 @@ public interface Comment {
      *
      * @param commentRangeEnd the {@link CommentRangeEnd} object to set
      */
-    // TODO_LATER: Remove the setting method from interface to increase immutability
+    // TODO: Remove the setting method from interface to increase immutability
     void setCommentRangeEnd(CommentRangeEnd commentRangeEnd);
 
     /**
@@ -52,7 +59,7 @@ public interface Comment {
      *
      * @param commentRangeStart the CommentRangeStart object to set
      */
-    // TODO_LATER: Remove the setting method from interface to increase immutability
+    // TODO: Remove the setting method from interface to increase immutability
     void setCommentRangeStart(CommentRangeStart commentRangeStart);
 
     /**
@@ -67,7 +74,7 @@ public interface Comment {
      *
      * @param commentReference the comment reference to set
      */
-    // TODO_LATER: Remove the setting method from interface to increase immutability
+    // TODO: Remove the setting method from interface to increase immutability
     void setCommentReference(R.CommentReference commentReference);
 
     /**
@@ -82,7 +89,7 @@ public interface Comment {
      *
      * @param comments the set of Comment objects representing the children of the comment
      */
-    // TODO_LATER: Remove the setting method from interface to increase immutability
+    // TODO: Remove the setting method from interface to increase immutability
     void setChildren(Set<Comment> comments);
 
     /**
@@ -97,7 +104,7 @@ public interface Comment {
      *
      * @param comment the comment to set
      */
-    // TODO_LATER: Remove the setting method from interface to increase immutability
+    // TODO: Remove the setting method from interface to increase immutability
     void setComment(Comments.Comment comment);
 
     /**

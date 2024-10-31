@@ -7,6 +7,7 @@ import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.StampTable;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.params.provider.Arguments.of;
@@ -193,18 +194,6 @@ public class Contexts {
     }
 
     /**
-     * <p>nowContext.</p>
-     *
-     * @return a {@link Contexts.DateContext} object
-     *
-     * @since 1.6.6
-     */
-    public static DateContext nowContext() {
-        var now = new Date();
-        return new DateContext(now);
-    }
-
-    /**
      * <p>mapAndReflectiveContext.</p>
      *
      * @return a {@link java.util.HashMap} object
@@ -284,13 +273,6 @@ public class Contexts {
      * The Characters class represents a list of characters played by actors.
      */
     public record Characters(List<Role> characters) {}
-
-    /**
-     * Represents a Date context.
-     *
-     * @param date The Date value to be encapsulated in the context.
-     */
-    public record DateContext(Date date) {}
 
     public record ZonedDateContext(java.time.ZonedDateTime date) {}
 
@@ -614,4 +596,8 @@ public class Contexts {
     public static class EmptyContext {}
 
     public record TableContext(StampTable characters) {}
+
+    public record DateContext(LocalDate date) {
+
+    }
 }

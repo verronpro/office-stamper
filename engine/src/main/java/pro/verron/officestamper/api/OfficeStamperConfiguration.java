@@ -8,6 +8,7 @@ import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 /**
@@ -25,8 +26,7 @@ public interface OfficeStamperConfiguration {
      * allows you to define how unresolved expressions are handled in a more flexible and
      * comprehensive manner.
      */
-    @Deprecated(since = "2.5", forRemoval = true)
-    boolean isFailOnUnresolvedExpression();
+    @Deprecated(since = "2.5", forRemoval = true) boolean isFailOnUnresolvedExpression();
 
     /**
      * Sets the failOnUnresolvedExpression flag to determine whether unresolved expressions should
@@ -113,8 +113,7 @@ public interface OfficeStamperConfiguration {
      * allows you to define how unresolved expressions are handled in a more flexible and
      * comprehensive manner.
      */
-    @Deprecated(since = "2.5", forRemoval = true)
-    OfficeStamperConfiguration replaceUnresolvedExpressions(
+    @Deprecated(since = "2.5", forRemoval = true) OfficeStamperConfiguration replaceUnresolvedExpressions(
             boolean replaceUnresolvedExpressions
     );
 
@@ -275,14 +274,13 @@ public interface OfficeStamperConfiguration {
 
     List<CustomFunction> customFunctions();
 
+    void addCustomFunction(String name, Supplier<?> implementation);
+
     <T> NeedsFunctionImpl<T> addCustomFunction(String name, Class<T> class0);
 
     <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1);
 
     <T, U, V> NeedsTriFunctionImpl<T, U, V> addCustomFunction(
-            String name,
-            Class<T> class0,
-            Class<U> class1,
-            Class<V> class2
+            String name, Class<T> class0, Class<U> class1, Class<V> class2
     );
 }

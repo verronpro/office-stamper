@@ -10,7 +10,7 @@
     <version>2.6.0-SNAPSHOT</version>
 
     <description>
-        Office-stamper is a Java template engine for docx documents, forked from org.wickedsource.docx-stamper
+        Office-stamper is a Java template engine for DOCX documents, forked from org.wickedsource.docx-stamper
     </description>
     <url>https://github.com/verronpro/docx-stamper</url>
     <properties>

@@ -15,45 +15,52 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 
 == Release Notes
 
-=== {proj}/releases/tag/v2.5.0[v2.5.0]
+=== {proj}/releases/tag/v2.6.0[v2.6.0]
 
 ==== Features
 
-* Add a way to set an ExceptionResolver to Office stamper, with `OfficeStamperConfiguration#setExceptionResolver(ExceptionResolver)`
- and allows users to handle errors programmatically as was expressed in the old https://github.com/verronpro/docx-stamper/issues/65[Issue #65]
-** Added an `ExceptionsResolvers` class providind default implementations
-** It deprecates `setFailOnUnresolvedExpression(boolean)`, `unresolvedExpressionsDefaultValue(String)`, `replaceUnresolvedExpressions(boolean)` and `leaveEmptyOnExpressionError(boolean)`.
+* It is now possible to add custom function to the Spel context in a simpler way. Try using `OfficeStamperConfiguration.addCustomFunction` methods.
+* Added the `pro.verron.officestamper.utils` package to provide useful and common elements for core, preset, test and users.
+* *Deprecated* the Paragraph wrapper now can provide a bit more advanced capability on inner P, don’t recommend calling `getP()` anymore.
 
 ==== Dependencies
 
-* Bumped `org.docx4j:docx4j-core` from version 11.4.11 to 11.5.0
-* Bumped `org.springframework:spring-context` from version 6.1.11 to 6.1.12.
+* Change java target from `17` to `21`
+* Bump `org.springframework:spring-expression` from `6.1.12` to `6.1.14`
+* Bump `org.springframework:spring-context` from `6.1.12` to `6.1.14`
 
 ==== Continuous Integration
 
-* Added Renovate settings to improve over dependabot
-* Follow best practices for maven-gpg-plugin
-* Removed GitHub .devcontainer settings
-* Bumped `actions/configure-pages` to v5
-* Bumped `org.pitest:pitest-maven` to 1.16.3
-* Bumped `org.apache.maven.plugins:maven-javadoc-plugin` to 3.10.0
-* Bumped `org.apache.maven.plugins:maven-gpg-plugin` to 3.2.5
-* Bumped `org.apache.maven.plugins:maven-site-plugin` to 3.20.0
-* Bumped `org.apache.maven.plugins:maven-project-info-reports-plugin` to 3.7.0
-* Bumped `org.junit.jupiter:junit-jupiter` to 5.11.0
+* Removed dependabot analysis
+* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.5` to `3.2.7`
+* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.0` to `3.10.1`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.0` to `3.5.1`
+* Bump `org.apache.maven.reporting:maven-surefire-report-plugin` from `3.5.0` to `3.5.1`
+* Bump `org.apache.maven.plugins:maven-site-plugin` from `3.20.0` to `3.21.0`
+* Bump `org.apache.maven.plugins:maven-project-info-reports-plugin` from `3.7.0` to `3.8.0`
+* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.0` to `3.10.1`
+* Bump `org.apache.maven.reporting:maven-reporting-exec` from `2.0.0-M14` to `2.0.0`
+* Bump `org.pitest:pitest-maven` from `1.16.3` to `1.17.0`
+* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.0.0` to `3.1.0`
+* Bump `org.junit.jupiter:junit-jupiter` from `5.11.0` to `5.11.3`
 
 ==== Refactorings
 
-* Improved some logs related to unresolved errors
-* Improved comments collections
+* CommentProcessor to now be setup with a P, run and placeholder with a ProcessorContext instead.
+* Cleanup of malformed comments has moved to a PreProcessor instead of done on the fly during processing.
+* Do a step toward treating Comment in the same way as Placeholder.
+* *Deprecated* CommentProcessor to now be setup with a Paragraph that wraps and provides features around the docx4j P.
+* *Deprecated* The `Image` preset object now deprecate `getMaxWidth` and `getImageBytes`.
+* *BREAK* Removed DocxDocument.commentsPart method.
+* *BREAK* DocxPart.streamParagraphs method now returns the Paragraph wrapper, instead of docx4j P.
+
 
 ==== Tests
 
-* Tests can now differentiate tables with their asciidoc-like representation
-* Tests can now differentate when paragraph style has the `cnfStyle` property set
-* Quite a few tests have been remodeled to decrease their verbosity
-* Added a regression test for https://github.com/verronpro/docx-stamper/issues/64[Issue #64]
-
+* Improved test names,
+* Improved Word to string representation to better differentiate paragraph, run and cell styles.
+* Remove exotic characters from string representation of Word documents.
+* Section break and page break are more explicit in string representation of Word documents.
 
 === Previous releases notes link:RELEASE_NOTES.adoc[here]
 

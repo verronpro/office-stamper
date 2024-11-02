@@ -1,23 +1,22 @@
-# Security Policy
+# Security policy
 
-## Supported Versions
+## Supported versions
 
-Currently, only the latest version of our project is being supported with security updates.
+Security update provided only to the latest version of the project.
 
 | Version    | Supported          |
 |------------|--------------------|
 | Latest     | :white_check_mark: |
 | &lt; Older | :x:                |
 
-## Reporting a Vulnerability
+## Reporting a vulnerability
 
-If you have discovered a vulnerability in our project, we appreciate your help in disclosing it to us responsibly. Please avoid public disclosure of the issue until we've had a chance to address it.
+When discovering a vulnerability in the project, disclose it responsibly.
+Avoid public disclosure of the issue until it gets addressed.
 
 *Do NOT create GitHub issues for security vulnerabilities*.
 
-Instead, to ensure privacy and efficient communication, please email your findings directly to me at link:mailto:
+Instead, to ensure privacy and efficient communication, email findings directly to link:mailto:
 security@verron.pro[security@verron.pro].
-
-We will review your report and will communicate any updates or requests for additional information through the same
-channel. Your effort in helping us ensure the security of our project is greatly appreciated, and we will endeavor to
-acknowledge your report in a timely manner.
+Those will be viewed and answered through the same channel.
+Helping ensure the security of the project is appreciated, and will be acknowledged in a timely manner.

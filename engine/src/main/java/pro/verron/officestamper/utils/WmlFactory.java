@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * WmlFactory is a utility class that provides methods to create and manipulate WordML objects.
- * It includes methods for creating paragraphs, runs, text elements, comments, bodies, and drawings.
- * This factory encapsulates the complexity of creating WordML elements and simplifies the process of working with them.
+ * WmlFactory is a utility class providing methods to create and manipulate WordML objects.
+ * It includes methods for creating paragraphs, runs, text elements, comments, bodies and drawings.
+ * This factory encapsulates the complexity of WordML elements and simplifies the process of working with them.
  */
 public class WmlFactory {
     private static final Random RANDOM = new Random();

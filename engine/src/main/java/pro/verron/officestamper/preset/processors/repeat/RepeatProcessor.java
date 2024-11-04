@@ -1,13 +1,17 @@
 package pro.verron.officestamper.preset.processors.repeat;
 
+import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
+import org.docx4j.finders.ClassFinder;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Comments;
+import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
+import pro.verron.officestamper.core.StandardParagraph;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 import java.math.BigInteger;
@@ -82,10 +86,14 @@ public class RepeatProcessor
                     Comments.Comment comment = requireNonNull(commentWrapper.getComment());
                     BigInteger commentId = comment.getId();
                     CommentUtil.deleteCommentFromElements(rowClone.getContent(), commentId);
-                    new ParagraphResolverDocumentWalker(source,
-                            rowClone,
-                            expressionContext,
-                            this.placeholderReplacer).walk();
+                    var classFinder = new ClassFinder(P.class);
+                    TraversalUtil.visit(rowClone, classFinder);
+                    var objects = classFinder.results;
+                    for (Object object : objects) {
+                        P result = (P) object;
+                        StandardParagraph paragraph = StandardParagraph.from(source, result);
+                        placeholderReplacer.resolveExpressionsForParagraph(source, paragraph, expressionContext);
+                    }
                     changes.add(rowClone);
                 }
             }
@@ -102,8 +110,8 @@ public class RepeatProcessor
     /** {@inheritDoc} */
     @Override public void repeatTableRow(@Nullable List<Object> objects) {
         var tr = this.getParagraph()
-                      .parent(Tr.class)
-                      .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));
+                     .parent(Tr.class)
+                     .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));
         tableRowsToRepeat.put(tr, objects);
         tableRowsCommentsToRemove.put(tr, getCurrentCommentWrapper());
     }

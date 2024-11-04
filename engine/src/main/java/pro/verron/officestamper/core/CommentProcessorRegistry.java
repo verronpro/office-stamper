@@ -1,20 +1,18 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
+import org.docx4j.wml.*;
+import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
+import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-import static pro.verron.officestamper.core.CommentCollectorWalker.collectComments;
 import static pro.verron.officestamper.core.Placeholders.findProcessors;
 
 /**
@@ -54,6 +52,64 @@ public class CommentProcessorRegistry {
         this.expressionResolver = expressionResolver;
         this.commentProcessors = commentProcessors;
         this.exceptionResolver = exceptionResolver;
+    }
+
+    private static Map<BigInteger, Comment> collectComments(DocxPart document) {
+        var rootComments = new HashMap<BigInteger, Comment>();
+        var allComments = new HashMap<BigInteger, Comment>();
+        var stack = Collections.asLifoQueue(new ArrayDeque<Comment>());
+
+        var list = WmlUtils.extractCommentElements(document.document());
+        for (Child commentElement : list) {
+            if (commentElement instanceof CommentRangeStart crs) {
+                Comment comment = allComments.get(crs.getId());
+                if (comment == null) {
+                    comment = new StandardComment(document.document());
+                    allComments.put(crs.getId(), comment);
+                    if (stack.isEmpty()) {
+                        rootComments.put(crs.getId(), comment);
+                    }
+                    else {
+                        stack.peek()
+                             .getChildren()
+                             .add(comment);
+                    }
+                }
+                comment.setCommentRangeStart(crs);
+                stack.add(comment);
+            }
+            else if (commentElement instanceof CommentRangeEnd cre) {
+                Comment comment = allComments.get(cre.getId());
+                if (comment == null)
+                    throw new OfficeStamperException("Found a comment range end before the comment range start !");
+
+                comment.setCommentRangeEnd(cre);
+
+                if (!stack.isEmpty()) {
+                    var peek = stack.peek();
+                    if (peek.equals(comment)) stack.remove();
+                    else throw new OfficeStamperException("Cannot figure which comment contains the other !");
+                }
+            }
+            else if (commentElement instanceof R.CommentReference cr) {
+                Comment comment = allComments.get(cr.getId());
+                if (comment == null) {
+                    comment = new StandardComment(document.document());
+                    allComments.put(cr.getId(), comment);
+                }
+                comment.setCommentReference(cr);
+            }
+        }
+        var sourceDocument = document.document();
+        CommentUtil.getCommentsPart(sourceDocument.getParts())
+                   .map(CommentUtil::extractContent)
+                   .map(Comments::getComment)
+                   .stream()
+                   .flatMap(Collection::stream)
+                   .filter(comment -> allComments.containsKey(comment.getId()))
+                   .forEach(comment -> allComments.get(comment.getId())
+                                                  .setComment(comment));
+        return new HashMap<>(rootComments);
     }
 
     public <T> void runProcessors(T expressionContext) {

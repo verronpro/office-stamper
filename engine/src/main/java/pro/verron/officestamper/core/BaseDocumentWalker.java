@@ -1,6 +1,9 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.wml.*;
+import org.docx4j.wml.CommentRangeEnd;
+import org.docx4j.wml.CommentRangeStart;
+import org.docx4j.wml.P;
+import org.docx4j.wml.R;
 import pro.verron.officestamper.api.DocxPart;
 
 /**
@@ -29,30 +32,6 @@ public abstract class BaseDocumentWalker extends DocumentWalker {
      */
     @Override
     protected void onParagraph(P paragraph) {
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onRun(R run) {
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onTable(Tbl table) {
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onTableCell(Tc tableCell) {
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onTableRow(Tr tableRow) {
 
     }
 

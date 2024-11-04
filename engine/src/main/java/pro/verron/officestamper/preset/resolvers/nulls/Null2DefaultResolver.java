@@ -4,7 +4,6 @@ import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.preset.Resolvers;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 

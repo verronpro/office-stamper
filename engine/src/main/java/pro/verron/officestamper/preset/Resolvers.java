@@ -1,6 +1,7 @@
 package pro.verron.officestamper.preset;
 
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.ObjectResolver;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.resolvers.date.DateResolver;
 import pro.verron.officestamper.preset.resolvers.image.ImageResolver;
 import pro.verron.officestamper.preset.resolvers.localdate.LocalDateResolver;
@@ -15,8 +16,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
 /**
  * This class provides static methods to create different types of

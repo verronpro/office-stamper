@@ -64,7 +64,6 @@ public abstract class DocumentWalker {
     }
 
     private void walkTable(Tbl table) {
-        onTable(table);
         for (Object contentElement : table.getContent()) {
             Object unwrappedObject = XmlUtils.unwrap(contentElement);
             if (unwrappedObject instanceof Tr row) {
@@ -74,7 +73,6 @@ public abstract class DocumentWalker {
     }
 
     private void walkTableRow(Tr row) {
-        onTableRow(row);
         for (Object rowContentElement : row.getContent()) {
             Object unwrappedObject = XmlUtils.unwrap(rowContentElement);
             if (unwrappedObject instanceof Tc cell) {
@@ -84,7 +82,6 @@ public abstract class DocumentWalker {
     }
 
     private void walkTableCell(Tc cell) {
-        onTableCell(cell);
         for (Object cellContentElement : cell.getContent()) {
             Object unwrappedObject = XmlUtils.unwrap(cellContentElement);
             if (unwrappedObject instanceof P) {
@@ -124,7 +121,6 @@ public abstract class DocumentWalker {
     }
 
     private void walkRun(R r) {
-        onRun(r);
         for (Object element : r.getContent()) {
             Object unwrappedObject = XmlUtils.unwrap(element);
             if (unwrappedObject instanceof CommentReference commentReference) {
@@ -134,39 +130,11 @@ public abstract class DocumentWalker {
     }
 
     /**
-     * This method is called for every {@link R} element in the document.
-     *
-     * @param run the {@link R} element to process.
-     */
-    protected abstract void onRun(R run);
-
-    /**
      * This method is called for every {@link P} element in the document.
      *
      * @param paragraph the {@link P} element to process.
      */
     protected abstract void onParagraph(P paragraph);
-
-    /**
-     * This method is called for every {@link Tbl} element in the document.
-     *
-     * @param table the {@link Tbl} element to process.
-     */
-    protected abstract void onTable(Tbl table);
-
-    /**
-     * This method is called for every {@link Tc} element in the document.
-     *
-     * @param tableCell the {@link Tc} element to process.
-     */
-    protected abstract void onTableCell(Tc tableCell);
-
-    /**
-     * This method is called for every {@link Tr} element in the document.
-     *
-     * @param tableRow the {@link Tr} element to process.
-     */
-    protected abstract void onTableRow(Tr tableRow);
 
     /**
      * This method is called for every {@link CommentRangeStart} element in the document.

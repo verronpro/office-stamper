@@ -1,8 +1,12 @@
 package pro.verron.officestamper.utils;
 
+import org.docx4j.TraversalUtil;
+import org.docx4j.finders.CommentFinder;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.OfficeStamperException;
 
+import java.util.List;
 import java.util.Optional;
 
 public final class WmlUtils {
@@ -20,5 +24,11 @@ public final class WmlUtils {
             if (parent instanceof Child next) parent = next.getParent();
         }
         return Optional.empty();
+    }
+
+    public static List<Child> extractCommentElements(WordprocessingMLPackage document) {
+        var commentFinder = new CommentFinder();
+        TraversalUtil.visit(document, true, commentFinder);
+        return commentFinder.getCommentElements();
     }
 }

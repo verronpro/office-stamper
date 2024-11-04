@@ -1,5 +1,6 @@
 package pro.verron.officestamper.core;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
@@ -54,70 +55,12 @@ public class CommentProcessorRegistry {
         this.exceptionResolver = exceptionResolver;
     }
 
-    private static Map<BigInteger, Comment> collectComments(DocxPart document) {
-        var rootComments = new HashMap<BigInteger, Comment>();
-        var allComments = new HashMap<BigInteger, Comment>();
-        var stack = Collections.asLifoQueue(new ArrayDeque<Comment>());
-
-        var list = WmlUtils.extractCommentElements(document.document());
-        for (Child commentElement : list) {
-            if (commentElement instanceof CommentRangeStart crs) {
-                Comment comment = allComments.get(crs.getId());
-                if (comment == null) {
-                    comment = new StandardComment(document.document());
-                    allComments.put(crs.getId(), comment);
-                    if (stack.isEmpty()) {
-                        rootComments.put(crs.getId(), comment);
-                    }
-                    else {
-                        stack.peek()
-                             .getChildren()
-                             .add(comment);
-                    }
-                }
-                comment.setCommentRangeStart(crs);
-                stack.add(comment);
-            }
-            else if (commentElement instanceof CommentRangeEnd cre) {
-                Comment comment = allComments.get(cre.getId());
-                if (comment == null)
-                    throw new OfficeStamperException("Found a comment range end before the comment range start !");
-
-                comment.setCommentRangeEnd(cre);
-
-                if (!stack.isEmpty()) {
-                    var peek = stack.peek();
-                    if (peek.equals(comment)) stack.remove();
-                    else throw new OfficeStamperException("Cannot figure which comment contains the other !");
-                }
-            }
-            else if (commentElement instanceof R.CommentReference cr) {
-                Comment comment = allComments.get(cr.getId());
-                if (comment == null) {
-                    comment = new StandardComment(document.document());
-                    allComments.put(cr.getId(), comment);
-                }
-                comment.setCommentReference(cr);
-            }
-        }
-        var sourceDocument = document.document();
-        CommentUtil.getCommentsPart(sourceDocument.getParts())
-                   .map(CommentUtil::extractContent)
-                   .map(Comments::getComment)
-                   .stream()
-                   .flatMap(Collection::stream)
-                   .filter(comment -> allComments.containsKey(comment.getId()))
-                   .forEach(comment -> allComments.get(comment.getId())
-                                                  .setComment(comment));
-        return new HashMap<>(rootComments);
-    }
-
     public <T> void runProcessors(T expressionContext) {
         var proceedComments = new ArrayList<Comment>();
 
         source.streamRun()
               .forEach(run -> {
-                  var comments = collectComments(source);
+                  var comments = collectComments();
                   var runParent = StandardParagraph.from(source, (P) run.getParent());
                   var optional = runProcessorsOnRunComment(comments, expressionContext, run, runParent);
                   commentProcessors.commitChanges(source);
@@ -127,7 +70,7 @@ public class CommentProcessorRegistry {
         // we run the paragraph afterward so that the comments inside work before the whole paragraph comments
         source.streamParagraphs()
               .forEach(p -> {
-                  var comments = collectComments(source);
+                  var comments = collectComments();
                   var paragraphComment = p.getComment();
                   paragraphComment.ifPresent((pc -> {
                       var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
@@ -142,18 +85,42 @@ public class CommentProcessorRegistry {
         proceedComments.forEach(CommentUtil::deleteComment);
     }
 
+    private Map<BigInteger, Comment> collectComments() {
+        var rootComments = new HashMap<BigInteger, Comment>();
+        var allComments = new HashMap<BigInteger, Comment>();
+        var stack = Collections.asLifoQueue(new ArrayDeque<Comment>());
+
+        var list = WmlUtils.extractCommentElements(document());
+        for (Child commentElement : list) {
+            if (commentElement instanceof CommentRangeStart crs) onRangeStart(crs, allComments, stack, rootComments);
+            else if (commentElement instanceof CommentRangeEnd cre) onRangeEnd(cre, allComments, stack);
+            else if (commentElement instanceof R.CommentReference cr) onReference(cr, allComments);
+        }
+        CommentUtil.getCommentsPart(document().getParts())
+                   .map(CommentUtil::extractContent)
+                   .map(Comments::getComment)
+                   .stream()
+                   .flatMap(Collection::stream)
+                   .filter(comment -> allComments.containsKey(comment.getId()))
+                   .forEach(comment -> allComments.get(comment.getId())
+                                                  .setComment(comment));
+        return new HashMap<>(rootComments);
+    }
+
     private <T> Optional<Comment> runProcessorsOnRunComment(
             Map<BigInteger, Comment> comments, T expressionContext, R run, Paragraph paragraph
     ) {
-        return CommentUtil.getCommentAround(run, source.document())
+        return CommentUtil.getCommentAround(run, document())
                           .flatMap(c -> Optional.ofNullable(comments.get(c.getId())))
                           .flatMap(c -> {
-                              var context = new ProcessorContext(paragraph, run, c, c.asPlaceholder());
-                              commentProcessors.setContext(context);
-                              var comment = runCommentProcessors(expressionContext, c);
-                              comments.remove(c.getComment()
-                                               .getId());
-                              return comment;
+                              var cPlaceholder = c.asPlaceholder();
+                              var cComment = c.getComment();
+                              comments.remove(cComment.getId());
+                              commentProcessors.setContext(new ProcessorContext(paragraph, run, c, cPlaceholder));
+                              return runCommentProcessors(expressionContext, cPlaceholder)
+                                      ? Optional.of(c)
+                                      : Optional.empty();
+
                           });
     }
 
@@ -167,21 +134,16 @@ public class CommentProcessorRegistry {
      * @param <T>               the type of the context root object.
      */
     private <T> Optional<Comment> runProcessorsOnParagraphComment(
-            Map<BigInteger, Comment> comments,
-            T expressionContext,
-            Paragraph paragraph,
-            BigInteger paragraphCommentId
+            Map<BigInteger, Comment> comments, T expressionContext, Paragraph paragraph, BigInteger paragraphCommentId
     ) {
         if (!comments.containsKey(paragraphCommentId)) return Optional.empty();
 
         var c = comments.get(paragraphCommentId);
         var cPlaceholder = c.asPlaceholder();
         var cComment = c.getComment();
-        var context = new ProcessorContext(paragraph, null, c, cPlaceholder);
-        commentProcessors.setContext(context);
-        var comment = runCommentProcessors(expressionContext, c);
         comments.remove(cComment.getId());
-        return comment;
+        commentProcessors.setContext(new ProcessorContext(paragraph, null, c, cPlaceholder));
+        return runCommentProcessors(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
     }
 
     /**
@@ -212,17 +174,68 @@ public class CommentProcessorRegistry {
         }
     }
 
-    private <T> Optional<Comment> runCommentProcessors(T context, Comment comment) {
-        var placeholder = comment.asPlaceholder();
+    private WordprocessingMLPackage document() {
+        return source.document();
+    }
+
+    private void onRangeStart(
+            CommentRangeStart crs,
+            HashMap<BigInteger, Comment> allComments,
+            Queue<Comment> stack,
+            HashMap<BigInteger, Comment> rootComments
+    ) {
+        Comment comment = allComments.get(crs.getId());
+        if (comment == null) {
+            comment = new StandardComment(document());
+            allComments.put(crs.getId(), comment);
+            if (stack.isEmpty()) {
+                rootComments.put(crs.getId(), comment);
+            }
+            else {
+                stack.peek()
+                     .getChildren()
+                     .add(comment);
+            }
+        }
+        comment.setCommentRangeStart(crs);
+        stack.add(comment);
+    }
+
+    private void onRangeEnd(
+            CommentRangeEnd cre, HashMap<BigInteger, Comment> allComments, Queue<Comment> stack
+    ) {
+        Comment comment = allComments.get(cre.getId());
+        if (comment == null)
+            throw new OfficeStamperException("Found a comment range end before the comment range start !");
+
+        comment.setCommentRangeEnd(cre);
+
+        if (!stack.isEmpty()) {
+            var peek = stack.peek();
+            if (peek.equals(comment)) stack.remove();
+            else throw new OfficeStamperException("Cannot figure which comment contains the other !");
+        }
+    }
+
+    private void onReference(R.CommentReference cr, HashMap<BigInteger, Comment> allComments) {
+        Comment comment = allComments.get(cr.getId());
+        if (comment == null) {
+            comment = new StandardComment(document());
+            allComments.put(cr.getId(), comment);
+        }
+        comment.setCommentReference(cr);
+    }
+
+    private <T> boolean runCommentProcessors(T context, Placeholder commentPlaceholder) {
         try {
             expressionResolver.setContext(context);
-            expressionResolver.resolve(placeholder);
-            logger.debug("Comment '{}' successfully processed by a comment processor.", placeholder);
-            return Optional.of(comment);
+            expressionResolver.resolve(commentPlaceholder);
+            logger.debug("Comment '{}' successfully processed by a comment processor.", commentPlaceholder);
+            return true;
         } catch (SpelEvaluationException | SpelParseException e) {
-            var message = "Comment '%s' failed to process.".formatted(placeholder.expression());
-            exceptionResolver.resolve(placeholder, message, e);
-            return Optional.empty();
+            var message = "Comment '%s' failed to process.".formatted(commentPlaceholder.expression());
+            exceptionResolver.resolve(commentPlaceholder, message, e);
+            return false;
         }
     }
 

@@ -129,23 +129,32 @@ public class Stringifier {
     }
 
 
-    private static String stringify(
-            Map<String, String> map, String affectation, String delimiter, String prefix, String suffix
-    ) {
-        return map.entrySet()
-                  .stream()
-                  .map(e -> e.getKey() + affectation + e.getValue())
-                  .collect(joining(delimiter, prefix, suffix));
+    /**
+     * <p>stringify.</p>
+     *
+     * @param spacing a {@link PPrBase.Spacing} object
+     *
+     * @return a {@link Optional} object
+     *
+     * @since 1.6.6
+     */
+    private Optional<String> stringify(PPrBase.Spacing spacing) {
+        if (spacing == null) return empty();
+        var map = new TreeMap<String, String>();
+        ofNullable(spacing.getAfter()).ifPresent(value -> map.put("after", String.valueOf(value)));
+        ofNullable(spacing.getBefore()).ifPresent(value -> map.put("before", String.valueOf(value)));
+        ofNullable(spacing.getBeforeLines()).ifPresent(value -> map.put("beforeLines", String.valueOf(value)));
+        ofNullable(spacing.getAfterLines()).ifPresent(value -> map.put("afterLines", String.valueOf(value)));
+        ofNullable(spacing.getLine()).ifPresent(value -> map.put("line", String.valueOf(value)));
+        ofNullable(spacing.getLineRule()).ifPresent(value -> map.put("lineRule", value.value()));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    private static <T> Optional<String> stringify(
-            List<T> list, Function<T, Optional<String>> stringify, String delimiter, String prefix, String suffix
-    ) {
-        if (list == null) return empty();
-        return of(list.stream()
-                      .map(stringify)
-                      .flatMap(Optional::stream)
-                      .collect(joining(delimiter, prefix, suffix)));
+    private static String stringify(Map<String, String> map) {
+        return map.entrySet()
+                  .stream()
+                  .map(e -> "%s=%s".formatted(e.getKey(), e.getValue()))
+                  .collect(joining(",", "{", "}"));
     }
 
     private String stringify(Text text) {
@@ -448,22 +457,51 @@ public class Stringifier {
     /**
      * <p>stringify.</p>
      *
-     * @param spacing a {@link PPrBase.Spacing} object
+     * @param rPr a {@link RPrAbstract} object
      *
-     * @return a {@link Optional} object
+     * @return a {@link String} object
      *
      * @since 1.6.6
      */
-    private Optional<String> stringify(PPrBase.Spacing spacing) {
-        if (spacing == null) return empty();
+    private Optional<String> stringify(RPrAbstract rPr) {
+        if (rPr == null) return empty();
         var map = new TreeMap<String, String>();
-        ofNullable(spacing.getAfter()).ifPresent(value -> map.put("after", String.valueOf(value)));
-        ofNullable(spacing.getBefore()).ifPresent(value -> map.put("before", String.valueOf(value)));
-        ofNullable(spacing.getBeforeLines()).ifPresent(value -> map.put("beforeLines", String.valueOf(value)));
-        ofNullable(spacing.getAfterLines()).ifPresent(value -> map.put("afterLines", String.valueOf(value)));
-        ofNullable(spacing.getLine()).ifPresent(value -> map.put("line", String.valueOf(value)));
-        ofNullable(spacing.getLineRule()).ifPresent(value -> map.put("lineRule", value.value()));
-        return map.isEmpty() ? empty() : of(stringify(map, "=", ",", "{", "}"));
+        ofNullable(rPr.getB()).ifPresent(value -> map.put("b", String.valueOf(value.isVal())));
+        ofNullable(rPr.getBdr()).ifPresent(value -> map.put("bdr", "xxx"));
+        ofNullable(rPr.getCaps()).ifPresent(value -> map.put("caps", String.valueOf(value.isVal())));
+        ofNullable(rPr.getColor()).ifPresent(value -> map.put("color", value.getVal()));
+        ofNullable(rPr.getDstrike()).ifPresent(value -> map.put("dstrike", String.valueOf(value.isVal())));
+        ofNullable(rPr.getI()).ifPresent(value -> map.put("i", String.valueOf(value.isVal())));
+        ofNullable(rPr.getKern()).ifPresent(value -> map.put("kern", String.valueOf(value.getVal())));
+        ofNullable(rPr.getLang()).ifPresent(value -> map.put("lang", value.getVal()));
+        stringify(rPr.getRFonts()).ifPresent(e -> map.put("rFont", e));
+        ofNullable(rPr.getRPrChange()).ifPresent(value -> map.put("rPrChange", "xxx"));
+        ofNullable(rPr.getRStyle()).ifPresent(value -> map.put("rStyle", value.getVal()));
+        ofNullable(rPr.getRtl()).ifPresent(value -> map.put("rtl", String.valueOf(value.isVal())));
+        ofNullable(rPr.getShadow()).ifPresent(value -> map.put("shadow", String.valueOf(value.isVal())));
+        ofNullable(rPr.getShd()).ifPresent(value -> map.put("shd", value.getColor()));
+        ofNullable(rPr.getSmallCaps()).ifPresent(value -> map.put("smallCaps", String.valueOf(value.isVal())));
+        ofNullable(rPr.getVertAlign()).ifPresent(value -> map.put("vertAlign",
+                value.getVal()
+                     .value()));
+        ofNullable(rPr.getSpacing()).ifPresent(value -> map.put("spacing", String.valueOf(value.getVal())));
+        ofNullable(rPr.getStrike()).ifPresent(value -> map.put("strike", String.valueOf(value.isVal())));
+        ofNullable(rPr.getOutline()).ifPresent(value -> map.put("outline", String.valueOf(value.isVal())));
+        ofNullable(rPr.getEmboss()).ifPresent(value -> map.put("emboss", String.valueOf(value.isVal())));
+        ofNullable(rPr.getImprint()).ifPresent(value -> map.put("imprint", String.valueOf(value.isVal())));
+        ofNullable(rPr.getNoProof()).ifPresent(value -> map.put("noProof", String.valueOf(value.isVal())));
+        ofNullable(rPr.getSpecVanish()).ifPresent(value -> map.put("specVanish", String.valueOf(value.isVal())));
+        ofNullable(rPr.getU()).ifPresent(value -> map.put("u",
+                value.getVal()
+                     .value()));
+        ofNullable(rPr.getVanish()).ifPresent(value -> map.put("vanish", String.valueOf(value.isVal())));
+        ofNullable(rPr.getW()).ifPresent(value -> map.put("w", String.valueOf(value.getVal())));
+        ofNullable(rPr.getWebHidden()).ifPresent(value -> map.put("webHidden", String.valueOf(value.isVal())));
+        ofNullable(rPr.getHighlight()).ifPresent(value -> map.put("highlight", value.getVal()));
+        ofNullable(rPr.getEffect()).ifPresent(value -> map.put("effect",
+                value.getVal()
+                     .value()));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
     /**
@@ -556,56 +594,6 @@ public class Stringifier {
                                        .orElse(serialized);
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param rPr a {@link RPrAbstract} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
-    private Optional<String> stringify(RPrAbstract rPr) {
-        if (rPr == null) return empty();
-        var map = new TreeMap<String, String>();
-        ofNullable(rPr.getB()).ifPresent(value -> map.put("b", String.valueOf(value.isVal())));
-        ofNullable(rPr.getBdr()).ifPresent(value -> map.put("bdr", "xxx"));
-        ofNullable(rPr.getCaps()).ifPresent(value -> map.put("caps", String.valueOf(value.isVal())));
-        ofNullable(rPr.getColor()).ifPresent(value -> map.put("color", value.getVal()));
-        ofNullable(rPr.getDstrike()).ifPresent(value -> map.put("dstrike", String.valueOf(value.isVal())));
-        ofNullable(rPr.getI()).ifPresent(value -> map.put("i", String.valueOf(value.isVal())));
-        ofNullable(rPr.getKern()).ifPresent(value -> map.put("kern", String.valueOf(value.getVal())));
-        ofNullable(rPr.getLang()).ifPresent(value -> map.put("lang", value.getVal()));
-        stringify(rPr.getRFonts()).ifPresent(e -> map.put("rFont", e));
-        ofNullable(rPr.getRPrChange()).ifPresent(value -> map.put("rPrChange", "xxx"));
-        ofNullable(rPr.getRStyle()).ifPresent(value -> map.put("rStyle", value.getVal()));
-        ofNullable(rPr.getRtl()).ifPresent(value -> map.put("rtl", String.valueOf(value.isVal())));
-        ofNullable(rPr.getShadow()).ifPresent(value -> map.put("shadow", String.valueOf(value.isVal())));
-        ofNullable(rPr.getShd()).ifPresent(value -> map.put("shd", value.getColor()));
-        ofNullable(rPr.getSmallCaps()).ifPresent(value -> map.put("smallCaps", String.valueOf(value.isVal())));
-        ofNullable(rPr.getVertAlign()).ifPresent(value -> map.put("vertAlign",
-                value.getVal()
-                     .value()));
-        ofNullable(rPr.getSpacing()).ifPresent(value -> map.put("spacing", String.valueOf(value.getVal())));
-        ofNullable(rPr.getStrike()).ifPresent(value -> map.put("strike", String.valueOf(value.isVal())));
-        ofNullable(rPr.getOutline()).ifPresent(value -> map.put("outline", String.valueOf(value.isVal())));
-        ofNullable(rPr.getEmboss()).ifPresent(value -> map.put("emboss", String.valueOf(value.isVal())));
-        ofNullable(rPr.getImprint()).ifPresent(value -> map.put("imprint", String.valueOf(value.isVal())));
-        ofNullable(rPr.getNoProof()).ifPresent(value -> map.put("noProof", String.valueOf(value.isVal())));
-        ofNullable(rPr.getSpecVanish()).ifPresent(value -> map.put("specVanish", String.valueOf(value.isVal())));
-        ofNullable(rPr.getU()).ifPresent(value -> map.put("u",
-                value.getVal()
-                     .value()));
-        ofNullable(rPr.getVanish()).ifPresent(value -> map.put("vanish", String.valueOf(value.isVal())));
-        ofNullable(rPr.getW()).ifPresent(value -> map.put("w", String.valueOf(value.getVal())));
-        ofNullable(rPr.getWebHidden()).ifPresent(value -> map.put("webHidden", String.valueOf(value.isVal())));
-        ofNullable(rPr.getHighlight()).ifPresent(value -> map.put("highlight", value.getVal()));
-        ofNullable(rPr.getEffect()).ifPresent(value -> map.put("effect",
-                value.getVal()
-                     .value()));
-        return map.isEmpty() ? empty() : of(stringify(map, "=", ",", "{", "}"));
-    }
-
     private Optional<String> stringify(RFonts rFonts) {
         if (rFonts == null) return empty();
         var map = new TreeMap<String, String>();
@@ -617,14 +605,13 @@ public class Stringifier {
         ofNullable(rFonts.getHAnsiTheme()).ifPresent(value -> map.put("hAnsiTheme", value.value()));
         ofNullable(rFonts.getCstheme()).ifPresent(value -> map.put("cstheme", value.value()));
         ofNullable(rFonts.getEastAsiaTheme()).ifPresent(value -> map.put("eastAsiaTheme", value.value()));
-        return map.isEmpty() ? empty() : of(stringify(map, "=", ",", "{", "}"));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
     private Optional<String> stringify(SectPr sectPr) {
         if (sectPr == null) return empty();
         var map = new TreeMap<String, String>();
-        stringify(sectPr.getEGHdrFtrReferences(), this::stringify, ",", "[", "]").ifPresent(value -> map.put(
-                "eGHdrFtrReferences",
+        stringify(sectPr.getEGHdrFtrReferences(), this::stringify).ifPresent(value -> map.put("eGHdrFtrReferences",
                 value));
         stringify(sectPr.getPgSz()).ifPresent(value -> map.put("pgSz", value));
         stringify(sectPr.getPgMar()).ifPresent(value -> map.put("pgMar", value));
@@ -638,23 +625,33 @@ public class Stringifier {
         ofNullable(sectPr.getTitlePg()).ifPresent(value -> map.put("titlePg", "xxx"));
         ofNullable(sectPr.getTextDirection()).ifPresent(value -> map.put("textDirection", "xxx"));
         ofNullable(sectPr.getRtlGutter()).ifPresent(value -> map.put("rtlGutter", "xxx"));
-        return map.isEmpty() ? empty() : of(stringify(map, "=", ",", "{", "}"));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    private Optional<String> stringify(CTDocGrid ctDocGrid) {
-        if (ctDocGrid == null) return empty();
-        var map = new TreeMap<String, String>();
-        ofNullable(ctDocGrid.getCharSpace()).ifPresent(value -> map.put("charSpace", String.valueOf(value)));
-        ofNullable(ctDocGrid.getLinePitch()).ifPresent(value -> map.put("linePitch", String.valueOf(value)));
-        ofNullable(ctDocGrid.getType()).ifPresent(value -> map.put("type", String.valueOf(value)));
-        return map.isEmpty() ? empty() : of(stringify(map, "=", ",", "{", "}"));
+    private static <T> Optional<String> stringify(List<T> list, Function<T, Optional<String>> stringify) {
+        if (list == null) return empty();
+        if (list.isEmpty()) return empty();
+        return of(list.stream()
+                      .map(stringify)
+                      .flatMap(Optional::stream)
+                      .collect(joining(",", "[", "]")));
     }
 
     private Optional<String> stringify(CTRel ctRel) {
         if (ctRel == null) return empty();
         var map = new TreeMap<String, String>();
         ofNullable(ctRel.getId()).ifPresent(value -> map.put("id", value));
-        return map.isEmpty() ? empty() : of(stringify(map, "=", ",", "{", "}"));
+        return map.isEmpty() ? empty() : of(stringify(map));
+    }
+
+    private Optional<String> stringify(SectPr.PgSz pgSz) {
+        if (pgSz == null) return empty();
+        var map = new TreeMap<String, String>();
+        ofNullable(pgSz.getOrient()).ifPresent(value -> map.put("orient", String.valueOf(value)));
+        ofNullable(pgSz.getW()).ifPresent(value -> map.put("w", String.valueOf(value)));
+        ofNullable(pgSz.getH()).ifPresent(value -> map.put("h", String.valueOf(value)));
+        ofNullable(pgSz.getCode()).ifPresent(value -> map.put("code", String.valueOf(value)));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
     private Optional<String> stringify(SectPr.PgMar pgMar) {
@@ -667,16 +664,15 @@ public class Stringifier {
         ofNullable(pgMar.getLeft()).ifPresent(value -> map.put("left", String.valueOf(value)));
         ofNullable(pgMar.getBottom()).ifPresent(value -> map.put("bottom", String.valueOf(value)));
         ofNullable(pgMar.getRight()).ifPresent(value -> map.put("right", String.valueOf(value)));
-        return map.isEmpty() ? empty() : of(stringify(map, "=", ",", "{", "}"));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    private Optional<String> stringify(SectPr.PgSz pgSz) {
-        if (pgSz == null) return empty();
+    private Optional<String> stringify(CTDocGrid ctDocGrid) {
+        if (ctDocGrid == null) return empty();
         var map = new TreeMap<String, String>();
-        ofNullable(pgSz.getOrient()).ifPresent(value -> map.put("orient", String.valueOf(value)));
-        ofNullable(pgSz.getW()).ifPresent(value -> map.put("w", String.valueOf(value)));
-        ofNullable(pgSz.getH()).ifPresent(value -> map.put("h", String.valueOf(value)));
-        ofNullable(pgSz.getCode()).ifPresent(value -> map.put("code", String.valueOf(value)));
-        return map.isEmpty() ? empty() : of(stringify(map, "=", ",", "{", "}"));
+        ofNullable(ctDocGrid.getCharSpace()).ifPresent(value -> map.put("charSpace", String.valueOf(value)));
+        ofNullable(ctDocGrid.getLinePitch()).ifPresent(value -> map.put("linePitch", String.valueOf(value)));
+        ofNullable(ctDocGrid.getType()).ifPresent(value -> map.put("type", String.valueOf(value)));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 }

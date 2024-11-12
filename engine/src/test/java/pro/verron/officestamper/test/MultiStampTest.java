@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.test.Contexts.names;
+import static pro.verron.officestamper.test.ContextFactory.names;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**

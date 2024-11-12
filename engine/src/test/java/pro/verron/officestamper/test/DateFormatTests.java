@@ -12,6 +12,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.test.ContextFactory.date;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
 @DisplayName("Custom functions")
@@ -81,7 +82,7 @@ class DateFormatTests {
                 ISO Localized Datetime (SHORT, MEDIUM): ${flocaldatetime(date, "SHORT", "MEDIUM")}
                 ISO Localized Datetime (SHORT, SHORT): ${flocaldatetime(date, "SHORT", "SHORT")}
                 """);
-        var context = new Contexts.ZonedDateContext(ZonedDateTime.of(2000, 1, 12, 23, 34, 45, 567, ZoneId.of("UTC+2")));
+        var context = date(ZonedDateTime.of(2000, 1, 12, 23, 34, 45, 567, ZoneId.of("UTC+2")));
         var stamper = new TestDocxStamper<>(config);
         var expected = """
                 ISO Date: 2000-01-12+02:00

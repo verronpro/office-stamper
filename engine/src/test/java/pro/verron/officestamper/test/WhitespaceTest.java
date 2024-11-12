@@ -10,7 +10,7 @@ import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.test.Contexts.name;
+import static pro.verron.officestamper.test.ContextFactory.name;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
 @DisplayName("Whitespaces manipulations")

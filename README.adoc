@@ -8,7 +8,7 @@
 
 == Introduction
 
-OfficeStamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of docx documents at runtime.
+OfficeStamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
 You design a template using your preferred Word processor; and OfficeStamper will generate documents based on that template.
 
 image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-os.yml] image:{proj}/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-docx4j.yml] image:{proj}/actions/workflows/analyze.yml/badge.svg[Build Status,link={proj}/actions/workflows/analyze.yml] image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/actions/workflows/pages.yml]
@@ -54,7 +54,6 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 * *BREAK* Removed DocxDocument.commentsPart method.
 * *BREAK* DocxPart.streamParagraphs method now returns the Paragraph wrapper, instead of docx4j P.
 
-
 ==== Tests
 
 * Improved test names,
@@ -66,20 +65,20 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 
 == Usage
 
-Here is a simple code snippet exemplifying how to use OfficeStamper:
+Here is a code snippet exemplifying how to use OfficeStamper:
 
 [source,java]
 ----
 class Example {
     public static void main(String[] args) {
-        // your own POJO against which expressions found in the template will be resolved
+        // a java object to use as context for the expressions found in the template.
         var context = new YourPojoContext(_, _ , _);
 
         // an instance of the stamper
         var stamper = OfficeStampers.docxStamper();
 
         try(
-            // Path to your .docx template file
+            // Path to the .docx template file
             var template = Files.newInputStream(Paths.get("your/docx/template/file.docx"));
             // Path to write the resulting .docx document
             var output = Files.newOutputStream(Paths.get("your/desired/output/path.docx"))
@@ -173,7 +172,7 @@ Office-stamper provides some function already added to the standard configuratio
 
 === Custom resolvers
 
-You can expand the resolution functionality by implementing custom `link:{engine}api/ObjectResolver.java[ObjectResolver]`.
+You can expand the resolution capability by implementing custom `link:{engine}api/ObjectResolver.java[ObjectResolver]`.
 
 Here's a code snippet on how to proceed:
 
@@ -198,7 +197,7 @@ class Main {
 
 === Custom functions
 
-OfficeStamper lets you add custom functions to the tool’s expression language.
+OfficeStamper lets you add custom functions to the tool's expression language.
 For example, if you need specific formats for numbers or dates, you can register such functions which can then be used in the placeholders throughout your template.
 
 Below is a sample code demonstrating how to extend the expression language with a custom function.
@@ -206,20 +205,40 @@ This particular example adds a function `toUppercase(String)`, enabling you to c
 
 [source,java]
 ----
-class Main {
+import java.time.LocalDate;import java.time.format.DateTimeFormatter;class Main {
     public static void main(String... args) {
-        interface UppercaseFunction {
+        var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+
+        // add `today()` function to use in the template to retrieve current date, at time of running the stamping
+        config.addCustomFunction("today", () -> LocalDate.now());
+
+        // add `censor(String)` function, to remove the f-word from resolved template values.
+        config.addCustomFunction("censor", String.class, input -> input.replace("f-word", "f**k"));
+
+        // add `add(Integer, Integer)` function to sum 2 values together after their resolution.
+        config.addCustomFunction("add", Integer.class, Integer.class, (a, b) -> a + b);
+
+        // add `format(Date, String, String)` function to format a date with a pattern and a locale.
+        config.addCustomFunction("format", LocalDate.class, String.class, String.class, (date, pattern, locale) -> DateTimeFormatter.ofPattern(pattern, locale).format(date));
+
+        //
+        interface StringFunctionProvider {
             String toUppercase(String string);
+            String toLowercase(String string);
         }
 
-        var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
-        configuration.exposeInterfaceToExpressionLanguage(UppercaseFunction.class, String::toUppercase);
+        class StringFunctionProviderImpl implements StringFunctionProvider {
+            String toUppercase(String string){return string.toUpperCase();}
+            String toLowercase(String string){return string.toUpperCase();}
+        }
+
+        configuration.exposeInterfaceToExpressionLanguage(UppercaseFunction.class, new StringFunctionProviderImpl());
         var stamper = OfficeStampers.docxStamper(configuration);
     }
 }
 ----
 
-Chains of such custom functions can enhance the versatility of OfficeStamper, making it capable of handling complex and unique templating situations.
+Chains of such custom functions can enhance the versatility of OfficeStamper, making it able to handle complex and unique templating situations.
 
 === Custom Comment Processors
 

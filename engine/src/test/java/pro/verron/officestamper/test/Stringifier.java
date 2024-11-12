@@ -40,7 +40,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
+import static java.util.Optional.*;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -62,10 +62,9 @@ public class Stringifier {
      */
     public Stringifier(Supplier<WordprocessingMLPackage> documentSupplier) {
         this.documentSupplier = documentSupplier;
-        this.styleDefinitionsPartSupplier =
-                () -> documentSupplier.get()
-                                      .getMainDocumentPart()
-                                      .getStyleDefinitionsPart(true);
+        this.styleDefinitionsPartSupplier = () -> documentSupplier.get()
+                                                                  .getMainDocumentPart()
+                                                                  .getStyleDefinitionsPart(true);
     }
 
     public static String stringifyPowerpoint(PresentationMLPackage presentation) {
@@ -129,14 +128,33 @@ public class Stringifier {
         };
     }
 
-    private static void extract(
-            Map<String, Object> map, String key, Object value
-    ) {
-        if (value != null) map.put(key, value);
+
+    /**
+     * <p>stringify.</p>
+     *
+     * @param spacing a {@link PPrBase.Spacing} object
+     *
+     * @return a {@link Optional} object
+     *
+     * @since 1.6.6
+     */
+    private Optional<String> stringify(PPrBase.Spacing spacing) {
+        if (spacing == null) return empty();
+        var map = new TreeMap<String, String>();
+        ofNullable(spacing.getAfter()).ifPresent(value -> map.put("after", String.valueOf(value)));
+        ofNullable(spacing.getBefore()).ifPresent(value -> map.put("before", String.valueOf(value)));
+        ofNullable(spacing.getBeforeLines()).ifPresent(value -> map.put("beforeLines", String.valueOf(value)));
+        ofNullable(spacing.getAfterLines()).ifPresent(value -> map.put("afterLines", String.valueOf(value)));
+        ofNullable(spacing.getLine()).ifPresent(value -> map.put("line", String.valueOf(value)));
+        ofNullable(spacing.getLineRule()).ifPresent(value -> map.put("lineRule", value.value()));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    private static Function<Entry<?, ?>, String> format(String format) {
-        return entry -> format.formatted(entry.getKey(), entry.getValue());
+    private static String stringify(Map<String, String> map) {
+        return map.entrySet()
+                  .stream()
+                  .map(e -> "%s=%s".formatted(e.getKey(), e.getValue()))
+                  .collect(joining(",", "{", "}"));
     }
 
     private String stringify(Text text) {
@@ -228,16 +246,7 @@ public class Stringifier {
      */
     public String stringify(Object o) {
         if (o instanceof JAXBElement<?> jaxb) return stringify(jaxb.getValue());
-        if (o instanceof WordprocessingMLPackage mlPackage) {
-            var header = stringifyHeaders(getHeaderPart(mlPackage));
-            var body = stringify(mlPackage.getMainDocumentPart());
-            var footer = stringifyFooters(getFooterPart(mlPackage));
-            var hStr = header.map(h -> h + "\n\n")
-                             .orElse("");
-            var fStr = footer.map(f -> "\n" + f + "\n")
-                             .orElse("");
-            return hStr + body + fStr;
-        }
+        if (o instanceof WordprocessingMLPackage mlPackage) return stringify(mlPackage);
         if (o instanceof Tbl tbl) return stringify(tbl);
         if (o instanceof Tr tr) return stringify(tr);
         if (o instanceof Tc tc) return stringify(tc);
@@ -245,7 +254,7 @@ public class Stringifier {
         if (o instanceof Body body) return stringify(body.getContent());
         if (o instanceof List<?> list) return stringify(list);
         if (o instanceof Text text) return stringify(text);
-        if (o instanceof P p) return stringify(p) + "\n";
+        if (o instanceof P p) return stringify(p);
         if (o instanceof R r) return stringify(r);
         if (o instanceof Drawing drawing) return stringify(drawing);
         if (o instanceof Inline inline) return stringify(inline);
@@ -263,19 +272,41 @@ public class Stringifier {
         if (o instanceof ProofErr) return "";
         if (o instanceof CommentRangeStart) return "";
         if (o instanceof CommentRangeEnd) return "";
-        if (o instanceof SdtBlock block) return stringify(block.getSdtContent()) + "\n";
+        if (o instanceof SdtBlock block) return stringify(block);
         if (o instanceof AlternateContent) return "";
         if (o instanceof Pict pict) return stringify(pict.getAnyAndAny());
         if (o instanceof CTShapetype) return "";
-        if (o instanceof VmlShapeElements vmlShapeElements)
-            return "[" + stringify(vmlShapeElements.getEGShapeElements()).trim() + "]\n";
+        if (o instanceof VmlShapeElements vmlShapeElements) return stringify(vmlShapeElements);
         if (o instanceof CTTextbox ctTextbox) return stringify(ctTextbox.getTxbxContent());
         if (o instanceof CTTxbxContent content) return stringify(content.getContent());
         if (o instanceof CTShadow) return "";
         if (o instanceof SdtRun run) return stringify(run.getSdtContent());
-        if (o instanceof SdtContent content) return "[" + stringify(content.getContent()).trim() + "]";
+        if (o instanceof SdtContent content) return stringify(content);
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
+    }
+
+    private String stringify(SdtBlock block) {
+        return stringify(block.getSdtContent()) + "\n";
+    }
+
+    private String stringify(SdtContent content) {
+        return "[" + stringify(content.getContent()).trim() + "]";
+    }
+
+    private String stringify(VmlShapeElements vmlShapeElements) {
+        return "[" + stringify(vmlShapeElements.getEGShapeElements()).trim() + "]\n";
+    }
+
+    private String stringify(WordprocessingMLPackage mlPackage) {
+        var header = stringifyHeaders(getHeaderPart(mlPackage));
+        var body = stringify(mlPackage.getMainDocumentPart());
+        var footer = stringifyFooters(getFooterPart(mlPackage));
+        var hStr = header.map(h -> h + "\n\n")
+                         .orElse("");
+        var fStr = footer.map(f -> "\n" + f + "\n")
+                         .orElse("");
+        return hStr + body + fStr;
     }
 
     private String stringify(Tc tc) {
@@ -315,8 +346,8 @@ public class Stringifier {
 
     private Optional<String> stringify(HeaderPart part) {
         var content = stringify(part.getContent());
-        if (content.isEmpty()) return Optional.empty();
-        return Optional.of("""
+        if (content.isEmpty()) return empty();
+        return of("""
                 [header, name="%s"]
                 ----
                 %s
@@ -325,14 +356,13 @@ public class Stringifier {
 
     private Optional<String> stringify(FooterPart part) {
         var content = stringify(part.getContent());
-        if (content.isEmpty()) return Optional.empty();
-        return Optional.of("""
+        if (content.isEmpty()) return empty();
+        return of("""
                 [footer, name="%s"]
                 ----
                 %s
                 ----""".formatted(part.getPartName(), content));
     }
-
 
     private Stream<HeaderPart> getHeaderPart(WordprocessingMLPackage document) {
         var sections = document.getDocumentModel()
@@ -392,8 +422,9 @@ public class Stringifier {
 
     private String stringify(R.CommentReference commentReference) {
         try {
-            return findComment(document(), commentReference.getId()).map(c -> stringify(c.getContent()))
-                                                                    .orElseThrow();
+            return Stringifier.findComment(document(), commentReference.getId())
+                              .map(c -> stringify(c.getContent()))
+                              .orElseThrow();
         } catch (Docx4JException e) {
             throw new RuntimeException(e);
         }
@@ -426,27 +457,51 @@ public class Stringifier {
     /**
      * <p>stringify.</p>
      *
-     * @param spacing a {@link PPrBase.Spacing} object
+     * @param rPr a {@link RPrAbstract} object
      *
-     * @return a {@link Optional} object
+     * @return a {@link String} object
      *
      * @since 1.6.6
      */
-    private Optional<String> stringify(PPrBase.Spacing spacing) {
-        if (spacing == null) return Optional.empty();
-        SortedMap<String, Object> map = new TreeMap<>();
-        extract(map, "after", spacing.getAfter());
-        extract(map, "before", spacing.getBefore());
-        extract(map, "beforeLines", spacing.getBeforeLines());
-        extract(map, "afterLines", spacing.getAfterLines());
-        extract(map, "line", spacing.getLine());
-        extract(map, "lineRule", spacing.getLineRule());
-        return map.isEmpty()
-                ? Optional.empty()
-                : Optional.of(map.entrySet()
-                                 .stream()
-                                 .map(format("%s=%s"))
-                                 .collect(joining(",", "{", "}")));
+    private Optional<String> stringify(RPrAbstract rPr) {
+        if (rPr == null) return empty();
+        var map = new TreeMap<String, String>();
+        ofNullable(rPr.getB()).ifPresent(value -> map.put("b", String.valueOf(value.isVal())));
+        ofNullable(rPr.getBdr()).ifPresent(value -> map.put("bdr", "xxx"));
+        ofNullable(rPr.getCaps()).ifPresent(value -> map.put("caps", String.valueOf(value.isVal())));
+        ofNullable(rPr.getColor()).ifPresent(value -> map.put("color", value.getVal()));
+        ofNullable(rPr.getDstrike()).ifPresent(value -> map.put("dstrike", String.valueOf(value.isVal())));
+        ofNullable(rPr.getI()).ifPresent(value -> map.put("i", String.valueOf(value.isVal())));
+        ofNullable(rPr.getKern()).ifPresent(value -> map.put("kern", String.valueOf(value.getVal())));
+        ofNullable(rPr.getLang()).ifPresent(value -> map.put("lang", value.getVal()));
+        stringify(rPr.getRFonts()).ifPresent(e -> map.put("rFont", e));
+        ofNullable(rPr.getRPrChange()).ifPresent(value -> map.put("rPrChange", "xxx"));
+        ofNullable(rPr.getRStyle()).ifPresent(value -> map.put("rStyle", value.getVal()));
+        ofNullable(rPr.getRtl()).ifPresent(value -> map.put("rtl", String.valueOf(value.isVal())));
+        ofNullable(rPr.getShadow()).ifPresent(value -> map.put("shadow", String.valueOf(value.isVal())));
+        ofNullable(rPr.getShd()).ifPresent(value -> map.put("shd", value.getColor()));
+        ofNullable(rPr.getSmallCaps()).ifPresent(value -> map.put("smallCaps", String.valueOf(value.isVal())));
+        ofNullable(rPr.getVertAlign()).ifPresent(value -> map.put("vertAlign",
+                value.getVal()
+                     .value()));
+        ofNullable(rPr.getSpacing()).ifPresent(value -> map.put("spacing", String.valueOf(value.getVal())));
+        ofNullable(rPr.getStrike()).ifPresent(value -> map.put("strike", String.valueOf(value.isVal())));
+        ofNullable(rPr.getOutline()).ifPresent(value -> map.put("outline", String.valueOf(value.isVal())));
+        ofNullable(rPr.getEmboss()).ifPresent(value -> map.put("emboss", String.valueOf(value.isVal())));
+        ofNullable(rPr.getImprint()).ifPresent(value -> map.put("imprint", String.valueOf(value.isVal())));
+        ofNullable(rPr.getNoProof()).ifPresent(value -> map.put("noProof", String.valueOf(value.isVal())));
+        ofNullable(rPr.getSpecVanish()).ifPresent(value -> map.put("specVanish", String.valueOf(value.isVal())));
+        ofNullable(rPr.getU()).ifPresent(value -> map.put("u",
+                value.getVal()
+                     .value()));
+        ofNullable(rPr.getVanish()).ifPresent(value -> map.put("vanish", String.valueOf(value.isVal())));
+        ofNullable(rPr.getW()).ifPresent(value -> map.put("w", String.valueOf(value.getVal())));
+        ofNullable(rPr.getWebHidden()).ifPresent(value -> map.put("webHidden", String.valueOf(value.isVal())));
+        ofNullable(rPr.getHighlight()).ifPresent(value -> map.put("highlight", value.getVal()));
+        ofNullable(rPr.getEffect()).ifPresent(value -> map.put("effect",
+                value.getVal()
+                     .value()));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
     /**
@@ -461,7 +516,7 @@ public class Stringifier {
     private String stringify(P p) {
         var runs = stringify(p.getContent());
         var ppr = stringify(p.getPPr());
-        return ppr.apply(runs);
+        return ppr.apply(runs) + "\n";
     }
 
     private Function<String, String> stringify(PPr pPr) {
@@ -501,13 +556,11 @@ public class Stringifier {
         ofNullable(pPr.getCnfStyle()).ifPresent(style -> set.put("cnfStyle", style.getVal()));
         return set.entrySet()
                   .stream()
-                  .reduce(Function.identity(),
-                          (f, entry) -> switch (entry.getKey()) {
-                              case "pStyle" -> f.compose(decorateWithStyle(entry.getValue()));
-                              case "sectPr" -> f.compose(str -> str+"\n[section-break, " + entry.getValue() +"]\n<<<");
-                              default -> f.andThen(s -> s + "<%s=%s>".formatted(entry.getKey(), entry.getValue()));
-                          },
-                          Function::andThen);
+                  .reduce(Function.identity(), (f, entry) -> switch (entry.getKey()) {
+                      case "pStyle" -> f.compose(decorateWithStyle(entry.getValue()));
+                      case "sectPr" -> f.compose(str -> str + "\n[section-break, " + entry.getValue() + "]\n<<<");
+                      default -> f.andThen(s -> s + "<%s=%s>".formatted(entry.getKey(), entry.getValue()));
+                  }, Function::andThen);
     }
 
     private Function<? super String, String> decorateWithStyle(String value) {
@@ -541,140 +594,85 @@ public class Stringifier {
                                        .orElse(serialized);
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param rPr a {@link RPrAbstract} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
-    private Optional<String> stringify(RPrAbstract rPr) {
-        if (rPr == null) return Optional.empty();
-        var set = new TreeSet<String>();
-        if (rPr.getB() != null) set.add("b=" + rPr.getB()
-                                                  .isVal());
-        if (rPr.getBdr() != null) set.add("bdr=xxx");
-        if (rPr.getCaps() != null) set.add("caps=" + rPr.getCaps()
-                                                        .isVal());
-        if (rPr.getColor() != null) set.add("color=" + rPr.getColor()
-                                                          .getVal());
-        if (rPr.getDstrike() != null) set.add("dstrike=" + rPr.getDstrike()
-                                                              .isVal());
-        if (rPr.getI() != null) set.add("i=" + rPr.getI()
-                                                  .isVal());
-        if (rPr.getKern() != null) set.add("kern=" + rPr.getKern()
-                                                        .getVal()
-                                                        .intValue());
-        if (rPr.getLang() != null) set.add("lang=" + rPr.getLang()
-                                                        .getVal());
-        if (rPr.getRFonts() != null) {/* DO NOTHING */}
-        if (rPr.getRPrChange() != null) set.add("rPrChange=xxx");
-        if (rPr.getRStyle() != null) set.add("rStyle=" + rPr.getRStyle()
-                                                            .getVal());
-        if (rPr.getRtl() != null) set.add("rtl=" + rPr.getRtl()
-                                                      .isVal());
-        if (rPr.getShadow() != null) set.add("shadow=" + rPr.getShadow()
-                                                            .isVal());
-        if (rPr.getShd() != null) set.add("shd=" + rPr.getShd()
-                                                      .getColor());
-        if (rPr.getSmallCaps() != null) set.add("smallCaps=" + rPr.getSmallCaps()
-                                                                  .isVal());
-        if (rPr.getVertAlign() != null) set.add("vertAlign=" + rPr.getVertAlign()
-                                                                  .getVal()
-                                                                  .value());
-        if (rPr.getSpacing() != null) set.add("spacing=" + rPr.getSpacing()
-                                                              .getVal()
-                                                              .intValue());
-        if (rPr.getStrike() != null) set.add("strike=" + rPr.getStrike()
-                                                            .isVal());
-        if (rPr.getOutline() != null) set.add("outline=" + rPr.getOutline()
-                                                              .isVal());
-        if (rPr.getEmboss() != null) set.add("emboss=" + rPr.getEmboss()
-                                                            .isVal());
-        if (rPr.getImprint() != null) set.add("imprint=" + rPr.getImprint()
-                                                              .isVal());
-        if (rPr.getNoProof() != null) set.add("noProof=" + rPr.getNoProof()
-                                                              .isVal());
-        if (rPr.getSpecVanish() != null) set.add("specVanish=" + rPr.getSpecVanish()
-                                                                    .isVal());
-        if (rPr.getU() != null) set.add("u=" + rPr.getU()
-                                                  .getVal()
-                                                  .value());
-        if (rPr.getVanish() != null) set.add("vanish=" + rPr.getVanish()
-                                                            .isVal());
-        if (rPr.getW() != null) set.add("w=" + rPr.getW()
-                                                  .getVal());
-        if (rPr.getWebHidden() != null) set.add("webHidden=" + rPr.getWebHidden()
-                                                                  .isVal());
-        if (rPr.getHighlight() != null) set.add("highlight=" + rPr.getHighlight()
-                                                                  .getVal());
-        if (rPr.getEffect() != null) set.add("effect=" + rPr.getEffect()
-                                                            .getVal()
-                                                            .value());
-        if (set.isEmpty()) return Optional.empty();
-        return Optional.of("{" + String.join(",", set) + "}");
+    private Optional<String> stringify(RFonts rFonts) {
+        if (rFonts == null) return empty();
+        var map = new TreeMap<String, String>();
+        ofNullable(rFonts.getAscii()).ifPresent(value -> map.put("ascii", value));
+        ofNullable(rFonts.getHAnsi()).ifPresent(value -> map.put("hAnsi", value));
+        ofNullable(rFonts.getCs()).ifPresent(value -> map.put("cs", value));
+        ofNullable(rFonts.getEastAsia()).ifPresent(value -> map.put("eastAsia", value));
+        ofNullable(rFonts.getAsciiTheme()).ifPresent(value -> map.put("asciiTheme", value.value()));
+        ofNullable(rFonts.getHAnsiTheme()).ifPresent(value -> map.put("hAnsiTheme", value.value()));
+        ofNullable(rFonts.getCstheme()).ifPresent(value -> map.put("cstheme", value.value()));
+        ofNullable(rFonts.getEastAsiaTheme()).ifPresent(value -> map.put("eastAsiaTheme", value.value()));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
     private Optional<String> stringify(SectPr sectPr) {
-        if (sectPr == null) return Optional.empty();
-        var set = new TreeSet<String>();
-        if (sectPr.getEGHdrFtrReferences() != null && !sectPr.getEGHdrFtrReferences()
-                                                             .isEmpty())
-            set.add("eGHdrFtrReferences=%s".formatted(sectPr.getEGHdrFtrReferences()
-                                                            .stream()
-                                                            .map(this::stringify)
-                                                            .collect(joining(",", "[", "]"))));
-        if (sectPr.getPgSz() != null) set.add("pgSz={" + stringify(sectPr.getPgSz()) + "}");
-        if (sectPr.getPgMar() != null) set.add("pgMar={" + stringify(sectPr.getPgMar()) + "}");
-        if (sectPr.getPaperSrc() != null) set.add("paperSrc=xxx");
-        if (sectPr.getBidi() != null) set.add("bidi=xxx");
-        if (sectPr.getRtlGutter() != null) set.add("rtlGutter=xxx");
-        if (sectPr.getDocGrid() != null) set.add("docGrid={" + stringify(sectPr.getDocGrid()) + "}");
-        if (sectPr.getFormProt() != null) set.add("formProt=xxx");
-        if (sectPr.getVAlign() != null) set.add("vAlign=xxx");
-        if (sectPr.getNoEndnote() != null) set.add("noEndnote=xxx");
-        if (sectPr.getTitlePg() != null) set.add("titlePg=xxx");
-        if (sectPr.getTextDirection() != null) set.add("textDirection=xxx");
-        if (sectPr.getRtlGutter() != null) set.add("rtlGutter=xxx");
-        if (set.isEmpty()) return Optional.empty();
-        return Optional.of(String.join(",", set));
+        if (sectPr == null) return empty();
+        var map = new TreeMap<String, String>();
+        stringify(sectPr.getEGHdrFtrReferences(), this::stringify).ifPresent(value -> map.put("eGHdrFtrReferences",
+                value));
+        stringify(sectPr.getPgSz()).ifPresent(value -> map.put("pgSz", value));
+        stringify(sectPr.getPgMar()).ifPresent(value -> map.put("pgMar", value));
+        ofNullable(sectPr.getPaperSrc()).ifPresent(value -> map.put("paperSrc", "xxx"));
+        ofNullable(sectPr.getBidi()).ifPresent(value -> map.put("bidi", "xxx"));
+        ofNullable(sectPr.getRtlGutter()).ifPresent(value -> map.put("rtlGutter", "xxx"));
+        stringify(sectPr.getDocGrid()).ifPresent(value -> map.put("docGrid", value));
+        ofNullable(sectPr.getFormProt()).ifPresent(value -> map.put("formProt", "xxx"));
+        ofNullable(sectPr.getVAlign()).ifPresent(value -> map.put("vAlign", "xxx"));
+        ofNullable(sectPr.getNoEndnote()).ifPresent(value -> map.put("noEndnote", "xxx"));
+        ofNullable(sectPr.getTitlePg()).ifPresent(value -> map.put("titlePg", "xxx"));
+        ofNullable(sectPr.getTextDirection()).ifPresent(value -> map.put("textDirection", "xxx"));
+        ofNullable(sectPr.getRtlGutter()).ifPresent(value -> map.put("rtlGutter", "xxx"));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    private String stringify(CTDocGrid ctDocGrid) {
-        var set = new TreeSet<String>();
-        if (ctDocGrid.getCharSpace() != null) set.add("charSpace=" + ctDocGrid.getCharSpace());
-        if (ctDocGrid.getLinePitch() != null) set.add("linePitch=" + ctDocGrid.getLinePitch()
-                                                                              .intValue());
-        if (ctDocGrid.getType() != null) set.add("type=" + ctDocGrid.getType());
-        return String.join(",", set);
+    private static <T> Optional<String> stringify(List<T> list, Function<T, Optional<String>> stringify) {
+        if (list == null) return empty();
+        if (list.isEmpty()) return empty();
+        return of(list.stream()
+                      .map(stringify)
+                      .flatMap(Optional::stream)
+                      .collect(joining(",", "[", "]")));
     }
 
-    private String stringify(CTRel ctRel) {
-        var set = new TreeSet<String>();
-        if (ctRel.getId() != null) set.add("id=" + ctRel.getId());
-        return String.join(",", set);
+    private Optional<String> stringify(CTRel ctRel) {
+        if (ctRel == null) return empty();
+        var map = new TreeMap<String, String>();
+        ofNullable(ctRel.getId()).ifPresent(value -> map.put("id", value));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    private String stringify(SectPr.PgMar pgMar) {
-        var set = new TreeSet<String>();
-        if (pgMar.getHeader() != null) set.add("header=" + pgMar.getHeader());
-        if (pgMar.getFooter() != null) set.add("footer=" + pgMar.getFooter());
-        if (pgMar.getGutter() != null) set.add("gutter=" + pgMar.getGutter());
-        if (pgMar.getTop() != null) set.add("top=" + pgMar.getTop());
-        if (pgMar.getLeft() != null) set.add("left=" + pgMar.getLeft());
-        if (pgMar.getBottom() != null) set.add("bottom=" + pgMar.getBottom());
-        if (pgMar.getRight() != null) set.add("right=" + pgMar.getRight());
-        return String.join(",", set);
+    private Optional<String> stringify(SectPr.PgSz pgSz) {
+        if (pgSz == null) return empty();
+        var map = new TreeMap<String, String>();
+        ofNullable(pgSz.getOrient()).ifPresent(value -> map.put("orient", String.valueOf(value)));
+        ofNullable(pgSz.getW()).ifPresent(value -> map.put("w", String.valueOf(value)));
+        ofNullable(pgSz.getH()).ifPresent(value -> map.put("h", String.valueOf(value)));
+        ofNullable(pgSz.getCode()).ifPresent(value -> map.put("code", String.valueOf(value)));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    private String stringify(SectPr.PgSz pgSz) {
-        var set = new TreeSet<String>();
-        if (pgSz.getOrient() != null) set.add("orient=" + pgSz.getOrient());
-        if (pgSz.getW() != null) set.add("w=" + pgSz.getW());
-        if (pgSz.getH() != null) set.add("h=" + pgSz.getH());
-        if (pgSz.getCode() != null) set.add("code=" + pgSz.getCode());
-        return String.join(",", set);
+    private Optional<String> stringify(SectPr.PgMar pgMar) {
+        if (pgMar == null) return empty();
+        var map = new TreeMap<String, String>();
+        ofNullable(pgMar.getHeader()).ifPresent(value -> map.put("header", String.valueOf(value)));
+        ofNullable(pgMar.getFooter()).ifPresent(value -> map.put("footer", String.valueOf(value)));
+        ofNullable(pgMar.getGutter()).ifPresent(value -> map.put("gutter", String.valueOf(value)));
+        ofNullable(pgMar.getTop()).ifPresent(value -> map.put("top", String.valueOf(value)));
+        ofNullable(pgMar.getLeft()).ifPresent(value -> map.put("left", String.valueOf(value)));
+        ofNullable(pgMar.getBottom()).ifPresent(value -> map.put("bottom", String.valueOf(value)));
+        ofNullable(pgMar.getRight()).ifPresent(value -> map.put("right", String.valueOf(value)));
+        return map.isEmpty() ? empty() : of(stringify(map));
+    }
+
+    private Optional<String> stringify(CTDocGrid ctDocGrid) {
+        if (ctDocGrid == null) return empty();
+        var map = new TreeMap<String, String>();
+        ofNullable(ctDocGrid.getCharSpace()).ifPresent(value -> map.put("charSpace", String.valueOf(value)));
+        ofNullable(ctDocGrid.getLinePitch()).ifPresent(value -> map.put("linePitch", String.valueOf(value)));
+        ofNullable(ctDocGrid.getType()).ifPresent(value -> map.put("type", String.valueOf(value)));
+        return map.isEmpty() ? empty() : of(stringify(map));
     }
 }

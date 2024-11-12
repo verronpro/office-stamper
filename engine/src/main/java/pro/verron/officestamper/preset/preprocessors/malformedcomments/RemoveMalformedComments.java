@@ -1,7 +1,6 @@
 package pro.verron.officestamper.preset.preprocessors.malformedcomments;
 
 import org.docx4j.TraversalUtil;
-import org.docx4j.finders.CommentFinder;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
@@ -11,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PreProcessor;
+import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -22,7 +22,7 @@ public class RemoveMalformedComments
     private static final Logger log = LoggerFactory.getLogger(RemoveMalformedComments.class);
 
     @Override public void process(WordprocessingMLPackage document) {
-        var commentElements = getCommentElements(document);
+        var commentElements = WmlUtils.extractCommentElements(document);
 
         var commentIds = new ArrayList<BigInteger>(commentElements.size());
         var openedCommentsIds = new ArrayDeque<BigInteger>();
@@ -59,41 +59,28 @@ public class RemoveMalformedComments
         log.debug("These comments have been opened, but never closed: {}", openedCommentsIds);
         var malformedCommentIds = new ArrayList<>(openedCommentsIds);
 
-        Set<BigInteger> writtenCommentsId = Optional.ofNullable(document.getMainDocumentPart()
-                                                                        .getCommentsPart())
+        var mainDocumentPart = document.getMainDocumentPart();
+        Set<BigInteger> writtenCommentsId = Optional.ofNullable(mainDocumentPart.getCommentsPart())
                                                     .map(RemoveMalformedComments::tryGetCommentsPart)
                                                     .map(Comments::getComment)
                                                     .orElse(Collections.emptyList())
                                                     .stream()
-                                                    .filter(c -> c.getContent() != null)
-                                                    .filter(c -> !c.getContent()
-                                                                   .isEmpty())
+                                                    .filter(c -> !isEmpty(c))
                                                     .map(CTMarkup::getId)
                                                     .collect(toSet());
-
 
         commentIds.removeAll(writtenCommentsId);
 
         log.debug("These comments have been referenced in body, but have no related content: {}", commentIds);
         malformedCommentIds.addAll(commentIds);
 
-        var commentReferenceRemoverVisitor = new CommentReferenceRemoverVisitor(malformedCommentIds);
-        var commentRangeStartRemoverVisitor = new CommentRangeStartRemoverVisitor(malformedCommentIds);
-        var commentRangeEndRemoverVisitor = new CommentRangeEndRemoverVisitor(malformedCommentIds);
-        TraversalUtil.visit(document,
-                true,
-                List.of(commentReferenceRemoverVisitor,
-                        commentRangeStartRemoverVisitor,
-                        commentRangeEndRemoverVisitor));
-        commentReferenceRemoverVisitor.run();
-        commentRangeStartRemoverVisitor.run();
-        commentRangeEndRemoverVisitor.run();
-    }
-
-    private static List<Child> getCommentElements(WordprocessingMLPackage document) {
-        var commentFinder = new CommentFinder();
-        TraversalUtil.visit(document, true, commentFinder);
-        return commentFinder.getCommentElements();
+        var crVisitor = new CommentReferenceRemoverVisitor(malformedCommentIds);
+        var crsVisitor = new CommentRangeStartRemoverVisitor(malformedCommentIds);
+        var creVisitor = new CommentRangeEndRemoverVisitor(malformedCommentIds);
+        TraversalUtil.visit(document, true, List.of(crVisitor, crsVisitor, creVisitor));
+        crVisitor.run();
+        crsVisitor.run();
+        creVisitor.run();
     }
 
     private static Comments tryGetCommentsPart(CommentsPart commentsPart) {
@@ -102,6 +89,11 @@ public class RemoveMalformedComments
         } catch (Docx4JException e) {
             throw new OfficeStamperException(e);
         }
+    }
+
+    private static boolean isEmpty(Comments.Comment c) {
+        var content = c.getContent();
+        return content == null || content.isEmpty();
     }
 
 }

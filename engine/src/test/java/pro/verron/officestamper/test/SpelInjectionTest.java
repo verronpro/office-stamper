@@ -16,10 +16,12 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  */
 class SpelInjectionTest {
 
+    public static final ContextFactory FACTORY = new ContextFactory();
+
     @Test
     void spelInjectionTest()
             throws IOException {
-        var context = ContextFactory.empty();
+        var context = FACTORY.empty();
         try (var template = getResource("SpelInjectionTest.docx")) {
             var configuration = OfficeStamperConfigurations.standard();
             var stamper = new TestDocxStamper<>(configuration);

@@ -1,6 +1,5 @@
 package pro.verron.officestamper.test;
 
-import org.springframework.lang.NonNull;
 import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.preset.StampTable;
 
@@ -19,139 +18,17 @@ import static java.util.Arrays.stream;
  * @since 1.6.5
  */
 public class ContextFactory {
-    private ContextFactory() {
-        throw new RuntimeException("Static utility class should not be instantiated");
-    }
-
-    /**
-     * <p>empty.</p>
-     *
-     * @return a {@link java.lang.Object} object
-     *
-     * @since 1.6.6
-     */
-    public static Object empty() {
-        return new Object();
-    }
-
-    /**
-     * <p>name.</p>
-     *
-     * @param name a {@link java.lang.String} object
-     *
-     * @return a {@link java.lang.Object} object
-     *
-     * @since 1.6.6
-     */
-    public static Object name(String name) {
-        record Name(String name) {}
-        return new Name(name);
-    }
-
-    /**
-     * <p>names.</p>
-     *
-     * @param names a {@link java.lang.String} object
-     *
-     * @return a {@link java.lang.Object} object
-     *
-     * @since 1.6.6
-     */
-    public static Object names(String... names) {
-        record Name(String name) {}
-        record Names(List<Name> names) {}
-        var nameList = stream(names).map(Name::new)
-                                    .collect(Collectors.toCollection(ArrayList::new));
-        return new Names(nameList);
-    }
-
-    /**
-     * <p>role.</p>
-     *
-     * @param character a {@link java.lang.String} object
-     * @param actor     a {@link java.lang.String} object
-     *
-     * @return a {@link ContextFactory.Role} object
-     *
-     * @since 1.6.6
-     */
-    public static Role role(String character, String actor) {
-        return new Role(character, actor);
-    }
-
-    /**
-     * Creates a Characters object from an array of string inputs containing names and actors.
-     *
-     * @param input an array of strings where each pair of strings represents a character's name and actor's name.
-     *
-     * @return a Characters object containing a list of Role objects constructed from the input array.
-     */
-    public static Object roles(String... input) {
-        var roles = IntStream.iterate(0, i -> i < input.length, i -> i + 2)
-                             .mapToObj(i -> new Role(input[i], input[i + 1]))
-                             .toList();
-        return new Characters(roles);
-    }
-
-    /**
-     * <p>subDocPartContext.</p>
-     *
-     * @return a {@link java.util.HashMap} object
-     *
-     * @since 1.6.6
-     */
-    //TODO make an object version
-    //TODO make a Simpsons version
-    public static HashMap<String, Object> subDocPartContext() {
-        var context = new HashMap<String, Object>();
-        var subDocParts = new ArrayList<Map<String, Object>>();
-
-        var firstPart = new HashMap<String, Object>();
-        firstPart.put("name", "first doc part");
-        subDocParts.add(firstPart);
-
-        var secondPart = new HashMap<String, Object>();
-        secondPart.put("name", "second doc part");
-        subDocParts.add(secondPart);
-
-        context.put("subDocParts", subDocParts);
-        return context;
-    }
-
-    /**
-     * <p>schoolContext.</p>
-     *
-     * @return a {@link ContextFactory.SchoolContext} object
-     *
-     * @since 1.6.6
-     */
-    //TODO make a Simpsons version
-    public static SchoolContext schoolContext() {
-        List<Grade> grades = new ArrayList<>();
-        for (int grade1 = 0; grade1 < 3; grade1++) {
-            var classes = new ArrayList<AClass>();
-            for (int classroom1 = 0; classroom1 < 3; classroom1++) {
-                var students = new ArrayList<Student>();
-                for (int i = 0; i < 5; i++) {
-                    students.add(new Student(i, "Bruce·No" + i, 1 + i));
-                }
-                classes.add(new AClass(classroom1, students));
-            }
-            grades.add(new Grade(grade1, classes));
-        }
-        return new SchoolContext("South Park Primary School", grades);
-    }
 
     /**
      * <p>tableContext.</p>
+     * TODO make an object version
+     * TODO make a Simpsons version
      *
-     * @return a {@link java.util.HashMap} object
+     * @return a {@link HashMap} object
      *
      * @since 1.6.6
      */
-    //TODO make an object version
-    //TODO make a Simpsons version
-    public static HashMap<String, Object> tableContext() {
+    public Object tableContext() {
         var context = new HashMap<String, Object>();
 
         var firstTable = new ArrayList<TableValue>();
@@ -176,15 +53,138 @@ public class ContextFactory {
     }
 
     /**
-     * <p>coupleContext.</p>
+     * <p>subDocPartContext.</p>
+     * TODO make an object version
+     * TODO make a Simpsons version
      *
-     * @return a {@link java.util.Map} object
+     * @return a {@link HashMap} object
      *
      * @since 1.6.6
      */
-    //TODO make an object version
-    //TODO make a Simpsons version
-    public static Map<String, Object> coupleContext() {
+    public Object subDocPartContext() {
+        var context = new HashMap<String, Object>();
+        var subDocParts = new ArrayList<Map<String, Object>>();
+
+        var firstPart = new HashMap<String, Object>();
+        firstPart.put("name", "first doc part");
+        subDocParts.add(firstPart);
+
+        var secondPart = new HashMap<String, Object>();
+        secondPart.put("name", "second doc part");
+        subDocParts.add(secondPart);
+
+        context.put("subDocParts", subDocParts);
+        return context;
+    }
+
+    public Object spacy() {
+        return new SpacyContext();
+    }
+
+    public Object show() {
+        return new Show("The Simpsons",
+                List.of(new CharacterRecord(1, "st", "Homer Simpson", "Dan Castellaneta"),
+                        new CharacterRecord(2, "nd", "Marge Simpson", "Julie Kavner"),
+                        new CharacterRecord(3, "rd", "Bart Simpson", "Nancy Cartwright"),
+                        new CharacterRecord(4, "th", "Lisa Simpson", "Yeardley Smith"),
+                        new CharacterRecord(5, "th", "Maggie Simpson", "Julie Kavner")));
+    }
+
+    /**
+     * <p>schoolContext.</p>
+     * TODO make a Simpsons version
+     *
+     * @return a {@link SchoolContext} object
+     *
+     * @since 1.6.6
+     */
+    public Object schoolContext() {
+        List<Grade> grades = new ArrayList<>();
+        for (int grade1 = 0; grade1 < 3; grade1++) {
+            var classes = new ArrayList<AClass>();
+            for (int classroom1 = 0; classroom1 < 3; classroom1++) {
+                var students = new ArrayList<Student>();
+                for (int i = 0; i < 5; i++) {
+                    students.add(new Student(i, "Bruce·No" + i, 1 + i));
+                }
+                classes.add(new AClass(classroom1, students));
+            }
+            grades.add(new Grade(grade1, classes));
+        }
+        return new SchoolContext("South Park Primary School", grades);
+    }
+
+    /**
+     * Creates a Characters object from an array of string inputs containing names and actors.
+     *
+     * @param input an array of strings where each pair of strings represents a character's name and actor's name.
+     *
+     * @return a Characters object containing a list of Role objects constructed from the input array.
+     */
+    public Object roles(String... input) {
+        var roles = IntStream.iterate(0, i -> i < input.length, i -> i + 2)
+                             .mapToObj(i -> new Role(input[i], input[i + 1]))
+                             .toList();
+        return new Characters(roles);
+    }
+
+    /**
+     * <p>nullishContext.</p>
+     * TODO make an object version
+     * TODO make a Simpsons version
+     *
+     * @return a {@link NullishContext} object
+     *
+     * @since 1.6.6
+     */
+    public Object nullishContext() {
+        var stringList = List.of("Fullish3", "Fullish4", "Fullish5");
+        var subContext = new SubContext("Fullish2", stringList);
+        return new NullishContext("Fullish1", subContext, null, null);
+    }
+
+    /**
+     * <p>mapAndReflectiveContext.</p>
+     * TODO make an object version
+     * TODO make a Simpsons version
+     *
+     * @return a {@link HashMap} object
+     *
+     * @since 1.6.6
+     */
+    public Object mapAndReflectiveContext() {
+        var context = new HashMap<String, Object>();
+        context.put("FLAT_STRING", "Flat string has been resolved");
+
+        var listProp = new ArrayList<Container>();
+        listProp.add(new Container("first value"));
+        listProp.add(new Container("second value"));
+        context.put("OBJECT_LIST_PROP", listProp);
+
+        return context;
+    }
+
+    /**
+     * Represents the context for an insertable image.
+     */
+    public Object image(Image image) {
+        return new ImageContext(image);
+    }
+
+    public Object date(Temporal date) {
+        return new DateContext(date);
+    }
+
+    /**
+     * <p>coupleContext.</p>
+     * TODO make an object version
+     * TODO make a Simpsons version
+     *
+     * @return a {@link Map} object
+     *
+     * @since 1.6.6
+     */
+    public Object coupleContext() {
         Map<String, Object> context = new HashMap<>();
 
         Name name1 = new Name("Homer");
@@ -198,68 +198,50 @@ public class ContextFactory {
         return context;
     }
 
-    /**
-     * <p>mapAndReflectiveContext.</p>
-     *
-     * @return a {@link java.util.HashMap} object
-     *
-     * @since 1.6.6
-     */
-    //TODO make an object version
-    //TODO make a Simpsons version
-    public static HashMap<String, Object> mapAndReflectiveContext() {
-        var context = new HashMap<String, Object>();
-        context.put("FLAT_STRING", "Flat string has been resolved");
-
-        var listProp = new ArrayList<Container>();
-        listProp.add(new Container("first value"));
-        listProp.add(new Container("second value"));
-        context.put("OBJECT_LIST_PROP", listProp);
-
-        return context;
-    }
-
-    /**
-     * <p>nullishContext.</p>
-     *
-     * @return a {@link ContextFactory.NullishContext} object
-     *
-     * @since 1.6.6
-     */
-    //TODO make an object version
-    //TODO make a Simpsons version
-    public static NullishContext nullishContext() {
-        var stringList = List.of("Fullish3", "Fullish4", "Fullish5");
-        var subContext = new SubContext("Fullish2", stringList);
-        return new NullishContext("Fullish1", subContext, null, null);
-    }
-
-    public static TableContext characterTable(List<String> headers, List<List<String>> records) {
+    public Object characterTable(List<String> headers, List<List<String>> records) {
         return new TableContext(new StampTable(headers, records));
     }
 
-    public static @NonNull Show show() {
-        return new Show("The Simpsons",
-                List.of(new CharacterRecord(1, "st", "Homer Simpson", "Dan Castellaneta"),
-                        new CharacterRecord(2, "nd", "Marge Simpson", "Julie Kavner"),
-                        new CharacterRecord(3, "rd", "Bart Simpson", "Nancy Cartwright"),
-                        new CharacterRecord(4, "th", "Lisa Simpson", "Yeardley Smith"),
-                        new CharacterRecord(5, "th", "Maggie Simpson", "Julie Kavner")));
-    }
-
-    public static Object date(Temporal date) {
-        return new DateContext(date);
+    /**
+     * <p>names.</p>
+     *
+     * @param names a {@link String} object
+     *
+     * @return a {@link Object} object
+     *
+     * @since 1.6.6
+     */
+    public Object names(String... names) {
+        record Name(String name) {}
+        record Names(List<Name> names) {}
+        var nameList = stream(names).map(Name::new)
+                                    .collect(Collectors.toCollection(ArrayList::new));
+        return new Names(nameList);
     }
 
     /**
-     * Represents the context for an insertable image.
+     * <p>name.</p>
+     *
+     * @param name a {@link String} object
+     *
+     * @return a {@link Object} object
+     *
+     * @since 1.6.6
      */
-    public static Object image(Image image) {
-        return new ImageContext(image);
+    public Object name(String name) {
+        record Name(String name) {}
+        return new Name(name);
     }
 
-    public static Object spacy() {
-        return new SpacyContext();
+    /**
+     * <p>empty.</p>
+     *
+     * @return a {@link Object} object
+     *
+     * @since 1.6.6
+     */
+    public Object empty() {
+        return new Object();
     }
 
     private record Role(String name, String actor) {}

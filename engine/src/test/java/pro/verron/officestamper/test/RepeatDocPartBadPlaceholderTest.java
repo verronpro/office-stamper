@@ -11,7 +11,6 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static pro.verron.officestamper.test.ContextFactory.roles;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**
@@ -22,11 +21,12 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  */
 class RepeatDocPartBadPlaceholderTest {
     private static final Logger logger = LoggerFactory.getLogger(RepeatDocPartBadPlaceholderTest.class);
+    public static final ContextFactory FACTORY = new ContextFactory();
 
     @Test @Timeout(10) // in the case of pipe lock because of unknown exceptions
     void testBadExpressionShouldNotBlockCallerThread() {
         var template = getResource("RepeatDocPartBadExpressionTest.docx");
-        var context = roles("Homer Simpson",
+        var context = FACTORY.roles("Homer Simpson",
                 "Dan Castellaneta",
                 "Marge Simpson",
                 "Julie Kavner",

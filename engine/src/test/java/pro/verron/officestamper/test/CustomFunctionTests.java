@@ -125,7 +125,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
                   var formatter = DateTimeFormatter.ofPattern(pattern, locale);
                   return formatter.format(date);
               });
-        var template = makeResource("${format(date,'yyyy MMMM','%s')}" .formatted(tag));
+        var template = makeResource("${format(date,'yyyy MMMM','%s')}".formatted(tag));
         var context = FACTORY.date(LocalDate.of(2024, Month.APRIL, 1));
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);

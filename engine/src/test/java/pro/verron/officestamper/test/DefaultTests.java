@@ -38,8 +38,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
  */
 @DisplayName("Core Features") public class DefaultTests {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
     public static final ContextFactory FACTORY = new ContextFactory();
+    private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
 
     /**
      * <p>tests.</p>

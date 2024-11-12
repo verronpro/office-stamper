@@ -14,12 +14,14 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @author Thomas Oster
  */
 class TextBoxesTest {
-    @DisplayName("Placeholders in text boxes should be replaced") @Test
-    void placeholders() {
-        var context = new Name("Bart Simpson");
+
+    public static final ContextFactory FACTORY = new ContextFactory();
+
+    @DisplayName("Placeholders in text boxes should be replaced") @Test void placeholders() {
+        var context = FACTORY.name("Bart Simpson");
         var template = getResource("ExpressionReplacementInTextBoxesTest.docx");
         var config = standard().setExceptionResolver(passing());
-        var stamper = new TestDocxStamper<Name>(config);
+        var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         String expected = """
                 == Expression Replacement in TextBoxes
@@ -31,6 +33,4 @@ class TextBoxesTest {
                 """;
         assertEquals(expected, actual);
     }
-
-    public record Name(String name) {}
 }

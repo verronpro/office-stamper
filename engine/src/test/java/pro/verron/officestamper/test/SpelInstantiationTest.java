@@ -9,13 +9,14 @@ import static pro.verron.officestamper.preset.EvaluationContextConfigurers.noopC
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 
 class SpelInstantiationTest {
-    @Test
-    void testDateInstantiationAndResolution() {
-        var stamperConfiguration = standardWithPreprocessing()
-                .setEvaluationContextConfigurer(noopConfigurer());
+
+    public static final ContextFactory FACTORY = new ContextFactory();
+
+    @Test void testDateInstantiationAndResolution() {
+        var stamperConfiguration = standardWithPreprocessing().setEvaluationContextConfigurer(noopConfigurer());
         var stamper = new TestDocxStamper<>(stamperConfiguration);
         var templateStream = TestUtils.getResource(Path.of("date.docx"));
-        var context = new Object();
+        var context = FACTORY.empty();
         var actual = stamper.stampAndLoadAndExtract(templateStream, context);
         var expected = """
                 01.01.1970

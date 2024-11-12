@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +22,6 @@ class DateFormatTests {
     @Test()
     void features()
             throws IOException, Docx4JException {
-        new Date();
         var config = standard();
         Locale.setDefault(Locale.KOREA);
         var template = makeResource("""

@@ -27,7 +27,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     @DisplayName("Should allow to inject full interfaces") @Test() void interfaces() {
         var config = standard().exposeInterfaceToExpressionLanguage(UppercaseFunction.class, Functions.upperCase());
         var template = getResource(Path.of("CustomExpressionFunction.docx"));
-        var context = Contexts.show();
+        var context = ContextFactory.show();
         var stamper = new TestDocxStamper<>(config);
         var expected = """
                 == Custom Expression Function
@@ -74,7 +74,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         config.addCustomFunction("toUppercase", String.class)
               .withImplementation(String::toUpperCase);
         var template = makeResource("${toUppercase(name)}");
-        var context = Contexts.show();
+        var context = ContextFactory.show();
         var stamper = new TestDocxStamper<>(config);
         var expected = """
                 THE SIMPSONS
@@ -88,7 +88,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         var config = standard();
         config.addCustomFunction("foo", () -> List.of("a", "b", "c"));
         var template = makeResource("${foo()}");
-        var context = Contexts.empty();
+        var context = ContextFactory.empty();
         var stamper = new TestDocxStamper<>(config);
         var expected = """
                 [a, b, c]
@@ -103,7 +103,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         config.addCustomFunction("Add", String.class, Integer.class)
               .withImplementation((s, i) -> new BigDecimal(s).add(new BigDecimal(i)));
         var template = makeResource("${Add('3.22', 4)}");
-        var context = Contexts.empty();
+        var context = ContextFactory.empty();
         var stamper = new TestDocxStamper<>(config);
         var expected = """
                 7.22
@@ -124,7 +124,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
                   return formatter.format(date);
               });
         var template = makeResource("${format(date,'yyyy MMMM','%s')}" .formatted(tag));
-        var context = new Contexts.DateContext(LocalDate.of(2024, Month.APRIL, 1));
+        var context = ContextFactory.date(LocalDate.of(2024, Month.APRIL, 1));
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected + "\n", actual);

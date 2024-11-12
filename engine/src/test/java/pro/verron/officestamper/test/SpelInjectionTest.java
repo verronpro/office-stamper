@@ -19,7 +19,7 @@ class SpelInjectionTest {
     @Test
     void spelInjectionTest()
             throws IOException {
-        var context = Contexts.empty();
+        var context = ContextFactory.empty();
         try (var template = getResource("SpelInjectionTest.docx")) {
             var configuration = OfficeStamperConfigurations.standard();
             var stamper = new TestDocxStamper<>(configuration);

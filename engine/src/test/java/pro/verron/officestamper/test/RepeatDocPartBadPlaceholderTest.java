@@ -6,14 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
-import pro.verron.officestamper.test.Contexts.Characters;
-import pro.verron.officestamper.test.Contexts.Role;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static pro.verron.officestamper.test.ContextFactory.roles;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**
@@ -23,22 +21,21 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @since 1.6.6
  */
 class RepeatDocPartBadPlaceholderTest {
-    private static final Logger logger =
-            LoggerFactory.getLogger(RepeatDocPartBadPlaceholderTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(RepeatDocPartBadPlaceholderTest.class);
 
-    @Test
-    @Timeout(10) // in the case of pipe lock because of unknown exceptions
+    @Test @Timeout(10) // in the case of pipe lock because of unknown exceptions
     void testBadExpressionShouldNotBlockCallerThread() {
         var template = getResource("RepeatDocPartBadExpressionTest.docx");
-        var context = new Characters(
-                List.of(new Role("Homer Simpson", "Dan Castellaneta"),
-                        new Role("Marge Simpson", "Julie Kavner"),
-                        new Role("Bart Simpson", "Nancy Cartwright")));
+        var context = roles("Homer Simpson",
+                "Dan Castellaneta",
+                "Marge Simpson",
+                "Julie Kavner",
+                "Bart Simpson",
+                "Nancy Cartwright");
         var configuration = OfficeStamperConfigurations.standard();
         var stamper = new TestDocxStamper<>(configuration);
 
-        var exception = assertThrows(
-                OfficeStamperException.class,
+        var exception = assertThrows(OfficeStamperException.class,
                 () -> stamper.stampAndLoadAndExtract(template, context));
 
         String expectedErrorInfo = "someUnknownField";
@@ -49,8 +46,7 @@ class RepeatDocPartBadPlaceholderTest {
                                        .anyMatch(s -> s.contains(expectedErrorInfo));
 
         logger.info("Here is the exception info dump:", exception);
-        String errorMessage = "Could not find the expected '%s' information"
-                .formatted(expectedErrorInfo);
+        String errorMessage = "Could not find the expected '%s' information".formatted(expectedErrorInfo);
         assertTrue(findDirectInfo || findSuppressedInfo, errorMessage);
     }
 }

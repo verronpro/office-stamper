@@ -1,27 +1,25 @@
 package pro.verron.officestamper.test;
 
-import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.lang.NonNull;
 import pro.verron.officestamper.preset.Image;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.StampTable;
 
-import java.nio.file.Path;
-import java.time.LocalDate;
+import java.time.temporal.Temporal;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static org.junit.jupiter.params.provider.Arguments.of;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static java.util.Arrays.stream;
 
 /**
- * <p>Contexts class.</p>
+ * <p>ContextFactory class.</p>
  *
  * @author Joseph Verron
  * @version ${version}
  * @since 1.6.5
  */
-public class Contexts {
-    private Contexts() {
+public class ContextFactory {
+    private ContextFactory() {
         throw new RuntimeException("Static utility class should not be instantiated");
     }
 
@@ -33,8 +31,7 @@ public class Contexts {
      * @since 1.6.6
      */
     public static Object empty() {
-        record EmptyContext() {}
-        return new EmptyContext();
+        return new Object();
     }
 
     /**
@@ -63,9 +60,9 @@ public class Contexts {
     public static Object names(String... names) {
         record Name(String name) {}
         record Names(List<Name> names) {}
-        return new Names(Arrays.stream(names)
-                               .map(Name::new)
-                               .toList());
+        var nameList = stream(names).map(Name::new)
+                                    .collect(Collectors.toCollection(ArrayList::new));
+        return new Names(nameList);
     }
 
     /**
@@ -74,7 +71,7 @@ public class Contexts {
      * @param character a {@link java.lang.String} object
      * @param actor     a {@link java.lang.String} object
      *
-     * @return a {@link Contexts.Role} object
+     * @return a {@link ContextFactory.Role} object
      *
      * @since 1.6.6
      */
@@ -83,16 +80,17 @@ public class Contexts {
     }
 
     /**
-     * <p>roles.</p>
+     * Creates a Characters object from an array of string inputs containing names and actors.
      *
-     * @param roles a {@link Contexts.Role} object
+     * @param input an array of strings where each pair of strings represents a character's name and actor's name.
      *
-     * @return a {@link Contexts.Characters} object
-     *
-     * @since 1.6.6
+     * @return a Characters object containing a list of Role objects constructed from the input array.
      */
-    public static Characters roles(Role... roles) {
-        return new Characters(List.of(roles));
+    public static Object roles(String... input) {
+        var roles = IntStream.iterate(0, i -> i < input.length, i -> i + 2)
+                             .mapToObj(i -> new Role(input[i], input[i + 1]))
+                             .toList();
+        return new Characters(roles);
     }
 
     /**
@@ -102,6 +100,8 @@ public class Contexts {
      *
      * @since 1.6.6
      */
+    //TODO make an object version
+    //TODO make a Simpsons version
     public static HashMap<String, Object> subDocPartContext() {
         var context = new HashMap<String, Object>();
         var subDocParts = new ArrayList<Map<String, Object>>();
@@ -121,10 +121,11 @@ public class Contexts {
     /**
      * <p>schoolContext.</p>
      *
-     * @return a {@link Contexts.SchoolContext} object
+     * @return a {@link ContextFactory.SchoolContext} object
      *
      * @since 1.6.6
      */
+    //TODO make a Simpsons version
     public static SchoolContext schoolContext() {
         List<Grade> grades = new ArrayList<>();
         for (int grade1 = 0; grade1 < 3; grade1++) {
@@ -148,6 +149,8 @@ public class Contexts {
      *
      * @since 1.6.6
      */
+    //TODO make an object version
+    //TODO make a Simpsons version
     public static HashMap<String, Object> tableContext() {
         var context = new HashMap<String, Object>();
 
@@ -179,6 +182,8 @@ public class Contexts {
      *
      * @since 1.6.6
      */
+    //TODO make an object version
+    //TODO make a Simpsons version
     public static Map<String, Object> coupleContext() {
         Map<String, Object> context = new HashMap<>();
 
@@ -200,6 +205,8 @@ public class Contexts {
      *
      * @since 1.6.6
      */
+    //TODO make an object version
+    //TODO make a Simpsons version
     public static HashMap<String, Object> mapAndReflectiveContext() {
         var context = new HashMap<String, Object>();
         context.put("FLAT_STRING", "Flat string has been resolved");
@@ -215,44 +222,20 @@ public class Contexts {
     /**
      * <p>nullishContext.</p>
      *
-     * @return a {@link Contexts.NullishContext} object
+     * @return a {@link ContextFactory.NullishContext} object
      *
      * @since 1.6.6
      */
+    //TODO make an object version
+    //TODO make a Simpsons version
     public static NullishContext nullishContext() {
-        return new NullishContext("Fullish1",
-                new SubContext("Fullish2", List.of("Fullish3", "Fullish4", "Fullish5")),
-                null,
-                null);
+        var stringList = List.of("Fullish3", "Fullish4", "Fullish5");
+        var subContext = new SubContext("Fullish2", stringList);
+        return new NullishContext("Fullish1", subContext, null, null);
     }
 
-    public static TableContext characterTable(
-            List<String> headers, List<List<String>> records
-    ) {
+    public static TableContext characterTable(List<String> headers, List<List<String>> records) {
         return new TableContext(new StampTable(headers, records));
-    }
-
-    static Arguments repeatTableRowKeepsFormatTest() {
-        return of("Repeat Table row Integration test (keeps formatting)",
-                OfficeStamperConfigurations.standard(),
-                show(),
-                getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
-                """
-                        |===
-                        |1❬st❘{vertAlign=superscript}❭ Homer Simpson-❬Dan Castellaneta❘{b=true}❭
-                        
-                        |2❬nd❘{vertAlign=superscript}❭ Marge Simpson-❬Julie Kavner❘{b=true}❭
-                        
-                        |3❬rd❘{vertAlign=superscript}❭ Bart Simpson-❬Nancy Cartwright❘{b=true}❭
-                        
-                        |4❬th❘{vertAlign=superscript}❭ Lisa Simpson-❬Yeardley Smith❘{b=true}❭
-                        
-                        |5❬th❘{vertAlign=superscript}❭ Maggie Simpson-❬Julie Kavner❘{b=true}❭
-                        
-                        
-                        |===
-                        
-                        """);
     }
 
     public static @NonNull Show show() {
@@ -264,22 +247,34 @@ public class Contexts {
                         new CharacterRecord(5, "th", "Maggie Simpson", "Julie Kavner")));
     }
 
+    public static Object date(Temporal date) {
+        return new DateContext(date);
+    }
+
     /**
-     * The Role class represents a role played by an actor.
+     * Represents the context for an insertable image.
      */
-    public record Role(String name, String actor) {}
+    public static Object image(Image image) {
+        return new ImageContext(image);
+    }
+
+    public static Object spacy() {
+        return new SpacyContext();
+    }
+
+    private record Role(String name, String actor) {}
 
     /**
      * The Characters class represents a list of characters played by actors.
      */
-    public record Characters(List<Role> characters) {}
+    private record Characters(List<Role> characters) {}
 
-    public record ZonedDateContext(java.time.ZonedDateTime date) {}
+    private record ZonedDateContext(java.time.ZonedDateTime date) {}
 
     /**
      * A static inner class representing a Spacy context.
      */
-    public static class SpacyContext {
+    private static class SpacyContext {
         private final String expressionWithLeadingAndTrailingSpace = " Expression ";
         private final String expressionWithLeadingSpace = " Expression";
         private final String expressionWithTrailingSpace = "Expression ";
@@ -322,17 +317,11 @@ public class Contexts {
         }
     }
 
-    /**
-     * Represents the context for an image that will be inserted into a document.
-     */
-    public record ImageContext(Image monalisa) {}
+    private record ImageContext(Image monalisa) {}
 
-    record Container(String value) {}
+    private record Container(String value) {}
 
-    /**
-     * This class represents a NullishContext object.
-     */
-    public static final class NullishContext {
+    private static final class NullishContext {
         private String fullish_value;
         private SubContext fullish;
         private String nullish_value;
@@ -453,10 +442,7 @@ public class Contexts {
 
     }
 
-    /**
-     * This class represents a SubContext object.
-     */
-    public static final class SubContext {
+    private static final class SubContext {
         private String value;
         private List<String> li;
 
@@ -533,71 +519,24 @@ public class Contexts {
 
     }
 
-    /**
-     * Represents the context of a school.
-     *
-     * @param schoolName the name of the school
-     * @param grades     the list of grades in the school
-     */
-    public record SchoolContext(String schoolName, List<Grade> grades) {}
 
-    /**
-     * Represents a grade in a school.
-     *
-     * @param number  the grade number
-     * @param classes the list of classes in the grade
-     */
-    record Grade(int number, List<AClass> classes) {}
+    private record SchoolContext(String schoolName, List<Grade> grades) {}
 
-    /**
-     * Represents a Show, which is a collection of CharacterRecords.
-     *
-     * @param characters The list of CharacterRecords in the Show.
-     */
-    public record Show(String name, List<CharacterRecord> characters) {}
+    private record Grade(int number, List<AClass> classes) {}
 
-    /**
-     * Represents a character record.
-     */
-    public record CharacterRecord(int index, String indexSuffix, String characterName, String actorName) {}
+    private record Show(String name, List<CharacterRecord> characters) {}
 
-    /**
-     * Represents a character in a movie or play.
-     */
-    public record Character(String name, String actor) {}
+    private record CharacterRecord(int index, String indexSuffix, String characterName, String actorName) {}
 
-    /**
-     * Represents a class.
-     */
-    public record AClass(int number, List<Student> students) {}
+    private record AClass(int number, List<Student> students) {}
 
-    /**
-     * Represents a student.
-     *
-     * @param number the student number
-     * @param name   the student name
-     * @param age    the student age
-     */
-    record Student(int number, String name, int age) {}
+    private record Student(int number, String name, int age) {}
 
-    /**
-     * Represents a value in a table.
-     */
-    record TableValue(String value) {}
+    private record TableValue(String value) {}
 
-    /**
-     * Represents a name.
-     */
-    public record Name(String name) {}
+    private record Name(String name) {}
 
-    /**
-     * Represents an empty context.
-     */
-    public static class EmptyContext {}
+    private record TableContext(StampTable characters) {}
 
-    public record TableContext(StampTable characters) {}
-
-    public record DateContext(LocalDate date) {
-
-    }
+    private record DateContext(Temporal date) {}
 }

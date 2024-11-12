@@ -18,16 +18,13 @@ class SpelInjectionTest {
 
     public static final ContextFactory FACTORY = new ContextFactory();
 
-    @Test
-    void spelInjectionTest()
+    @Test void spelInjectionTest()
             throws IOException {
         var context = FACTORY.empty();
         try (var template = getResource("SpelInjectionTest.docx")) {
             var configuration = OfficeStamperConfigurations.standard();
             var stamper = new TestDocxStamper<>(configuration);
-            assertThrows(
-                    OfficeStamperException.class,
-                    () -> stamper.stampAndLoadAndExtract(template, context));
+            assertThrows(OfficeStamperException.class, () -> stamper.stampAndLoadAndExtract(template, context));
         }
         assertDoesNotThrow(() -> "Does not throw", "Since VM is still up.");
     }

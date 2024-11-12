@@ -16,6 +16,8 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
 
 class ResolutionTest {
 
+    public static final ContextFactory FACTORY = new ContextFactory();
+
     /**
      * This method is a unit test for the `testStaticResolution` method. It uses parameterized testing with a CSV source
      * to test various scenarios.
@@ -61,11 +63,11 @@ class ResolutionTest {
 
         var stamper = new TestDocxStamper<>(configuration);
         if (shouldFail) {
-            Executable executable = () -> stamper.stampAndLoadAndExtract(resource, new Object());
+            Executable executable = () -> stamper.stampAndLoadAndExtract(resource, FACTORY.empty());
             assertThrows(OfficeStamperException.class, executable);
         }
         else {
-            ThrowingSupplier<String> supplier = () -> stamper.stampAndLoadAndExtract(resource, new Object());
+            ThrowingSupplier<String> supplier = () -> stamper.stampAndLoadAndExtract(resource, FACTORY.empty());
             assertEquals(expected + "\n", assertDoesNotThrow(supplier));
         }
     }

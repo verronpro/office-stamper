@@ -20,8 +20,8 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @since 1.6.6
  */
 class RepeatDocPartBadPlaceholderTest {
-    private static final Logger logger = LoggerFactory.getLogger(RepeatDocPartBadPlaceholderTest.class);
     public static final ContextFactory FACTORY = new ContextFactory();
+    private static final Logger logger = LoggerFactory.getLogger(RepeatDocPartBadPlaceholderTest.class);
 
     @Test @Timeout(10) // in the case of pipe lock because of unknown exceptions
     void testBadExpressionShouldNotBlockCallerThread() {

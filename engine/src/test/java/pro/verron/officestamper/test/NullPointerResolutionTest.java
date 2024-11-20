@@ -14,7 +14,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  */
 class NullPointerResolutionTest {
 
-    public static final ContextFactory FACTORY = new ContextFactory();
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
     @Test void nullPointerResolutionTest_testThrowingCase()
             throws IOException {

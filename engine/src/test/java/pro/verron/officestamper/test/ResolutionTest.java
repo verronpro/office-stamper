@@ -16,7 +16,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
 
 class ResolutionTest {
 
-    public static final ContextFactory FACTORY = new ContextFactory();
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
     /**
      * This method is a unit test for the `testStaticResolution` method. It uses parameterized testing with a CSV source

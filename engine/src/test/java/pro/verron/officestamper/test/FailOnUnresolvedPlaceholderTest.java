@@ -19,7 +19,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  */
 class FailOnUnresolvedPlaceholderTest {
 
-    public static final ContextFactory FACTORY = new ContextFactory();
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
     @Test void fails()
             throws IOException {

@@ -38,7 +38,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
  */
 @DisplayName("Core Features") public class DefaultTests {
 
-    public static final ContextFactory FACTORY = new ContextFactory();
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
     private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
 
     /**

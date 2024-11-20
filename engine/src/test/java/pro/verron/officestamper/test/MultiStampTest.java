@@ -13,7 +13,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  */
 class MultiStampTest {
 
-    public static final ContextFactory FACTORY = new ContextFactory();
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
     @Test @DisplayName("The same stamper instance can stamp several times") void repeatDocPart() {
         var config = OfficeStamperConfigurations.standard();

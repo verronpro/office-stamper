@@ -16,7 +16,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
 @DisplayName("Custom functions")
 class DateFormatTests {
 
-    public static final ContextFactory FACTORY = new ContextFactory();
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
     @DisplayName("Should works with variables, multiline text, in comment content, inside comment, and in repetitions.")
     @Test()

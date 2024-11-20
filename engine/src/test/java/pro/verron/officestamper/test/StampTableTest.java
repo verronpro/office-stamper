@@ -14,7 +14,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  */
 class StampTableTest {
 
-    public static final ContextFactory FACTORY = new ContextFactory();
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
     @Test void stampTableTest() {
         var testDocx = getResource("StampTableTest.docx");

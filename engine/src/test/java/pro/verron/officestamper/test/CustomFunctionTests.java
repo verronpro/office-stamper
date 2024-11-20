@@ -24,7 +24,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
 @DisplayName("Custom functions") class CustomFunctionTests {
 
 
-    public static final ContextFactory FACTORY = new ContextFactory();
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
     @DisplayName("Should allow to inject full interfaces") @Test() void interfaces() {
         var config = standard().exposeInterfaceToExpressionLanguage(UppercaseFunction.class, Functions.upperCase());

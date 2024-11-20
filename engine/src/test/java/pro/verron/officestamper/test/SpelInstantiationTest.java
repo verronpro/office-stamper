@@ -10,7 +10,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 
 class SpelInstantiationTest {
 
-    public static final ContextFactory FACTORY = new ContextFactory();
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
     @Test void testDateInstantiationAndResolution() {
         var stamperConfiguration = standardWithPreprocessing().setEvaluationContextConfigurer(noopConfigurer());

@@ -186,5 +186,17 @@ public class CommentProcessorFactory {
 
         /// @param condition if non-null, keep the table surrounding the comment, else remove.
         void displayTableIfPresent(@Nullable Object condition);
+
+        /// @param condition if true, keep the selected words surrounding the comment, else remove.
+        void displayWordsIf(@Nullable Boolean condition);
+
+        /// @param condition if non-null, keep the selected words surrounding the comment, else remove.
+        void displayWordsIfPresent(@Nullable Object condition);
+
+        /// @param condition if true, keep the selected elements surrounding the comment, else remove.
+        void displayDocPartIf(@Nullable Boolean condition);
+
+        /// @param condition if non-null, keep the selected elements surrounding the comment, else remove.
+        void displayDocPartIfPresent(@Nullable Object condition);
     }
 }

@@ -50,7 +50,7 @@ public class RepeatDocPartProcessor
     private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
 
     private final OfficeStamper<WordprocessingMLPackage> stamper;
-    private final Map<Comment, List<Object>> contexts = new HashMap<>();
+    private final Map<Comment, Iterable<Object>> contexts = new HashMap<>();
     private final Supplier<? extends List<?>> nullSupplier;
 
     private RepeatDocPartProcessor(
@@ -80,7 +80,7 @@ public class RepeatDocPartProcessor
     /**
      * {@inheritDoc}
      */
-    @Override public void repeatDocPart(@Nullable List<Object> contexts) {
+    @Override public void repeatDocPart(@Nullable Iterable<Object> contexts) {
         if (contexts == null) contexts = Collections.emptyList();
 
         Comment currentComment = getCurrentCommentWrapper();
@@ -95,7 +95,7 @@ public class RepeatDocPartProcessor
      * {@inheritDoc}
      */
     @Override public void commitChanges(DocxPart source) {
-        for (Map.Entry<Comment, List<Object>> entry : this.contexts.entrySet()) {
+        for (Map.Entry<Comment, Iterable<Object>> entry : this.contexts.entrySet()) {
             var comment = entry.getKey();
             var expressionContexts = entry.getValue();
             var gcp = requireNonNull(comment.getParent());
@@ -136,7 +136,7 @@ public class RepeatDocPartProcessor
 
     private List<Object> stampSubDocuments(
             WordprocessingMLPackage document,
-            List<Object> expressionContexts,
+            Iterable<Object> expressionContexts,
             ContentAccessor gcp,
             WordprocessingMLPackage subTemplate,
             UnaryOperator<List<Object>> sectionBreakInserter
@@ -163,7 +163,7 @@ public class RepeatDocPartProcessor
     }
 
     private List<WordprocessingMLPackage> stampSubDocuments(
-            List<Object> subContexts, WordprocessingMLPackage subTemplate
+            Iterable<Object> subContexts, WordprocessingMLPackage subTemplate
     ) {
         var subDocuments = new ArrayList<WordprocessingMLPackage>();
         for (Object subContext : subContexts) {

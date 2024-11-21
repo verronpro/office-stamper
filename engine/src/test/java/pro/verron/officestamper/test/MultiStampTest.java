@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.test.Contexts.names;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /**
@@ -13,9 +12,12 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  * @author Tom Hombergs
  */
 class MultiStampTest {
+
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
+
     @Test @DisplayName("The same stamper instance can stamp several times") void repeatDocPart() {
         var config = OfficeStamperConfigurations.standard();
-        var context = names("Homer", "Marge", "Bart", "Lisa", "Maggie");
+        var context = FACTORY.names("Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamper = new TestDocxStamper<>(config);
 
         var filename = "MultiStampTest.docx";

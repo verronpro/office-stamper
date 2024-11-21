@@ -10,11 +10,12 @@ import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.test.Contexts.name;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
 @DisplayName("Whitespaces manipulations")
 class WhitespaceTest {
+
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
     @DisplayName("Should keep any number of spaces")
     @CsvSource(
@@ -28,7 +29,7 @@ class WhitespaceTest {
             throws Docx4JException, IOException {
         var config = OfficeStamperConfigurations.standard();
         var template = makeResource("Space ${name}");
-        var context = name(in);
+        var context = FACTORY.name(in);
 
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
@@ -42,7 +43,7 @@ class WhitespaceTest {
             throws IOException, Docx4JException {
         var config = OfficeStamperConfigurations.standard();
         var template = makeResource("Tab|TAB|${name}");
-        var context = name("Homer\tSimpson");
+        var context = FACTORY.name("Homer\tSimpson");
 
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);

@@ -13,14 +13,12 @@ import java.util.List;
 
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
-/**
- * Processor for the {@link CommentProcessorFactory.IDisplayIfProcessor} comment.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.0
- */
+/// Processor for the [CommentProcessorFactory.IDisplayIfProcessor] comment.
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.0
 public class DisplayIfProcessor
         extends AbstractCommentProcessor
         implements CommentProcessorFactory.IDisplayIfProcessor {
@@ -33,18 +31,15 @@ public class DisplayIfProcessor
         super(placeholderReplacer);
     }
 
-    /**
-     * Creates a new DisplayIfProcessor instance.
-     *
-     * @param pr the {@link PlaceholderReplacer} used for replacing expressions.
-     *
-     * @return a new DisplayIfProcessor instance.
-     */
+    /// Creates a new DisplayIfProcessor instance.
+    ///
+    /// @param pr the [PlaceholderReplacer] used for replacing expressions.
+    ///
+    /// @return a new DisplayIfProcessor instance.
     public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
         return new DisplayIfProcessor(pr);
     }
 
-    /** {@inheritDoc} */
     @Override public void commitChanges(DocxPart source) {
         removeParagraphs();
         removeTables();
@@ -63,25 +58,21 @@ public class DisplayIfProcessor
         tableRowsToBeRemoved.forEach(ObjectDeleter::deleteTableRow);
     }
 
-    /** {@inheritDoc} */
     @Override public void reset() {
         paragraphsToBeRemoved = new ArrayList<>();
         tablesToBeRemoved = new ArrayList<>();
         tableRowsToBeRemoved = new ArrayList<>();
     }
 
-    /** {@inheritDoc} */
     @Override public void displayParagraphIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
         paragraphsToBeRemoved.add(this.getParagraph());
     }
 
-    /** {@inheritDoc} */
     @Override public void displayParagraphIfPresent(@Nullable Object condition) {
         displayParagraphIf(condition != null);
     }
 
-    /** {@inheritDoc} */
     @Override public void displayTableRowIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
         var tr = this.getParagraph()
@@ -94,7 +85,6 @@ public class DisplayIfProcessor
         displayTableRowIf(condition != null);
     }
 
-    /** {@inheritDoc} */
     @Override public void displayTableIf(Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
         var tbl = this.getParagraph()
@@ -105,5 +95,29 @@ public class DisplayIfProcessor
 
     @Override public void displayTableIfPresent(@Nullable Object condition) {
         displayTableIf(condition != null);
+    }
+
+    @Override public void displayWordsIf(@Nullable Boolean condition) {
+        if (Boolean.TRUE.equals(condition)) return;
+        var commentWrapper = getCurrentCommentWrapper();
+        commentWrapper.getParent()
+                      .getContent()
+                      .removeAll(commentWrapper.getElements());
+    }
+
+    @Override public void displayWordsIfPresent(@Nullable Object condition) {
+        displayWordsIf(condition != null);
+    }
+
+    @Override public void displayDocPartIf(@Nullable Boolean condition) {
+        if (Boolean.TRUE.equals(condition)) return;
+        var commentWrapper = getCurrentCommentWrapper();
+        commentWrapper.getParent()
+                      .getContent()
+                      .removeAll(commentWrapper.getElements());
+    }
+
+    @Override public void displayDocPartIfPresent(@Nullable Object condition) {
+        displayDocPartIf(condition != null);
     }
 }

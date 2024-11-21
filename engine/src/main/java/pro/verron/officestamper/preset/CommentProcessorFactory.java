@@ -29,7 +29,7 @@ public class CommentProcessorFactory {
         this.configuration = configuration;
     }
 
-    /// Creates a new CommentProcessorFactory with default configuration.
+    /// Creates new repeatParagraph [CommentProcessor] with default configuration.
     ///
     /// @param pr a [ParagraphPlaceholderReplacer] object
     ///
@@ -38,7 +38,7 @@ public class CommentProcessorFactory {
         return ParagraphRepeatProcessor.newInstance(pr);
     }
 
-    /// Creates a new CommentProcessorFactory with default configuration.
+    /// Creates new repeatDocPart [CommentProcessor] with default configuration.
     ///
     /// @param pr a [ParagraphPlaceholderReplacer] object
     ///
@@ -51,7 +51,7 @@ public class CommentProcessorFactory {
         return (template, context, output) -> new DocxStamper(configuration).stamp(template, context, output);
     }
 
-    /// Creates a new CommentProcessorFactory with default configuration.
+    /// Creates new repeating [CommentProcessor] with default configuration.
     ///
     /// @param pr a [ParagraphPlaceholderReplacer] object
     ///
@@ -60,7 +60,7 @@ public class CommentProcessorFactory {
         return RepeatProcessor.newInstance(pr);
     }
 
-    /// Creates a new CommentProcessorFactory with default configuration.
+    /// Creates new tableResolver [CommentProcessor] with default configuration.
     ///
     /// @param pr a [ParagraphPlaceholderReplacer] object
     ///
@@ -69,7 +69,7 @@ public class CommentProcessorFactory {
         return TableResolver.newInstance(pr);
     }
 
-    /// Creates a new CommentProcessorFactory with default configuration.
+    /// Creates new displayIf [CommentProcessor] with default configuration.
     ///
     /// @param pr a [ParagraphPlaceholderReplacer] object
     ///
@@ -78,7 +78,7 @@ public class CommentProcessorFactory {
         return DisplayIfProcessor.newInstance(pr);
     }
 
-    /// Creates a new CommentProcessorFactory with default configuration.
+    /// Creates new replaceWith [CommentProcessor] with default configuration.
     ///
     /// @param pr a [ParagraphPlaceholderReplacer] object
     ///
@@ -87,14 +87,14 @@ public class CommentProcessorFactory {
         return ReplaceWithProcessor.newInstance(pr);
     }
 
-    /// This interface is used to resolve a table in the template document.
-    /// The table is passed to the resolveTable method and will be used to fill an existing Tbl object in the document.
+    /// Used to resolve a table in the template document.
+    /// Take the table passed-in to fill an existing Tbl object in the document.
     ///
     /// @author Joseph Verron
     /// @version ${version}
     /// @since 1.6.2
     public interface ITableResolver {
-        /// Resolves the given table by manipulating the given table in the template
+        /// Resolves the given table by manipulating the given table in the template.
         ///
         /// @param table the table to resolve.
         void resolveTable(@Nullable StampTable table);
@@ -109,9 +109,8 @@ public class CommentProcessorFactory {
     /// @since 1.0.8
     public interface IReplaceWithProcessor {
 
-        /// May be called to replace a single word inside a paragraph with an expression
-        /// defined in a comment. The comment must be applied to a single word for the
-        /// replacement to take effect!
+        /// Replace a single word inside a paragraph with an expression defined in the comment.
+        /// The comment should apply to a single word for the replacement to take effect.
         ///
         /// @param expression the expression to replace the text with
         void replaceWordWith(@Nullable String expression);
@@ -170,22 +169,22 @@ public class CommentProcessorFactory {
     /// @since 1.0.0
     public interface IDisplayIfProcessor {
 
-        /// @param condition if true, the paragraph surrounding the comment remains, else is removed.
+        /// @param condition if true, keep the paragraph surrounding the comment, else remove.
         void displayParagraphIf(@Nullable Boolean condition);
 
-        /// @param condition if non-null, the paragraph surrounding the comment remains, else is removed.
+        /// @param condition if non-null, keep the paragraph surrounding the comment, else remove.
         void displayParagraphIfPresent(@Nullable Object condition);
 
-        /// @param condition if true, the table row surrounding the comment remains, else is removed.
+        /// @param condition if true, keep the table row surrounding the comment, else remove.
         void displayTableRowIf(@Nullable Boolean condition);
 
-        /// @param condition if non-null, the table row surrounding the comment remains, else is removed.
+        /// @param condition if non-null, keep the table row surrounding the comment, else remove.
         void displayTableRowIfPresent(@Nullable Object condition);
 
-        /// @param condition if true, the table surrounding the comment remains, else is removed.
+        /// @param condition if true, keep the table surrounding the comment, else remove.
         void displayTableIf(@Nullable Boolean condition);
 
-        /// @param condition if non-null, the table surrounding the comment remains, else is removed.
+        /// @param condition if non-null, keep the table surrounding the comment, else remove.
         void displayTableIfPresent(@Nullable Object condition);
     }
 }

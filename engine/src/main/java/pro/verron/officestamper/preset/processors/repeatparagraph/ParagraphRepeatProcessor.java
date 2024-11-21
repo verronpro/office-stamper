@@ -37,12 +37,11 @@ public class ParagraphRepeatProcessor
         super(placeholderReplacer);
     }
 
-    /**
-     * Creates a new instance of {@link CommentProcessor} using the provided {@link ParagraphPlaceholderReplacer}.
-     *
-     * @param placeholderReplacer the replacer to use for processing paragraph placeholders.
-     * @return a new instance of {@link ParagraphRepeatProcessor}.
-     */
+    /// Creates a new instance of [CommentProcessor] using the provided [ParagraphPlaceholderReplacer].
+    ///
+    /// @param placeholderReplacer the replacer to use for processing paragraph placeholders.
+    ///
+    /// @return a new instance of [ParagraphRepeatProcessor].
     public static CommentProcessor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
         return new ParagraphRepeatProcessor(placeholderReplacer);
     }

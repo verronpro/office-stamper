@@ -14,6 +14,8 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
  */
 class StampTableTest {
 
+    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
+
     @Test void stampTableTest() {
         var testDocx = getResource("StampTableTest.docx");
 
@@ -21,7 +23,7 @@ class StampTableTest {
         var stamper = new TestDocxStamper<>(configuration);
 
         String string = stamper.stampAndLoadAndExtract(testDocx,
-                Contexts.characterTable(List.of("Character", "Actor"),
+                FACTORY.characterTable(List.of("Character", "Actor"),
                         List.of(List.of("Homer Simpson", "Dan Castellaneta"),
                                 List.of("Marge Simpson", "Julie Kavner"),
                                 List.of("Bart Simpson", "Nancy Cartwright"),

@@ -85,9 +85,13 @@ public class DisplayIfProcessor
     @Override public void displayTableRowIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
         var tr = this.getParagraph()
-                    .parent(Tr.class)
-                    .orElseThrow(throwing("Paragraph is not within a row!"));
+                     .parent(Tr.class)
+                     .orElseThrow(throwing("Paragraph is not within a row!"));
         tableRowsToBeRemoved.add(tr);
+    }
+
+    @Override public void displayTableRowIfPresent(@Nullable Object condition) {
+        displayTableRowIf(condition != null);
     }
 
     /** {@inheritDoc} */
@@ -97,5 +101,9 @@ public class DisplayIfProcessor
                       .parent(Tbl.class)
                       .orElseThrow(throwing("Paragraph is not within a table!"));
         tablesToBeRemoved.add(tbl);
+    }
+
+    @Override public void displayTableIfPresent(@Nullable Object condition) {
+        displayTableIf(condition != null);
     }
 }

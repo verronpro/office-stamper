@@ -162,8 +162,7 @@ public class CommentProcessorFactory {
         void repeatTableRow(@Nullable Iterable<Object> objects);
     }
 
-    /// Interface for processors that may be used to delete commented paragraphs or tables from the document, depending
-    /// on a given condition.
+    /// Interface for processors used to delete paragraphs or tables from the document, depending on condition.
     ///
     /// @author Joseph Verron
     /// @author Tom Hombergs
@@ -180,7 +179,13 @@ public class CommentProcessorFactory {
         /// @param condition if true, the table row surrounding the comment remains, else is removed.
         void displayTableRowIf(@Nullable Boolean condition);
 
+        /// @param condition if non-null, the table row surrounding the comment remains, else is removed.
+        void displayTableRowIfPresent(@Nullable Object condition);
+
         /// @param condition if true, the table surrounding the comment remains, else is removed.
         void displayTableIf(@Nullable Boolean condition);
+
+        /// @param condition if non-null, the table surrounding the comment remains, else is removed.
+        void displayTableIfPresent(@Nullable Object condition);
     }
 }

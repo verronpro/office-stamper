@@ -37,7 +37,7 @@ public class RepeatProcessor
         implements CommentProcessorFactory.IRepeatProcessor {
 
     private final BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier;
-    private Map<Tr, List<Object>> tableRowsToRepeat = new HashMap<>();
+    private Map<Tr, Iterable<Object>> tableRowsToRepeat = new HashMap<>();
     private Map<Tr, Comment> tableRowsCommentsToRemove = new HashMap<>();
 
     private RepeatProcessor(
@@ -65,9 +65,9 @@ public class RepeatProcessor
     }
 
     private void repeatRows(DocxPart source) {
-        for (Map.Entry<Tr, List<Object>> entry : tableRowsToRepeat.entrySet()) {
+        for (Map.Entry<Tr, Iterable<Object>> entry : tableRowsToRepeat.entrySet()) {
             Tr row = entry.getKey();
-            List<Object> expressionContexts = entry.getValue();
+            Iterable<Object> expressionContexts = entry.getValue();
 
             Tbl table = (Tbl) XmlUtils.unwrap(row.getParent());
             var content = table.getContent();
@@ -108,7 +108,7 @@ public class RepeatProcessor
     }
 
     /** {@inheritDoc} */
-    @Override public void repeatTableRow(@Nullable List<Object> objects) {
+    @Override public void repeatTableRow(@Nullable Iterable<Object> objects) {
         var tr = this.getParagraph()
                      .parent(Tr.class)
                      .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));

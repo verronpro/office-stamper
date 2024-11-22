@@ -1266,11 +1266,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var expected = """
                 == Expression Replacement with comments
                 
-                This paragraph is untouched.
-                In this paragraph, the variable name should be resolved to the value Homer Simpson.
-                In this paragraph, the variable foo should not be resolved: unresolvedValueWithCommentreplaceWordWith(foo)
-                
-                .
+                 This paragraph is untouched.
+                 In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                 In this paragraph, the variable foo should not be resolved: <1|unresolvedValueWithComment|1><1|replaceWordWith(foo)>.
                 """;
         var config = standardWithPreprocessing().setExceptionResolver(ExceptionResolvers.passing());
         return arguments("Replace Word With Integration test", config, context, template, expected);

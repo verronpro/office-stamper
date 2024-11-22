@@ -105,7 +105,7 @@ public class EvaluationContextConfigurers {
             TypeLocator typeLocator = typeName -> {
                 throw new SpelEvaluationException(SpelMessage.TYPE_NOT_FOUND, typeName);
             };
-            context.setPropertyAccessors(List.of(DataBindingPropertyAccessor.forReadWriteAccess()));
+            context.setPropertyAccessors(List.of(DataBindingPropertyAccessor.forReadWriteAccess(), new MapAccessor()));
             context.setConstructorResolvers(Collections.emptyList());
             context.setMethodResolvers(new ArrayList<>(List.of(DataBindingMethodResolver.forInstanceMethodInvocation())));
             //noinspection DataFlowIssue, ignore the warning since it is a workaround fixing potential security issues

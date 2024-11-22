@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.EvaluationContextConfigurers;
@@ -329,7 +328,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 """;
 
-        var config = standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        var config = standard();
         return of("repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument",
                 config,
                 context,
@@ -339,7 +338,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate() {
         return of("repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
-                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                standard(),
                 FACTORY.subDocPartContext(),
                 getResource(Path.of("RepeatDocPartWithImagesInSourceTest" + ".docx")),
                 """
@@ -745,7 +744,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 This will stay untouched too.
                 """;
 
-        var config = standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        var config = standard();
 
         return arguments(
                 "RepeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate",
@@ -757,7 +756,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment() {
         return arguments("In multiple layouts, keeps section orientations outside RepeatParagraph comments",
-                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                standard(),
                 Map.of("repeatValues", List.of(FACTORY.name("Homer"), FACTORY.name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutOutsideRepeatParagraphTest.docx")),
                 """
@@ -814,7 +813,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 Fourth page is set to portrait again.
                 """;
 
-        var config = standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+        var config = standard();
         return arguments("In multiple layouts, keeps section orientations inside RepeatParagraph comments",
                 config,
                 context,
@@ -824,7 +823,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment() {
         return arguments("In multiple layouts, keeps section orientations outside RepeatDocPart comments",
-                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                standard(),
                 Map.of("repeatValues", List.of(FACTORY.name("Homer"), FACTORY.name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutInRepeatDocPartTest.docx")),
                 """
@@ -870,7 +869,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments(
                 "In multiple layouts, keeps section orientations inside RepeatDocPart comments with a table as last "
                 + "element",
-                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                standard(),
 
                 Map.of("repeatValues", List.of(FACTORY.name("Homer"), FACTORY.name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutInRepeatDocPartWithTableLastElementTest.docx")),
@@ -917,7 +916,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment() {
         return arguments("In multiple layouts, keeps section orientation outside RepeatDocPart comment",
-                standard().setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor())),
+                standard(),
                 Map.of("repeatValues", List.of(FACTORY.name("Homer"), FACTORY.name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutOutsideRepeatDocPartTest.docx")),
                 """
@@ -1266,9 +1265,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var expected = """
                 == Expression Replacement with comments
                 
-                 This paragraph is untouched.
-                 In this paragraph, the variable name should be resolved to the value Homer Simpson.
-                 In this paragraph, the variable foo should not be resolved: <1|unresolvedValueWithComment|1><1|replaceWordWith(foo)>.
+                This paragraph is untouched.
+                In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                In this paragraph, the variable foo should not be resolved: <1|unresolvedValueWithComment|1><1|replaceWordWith(foo)>.
                 """;
         var config = standardWithPreprocessing().setExceptionResolver(ExceptionResolvers.passing());
         return arguments("Replace Word With Integration test", config, context, template, expected);
@@ -1363,8 +1362,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var defaultValue = "N/C";
         var config = standard().setLineBreakPlaceholder("\n")
                                .addResolver(Resolvers.nullToDefault(defaultValue))
-                               .setExceptionResolver(ExceptionResolvers.defaulting(defaultValue))
-                               .setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
+                               .setExceptionResolver(ExceptionResolvers.defaulting(defaultValue));
 
         return arguments("Should be able to stamp from a Map<String, Object> context",
                 config,

@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static pro.verron.officestamper.EvaluationContexts.enableMapAccess;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 
 public class Examples {
@@ -23,8 +22,7 @@ public class Examples {
 
         logger.info("Setup a map-reading able docx-stamper instance");
 
-        var configuration = standard()
-                .setEvaluationContextConfigurer(enableMapAccess());
+        var configuration = standard();
         var stamper = OfficeStampers.docxStamper(configuration);
 
         logger.info("Load the internally packaged 'Diagnostic.docx' template resource");

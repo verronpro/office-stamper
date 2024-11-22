@@ -8,18 +8,15 @@ import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.mce.AlternateContent;
 import org.docx4j.model.structure.HeaderFooterPolicy;
 import org.docx4j.model.structure.SectionWrapper;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.*;
 import org.docx4j.vml.CTShadow;
 import org.docx4j.vml.CTShapetype;
 import org.docx4j.vml.CTTextbox;
 import org.docx4j.vml.VmlShapeElements;
 import org.docx4j.wml.*;
-import org.docx4j.wml.Comments.Comment;
 import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
 import org.xlsx4j.sml.Cell;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -27,21 +24,19 @@ import pro.verron.officestamper.experimental.ExcelCollector;
 import pro.verron.officestamper.experimental.PowerpointCollector;
 import pro.verron.officestamper.experimental.PowerpointParagraph;
 import pro.verron.officestamper.experimental.PptxPart;
+import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.Optional.*;
 import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.utils.ByteUtils.humanReadableByteCountSI;
+import static pro.verron.officestamper.utils.ByteUtils.sha1b64;
 
 /**
  * <p>Stringifier class.</p>
@@ -89,45 +84,21 @@ public class Stringifier {
                         .collect(joining("\n"));
     }
 
-    private static MessageDigest findDigest() {
-        try {
-            return MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new OfficeStamperException(e);
-        }
+    private static String stringify(Map<String, String> map) {
+        return map.entrySet()
+                  .stream()
+                  .map(e -> "%s=%s".formatted(e.getKey(), e.getValue()))
+                  .collect(joining(",", "{", "}"));
     }
 
-    /**
-     * Finds a comment with the given ID in the specified WordprocessingMLPackage document.
-     *
-     * @param document the WordprocessingMLPackage document to search for the comment
-     * @param id       the ID of the comment to find
-     *
-     * @return an Optional containing the Comment if found, or an empty Optional if not found
-     *
-     * @throws Docx4JException if an error occurs while searching for the comment
-     */
-    public static Optional<Comment> findComment(
-            WordprocessingMLPackage document, BigInteger id
-    )
-            throws Docx4JException {
-        var name = new PartName("/word/comments.xml");
-        var parts = document.getParts();
-        var wordComments = (CommentsPart) parts.get(name);
-        var comments = wordComments.getContents();
-        return comments.getComment()
-                       .stream()
-                       .filter(idEqual(id))
-                       .findFirst();
+    private static <T> Optional<String> stringify(List<T> list, Function<T, Optional<String>> stringify) {
+        if (list == null) return empty();
+        if (list.isEmpty()) return empty();
+        return of(list.stream()
+                      .map(stringify)
+                      .flatMap(Optional::stream)
+                      .collect(joining(",", "[", "]")));
     }
-
-    private static Predicate<Comment> idEqual(BigInteger id) {
-        return comment -> {
-            var commentId = comment.getId();
-            return commentId.equals(id);
-        };
-    }
-
 
     /**
      * <p>stringify.</p>
@@ -148,13 +119,6 @@ public class Stringifier {
         ofNullable(spacing.getLine()).ifPresent(value -> map.put("line", String.valueOf(value)));
         ofNullable(spacing.getLineRule()).ifPresent(value -> map.put("lineRule", value.value()));
         return map.isEmpty() ? empty() : of(stringify(map));
-    }
-
-    private static String stringify(Map<String, String> map) {
-        return map.entrySet()
-                  .stream()
-                  .map(e -> "%s=%s".formatted(e.getKey(), e.getValue()))
-                  .collect(joining(",", "{", "}"));
     }
 
     private String stringify(Text text) {
@@ -209,33 +173,6 @@ public class Stringifier {
     }
 
     /**
-     * <p>humanReadableByteCountSI.</p>
-     *
-     * @param bytes a long
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
-    private String humanReadableByteCountSI(long bytes) {
-        if (-1000 < bytes && bytes < 1000) return bytes + "B";
-
-        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
-        while (bytes <= -999_950 || bytes >= 999_950) {
-            bytes /= 1000;
-            ci.next();
-        }
-        return String.format(Locale.US, "%.1f%cB", bytes / 1000.0, ci.current());
-    }
-
-    private String sha1b64(byte[] imageBytes) {
-        MessageDigest messageDigest = findDigest();
-        Base64.Encoder encoder = Base64.getEncoder();
-        byte[] digest = messageDigest.digest(imageBytes);
-        return encoder.encodeToString(digest);
-    }
-
-    /**
      * <p>stringify.</p>
      *
      * @param o a {@link Object} object
@@ -270,8 +207,8 @@ public class Stringifier {
         if (o instanceof R.CommentReference cr) return stringify(cr);
         if (o instanceof CTMarkupRange) return "";
         if (o instanceof ProofErr) return "";
-        if (o instanceof CommentRangeStart) return "";
-        if (o instanceof CommentRangeEnd) return "";
+        if (o instanceof CommentRangeStart crs) return stringify(crs);
+        if (o instanceof CommentRangeEnd cre) return stringify(cre);
         if (o instanceof SdtBlock block) return stringify(block);
         if (o instanceof AlternateContent) return "";
         if (o instanceof Pict pict) return stringify(pict.getAnyAndAny());
@@ -296,6 +233,14 @@ public class Stringifier {
 
     private String stringify(VmlShapeElements vmlShapeElements) {
         return "[" + stringify(vmlShapeElements.getEGShapeElements()).trim() + "]\n";
+    }
+
+    private String stringify(CommentRangeStart crs) {
+        return "<" + crs.getId() + "|";
+    }
+
+    private String stringify(CommentRangeEnd cre) {
+        return "|" + cre.getId() + ">";
     }
 
     private String stringify(WordprocessingMLPackage mlPackage) {
@@ -421,13 +366,18 @@ public class Stringifier {
     }
 
     private String stringify(R.CommentReference commentReference) {
-        try {
-            return Stringifier.findComment(document(), commentReference.getId())
-                              .map(c -> stringify(c.getContent()))
-                              .orElseThrow();
-        } catch (Docx4JException e) {
-            throw new RuntimeException(e);
-        }
+        var id = commentReference.getId();
+        var stringifiedComment = stringifyComment(id);
+        return "<%s|%s>".formatted(id, stringifiedComment);
+    }
+
+    private String stringifyComment(BigInteger id) {
+        var document = document();
+        return WmlUtils.findComment(document, id)
+                       .map(Comments.Comment::getContent)
+                       .map(this::stringify)
+                       .orElseThrow()
+                       .strip();
     }
 
     private String stringify(GraphicData graphicData) {
@@ -626,15 +576,6 @@ public class Stringifier {
         ofNullable(sectPr.getTextDirection()).ifPresent(value -> map.put("textDirection", "xxx"));
         ofNullable(sectPr.getRtlGutter()).ifPresent(value -> map.put("rtlGutter", "xxx"));
         return map.isEmpty() ? empty() : of(stringify(map));
-    }
-
-    private static <T> Optional<String> stringify(List<T> list, Function<T, Optional<String>> stringify) {
-        if (list == null) return empty();
-        if (list.isEmpty()) return empty();
-        return of(list.stream()
-                      .map(stringify)
-                      .flatMap(Optional::stream)
-                      .collect(joining(",", "[", "]")));
     }
 
     private Optional<String> stringify(CTRel ctRel) {

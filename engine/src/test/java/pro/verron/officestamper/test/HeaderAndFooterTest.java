@@ -13,10 +13,8 @@ import static pro.verron.officestamper.test.TestUtils.getImage;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 
-/**
- * @author Joseph Verron
- * @author Tom Hombergs
- */
+/// @author Joseph Verron
+/// @author Tom Hombergs
 class HeaderAndFooterTest {
     @Test @DisplayName("Placeholders in headers and footers should be replaced") void placeholders() {
         var context = new Name("Homer Simpson", getImage(Path.of("butterfly.png")));

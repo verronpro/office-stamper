@@ -13,10 +13,8 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 
-/**
- * @author Joseph Verron
- * @author Tom Hombergs
- */
+/// @author Joseph Verron
+/// @author Tom Hombergs
 class FailOnUnresolvedPlaceholderTest {
 
     public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();

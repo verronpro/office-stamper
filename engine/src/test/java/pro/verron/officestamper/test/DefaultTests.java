@@ -28,23 +28,16 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 import static pro.verron.officestamper.test.TestUtils.*;
 
-/**
- * <p>DefaultTests class.</p>
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.6
- */
-@DisplayName("Core Features") public class DefaultTests {
+/// DefaultTests class.
+///
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.6
+@DisplayName("Core Features") class DefaultTests {
 
     public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
     private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
 
-    /**
-     * <p>tests.</p>
-     *
-     * @return a {@link java.util.stream.Stream} object
-     */
     public static Stream<Arguments> tests()
             throws IOException, Docx4JException {
         return Stream.of(ternary(),

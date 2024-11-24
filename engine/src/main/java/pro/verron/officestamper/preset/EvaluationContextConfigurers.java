@@ -83,7 +83,8 @@ public class EvaluationContextConfigurers {
          */
         @Override
         public void configureEvaluationContext(StandardEvaluationContext context) {
-            // DO NOTHING
+            // Just add the MapAccessor to the standard list.
+            context.setPropertyAccessors(List.of(new ReflectivePropertyAccessor(), new MapAccessor()));
         }
     }
 

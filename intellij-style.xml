@@ -1,10 +1,10 @@
-<code_scheme name="Project" version="173">
+<code_scheme name="docx-stamper" version="173">
   <JavaCodeStyleSettings>
     <option name="REPLACE_INSTANCEOF_AND_CAST" value="true"/>
+    <option name="DO_NOT_WRAP_AFTER_SINGLE_ANNOTATION" value="true"/>
     <option name="DO_NOT_WRAP_AFTER_SINGLE_ANNOTATION_IN_PARAMETER" value="true"/>
     <option name="ANNOTATION_PARAMETER_WRAP" value="5"/>
     <option name="ALIGN_MULTILINE_ANNOTATION_PARAMETERS" value="true"/>
-    <option name="NEW_LINE_AFTER_LPAREN_IN_ANNOTATION" value="true"/>
     <option name="CLASS_NAMES_IN_JAVADOC" value="3"/>
     <option name="RECORD_COMPONENTS_WRAP" value="5"/>
     <option name="ALIGN_MULTILINE_RECORDS" value="false"/>
@@ -25,6 +25,7 @@
     <option name="ELSE_ON_NEW_LINE" value="true"/>
     <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true"/>
     <option name="ALIGN_MULTILINE_PARAMETERS" value="false"/>
+    <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true"/>
     <option name="CALL_PARAMETERS_WRAP" value="5"/>
     <option name="METHOD_PARAMETERS_WRAP" value="5"/>
     <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true"/>
@@ -52,7 +53,6 @@
     <option name="ASSERT_STATEMENT_WRAP" value="5"/>
     <option name="ASSERT_STATEMENT_COLON_ON_NEXT_LINE" value="true"/>
     <option name="WRAP_LONG_LINES" value="true"/>
-    <option name="METHOD_ANNOTATION_WRAP" value="5"/>
     <option name="CLASS_ANNOTATION_WRAP" value="5"/>
     <option name="FIELD_ANNOTATION_WRAP" value="5"/>
     <option name="PARAMETER_ANNOTATION_WRAP" value="5"/>
@@ -68,7 +68,7 @@
         </group>
         <group>
           <type>OVERRIDDEN_METHODS</type>
-          <order>BY_NAME</order>
+          <order>KEEP</order>
         </group>
         <group>
           <type>DEPENDENT_METHODS</type>

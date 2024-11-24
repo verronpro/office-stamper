@@ -11,6 +11,8 @@ public sealed interface ContextFactory
 
     static ContextFactory mapContextFactory() {return new MapContextFactory();}
 
+    Object units(Image... images);
+
     Object tableContext();
 
     Object subDocPartContext();
@@ -40,4 +42,8 @@ public sealed interface ContextFactory
     Object name(String name);
 
     Object empty();
+
+    Object sectionName(String firstName, String secondName);
+
+    Object imagedName(String name, Image image);
 }

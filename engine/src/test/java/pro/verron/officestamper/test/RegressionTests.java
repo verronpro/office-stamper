@@ -38,12 +38,14 @@ class RegressionTests {
     void test64()
             throws IOException, Docx4JException {
         var configuration = givenConfiguration();
-        configuration.exposeInterfaceToExpressionLanguage(TestFunction.class, new TestFunction.TestFunctionImpl());
+        var testFunction = new TestFunction.TestFunctionImpl();
+        configuration.exposeInterfaceToExpressionLanguage(TestFunction.class, testFunction);
         var stamper = givenStamper(configuration);
         var template = givenTemplate("${test()}");
         var context = givenContext();
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals("\n", actual);
+        assertEquals(1, testFunction.counter());
     }
 
     private static OfficeStamperConfiguration givenConfiguration() {
@@ -81,8 +83,15 @@ class RegressionTests {
 
         class TestFunctionImpl
                 implements TestFunction {
-            @Override public void test() {
-                System.out.println("Test");
+            private int counter = 0;
+
+            @Override
+            public void test() {
+                counter++;
+            }
+
+            public int counter() {
+                return counter;
             }
         }
     }
@@ -96,7 +105,8 @@ class RegressionTests {
             return new Conditions(elements);
         }
 
-        @Override public String toString() {
+        @Override
+        public String toString() {
             return conditions.stream()
                              .map(Condition::condition)
                              .map(Objects::toString)

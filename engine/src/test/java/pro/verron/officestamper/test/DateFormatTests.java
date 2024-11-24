@@ -1,27 +1,33 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
 @DisplayName("Custom functions")
 class DateFormatTests {
 
-    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
+    static Stream<Arguments> factories() {
+        return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
+    }
 
     @DisplayName("Should works with variables, multiline text, in comment content, inside comment, and in repetitions.")
-    @Test()
-    void features()
-            throws IOException, Docx4JException {
+    @MethodSource("factories")
+    @ParameterizedTest
+    void features(ContextFactory factory) {
         var config = standard();
         Locale.setDefault(Locale.KOREA);
         var template = makeResource("""
@@ -81,7 +87,7 @@ class DateFormatTests {
                 ISO Localized Datetime (SHORT, MEDIUM): ${flocaldatetime(date, "SHORT", "MEDIUM")}
                 ISO Localized Datetime (SHORT, SHORT): ${flocaldatetime(date, "SHORT", "SHORT")}
                 """);
-        var context = FACTORY.date(ZonedDateTime.of(2000, 1, 12, 23, 34, 45, 567, ZoneId.of("UTC+2")));
+        var context = factory.date(ZonedDateTime.of(2000, 1, 12, 23, 34, 45, 567, ZoneId.of("UTC+2")));
         var stamper = new TestDocxStamper<>(config);
         var expected = """
                 ISO Date: 2000-01-12+02:00

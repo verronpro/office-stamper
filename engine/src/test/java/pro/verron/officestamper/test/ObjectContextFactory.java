@@ -5,6 +5,7 @@ import pro.verron.officestamper.preset.StampTable;
 
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -18,8 +19,20 @@ import static java.util.Arrays.stream;
 public final class ObjectContextFactory
         implements ContextFactory {
 
+    @Override
+    public Object units(Image... images) {
+        record Facility(Image coverImage) {}
+        record Unit(Facility productionFacility) {}
+        record Units(List<Unit> units) {}
+        return new Units(Arrays.stream(images)
+                               .map(Facility::new)
+                               .map(Unit::new)
+                               .toList());
+    }
+
     // TODO make a Simpsons version
-    @Override public Object tableContext() {
+    @Override
+    public Object tableContext() {
         record TableValue(String value) {}
         record TableHolder(
                 List<TableValue> firstTable, List<TableValue> secondTable, Iterable<TableValue> thirdTable
@@ -42,13 +55,15 @@ public final class ObjectContextFactory
     }
 
     // TODO make a Simpsons version
-    @Override public Object subDocPartContext() {
+    @Override
+    public Object subDocPartContext() {
         record Named(String name) {}
         record SubDocPartHolder(List<Named> subDocParts) {}
         return new SubDocPartHolder(List.of(new Named("first doc part"), new Named("second doc part")));
     }
 
-    @Override public Object spacy() {
+    @Override
+    public Object spacy() {
         class SpacyContext {
             public String getExpressionWithLeadingAndTrailingSpace() {
                 return " Expression ";
@@ -69,7 +84,8 @@ public final class ObjectContextFactory
         return new SpacyContext();
     }
 
-    @Override public Object show() {
+    @Override
+    public Object show() {
         record CharacterRecord(int index, String indexSuffix, String characterName, String actorName) {}
         record Show(String name, List<CharacterRecord> characters) {}
         return new Show("The Simpsons",
@@ -81,7 +97,8 @@ public final class ObjectContextFactory
     }
 
     // TODO make a Simpsons version
-    @Override public Object schoolContext() {
+    @Override
+    public Object schoolContext() {
         record Student(int number, String name, int age) {}
         record AClass(int number, List<Student> students) {}
         record Grade(int number, List<AClass> classes) {}
@@ -106,7 +123,8 @@ public final class ObjectContextFactory
     /// @param input an array of strings where each pair of strings represents a character's name and actor's name.
     ///
     /// @return a Characters object containing a list of Role objects constructed from the input array.
-    @Override public Object roles(String... input) {
+    @Override
+    public Object roles(String... input) {
         record Role(String name, String actor) {}
         record Characters(List<Role> characters) {}
         var roles = IntStream.iterate(0, i -> i < input.length, i -> i + 2)
@@ -116,7 +134,8 @@ public final class ObjectContextFactory
     }
 
     // TODO make a Simpsons version
-    @Override public Object nullishContext() {
+    @Override
+    public Object nullishContext() {
         record SubContext(String value, List<String> li) {
             /// Add an empty constructor to respect the Bean interface contract
             /// Insert a new ArrayList() instead of null or Collections emptyList to permit Spel autofill
@@ -162,7 +181,8 @@ public final class ObjectContextFactory
     }
 
     // TODO make a Simpsons version
-    @Override public Object mapAndReflectiveContext() {
+    @Override
+    public Object mapAndReflectiveContext() {
         record Container(String value) {}
         record MappyContext(String FLAT_STRING, List<Container> OBJECT_LIST_PROP) {}
         return new MappyContext("Flat string has been resolved",
@@ -170,29 +190,34 @@ public final class ObjectContextFactory
     }
 
     /// Represents the context for an insertable image.
-    @Override public Object image(Image image) {
+    @Override
+    public Object image(Image image) {
         record ImageContext(Image monalisa) {}
         return new ImageContext(image);
     }
 
-    @Override public Object date(Temporal date) {
+    @Override
+    public Object date(Temporal date) {
         record DateContext(Temporal date) {}
         return new DateContext(date);
     }
 
     // TODO make a Simpsons version
-    @Override public Object coupleContext() {
+    @Override
+    public Object coupleContext() {
         record Name(String name) {}
         record MapHolder(List<Name> repeatValues) {}
         return new MapHolder(List.of(new Name("Homer"), new Name("Marge")));
     }
 
-    @Override public Object characterTable(List<String> headers, List<List<String>> records) {
+    @Override
+    public Object characterTable(List<String> headers, List<List<String>> records) {
         record TableContext(StampTable characters) {}
         return new TableContext(new StampTable(headers, records));
     }
 
-    @Override public Object names(String... names) {
+    @Override
+    public Object names(String... names) {
         record Name(String name) {}
         record Names(List<Name> names) {}
         var nameList = stream(names).map(Name::new)
@@ -200,12 +225,26 @@ public final class ObjectContextFactory
         return new Names(nameList);
     }
 
-    @Override public Object name(String name) {
+    @Override
+    public Object name(String name) {
         record Name(String name) {}
         return new Name(name);
     }
 
-    @Override public Object empty() {
+    @Override
+    public Object empty() {
         return new Object();
+    }
+
+    @Override
+    public Object sectionName(String firstName, String secondName) {
+        record NamesContext(String firstName, String secondName) {}
+        return new NamesContext(firstName, secondName);
+    }
+
+    @Override
+    public Object imagedName(String name, Image image) {
+        record ImagedName(String name, Image butterfly) {}
+        return new ImagedName(name, image);
     }
 }

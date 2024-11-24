@@ -1,14 +1,19 @@
 package pro.verron.officestamper.test;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.preset.ExceptionResolvers;
-import pro.verron.officestamper.preset.Image;
 
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getImage;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
@@ -16,11 +21,18 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
 /// @author Joseph Verron
 /// @author Tom Hombergs
 class HeaderAndFooterTest {
-    @Test @DisplayName("Placeholders in headers and footers should be replaced") void placeholders() {
-        var context = new Name("Homer Simpson", getImage(Path.of("butterfly.png")));
+    static Stream<Arguments> factories() {
+        return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
+    }
+
+    @DisplayName("Placeholders in headers and footers should be replaced")
+    @MethodSource("factories")
+    @ParameterizedTest
+    void placeholders(ContextFactory factory) {
+        var context = factory.imagedName("Homer Simpson", getImage(Path.of("butterfly.png")));
         var template = getResource("ExpressionReplacementInHeaderAndFooterTest.docx");
         var config = standard().setExceptionResolver(ExceptionResolvers.passing());
-        var stamper = new TestDocxStamper<Name>(config);
+        var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals("""
                 [header, name="/word/header2.xml"]
@@ -44,6 +56,4 @@ class HeaderAndFooterTest {
                 ----
                 """, actual);
     }
-
-    public record Name(String name, Image butterfly) {}
 }

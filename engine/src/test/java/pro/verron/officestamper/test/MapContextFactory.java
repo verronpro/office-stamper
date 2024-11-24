@@ -10,6 +10,15 @@ import java.util.stream.IntStream;
 public final class MapContextFactory
         implements ContextFactory {
 
+    @Override
+    public Object units(Image... images) {
+        return Map.of("units",
+                Arrays.stream(images)
+                      .map(coverImage -> Map.of("coverImage", coverImage))
+                      .map(productionFacility -> Map.of("productionFacility", productionFacility))
+                      .toList());
+    }
+
     /// TODO make a Simpsons version
     @Override
     public Object tableContext() {
@@ -54,7 +63,8 @@ public final class MapContextFactory
         return context;
     }
 
-    @Override public Object spacy() {
+    @Override
+    public Object spacy() {
         return Map.of("expressionWithLeadingAndTrailingSpace",
                 " Expression ",
                 "expressionWithLeadingSpace",
@@ -65,33 +75,51 @@ public final class MapContextFactory
                 "Expression");
     }
 
-    @Override public Object show() {
-        return Map.of("name", "The Simpsons", "characters", List.of(Map.of("index",
-                        1,
-                        "indexSuffix",
-                        "st",
-                        "characterName",
-                        "Homer Simpson",
-                        "actorName",
-                        "Dan Castellaneta"),
-                Map.of("index", 2, "indexSuffix", "nd", "characterName", "Marge Simpson", "actorName", "Julie Kavner"),
-                Map.of("index",
-                        3,
-                        "indexSuffix",
-                        "rd",
-                        "characterName",
-                        "Bart Simpson",
-                        "actorName",
-                        "Nancy Cartwright"),
-                Map.of("index", 4, "indexSuffix", "th", "characterName", "Lisa Simpson", "actorName", "Yeardley Smith"),
-                Map.of("index",
-                        5,
-                        "indexSuffix",
-                        "th",
-                        "characterName",
-                        "Maggie Simpson",
-                        "actorName",
-                        "Julie Kavner")));
+    @Override
+    public Object show() {
+        return Map.of("name",
+                "The Simpsons",
+                "characters",
+                List.of(Map.of("index",
+                                1,
+                                "indexSuffix",
+                                "st",
+                                "characterName",
+                                "Homer Simpson",
+                                "actorName",
+                                "Dan Castellaneta"),
+                        Map.of("index",
+                                2,
+                                "indexSuffix",
+                                "nd",
+                                "characterName",
+                                "Marge Simpson",
+                                "actorName",
+                                "Julie Kavner"),
+                        Map.of("index",
+                                3,
+                                "indexSuffix",
+                                "rd",
+                                "characterName",
+                                "Bart Simpson",
+                                "actorName",
+                                "Nancy Cartwright"),
+                        Map.of("index",
+                                4,
+                                "indexSuffix",
+                                "th",
+                                "characterName",
+                                "Lisa Simpson",
+                                "actorName",
+                                "Yeardley Smith"),
+                        Map.of("index",
+                                5,
+                                "indexSuffix",
+                                "th",
+                                "characterName",
+                                "Maggie Simpson",
+                                "actorName",
+                                "Julie Kavner")));
     }
 
     /// TODO make a Simpsons version
@@ -109,7 +137,7 @@ public final class MapContextFactory
             }
             grades.add(Map.of("number", grade1, "classes", classes));
         }
-        return Map.of("schoolname", "South Park Primary School", "grades", grades);
+        return Map.of("schoolName", "South Park Primary School", "grades", grades);
     }
 
     /// Creates a Characters object from an array of string inputs containing names and actors.
@@ -120,7 +148,7 @@ public final class MapContextFactory
     @Override
     public Object roles(String... input) {
         var roles = IntStream.iterate(0, i -> i < input.length, i -> i + 2)
-                             .mapToObj(i -> Map.of(input[i], (Object) input[i + 1]))
+                             .mapToObj(i -> Map.of("name", input[i], "actor", (Object) input[i + 1]))
                              .toList();
         return Map.of("characters", roles);
     }
@@ -130,7 +158,12 @@ public final class MapContextFactory
     public Object nullishContext() {
         var stringList = List.of("Fullish3", "Fullish4", "Fullish5");
         var subContext = Map.of("value", "Fullish2", "li", stringList);
-        return Map.of("fullish_value", "Fullish1", "fullish", subContext, "nullish_value", null, "nullish", null);
+        Map<String, Object> stringObjectMap = new HashMap<>();
+        stringObjectMap.put("fullish_value", "Fullish1");
+        stringObjectMap.put("fullish", subContext);
+        stringObjectMap.put("nullish_value", null);
+        stringObjectMap.put("nullish", null);
+        return stringObjectMap;
     }
 
     /// TODO make a Simpsons version
@@ -153,7 +186,8 @@ public final class MapContextFactory
         return Map.of("monalisa", image);
     }
 
-    @Override public Object date(Temporal date) {
+    @Override
+    public Object date(Temporal date) {
         return Map.of("date", date);
     }
 
@@ -168,7 +202,8 @@ public final class MapContextFactory
         return context;
     }
 
-    @Override public Object characterTable(List<String> headers, List<List<String>> records) {
+    @Override
+    public Object characterTable(List<String> headers, List<List<String>> records) {
         return Map.of("characters", new StampTable(headers, records));
     }
 
@@ -190,5 +225,15 @@ public final class MapContextFactory
     @Override
     public Object empty() {
         return Map.of();
+    }
+
+    @Override
+    public Object sectionName(String firstName, String secondName) {
+        return Map.of("firstName", firstName, "secondName", secondName);
+    }
+
+    @Override
+    public Object imagedName(String name, Image image) {
+        return Map.of("name", name, "butterfly", image);
     }
 }

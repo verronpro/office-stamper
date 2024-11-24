@@ -1,20 +1,32 @@
 package pro.verron.officestamper.test;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /// @author Joseph Verron
 class MultiSectionTest {
 
-    @Test
-    void expressionsInMultipleSections() {
-        var context = new NamesContext("Homer", "Marge");
+    static Stream<Arguments> factories() {
+        return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
+    }
+
+    @MethodSource("factories")
+    @ParameterizedTest
+    void expressionsInMultipleSections(ContextFactory factory) {
+        var context = factory.sectionName("Homer", "Marge");
         var template = getResource("MultiSectionTest.docx");
         var configuration = OfficeStamperConfigurations.standard();
-        var stamper = new TestDocxStamper<NamesContext>(configuration);
+        var stamper = new TestDocxStamper<>(configuration);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         String expected = """
                 Homer
@@ -25,8 +37,5 @@ class MultiSectionTest {
                 Marge
                 """;
         assertEquals(expected, actual);
-    }
-
-    public record NamesContext(String firstName, String secondName) {
     }
 }

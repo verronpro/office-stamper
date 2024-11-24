@@ -1,6 +1,5 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,7 +13,6 @@ import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
@@ -26,6 +24,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
+import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
 
 /// DefaultTests class.
@@ -35,57 +35,72 @@ import static pro.verron.officestamper.test.TestUtils.*;
 /// @since 1.6.6
 @DisplayName("Core Features") class DefaultTests {
 
-    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
     private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
 
-    public static Stream<Arguments> tests()
-            throws IOException, Docx4JException {
-        return Stream.of(ternary(),
-                repeatingRows(),
-                repeatingRowsWithLineBreak(),
-                replaceWordWithIntegrationTest(),
-                replaceNullExpressionTest(),
-                repeatTableRowKeepsFormatTest(),
-                repeatParagraphTest(),
-                repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument(),
-                repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate(),
-                repeatDocPartTest(),
-                repeatDocPartNestingTest(),
-                repeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate(),
-                changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment(),
-                changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithSectionBreakInsideComment(),
-                changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment(),
-                replaceNullExpressionTest2(),
-                changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement(),
-                changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment(),
-                conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved(),
-                conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(),
-                conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(),
-                conditionalDisplayOfTableRowsTest(),
-                conditionalDisplayOfTableBug32Test(),
-                conditionalDisplayOfTableTest(),
-                customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(),
-                expressionReplacementInGlobalParagraphsTest(),
-                expressionReplacementInTablesTest(),
-                expressionReplacementWithFormattingTest(),
-                expressionWithSurroundingSpacesTest(),
-                expressionReplacementWithCommentTest(),
-                imageReplacementInGlobalParagraphsTest(),
-                imageReplacementInGlobalParagraphsTestWithMaxWidth(),
-                leaveEmptyOnExpressionErrorTest(),
-                lineBreakReplacementTest(),
-                mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(),
-                nullPointerResolutionTest_testWithDefaultSpel(),
-                nullPointerResolutionTest_testWithCustomSpel(),
-                customCommentProcessor(),
-                controls());
+    private static Stream<Arguments> tests() {
+        return Stream.concat(factories().mapMulti((factory, pipe) -> {
+            pipe.accept(ternary(factory));
+            pipe.accept(repeatingRows(factory));
+            pipe.accept(repeatingRowsWithLineBreak(factory));
+            pipe.accept(replaceWordWithIntegrationTest(factory));
+            pipe.accept(replaceNullExpressionTest(factory));
+            pipe.accept(repeatTableRowKeepsFormatTest(factory));
+            pipe.accept(repeatParagraphTest(factory));
+            pipe.accept(repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument(factory));
+            pipe.accept(repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate(
+                    factory));
+            pipe.accept(repeatDocPartTest(factory));
+            pipe.accept(repeatDocPartNestingTest(factory));
+            pipe.accept(
+                    repeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate(
+                            factory));
+            pipe.accept(
+                    changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment(
+                            factory));
+            pipe.accept(
+                    changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithSectionBreakInsideComment(
+                            factory));
+            pipe.accept(
+                    changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment(
+                            factory));
+            pipe.accept(replaceNullExpressionTest2(factory));
+            pipe.accept(
+                    changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement(
+                            factory));
+            pipe.accept(
+                    changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment(
+                            factory));
+            pipe.accept(conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved(factory));
+            pipe.accept(conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(factory));
+            pipe.accept(conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(factory));
+            pipe.accept(conditionalDisplayOfTableRowsTest(factory));
+            pipe.accept(conditionalDisplayOfTableBug32Test(factory));
+            pipe.accept(conditionalDisplayOfTableTest(factory));
+            pipe.accept(customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(factory));
+            pipe.accept(expressionReplacementInGlobalParagraphsTest(factory));
+            pipe.accept(expressionReplacementInTablesTest(factory));
+            pipe.accept(expressionReplacementWithFormattingTest(factory));
+            pipe.accept(expressionWithSurroundingSpacesTest(factory));
+            pipe.accept(expressionReplacementWithCommentTest(factory));
+            pipe.accept(imageReplacementInGlobalParagraphsTest(factory));
+            pipe.accept(imageReplacementInGlobalParagraphsTestWithMaxWidth(factory));
+            pipe.accept(leaveEmptyOnExpressionErrorTest(factory));
+            pipe.accept(lineBreakReplacementTest(factory));
+            pipe.accept(mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(factory));
+            pipe.accept(nullPointerResolutionTest_testWithDefaultSpel(factory));
+            pipe.accept(customCommentProcessor(factory));
+            pipe.accept(controls(factory));
+        }), Stream.of(nullPointerResolutionTest_testWithCustomSpel(ContextFactory.objectContextFactory())));
     }
 
+    static Stream<ContextFactory> factories() {
+        return Stream.of(objectContextFactory(), mapContextFactory());
+    }
 
-    private static Arguments ternary() {
-        return of("Ternary operators should function",
+    private static Arguments ternary(ContextFactory factory) {
+        return arguments("Ternary operators should function",
                 standard(),
-                FACTORY.name("Homer"),
+                factory.name("Homer"),
                 getResource(Path.of("TernaryOperatorTest.docx")),
                 """
                         Expression Replacement with ternary operator
@@ -96,10 +111,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments repeatingRows() {
+    private static Arguments repeatingRows(ContextFactory factory) {
         return of("Repeating table rows should be possible",
                 standard(),
-                FACTORY.roles("Homer Simpson",
+                factory.roles("Homer Simpson",
                         "Dan Castellaneta",
                         "Marge Simpson",
                         "Julie Kavner",
@@ -144,10 +159,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments repeatingRowsWithLineBreak() {
+    private static Arguments repeatingRowsWithLineBreak(ContextFactory factory) {
         return of("Repeating table rows should be possible while replacing various linebreaks",
                 standard().setLineBreakPlaceholder("\n"),
-                FACTORY.roles("Homer Simpson",
+                factory.roles("Homer Simpson",
                         "Dan Castellaneta",
                         "Marge Simpson",
                         "Julie\nKavner",
@@ -201,10 +216,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments replaceWordWithIntegrationTest() {
+    private static Arguments replaceWordWithIntegrationTest(ContextFactory factory) {
         return of("Replace Word With integration test",
                 OfficeStamperConfigurations.standardWithPreprocessing(),
-                FACTORY.name("Simpsons"),
+                factory.name("Simpsons"),
                 getResource(Path.of("ReplaceWordWithIntegrationTest.docx")),
                 """
                         == ReplaceWordWith Integration
@@ -219,20 +234,20 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments replaceNullExpressionTest() {
+    private static Arguments replaceNullExpressionTest(ContextFactory factory) {
         return of("Do not replace 'null' values",
                 standard().addResolver(Resolvers.nullToPlaceholder()),
-                FACTORY.name(null),
+                factory.name(null),
                 getResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
                         I am ${name}.
                         """);
     }
 
-    static Arguments repeatTableRowKeepsFormatTest() {
+    static Arguments repeatTableRowKeepsFormatTest(ContextFactory factory) {
         return of("Repeat Table row Integration test (keeps formatting)",
                 standard(),
-                FACTORY.show(),
+                factory.show(),
                 getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
                 """
                         |===
@@ -252,8 +267,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments repeatParagraphTest() {
-        var context = FACTORY.roles("Homer Simpson",
+    private static Arguments repeatParagraphTest(ContextFactory factory) {
+        var context = factory.roles("Homer Simpson",
                 "Dan Castellaneta",
                 "Marge Simpson",
                 "Julie Kavner",
@@ -302,12 +317,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("Repeat Paragraph Integration test", standard(), context, template, expected);
     }
 
-    private static Arguments repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument() {
-        var context = Map.of("units",
-                Stream.of(getImage(Path.of("butterfly.png")), getImage(Path.of("map.jpg")))
-                      .map(image -> Map.of("coverImage", image))
-                      .map(map -> Map.of("productionFacility", map))
-                      .toList());
+    private static Arguments repeatDocPartWithImageTestShouldImportImageDataInTheMainDocument(ContextFactory factory) {
+        var butterfly = getImage(Path.of("butterfly.png"));
+        var cartography = getImage(Path.of("map.jpg"));
+        var context = factory.units(butterfly, cartography);
         var template = getResource(Path.of("RepeatDocPartWithImageTest.docx"));
         var expected = """
                 
@@ -329,10 +342,12 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate() {
+    private static Arguments repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate(
+            ContextFactory factory
+    ) {
         return of("repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
                 standard(),
-                FACTORY.subDocPartContext(),
+                factory.subDocPartContext(),
                 getResource(Path.of("RepeatDocPartWithImagesInSourceTest" + ".docx")),
                 """
                         This is not repeated
@@ -346,10 +361,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments repeatDocPartTest() {
+    private static Arguments repeatDocPartTest(ContextFactory factory) {
         return of("Repeat Doc Part Integration test",
                 standard(),
-                FACTORY.roles("Homer Simpson",
+                factory.roles("Homer Simpson",
                         "Dan Castellaneta",
                         "Marge Simpson",
                         "Julie Kavner",
@@ -437,10 +452,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments repeatDocPartNestingTest() {
+    private static Arguments repeatDocPartNestingTest(ContextFactory factory) {
         return of("Repeat Doc Part Integration Test, with nested comments",
                 OfficeStamperConfigurations.standardWithPreprocessing(),
-                FACTORY.schoolContext(),
+                factory.schoolContext(),
                 getResource(Path.of("RepeatDocPartNestingTest.docx")),
                 """
                         = Repeating Doc Part
@@ -696,8 +711,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments repeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate() {
-        var context = FACTORY.tableContext();
+    private static Arguments repeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate(
+            ContextFactory factory
+    ) {
+        var context = factory.tableContext();
         var template = getResource(Path.of("RepeatDocPartAndCommentProcessorsIsolationTest.docx"));
         var expected = """
                 This will stay untouched.
@@ -747,10 +764,12 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment() {
+    private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithoutSectionBreakInsideComment(
+            ContextFactory factory
+    ) {
         return arguments("In multiple layouts, keeps section orientations outside RepeatParagraph comments",
                 standard(),
-                Map.of("repeatValues", List.of(FACTORY.name("Homer"), FACTORY.name("Marge"))),
+                Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutOutsideRepeatParagraphTest.docx")),
                 """
                         First page is landscape.
@@ -777,8 +796,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithSectionBreakInsideComment() {
-        var context = FACTORY.coupleContext();
+    private static Arguments changingPageLayoutTest_shouldKeepSectionBreakOrientationInRepeatParagraphWithSectionBreakInsideComment(
+            ContextFactory factory
+    ) {
+        var context = factory.coupleContext();
         var template = getResource(Path.of("ChangingPageLayoutInRepeatParagraphTest.docx"));
         var expected = """
                 First page is landscape.
@@ -814,10 +835,12 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment() {
+    private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideComment(
+            ContextFactory factory
+    ) {
         return arguments("In multiple layouts, keeps section orientations outside RepeatDocPart comments",
                 standard(),
-                Map.of("repeatValues", List.of(FACTORY.name("Homer"), FACTORY.name("Marge"))),
+                Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutInRepeatDocPartTest.docx")),
                 """
                         First page is portrait.
@@ -848,23 +871,25 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments replaceNullExpressionTest2() {
+    private static Arguments replaceNullExpressionTest2(ContextFactory factory) {
         return of("Do replace 'null' values",
                 standard().addResolver(Resolvers.nullToEmpty()),
-                FACTORY.name(null),
+                factory.name(null),
                 getResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
                         I am .
                         """);
     }
 
-    private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement() {
+    private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithSectionBreaksInsideCommentAndTableAsLastElement(
+            ContextFactory factory
+    ) {
         return arguments(
                 "In multiple layouts, keeps section orientations inside RepeatDocPart comments with a table as last "
                 + "element",
                 standard(),
 
-                Map.of("repeatValues", List.of(FACTORY.name("Homer"), FACTORY.name("Marge"))),
+                Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutInRepeatDocPartWithTableLastElementTest.docx")),
                 """
                         First page is portrait.
@@ -907,10 +932,12 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment() {
+    private static Arguments changingPageLayoutTest_shouldKeepPageBreakOrientationInRepeatDocPartWithoutSectionBreaksInsideComment(
+            ContextFactory factory
+    ) {
         return arguments("In multiple layouts, keeps section orientation outside RepeatDocPart comment",
                 standard(),
-                Map.of("repeatValues", List.of(FACTORY.name("Homer"), FACTORY.name("Marge"))),
+                Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
                 getResource(Path.of("ChangingPageLayoutOutsideRepeatDocPartTest.docx")),
                 """
                         First page is landscape.
@@ -937,8 +964,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-    private static Arguments conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved() {
-        var context = FACTORY.name("Homer");
+    private static Arguments conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved(ContextFactory factory) {
+        var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfParagraphsTest.docx"));
         var expected = """
                 == Conditional Display of Paragraphs
@@ -967,8 +994,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("Display Paragraph If Integration test", standard(), context, template, expected);
     }
 
-    private static Arguments conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved() {
-        var context = FACTORY.name("Homer");
+    private static Arguments conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(ContextFactory factory) {
+        var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
         var expected = """
                 == Conditional Display of Paragraphs
@@ -1000,8 +1027,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved() {
-        var context = FACTORY.name("Bart");
+    private static Arguments conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(
+            ContextFactory factory
+    ) {
+        var context = factory.name("Bart");
         var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
         var expected = """
                 == Conditional Display of Paragraphs
@@ -1035,8 +1064,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments conditionalDisplayOfTableRowsTest() {
-        var context = FACTORY.name("Homer");
+    private static Arguments conditionalDisplayOfTableRowsTest(ContextFactory factory) {
+        var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTableRowsTest.docx"));
         var expected = """
                 == Conditional Display of Table Rows
@@ -1062,8 +1091,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("Display Table Row If Integration test", standard(), context, template, expected);
     }
 
-    private static Arguments conditionalDisplayOfTableBug32Test() {
-        var context = FACTORY.name("Homer");
+    private static Arguments conditionalDisplayOfTableBug32Test(ContextFactory factory) {
+        var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTablesBug32Test.docx"));
         var expected = """
                 == Conditional Display of Tables
@@ -1093,8 +1122,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("Display Table If Bug32 Regression test", standard(), context, template, expected);
     }
 
-    private static Arguments conditionalDisplayOfTableTest() {
-        var context = FACTORY.name("Homer");
+    private static Arguments conditionalDisplayOfTableTest(ContextFactory factory) {
+        var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTablesTest" + ".docx"));
         var expected = """
                 == Conditional Display of Tables
@@ -1124,9 +1153,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("Display Table If Integration test", standard(), context, template, expected);
     }
 
-    private static Arguments customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored()
-            throws IOException, Docx4JException {
-        var context = FACTORY.empty();
+    private static Arguments customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(
+            ContextFactory factory
+    ) {
+        var context = factory.empty();
         var template = makeResource("""
                 Custom EvaluationContextConfigurer Test
                 This paragraph stays untouched.
@@ -1149,9 +1179,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments expressionReplacementInGlobalParagraphsTest()
-            throws IOException, Docx4JException {
-        var context = FACTORY.name("Homer Simpson");
+    private static Arguments expressionReplacementInGlobalParagraphsTest(ContextFactory factory) {
+        var context = factory.name("Homer Simpson");
         var template = makeResource("""
                 Expression Replacement in global paragraphs
                 This paragraph is untouched.
@@ -1167,8 +1196,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("expressionReplacementInGlobalParagraphsTest", config, context, template, expected);
     }
 
-    private static Arguments expressionReplacementInTablesTest() {
-        var context = FACTORY.name("Bart Simpson");
+    private static Arguments expressionReplacementInTablesTest(ContextFactory factory) {
+        var context = factory.name("Bart Simpson");
         var template = getResource(Path.of("ExpressionReplacementInTablesTest.docx"));
 
         var expected = """
@@ -1200,8 +1229,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("Placeholder replacement in tables", config, context, template, expected);
     }
 
-    private static Arguments expressionReplacementWithFormattingTest() {
-        var context = FACTORY.name("Homer Simpson");
+    private static Arguments expressionReplacementWithFormattingTest(ContextFactory factory) {
+        var context = factory.name("Homer Simpson");
         var template = getResource(Path.of("ExpressionReplacementWithFormattingTest.docx"));
         var expected = """
                 == Expression Replacement with text format
@@ -1230,8 +1259,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments expressionWithSurroundingSpacesTest() {
-        var spacyContext = FACTORY.spacy();
+    private static Arguments expressionWithSurroundingSpacesTest(ContextFactory factory) {
+        var spacyContext = factory.spacy();
         var template = getResource(Path.of("ExpressionWithSurroundingSpacesTest.docx"));
         var expected = """
                 == Expression Replacement when expression has leading and/or trailing spaces
@@ -1252,8 +1281,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments expressionReplacementWithCommentTest() {
-        var context = FACTORY.name("Homer Simpson");
+    private static Arguments expressionReplacementWithCommentTest(ContextFactory factory) {
+        var context = factory.name("Homer Simpson");
         var template = getResource(Path.of("ExpressionReplacementWithCommentsTest.docx"));
         var expected = """
                 == Expression Replacement with comments
@@ -1269,8 +1298,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
     /**
      * <p>testDateInstantiationAndResolution.</p>
      */
-    private static Arguments imageReplacementInGlobalParagraphsTest() {
-        var context = FACTORY.image(getImage(Path.of("monalisa.jpg")));
+    private static Arguments imageReplacementInGlobalParagraphsTest(ContextFactory factory) {
+        var context = factory.image(getImage(Path.of("monalisa.jpg")));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
                 == Image Replacement in global paragraphs
@@ -1282,8 +1311,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("Image Type resolver integration test", standard(), context, template, expected);
     }
 
-    private static Arguments imageReplacementInGlobalParagraphsTestWithMaxWidth() {
-        var context = FACTORY.image(getImage(Path.of("monalisa.jpg"), 1000));
+    private static Arguments imageReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
+        var context = factory.image(getImage(Path.of("monalisa.jpg"), 1000));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
                 == Image Replacement in global paragraphs
@@ -1299,8 +1328,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments leaveEmptyOnExpressionErrorTest() {
-        var context = FACTORY.name("Homer Simpson");
+    private static Arguments leaveEmptyOnExpressionErrorTest(ContextFactory factory) {
+        var context = factory.name("Homer Simpson");
         var template = getResource(Path.of("LeaveEmptyOnExpressionErrorTest.docx"));
         var expected = "Leave me empty .\n";
         var config = standard().setExceptionResolver(ExceptionResolvers.defaulting());
@@ -1311,9 +1340,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments lineBreakReplacementTest() {
+    private static Arguments lineBreakReplacementTest(ContextFactory factory) {
         var config = standard().setLineBreakPlaceholder("#");
-        var context = FACTORY.name(null);
+        var context = factory.name(null);
         var template = getResource(Path.of("LineBreakReplacementTest.docx"));
         var expected = """
                 Line Break Replacement
@@ -1326,8 +1355,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("lineBreakReplacementTest", config, context, template, expected);
     }
 
-    private static Arguments mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders() {
-        var context = FACTORY.mapAndReflectiveContext();
+    private static Arguments mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(
+            ContextFactory factory
+    ) {
+        var context = factory.mapAndReflectiveContext();
         var template = getResource(Path.of("MapAccessorAndReflectivePropertyAccessorTest.docx"));
         var expected = """
                 Flat string : Flat string has been resolved
@@ -1364,8 +1395,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 expected);
     }
 
-    private static Arguments nullPointerResolutionTest_testWithDefaultSpel() {
-        var context = FACTORY.nullishContext();
+    private static Arguments nullPointerResolutionTest_testWithDefaultSpel(ContextFactory factory) {
+        var context = factory.nullishContext();
         var template = getResource(Path.of("NullPointerResolution.docx"));
         var expected = """
                 Deal with null references
@@ -1387,8 +1418,39 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
     }
 
-    private static Arguments nullPointerResolutionTest_testWithCustomSpel() {
-        var context = FACTORY.nullishContext();
+    private static Arguments customCommentProcessor(ContextFactory factory) {
+        return arguments("Custom processor Integration test",
+                standard().addCommentProcessor(ICustomCommentProcessor.class, CustomCommentProcessor::new),
+                factory.empty(),
+                getResource(Path.of("CustomCommentProcessorTest.docx")),
+                """     
+                        == Custom Comment Processor Test
+                        
+                        Visited
+                        This paragraph is untouched.
+                        Visited
+                        """);
+    }
+
+    private static Arguments controls(ContextFactory factory) {
+        return of("Form controls should be replaced as well",
+                standard(),
+                factory.name("Homer"),
+                getResource(Path.of("form-controls.docx")),
+                """
+                        == Expression Replacement in Form Controls
+                        
+                        [Rich text control line Homer]
+                        Rich text control inlined [Homer]
+                        [Raw text control line Homer]
+                        Raw text control inlined [Homer]
+                        [Homer]
+                        
+                        """);
+    }
+
+    private static Arguments nullPointerResolutionTest_testWithCustomSpel(ContextFactory factory) {
+        var context = factory.nullishContext();
         var template = getResource(Path.of("NullPointerResolution.docx"));
         var expected = """
                 Deal with null references
@@ -1407,7 +1469,6 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
         // Beware, this configuration only autogrows pojos and java beans,
         // so it will not work if your type has no default constructor and no setters.
-
         var config = standard().setSpelParserConfiguration(new SpelParserConfiguration(true, true))
                                .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
                                .addResolver(Resolvers.nullToDefault("Nullish value!!"));
@@ -1415,39 +1476,14 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("nullPointerResolutionTest_testWithCustomSpel", config, context, template, expected);
     }
 
-    private static Arguments customCommentProcessor() {
-        return arguments("Custom processor Integration test",
-                standard().addCommentProcessor(ICustomCommentProcessor.class, CustomCommentProcessor::new),
-                FACTORY.empty(),
-                getResource(Path.of("CustomCommentProcessorTest.docx")),
-                """     
-                        == Custom Comment Processor Test
-                        
-                        Visited
-                        This paragraph is untouched.
-                        Visited
-                        """);
-    }
-
-    private static Arguments controls() {
-        return of("Form controls should be replaced as well",
-                standard(),
-                FACTORY.name("Homer"),
-                getResource(Path.of("form-controls.docx")),
-                """
-                        == Expression Replacement in Form Controls
-                        
-                        [Rich text control line Homer]
-                        Rich text control inlined [Homer]
-                        [Raw text control line Homer]
-                        Raw text control inlined [Homer]
-                        [Homer]
-                        
-                        """);
-    }
-
-    @MethodSource("tests") @ParameterizedTest(name = "{0}") void features(
-            String name, OfficeStamperConfiguration config, Object context, InputStream template, String expected
+    @MethodSource("tests")
+    @ParameterizedTest(name = "{0}")
+    void features(
+            String name,
+            OfficeStamperConfiguration config,
+            Object context,
+            InputStream template,
+            String expected
     ) {
         log.info(name);
         var stamper = new TestDocxStamper<>(config);

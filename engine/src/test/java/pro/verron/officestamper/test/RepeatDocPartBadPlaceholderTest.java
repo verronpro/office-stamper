@@ -1,16 +1,20 @@
 package pro.verron.officestamper.test;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 /// @author Jenei Attila
@@ -18,13 +22,16 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
 /// @version ${version}
 /// @since 1.6.6
 class RepeatDocPartBadPlaceholderTest {
-    public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
-    private static final Logger logger = LoggerFactory.getLogger(RepeatDocPartBadPlaceholderTest.class);
+    static Stream<Arguments> factories() {
+        return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
+    }
 
-    @Test @Timeout(10) // in the case of pipe lock because of unknown exceptions
-    void testBadExpressionShouldNotBlockCallerThread() {
+    @MethodSource("factories")
+    @ParameterizedTest
+    @Timeout(10) /* in the case of pipe lock because of unknown exceptions */
+    void testBadExpressionShouldNotBlockCallerThread(ContextFactory factory) {
         var template = getResource("RepeatDocPartBadExpressionTest.docx");
-        var context = FACTORY.roles("Homer Simpson",
+        var context = factory.roles("Homer Simpson",
                 "Dan Castellaneta",
                 "Marge Simpson",
                 "Julie Kavner",
@@ -37,13 +44,14 @@ class RepeatDocPartBadPlaceholderTest {
                 () -> stamper.stampAndLoadAndExtract(template, context));
 
         String expectedErrorInfo = "someUnknownField";
-        var findDirectInfo = exception.getMessage()
-                                      .contains(expectedErrorInfo);
-        var findSuppressedInfo = Arrays.stream(exception.getSuppressed())
-                                       .map(Throwable::getMessage)
-                                       .anyMatch(s -> s.contains(expectedErrorInfo));
+        var exceptionMessage = exception.getMessage();
+        var findDirectInfo = exceptionMessage.contains(expectedErrorInfo);
+        var suppressedInfo = Arrays.stream(exception.getSuppressed())
+                                   .map(Throwable::getMessage)
+                                   .toList();
+        var findSuppressedInfo = suppressedInfo.stream()
+                                               .anyMatch(s -> s.contains(expectedErrorInfo));
 
-        logger.info("Here is the exception info dump:", exception);
         String errorMessage = "Could not find the expected '%s' information".formatted(expectedErrorInfo);
         assertTrue(findDirectInfo || findSuppressedInfo, errorMessage);
     }

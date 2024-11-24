@@ -1,18 +1,21 @@
 package pro.verron.officestamper.test;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.docx4j.wml.Text;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static pro.verron.officestamper.utils.WmlFactory.*;
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
 
 /// A utility class for testing.
@@ -45,9 +48,13 @@ public class TestUtils {
         }
     }
 
-    public static InputStream makeResource(String content)
-            throws Docx4JException, IOException {
-        var aPackage = WordprocessingMLPackage.createPackage();
+    public static InputStream makeResource(String content) {
+        WordprocessingMLPackage aPackage = null;
+        try {
+            aPackage = WordprocessingMLPackage.createPackage();
+        } catch (InvalidFormatException e) {
+            throw new OfficeStamperException(e);
+        }
         var mainDocumentPart = aPackage.getMainDocumentPart();
         content.lines()
                .forEach(line -> {
@@ -70,8 +77,17 @@ public class TestUtils {
           .add(run);
         mainDocumentPart.addObject(p1);
                });
-        var outputStream = IOStreams.getOutputStream();
-        aPackage.save(outputStream);
+        OutputStream outputStream = null;
+        try {
+            outputStream = IOStreams.getOutputStream();
+        } catch (IOException e) {
+            throw new OfficeStamperException(e);
+        }
+        try {
+            aPackage.save(outputStream);
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException(e);
+        }
         return IOStreams.getInputStream(outputStream);
     }
 

@@ -9,10 +9,8 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 
-/**
- * @author Joseph Verron
- * @author Thomas Oster
- */
+/// @author Joseph Verron
+/// @author Thomas Oster
 class TextBoxesTest {
 
     public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();

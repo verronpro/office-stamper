@@ -7,10 +7,8 @@ import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
-/**
- * @author Joseph Verron
- * @author Tom Hombergs
- */
+/// @author Joseph Verron
+/// @author Tom Hombergs
 class MultiStampTest {
 
     public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();

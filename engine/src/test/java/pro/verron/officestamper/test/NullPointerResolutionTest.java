@@ -9,9 +9,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
-/**
- * @author Joseph Verron
- */
+/// @author Joseph Verron
 class NullPointerResolutionTest {
 
     public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();

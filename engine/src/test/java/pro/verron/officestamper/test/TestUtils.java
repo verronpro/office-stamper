@@ -15,32 +15,26 @@ import java.nio.file.Path;
 import static pro.verron.officestamper.utils.WmlFactory.*;
 
 
-/**
- * A utility class for testing.
- * Provides methods for retrieving InputStreams from specified resource paths.
- * Typically used for accessing test resources.
- */
+/// A utility class for testing.
+/// Provides methods for retrieving InputStreams from specified resource paths.
+/// Typically used for accessing test resources.
 public class TestUtils {
 
-    /**
-     * Retrieves an InputStream for the specified resource path.
-     *
-     * @param path the path of the resource
-     *
-     * @return an InputStream for the specified resource
-     */
+    /// Retrieves an InputStream for the specified resource path.
+    ///
+    /// @param path the path of the resource
+    ///
+    /// @return an InputStream for the specified resource
     public static InputStream getResource(String path) {
         return getResource(Path.of(path));
     }
 
 
-    /**
-     * Retrieves an InputStream for the specified resource path.
-     *
-     * @param path the path of the resource
-     *
-     * @return an InputStream for the specified resource
-     */
+    /// Retrieves an InputStream for the specified resource path.
+    ///
+    /// @param path the path of the resource
+    ///
+    /// @return an InputStream for the specified resource
     public static InputStream getResource(Path path) {
         try {
             var testRoot = Path.of("..", "test", "sources");

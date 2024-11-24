@@ -6,9 +6,7 @@ import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
-/**
- * @author Joseph Verron
- */
+/// @author Joseph Verron
 class MultiSectionTest {
 
     @Test

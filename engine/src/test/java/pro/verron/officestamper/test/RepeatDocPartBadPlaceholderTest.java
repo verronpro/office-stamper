@@ -13,12 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
-/**
- * @author Jenei Attila
- * @author Joseph Verrron
- * @version ${version}
- * @since 1.6.6
- */
+/// @author Jenei Attila
+/// @author Joseph Verrron
+/// @version ${version}
+/// @since 1.6.6
 class RepeatDocPartBadPlaceholderTest {
     public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
     private static final Logger logger = LoggerFactory.getLogger(RepeatDocPartBadPlaceholderTest.class);

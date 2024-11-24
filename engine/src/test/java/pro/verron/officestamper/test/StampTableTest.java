@@ -9,9 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 
-/**
- * A test class that verifies that stampTable feature works correctly
- */
+/// Verifies stampTable feature works correctly
 class StampTableTest {
 
     public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();

@@ -6,10 +6,7 @@ package pro.verron.officestamper.core;
 /// and ends with the suffix.
 /// The strip() method removes the prefix and suffix from an expression
 /// and returns the inner part.
-public record Matcher(
-        String prefix,
-        String suffix
-) {
+public record Matcher(String prefix, String suffix) {
 
     /// Checks if the given expression matches the specified criteria.
     ///
@@ -18,8 +15,7 @@ public record Matcher(
     /// @return `true` if the expression starts with the prefix
     /// and ends with the suffix,`false` otherwise.
     public boolean match(String expression) {
-        return expression.startsWith(prefix)
-               && expression.endsWith(suffix);
+        return expression.startsWith(prefix) && expression.endsWith(suffix);
     }
 
     /// Strips the prefix and suffix from the given expression and returns the inner part.

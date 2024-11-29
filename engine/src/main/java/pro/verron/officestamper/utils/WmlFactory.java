@@ -305,4 +305,16 @@ public class WmlFactory {
         commentReference.setParent(parent);
         return commentReference;
     }
+
+    public static Tbl newTbl() {
+        return new Tbl();
+    }
+
+    public static Tc newCell() {
+        return new Tc();
+    }
+
+    public static Tr newRow() {
+        return new Tr();
+    }
 }

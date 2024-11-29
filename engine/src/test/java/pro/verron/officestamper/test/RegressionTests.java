@@ -56,8 +56,7 @@ class RegressionTests {
         return new TestDocxStamper<>(configuration);
     }
 
-    private static InputStream givenTemplate(String str)
-            throws Docx4JException, IOException {
+    private static InputStream givenTemplate(String str) {
         return TestUtils.makeResource(str);
     }
 

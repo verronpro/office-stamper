@@ -1,5 +1,7 @@
 package pro.verron.officestamper.test;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,11 +19,20 @@ import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
-@DisplayName("Custom functions")
-class DateFormatTests {
+@DisplayName("Custom functions") class DateFormatTests {
 
     static Stream<Arguments> factories() {
         return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
+    }
+
+    @BeforeAll
+    static void beforeAll() {
+        Locale.setDefault(Locale.KOREA);
+    }
+
+    @AfterAll
+    static void afterAll() {
+        Locale.setDefault(Locale.ROOT);
     }
 
     @DisplayName("Should works with variables, multiline text, in comment content, inside comment, and in repetitions.")
@@ -29,7 +40,6 @@ class DateFormatTests {
     @ParameterizedTest
     void features(ContextFactory factory) {
         var config = standard();
-        Locale.setDefault(Locale.KOREA);
         var template = makeResource("""
                 ISO Date: ${fdate(date)}
                 ISO Datetime: ${fdatetime(date)}

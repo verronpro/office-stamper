@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
@@ -30,18 +31,18 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     }
 
     static Stream<Arguments> trifunctions() {
-        return Stream.of(Arguments.of(objectContextFactory(), "ZH", "2024 四月"),
-                Arguments.of(objectContextFactory(), "FR", "2024 avril"),
-                Arguments.of(objectContextFactory(), "EN", "2024 April"),
-                Arguments.of(objectContextFactory(), "JA", "2024 4月"),
-                Arguments.of(objectContextFactory(), "HE", "2024 אפריל"),
-                Arguments.of(objectContextFactory(), "IT", "2024 aprile"),
-                Arguments.of(mapContextFactory(), "ZH", "2024 四月"),
-                Arguments.of(mapContextFactory(), "FR", "2024 avril"),
-                Arguments.of(mapContextFactory(), "EN", "2024 April"),
-                Arguments.of(mapContextFactory(), "JA", "2024 4月"),
-                Arguments.of(mapContextFactory(), "HE", "2024 אפריל"),
-                Arguments.of(mapContextFactory(), "IT", "2024 aprile"));
+        return Stream.of(arguments(objectContextFactory(), "ZH", "2024 四月"),
+                arguments(objectContextFactory(), "FR", "2024 avril"),
+                arguments(objectContextFactory(), "EN", "2024 April"),
+                arguments(objectContextFactory(), "JA", "2024 4月"),
+                arguments(objectContextFactory(), "HE", "2024 אפריל"),
+                arguments(objectContextFactory(), "IT", "2024 aprile"),
+                arguments(mapContextFactory(), "ZH", "2024 四月"),
+                arguments(mapContextFactory(), "FR", "2024 avril"),
+                arguments(mapContextFactory(), "EN", "2024 April"),
+                arguments(mapContextFactory(), "JA", "2024 4月"),
+                arguments(mapContextFactory(), "HE", "2024 אפריל"),
+                arguments(mapContextFactory(), "IT", "2024 aprile"));
     }
 
     @DisplayName("Should allow to inject full interfaces")
@@ -134,9 +135,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         var template = makeResource("${Add('3.22', 4)}");
         var context = factory.empty();
         var stamper = new TestDocxStamper<>(config);
-        var expected = """
-                7.22
-                """;
+        var expected = "7.22\n";
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);
     }

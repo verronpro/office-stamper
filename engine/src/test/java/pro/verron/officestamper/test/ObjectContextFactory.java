@@ -4,9 +4,7 @@ import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.preset.StampTable;
 
 import java.time.temporal.Temporal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.stream;
@@ -24,10 +22,9 @@ public final class ObjectContextFactory
         record Facility(Image coverImage) {}
         record Unit(Facility productionFacility) {}
         record Units(List<Unit> units) {}
-        return new Units(Arrays.stream(images)
-                               .map(Facility::new)
-                               .map(Unit::new)
-                               .toList());
+        return new Units(stream(images).map(Facility::new)
+                                       .map(Unit::new)
+                                       .toList());
     }
 
     // TODO make a Simpsons version
@@ -218,11 +215,19 @@ public final class ObjectContextFactory
 
     @Override
     public Object names(String... names) {
+        return names(List.class, names);
+    }
+
+    @Override
+    public <T extends Iterable<?>> Object names(Class<T> clazz, String... names) {
         record Name(String name) {}
-        record Names(List<Name> names) {}
+        record Names(Iterable<Name> names) {}
         var nameList = stream(names).map(Name::new)
                                     .toList();
-        return new Names(nameList);
+        if (Queue.class.equals(clazz)) return new Names(new ArrayDeque<>(nameList));
+        else if (List.class.equals(clazz)) return new Names(new ArrayList<>(nameList));
+        else if (Set.class.equals(clazz)) return new Names(new HashSet<>(nameList));
+        throw new IllegalStateException("Unexpected value: " + clazz);
     }
 
     @Override

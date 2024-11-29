@@ -7,6 +7,8 @@ import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static java.util.Arrays.stream;
+
 public final class MapContextFactory
         implements ContextFactory {
 
@@ -209,10 +211,17 @@ public final class MapContextFactory
 
     @Override
     public Object names(String... names) {
-        return Map.of("names",
-                Arrays.stream(names)
-                      .map(name -> Map.of("name", name))
-                      .toList());
+        return names(List.class, names);
+    }
+
+    @Override
+    public <T extends Iterable<?>> Object names(Class<T> clazz, String... names) {
+        var nameList = stream(names).map(name -> Map.of("name", name))
+                                    .toList();
+        if (Queue.class.equals(clazz)) return Map.of("names", new ArrayDeque<>(nameList));
+        else if (List.class.equals(clazz)) return Map.of("names", new ArrayList<>(nameList));
+        else if (Set.class.equals(clazz)) return Map.of("names", new HashSet<>(nameList));
+        throw new IllegalStateException("Unexpected value: " + clazz);
     }
 
     @Override

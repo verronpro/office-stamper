@@ -2,6 +2,7 @@ package pro.verron.officestamper.utils;
 
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
@@ -316,5 +317,26 @@ public class WmlFactory {
 
     public static Tr newRow() {
         return new Tr();
+    }
+
+    public static WordprocessingMLPackage newWord() {
+        try {
+            var aPackage = WordprocessingMLPackage.createPackage();
+            var mainDocumentPart = aPackage.getMainDocumentPart();
+
+            var cp = newCommentsPart();
+            cp.init();
+            cp.setJaxbElement(newComments());
+            var cpPackage = cp.getPackage();
+            mainDocumentPart.addTargetPart(cp);
+            aPackage.setSourcePartStore(cpPackage.getSourcePartStore());
+            return aPackage;
+        } catch (InvalidFormatException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    private static Comments newComments() {
+        return new Comments();
     }
 }

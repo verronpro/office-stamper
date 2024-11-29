@@ -1,27 +1,37 @@
 package pro.verron.officestamper.test;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.exceptions.InvalidFormatException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
-import org.docx4j.wml.Text;
+import org.docx4j.wml.*;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;
+import pro.verron.officestamper.utils.WmlFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
+import static java.util.regex.Pattern.compile;
+import static pro.verron.officestamper.utils.WmlFactory.*;
 
 
 /// A utility class for testing.
 /// Provides methods for retrieving InputStreams from specified resource paths.
 /// Typically used for accessing test resources.
 public class TestUtils {
+
+    private static final Pattern TABLE_PATTERN = compile("^\\|===$");
+    private static final Pattern CELL_PATTERN = compile("^\\|.*");
+    private static final Pattern EMPTY_PATTERN = compile("^$");
+    private static final Pattern CRS_PATTERN = compile("^(.*?)<([0-9]+)\\|>.*");
+    private static final Pattern TAB_PATTERN = compile("^(.*?)\\|TAB\\|.*");
+    private static final Pattern CR_PATTERN = compile("^(.*?)<([0-9]+)\\|(.+?)>.*");
+    private static final Pattern CRE_PATTERN = compile("^(.*?)<\\|([0-9]+)>.*");
 
     /// Retrieves an InputStream for the specified resource path.
     ///
@@ -49,35 +59,131 @@ public class TestUtils {
     }
 
     public static InputStream makeResource(String content) {
-        WordprocessingMLPackage aPackage = null;
-        try {
-            aPackage = WordprocessingMLPackage.createPackage();
-        } catch (InvalidFormatException e) {
-            throw new OfficeStamperException(e);
-        }
+        var aPackage = newWord();
         var mainDocumentPart = aPackage.getMainDocumentPart();
+        var parent = new AtomicReference<ContentAccessor>(mainDocumentPart);
         content.lines()
                .forEach(line -> {
-                   var split = line.split("\\|TAB\\|");
-                   var value = split[0];
-                   var run = newRun(value);
-                   int i = 1;
-                   while (i < split.length) {
-                       var s = split[i];
-                       var text = new Text();
-                       text.setValue(s);
-                       run.getContent()
-                          .add(new R.Tab());
-                       run.getContent()
-                          .add(text);
-                       i++;
+                   var p1 = new P();
+                   while (!line.isEmpty()) {
+                       var tableMatcher = TABLE_PATTERN.matcher(line);
+                       var cellMatcher = CELL_PATTERN.matcher(line);
+                       var emptyMatcher = EMPTY_PATTERN.matcher(line);
+                       var tabMatcher = TAB_PATTERN.matcher(line);
+                       var crsMatcher = CRS_PATTERN.matcher(line);
+                       var creMatcher = CRE_PATTERN.matcher(line);
+                       var crMatcher = CR_PATTERN.matcher(line);
+                       if (tableMatcher.matches()) {
+                           var accessor = parent.get();
+                           if (accessor instanceof Tc tc) parent.set((ContentAccessor) tc.getParent());
+                           if (accessor instanceof Tr tr) parent.set((ContentAccessor) tr.getParent());
+                           if (accessor instanceof Tbl tbl) {
+                               parent.set((ContentAccessor) tbl.getParent());
+                               return;
+                           }
+                           else {
+                               var newTbl = newTbl();
+                               var newRow = newRow();
+                               newTbl.getContent()
+                                     .add(newRow);
+                               parent.get()
+                                     .getContent()
+                                     .add(newTbl);
+                               parent.set(newRow);
+                               return;
+                           }
+                       }
+                       else if (cellMatcher.matches()) {
+                           var newCell = newCell();
+                           var accessor = parent.get();
+                           if (accessor instanceof Tc tc) parent.set((ContentAccessor) tc.getParent());
+                           parent.get()
+                                 .getContent()
+                                 .add(newCell);
+                           parent.set(newCell);
+                           line = line.substring(1);
+                       }
+                       else if (emptyMatcher.matches()) {
+                           var accessor = parent.get();
+                           if (accessor instanceof Tc tc) parent.set((ContentAccessor) tc.getParent());
+                           if (accessor instanceof Tr tr) parent.set((ContentAccessor) tr.getParent());
+                           if (accessor instanceof Tbl tbl) {
+                               var row = newRow();
+                               tbl.getContent()
+                                  .add(row);
+                               parent.set(row);
+                               return;
+                           }
+                       }
+                       else if (tabMatcher.matches()) {
+                           var next = tabMatcher.group(1);
+                           var text = newText(next);
+                           p1.getContent()
+                             .add(newRun(List.of(text, new R.Tab())));
+                           line = line.substring(next.length() + "|TAB|".length());
+                       }
+                       else if (crsMatcher.matches()) {
+                           var next = crsMatcher.group(1);
+                           var strId = crsMatcher.group(2);
+                           var id = new BigInteger(strId);
+                           var text = newText(next);
+                           var commentRangeStart = new CommentRangeStart();
+                           commentRangeStart.setId(id);
+                           p1.getContent()
+                             .add(newRun(text));
+                           p1.getContent()
+                             .add(commentRangeStart);
+                           line = line.substring(next.length() + 1 + strId.length() + 2);
+                       }
+                       else if (creMatcher.matches()) {
+                           var next = creMatcher.group(1);
+                           var strId = creMatcher.group(2);
+                           var text = newText(next);
+                           text.setValue(next);
+                           var id = new BigInteger(strId);
+                           var commentRangeEnd = new CommentRangeEnd();
+                           commentRangeEnd.setId(id);
+                           p1.getContent()
+                             .add(newRun(text));
+
+                           p1.getContent()
+                             .add(commentRangeEnd);
+                           line = line.substring(next.length() + 2 + strId.length() + 1);
+                       }
+                       else if (crMatcher.matches()) {
+                           var next = crMatcher.group(1);
+                           var strId = crMatcher.group(2);
+                           var strComment = crMatcher.group(3);
+                           var text = newText(next);
+                           var id = new BigInteger(strId);
+                           var commentReference = new R.CommentReference();
+                           commentReference.setId(id);
+                           var comment = WmlFactory.newComment(id, strComment);
+                           try {
+                               mainDocumentPart.getCommentsPart()
+                                               .getContents()
+                                               .getComment()
+                                               .add(comment);
+                           } catch (Docx4JException e) {
+                               throw new OfficeStamperException(e);
+                           }
+                           var run = newRun(List.of(text, commentReference));
+                           p1.getContent()
+                             .add(run);
+                           line = line.substring(next.length() + 1 + strId.length() + 1 + strComment.length() + 1);
+                       }
+                       else {
+                           var run = newRun(line);
+                           p1.getContent()
+                             .add(run);
+                           line = "";
+                       }
                    }
-                       var p1 = new P();
-        p1.getContent()
-          .add(run);
-        mainDocumentPart.addObject(p1);
+                   parent.get()
+                         .getContent()
+                         .add(p1);
                });
-        OutputStream outputStream = null;
+        OutputStream outputStream;
         try {
             outputStream = IOStreams.getOutputStream();
         } catch (IOException e) {

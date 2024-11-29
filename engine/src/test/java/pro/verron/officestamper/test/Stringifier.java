@@ -38,23 +38,15 @@ import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.ByteUtils.humanReadableByteCountSI;
 import static pro.verron.officestamper.utils.ByteUtils.sha1b64;
 
-/**
- * <p>Stringifier class.</p>
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.5
- */
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.5
 public class Stringifier {
 
     private final Supplier<WordprocessingMLPackage> documentSupplier;
     private final Supplier<StyleDefinitionsPart> styleDefinitionsPartSupplier;
 
-    /**
-     * <p>Constructor for Stringifier.</p>
-     *
-     * @since 1.6.6
-     */
+    /// @since 1.6.6
     public Stringifier(Supplier<WordprocessingMLPackage> documentSupplier) {
         this.documentSupplier = documentSupplier;
         this.styleDefinitionsPartSupplier = () -> documentSupplier.get()

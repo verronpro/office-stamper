@@ -9,9 +9,12 @@ import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import static java.util.stream.Collectors.toCollection;
 
 /**
  * WmlFactory is a utility class providing methods to create and manipulate WordML objects.
@@ -61,11 +64,21 @@ public class WmlFactory {
         return newRun(List.of(value));
     }
 
-    private static R newRun(List<Object> values) {
+    public static R newRun(List<Object> values) {
         var run = new R();
         var runContent = run.getContent();
-        runContent.addAll(values);
+        runContent.addAll(values.stream()
+                                .filter(WmlFactory::worthKeeping)
+                                .collect(toCollection(ArrayList::new)));
         return run;
+    }
+
+    private static boolean worthKeeping(Object o) {
+        if (o instanceof Text text) {
+            var value = text.getValue();
+            return !value.isEmpty();
+        }
+        return true;
     }
 
     /**
@@ -218,7 +231,10 @@ public class WmlFactory {
      * @return a new run element containing the image
      */
     public static R newRun(
-            @Nullable Integer maxWidth, BinaryPartAbstractImage abstractImage, String filenameHint, String altText
+            @Nullable Integer maxWidth,
+            BinaryPartAbstractImage abstractImage,
+            String filenameHint,
+            String altText
     ) {
         var inline = newInline(abstractImage, filenameHint, altText, maxWidth);
         return newRun(newDrawing(inline));
@@ -236,7 +252,10 @@ public class WmlFactory {
      * @throws OfficeStamperException If there is an error creating the image inline.
      */
     public static Inline newInline(
-            BinaryPartAbstractImage imagePart, String filenameHint, String altText, @Nullable Integer maxWidth
+            BinaryPartAbstractImage imagePart,
+            String filenameHint,
+            String altText,
+            @Nullable Integer maxWidth
     ) {
         // creating random ids assuming they are unique,
         // id must not be too large

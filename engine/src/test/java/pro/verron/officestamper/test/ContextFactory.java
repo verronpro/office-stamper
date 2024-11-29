@@ -39,6 +39,8 @@ public sealed interface ContextFactory
 
     Object names(String... names);
 
+    <T extends Iterable<?>> Object names(Class<T> clazz, String... names);
+
     Object name(String name);
 
     Object empty();

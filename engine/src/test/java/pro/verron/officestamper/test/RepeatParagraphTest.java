@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,6 +12,8 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,8 +22,10 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.makeResource;
 
 class RepeatParagraphTest {
+    public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
     private static final Logger log = LoggerFactory.getLogger(RepeatParagraphTest.class);
 
     private static Stream<Arguments> tests() {
@@ -168,6 +173,57 @@ class RepeatParagraphTest {
         log.info(name);
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void shouldAcceptList() {
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var template = makeResource("<1|>${name}<|1><1|repeatParagraph(names)>");
+        var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var expected = """
+                Homer
+                Marge
+                Bart
+                Lisa
+                Maggie
+                """;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void shouldAcceptSet() {
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var template = makeResource("<1|>${name}<|1><1|repeatParagraph(names)>");
+        var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var expected = """
+                Marge
+                Homer
+                Maggie
+                Bart
+                Lisa
+                """;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void shouldAcceptQueue() {
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var template = makeResource("<1|>${name}<|1><1|repeatParagraph(names)>");
+        var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var expected = """
+                Homer
+                Marge
+                Bart
+                Lisa
+                Maggie
+                """;
         assertEquals(expected, actual);
     }
 }

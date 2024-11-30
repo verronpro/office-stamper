@@ -1,18 +1,6 @@
 package pro.verron.officestamper.preset;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.OfficeStamper;
-import pro.verron.officestamper.api.OfficeStamperConfiguration;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.officestamper.core.DocxStamper;
-import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
-import pro.verron.officestamper.preset.processors.repeat.RepeatProcessor;
-import pro.verron.officestamper.preset.processors.repeatdocpart.RepeatDocPartProcessor;
-import pro.verron.officestamper.preset.processors.repeatparagraph.ParagraphRepeatProcessor;
-import pro.verron.officestamper.preset.processors.replacewith.ReplaceWithProcessor;
-import pro.verron.officestamper.preset.processors.table.TableResolver;
 
 /// Factory class to create the correct comment processor for a given comment.
 ///
@@ -20,73 +8,6 @@ import pro.verron.officestamper.preset.processors.table.TableResolver;
 /// @version ${version}
 /// @since 1.6.4
 public class CommentProcessorFactory {
-    private final OfficeStamperConfiguration configuration;
-
-    /// Creates a new CommentProcessorFactory.
-    ///
-    /// @param configuration the configuration to use for the created processors.
-    public CommentProcessorFactory(OfficeStamperConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
-    /// Creates new repeatParagraph [CommentProcessor] with default configuration.
-    ///
-    /// @param pr a [ParagraphPlaceholderReplacer] object
-    ///
-    /// @return a [CommentProcessor] object
-    public CommentProcessor repeatParagraph(ParagraphPlaceholderReplacer pr) {
-        return ParagraphRepeatProcessor.newInstance(pr);
-    }
-
-    /// Creates new repeatDocPart [CommentProcessor] with default configuration.
-    ///
-    /// @param pr a [ParagraphPlaceholderReplacer] object
-    ///
-    /// @return a [CommentProcessor] object
-    public CommentProcessor repeatDocPart(ParagraphPlaceholderReplacer pr) {
-        return RepeatDocPartProcessor.newInstance(pr, getStamper());
-    }
-
-    private OfficeStamper<WordprocessingMLPackage> getStamper() {
-        return (template, context, output) -> new DocxStamper(configuration).stamp(template, context, output);
-    }
-
-    /// Creates new repeating [CommentProcessor] with default configuration.
-    ///
-    /// @param pr a [ParagraphPlaceholderReplacer] object
-    ///
-    /// @return a [CommentProcessor] object
-    public CommentProcessor repeat(ParagraphPlaceholderReplacer pr) {
-        return RepeatProcessor.newInstance(pr);
-    }
-
-    /// Creates new tableResolver [CommentProcessor] with default configuration.
-    ///
-    /// @param pr a [ParagraphPlaceholderReplacer] object
-    ///
-    /// @return a [CommentProcessor] object
-    public CommentProcessor tableResolver(ParagraphPlaceholderReplacer pr) {
-        return TableResolver.newInstance(pr);
-    }
-
-    /// Creates new displayIf [CommentProcessor] with default configuration.
-    ///
-    /// @param pr a [ParagraphPlaceholderReplacer] object
-    ///
-    /// @return a [CommentProcessor] object
-    public CommentProcessor displayIf(ParagraphPlaceholderReplacer pr) {
-        return DisplayIfProcessor.newInstance(pr);
-    }
-
-    /// Creates new replaceWith [CommentProcessor] with default configuration.
-    ///
-    /// @param pr a [ParagraphPlaceholderReplacer] object
-    ///
-    /// @return a [CommentProcessor] object
-    public CommentProcessor replaceWith(ParagraphPlaceholderReplacer pr) {
-        return ReplaceWithProcessor.newInstance(pr);
-    }
-
     /// Used to resolve a table in the template document.
     /// Take the table passed-in to fill an existing Tbl object in the document.
     ///

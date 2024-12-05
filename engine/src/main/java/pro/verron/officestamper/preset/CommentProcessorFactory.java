@@ -90,6 +90,8 @@ public class CommentProcessorFactory {
     /// @since 1.0.0
     public interface IDisplayIfProcessor {
 
+        void displayParagraphIfAbsent(@Nullable Object condition);
+
         /// @param condition if true, keep the paragraph surrounding the comment, else remove.
         void displayParagraphIf(@Nullable Boolean condition);
 
@@ -102,11 +104,15 @@ public class CommentProcessorFactory {
         /// @param condition if non-null, keep the table row surrounding the comment, else remove.
         void displayTableRowIfPresent(@Nullable Object condition);
 
+        void displayTableRowIfAbsent(@Nullable Object condition);
+
         /// @param condition if true, keep the table surrounding the comment, else remove.
         void displayTableIf(@Nullable Boolean condition);
 
         /// @param condition if non-null, keep the table surrounding the comment, else remove.
         void displayTableIfPresent(@Nullable Object condition);
+
+        void displayTableIfAbsent(@Nullable Object condition);
 
         /// @param condition if true, keep the selected words surrounding the comment, else remove.
         void displayWordsIf(@Nullable Boolean condition);
@@ -114,10 +120,14 @@ public class CommentProcessorFactory {
         /// @param condition if non-null, keep the selected words surrounding the comment, else remove.
         void displayWordsIfPresent(@Nullable Object condition);
 
+        void displayWordsIfAbsent(@Nullable Object condition);
+
         /// @param condition if true, keep the selected elements surrounding the comment, else remove.
         void displayDocPartIf(@Nullable Boolean condition);
 
         /// @param condition if non-null, keep the selected elements surrounding the comment, else remove.
         void displayDocPartIfPresent(@Nullable Object condition);
+
+        void displayDocPartIfAbsent(@Nullable Object condition);
     }
 }

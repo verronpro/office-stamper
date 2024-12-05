@@ -63,9 +63,9 @@ public class CommentProcessorRegistry {
                   var comments = collectComments();
                   var runParent = StandardParagraph.from(source, (P) run.getParent());
                   var optional = runProcessorsOnRunComment(comments, expressionContext, run, runParent);
-                  commentProcessors.commitChanges(source);
                   optional.ifPresent(proceedComments::add);
               });
+        commentProcessors.commitChanges(source);
 
         // we run the paragraph afterward so that the comments inside work before the whole paragraph comments
         source.streamParagraphs()

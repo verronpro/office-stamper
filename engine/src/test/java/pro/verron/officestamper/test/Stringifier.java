@@ -211,6 +211,7 @@ public class Stringifier {
         if (o instanceof CTShadow) return "";
         if (o instanceof SdtRun run) return stringify(run.getSdtContent());
         if (o instanceof SdtContent content) return stringify(content);
+        if (o instanceof R.AnnotationRef) return "";
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
     }
@@ -515,6 +516,7 @@ public class Stringifier {
             case "heading 5" -> "====== %s\n"::formatted;
             case "heading 6" -> "======= %s\n"::formatted;
             case "caption" -> ".%s"::formatted;
+            case "annotation text" -> string -> string;
             default -> "[%s] %%s".formatted(value)::formatted;
         };
     }

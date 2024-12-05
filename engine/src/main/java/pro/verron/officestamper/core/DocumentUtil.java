@@ -30,10 +30,7 @@ public class DocumentUtil {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
     }
 
-    public static <T> Stream<T> streamObjectElements(
-            DocxPart source,
-            Class<T> elementClass
-    ) {
+    public static <T> Stream<T> streamObjectElements(DocxPart source, Class<T> elementClass) {
         ClassFinder finder = new ClassFinder(elementClass);
         TraversalUtil.visit(source.part(), finder);
         return finder.results.stream()
@@ -60,13 +57,8 @@ public class DocumentUtil {
      *
      * @return a {@link Map} object
      */
-    public static Map<R, R> walkObjectsAndImportImages(
-            WordprocessingMLPackage source,
-            WordprocessingMLPackage target
-    ) {
-        return walkObjectsAndImportImages(source.getMainDocumentPart(),
-                source,
-                target);
+    public static Map<R, R> walkObjectsAndImportImages(WordprocessingMLPackage source, WordprocessingMLPackage target) {
+        return walkObjectsAndImportImages(source.getMainDocumentPart(), source, target);
     }
 
     /**
@@ -122,10 +114,7 @@ public class DocumentUtil {
                   .anyMatch(Drawing.class::isInstance);
     }
 
-    private static BinaryPartAbstractImage tryCreateImagePart(
-            WordprocessingMLPackage destDocument,
-            byte[] imageData
-    ) {
+    private static BinaryPartAbstractImage tryCreateImagePart(WordprocessingMLPackage destDocument, byte[] imageData) {
         try {
             return BinaryPartAbstractImage.createImagePart(destDocument, imageData);
         } catch (Exception e) {
@@ -146,10 +135,8 @@ public class DocumentUtil {
     public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
         if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
             return findInsertableParent(contentAccessor);
-        else if (o2 instanceof Child child)
-            return findSmallestCommonParent(o1, child.getParent());
-        else
-            throw new OfficeStamperException();
+        else if (o2 instanceof Child child) return findSmallestCommonParent(o1, child.getParent());
+        else throw new OfficeStamperException();
     }
 
     /**
@@ -168,8 +155,7 @@ public class DocumentUtil {
         else if (content instanceof ContentAccessor contentAccessor) {
             for (Object object : contentAccessor.getContent()) {
                 Object unwrappedObject = XmlUtils.unwrap(object);
-                if (searchTarget.equals(unwrappedObject)
-                    || depthElementSearch(searchTarget, unwrappedObject)) {
+                if (searchTarget.equals(unwrappedObject) || depthElementSearch(searchTarget, unwrappedObject)) {
                     return true;
                 }
             }

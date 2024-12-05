@@ -72,7 +72,7 @@ public class CommentProcessorRegistry {
               .forEach(p -> {
                   var comments = collectComments();
                   var paragraphComment = p.getComment();
-                  paragraphComment.ifPresent((pc -> {
+                  paragraphComment.forEach((pc -> {
                       var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
                       commentProcessors.commitChanges(source);
                       optional.ifPresent(proceedComments::add);

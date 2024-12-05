@@ -162,7 +162,8 @@ public class StandardParagraph
         return parent(aClass, Integer.MAX_VALUE);
     }
 
-    @Override public Optional<Comments.Comment> getComment() {
+    @Override
+    public Collection<Comments.Comment> getComment() {
         return CommentUtil.getCommentFor(contents, source.document());
     }
 

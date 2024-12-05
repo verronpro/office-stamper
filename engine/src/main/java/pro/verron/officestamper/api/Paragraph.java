@@ -4,6 +4,7 @@ import org.docx4j.wml.Comments;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -107,5 +108,5 @@ public interface Paragraph {
      */
     <T> Optional<T> parent(Class<T> aClass);
 
-    Optional<Comments.Comment> getComment();
+    Collection<Comments.Comment> getComment();
 }

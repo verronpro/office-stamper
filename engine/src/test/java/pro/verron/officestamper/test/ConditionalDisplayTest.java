@@ -206,6 +206,65 @@ class ConditionalDisplayTest {
         assertEquals(expected, actual);
     }
 
+    @DisplayName("Display footnotes elements")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfFootnotes(ContextFactory factory) {
+        var context = factory.name("Bart");
+        var template = getResource(Path.of("footnotes.docx"));
+        var expected = """
+                = Springfield Chronicles: The Simpsons Edition
+                
+                == Introduction
+                
+                [Quote] "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
+                == Homer Simpson's Favorite Pastimes
+                
+                Homer Simpson, the patriarch of the Simpson family, is well-known for his love of donuts and Duff beer❬<1>❘{rStyle=Appelnotedebasdep}❭. He spends most of his time at the Springfield Nuclear Power Plant, though he often finds himself in various predicaments❬<2>❘{rStyle=Appelnotedebasdep}❭.
+                == Marge Simpson: The Heart of the Family
+                
+                Marge Simpson, with her iconic blue hair, is the moral center of the family. She manages the household with grace and patience❬<3>❘{rStyle=Appelnotedebasdep}❭. Despite the chaos around her, Marge always finds a way to keep the family together.
+                == Bart Simpson: The Troublemaker
+                
+                Bart Simpson, the eldest child, is notorious for his mischievous behavior. His prankster ways often land him in trouble, yet his cleverness sometimes helps solve the family's problems❬<4>❘{rStyle=Appelnotedebasdep}❭.
+                |===
+                |Character
+                |Role<cnfStyle=100000000000>
+                |Fun Fact<cnfStyle=100000000000>
+                
+                |Homer Simpson
+                |Patriarch<cnfStyle=000000100000>
+                |"D'oh!" is Homer's trademark exclamation❬<5>❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000100000>
+                
+                |Marge Simpson
+                |Matriarch<cnfStyle=000000000000>
+                |Her hair once hid an entire toolbox❬<6>❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000000000>
+                
+                |Bart Simpson
+                |Eldest Child<cnfStyle=000000100000>
+                |Bart's famous catchphrase is "Eat my shorts!"❬<7>❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000100000>
+                
+                |Lisa Simpson
+                |Middle Child<cnfStyle=000000000000>
+                |Lisa is a talented saxophonist❬<8>❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000000000>
+                
+                |Maggie Simpson
+                |Youngest Child<cnfStyle=000000100000>
+                |Maggie is known for her pacifier and silent wisdom❬<9>❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000100000>
+                
+                
+                |===
+                == Conclusion
+                
+                [Quote] "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
+                """;
+
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
+    }
+
     @DisplayName("Display Homer elements")
     @ParameterizedTest
     @MethodSource("factories")

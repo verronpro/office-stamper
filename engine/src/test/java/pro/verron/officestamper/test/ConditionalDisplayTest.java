@@ -1,10 +1,9 @@
 package pro.verron.officestamper.test;
 
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
-import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -15,27 +14,15 @@ import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 class ConditionalDisplayTest {
-    @TestFactory
-    Stream<DynamicTest> tests() {
-        return Stream.of(conditionalDisplayOfBart(objectContextFactory()),
-                conditionalDisplayOfHomer(objectContextFactory()),
-                conditionalDisplayOfAbsentValue(objectContextFactory()),
-                conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(objectContextFactory()),
-                conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(objectContextFactory()),
-                conditionalDisplayOfTableRowsTest(objectContextFactory()),
-                conditionalDisplayOfTableBug32Test(objectContextFactory()),
-                conditionalDisplayOfTableTest(objectContextFactory()),
-                conditionalDisplayOfBart(mapContextFactory()),
-                conditionalDisplayOfHomer(mapContextFactory()),
-                conditionalDisplayOfAbsentValue(mapContextFactory()),
-                conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(mapContextFactory()),
-                conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(mapContextFactory()),
-                conditionalDisplayOfTableRowsTest(mapContextFactory()),
-                conditionalDisplayOfTableBug32Test(mapContextFactory()),
-                conditionalDisplayOfTableTest(mapContextFactory()));
+
+    public static Stream<ContextFactory> factories() {
+        return Stream.of(objectContextFactory(), mapContextFactory());
     }
 
-    private static DynamicTest conditionalDisplayOfBart(ContextFactory factory) {
+    @DisplayName("Display Bart elements")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfBart(ContextFactory factory) {
         var context = factory.name("Bart");
         var template = getResource(Path.of("ConditionalDisplayTest.docx"));
         var expected = """
@@ -213,10 +200,16 @@ class ConditionalDisplayTest {
                 To show how comments spanning multiple paragraphs works.
                 """;
 
-        return getDynamicTest("Display Bart elements", standard(), context, template, expected);
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
     }
 
-    private static DynamicTest conditionalDisplayOfHomer(ContextFactory factory) {
+    @DisplayName("Display Homer elements")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfHomer(ContextFactory factory) {
         var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayTest.docx"));
         var expected = """
@@ -358,10 +351,16 @@ class ConditionalDisplayTest {
                 To show how comments spanning multiple paragraphs works.
                 """;
 
-        return getDynamicTest("Display Homer elements", standard(), context, template, expected);
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
     }
 
-    private static DynamicTest conditionalDisplayOfAbsentValue(ContextFactory factory) {
+    @DisplayName("Display 'null' elements")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfAbsentValue(ContextFactory factory) {
         var context = factory.name(null);
         var template = getResource(Path.of("ConditionalDisplayTest.docx"));
         var expected = """
@@ -503,10 +502,16 @@ class ConditionalDisplayTest {
                 To show how comments spanning multiple paragraphs works.
                 """;
 
-        return getDynamicTest("Display 'null' elements", standard(), context, template, expected);
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
     }
 
-    private static DynamicTest conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(ContextFactory factory) {
+    @DisplayName("Display Paragraph If Integration test (off case) + Inline processors Integration test")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(ContextFactory factory) {
         var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
         var expected = """
@@ -532,16 +537,17 @@ class ConditionalDisplayTest {
                 |===
                 
                 """;
-        return getDynamicTest("Display Paragraph If Integration test (off case) + Inline processors Integration test",
-                standard(),
-                context,
-                template,
-                expected);
+
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
     }
 
-    private static DynamicTest conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(
-            ContextFactory factory
-    ) {
+    @DisplayName("Display Paragraph If Integration test (on case) + Inline processors Integration test")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(ContextFactory factory) {
         var context = factory.name("Bart");
         var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
         var expected = """
@@ -569,14 +575,17 @@ class ConditionalDisplayTest {
                 |===
                 
                 """;
-        return getDynamicTest("Display Paragraph If Integration test (on case) + Inline processors Integration test",
-                standard(),
-                context,
-                template,
-                expected);
+
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
     }
 
-    private static DynamicTest conditionalDisplayOfTableRowsTest(ContextFactory factory) {
+    @DisplayName("Display Table If Bug32 Regression test")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfTableRowsTest(ContextFactory factory) {
         var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTableRowsTest.docx"));
         var expected = """
@@ -600,10 +609,17 @@ class ConditionalDisplayTest {
                 |===
                 
                 """;
-        return getDynamicTest("Display Table Row If Integration test", standard(), context, template, expected);
+
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
     }
 
-    private static DynamicTest conditionalDisplayOfTableBug32Test(ContextFactory factory) {
+    @DisplayName("Display Table If Bug32 Regression test")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfTableBug32Test(ContextFactory factory) {
         var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTablesBug32Test.docx"));
         var expected = """
@@ -631,10 +647,17 @@ class ConditionalDisplayTest {
                 
                 This paragraph stays untouched.
                 """;
-        return getDynamicTest("Display Table If Bug32 Regression test", standard(), context, template, expected);
+
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
     }
 
-    private static DynamicTest conditionalDisplayOfTableTest(ContextFactory factory) {
+    @DisplayName("Display Table If Integration test")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfTableTest(ContextFactory factory) {
         var context = factory.name("Homer");
         var template = getResource(Path.of("ConditionalDisplayOfTablesTest.docx"));
         var expected = """
@@ -662,21 +685,9 @@ class ConditionalDisplayTest {
                 
                 This paragraph stays untouched.
                 """;
-        return getDynamicTest("Display Table If Integration test", standard(), context, template, expected);
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
     }
-
-    private static DynamicTest getDynamicTest(
-            String displayName,
-            OfficeStamperConfiguration config,
-            Object context,
-            InputStream template,
-            Object expected
-    ) {
-        return DynamicTest.dynamicTest(displayName, () -> {
-            TestDocxStamper<Object> stamper = new TestDocxStamper<>(config);
-            var actual = stamper.stampAndLoadAndExtract(template, context);
-            assertEquals(expected, actual);
-        });
-    }
-
 }

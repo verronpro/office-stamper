@@ -41,6 +41,7 @@ public class OfficeStamperConfigurations {
     public static OfficeStamperConfiguration standardWithPreprocessing() {
         var configuration = standard();
         configuration.addPreprocessor(Preprocessors.removeLanguageProof());
+        configuration.addPreprocessor(Preprocessors.removeLanguageInfo());
         configuration.addPreprocessor(Preprocessors.mergeSimilarRuns());
         return configuration;
     }

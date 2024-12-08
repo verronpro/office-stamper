@@ -5,6 +5,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PreProcessor;
 import pro.verron.officestamper.preset.preprocessors.malformedcomments.RemoveMalformedComments;
 import pro.verron.officestamper.preset.preprocessors.prooferror.RemoveProofErrors;
+import pro.verron.officestamper.preset.preprocessors.rmlang.RemoveLang;
 import pro.verron.officestamper.preset.preprocessors.similarrun.MergeSameStyleRuns;
 
 /**
@@ -34,6 +35,10 @@ public class Preprocessors {
      */
     public static PreProcessor removeLanguageProof() {
         return new RemoveProofErrors();
+    }
+
+    public static PreProcessor removeLanguageInfo() {
+        return new RemoveLang();
     }
 
     public static PreProcessor removeMalformedComments() {

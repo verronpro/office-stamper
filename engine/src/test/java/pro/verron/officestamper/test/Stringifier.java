@@ -8,6 +8,7 @@ import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.mce.AlternateContent;
 import org.docx4j.model.structure.HeaderFooterPolicy;
 import org.docx4j.model.structure.SectionWrapper;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -212,8 +213,59 @@ public class Stringifier {
         if (o instanceof SdtRun run) return stringify(run.getSdtContent());
         if (o instanceof SdtContent content) return stringify(content);
         if (o instanceof R.AnnotationRef) return "";
+        if (o instanceof CTFtnEdnRef ref) return "[" + ref.getId() + "]";
+        if (o instanceof FootnotesPart footnotesPart) return stringify(footnotesPart).orElse("");
+        if (o instanceof EndnotesPart endnotesPart) return stringify(endnotesPart).orElse("");
+        if (o instanceof R.Separator) return "\n";
+        if (o instanceof R.ContinuationSeparator) return "\n";
+        if (o instanceof R.FootnoteRef) return "";
+        if (o instanceof R.EndnoteRef) return "";
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
+    }
+
+    private Optional<String> stringify(EndnotesPart endnotesPart) {
+        if (endnotesPart == null) return Optional.empty();
+        try {
+            var list = endnotesPart.getContents()
+                                   .getEndnote()
+                                   .stream()
+                                   .map(this::stringify)
+                                   .flatMap(Optional::stream)
+                                   .toList();
+            if (list.isEmpty()) return Optional.empty();
+            return Optional.of(list.stream()
+                                   .collect(joining("\n", "[endnotes]\n---\n", "\n---\n")));
+
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException("Error processing footnotes", e);
+        }
+    }
+
+    private Optional<String> stringify(FootnotesPart footnotesPart) {
+        if (footnotesPart == null) return Optional.empty();
+        try {
+            var list = footnotesPart.getContents()
+                                    .getFootnote()
+                                    .stream()
+                                    .map(this::stringify)
+                                    .flatMap(Optional::stream)
+                                    .toList();
+            if (list.isEmpty()) return Optional.empty();
+            return Optional.of(list.stream()
+                                   .collect(joining("\n", "[footnotes]\n---\n", "\n---\n")));
+
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException("Error processing footnotes", e);
+        }
+    }
+
+    private Optional<String> stringify(CTFtnEdn c) {
+        var type = Optional.ofNullable(c.getType())
+                           .map(STFtnEdn::value)
+                           .orElse("normal");
+        if (!type.equals("normal")) return Optional.empty();
+        return Optional.of("[%s]%s".formatted(c.getId(), stringify(c.getContent())));
     }
 
     private String stringify(SdtBlock block) {
@@ -238,13 +290,17 @@ public class Stringifier {
 
     private String stringify(WordprocessingMLPackage mlPackage) {
         var header = stringifyHeaders(getHeaderPart(mlPackage));
-        var body = stringify(mlPackage.getMainDocumentPart());
+        var mainDocumentPart = mlPackage.getMainDocumentPart();
+        var body = stringify(mainDocumentPart);
+
         var footer = stringifyFooters(getFooterPart(mlPackage));
-        var hStr = header.map(h -> h + "\n\n")
+        var hStr = header.map("%s\n\n"::formatted)
                          .orElse("");
-        var fStr = footer.map(f -> "\n" + f + "\n")
+        var fStr = footer.map("\n%s\n"::formatted)
                          .orElse("");
-        return hStr + body + fStr;
+        var footnotesPart = mainDocumentPart.getFootnotesPart();
+        var endnotesPart = mainDocumentPart.getEndNotesPart();
+        return hStr + body + stringify(footnotesPart).orElse("") + stringify(endnotesPart).orElse("") + fStr;
     }
 
     private String stringify(Tc tc) {
@@ -517,6 +573,7 @@ public class Stringifier {
             case "heading 6" -> "======= %s\n"::formatted;
             case "caption" -> ".%s"::formatted;
             case "annotation text" -> string -> string;
+            case "footnote text" -> string -> string;
             default -> "[%s] %%s".formatted(value)::formatted;
         };
     }

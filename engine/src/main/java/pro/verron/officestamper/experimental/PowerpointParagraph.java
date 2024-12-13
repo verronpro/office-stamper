@@ -98,18 +98,9 @@ public class PowerpointParagraph
         siblings().removeAll(toRemove);
     }
 
-    private List<Object> siblings() {
-        return this.parent(ContentAccessor.class, 1)
-                   .orElseThrow(throwing("Not a standard Child with common parent"))
-                   .getContent();
-    }
-
-    private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        return WmlUtils.getFirstParentWithClass(getP(), aClass, depth);
-    }
-
-    @Override public void remove() {
-        ObjectDeleter.deleteParagraph(getP());
+    @Override
+    public void remove() {
+        WmlUtils.remove(getP());
     }
 
     @Override public P getP() {

@@ -6,9 +6,8 @@ import org.docx4j.wml.Tr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.core.ObjectDeleter;
-import pro.verron.officestamper.core.PlaceholderReplacer;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.utils.WmlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ public class DisplayIfProcessor
 
     /// Creates a new DisplayIfProcessor instance.
     ///
-    /// @param pr the [PlaceholderReplacer] used for replacing expressions.
+    /// @param pr the [ParagraphPlaceholderReplacer] used for replacing expressions.
     ///
     /// @return a new DisplayIfProcessor instance.
     public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
@@ -56,16 +55,15 @@ public class DisplayIfProcessor
     }
 
     private void removeTables() {
-        tablesToBeRemoved.forEach(ObjectDeleter::deleteTable);
+        tablesToBeRemoved.forEach(WmlUtils::remove);
     }
 
     private void removeTableRows() {
-        tableRowsToBeRemoved.forEach(ObjectDeleter::deleteTableRow);
+        tableRowsToBeRemoved.forEach(WmlUtils::remove);
     }
 
     private void removeElements() {
-        elementsToBeRemoved.forEach(e -> ((ContentAccessor) e.getParent()).getContent()
-                                                                          .remove(e));
+        elementsToBeRemoved.forEach(WmlUtils::remove);
     }
 
     @Override

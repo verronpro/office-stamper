@@ -4,6 +4,7 @@ import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
+import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -108,7 +109,7 @@ public class StandardParagraph
     }
 
     @Override public void remove() {
-        ObjectDeleter.deleteParagraph(p);
+        WmlUtils.remove(p);
     }
 
     /**

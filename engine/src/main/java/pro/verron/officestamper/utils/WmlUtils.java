@@ -1,5 +1,6 @@
 package pro.verron.officestamper.utils;
 
+import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
 import org.docx4j.finders.CommentFinder;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
@@ -8,11 +9,15 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.Comments;
+import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.Tc;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.core.TableCellUtil;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -77,5 +82,30 @@ public final class WmlUtils {
             var commentId = comment.getId();
             return commentId.equals(id);
         };
+    }
+
+    public static void remove(Child child) {
+        var parent = (ContentAccessor) child.getParent();
+        remove(parent, child);
+        if (parent instanceof Tc cell && TableCellUtil.hasNoParagraphOrTable(cell)) {
+            TableCellUtil.addEmptyParagraph(cell);
+        }
+    }
+
+    private static void remove(ContentAccessor parent, Child child) {
+        var siblings = parent.getContent();
+        var iterator = siblings.listIterator();
+        while (iterator.hasNext()) {
+            if (equals(iterator.next(), child)) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
+
+    private static boolean equals(Object o1, Object o2) {
+        if (o1 instanceof JAXBElement<?> e1) o1 = e1.getValue();
+        if (o2 instanceof JAXBElement<?> e2) o2 = e2.getValue();
+        return Objects.equals(o1, o2);
     }
 }

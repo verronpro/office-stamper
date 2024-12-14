@@ -185,7 +185,6 @@ public class DocumentUtil {
         TraversalUtil.visit(mainDocumentPart, visitor);
         streamHeaderFooterPart(document).forEach(f -> TraversalUtil.visit(f, visitor));
         visitPartIfExists(visitor, mainDocumentPart.getFootnotesPart());
-        visitPartIfExists(visitor, mainDocumentPart.getFootnotesPart());
         visitPartIfExists(visitor, mainDocumentPart.getEndNotesPart());
     }
 

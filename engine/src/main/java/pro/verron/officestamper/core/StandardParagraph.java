@@ -132,14 +132,10 @@ public class StandardParagraph
      * @param replacement the object to replace the expression.
      */
     @Override public void replace(Placeholder placeholder, Object replacement) {
-        if (replacement instanceof R run) {
-            replaceWithRun(placeholder, run);
-        }
-        else if (replacement instanceof Br br) {
-            replaceWithBr(placeholder, br);
-        }
-        else {
-            throw new AssertionError("Replacement must be a R or Br, but was a " + replacement.getClass());
+        switch (replacement) {
+            case R run -> replaceWithRun(placeholder, run);
+            case Br br -> replaceWithBr(placeholder, br);
+            default -> throw new AssertionError("Replacement must be a R or Br, but was a " + replacement.getClass());
         }
     }
 

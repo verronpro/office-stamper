@@ -25,8 +25,6 @@ public class DisplayIfProcessor
         implements CommentProcessorFactory.IDisplayIfProcessor {
 
     private List<Paragraph> paragraphsToBeRemoved = new ArrayList<>();
-    private List<Tbl> tablesToBeRemoved = new ArrayList<>();
-    private List<Tr> tableRowsToBeRemoved = new ArrayList<>();
     private List<Child> elementsToBeRemoved = new ArrayList<>();
 
     private DisplayIfProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
@@ -44,33 +42,14 @@ public class DisplayIfProcessor
 
     @Override
     public void commitChanges(DocxPart source) {
-        removeParagraphs();
-        removeTables();
-        removeTableRows();
-        removeElements();
-    }
-
-    private void removeParagraphs() {
         paragraphsToBeRemoved.forEach(Paragraph::remove);
-    }
-
-    private void removeTables() {
-        tablesToBeRemoved.forEach(WmlUtils::remove);
-    }
-
-    private void removeTableRows() {
-        tableRowsToBeRemoved.forEach(WmlUtils::remove);
-    }
-
-    private void removeElements() {
         elementsToBeRemoved.forEach(WmlUtils::remove);
     }
+
 
     @Override
     public void reset() {
         paragraphsToBeRemoved = new ArrayList<>();
-        tablesToBeRemoved = new ArrayList<>();
-        tableRowsToBeRemoved = new ArrayList<>();
         elementsToBeRemoved = new ArrayList<>();
     }
 
@@ -97,7 +76,7 @@ public class DisplayIfProcessor
         var tr = this.getParagraph()
                      .parent(Tr.class)
                      .orElseThrow(throwing("Paragraph is not within a row!"));
-        tableRowsToBeRemoved.add(tr);
+        elementsToBeRemoved.add(tr);
     }
 
     @Override
@@ -116,7 +95,7 @@ public class DisplayIfProcessor
         var tbl = this.getParagraph()
                       .parent(Tbl.class)
                       .orElseThrow(throwing("Paragraph is not within a table!"));
-        tablesToBeRemoved.add(tbl);
+        elementsToBeRemoved.add(tbl);
     }
 
     @Override

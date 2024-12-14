@@ -32,6 +32,7 @@ public class DocxStamperConfiguration
     private final List<ObjectResolver> resolvers;
     private final Map<Class<?>, Object> expressionFunctions;
     private final List<PreProcessor> preprocessors;
+    private final List<PostProcessor> postprocessors;
     private final List<CustomFunction> functions;
     private String lineBreakPlaceholder;
     private EvaluationContextConfigurer evaluationContextConfigurer;
@@ -47,6 +48,7 @@ public class DocxStamperConfiguration
         resolvers = new ArrayList<>();
         expressionFunctions = new HashMap<>();
         preprocessors = new ArrayList<>();
+        postprocessors = new ArrayList<>();
         functions = new ArrayList<>();
         evaluationContextConfigurer = EvaluationContextConfigurers.defaultConfigurer();
         lineBreakPlaceholder = "\n";
@@ -352,5 +354,15 @@ public class DocxStamperConfiguration
             Class<V> class2
     ) {
         return new TriFunctionBuilder<>(this, name, class0, class1, class2);
+    }
+
+    @Override
+    public List<PostProcessor> getPostprocessors() {
+        return postprocessors;
+    }
+
+    @Override
+    public void addPostprocessor(PostProcessor postprocessor) {
+        postprocessors.add(postprocessor);
     }
 }

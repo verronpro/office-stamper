@@ -11,7 +11,8 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.utils.WmlFactory.*;
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
+import static pro.verron.officestamper.utils.WmlFactory.newText;
 
 /**
  * Utility class to handle runs.
@@ -68,6 +69,8 @@ public class RunUtil {
             case R.AnnotationRef ignored -> "";
             case R.CommentReference ignored -> "";
             case Drawing ignored -> "";
+            case CTFtnEdnRef ref -> ref.getId()
+                                       .toString();
             case R.Sym sym -> "<sym(%s, %s)>".formatted(sym.getFont(), sym.getChar());
             default -> {
                 log.debug("Unhandled object type: {}", content.getClass());

@@ -1,10 +1,10 @@
 package pro.verron.officestamper.preset.preprocessors.similarrun;
 
-import org.docx4j.TraversalUtil;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R;
 import pro.verron.officestamper.api.PreProcessor;
+import pro.verron.officestamper.core.DocumentUtil;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,9 +17,8 @@ public class MergeSameStyleRuns
      */
     @Override
     public void process(WordprocessingMLPackage document) {
-        var mainDocumentPart = document.getMainDocumentPart();
         var visitor = new SimilarRunVisitor();
-        TraversalUtil.visit(mainDocumentPart, visitor);
+        DocumentUtil.visitDocument(document, visitor);
         for (List<R> similarStyleRuns : visitor.getSimilarStyleRuns()) {
             R firstRun = similarStyleRuns.getFirst();
             var runContent = firstRun.getContent();

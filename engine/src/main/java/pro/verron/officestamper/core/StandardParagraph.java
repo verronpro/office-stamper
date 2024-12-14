@@ -4,6 +4,7 @@ import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
+import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -108,7 +109,7 @@ public class StandardParagraph
     }
 
     @Override public void remove() {
-        ObjectDeleter.deleteParagraph(p);
+        WmlUtils.remove(p);
     }
 
     /**
@@ -131,14 +132,10 @@ public class StandardParagraph
      * @param replacement the object to replace the expression.
      */
     @Override public void replace(Placeholder placeholder, Object replacement) {
-        if (replacement instanceof R run) {
-            replaceWithRun(placeholder, run);
-        }
-        else if (replacement instanceof Br br) {
-            replaceWithBr(placeholder, br);
-        }
-        else {
-            throw new AssertionError("Replacement must be a R or Br, but was a " + replacement.getClass());
+        switch (replacement) {
+            case R run -> replaceWithRun(placeholder, run);
+            case Br br -> replaceWithBr(placeholder, br);
+            default -> throw new AssertionError("Replacement must be a R or Br, but was a " + replacement.getClass());
         }
     }
 
@@ -162,7 +159,8 @@ public class StandardParagraph
         return parent(aClass, Integer.MAX_VALUE);
     }
 
-    @Override public Optional<Comments.Comment> getComment() {
+    @Override
+    public Collection<Comments.Comment> getComment() {
         return CommentUtil.getCommentFor(contents, source.document());
     }
 

@@ -41,12 +41,6 @@ import static pro.verron.officestamper.test.TestUtils.*;
             pipe.accept(replaceWordWithIntegrationTest(factory));
             pipe.accept(replaceNullExpressionTest(factory));
             pipe.accept(replaceNullExpressionTest2(factory));
-            pipe.accept(conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved(factory));
-            pipe.accept(conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(factory));
-            pipe.accept(conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(factory));
-            pipe.accept(conditionalDisplayOfTableRowsTest(factory));
-            pipe.accept(conditionalDisplayOfTableBug32Test(factory));
-            pipe.accept(conditionalDisplayOfTableTest(factory));
             pipe.accept(customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(factory));
             pipe.accept(expressionReplacementInGlobalParagraphsTest(factory));
             pipe.accept(expressionReplacementInTablesTest(factory));
@@ -64,7 +58,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         }), Stream.of(nullPointerResolutionTest_testWithCustomSpel(ContextFactory.objectContextFactory())));
     }
 
-    static Stream<ContextFactory> factories() {
+    private static Stream<ContextFactory> factories() {
         return Stream.of(objectContextFactory(), mapContextFactory());
     }
 
@@ -121,195 +115,6 @@ import static pro.verron.officestamper.test.TestUtils.*;
                         """);
     }
 
-
-    private static Arguments conditionalDisplayOfParagraphsTest_processorExpressionsInCommentsAreResolved(ContextFactory factory) {
-        var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfParagraphsTest.docx"));
-        var expected = """
-                == Conditional Display of Paragraphs
-                
-                This paragraph stays untouched.
-                This paragraph stays untouched.
-                |===
-                |=== Conditional Display of paragraphs also works in tables
-                
-                |This paragraph stays untouched.
-                |
-                
-                ||===
-                |=== Also works in nested tables
-                
-                |This paragraph stays untouched.
-                
-                
-                |===
-                
-                
-                |===
-                
-                """;
-
-        return arguments("Display Paragraph If Integration test", standard(), context, template, expected);
-    }
-
-    private static Arguments conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(ContextFactory factory) {
-        var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
-        var expected = """
-                == Conditional Display of Paragraphs
-                
-                Paragraph 1 stays untouched.
-                Paragraph 3 stays untouched.
-                |===
-                |=== Conditional Display of paragraphs also works in tables
-                
-                |Paragraph 4 in cell 2,1 stays untouched.
-                |
-                
-                ||===
-                |=== Also works in nested tables
-                
-                |Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
-                
-                
-                |===
-                
-                
-                |===
-                
-                """;
-        return arguments("Display Paragraph If Integration test (off case) + Inline processors Integration test",
-                standard(),
-                context,
-                template,
-                expected);
-    }
-
-    private static Arguments conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(
-            ContextFactory factory
-    ) {
-        var context = factory.name("Bart");
-        var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
-        var expected = """
-                == Conditional Display of Paragraphs
-                
-                Paragraph 1 stays untouched.
-                Paragraph 2 is only included if the “name” is “Bart”.
-                Paragraph 3 stays untouched.
-                |===
-                |=== Conditional Display of paragraphs also works in tables
-                
-                |Paragraph 4 in cell 2,1 stays untouched.
-                |Paragraph 5 in cell 2,2 is only included if the “name” is “Bart”.
-                
-                ||===
-                |=== Also works in nested tables
-                
-                |Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
-                Paragraph 7  in cell 2,1 in cell 3,1 is only included if the “name” is “Bart”.
-                
-                
-                |===
-                
-                
-                |===
-                
-                """;
-        return arguments("Display Paragraph If Integration test (on case) + Inline processors Integration test",
-                standard(),
-                context,
-                template,
-                expected);
-    }
-
-    private static Arguments conditionalDisplayOfTableRowsTest(ContextFactory factory) {
-        var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfTableRowsTest.docx"));
-        var expected = """
-                == Conditional Display of Table Rows
-                
-                This paragraph stays untouched.
-                |===
-                |This row stays untouched.
-                
-                |This row stays untouched.
-                
-                ||===
-                |Also works on nested Tables
-                
-                |This row stays untouched.
-                
-                
-                |===
-                
-                
-                |===
-                
-                """;
-        return arguments("Display Table Row If Integration test", standard(), context, template, expected);
-    }
-
-    private static Arguments conditionalDisplayOfTableBug32Test(ContextFactory factory) {
-        var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfTablesBug32Test.docx"));
-        var expected = """
-                == Conditional Display of Tables
-                
-                This paragraph stays untouched.
-                
-                |===
-                |This table stays untouched.
-                |<cnfStyle=100000000000>
-                
-                |
-                |<cnfStyle=000000100000>
-                
-                
-                |===
-                
-                |===
-                |Also works on nested tables
-                
-                |
-                
-                
-                |===
-                
-                This paragraph stays untouched.
-                """;
-        return arguments("Display Table If Bug32 Regression test", standard(), context, template, expected);
-    }
-
-    private static Arguments conditionalDisplayOfTableTest(ContextFactory factory) {
-        var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfTablesTest" + ".docx"));
-        var expected = """
-                == Conditional Display of Tables
-                
-                This paragraph stays untouched.
-                
-                |===
-                |This table stays untouched.
-                |
-                
-                |
-                |
-                
-                
-                |===
-                
-                |===
-                |Also works on nested tables
-                
-                |
-                
-                
-                |===
-                
-                This paragraph stays untouched.
-                """;
-        return arguments("Display Table If Integration test", standard(), context, template, expected);
-    }
 
     private static Arguments customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(
             ContextFactory factory

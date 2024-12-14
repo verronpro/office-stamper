@@ -52,7 +52,7 @@ public class CommentUtil {
      * @return Optional of the comment, if found, Optional.empty() otherwise.
      */
     public static Optional<Comments.Comment> getCommentAround(R run, WordprocessingMLPackage document) {
-        ContentAccessor parent = (ContentAccessor) ((Child) run).getParent();
+        ContentAccessor parent = (ContentAccessor) run.getParent();
         if (parent == null) return Optional.empty();
         return getComment(run, document, parent);
     }
@@ -100,16 +100,6 @@ public class CommentUtil {
     }
 
     /**
-     * Retrieves the CommentsPart from the given Parts object.
-     *
-     * @param parts the Parts object containing the various parts of the document.
-     * @return an Optional containing the CommentsPart if found, or an empty Optional if not found.
-     */
-    public static Optional<CommentsPart> getCommentsPart(Parts parts) {
-        return Optional.ofNullable((CommentsPart) parts.get(WORD_COMMENTS_PART_NAME));
-    }
-
-    /**
      * Retrieves the comment associated with a given paragraph content within a WordprocessingMLPackage document.
      *
      * @param paragraphContent the content of the paragraph to search for a comment.
@@ -118,7 +108,7 @@ public class CommentUtil {
      * @return an Optional containing the found comment, or Optional.empty() if no comment is associated with the given
      * paragraph content.
      */
-    public static Optional<Comments.Comment> getCommentFor(
+    public static Collection<Comments.Comment> getCommentFor(
             List<Object> paragraphContent, WordprocessingMLPackage document
     ) {
         var comments = getCommentsPart(document.getParts()).map(CommentUtil::extractContent)
@@ -130,9 +120,28 @@ public class CommentUtil {
         return paragraphContent.stream()
                                .filter(CommentRangeStart.class::isInstance)
                                .map(CommentRangeStart.class::cast)
-                               .findFirst()
                                .map(CommentRangeStart::getId)
-                               .flatMap(commentId -> findCommentById(comments, commentId));
+                               .flatMap(commentId -> findCommentById(comments, commentId).stream())
+                               .toList();
+    }
+
+    /**
+     * Retrieves the CommentsPart from the given Parts object.
+     *
+     * @param parts the Parts object containing the various parts of the document.
+     *
+     * @return an Optional containing the CommentsPart if found, or an empty Optional if not found.
+     */
+    public static Optional<CommentsPart> getCommentsPart(Parts parts) {
+        return Optional.ofNullable((CommentsPart) parts.get(WORD_COMMENTS_PART_NAME));
+    }
+
+    public static Comments extractContent(CommentsPart commentsPart) {
+        try {
+            return commentsPart.getContents();
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException("Error while searching comment.", e);
+        }
     }
 
     private static Optional<Comments.Comment> findCommentById(List<Comments.Comment> comments, BigInteger id) {
@@ -269,13 +278,5 @@ public class CommentUtil {
             }
         }
         return newComments(list);
-    }
-
-    public static Comments extractContent(CommentsPart commentsPart) {
-        try {
-            return commentsPart.getContents();
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException("Error while searching comment.", e);
-        }
     }
 }

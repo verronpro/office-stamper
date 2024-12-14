@@ -323,13 +323,10 @@ public class WmlFactory {
         try {
             var aPackage = WordprocessingMLPackage.createPackage();
             var mainDocumentPart = aPackage.getMainDocumentPart();
-
             var cp = newCommentsPart();
             cp.init();
             cp.setJaxbElement(newComments());
-            var cpPackage = cp.getPackage();
             mainDocumentPart.addTargetPart(cp);
-            aPackage.setSourcePartStore(cpPackage.getSourcePartStore());
             return aPackage;
         } catch (InvalidFormatException e) {
             throw new OfficeStamperException(e);

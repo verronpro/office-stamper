@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
-import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -12,7 +11,10 @@ import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static pro.verron.officestamper.core.Invokers.streamInvokers;
@@ -29,6 +31,7 @@ public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
 
     private final List<PreProcessor> preprocessors;
+    private final List<PostProcessor> postprocessors;
     private final PlaceholderReplacer placeholderReplacer;
     private final Function<DocxPart, CommentProcessorRegistry> commentProcessorRegistrySupplier;
 
@@ -44,8 +47,10 @@ public class DocxStamper
                 configuration.getResolvers(),
                 configuration.getCommentProcessors(),
                 configuration.getPreprocessors(),
+                configuration.getPostprocessors(),
                 configuration.getSpelParserConfiguration(),
-                configuration.getExceptionResolver());
+                configuration.getExceptionResolver()
+        );
     }
 
     private DocxStamper(
@@ -56,6 +61,7 @@ public class DocxStamper
             List<ObjectResolver> resolvers,
             Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> configurationCommentProcessors,
             List<PreProcessor> preprocessors,
+            List<PostProcessor> postprocessors,
             SpelParserConfiguration spelParserConfiguration,
             ExceptionResolver exceptionResolver
     ) {
@@ -75,9 +81,8 @@ public class DocxStamper
         var commentProcessors = buildCommentProcessors(configurationCommentProcessors);
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
-        evaluationContext.addMethodResolver(new Invokers(functions.stream().map(cf -> new Invoker(cf.name(),
-                new Invokers.Args(cf.parameterTypes()),
-                (context, target, arguments) -> new TypedValue(cf.function().apply(Arrays.asList(arguments)))))));
+        evaluationContext.addMethodResolver(new Invokers(functions.stream()
+                                                                  .map(Invokers::ofCustomFunction)));
 
         this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(
                 source,
@@ -86,6 +91,7 @@ public class DocxStamper
                 exceptionResolver);
 
         this.preprocessors = new ArrayList<>(preprocessors);
+        this.postprocessors = new ArrayList<>(postprocessors);
     }
 
     private CommentProcessors buildCommentProcessors(
@@ -119,7 +125,7 @@ public class DocxStamper
     ///     within the table cells against one of the objects within the list.
     ///
     /// If you need a wider vocabulary of methods available in the comments, you can create your own ICommentProcessor
-    /// and register it via [#addCommentProcessor(Class,Function)].
+    /// and register it via [OfficeStamperConfiguration#addCommentProcessor(Class, Function)].
     public void stamp(InputStream template, Object contextRoot, OutputStream out) {
         try {
             WordprocessingMLPackage document = WordprocessingMLPackage.load(template);
@@ -130,14 +136,16 @@ public class DocxStamper
     }
 
 
-    /// Same as [#stamp(InputStream,Object,OutputStream)] except that you
+    /// Same as [#stamp(InputStream, Object, OutputStream)] except that you
     /// may pass in a DOCX4J document as a template instead of an InputStream.
-    @Override public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
+    @Override
+    public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
         try {
             var source = new TextualDocxPart(document);
             preprocess(document);
             processComments(source, contextRoot);
             replaceExpressions(source, contextRoot);
+            postprocess(document);
             document.save(out);
         } catch (Docx4JException e) {
             throw new OfficeStamperException(e);
@@ -145,9 +153,7 @@ public class DocxStamper
     }
 
     private void preprocess(WordprocessingMLPackage document) {
-        for (PreProcessor preprocessor : preprocessors) {
-            preprocessor.process(document);
-        }
+        preprocessors.forEach(processor -> processor.process(document));
     }
 
     private void processComments(DocxPart document, Object contextObject) {
@@ -169,5 +175,9 @@ public class DocxStamper
     private void runProcessors(DocxPart source, Object contextObject) {
         var processors = commentProcessorRegistrySupplier.apply(source);
         processors.runProcessors(contextObject);
+    }
+
+    private void postprocess(WordprocessingMLPackage document) {
+        postprocessors.forEach(processor -> processor.process(document));
     }
 }

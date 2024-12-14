@@ -1,5 +1,8 @@
 package pro.verron.officestamper.api;
 
+import org.springframework.util.function.ThrowingFunction;
+
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -55,5 +58,9 @@ public class OfficeStamperException
 
     public static Supplier<OfficeStamperException> throwing(String message) {
         return () -> new OfficeStamperException(message);
+    }
+
+    public static <T, U> Function<T, U> throwing(ThrowingFunction<T, U> function) {
+        return ThrowingFunction.of(function, OfficeStamperException::new);
     }
 }

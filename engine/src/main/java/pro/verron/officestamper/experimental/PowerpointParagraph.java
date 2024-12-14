@@ -9,7 +9,6 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.ObjectDeleter;
 import pro.verron.officestamper.core.StandardComment;
 import pro.verron.officestamper.utils.WmlFactory;
 import pro.verron.officestamper.utils.WmlUtils;
@@ -18,6 +17,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
@@ -83,14 +83,56 @@ public class PowerpointParagraph
         currentPosition = endIndex + 1;
     }
 
-    @Override public ProcessorContext processorContext(Placeholder placeholder) {
+    private static CTTextCharacterProperties apply(
+            CTTextCharacterProperties source,
+            CTTextCharacterProperties destination
+    ) {
+        ofNullable(source.getAltLang()).ifPresent(destination::setAltLang);
+        ofNullable(source.getBaseline()).ifPresent(destination::setBaseline);
+        ofNullable(source.getBmk()).ifPresent(destination::setBmk);
+        ofNullable(source.getBlipFill()).ifPresent(destination::setBlipFill);
+        ofNullable(source.getCap()).ifPresent(destination::setCap);
+        ofNullable(source.getCs()).ifPresent(destination::setCs);
+        ofNullable(source.getGradFill()).ifPresent(destination::setGradFill);
+        ofNullable(source.getGrpFill()).ifPresent(destination::setGrpFill);
+        ofNullable(source.getHighlight()).ifPresent(destination::setHighlight);
+        ofNullable(source.getHlinkClick()).ifPresent(destination::setHlinkClick);
+        ofNullable(source.getHlinkMouseOver()).ifPresent(destination::setHlinkMouseOver);
+        ofNullable(source.getKern()).ifPresent(destination::setKern);
+        ofNullable(source.getLang()).ifPresent(destination::setLang);
+        ofNullable(source.getLn()).ifPresent(destination::setLn);
+        ofNullable(source.getLatin()).ifPresent(destination::setLatin);
+        ofNullable(source.getNoFill()).ifPresent(destination::setNoFill);
+        ofNullable(source.getPattFill()).ifPresent(destination::setPattFill);
+        ofNullable(source.getSpc()).ifPresent(destination::setSpc);
+        ofNullable(source.getSym()).ifPresent(destination::setSym);
+        ofNullable(source.getStrike()).ifPresent(destination::setStrike);
+        ofNullable(source.getSz()).ifPresent(destination::setSz);
+        destination.setSmtId(source.getSmtId());
+        ofNullable(source.getU()).ifPresent(destination::setU);
+        ofNullable(source.getUFill()).ifPresent(destination::setUFill);
+        ofNullable(source.getUFillTx()).ifPresent(destination::setUFillTx);
+        ofNullable(source.getULn()).ifPresent(destination::setULn);
+        ofNullable(source.getULnTx()).ifPresent(destination::setULnTx);
+        ofNullable(source.getULnTx()).ifPresent(destination::setULnTx);
+        return destination;
+    }
+
+    @Override
+    public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
         var firstRun = (R) paragraph.getEGTextRun()
                                     .getFirst();
         return new ProcessorContext(this, firstRun, comment, placeholder);
     }
 
-    @Override public void replace(List<P> toRemove, List<P> toAdd) {
+    @Override
+    public void remove() {
+        WmlUtils.remove(getP());
+    }
+
+    @Override
+    public void replace(List<P> toRemove, List<P> toAdd) {
         int index = siblings().indexOf(getP());
         if (index < 0) throw new OfficeStamperException("Impossible");
 
@@ -99,11 +141,7 @@ public class PowerpointParagraph
     }
 
     @Override
-    public void remove() {
-        WmlUtils.remove(getP());
-    }
-
-    @Override public P getP() {
+    public P getP() {
         var p = WmlFactory.newParagraph(paragraph.getEGTextRun());
         p.setParent(paragraph.getParent());
         return p;
@@ -117,7 +155,8 @@ public class PowerpointParagraph
      * @param placeholder the expression to be replaced.
      * @param replacement the object to replace the expression.
      */
-    @Override public void replace(Placeholder placeholder, Object replacement) {
+    @Override
+    public void replace(Placeholder placeholder, Object replacement) {
         if (!(replacement instanceof CTRegularTextRun replacementRun))
             throw new AssertionError("replacement is not a CTRegularTextRun");
         String text = asString();
@@ -132,72 +171,118 @@ public class PowerpointParagraph
 
         boolean singleRun = affectedRuns.size() == 1;
 
-        List<Object> runs = this.paragraph.getEGTextRun();
-        if (singleRun) {
-            PowerpointRun run = affectedRuns.getFirst();
-
-            boolean expressionSpansCompleteRun = full.length() == run.run()
-                                                                     .getT()
-                                                                     .length();
-            boolean expressionAtStartOfRun = matchStartIndex == run.startIndex();
-            boolean expressionAtEndOfRun = matchEndIndex == run.endIndex();
-            boolean expressionWithinRun = matchStartIndex > run.startIndex() && matchEndIndex < run.endIndex();
-
-            replacementRun.setRPr(run.run()
-                                     .getRPr());
-
-            if (expressionSpansCompleteRun) {
-                runs.remove(run.run());
-                runs.add(run.indexInParent(), replacement);
-                recalculateRuns();
-            }
-            else if (expressionAtStartOfRun) {
-                run.replace(matchStartIndex, matchEndIndex, "");
-                runs.add(run.indexInParent(), replacement);
-                recalculateRuns();
-            }
-            else if (expressionAtEndOfRun) {
-                run.replace(matchStartIndex, matchEndIndex, "");
-                runs.add(run.indexInParent() + 1, replacement);
-                recalculateRuns();
-            }
-            else if (expressionWithinRun) {
-                String runText = run.run()
-                                    .getT();
-                int startIndex = runText.indexOf(full);
-                int endIndex = startIndex + full.length();
-                String substring1 = runText.substring(0, startIndex);
-                CTRegularTextRun run1 = create(substring1, this.paragraph);
-                String substring2 = runText.substring(endIndex);
-                CTRegularTextRun run2 = create(substring2, this.paragraph);
-                runs.add(run.indexInParent(), run2);
-                runs.add(run.indexInParent(), replacement);
-                runs.add(run.indexInParent(), run1);
-                runs.remove(run.run());
-                recalculateRuns();
-            }
-        }
-        else {
-            PowerpointRun firstRun = affectedRuns.getFirst();
-            PowerpointRun lastRun = affectedRuns.getLast();
-            replacementRun.setRPr(firstRun.run()
+        List<Object> textRun = this.paragraph.getEGTextRun();
+        replacementRun.setRPr(affectedRuns.getFirst()
+                                          .run()
                                           .getRPr());
-            // remove the expression from first and last run
-            firstRun.replace(matchStartIndex, matchEndIndex, "");
-            lastRun.replace(matchStartIndex, matchEndIndex, "");
+        if (singleRun) singleRun(replacement,
+                full,
+                matchStartIndex,
+                matchEndIndex,
+                textRun,
+                affectedRuns.getFirst(),
+                affectedRuns.getLast());
+        else multipleRuns(replacement,
+                affectedRuns,
+                matchStartIndex,
+                matchEndIndex,
+                textRun,
+                affectedRuns.getFirst(),
+                affectedRuns.getLast());
 
-            // remove all runs between first and last
-            for (PowerpointRun run : affectedRuns) {
-                if (!Objects.equals(run, firstRun) && !Objects.equals(run, lastRun)) {
-                    runs.remove(run.run());
-                }
-            }
+    }
 
-            // add replacement run between first and last run
-            runs.add(firstRun.indexInParent() + 1, replacement);
+    private void singleRun(
+            Object replacement,
+            String full,
+            int matchStartIndex,
+            int matchEndIndex,
+            List<Object> runs,
+            PowerpointRun firstRun,
+            PowerpointRun lastRun
+    ) {
+        assert firstRun == lastRun;
+        boolean expressionSpansCompleteRun = full.length() == firstRun.run()
+                                                                      .getT()
+                                                                      .length();
+        boolean expressionAtStartOfRun = matchStartIndex == firstRun.startIndex();
+        boolean expressionAtEndOfRun = matchEndIndex == firstRun.endIndex();
+        boolean expressionWithinRun = matchStartIndex > firstRun.startIndex() && matchEndIndex < firstRun.endIndex();
 
+
+        if (expressionSpansCompleteRun) {
+            runs.remove(firstRun.run());
+            runs.add(firstRun.indexInParent(), replacement);
             recalculateRuns();
         }
+        else if (expressionAtStartOfRun) {
+            firstRun.replace(matchStartIndex, matchEndIndex, "");
+            runs.add(firstRun.indexInParent(), replacement);
+            recalculateRuns();
+        }
+        else if (expressionAtEndOfRun) {
+            firstRun.replace(matchStartIndex, matchEndIndex, "");
+            runs.add(firstRun.indexInParent() + 1, replacement);
+            recalculateRuns();
+        }
+        else if (expressionWithinRun) {
+            String runText = firstRun.run()
+                                     .getT();
+            int startIndex = runText.indexOf(full);
+            int endIndex = startIndex + full.length();
+            String substring1 = runText.substring(0, startIndex);
+            CTRegularTextRun run1 = create(substring1, this.paragraph);
+            String substring2 = runText.substring(endIndex);
+            CTRegularTextRun run2 = create(substring2, this.paragraph);
+            runs.add(firstRun.indexInParent(), run2);
+            runs.add(firstRun.indexInParent(), replacement);
+            runs.add(firstRun.indexInParent(), run1);
+            runs.remove(firstRun.run());
+            recalculateRuns();
+        }
+    }
+
+    private void multipleRuns(
+            Object replacement,
+            List<PowerpointRun> affectedRuns,
+            int matchStartIndex,
+            int matchEndIndex,
+            List<Object> runs,
+            PowerpointRun firstRun,
+            PowerpointRun lastRun
+    ) {
+        // remove the expression from first and last run
+        firstRun.replace(matchStartIndex, matchEndIndex, "");
+        lastRun.replace(matchStartIndex, matchEndIndex, "");
+
+        // remove all runs between first and last
+        for (PowerpointRun run : affectedRuns) {
+            if (!Objects.equals(run, firstRun) && !Objects.equals(run, lastRun)) {
+                runs.remove(run.run());
+            }
+        }
+
+        // add replacement run between first and last run
+        runs.add(firstRun.indexInParent() + 1, replacement);
+
+        recalculateRuns();
+    }
+
+    private static CTRegularTextRun create(String text, CTTextParagraph parentParagraph) {
+        CTRegularTextRun run = new CTRegularTextRun();
+        run.setT(text);
+        applyParagraphStyle(parentParagraph, run);
+        return run;
+    }
+
+    private static void applyParagraphStyle(CTTextParagraph p, CTRegularTextRun run) {
+        var properties = p.getPPr();
+        if (properties == null) return;
+
+        var textCharacterProperties = properties.getDefRPr();
+        if (textCharacterProperties == null) return;
+
+        run.setRPr(apply(textCharacterProperties));
     }
 
     /**
@@ -205,19 +290,17 @@ public class PowerpointParagraph
      *
      * @return the text of all runs.
      */
-    @Override public String asString() {
+    @Override
+    public String asString() {
         return runs.stream()
                    .map(PowerpointRun::run)
                    .map(CTRegularTextRun::getT)
                    .collect(joining()) + "\n";
     }
 
-    @Override public void apply(Consumer<P> pConsumer) {
+    @Override
+    public void apply(Consumer<P> pConsumer) {
         pConsumer.accept(getP());
-    }
-
-    @Override public <T> Optional<T> parent(Class<T> aClass) {
-        return parent(aClass, Integer.MAX_VALUE);
     }
 
     @Override
@@ -231,25 +314,15 @@ public class PowerpointParagraph
                    .toList();
     }
 
-    private static CTRegularTextRun create(
-            String text, CTTextParagraph parentParagraph
-    ) {
-        CTRegularTextRun run = new CTRegularTextRun();
-        run.setT(text);
-        applyParagraphStyle(parentParagraph, run);
-        return run;
+    @Override
+    public <T> Optional<T> parent(Class<T> aClass) {
+        return parent(aClass, Integer.MAX_VALUE);
     }
 
-    private static void applyParagraphStyle(
-            CTTextParagraph p, CTRegularTextRun run
-    ) {
-        var properties = p.getPPr();
-        if (properties == null) return;
-
-        var textCharacterProperties = properties.getDefRPr();
-        if (textCharacterProperties == null) return;
-
-        run.setRPr(apply(textCharacterProperties));
+    private List<Object> siblings() {
+        return this.parent(ContentAccessor.class, 1)
+                   .orElseThrow(throwing("Not a standard Child with common parent"))
+                   .getContent();
     }
 
     private static CTTextCharacterProperties apply(
@@ -258,38 +331,8 @@ public class PowerpointParagraph
         return apply(source, new CTTextCharacterProperties());
     }
 
-    private static CTTextCharacterProperties apply(
-            CTTextCharacterProperties source, CTTextCharacterProperties destination
-    ) {
-        if (source.getAltLang() != null) destination.setAltLang(source.getAltLang());
-        if (source.getBaseline() != null) destination.setBaseline(source.getBaseline());
-        if (source.getBmk() != null) destination.setBmk(source.getBmk());
-        if (source.getBlipFill() != null) destination.setBlipFill(source.getBlipFill());
-        if (source.getCap() != null) destination.setCap(source.getCap());
-        if (source.getCs() != null) destination.setCs(source.getCs());
-        if (source.getGradFill() != null) destination.setGradFill(source.getGradFill());
-        if (source.getGrpFill() != null) destination.setGrpFill(source.getGrpFill());
-        if (source.getHighlight() != null) destination.setHighlight(source.getHighlight());
-        if (source.getHlinkClick() != null) destination.setHlinkClick(source.getHlinkClick());
-        if (source.getHlinkMouseOver() != null) destination.setHlinkMouseOver(source.getHlinkMouseOver());
-        if (source.getKern() != null) destination.setKern(source.getKern());
-        if (source.getLang() != null) destination.setLang(source.getLang());
-        if (source.getLn() != null) destination.setLn(source.getLn());
-        if (source.getLatin() != null) destination.setLatin(source.getLatin());
-        if (source.getNoFill() != null) destination.setNoFill(source.getNoFill());
-        if (source.getPattFill() != null) destination.setPattFill(source.getPattFill());
-        if (source.getSpc() != null) destination.setSpc(source.getSpc());
-        if (source.getSym() != null) destination.setSym(source.getSym());
-        if (source.getStrike() != null) destination.setStrike(source.getStrike());
-        if (source.getSz() != null) destination.setSz(source.getSz());
-        if (source.getSmtId() != 0) destination.setSmtId(source.getSmtId());
-        if (source.getU() != null) destination.setU(source.getU());
-        if (source.getUFill() != null) destination.setUFill(source.getUFill());
-        if (source.getUFillTx() != null) destination.setUFillTx(source.getUFillTx());
-        if (source.getULn() != null) destination.setULn(source.getULn());
-        if (source.getULnTx() != null) destination.setULnTx(source.getULnTx());
-        if (source.getULnTx() != null) destination.setULnTx(source.getULnTx());
-        return destination;
+    private <T> Optional<T> parent(Class<T> aClass, int depth) {
+        return WmlUtils.getFirstParentWithClass(getP(), aClass, depth);
     }
 
     private Comment comment(Placeholder placeholder) {
@@ -301,7 +344,8 @@ public class PowerpointParagraph
     /**
      * {@inheritDoc}
      */
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return asString();
     }
 }

@@ -29,6 +29,7 @@ public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
 
     private final List<PreProcessor> preprocessors;
+    private final List<PostProcessor> postprocessors;
     private final PlaceholderReplacer placeholderReplacer;
     private final Function<DocxPart, CommentProcessorRegistry> commentProcessorRegistrySupplier;
 
@@ -44,8 +45,10 @@ public class DocxStamper
                 configuration.getResolvers(),
                 configuration.getCommentProcessors(),
                 configuration.getPreprocessors(),
+                configuration.getPostprocessors(),
                 configuration.getSpelParserConfiguration(),
-                configuration.getExceptionResolver());
+                configuration.getExceptionResolver()
+        );
     }
 
     private DocxStamper(
@@ -56,6 +59,7 @@ public class DocxStamper
             List<ObjectResolver> resolvers,
             Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> configurationCommentProcessors,
             List<PreProcessor> preprocessors,
+            List<PostProcessor> postprocessors,
             SpelParserConfiguration spelParserConfiguration,
             ExceptionResolver exceptionResolver
     ) {
@@ -85,6 +89,7 @@ public class DocxStamper
                 exceptionResolver);
 
         this.preprocessors = new ArrayList<>(preprocessors);
+        this.postprocessors = new ArrayList<>(postprocessors);
     }
 
     private CommentProcessors buildCommentProcessors(
@@ -137,6 +142,7 @@ public class DocxStamper
             preprocess(document);
             processComments(source, contextRoot);
             replaceExpressions(source, contextRoot);
+            postprocess(document);
             document.save(out);
         } catch (Docx4JException e) {
             throw new OfficeStamperException(e);
@@ -144,9 +150,7 @@ public class DocxStamper
     }
 
     private void preprocess(WordprocessingMLPackage document) {
-        for (PreProcessor preprocessor : preprocessors) {
-            preprocessor.process(document);
-        }
+        preprocessors.forEach(processor -> processor.process(document));
     }
 
     private void processComments(DocxPart document, Object contextObject) {
@@ -168,5 +172,9 @@ public class DocxStamper
     private void runProcessors(DocxPart source, Object contextObject) {
         var processors = commentProcessorRegistrySupplier.apply(source);
         processors.runProcessors(contextObject);
+    }
+
+    private void postprocess(WordprocessingMLPackage document) {
+        postprocessors.forEach(processor -> processor.process(document));
     }
 }

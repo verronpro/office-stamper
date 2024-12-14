@@ -283,4 +283,9 @@ public interface OfficeStamperConfiguration {
     <T, U, V> NeedsTriFunctionImpl<T, U, V> addCustomFunction(
             String name, Class<T> class0, Class<U> class1, Class<V> class2
     );
+
+    List<PostProcessor> getPostprocessors();
+
+    void addPostprocessor(PostProcessor postProcessor);
+
 }

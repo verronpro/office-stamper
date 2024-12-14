@@ -261,10 +261,8 @@ public class Stringifier {
     }
 
     private Optional<String> stringify(CTFtnEdn c) {
-        var type = Optional.ofNullable(c.getType())
-                           .map(STFtnEdn::value)
-                           .orElse("normal");
-        if (!type.equals("normal")) return Optional.empty();
+        var type = ofNullable(c.getType()).orElse(STFtnEdn.NORMAL);
+        if (STFtnEdn.NORMAL != type) return Optional.empty();
         return Optional.of("[%s]%s".formatted(c.getId(), stringify(c.getContent())));
     }
 

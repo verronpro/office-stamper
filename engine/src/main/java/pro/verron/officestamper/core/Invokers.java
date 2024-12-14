@@ -4,15 +4,19 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.MethodResolver;
+import org.springframework.expression.TypedValue;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import pro.verron.officestamper.api.CustomFunction;
 
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.groupingBy;
@@ -43,6 +47,13 @@ public class Invokers
 
     private static Stream<Invoker> streamInvokers(Class<?> key, Object obj) {
         return stream(key.getDeclaredMethods()).map(method -> new Invoker(obj, method));
+    }
+
+    static Invoker ofCustomFunction(CustomFunction cf) {
+        var cfName = cf.name();
+        var cfArgs = new Args(cf.parameterTypes());
+        var cfExecutor = new CustomFunctionExecutor(cf.function());
+        return new Invoker(cfName, cfArgs, cfExecutor);
     }
 
     @Override
@@ -88,4 +99,13 @@ public class Invokers
 
     /// Represent a placeholder validating all other classes as possible candidate for validation
     private class Any {}
+
+    private record CustomFunctionExecutor(Function<List<Object>, Object> function)
+            implements MethodExecutor {
+
+        @Override
+        public TypedValue execute(EvaluationContext context, Object target, Object... arguments) {
+            return new TypedValue(function.apply(asList(arguments)));
+        }
+    }
 }

@@ -22,5 +22,4 @@ public record CustomFunction(
     public interface NeedsTriFunctionImpl<T, U, V> {
         void withImplementation(TriFunction<T, U, V, ?> function);
     }
-
 }

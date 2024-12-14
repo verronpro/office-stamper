@@ -75,9 +75,8 @@ public class DocxStamper
         var commentProcessors = buildCommentProcessors(configurationCommentProcessors);
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
-        evaluationContext.addMethodResolver(new Invokers(functions.stream().map(cf -> new Invoker(cf.name(),
-                new Invokers.Args(cf.parameterTypes()),
-                (context, target, arguments) -> new TypedValue(cf.function().apply(Arrays.asList(arguments)))))));
+        evaluationContext.addMethodResolver(new Invokers(functions.stream()
+                                                                  .map(Invokers::ofCustomFunction)));
 
         this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(
                 source,

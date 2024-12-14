@@ -221,21 +221,13 @@ class ConditionalDisplayTest {
                 [Quote] "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
                 == Homer Simpson's Favorite Pastimes
                 
-                Homer Simpson, the patriarch of the Simpson family, is well-known for his love of donuts and Duff beer❬[1]❘{rStyle=Appelnotedebasdep}❭. He spends most of his time at the Springfield Nuclear Power Plant, though he often finds himself in various predicaments❬[2]❘{rStyle=Appelnotedebasdep}❭.
                 == Marge Simpson: The Heart of the Family
                 
-                Marge Simpson, with her iconic blue hair, is the moral center of the family. She manages the household with grace and patience❬[3]❘{rStyle=Appelnotedebasdep}❭. Despite the chaos around her, Marge always finds a way to keep the family together.
-                == Bart Simpson: The Troublemaker
-                
-                Bart Simpson, the eldest child, is notorious for his mischievous behavior. His prankster ways often land him in trouble, yet his cleverness sometimes helps solve the family's problems❬[4]❘{rStyle=Appelnotedebasdep}❭.
+                Marge Simpson, with her iconic blue hair, is the moral center of the family. She manages the household with the chaos around her, Marge always finds a way to keep the family together.
                 |===
                 |Character
                 |Role<cnfStyle=100000000000>
                 |Fun Fact<cnfStyle=100000000000>
-                
-                |Homer Simpson
-                |Patriarch<cnfStyle=000000100000>
-                |"D'oh!" is Homer's trademark exclamation❬[5]❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000100000>
                 
                 |Marge Simpson
                 |Matriarch<cnfStyle=000000000000>
@@ -260,16 +252,68 @@ class ConditionalDisplayTest {
                 [Quote] "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
                 [footnotes]
                 ---
-                [1] Donuts, preferably with pink frosting and sprinkles, are Homer's favorite treat.
+                [6] Marge's hairdo was designed to hide various items, a nod to cartoon logic.
                 
-                [2] Homer’s adventures range from becoming an astronaut to leading a vigilante group.
+                [7] Bart's rebellious attitude is encapsulated in this catchphrase.
                 
-                [3] Marge once served as a police officer and even ran for mayor of Springfield.
+                [8] Lisa's musical talent often shines through her saxophone solos.
                 
-                [4] Bart once saved Springfield from a dam break with his skateboarding skills.
+                [9] Despite her silence, Maggie has saved her family on multiple occasions.
                 
-                [5] "D'oh!" was first added to the Oxford English Dictionary in 2001.
+                ---
+                """;
+
+        var config = standardWithPreprocessing();
+        var stamper = new TestDocxStamper<>(config);
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals(expected, actual);
+    }
+
+    @DisplayName("Display endnotes elements")
+    @ParameterizedTest
+    @MethodSource("factories")
+    void conditionalDisplayOfEndnotes(ContextFactory factory) {
+        var context = factory.name("Bart");
+        var template = getResource(Path.of("endnotes.docx"));
+        var expected = """
+                = Springfield Chronicles: The Simpsons Edition
                 
+                == Introduction
+                
+                [Quote] "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
+                == Homer Simpson's Favorite Pastimes
+                
+                == Marge Simpson: The Heart of the Family
+                
+                Marge Simpson, with her iconic blue hair, is the moral center of the family. She manages the household with the chaos around her, Marge always finds a way to keep the family together.
+                |===
+                |Character
+                |Role<cnfStyle=100000000000>
+                |Fun Fact<cnfStyle=100000000000>
+                
+                |Marge Simpson
+                |Matriarch<cnfStyle=000000000000>
+                |Her hair once hid an entire toolbox❬[6]❘{rStyle=Appeldenotedefin}❭.<cnfStyle=000000000000>
+                
+                |Bart Simpson
+                |Eldest Child<cnfStyle=000000100000>
+                |Bart's famous catchphrase is "Eat my shorts!"❬[7]❘{rStyle=Appeldenotedefin}❭.<cnfStyle=000000100000>
+                
+                |Lisa Simpson
+                |Middle Child<cnfStyle=000000000000>
+                |Lisa is a talented saxophonist❬[8]❘{rStyle=Appeldenotedefin}❭.<cnfStyle=000000000000>
+                
+                |Maggie Simpson
+                |Youngest Child<cnfStyle=000000100000>
+                |Maggie is known for her pacifier and silent wisdom❬[9]❘{rStyle=Appeldenotedefin}❭.<cnfStyle=000000100000>
+                
+                
+                |===
+                == Conclusion
+                
+                [Quote] "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
+                [endnotes]
+                ---
                 [6] Marge's hairdo was designed to hide various items, a nod to cartoon logic.
                 
                 [7] Bart's rebellious attitude is encapsulated in this catchphrase.

@@ -136,7 +136,7 @@ public class DocxStamper
     }
 
 
-    /// Same as [#stamp(InputStream,Object,OutputStream)] except that you
+    /// Same as [#stamp(InputStream, Object, OutputStream)] except that you
     /// may pass in a DOCX4J document as a template instead of an InputStream.
     @Override
     public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {

@@ -8,9 +8,7 @@ import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
-import org.docx4j.wml.Comments;
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.Tc;
+import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.TableCellUtil;
@@ -85,11 +83,27 @@ public final class WmlUtils {
     }
 
     public static void remove(Child child) {
-        var parent = (ContentAccessor) child.getParent();
-        remove(parent, child);
-        if (parent instanceof Tc cell && TableCellUtil.hasNoParagraphOrTable(cell)) {
+        switch (child.getParent()) {
+            case ContentAccessor parent -> remove(parent, child);
+            case CTFootnotes parent -> remove(parent, child);
+            case CTEndnotes parent -> remove(parent, child);
+            default -> throw new OfficeStamperException("Unexpected value: " + child.getParent());
+        }
+        if (child.getParent() instanceof Tc cell && TableCellUtil.hasNoParagraphOrTable(cell)) {
             TableCellUtil.addEmptyParagraph(cell);
         }
+    }
+
+    @SuppressWarnings("SuspiciousMethodCalls")
+    private static void remove(CTFootnotes parent, Child child) {
+        parent.getFootnote()
+              .remove(child);
+    }
+
+    @SuppressWarnings("SuspiciousMethodCalls")
+    private static void remove(CTEndnotes parent, Child child) {
+        parent.getEndnote()
+              .remove(child);
     }
 
     private static void remove(ContentAccessor parent, Child child) {

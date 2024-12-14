@@ -43,6 +43,8 @@ public class OfficeStamperConfigurations {
         configuration.addPreprocessor(Preprocessors.removeLanguageProof());
         configuration.addPreprocessor(Preprocessors.removeLanguageInfo());
         configuration.addPreprocessor(Preprocessors.mergeSimilarRuns());
+        configuration.addPostprocessor(Postprocessors.removeOrphanedFootnotes());
+        configuration.addPostprocessor(Postprocessors.removeOrphanedEndnotes());
         return configuration;
     }
 

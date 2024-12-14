@@ -570,8 +570,7 @@ public class Stringifier {
             case "heading 5" -> "====== %s\n"::formatted;
             case "heading 6" -> "======= %s\n"::formatted;
             case "caption" -> ".%s"::formatted;
-            case "annotation text" -> string -> string;
-            case "footnote text" -> string -> string;
+            case "annotation text", "footnote text", "endnote text" -> string -> string;
             default -> "[%s] %%s".formatted(value)::formatted;
         };
     }

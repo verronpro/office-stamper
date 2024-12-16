@@ -24,7 +24,7 @@ import static pro.verron.officestamper.test.TestUtils.getResource;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
 class RepeatTableRowTest {
-    public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
+    private static final ObjectContextFactory FACTORY = new ObjectContextFactory();
     private static final Logger log = LoggerFactory.getLogger(RepeatTableRowTest.class);
 
     private static Stream<Arguments> tests() {

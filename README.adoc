@@ -15,51 +15,63 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 
 == Release Notes
 
-=== {proj}/releases/tag/v2.6.0[v2.6.0]
+=== {proj}/releases/tag/v2.7.0[v2.7.0]
 
 ==== Features
 
-* It is now possible to add custom function to the Spel context in a simpler way. Try using `OfficeStamperConfiguration.addCustomFunction` methods.
-* Added the `pro.verron.officestamper.utils` package to provide useful and common elements for core, preset, test and users.
-* *Deprecated* the Paragraph wrapper now can provide a bit more advanced capability on inner P, don’t recommend calling `getP()` anymore.
+* Add the `PostProcessor` concept to be able to add cleaners or summaries at stamping finish.
+* #68 Filled to `displayXXXIf` panoply with:
+** `displayParagraphIf(boolean)`, `displayParagraphIfPresent(object)` and `displayParagraphIfAbsent(object)`
+** `displayTableRowIf(boolean)`, `displayTableRowIfPresent(object)` and `displayTableRowIfAbsent(object)`
+** `displayTableIf(boolean)`, `displayTableIfPresent(object)` and `displayTableIfAbsent(object)`
+** `displayWordsIf(boolean)`, `displayWordsIfPresent(object)` and `displayWordsIfAbsent(object)`
+** `displayDocPartIf(boolean)`, `displayDocPartIfPresent(object)` and `displayDocPartIfAbsent(object)`
+* The two provided evaluation context configurer now include the classic Get Accessor and the Map Accessor, so the object used as context can be much more flexible.
+** ie. `$+{name}+` can now refer to an object `getName()` method or to a map `get("name")` value.
+
+==== Bugfixes
+
+* BREAKING - `Paragraph#getComment` now returns a Collection instead of an Optional, because one paragraph can have several comments.
+Fixes a bug when commenting several groups of runs by different comments in a single paragraph.
+* #69 Office-stamper is now aware of Footnotes and Endnotes, it only cleans orphaned notes with `standardWithPreprocessing` configuration for now, but probably going to run the stamping as well in future versions.
+* #510 All `repeatXXX` can now accept Iterable as input
 
 ==== Dependencies
 
-* Change java target from `17` to `21`
-* Bump `org.springframework:spring-expression` from `6.1.12` to `6.1.14`
-* Bump `org.springframework:spring-context` from `6.1.12` to `6.1.14`
+* Bump `org.docx4j:docx4j-core` from `11.5.0` to `11.5.1`
+* Bump `org.docx4j:docx4j-JAXB-ReferenceImpl` from `11.5.0` to `11.5.1`
+
+* Bump `org.springframework:spring-expression` from `6.1.14` to `6.2.1`
+* Bump `org.springframework:spring-context` from `6.1.14` to `6.2.1`
 
 ==== Continuous Integration
 
-* Removed dependabot analysis
-* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.5` to `3.2.7`
-* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.0` to `3.10.1`
-* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.0` to `3.5.1`
-* Bump `org.apache.maven.reporting:maven-surefire-report-plugin` from `3.5.0` to `3.5.1`
+* Bump `org.junit.jupiter:junit-jupiter` from `5.11.3` to `5.11.4`
+* Bump `org.pitest:pitest-maven` from `1.17.0` to `1.17.3`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.1` to `3.5.2`
+
 * Bump `org.apache.maven.plugins:maven-site-plugin` from `3.20.0` to `3.21.0`
 * Bump `org.apache.maven.plugins:maven-project-info-reports-plugin` from `3.7.0` to `3.8.0`
-* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.0` to `3.10.1`
+* Bump `org.apache.maven.plugins:maven-surefire-report-plugin` from `3.5.1` to `3.5.2`
 * Bump `org.apache.maven.reporting:maven-reporting-exec` from `2.0.0-M14` to `2.0.0`
-* Bump `org.pitest:pitest-maven` from `1.16.3` to `1.17.0`
-* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.0.0` to `3.1.0`
-* Bump `org.junit.jupiter:junit-jupiter` from `5.11.0` to `5.11.3`
+* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.1.0` to `3.1.1`
+* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.1` to `3.11.2`
+
+* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.5` to `3.2.7`
 
 ==== Refactorings
 
-* CommentProcessor to now be setup with a P, run and placeholder with a ProcessorContext instead.
-* Cleanup of malformed comments has moved to a PreProcessor instead of done on the fly during processing.
-* Do a step toward treating Comment in the same way as Placeholder.
-* *Deprecated* CommentProcessor to now be setup with a Paragraph that wraps and provides features around the docx4j P.
-* *Deprecated* The `Image` preset object now deprecate `getMaxWidth` and `getImageBytes`.
-* *BREAK* Removed DocxDocument.commentsPart method.
-* *BREAK* DocxPart.streamParagraphs method now returns the Paragraph wrapper, instead of docx4j P.
+* Removed the old `ObjectDeleter` utility class to use mostly `WmlUtils#remove` method instead.
+* All Lang info is removed with `standardWithPreprocessing` configuration now.
 
 ==== Tests
 
-* Improved test names,
-* Improved Word to string representation to better differentiate paragraph, run and cell styles.
-* Remove exotic characters from string representation of Word documents.
-* Section break and page break are more explicit in string representation of Word documents.
+* Create the ObjectContextFactory, and the MapContextFactory to test all use cases with POJO Beans and Map equally.
+* Fix a bug in Locale when some test failed
+* Move processors-specific test outside the DefaultTest class
+* #114 added a test to trace this still unresolved issue.
+* Word 2 String now includes comments, endnotes and footnotes
+* String 2 Word now includes comments
 
 === Previous releases notes link:RELEASE_NOTES.adoc[here]
 

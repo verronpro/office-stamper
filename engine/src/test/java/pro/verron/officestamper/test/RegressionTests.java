@@ -1,13 +1,11 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -17,11 +15,14 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.abort;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
+import static pro.verron.officestamper.test.TestUtils.getResource;
 
 class RegressionTests {
-
+    public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
     private static final Path TEMPLATE_52 = Path.of("#52.docx");
 
     public static Stream<Arguments> source52() {
@@ -35,8 +36,7 @@ class RegressionTests {
     }
 
     @Test
-    void test64()
-            throws IOException, Docx4JException {
+    void test64() {
         var configuration = givenConfiguration();
         var testFunction = new TestFunction.TestFunctionImpl();
         configuration.exposeInterfaceToExpressionLanguage(TestFunction.class, testFunction);
@@ -62,6 +62,38 @@ class RegressionTests {
 
     private static Object givenContext() {
         return new Object();
+    }
+
+    @Test
+    void test114() {
+        abort("Will be worked on after 2.7.0");
+        var config = standard();
+        var stamper = new TestDocxStamper<>(config);
+        var template = getResource(Path.of("#114.docx"));
+        var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var expected = """
+                = Issue #114
+                
+                |===
+                |Name
+                
+                |Homer
+                
+                |Marge
+                
+                |Bart
+                
+                |Lisa
+                
+                |Maggie
+                
+                
+                |===
+                
+                
+                """;
+        assertEquals(expected, actual);
     }
 
     @MethodSource("source52")

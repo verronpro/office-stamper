@@ -8,7 +8,6 @@ import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.Parts;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
-import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.OfficeStamperException;
 

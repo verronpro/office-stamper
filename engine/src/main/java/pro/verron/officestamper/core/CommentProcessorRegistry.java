@@ -120,7 +120,6 @@ public class CommentProcessorRegistry {
                               return runCommentProcessors(expressionContext, cPlaceholder)
                                       ? Optional.of(c)
                                       : Optional.empty();
-
                           });
     }
 

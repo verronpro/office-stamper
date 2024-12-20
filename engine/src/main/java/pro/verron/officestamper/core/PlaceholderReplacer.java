@@ -1,7 +1,8 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.*;
+import org.docx4j.wml.Br;
+import org.docx4j.wml.R;
+import org.docx4j.wml.STBrType;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
@@ -96,10 +97,5 @@ public class PlaceholderReplacer
         br.setType(STBrType.TEXT_WRAPPING);
         br.setClear(null);
         return br;
-    }
-
-    @Override
-    public void resolveExpressionsForParagraph(Paragraph paragraph, Object context, WordprocessingMLPackage document) {
-        throw new OfficeStamperException("Should not be called, since deprecated");
     }
 }

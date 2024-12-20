@@ -2,13 +2,15 @@ package pro.verron.officestamper.preset.processors.table;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.XmlUtils;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.AbstractCommentProcessor;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.core.PlaceholderReplacer;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
@@ -82,10 +84,6 @@ public class TableResolver
                 tableParentContent.set(tablePosition, toInsert);
             }
         }
-    }
-
-    @Override public void commitChanges(WordprocessingMLPackage document) {
-        throw new OfficeStamperException("Should not be called, since deprecation");
     }
 
     /**

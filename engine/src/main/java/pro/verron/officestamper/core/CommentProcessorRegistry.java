@@ -56,31 +56,34 @@ public class CommentProcessorRegistry {
     }
 
     public <T> void runProcessors(T expressionContext) {
-        var proceedComments = new ArrayList<Comment>();
+        runProcessors(expressionContext, source);
+    }
 
-        source.streamRun()
-              .forEach(run -> {
+    private <T> void runProcessors(T expressionContext, DocxPart part) {
+        var proceedComments = new ArrayList<Comment>();
+        part.streamRun()
+            .forEach(run -> {
                   var comments = collectComments();
-                  var runParent = StandardParagraph.from(source, (P) run.getParent());
+                var runParent = StandardParagraph.from(part, (P) run.getParent());
                   var optional = runProcessorsOnRunComment(comments, expressionContext, run, runParent);
                   optional.ifPresent(proceedComments::add);
               });
-        commentProcessors.commitChanges(source);
+        commentProcessors.commitChanges(part);
 
         // we run the paragraph afterward so that the comments inside work before the whole paragraph comments
-        source.streamParagraphs()
-              .forEach(p -> {
+        part.streamParagraphs()
+            .forEach(p -> {
                   var comments = collectComments();
                   var paragraphComment = p.getComment();
                   paragraphComment.forEach((pc -> {
                       var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
-                      commentProcessors.commitChanges(source);
+                      commentProcessors.commitChanges(part);
                       optional.ifPresent(proceedComments::add);
                   }));
               });
 
-        source.streamParagraphs()
-              .forEach(paragraph -> runProcessorsOnInlineContent(expressionContext, paragraph));
+        part.streamParagraphs()
+            .forEach(paragraph -> runProcessorsOnInlineContent(expressionContext, paragraph));
 
         proceedComments.forEach(CommentUtil::deleteComment);
     }

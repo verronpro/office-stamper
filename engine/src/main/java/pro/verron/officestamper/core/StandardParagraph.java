@@ -113,17 +113,6 @@ public class StandardParagraph
     }
 
     /**
-     * Retrieves the P object associated with this StandardParagraph.
-     *
-     * @return the P object of this paragraph.
-     *
-     * @deprecated Not recommended, as will be replaced by other API
-     */
-    @Deprecated(since = "2.6", forRemoval = true) @Override public P getP() {
-        return p;
-    }
-
-    /**
      * Replaces the given expression with the replacement object within
      * the paragraph.
      * The replacement object must be a valid DOCX4J Object.
@@ -285,5 +274,4 @@ public class StandardParagraph
     @Override public String toString() {
         return asString();
     }
-
 }

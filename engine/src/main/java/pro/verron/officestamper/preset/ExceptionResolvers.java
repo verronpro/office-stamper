@@ -59,19 +59,6 @@ public class ExceptionResolvers {
         return new ThrowingResolver(logger.isTraceEnabled());
     }
 
-    @Deprecated(since="2.5", forRemoval = true)
-    public static ExceptionResolver legacyBehavior(
-            boolean shouldFail,
-            boolean emptyOnError,
-            boolean shouldReplace,
-            String replacementValue
-    ) {
-        if (shouldFail) return new ThrowingResolver(logger.isTraceEnabled());
-        if (emptyOnError) return new DefaultingResolver("", logger.isTraceEnabled());
-        if (shouldReplace) return new DefaultingResolver(replacementValue, logger.isTraceEnabled());
-        return new PassingResolver(logger.isTraceEnabled());
-    }
-
     private record DefaultingResolver(String value, boolean tracing)
             implements ExceptionResolver {
 

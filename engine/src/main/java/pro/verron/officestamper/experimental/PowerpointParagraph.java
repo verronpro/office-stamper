@@ -140,8 +140,7 @@ public class PowerpointParagraph
         siblings().removeAll(toRemove);
     }
 
-    @Override
-    public P getP() {
+    private P getP() {
         var p = WmlFactory.newParagraph(paragraph.getEGTextRun());
         p.setParent(paragraph.getParent());
         return p;

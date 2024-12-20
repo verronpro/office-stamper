@@ -1,9 +1,7 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.core.StandardParagraph;
 
 import java.util.Objects;
 
@@ -58,15 +56,6 @@ public abstract class AbstractCommentProcessor
 
     public Paragraph getParagraph() {
         return paragraph;
-    }
-
-    /**
-     * @param paragraph coordinates of the currently processed paragraph within the template.
-     *
-     * @deprecated use {@link #setParagraph(Paragraph)} instead
-     */
-    @Deprecated(since = "2.6", forRemoval = true) public void setParagraph(P paragraph) {
-        this.paragraph = StandardParagraph.from((DocxPart) paragraph.getParent(), paragraph);
     }
 
     public void setParagraph(Paragraph paragraph) {

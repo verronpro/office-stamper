@@ -47,7 +47,6 @@ public interface ObjectResolver {
     /**
      * Resolves the expression in the given document with the provided object.
      * <p>
-     * Replace the previous {@link #resolve(WordprocessingMLPackage, String, Object)}
      *
      * @param docxPart   the {@link DocxPart} document in
      *                   which to resolve the expression
@@ -58,17 +57,8 @@ public interface ObjectResolver {
      *
      * @throws OfficeStamperException if no resolver is found for the object
      */
-    default R resolve(DocxPart docxPart, String expression, Object object) {
-        return resolve(docxPart.document(), expression, object);
-    }
+    R resolve(DocxPart docxPart, String expression, Object object);
 
-    /**
-     * @deprecated replaced by {@link #resolve(DocxPart, String, Object)}
-     */
-    @Deprecated(since = "2.3", forRemoval = true)
-    default R resolve(WordprocessingMLPackage document, String expression, Object object) {
-        throw new OfficeStamperException("Should not be called, only legacy implementation might still override this");
-    }
 
     /**
      * Checks if the given object can be resolved.

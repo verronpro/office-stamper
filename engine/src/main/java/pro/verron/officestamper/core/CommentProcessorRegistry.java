@@ -63,24 +63,24 @@ public class CommentProcessorRegistry {
         var proceedComments = new ArrayList<Comment>();
         part.streamRun()
             .forEach(run -> {
-                  var comments = collectComments();
+                var comments = collectComments();
                 var runParent = StandardParagraph.from(part, (P) run.getParent());
-                  var optional = runProcessorsOnRunComment(comments, expressionContext, run, runParent);
-                  optional.ifPresent(proceedComments::add);
-              });
+                var optional = runProcessorsOnRunComment(comments, expressionContext, run, runParent);
+                optional.ifPresent(proceedComments::add);
+            });
         commentProcessors.commitChanges(part);
 
         // we run the paragraph afterward so that the comments inside work before the whole paragraph comments
         part.streamParagraphs()
             .forEach(p -> {
-                  var comments = collectComments();
-                  var paragraphComment = p.getComment();
-                  paragraphComment.forEach((pc -> {
-                      var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
-                      commentProcessors.commitChanges(part);
-                      optional.ifPresent(proceedComments::add);
-                  }));
-              });
+                var comments = collectComments();
+                var paragraphComment = p.getComment();
+                paragraphComment.forEach((pc -> {
+                    var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
+                    commentProcessors.commitChanges(part);
+                    optional.ifPresent(proceedComments::add);
+                }));
+            });
 
         part.streamParagraphs()
             .forEach(paragraph -> runProcessorsOnInlineContent(expressionContext, paragraph));
@@ -111,7 +111,10 @@ public class CommentProcessorRegistry {
     }
 
     private <T> Optional<Comment> runProcessorsOnRunComment(
-            Map<BigInteger, Comment> comments, T expressionContext, R run, Paragraph paragraph
+            Map<BigInteger, Comment> comments,
+            T expressionContext,
+            R run,
+            Paragraph paragraph
     ) {
         return CommentUtil.getCommentAround(run, document())
                           .flatMap(c -> Optional.ofNullable(comments.get(c.getId())))
@@ -136,7 +139,10 @@ public class CommentProcessorRegistry {
      * @param <T>               the type of the context root object.
      */
     private <T> Optional<Comment> runProcessorsOnParagraphComment(
-            Map<BigInteger, Comment> comments, T expressionContext, Paragraph paragraph, BigInteger paragraphCommentId
+            Map<BigInteger, Comment> comments,
+            T expressionContext,
+            Paragraph paragraph,
+            BigInteger paragraphCommentId
     ) {
         if (!comments.containsKey(paragraphCommentId)) return Optional.empty();
 
@@ -203,9 +209,7 @@ public class CommentProcessorRegistry {
         stack.add(comment);
     }
 
-    private void onRangeEnd(
-            CommentRangeEnd cre, HashMap<BigInteger, Comment> allComments, Queue<Comment> stack
-    ) {
+    private void onRangeEnd(CommentRangeEnd cre, HashMap<BigInteger, Comment> allComments, Queue<Comment> stack) {
         Comment comment = allComments.get(cre.getId());
         if (comment == null)
             throw new OfficeStamperException("Found a comment range end before the comment range start !");

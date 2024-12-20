@@ -1,3 +1,4 @@
+fix // suppress inspection "Since15" for whole file
 // suppress inspection "AsciiDocLinkResolve" for whole file
 :proj: https://github.com/verronpro/docx-stamper
 :repo: https://github.com/verronpro/docx-stamper/blob/main
@@ -11,7 +12,13 @@
 OfficeStamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
 You design a template using your preferred Word processor; and OfficeStamper will generate documents based on that template.
 
-image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-os.yml] image:{proj}/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-docx4j.yml] image:{proj}/actions/workflows/analyze.yml/badge.svg[Build Status,link={proj}/actions/workflows/analyze.yml] image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/actions/workflows/pages.yml]
+[cols=2]
+|===
+| image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-os.yml]
+| image:{proj}/actions/workflows/analyze.yml/badge.svg[Build Status,link={proj}/actions/workflows/analyze.yml]
+| image:{proj}/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-docx4j.yml]
+| image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/actions/workflows/pages.yml]
+|===
 
 == Release Notes
 
@@ -27,7 +34,7 @@ image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={pro
 ** `displayWordsIf(boolean)`, `displayWordsIfPresent(object)` and `displayWordsIfAbsent(object)`
 ** `displayDocPartIf(boolean)`, `displayDocPartIfPresent(object)` and `displayDocPartIfAbsent(object)`
 * The two provided evaluation context configurer now include the classic Get Accessor and the Map Accessor, so the object used as context can be much more flexible.
-** ie. `$+{name}+` can now refer to an object `getName()` method or to a map `get("name")` value.
+** That is `$+{name}+` can now refer to an object `getName()` method or to a map `get("name")` value.
 
 ==== Bugfixes
 
@@ -77,7 +84,7 @@ Fixes a bug when commenting several groups of runs by different comments in a si
 
 == Usage
 
-Here is a code snippet exemplifying how to use OfficeStamper:
+Here's a code snippet exemplifying how to use OfficeStamper:
 
 [source,java]
 ----
@@ -136,18 +143,29 @@ As a standard, the following expressions can be used within comments:
 [cols=">1,4"]
 |===
 | Expression in .docx comment           | Effect on the commented paragraph/paragraphs
-| `displayParagraphIf(boolean)`         | It is only displayed if condition resolves to `true`.
-| `displayTableRowIf(boolean)`          | The table row around it is only displayed if condition resolves to `true`.
-| `displayTableIf(boolean)`             | The whole table around it is only displayed if condition resolves to `true`.
-| `repeatParagraph(List&lt;Object&gt;)` | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list.
-| `repeatTableRow(List&lt;Object&gt;)`  | The table row around it is copied once for each object in the passed-in list. Expressions found in the cells of the table row are evaluated against the object from the list.
-| `repeatDocPart(List&lt;Object&gt;)`   | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
+| `displayParagraphIf(boolean)`         | The commented paragraph  to display  if condition resolves to `true`.
+| `displayParagraphIfAbsent(object)`    | Same if the object is null.
+| `displayParagraphIfPresent(object)`   | Same if the object isn't null.
+| `displayTableRowIf(boolean)`          | The row around the comment to display if condition resolves to `true`.
+| `displayTableRowIfAbsent(object)`     | Same if the object is null.
+| `displayTableRowIfPresent(object)`    | Same if the object isn't null.
+| `displayTableIf(boolean)`             | The table around the comment to display if condition resolves to `true`.
+| `displayTableIfAbsent(object)`        | Same if the object is null.
+| `displayTableIfPresent(object)`       | Same if the object isn't null.
+| `displayWordsIf(boolean)`             | The commented words in a paragraph to display if condition resolves to `true`.
+| `displayWordsIfAbsent(object)`        | Same if the object is null.
+| `displayWordsIfPresent(object)`       | Same if the object isn't null.
+| `displayDocPartIf(boolean)`           | The suite of elements around the comment  to display  if condition resolves to `true`.
+| `displayDocPartIfAbsent(object)`      | Same if the object is null.
+| `displayDocPartIfPresent(object)`     | Same if the object isn't null.
+| `repeatParagraph(List&lt;Object&gt;)` | Add a copy of the commented paragraph for each object in the passed-in list. Expressions found in the copies use the different objects from the list as context for resolution.
+| `repeatTableRow(List&lt;Object&gt;)`  | Add a copy of the commented table row for each object in the passed-in list. Expressions found in the cells use the different objects for resolution.
+| `repeatDocPart(List&lt;Object&gt;)`   | Add a copy of It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
 | `replaceWordWith(expression)`         | Replace the commented word with the value of the given expression.
 | `resolveTable(StampTable)`            | Replace a table (that must have one column and two rows) with the values given by the StampTable. The StampTable contains a list of headers for columns, and a 2-level list of rows containing values for each column.
 |===
 
-By default, an exception is thrown if a comment fails to process.
-However, successfully processed comments are wiped from the document.
+By default, when a comment fails to process, the engine throws an exception, while it removes successfully processed comments from the document.
 
 === SpEL functions
 
@@ -217,21 +235,25 @@ This particular example adds a function `toUppercase(String)`, enabling you to c
 
 [source,java]
 ----
-import java.time.LocalDate;import java.time.format.DateTimeFormatter;class Main {
+class Main {
     public static void main(String... args) {
         var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
 
         // add `today()` function to use in the template to retrieve current date, at time of running the stamping
-        config.addCustomFunction("today", () -> LocalDate.now());
+        config.addCustomFunction("today")
+              .withImplementation(() -> LocalDate.now());
 
         // add `censor(String)` function, to remove the f-word from resolved template values.
-        config.addCustomFunction("censor", String.class, input -> input.replace("f-word", "f**k"));
+        config.addCustomFunction("censor", String.class)
+              .withImplementation(input -> input.replace("f-word", "f**k"));
 
         // add `add(Integer, Integer)` function to sum 2 values together after their resolution.
-        config.addCustomFunction("add", Integer.class, Integer.class, (a, b) -> a + b);
+        config.addCustomFunction("add", Integer.class, Integer.class)
+              .withImplementation((a, b) -> a + b);
 
         // add `format(Date, String, String)` function to format a date with a pattern and a locale.
-        config.addCustomFunction("format", LocalDate.class, String.class, String.class, (date, pattern, locale) -> DateTimeFormatter.ofPattern(pattern, locale).format(date));
+        config.addCustomFunction("format", LocalDate.class, String.class, String.class)
+              .withImplementation((date, pattern, locale) -> DateTimeFormatter.ofPattern(pattern, locale).format(date));
 
         //
         interface StringFunctionProvider {

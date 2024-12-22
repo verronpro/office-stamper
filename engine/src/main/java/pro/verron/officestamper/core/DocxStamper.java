@@ -32,15 +32,13 @@ public class DocxStamper
 
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
-    private final PlaceholderReplacer placeholderReplacer;
     private final Function<DocxPart, CommentProcessorRegistry> commentProcessorRegistrySupplier;
 
     /// Creates a new DocxStamper with the given configuration.
     ///
     /// @param configuration the configuration to use for this DocxStamper.
     public DocxStamper(OfficeStamperConfiguration configuration) {
-        this(
-                configuration.getLineBreakPlaceholder(),
+        this(configuration.getLineBreakPlaceholder(),
                 configuration.getEvaluationContextConfigurer(),
                 configuration.getExpressionFunctions(),
                 configuration.customFunctions(),
@@ -49,8 +47,7 @@ public class DocxStamper
                 configuration.getPreprocessors(),
                 configuration.getPostprocessors(),
                 configuration.getSpelParserConfiguration(),
-                configuration.getExceptionResolver()
-        );
+                configuration.getExceptionResolver());
     }
 
     private DocxStamper(
@@ -72,35 +69,35 @@ public class DocxStamper
 
         var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
         var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-        this.placeholderReplacer = new PlaceholderReplacer(
-                typeResolverRegistry,
+        var placeholderReplacer = new PlaceholderReplacer(typeResolverRegistry,
                 expressionResolver,
                 Placeholders.raw(lineBreakPlaceholder),
                 exceptionResolver);
 
-        var commentProcessors = buildCommentProcessors(configurationCommentProcessors);
+        var commentProcessors = buildCommentProcessors(configurationCommentProcessors, placeholderReplacer);
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
         evaluationContext.addMethodResolver(new Invokers(functions.stream()
                                                                   .map(Invokers::ofCustomFunction)));
 
-        this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(
-                source,
+        this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(source,
                 expressionResolver,
                 commentProcessors,
-                exceptionResolver);
+                exceptionResolver,
+                placeholderReplacer,
+                Placeholders.raw(lineBreakPlaceholder));
 
         this.preprocessors = new ArrayList<>(preprocessors);
         this.postprocessors = new ArrayList<>(postprocessors);
     }
 
     private CommentProcessors buildCommentProcessors(
-            Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors
+            Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors,
+            PlaceholderReplacer placeholderReplacer
     ) {
         var processors = new HashMap<Class<?>, CommentProcessor>();
         for (var entry : commentProcessors.entrySet()) {
-            processors.put(
-                    entry.getKey(),
+            processors.put(entry.getKey(),
                     entry.getValue()
                          .apply(placeholderReplacer));
         }
@@ -135,7 +132,6 @@ public class DocxStamper
         }
     }
 
-
     /// Same as [#stamp(InputStream, Object, OutputStream)] except that you
     /// may pass in a DOCX4J document as a template instead of an InputStream.
     @Override
@@ -144,7 +140,6 @@ public class DocxStamper
             var source = new TextualDocxPart(document);
             preprocess(document);
             processComments(source, contextRoot);
-            replaceExpressions(source, contextRoot);
             postprocess(document);
             document.save(out);
         } catch (Docx4JException e) {
@@ -164,20 +159,12 @@ public class DocxStamper
                 .forEach(footer -> runProcessors(footer, contextObject));
     }
 
-    private void replaceExpressions(DocxPart document, Object contextObject) {
-        document.streamParts(Namespaces.HEADER)
-                .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
-        placeholderReplacer.resolveExpressions(document, contextObject);
-        document.streamParts(Namespaces.FOOTER)
-                .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
+    private void postprocess(WordprocessingMLPackage document) {
+        postprocessors.forEach(processor -> processor.process(document));
     }
 
     private void runProcessors(DocxPart source, Object contextObject) {
         var processors = commentProcessorRegistrySupplier.apply(source);
         processors.runProcessors(contextObject);
-    }
-
-    private void postprocess(WordprocessingMLPackage document) {
-        postprocessors.forEach(processor -> processor.process(document));
     }
 }

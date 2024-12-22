@@ -1,13 +1,12 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.wml.Br;
 import org.docx4j.wml.R;
-import org.docx4j.wml.STBrType;
-import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
+
+import static pro.verron.officestamper.utils.WmlFactory.newBr;
 
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
@@ -64,7 +63,8 @@ public class PlaceholderReplacer
      * @param paragraph the paragraph in which to replace expressions.
      * @param context   the context root
      */
-    @Override public void resolveExpressionsForParagraph(
+    @Override
+    public void resolveExpressionsForParagraph(
             DocxPart docxPart,
             Paragraph paragraph,
             Object context
@@ -74,28 +74,30 @@ public class PlaceholderReplacer
             var replacement = resolve(docxPart, context, expression);
             paragraph.replace(expression, replacement);
         }
-        paragraph.replace(lineBreakPlaceholder, getBr());
+        paragraph.replace(lineBreakPlaceholder, newBr());
     }
 
-    private R resolve(DocxPart docxPart, Object context, Placeholder placeholder) {
+    public R resolve(DocxPart docxPart, Object context, Placeholder placeholder) {
+        var resolution = getResolution(context, placeholder);
+        var expression = placeholder.expression();
+        var contextClass = context.getClass();
+        var contextSimpleName = contextClass.getSimpleName();
+        var errorMessage = "Expression %s could not be resolved against context of type %s".formatted(expression,
+                contextSimpleName);
+        return resolve(docxPart, placeholder, resolution, errorMessage);
+    }
+
+    public Object getResolution(Object context, Placeholder placeholder) {
+        resolver.setContext(context);
+        return resolver.resolve(placeholder);
+    }
+
+    public R resolve(DocxPart docxPart, Placeholder placeholder, Object resolution, String errorMessage) {
         try {
-            resolver.setContext(context);
-            var resolution = resolver.resolve(placeholder);
             return registry.resolve(docxPart, placeholder, resolution);
-        } catch (SpelEvaluationException
-                 | SpelParseException
-                 | OfficeStamperException e) {
-            var message = "Expression %s could not be resolved against context of type %s"
-                    .formatted(placeholder.expression(), context.getClass().getSimpleName());
-            var resolution = exceptionResolver.resolve(placeholder, message, e);
-            return WmlFactory.newRun(resolution);
+        } catch (SpelEvaluationException | SpelParseException | OfficeStamperException e) {
+            return WmlFactory.newRun(exceptionResolver.resolve(placeholder, errorMessage, e));
         }
     }
 
-    private static Child getBr() {
-        var br = new Br();
-        br.setType(STBrType.TEXT_WRAPPING);
-        br.setClear(null);
-        return br;
-    }
 }

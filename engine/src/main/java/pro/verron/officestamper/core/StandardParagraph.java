@@ -85,17 +85,30 @@ public class StandardParagraph
         return new StandardParagraph(source, paragraph.getContent(), p);
     }
 
-    @Override public ProcessorContext processorContext(Placeholder placeholder) {
-        var comment = comment(placeholder);
-        var firstRun = (R) contents.getFirst();
-        return new ProcessorContext(this, firstRun, comment, placeholder);
+    private static void replaceWithBr(
+            Placeholder placeholder,
+            Br br,
+            Text text,
+            ListIterator<Object> runContentIterator
+    ) {
+        var value = text.getValue();
+        runContentIterator.remove();
+        var runLinebreakIterator = stream(value.split(placeholder.expression())).iterator();
+        while (runLinebreakIterator.hasNext()) {
+            var subText = WmlFactory.newText(runLinebreakIterator.next());
+            runContentIterator.add(subText);
+            if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
+        }
     }
 
-    @Override public void replace(List<P> toRemove, List<P> toAdd) {
-        int index = siblings().indexOf(p);
-        if (index < 0) throw new OfficeStamperException("Impossible");
-        siblings().addAll(index, toAdd);
-        siblings().removeAll(toRemove);
+    @Override
+    public ProcessorContext processorContext(Placeholder placeholder) {
+        var comment = comment(placeholder);
+        var firstRun = (R) contents.stream()
+                                   .filter(R.class::isInstance)
+                                   .findFirst()
+                                   .orElseThrow(throwing("No runs found"));
+        return new ProcessorContext(this, firstRun, comment, placeholder);
     }
 
     private List<Object> siblings() {
@@ -108,7 +121,16 @@ public class StandardParagraph
         return getFirstParentWithClass(p, aClass, depth);
     }
 
-    @Override public void remove() {
+    @Override
+    public void replace(List<P> toRemove, List<P> toAdd) {
+        int index = siblings().indexOf(p);
+        if (index < 0) throw new OfficeStamperException("Impossible");
+        siblings().addAll(index, toAdd);
+        siblings().removeAll(toRemove);
+    }
+
+    @Override
+    public void remove() {
         WmlUtils.remove(p);
     }
 
@@ -120,7 +142,8 @@ public class StandardParagraph
      * @param placeholder the expression to be replaced.
      * @param replacement the object to replace the expression.
      */
-    @Override public void replace(Placeholder placeholder, Object replacement) {
+    @Override
+    public void replace(Placeholder placeholder, Object replacement) {
         switch (replacement) {
             case R run -> replaceWithRun(placeholder, run);
             case Br br -> replaceWithBr(placeholder, br);
@@ -133,19 +156,17 @@ public class StandardParagraph
      *
      * @return the text of all runs.
      */
-    @Override public String asString() {
+    @Override
+    public String asString() {
         return runs.stream()
                    .map(IndexedRun::run)
                    .map(RunUtil::getText)
                    .collect(joining());
     }
 
-    @Override public void apply(Consumer<P> pConsumer) {
+    @Override
+    public void apply(Consumer<P> pConsumer) {
         pConsumer.accept(p);
-    }
-
-    @Override public <T> Optional<T> parent(Class<T> aClass) {
-        return parent(aClass, Integer.MAX_VALUE);
     }
 
     @Override
@@ -250,17 +271,9 @@ public class StandardParagraph
         lastRun.replace(matchStartIndex, matchEndIndex, "");
     }
 
-    private static void replaceWithBr(
-            Placeholder placeholder, Br br, Text text, ListIterator<Object> runContentIterator
-    ) {
-        var value = text.getValue();
-        runContentIterator.remove();
-        var runLinebreakIterator = stream(value.split(placeholder.expression())).iterator();
-        while (runLinebreakIterator.hasNext()) {
-            var subText = WmlFactory.newText(runLinebreakIterator.next());
-            runContentIterator.add(subText);
-            if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
-        }
+    @Override
+    public <T> Optional<T> parent(Class<T> aClass) {
+        return parent(aClass, Integer.MAX_VALUE);
     }
 
     private Comment comment(Placeholder placeholder) {
@@ -271,7 +284,8 @@ public class StandardParagraph
     /**
      * {@inheritDoc}
      */
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return asString();
     }
 }

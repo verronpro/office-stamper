@@ -23,13 +23,13 @@ public class Placeholders {
      * The pattern search for expressions starting with '#{' and ending with
      * '}'.
      */
-    private static final Pattern PROC_PATTERN = Pattern.compile("#\\{(.*?)}", Pattern.DOTALL);
+    private static final Pattern PROC_PATTERN = Pattern.compile("[#$]\\{(.*?)}", Pattern.DOTALL);
     /**
      * A Matcher matching processor expressions.
      * The matcher checks for expressions starting with '#{' and ending with
      * '}'.
      */
-    private static final Matcher PROC_MATCHER = new Matcher("#{", "}");
+    private static final Matcher PROC_MATCHER = new Matcher("[#$]\\{", "\\}");
     /**
      * An ExpressionFinder to find processor expressions.
      * It is initialized with a specified pattern and matcher.
@@ -47,13 +47,12 @@ public class Placeholders {
      * The matcher checks for expressions starting with '${' and ending with
      * '}'.
      */
-    private static final Matcher VAR_MATCHER = new Matcher("${", "}");
+    private static final Matcher VAR_MATCHER = new Matcher("\\$\\{", "}");
     /**
      * An ExpressionFinder to find variable expressions.
      * It is initialized with a specified pattern and matcher.
      */
-    private static final PlaceholderFinder VAR_FINDER =
-            new PlaceholderFinder(VAR_PATTERN, VAR_MATCHER);
+    private static final PlaceholderFinder VAR_FINDER = new PlaceholderFinder(VAR_PATTERN, VAR_MATCHER);
     /**
      * A Matcher matching raw expressions.
      * It is typically used to wrap raw expressions that do not have a

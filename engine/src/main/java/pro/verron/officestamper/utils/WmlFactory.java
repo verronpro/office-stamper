@@ -6,6 +6,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
+import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
@@ -335,5 +336,12 @@ public class WmlFactory {
 
     private static Comments newComments() {
         return new Comments();
+    }
+
+    public static Child newBr() {
+        var br = new Br();
+        br.setType(STBrType.TEXT_WRAPPING);
+        br.setClear(null);
+        return br;
     }
 }

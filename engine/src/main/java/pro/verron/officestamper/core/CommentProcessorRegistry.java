@@ -34,6 +34,8 @@ public class CommentProcessorRegistry {
     private final CommentProcessors commentProcessors;
     private final ExpressionResolver expressionResolver;
     private final ExceptionResolver exceptionResolver;
+    private final PlaceholderReplacer placeholderReplacer;
+    private final Placeholder linebreakPlaceholder;
 
     /**
      * Constructs a new CommentProcessorRegistry.
@@ -47,12 +49,16 @@ public class CommentProcessorRegistry {
             DocxPart source,
             ExpressionResolver expressionResolver,
             CommentProcessors commentProcessors,
-            ExceptionResolver exceptionResolver
+            ExceptionResolver exceptionResolver,
+            PlaceholderReplacer placeholderReplacer,
+            Placeholder linebreakPlaceholder
     ) {
         this.source = source;
         this.expressionResolver = expressionResolver;
         this.commentProcessors = commentProcessors;
         this.exceptionResolver = exceptionResolver;
+        this.placeholderReplacer = placeholderReplacer;
+        this.linebreakPlaceholder = linebreakPlaceholder;
     }
 
     public <T> void runProcessors(T expressionContext) {
@@ -171,12 +177,14 @@ public class CommentProcessorRegistry {
             var placeholder = processorContext.placeholder();
             try {
                 expressionResolver.setContext(context);
-                expressionResolver.resolve(placeholder);
-                paragraph.replace(placeholder, WmlFactory.newRun(""));
+                var resolution = expressionResolver.resolve(placeholder);
+                paragraph.replace(placeholder, placeholderReplacer.resolve(source, placeholder, resolution, "error"));
+                paragraph.replace(linebreakPlaceholder, WmlFactory.newBr());
                 logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
             } catch (SpelEvaluationException | SpelParseException e) {
                 var message = "Placeholder '%s' failed to process.".formatted(placeholder);
-                exceptionResolver.resolve(placeholder, message, e);
+                var resolution = exceptionResolver.resolve(placeholder, message, e);
+                paragraph.replace(placeholder, WmlFactory.newRun(resolution));
             }
             commentProcessors.commitChanges(source);
         }

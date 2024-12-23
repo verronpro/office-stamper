@@ -4,7 +4,9 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
-import org.docx4j.wml.*;
+import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.P;
+import org.docx4j.wml.R;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
 
@@ -33,13 +35,7 @@ public final class TextualDocxPart
 
 
     public Stream<Paragraph> streamParagraphs() {
-        return Stream.concat(DocumentUtil.streamObjectElements(this, P.class)
-                                         .map(p -> StandardParagraph.from(this, p)),
-                DocumentUtil.streamObjectElements(this, SdtRun.class)
-                                    .map(SdtRun::getSdtContent)
-                                    .filter(CTSdtContentRun.class::isInstance)
-                                    .map(CTSdtContentRun.class::cast)
-                                    .map(paragraph -> StandardParagraph.from(this, paragraph)));
+        return DocumentUtil.streamParagraphs(this);
     }
 
     @Override public Stream<R> streamRun() {

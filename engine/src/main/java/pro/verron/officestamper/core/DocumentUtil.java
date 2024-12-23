@@ -16,6 +16,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.function.ThrowingFunction;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.Paragraph;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -36,13 +37,6 @@ public class DocumentUtil {
 
     private DocumentUtil() {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
-    }
-
-    public static <T> Stream<T> streamObjectElements(DocxPart source, Class<T> elementClass) {
-        ClassFinder finder = new ClassFinder(elementClass);
-        TraversalUtil.visit(source.part(), finder);
-        return finder.results.stream()
-                             .map(elementClass::cast);
     }
 
     /**
@@ -212,5 +206,23 @@ public class DocumentUtil {
         ofNullable(hfp.getDefaultFooter()).ifPresent(builder::add);
         ofNullable(hfp.getEvenFooter()).ifPresent(builder::add);
         return builder.build();
+    }
+
+    static Stream<Paragraph> streamParagraphs(TextualDocxPart source) {
+        var paragraphs = streamObjectElements(source, P.class)
+                .map(p -> StandardParagraph.from(source, p));
+        var sdtRuns = streamObjectElements(source, SdtRun.class)
+                .map(SdtRun::getSdtContent)
+                .filter(CTSdtContentRun.class::isInstance)
+                .map(CTSdtContentRun.class::cast)
+                .map(paragraph -> StandardParagraph.from(source, paragraph));
+        return Stream.concat(paragraphs, sdtRuns);
+    }
+
+    public static <T> Stream<T> streamObjectElements(DocxPart source, Class<T> elementClass) {
+        ClassFinder finder = new ClassFinder(elementClass);
+        TraversalUtil.visit(source.part(), finder);
+        return finder.results.stream()
+                             .map(elementClass::cast);
     }
 }

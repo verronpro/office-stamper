@@ -46,9 +46,7 @@ public interface OfficeStamperConfiguration {
      *
      * @param preprocessor the pre-processor to add
      */
-    void addPreprocessor(PreProcessor preprocessor);
-
-
+    OfficeStamperConfiguration addPreprocessor(PreProcessor preprocessor);
 
     /**
      * Retrieves the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL) EvaluationContext
@@ -152,5 +150,5 @@ public interface OfficeStamperConfiguration {
 
     List<PostProcessor> getPostprocessors();
 
-    void addPostprocessor(PostProcessor postProcessor);
+    OfficeStamperConfiguration addPostprocessor(PostProcessor postProcessor);
 }

@@ -65,7 +65,7 @@ public class DocxStamperConfiguration
     ///
     /// @param interfaceClass the interface holding methods to expose in the expression language.
     /// @param implementation the implementation to call to evaluate invocations of those methods.
-    ///                          Must implement the mentioned interface.
+    ///                       Must implement the mentioned interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override
@@ -96,9 +96,9 @@ public class DocxStamperConfiguration
     ///
     /// @param preprocessor the preprocessor to add.
     @Override
-    public void addPreprocessor(PreProcessor preprocessor) {
+    public OfficeStamperConfiguration addPreprocessor(PreProcessor preprocessor) {
         preprocessors.add(preprocessor);
-
+        return this;
     }
 
     @Override
@@ -239,7 +239,8 @@ public class DocxStamperConfiguration
     }
 
     @Override
-    public void addPostprocessor(PostProcessor postprocessor) {
+    public OfficeStamperConfiguration addPostprocessor(PostProcessor postprocessor) {
         postprocessors.add(postprocessor);
+        return this;
     }
 }

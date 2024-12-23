@@ -91,6 +91,15 @@ public class DocxStamper
         this.postprocessors = new ArrayList<>(postprocessors);
     }
 
+    public static void stamp(
+            DocxStamperConfiguration configuration,
+            WordprocessingMLPackage template,
+            Object context,
+            OutputStream output
+    ) {
+        new DocxStamper(configuration).stamp(template, context, output);
+    }
+
     private CommentProcessors buildCommentProcessors(
             Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors,
             PlaceholderReplacer placeholderReplacer

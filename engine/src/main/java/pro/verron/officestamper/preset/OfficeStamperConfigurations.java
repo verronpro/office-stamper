@@ -2,7 +2,6 @@ package pro.verron.officestamper.preset;
 
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.core.DocxStamper;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 import pro.verron.officestamper.preset.CommentProcessorFactory.*;
 import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
@@ -56,15 +55,13 @@ public class OfficeStamperConfigurations {
     public static OfficeStamperConfiguration standard() {
         var configuration = new DocxStamperConfiguration();
 
-        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance);
-        configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance);
-        configuration.addCommentProcessor(IRepeatDocPartProcessor.class,
-                pr -> RepeatDocPartProcessor.newInstance(pr,
-                        (template, context, output) -> new DocxStamper(configuration)
-                                .stamp(template, context, output)));
-        configuration.addCommentProcessor(ITableResolver.class, TableResolver::newInstance);
-        configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance);
-        configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);
+        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance)
+                     .addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance)
+                     .addCommentProcessor(IRepeatDocPartProcessor.class,
+                             pr -> RepeatDocPartProcessor.newInstance(pr, configuration))
+                     .addCommentProcessor(ITableResolver.class, TableResolver::newInstance)
+                     .addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance)
+                     .addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);
 
         configuration.setResolvers(List.of(Resolvers.image(),
                 Resolvers.legacyDate(),
@@ -97,10 +94,9 @@ public class OfficeStamperConfigurations {
         configuration.addCustomFunction("flocaldatetime", TemporalAccessor.class)
                      .withImplementation(ISO_LOCAL_DATE_TIME::format);
         configuration.addCustomFunction("flocaldatetime", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedDateTime(valueOf(style)).format(date));
+                     .withImplementation(OfficeStamperConfigurations::localizedDatetimeFormatter);
         configuration.addCustomFunction("flocaldatetime", TemporalAccessor.class, String.class, String.class)
-                     .withImplementation((date, dateStyle, timeStyle) -> ofLocalizedDateTime(valueOf(dateStyle),
-                             valueOf(timeStyle)).format(date));
+                     .withImplementation(OfficeStamperConfigurations::localizedDatetimeFormatter);
         configuration.addCustomFunction("foffsetdatetime", TemporalAccessor.class)
                      .withImplementation(ISO_OFFSET_DATE_TIME::format);
         configuration.addCustomFunction("fzoneddatetime", TemporalAccessor.class)
@@ -112,15 +108,41 @@ public class OfficeStamperConfigurations {
         configuration.addCustomFunction("foffsettime", TemporalAccessor.class)
                      .withImplementation(ISO_OFFSET_TIME::format);
         configuration.addCustomFunction("flocaldate", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedDate(valueOf(style)).format(date));
+                     .withImplementation(OfficeStamperConfigurations::localDateFormatter);
         configuration.addCustomFunction("flocaltime", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedTime(valueOf(style)).format(date));
+                     .withImplementation(OfficeStamperConfigurations::localTimeFormatter);
         configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class)
-                     .withImplementation((date, pattern) -> ofPattern(pattern).format(date));
+                     .withImplementation(OfficeStamperConfigurations::patternFormatter);
         configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class, String.class)
-                     .withImplementation((date, pattern, locale) -> ofPattern(pattern, forLanguageTag(locale))
-                             .format(date));
+                     .withImplementation(OfficeStamperConfigurations::patternFormatter);
         return configuration;
+    }
+
+    private static Object localizedDatetimeFormatter(TemporalAccessor date, String style) {
+        return ofLocalizedDateTime(valueOf(style)).format(date);
+    }
+
+    private static Object localizedDatetimeFormatter(TemporalAccessor date, String dateStyle, String timeStyle) {
+        return ofLocalizedDateTime(valueOf(dateStyle), valueOf(timeStyle)).format(date);
+    }
+
+    private static Object localDateFormatter(
+            TemporalAccessor date,
+            String style
+    ) {return ofLocalizedDate(valueOf(style)).format(date);}
+
+    private static Object localTimeFormatter(
+            TemporalAccessor date,
+            String style
+    ) {return ofLocalizedTime(valueOf(style)).format(date);}
+
+    private static Object patternFormatter(
+            TemporalAccessor date,
+            String pattern
+    ) {return ofPattern(pattern).format(date);}
+
+    private static Object patternFormatter(TemporalAccessor date, String pattern, String locale) {
+        return ofPattern(pattern, forLanguageTag(locale)).format(date);
     }
 
     /**

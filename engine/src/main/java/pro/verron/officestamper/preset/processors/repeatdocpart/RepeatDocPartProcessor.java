@@ -9,9 +9,7 @@ import org.docx4j.wml.SectPr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.DocumentUtil;
-import pro.verron.officestamper.core.SectionUtil;
+import pro.verron.officestamper.core.*;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.utils.WmlFactory;
 
@@ -63,6 +61,13 @@ public class RepeatDocPartProcessor
         this.nullSupplier = nullSupplier;
     }
 
+    public static CommentProcessor newInstance(
+            ParagraphPlaceholderReplacer pr,
+            DocxStamperConfiguration configuration
+    ) {
+        return newInstance(pr, stampMaker(configuration));
+    }
+
     /**
      * <p>newInstance.</p>
      *
@@ -77,10 +82,15 @@ public class RepeatDocPartProcessor
         return new RepeatDocPartProcessor(pr, stamper, Collections::emptyList);
     }
 
+    public static OfficeStamper<WordprocessingMLPackage> stampMaker(DocxStamperConfiguration configuration) {
+        return (template, context, output) -> DocxStamper.stamp(configuration, template, context, output);
+    }
+
     /**
      * {@inheritDoc}
      */
-    @Override public void repeatDocPart(@Nullable Iterable<Object> contexts) {
+    @Override
+    public void repeatDocPart(@Nullable Iterable<Object> contexts) {
         if (contexts == null) contexts = Collections.emptyList();
 
         Comment currentComment = getCurrentCommentWrapper();
@@ -94,7 +104,8 @@ public class RepeatDocPartProcessor
     /**
      * {@inheritDoc}
      */
-    @Override public void commitChanges(DocxPart source) {
+    @Override
+    public void commitChanges(DocxPart source) {
         for (Map.Entry<Comment, Iterable<Object>> entry : this.contexts.entrySet()) {
             var comment = entry.getKey();
             var expressionContexts = entry.getValue();
@@ -251,7 +262,8 @@ public class RepeatDocPartProcessor
     /**
      * {@inheritDoc}
      */
-    @Override public void reset() {
+    @Override
+    public void reset() {
         contexts.clear();
     }
 
@@ -334,7 +346,8 @@ public class RepeatDocPartProcessor
          * Captures and stores an uncaught exception from a thread run
          * and executes all defined routines on occurrence of the exception.
          */
-        @Override public void uncaughtException(Thread t, Throwable e) {
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
             exception.set(e);
             onException.forEach(Runnable::run);
         }

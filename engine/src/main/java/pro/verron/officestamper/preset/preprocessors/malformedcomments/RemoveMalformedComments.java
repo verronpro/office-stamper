@@ -95,5 +95,4 @@ public class RemoveMalformedComments
         var content = c.getContent();
         return content == null || content.isEmpty();
     }
-
 }

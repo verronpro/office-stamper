@@ -3,6 +3,7 @@ package pro.verron.officestamper.core;
 import org.docx4j.wml.R;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
+import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
 
@@ -87,12 +88,12 @@ public class PlaceholderReplacer
         return resolve(docxPart, placeholder, resolution, errorMessage);
     }
 
-    public Object getResolution(Object context, Placeholder placeholder) {
+    public @Nullable Object getResolution(Object context, Placeholder placeholder) {
         resolver.setContext(context);
         return resolver.resolve(placeholder);
     }
 
-    public R resolve(DocxPart docxPart, Placeholder placeholder, Object resolution, String errorMessage) {
+    public R resolve(DocxPart docxPart, Placeholder placeholder, @Nullable Object resolution, String errorMessage) {
         try {
             return registry.resolve(docxPart, placeholder, resolution);
         } catch (SpelEvaluationException | SpelParseException | OfficeStamperException e) {

@@ -89,7 +89,7 @@ class RepeatTableRowTest {
 
     private static Arguments repeatingRowsWithLineBreak(ContextFactory factory) {
         return of("Repeating table rows should be possible while replacing various linebreaks",
-                standard().setLineBreakPlaceholder("\n"),
+                standard(),
                 factory.roles("Homer Simpson",
                         "Dan Castellaneta",
                         "Marge Simpson",

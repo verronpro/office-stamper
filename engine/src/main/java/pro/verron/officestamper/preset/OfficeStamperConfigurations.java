@@ -54,7 +54,6 @@ public class OfficeStamperConfigurations {
                 Resolvers.nullToEmpty(),
                 Resolvers.fallback()));
 
-        configuration.addPreprocessor(Preprocessors.removeMalformedComments());
         configuration.addPreprocessor(Preprocessors.removeLanguageProof())
                      .addPreprocessor(Preprocessors.removeLanguageInfo())
                      .addPreprocessor(Preprocessors.mergeSimilarRuns())
@@ -62,6 +61,7 @@ public class OfficeStamperConfigurations {
 
         configuration.addPostprocessor(Postprocessors.removeOrphanedFootnotes())
                      .addPostprocessor(Postprocessors.removeOrphanedEndnotes());
+        configuration.addPostprocessor(Postprocessors.linebreaker("\n"));
 
         configuration.addCustomFunction("ftime", TemporalAccessor.class)
                      .withImplementation(ISO_TIME::format);

@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
-import org.springframework.lang.NonNull;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
@@ -36,7 +35,6 @@ public class DocxStamperConfiguration
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final List<CustomFunction> functions;
-    private String lineBreakPlaceholder;
     private EvaluationContextConfigurer evaluationContextConfigurer;
     private SpelParserConfiguration spelParserConfiguration;
     private ExceptionResolver exceptionResolver;
@@ -49,7 +47,6 @@ public class DocxStamperConfiguration
         postprocessors = new ArrayList<>();
         functions = new ArrayList<>();
         evaluationContextConfigurer = EvaluationContextConfigurers.defaultConfigurer();
-        lineBreakPlaceholder = "\n";
         spelParserConfiguration = new SpelParserConfiguration();
         exceptionResolver = ExceptionResolvers.throwing();
     }
@@ -101,24 +98,7 @@ public class DocxStamperConfiguration
     @Override
     public void addPreprocessor(PreProcessor preprocessor) {
         preprocessors.add(preprocessor);
-    }
 
-
-    @Override
-    public String getLineBreakPlaceholder() {
-        return lineBreakPlaceholder;
-    }
-
-    /// String to replace with a line break when stamping a document.
-    /// By default, `\\n` is the placeholder.
-    ///
-    /// @param lineBreakPlaceholder string to replace with line breaks during stamping.
-    ///
-    /// @return the configuration object for chaining.
-    @Override
-    public DocxStamperConfiguration setLineBreakPlaceholder(@NonNull String lineBreakPlaceholder) {
-        this.lineBreakPlaceholder = lineBreakPlaceholder;
-        return this;
     }
 
     @Override

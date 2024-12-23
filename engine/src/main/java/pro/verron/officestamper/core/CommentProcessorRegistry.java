@@ -35,7 +35,6 @@ public class CommentProcessorRegistry {
     private final ExpressionResolver expressionResolver;
     private final ExceptionResolver exceptionResolver;
     private final PlaceholderReplacer placeholderReplacer;
-    private final Placeholder linebreakPlaceholder;
 
     /**
      * Constructs a new CommentProcessorRegistry.
@@ -50,15 +49,13 @@ public class CommentProcessorRegistry {
             ExpressionResolver expressionResolver,
             CommentProcessors commentProcessors,
             ExceptionResolver exceptionResolver,
-            PlaceholderReplacer placeholderReplacer,
-            Placeholder linebreakPlaceholder
+            PlaceholderReplacer placeholderReplacer
     ) {
         this.source = source;
         this.expressionResolver = expressionResolver;
         this.commentProcessors = commentProcessors;
         this.exceptionResolver = exceptionResolver;
         this.placeholderReplacer = placeholderReplacer;
-        this.linebreakPlaceholder = linebreakPlaceholder;
     }
 
     public <T> void runProcessors(T expressionContext) {
@@ -179,7 +176,6 @@ public class CommentProcessorRegistry {
                 expressionResolver.setContext(context);
                 var resolution = expressionResolver.resolve(placeholder);
                 paragraph.replace(placeholder, placeholderReplacer.resolve(source, placeholder, resolution, "error"));
-                paragraph.replace(linebreakPlaceholder, WmlFactory.newBr());
                 logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
             } catch (SpelEvaluationException | SpelParseException e) {
                 var message = "Placeholder '%s' failed to process.".formatted(placeholder);

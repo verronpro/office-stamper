@@ -7,8 +7,6 @@ import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
 
-import static pro.verron.officestamper.utils.WmlFactory.newBr;
-
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
  *
@@ -22,7 +20,6 @@ public class PlaceholderReplacer
 
     private final ExpressionResolver resolver;
     private final ObjectResolverRegistry registry;
-    private final Placeholder lineBreakPlaceholder;
     private final ExceptionResolver exceptionResolver;
 
     /**
@@ -30,19 +27,14 @@ public class PlaceholderReplacer
      *
      * @param registry             the registry containing all available type resolvers.
      * @param resolver             the expression resolver used to resolve expressions in the document.
-     * @param linebreakPlaceholder if set to a non-null value,
-     *                             all occurrences of this placeholder will be
-     *                             replaced with a line break.
      */
     public PlaceholderReplacer(
             ObjectResolverRegistry registry,
             ExpressionResolver resolver,
-            Placeholder linebreakPlaceholder,
             ExceptionResolver exceptionResolver
     ) {
         this.registry = registry;
         this.resolver = resolver;
-        this.lineBreakPlaceholder = linebreakPlaceholder;
         this.exceptionResolver = exceptionResolver;
     }
 
@@ -75,7 +67,6 @@ public class PlaceholderReplacer
             var replacement = resolve(docxPart, context, expression);
             paragraph.replace(expression, replacement);
         }
-        paragraph.replace(lineBreakPlaceholder, newBr());
     }
 
     public R resolve(DocxPart docxPart, Object context, Placeholder placeholder) {

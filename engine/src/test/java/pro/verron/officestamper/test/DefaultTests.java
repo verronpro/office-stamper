@@ -300,7 +300,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments lineBreakReplacementTest(ContextFactory factory) {
-        var config = standard().setLineBreakPlaceholder("#");
+        var config = standard().addPostprocessor(Postprocessors.linebreaker("#"));
         var context = factory.name(null);
         var template = getResource(Path.of("LineBreakReplacementTest.docx"));
         var expected = """
@@ -343,8 +343,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """;
 
         var defaultValue = "N/C";
-        var config = standard().setLineBreakPlaceholder("\n")
-                               .addResolver(Resolvers.nullToDefault(defaultValue))
+        var config = standard().addResolver(Resolvers.nullToDefault(defaultValue))
                                .setExceptionResolver(ExceptionResolvers.defaulting(defaultValue));
 
         return arguments("Should be able to stamp from a Map<String, Object> context",

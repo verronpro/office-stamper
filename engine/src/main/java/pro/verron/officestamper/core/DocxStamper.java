@@ -6,7 +6,6 @@ import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.lang.NonNull;
 import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;
@@ -38,8 +37,7 @@ public class DocxStamper
     ///
     /// @param configuration the configuration to use for this DocxStamper.
     public DocxStamper(OfficeStamperConfiguration configuration) {
-        this(configuration.getLineBreakPlaceholder(),
-                configuration.getEvaluationContextConfigurer(),
+        this(configuration.getEvaluationContextConfigurer(),
                 configuration.getExpressionFunctions(),
                 configuration.customFunctions(),
                 configuration.getResolvers(),
@@ -51,7 +49,6 @@ public class DocxStamper
     }
 
     private DocxStamper(
-            @NonNull String lineBreakPlaceholder,
             EvaluationContextConfigurer evaluationContextConfigurer,
             Map<Class<?>, Object> expressionFunctions,
             List<CustomFunction> functions,
@@ -69,10 +66,7 @@ public class DocxStamper
 
         var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
         var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-        var placeholderReplacer = new PlaceholderReplacer(typeResolverRegistry,
-                expressionResolver,
-                Placeholders.raw(lineBreakPlaceholder),
-                exceptionResolver);
+        var placeholderReplacer = new PlaceholderReplacer(typeResolverRegistry, expressionResolver, exceptionResolver);
 
         var commentProcessors = buildCommentProcessors(configurationCommentProcessors, placeholderReplacer);
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
@@ -84,8 +78,7 @@ public class DocxStamper
                 expressionResolver,
                 commentProcessors,
                 exceptionResolver,
-                placeholderReplacer,
-                Placeholders.raw(lineBreakPlaceholder));
+                placeholderReplacer);
 
         this.preprocessors = new ArrayList<>(preprocessors);
         this.postprocessors = new ArrayList<>(postprocessors);

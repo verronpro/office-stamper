@@ -34,7 +34,7 @@ public class OfficeStampers {
      * @return a new DocxStamper
      */
     public static StreamStamper<WordprocessingMLPackage> docxStamper() {
-        return docxStamper(OfficeStamperConfigurations.standardWithPreprocessing());
+        return docxStamper(OfficeStamperConfigurations.standard());
     }
 
     /**

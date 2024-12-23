@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 /// @since 1.0.3
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
+
     private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors;
     private final List<ObjectResolver> resolvers;
     private final Map<Class<?>, Object> expressionFunctions;
@@ -67,9 +68,7 @@ public class DocxStamperConfiguration
     ///
     /// @param interfaceClass the interface holding methods to expose in the expression language.
     /// @param implementation the implementation to call to evaluate invocations of those methods.
-    ///
-    ///                                                                   Must implement the
-    ///                                                                                         mentioned interface.
+    ///                          Must implement the mentioned interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override

@@ -183,7 +183,7 @@ class RepeatDocPartTest {
 
     private static Arguments repeatDocPartNestingTest(ContextFactory factory) {
         return of("Repeat Doc Part Integration Test, with nested comments",
-                OfficeStamperConfigurations.standardWithPreprocessing(),
+                OfficeStamperConfigurations.standard(),
                 factory.schoolContext(),
                 getResource(Path.of("RepeatDocPartNestingTest.docx")),
                 """

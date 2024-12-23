@@ -7,12 +7,12 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 
 class BasicWordTest {
     @Test
     void testStamper() {
-        var stamperConfiguration = standardWithPreprocessing();
+        var stamperConfiguration = standard();
         var stamper = new TestDocxStamper<>(stamperConfiguration);
         var templateStream = TestUtils.getResource(Path.of("word-base.docx"));
 
@@ -27,7 +27,7 @@ class BasicWordTest {
 
     @Test
     void testMalformeStamper() {
-        var stamperConfiguration = standardWithPreprocessing();
+        var stamperConfiguration = standard();
         var stamper = new TestDocxStamper<>(stamperConfiguration);
         var templateStream = TestUtils.getResource(Path.of("malformed-comment.docx"));
 

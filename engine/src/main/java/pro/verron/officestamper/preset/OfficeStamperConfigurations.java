@@ -31,23 +31,6 @@ public class OfficeStamperConfigurations {
     }
 
     /**
-     * Creates a new OfficeStamperConfiguration with the standard configuration and additional preprocessors.
-     *
-     * @return the OfficeStamperConfiguration
-     *
-     * @see OfficeStamperConfiguration
-     */
-    public static OfficeStamperConfiguration standardWithPreprocessing() {
-        var configuration = standard();
-        configuration.addPreprocessor(Preprocessors.removeLanguageProof());
-        configuration.addPreprocessor(Preprocessors.removeLanguageInfo());
-        configuration.addPreprocessor(Preprocessors.mergeSimilarRuns());
-        configuration.addPostprocessor(Postprocessors.removeOrphanedFootnotes());
-        configuration.addPostprocessor(Postprocessors.removeOrphanedEndnotes());
-        return configuration;
-    }
-
-    /**
      * Creates a new standard OfficeStamperConfiguration.
      *
      * @return the standard OfficeStamperConfiguration
@@ -72,6 +55,13 @@ public class OfficeStamperConfigurations {
                 Resolvers.fallback()));
 
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
+        configuration.addPreprocessor(Preprocessors.removeLanguageProof())
+                     .addPreprocessor(Preprocessors.removeLanguageInfo())
+                     .addPreprocessor(Preprocessors.mergeSimilarRuns())
+                     .addPreprocessor(Preprocessors.removeMalformedComments());
+
+        configuration.addPostprocessor(Postprocessors.removeOrphanedFootnotes())
+                     .addPostprocessor(Postprocessors.removeOrphanedEndnotes());
 
         configuration.addCustomFunction("ftime", TemporalAccessor.class)
                      .withImplementation(ISO_TIME::format);
@@ -117,6 +107,7 @@ public class OfficeStamperConfigurations {
                      .withImplementation(OfficeStamperConfigurations::patternFormatter);
         return configuration;
     }
+
 
     private static Object localizedDatetimeFormatter(TemporalAccessor date, String style) {
         return ofLocalizedDateTime(valueOf(style)).format(date);

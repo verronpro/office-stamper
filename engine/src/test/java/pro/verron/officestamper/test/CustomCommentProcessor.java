@@ -9,40 +9,33 @@ import java.util.List;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
-/**
- * This is an example of a custom {@link CommentProcessor} implementation.
- * <p>
- * Users of the docx-stamper library could use it to understand how they could
- * leverage the library to create their own custom comment processors.
- * <p>
- * Specifically, it's designed to replace each paragraph that has been
- * commented with the annotation "visitParagraph" exposed by the
- * {@link ICustomCommentProcessor#visitParagraph()} public method,
- * marking it with the text 'Visited' in the resultant stamped Word
- * document.
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.6
- */
+/// This is an example of a custom [CommentProcessor] implementation.
+///
+/// Users of the docx-stamper library could use it to understand how they could
+/// leverage the library to create their own custom comment processors.
+///
+/// Specifically, it's designed to replace each paragraph that has been
+/// commented with the annotation "visitParagraph" exposed by the
+/// [#visitParagraph()] public method,
+/// marking it with the text 'Visited' in the resultant stamped Word
+/// document.
+///
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.6
 public class CustomCommentProcessor
         extends AbstractCommentProcessor
         implements ICustomCommentProcessor {
 
     private static final List<Paragraph> visitedParagraphs = new ArrayList<>();
 
-    /**
-     * <p>Constructor for CustomCommentProcessor.</p>
-     *
-     * @param placeholderReplacer a {@link ParagraphPlaceholderReplacer} object
-     */
+    /// Constructor for CustomCommentProcessor.
+    ///
+    /// @param placeholderReplacer a [ParagraphPlaceholderReplacer] object
     public CustomCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
         super(placeholderReplacer);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void commitChanges(DocxPart document) {
         visitedParagraphs.forEach(para -> para.apply((P p)->{
@@ -52,16 +45,10 @@ public class CustomCommentProcessor
         }));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void reset() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setCurrentCommentWrapper(Comment comment) {
     }
@@ -70,16 +57,10 @@ public class CustomCommentProcessor
         super.setParagraph(paragraph);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setCurrentRun(R run) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visitParagraph() {
         visitedParagraphs.add(getParagraph());

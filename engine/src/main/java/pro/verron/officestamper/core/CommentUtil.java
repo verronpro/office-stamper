@@ -19,14 +19,12 @@ import static org.docx4j.XmlUtils.unwrap;
 import static pro.verron.officestamper.utils.WmlFactory.newBody;
 import static pro.verron.officestamper.utils.WmlFactory.newComments;
 
-/**
- * Utility class for working with comments in a DOCX document.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.0
- */
+/// Utility class for working with comments in a DOCX document.
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.0
 public class CommentUtil {
     private static final PartName WORD_COMMENTS_PART_NAME;
 
@@ -42,14 +40,12 @@ public class CommentUtil {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
-    /**
-     * Returns the comment the given DOCX4J object is commented with.
-     *
-     * @param run      the DOCX4J object whose comment to retrieve.
-     * @param document the document that contains the object.
-     *
-     * @return Optional of the comment, if found, Optional.empty() otherwise.
-     */
+    /// Returns the comment the given DOCX4J object is commented with.
+    ///
+    /// @param run      the DOCX4J object whose comment to retrieve.
+    /// @param document the document that contains the object.
+    ///
+    /// @return Optional of the comment, if found, Optional.empty() otherwise.
     public static Optional<Comments.Comment> getCommentAround(R run, WordprocessingMLPackage document) {
         ContentAccessor parent = (ContentAccessor) run.getParent();
         if (parent == null) return Optional.empty();
@@ -80,14 +76,12 @@ public class CommentUtil {
         return Optional.empty();
     }
 
-    /**
-     * Finds a comment with the given ID in the specified WordprocessingMLPackage document.
-     *
-     * @param document the WordprocessingMLPackage document to search for the comment
-     * @param id       the ID of the comment to find
-     *
-     * @return an Optional containing the Comment if found, or an empty Optional if not found
-     */
+    /// Finds a comment with the given ID in the specified WordprocessingMLPackage document.
+    ///
+    /// @param document the WordprocessingMLPackage document to search for the comment
+    /// @param id       the ID of the comment to find
+    ///
+    /// @return an Optional containing the Comment if found, or an empty Optional if not found
     private static Optional<Comments.Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
         return getCommentsPart(document.getParts()).map(CommentUtil::extractContent)
                                                    .map(Comments::getComment)
@@ -98,15 +92,22 @@ public class CommentUtil {
 
     }
 
-    /**
-     * Retrieves the comment associated with a given paragraph content within a WordprocessingMLPackage document.
-     *
-     * @param paragraphContent the content of the paragraph to search for a comment.
-     * @param document         the WordprocessingMLPackage document containing the paragraph and its comments.
-     *
-     * @return an Optional containing the found comment, or Optional.empty() if no comment is associated with the given
-     * paragraph content.
-     */
+    /// Retrieves the CommentsPart from the given Parts object.
+    ///
+    /// @param parts the Parts object containing the various parts of the document.
+    ///
+    /// @return an Optional containing the CommentsPart if found, or an empty Optional if not found.
+    public static Optional<CommentsPart> getCommentsPart(Parts parts) {
+        return Optional.ofNullable((CommentsPart) parts.get(WORD_COMMENTS_PART_NAME));
+    }
+
+    /// Retrieves the comment associated with a given paragraph content within a WordprocessingMLPackage document.
+    ///
+    /// @param paragraphContent the content of the paragraph to search for a comment.
+    /// @param document         the WordprocessingMLPackage document containing the paragraph and its comments.
+    ///
+    /// @return an Optional containing the found comment, or Optional.empty() if no comment is associated with the given
+    /// paragraph content.
     public static Collection<Comments.Comment> getCommentFor(
             List<Object> paragraphContent, WordprocessingMLPackage document
     ) {
@@ -122,17 +123,6 @@ public class CommentUtil {
                                .map(CommentRangeStart::getId)
                                .flatMap(commentId -> findCommentById(comments, commentId).stream())
                                .toList();
-    }
-
-    /**
-     * Retrieves the CommentsPart from the given Parts object.
-     *
-     * @param parts the Parts object containing the various parts of the document.
-     *
-     * @return an Optional containing the CommentsPart if found, or an empty Optional if not found.
-     */
-    public static Optional<CommentsPart> getCommentsPart(Parts parts) {
-        return Optional.ofNullable((CommentsPart) parts.get(WORD_COMMENTS_PART_NAME));
     }
 
     public static Comments extractContent(CommentsPart commentsPart) {
@@ -152,11 +142,9 @@ public class CommentUtil {
         return Optional.empty();
     }
 
-    /**
-     * Returns the string value of the specified comment object.
-     *
-     * @param comment a {@link Comment} object
-     */
+    /// Returns the string value of the specified comment object.
+    ///
+    /// @param comment a [Comment] object
     public static void deleteComment(Comment comment) {
         CommentRangeEnd end = comment.getCommentRangeEnd();
         if (end != null) {
@@ -178,12 +166,10 @@ public class CommentUtil {
         }
     }
 
-    /**
-     * Returns the string value of the specified comment object.
-     *
-     * @param items     a {@link List} object
-     * @param commentId a {@link BigInteger} object
-     */
+    /// Returns the string value of the specified comment object.
+    ///
+    /// @param items     a [List] object
+    /// @param commentId a [BigInteger] object
     public static void deleteCommentFromElements(List<Object> items, BigInteger commentId) {
         List<Object> elementsToRemove = new ArrayList<>();
         for (Object item : items) {
@@ -221,14 +207,12 @@ public class CommentUtil {
         deleteCommentFromElements(elements, commentId);
     }
 
-    /**
-     * Creates a sub Word document
-     * by extracting a specified comment and its associated content from the original document.
-     *
-     * @param comment The comment to be extracted from the original document.
-     *
-     * @return The sub Word document containing the content of the specified comment.
-     */
+    /// Creates a sub Word document
+    /// by extracting a specified comment and its associated content from the original document.
+    ///
+    /// @param comment The comment to be extracted from the original document.
+    ///
+    /// @return The sub Word document containing the content of the specified comment.
     public static WordprocessingMLPackage createSubWordDocument(Comment comment) {
         var elements = comment.getElements();
 

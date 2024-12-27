@@ -14,16 +14,13 @@ import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 import static pro.verron.officestamper.utils.WmlFactory.newText;
 
-/**
- * Utility class to handle runs.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.0
- */
+/// Utility class to handle runs.
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.0
 public class RunUtil {
-
 
     private static final String PRESERVE = "preserve";
     private static final Logger log = LoggerFactory.getLogger(RunUtil.class);
@@ -32,13 +29,11 @@ public class RunUtil {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
-    /**
-     * Returns the text string of a run.
-     *
-     * @param run the run whose text to get.
-     *
-     * @return {@link String} representation of the run.
-     */
+    /// Returns the text string of a run.
+    ///
+    /// @param run the run whose text to get.
+    ///
+    /// @return [String] representation of the run.
     public static String getText(R run) {
         return run.getContent()
                   .stream()
@@ -46,13 +41,11 @@ public class RunUtil {
                   .collect(joining());
     }
 
-    /**
-     * Returns the textual representation of a run child
-     *
-     * @param content the run child to represent textually
-     *
-     * @return {@link String} representation of run child
-     */
+    /// Returns the textual representation of a run child
+    ///
+    /// @param content the run child to represent textually
+    ///
+    /// @return [String] representation of run child
     public static CharSequence getText(Object content) {
         return switch (content) {
             case JAXBElement<?> jaxbElement -> getText(jaxbElement.getValue());
@@ -87,24 +80,20 @@ public class RunUtil {
                 : value.trim(); // trimming value if spaces are not to be preserved (simulates behavior of Word;)
     }
 
-    /**
-     * Creates a new run with the specified text and inherits the style of the parent paragraph.
-     *
-     * @param text the initial text of the run.
-     *
-     * @return the newly created run.
-     */
+    /// Creates a new run with the specified text and inherits the style of the parent paragraph.
+    ///
+    /// @param text the initial text of the run.
+    ///
+    /// @return the newly created run.
     public static R create(String text, PPr paragraphPr) {
         R run = newRun(text);
         applyParagraphStyle(run, paragraphPr);
         return run;
     }
 
-    /**
-     * Applies the style of the given paragraph to the given content object (if the content object is a Run).
-     *
-     * @param run the Run to which the style should be applied.
-     */
+    /// Applies the style of the given paragraph to the given content object (if the content object is a Run).
+    ///
+    /// @param run the Run to which the style should be applied.
     public static void applyParagraphStyle(R run, @Nullable PPr paragraphPr) {
         if (paragraphPr == null) return;
         var runPr = paragraphPr.getRPr();
@@ -114,12 +103,10 @@ public class RunUtil {
         run.setRPr(runProperties);
     }
 
-    /**
-     * Sets the text of the given run to the given value.
-     *
-     * @param run  the run whose text to change.
-     * @param text the text to set.
-     */
+    /// Sets the text of the given run to the given value.
+    ///
+    /// @param run  the run whose text to change.
+    /// @param text the text to set.
     public static void setText(R run, String text) {
         run.getContent()
            .clear();

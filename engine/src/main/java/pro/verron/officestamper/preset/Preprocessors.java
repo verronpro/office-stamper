@@ -8,31 +8,25 @@ import pro.verron.officestamper.preset.preprocessors.prooferror.RemoveProofError
 import pro.verron.officestamper.preset.preprocessors.rmlang.RemoveLang;
 import pro.verron.officestamper.preset.preprocessors.similarrun.MergeSameStyleRuns;
 
-/**
- * A helper class that provides pre-processing functionality for WordprocessingMLPackage documents.
- */
+/// A helper class that provides pre-processing functionality for WordprocessingMLPackage documents.
 public class Preprocessors {
 
     private Preprocessors() {
         throw new OfficeStamperException("Preprocessors cannot be instantiated");
     }
 
-    /**
-     * Returns a PreProcessor object that merges same style runs that are next to each other in a
-     * WordprocessingMLPackage document.
-     *
-     * @return a PreProcessor object that merges similar runs.
-     */
+    /// Returns a PreProcessor object that merges same style runs that are next to each other in a
+    /// WordprocessingMLPackage document.
+    ///
+    /// @return a PreProcessor object that merges similar runs.
     public static PreProcessor mergeSimilarRuns() {
         return new MergeSameStyleRuns();
     }
 
-    /**
-     * Returns a PreProcessor object that removes all {@link ProofErr} elements from the WordprocessingMLPackage
-     * document.
-     *
-     * @return a PreProcessor object that removes ProofErr elements.
-     */
+    /// Returns a PreProcessor object that removes all [ProofErr] elements from the WordprocessingMLPackage
+    /// document.
+    ///
+    /// @return a PreProcessor object that removes ProofErr elements.
     public static PreProcessor removeLanguageProof() {
         return new RemoveProofErrors();
     }

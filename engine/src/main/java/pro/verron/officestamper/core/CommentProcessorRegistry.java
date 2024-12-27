@@ -16,17 +16,15 @@ import java.util.*;
 
 import static pro.verron.officestamper.core.Placeholders.findProcessors;
 
-/**
- * Allows registration of {@link CommentProcessor} objects. Each registered
- * ICommentProcessor must implement an interface which has to be specified at
- * registration time. Provides several getter methods to access the registered
- * {@link CommentProcessor}.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.0
- */
+/// Allows registration of [CommentProcessor] objects. Each registered
+/// ICommentProcessor must implement an interface which has to be specified at
+/// registration time. Provides several getter methods to access the registered
+/// [CommentProcessor].
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.0
 public class CommentProcessorRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentProcessorRegistry.class);
@@ -36,14 +34,12 @@ public class CommentProcessorRegistry {
     private final ExceptionResolver exceptionResolver;
     private final PlaceholderReplacer placeholderReplacer;
 
-    /**
-     * Constructs a new CommentProcessorRegistry.
-     *
-     * @param source             the source part of the Word document.
-     * @param expressionResolver the resolver for evaluating expressions.
-     * @param commentProcessors  map of comment processor instances keyed by their respective class types.
-     * @param exceptionResolver  the resolver for handling exceptions during processing.
-     */
+    /// Constructs a new CommentProcessorRegistry.
+    ///
+    /// @param source             the source part of the Word document.
+    /// @param expressionResolver the resolver for evaluating expressions.
+    /// @param commentProcessors  map of comment processor instances keyed by their respective class types.
+    /// @param exceptionResolver  the resolver for handling exceptions during processing.
     public CommentProcessorRegistry(
             DocxPart source,
             ExpressionResolver expressionResolver,
@@ -132,15 +128,13 @@ public class CommentProcessorRegistry {
                           });
     }
 
-    /**
-     * Takes the first comment on the specified paragraph and tries to evaluate
-     * the string within the comment against all registered
-     * {@link CommentProcessor}s.
-     *
-     * @param comments          the comments within the document.
-     * @param expressionContext the context root object
-     * @param <T>               the type of the context root object.
-     */
+    /// Takes the first comment on the specified paragraph and tries to evaluate
+    /// the string within the comment against all registered
+    /// [CommentProcessor]s.
+    ///
+    /// @param comments          the comments within the document.
+    /// @param expressionContext the context root object
+    /// @param <T>               the type of the context root object.
     private <T> Optional<Comment> runProcessorsOnParagraphComment(
             Map<BigInteger, Comment> comments,
             T expressionContext,
@@ -157,14 +151,12 @@ public class CommentProcessorRegistry {
         return runCommentProcessors(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
     }
 
-    /**
-     * Finds all processor expressions within the specified paragraph and tries
-     * to evaluate it against all registered {@link CommentProcessor}s.
-     *
-     * @param context   the context root object against which evaluation is done
-     * @param paragraph the paragraph to process.
-     * @param <T>       type of the context root object
-     */
+    /// Finds all processor expressions within the specified paragraph and tries
+    /// to evaluate it against all registered [CommentProcessor]s.
+    ///
+    /// @param context   the context root object against which evaluation is done
+    /// @param paragraph the paragraph to process.
+    /// @param <T>       type of the context root object
     private <T> void runProcessorsOnInlineContent(T context, Paragraph paragraph) {
         var processorContexts = findProcessors(paragraph.asString()).stream()
                                                                     .map(paragraph::processorContext)

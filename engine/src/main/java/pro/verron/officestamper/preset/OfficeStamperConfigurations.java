@@ -19,22 +19,17 @@ import static java.time.format.FormatStyle.valueOf;
 import static java.util.Locale.forLanguageTag;
 
 
-/**
- * The OfficeStamperConfigurations class provides static methods
- * to create different configurations for the OfficeStamper.
- */
+/// The OfficeStamperConfigurations class provides static methods
+/// to create different configurations for the OfficeStamper.
 public class OfficeStamperConfigurations {
-
 
     private OfficeStamperConfigurations() {
         throw new OfficeStamperException("OfficeStamperConfigurations cannot be instantiated");
     }
 
-    /**
-     * Creates a new standard OfficeStamperConfiguration.
-     *
-     * @return the standard OfficeStamperConfiguration
-     */
+    /// Creates a new standard OfficeStamperConfiguration.
+    ///
+    /// @return the standard OfficeStamperConfiguration
     public static OfficeStamperConfiguration standard() {
         var configuration = new DocxStamperConfiguration();
 
@@ -117,30 +112,25 @@ public class OfficeStamperConfigurations {
         return ofLocalizedDateTime(valueOf(dateStyle), valueOf(timeStyle)).format(date);
     }
 
-    private static Object localDateFormatter(
-            TemporalAccessor date,
-            String style
-    ) {return ofLocalizedDate(valueOf(style)).format(date);}
+    private static Object localDateFormatter(TemporalAccessor date, String style) {
+        return ofLocalizedDate(valueOf(style)).format(date);
+    }
 
-    private static Object localTimeFormatter(
-            TemporalAccessor date,
-            String style
-    ) {return ofLocalizedTime(valueOf(style)).format(date);}
+    private static Object localTimeFormatter(TemporalAccessor date, String style) {
+        return ofLocalizedTime(valueOf(style)).format(date);
+    }
 
-    private static Object patternFormatter(
-            TemporalAccessor date,
-            String pattern
-    ) {return ofPattern(pattern).format(date);}
+    private static Object patternFormatter(TemporalAccessor date, String pattern) {
+        return ofPattern(pattern).format(date);
+    }
 
     private static Object patternFormatter(TemporalAccessor date, String pattern, String locale) {
         return ofPattern(pattern, forLanguageTag(locale)).format(date);
     }
 
-    /**
-     * Creates a new standard OfficeStamperConfiguration.
-     *
-     * @return the standard OfficeStamperConfiguration
-     */
+    /// Creates a new standard OfficeStamperConfiguration.
+    ///
+    /// @return the standard OfficeStamperConfiguration
     public static OfficeStamperConfiguration raw() {
         var configuration = new DocxStamperConfiguration();
         configuration.resetResolvers();

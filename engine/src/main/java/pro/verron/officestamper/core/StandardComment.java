@@ -17,14 +17,12 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.WmlFactory.*;
 
-/**
- * <p>CommentWrapper class.</p>
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.2
- */
+/// CommentWrapper class.
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.2
 public class StandardComment
         implements Comment {
     private final Set<Comment> children = new HashSet<>();
@@ -34,11 +32,9 @@ public class StandardComment
     private CommentRangeEnd commentRangeEnd;
     private CommentReference commentReference;
 
-    /**
-     * Constructs a new StandardComment object.
-     *
-     * @param document the WordprocessingMLPackage document instance
-     */
+    /// Constructs a new StandardComment object.
+    ///
+    /// @param document the WordprocessingMLPackage document instance
     public StandardComment(WordprocessingMLPackage document) {
         this.document = document;
     }
@@ -78,18 +74,12 @@ public class StandardComment
         return Placeholders.raw(string);
     }
 
-    /**
-     * <p>getParent.</p>
-     *
-     * @return the comment's author.
-     */
+    /// @return the comment's author.
     @Override public ContentAccessor getParent() {
         return DocumentUtil.findSmallestCommonParent(getCommentRangeStart(), getCommentRangeEnd());
     }
 
-    /**
-     * @return the elements in the document that are between the comment range anchors.
-     */
+    /// @return the elements in the document that are between the comment range anchors.
     @Override public List<Object> getElements() {
         List<Object> elements = new ArrayList<>();
         boolean startFound = false;
@@ -103,11 +93,9 @@ public class StandardComment
         return elements;
     }
 
-    /**
-     * <p>Getter for the field <code>commentRangeEnd</code>.</p>
-     *
-     * @return a {@link CommentRangeEnd} object
-     */
+    /// Getter for the field <code>commentRangeEnd</code>.
+    ///
+    /// @return a [CommentRangeEnd] object
     @Override public CommentRangeEnd getCommentRangeEnd() {
         return commentRangeEnd;
     }
@@ -116,11 +104,9 @@ public class StandardComment
         this.commentRangeEnd = commentRangeEnd;
     }
 
-    /**
-     * <p>Getter for the field <code>commentRangeStart</code>.</p>
-     *
-     * @return a {@link CommentRangeStart} object
-     */
+    /// Getter for the field <code>commentRangeStart</code>.
+    ///
+    /// @return a [CommentRangeStart] object
     @Override public CommentRangeStart getCommentRangeStart() {
         return commentRangeStart;
     }
@@ -129,11 +115,9 @@ public class StandardComment
         this.commentRangeStart = commentRangeStart;
     }
 
-    /**
-     * <p>Getter for the field <code>commentReference</code>.</p>
-     *
-     * @return a {@link CommentReference} object
-     */
+    /// Getter for the field <code>commentReference</code>.
+    ///
+    /// @return a [CommentReference] object
     @Override public CommentReference getCommentReference() {
         return commentReference;
     }
@@ -142,11 +126,9 @@ public class StandardComment
         this.commentReference = commentReference;
     }
 
-    /**
-     * <p>Getter for the field <code>children</code>.</p>
-     *
-     * @return a {@link Set} object
-     */
+    /// Getter for the field <code>children</code>.
+    ///
+    /// @return a [Set] object
     @Override public Set<Comment> getChildren() {
         return children;
     }
@@ -155,11 +137,9 @@ public class StandardComment
         this.children.addAll(children);
     }
 
-    /**
-     * <p>Getter for the field <code>comment</code>.</p>
-     *
-     * @return a {@link Comments.Comment} object
-     */
+    /// Getter for the field <code>comment</code>.
+    ///
+    /// @return a [Comments.Comment] object
     @Override public Comments.Comment getComment() {
         return comment;
     }
@@ -171,5 +151,4 @@ public class StandardComment
     @Override public WordprocessingMLPackage getDocument() {
         return document;
     }
-
 }

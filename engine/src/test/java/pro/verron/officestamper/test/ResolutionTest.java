@@ -19,17 +19,16 @@ class ResolutionTest {
 
     public static final ContextFactory FACTORY = ContextFactory.objectContextFactory();
 
-    /**
-     * This method is a unit test for the `testStaticResolution` method. It uses parameterized testing with a CSV source
-     * to test various scenarios.
-     *
-     * @param template         The template path
-     * @param shouldFail       A boolean indicating whether the test should fail on unresolved expression
-     * @param emptyOnError     A boolean indicating whether the test should leave empty on expression error
-     * @param shouldReplace    A boolean indicating whether the test should replace unresolved expressions
-     * @param replacementValue The replacement value for unresolved expressions
-     * @param expected         The expected result of the test
-     */
+    /// This method is a unit test for the `testStaticResolution` method. It uses parameterized testing with a CSV
+    /// source
+    /// to test various scenarios.
+    ///
+    /// @param template         The template path
+    /// @param shouldFail       A boolean indicating whether the test should fail on unresolved expression
+    /// @param emptyOnError     A boolean indicating whether the test should leave empty on expression error
+    /// @param shouldReplace    A boolean indicating whether the test should replace unresolved expressions
+    /// @param replacementValue The replacement value for unresolved expressions
+    /// @param expected         The expected result of the test
     @CsvSource({
             "system.exit.docx,false,false,false,Unresolved,${T(java.lang.System).exit(0)}",
             "system.exit.docx,false,false,true,Unresolved,Unresolved",
@@ -77,22 +76,21 @@ class ResolutionTest {
         return ExceptionResolvers.passing();
     }
 
-    /**
-     * This method is a unit test for the `testCustomResolution` method. It uses parameterized testing with a CSV source
-     * to test various scenarios.
-     *
-     * @param template                   The template path
-     * @param shouldFail                 A boolean indicating whether the test should fail on unresolved expression
-     * @param emptyOnError               A boolean indicating whether the test should leave empty on expression error
-     * @param shouldReplace              A boolean indicating whether the test should replace unresolved expressions
-     * @param withResolver               A boolean indicating whether the custom type resolver is added to the
-     *                                   configuration
-     * @param withValue                  A boolean indicating whether a custom type value is set, or is null in the
-     *                                   context
-     * @param unresolvedReplacementValue The replacement value for unresolved expressions
-     * @param expectedFail               A boolean indicating whether the test is expected to fail
-     * @param expected                   The expected result of the test
-     */
+    /// This method is a unit test for the `testCustomResolution` method. It uses parameterized testing with a CSV
+    /// source
+    /// to test various scenarios.
+    ///
+    /// @param template                   The template path
+    /// @param shouldFail                 A boolean indicating whether the test should fail on unresolved expression
+    /// @param emptyOnError               A boolean indicating whether the test should leave empty on expression error
+    /// @param shouldReplace              A boolean indicating whether the test should replace unresolved expressions
+    /// @param withResolver               A boolean indicating whether the custom type resolver is added to the
+    ///                                                                     configuration
+    /// @param withValue                  A boolean indicating whether a custom type value is set, or is null in the
+    ///                                                                     context
+    /// @param unresolvedReplacementValue The replacement value for unresolved expressions
+    /// @param expectedFail               A boolean indicating whether the test is expected to fail
+    /// @param expected                   The expected result of the test
     @CsvSource({
             // template, failOnUnresolved, emptyOnError, shouldReplaceUnresolved, withResolver, withValue,
             // unresolvedReplacementValue, expectedFail, expected

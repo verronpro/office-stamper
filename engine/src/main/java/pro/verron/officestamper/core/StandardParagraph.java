@@ -15,20 +15,19 @@ import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 import static pro.verron.officestamper.utils.WmlUtils.getFirstParentWithClass;
 
-/**
- * <p>A "Run" defines a region of text within a docx document with a common set of properties. Word processors are
- * relatively free in splitting a paragraph of text into multiple runs, so there is no strict rule to say over how many
- * runs a word or a string of words is spread.</p>
- * <p>This class aggregates multiple runs so they can be treated as a single text, no matter how many runs the text
- * spans.
- * Create a {@link StandardParagraph} then, call methods to modify the aggregated text.
- * Finally, call {@link #asString()} to get the modified text.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.8
- */
+/// A "Run" defines a region of text within a docx document with a common set of properties. Word processors are
+/// relatively free in splitting a paragraph of text into multiple runs, so there is no strict rule to say over how many
+/// runs a word or a string of words is spread.
+///
+/// This class aggregates multiple runs so they can be treated as a single text, no matter how many runs the text
+/// spans.
+/// Create a [StandardParagraph] then, call methods to modify the aggregated text.
+/// Finally, call [#asString()] to get the modified text.
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.8
 public class StandardParagraph
         implements Paragraph {
 
@@ -46,11 +45,9 @@ public class StandardParagraph
     }
 
 
-    /**
-     * Calculates the runs of the paragraph.
-     * This method is called automatically by the constructor, but can also be
-     * called manually to recalculate the runs after a modification to the paragraph was done.
-     */
+    /// Calculates the runs of the paragraph.
+    /// This method is called automatically by the constructor, but can also be
+    /// called manually to recalculate the runs after a modification to the paragraph was done.
     private static List<IndexedRun> initializeRunList(List<Object> objects) {
         int currentLength = 0;
         var runList = new ArrayList<IndexedRun>(objects.size());
@@ -65,20 +62,16 @@ public class StandardParagraph
         return runList;
     }
 
-    /**
-     * Constructs a new ParagraphWrapper for the given paragraph.
-     */
+    /// Constructs a new ParagraphWrapper for the given paragraph.
     public static StandardParagraph from(DocxPart source, P paragraph) {
         return new StandardParagraph(source, paragraph.getContent(), paragraph);
     }
 
-    /**
-     * Constructs a StandardParagraph from a given CTSdtContentRun paragraph.
-     *
-     * @param paragraph a CTSdtContentRun object representing the content run of the paragraph
-     *
-     * @return a new instance of StandardParagraph based on the provided CTSdtContentRun
-     */
+    /// Constructs a StandardParagraph from a given CTSdtContentRun paragraph.
+    ///
+    /// @param paragraph a CTSdtContentRun object representing the content run of the paragraph
+    ///
+    /// @return a new instance of StandardParagraph based on the provided CTSdtContentRun
     public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
         var p = WmlFactory.newParagraph(paragraph.getContent());
         p.setParent(paragraph.getParent());
@@ -134,14 +127,12 @@ public class StandardParagraph
         WmlUtils.remove(p);
     }
 
-    /**
-     * Replaces the given expression with the replacement object within
-     * the paragraph.
-     * The replacement object must be a valid DOCX4J Object.
-     *
-     * @param placeholder the expression to be replaced.
-     * @param replacement the object to replace the expression.
-     */
+    /// Replaces the given expression with the replacement object within
+    /// the paragraph.
+    /// The replacement object must be a valid DOCX4J Object.
+    ///
+    /// @param placeholder the expression to be replaced.
+    /// @param replacement the object to replace the expression.
     @Override
     public void replace(Placeholder placeholder, Object replacement) {
         switch (replacement) {
@@ -151,11 +142,9 @@ public class StandardParagraph
         }
     }
 
-    /**
-     * Returns the aggregated text over all runs.
-     *
-     * @return the text of all runs.
-     */
+    /// Returns the aggregated text over all runs.
+    ///
+    /// @return the text of all runs.
     @Override
     public String asString() {
         return runs.stream()
@@ -281,9 +270,6 @@ public class StandardParagraph
         return StandardComment.create(source.document(), p, placeholder, id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return asString();

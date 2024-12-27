@@ -47,10 +47,8 @@ public class MapAccessor
         map.put(name, newValue);
     }
 
-    /**
-     * Exception thrown from {@code read} in order to reset a cached
-     * PropertyAccessor, allowing other accessors to have a try.
-     */
+    /// Exception thrown from `read` in order to reset a cached
+    /// PropertyAccessor, allowing other accessors to have a try.
     private static class MapAccessException
             extends AccessException {
 

@@ -7,14 +7,12 @@ import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
 
-/**
- * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.0
- */
+/// Replaces expressions in a document with the values provided by the [ExpressionResolver].
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.0
 public class PlaceholderReplacer
         implements ParagraphPlaceholderReplacer {
 
@@ -22,12 +20,10 @@ public class PlaceholderReplacer
     private final ObjectResolverRegistry registry;
     private final ExceptionResolver exceptionResolver;
 
-    /**
-     * <p>Constructor for PlaceholderReplacer.</p>
-     *
-     * @param registry             the registry containing all available type resolvers.
-     * @param resolver             the expression resolver used to resolve expressions in the document.
-     */
+    /// Constructor for PlaceholderReplacer.
+    ///
+    /// @param registry the registry containing all available type resolvers.
+    /// @param resolver the expression resolver used to resolve expressions in the document.
     public PlaceholderReplacer(
             ObjectResolverRegistry registry,
             ExpressionResolver resolver,
@@ -38,24 +34,20 @@ public class PlaceholderReplacer
         this.exceptionResolver = exceptionResolver;
     }
 
-    /**
-     * Finds expressions in a document and resolves them against the specified context object.
-     * The resolved values will then replace the expressions in the document.
-     *
-     * @param expressionContext the context root
-     */
+    /// Finds expressions in a document and resolves them against the specified context object.
+    /// The resolved values will then replace the expressions in the document.
+    ///
+    /// @param expressionContext the context root
     public void resolveExpressions(DocxPart document, Object expressionContext) {
         document.streamParagraphs()
                 .forEach(paragraph -> resolveExpressionsForParagraph(document, paragraph, expressionContext));
     }
 
-    /**
-     * Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.
-     *
-     * @param docxPart  the document in which to replace all expressions.
-     * @param paragraph the paragraph in which to replace expressions.
-     * @param context   the context root
-     */
+    /// Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.
+    ///
+    /// @param docxPart  the document in which to replace all expressions.
+    /// @param paragraph the paragraph in which to replace expressions.
+    /// @param context   the context root
     @Override
     public void resolveExpressionsForParagraph(
             DocxPart docxPart,
@@ -91,5 +83,4 @@ public class PlaceholderReplacer
             return WmlFactory.newRun(exceptionResolver.resolve(placeholder, errorMessage, e));
         }
     }
-
 }

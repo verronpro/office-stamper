@@ -11,40 +11,37 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-/**
- * Common methods to interact with docx documents.
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.5
- */
+/// Common methods to interact with docx documents.
+///
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.5
 public final class TestDocxStamper<T> {
 
     private final StreamStamper<WordprocessingMLPackage> stamper;
 
-    /**
-     * <p>Constructor for TestDocxStamper.</p>
-     *
-     * @param config a {@link OfficeStamperConfiguration} object
-     * @since 1.6.6
-     */
+    /// Constructor for TestDocxStamper.
+    ///
+    /// @param config a [OfficeStamperConfiguration] object
+    ///
+    /// @since 1.6.6
     public TestDocxStamper(OfficeStamperConfiguration config) {
         stamper = OfficeStampers.docxStamper(config);
     }
 
-    /**
-     * Stamps the given template resolving the expressions within the template against the specified context.
-     * Returns the resulting document after it has been saved and loaded
-     * again to ensure that changes in the DOCX4J
-     * object structure were really transported into the XML of the .docx file.
-     *
-     * @param template a {@link InputStream} object
-     * @param context  a T object
-     * @return a {@link WordprocessingMLPackage} object
-     * @throws IOException     if any.
-     * @throws Docx4JException if any.
-     * @since 1.6.6
-     */
+    /// Stamps the given template resolving the expressions within the template against the specified context.
+    /// Returns the resulting document after it has been saved and loaded
+    /// again to ensure that changes in the DOCX4J
+    /// object structure were really transported into the XML of the .docx file.
+    ///
+    /// @param template a [InputStream] object
+    /// @param context  a T object
+    ///
+    /// @return a [WordprocessingMLPackage] object
+    ///
+    /// @throws IOException     if any.
+    /// @throws Docx4JException if any.
+    /// @since 1.6.6
     public WordprocessingMLPackage stampAndLoad(
             InputStream template,
             T context
@@ -55,14 +52,10 @@ public final class TestDocxStamper<T> {
         return WordprocessingMLPackage.load(in);
     }
 
-    /**
-     * <p>stampAndLoadAndExtract.</p>
-     *
-     * @param template a {@link InputStream} object
-     * @param context  a T object
-     * @return a {@link List} object
-     * @since 1.6.6
-     */
+    /// @param template a [InputStream] object
+    /// @param context  a T object
+    /// @return a [List] object
+    /// @since 1.6.6
     public String stampAndLoadAndExtract(InputStream template, T context) {
         var wordprocessingMLPackage = streamElements(template, context);
         return new Stringifier(() -> wordprocessingMLPackage).stringify(wordprocessingMLPackage);
@@ -81,6 +74,4 @@ public final class TestDocxStamper<T> {
             throw new RuntimeException(e);
         }
     }
-
-
 }

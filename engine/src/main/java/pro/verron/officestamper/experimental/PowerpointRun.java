@@ -2,36 +2,31 @@ package pro.verron.officestamper.experimental;
 
 import org.docx4j.dml.CTRegularTextRun;
 
-/**
- * Represents a run within a PowerPoint slide.
- */
+/// Represents a run within a PowerPoint slide.
 public record PowerpointRun(
         int startIndex,
         int endIndex,
         int indexInParent,
         CTRegularTextRun run
 ) {
-    /**
-     * Checks if the given range of indices touches the start or end index of the run.
-     *
-     * @param globalStartIndex the start index of the global range.
-     * @param globalEndIndex   the end index of the global range.
-     *
-     * @return {@code true} if the range touches the start or end index of the run, {@code false} otherwise.
-     */
+
+    /// Checks if the given range of indices touches the start or end index of the run.
+    ///
+    /// @param globalStartIndex the start index of the global range.
+    /// @param globalEndIndex   the end index of the global range.
+    ///
+    /// @return `true` if the range touches the start or end index of the run,`false` otherwise.
     public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
         return ((startIndex >= globalStartIndex) && (startIndex <= globalEndIndex))
                 || ((endIndex >= globalStartIndex) && (endIndex <= globalEndIndex))
                 || ((startIndex <= globalStartIndex) && (endIndex >= globalEndIndex));
     }
 
-    /**
-     * Replaces a substring within the run's text.
-     *
-     * @param globalStartIndex the start index of the substring to be replaced.
-     * @param globalEndIndex   the end index of the substring to be replaced.
-     * @param replacement      the replacement string.
-     */
+    /// Replaces a substring within the run's text.
+    ///
+    /// @param globalStartIndex the start index of the substring to be replaced.
+    /// @param globalEndIndex   the end index of the substring to be replaced.
+    /// @param replacement      the replacement string.
     public void replace(
             int globalStartIndex,
             int globalEndIndex,

@@ -14,39 +14,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-/**
- * Extracts images from a docx document.
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.4.7
- */
+/// Extracts images from a docx document.
+///
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.4.7
 public class DocxImageExtractor {
 
     private final WordprocessingMLPackage wordprocessingMLPackage;
 
-    /**
-     * Creates a new image extractor for the given docx document.
-     *
-     * @param wordprocessingMLPackage the docx document to extract images from.
-     */
+    /// Creates a new image extractor for the given docx document.
+    ///
+    /// @param wordprocessingMLPackage the docx document to extract images from.
     public DocxImageExtractor(WordprocessingMLPackage wordprocessingMLPackage) {
         this.wordprocessingMLPackage = wordprocessingMLPackage;
     }
 
-    /**
-     * Extract an image bytes from an embedded image run.
-     *
-     * @param run run containing the embedded drawing.
-     */
-    byte[] getRunDrawingData(R run) {
-        String imageRelId = getPic(run).getBlipFill()
-                                       .getBlip()
-                                       .getEmbed();
-        String imageRelPartName = getImageRelPartName(imageRelId);
-        long size = getImageSize(imageRelPartName);
-        InputStream stream = getImageStream(imageRelPartName);
-        return streamToByteArray(size, stream);
+    /// Extract an inline graphic from a drawing.
+    ///
+    /// @param drawing the drawing containing the graphic.
+    private static Graphic getInlineGraphic(Drawing drawing) {
+        var anchorOrInline = drawing.getAnchorOrInline();
+        if (anchorOrInline.isEmpty()) throw new OfficeStamperException("Anchor or Inline is empty !");
+        if (anchorOrInline.getFirst() instanceof Inline inline) return inline.getGraphic();
+        throw new OfficeStamperException("Don't know how to process anchor !");
     }
 
     private static Pic getPic(R run) {
@@ -88,14 +79,25 @@ public class DocxImageExtractor {
         }
     }
 
-    /**
-     * Converts an InputStream to a byte array.
-     *
-     * @param size expected size of the byte array.
-     * @param is   input stream to read data from.
-     *
-     * @return the data from the input stream.
-     */
+    /// Extract an image bytes from an embedded image run.
+    ///
+    /// @param run run containing the embedded drawing.
+    byte[] getRunDrawingData(R run) {
+        String imageRelId = getPic(run).getBlipFill()
+                                       .getBlip()
+                                       .getEmbed();
+        String imageRelPartName = getImageRelPartName(imageRelId);
+        long size = getImageSize(imageRelPartName);
+        InputStream stream = getImageStream(imageRelPartName);
+        return streamToByteArray(size, stream);
+    }
+
+    /// Converts an InputStream to a byte array.
+    ///
+    /// @param size expected size of the byte array.
+    /// @param is   input stream to read data from.
+    ///
+    /// @return the data from the input stream.
     private static byte[] streamToByteArray(long size, InputStream is) {
         if (size > Integer.MAX_VALUE) throw new OfficeStamperException("Image size exceeds maximum allowed (2GB)");
 
@@ -103,18 +105,6 @@ public class DocxImageExtractor {
         byte[] data = new byte[intSize];
         int numRead = tryRead(is, data);
         return Arrays.copyOfRange(data, 0, numRead);
-    }
-
-    /**
-     * Extract an inline graphic from a drawing.
-     *
-     * @param drawing the drawing containing the graphic.
-     */
-    private static Graphic getInlineGraphic(Drawing drawing) {
-        var anchorOrInline = drawing.getAnchorOrInline();
-        if (anchorOrInline.isEmpty()) throw new OfficeStamperException("Anchor or Inline is empty !");
-        if (anchorOrInline.getFirst() instanceof Inline inline) return inline.getGraphic();
-        throw new OfficeStamperException("Don't know how to process anchor !");
     }
 
     private static int tryRead(InputStream is, byte[] data) {
@@ -125,39 +115,33 @@ public class DocxImageExtractor {
         }
     }
 
-    /**
-     * Extract the name of the image from an embedded image run.
-     *
-     * @param run run containing the embedded drawing.
-     *
-     * @return a {@link String} object
-     */
+    /// Extract the name of the image from an embedded image run.
+    ///
+    /// @param run run containing the embedded drawing.
+    ///
+    /// @return a [String] object
     public String getRunDrawingFilename(R run) {
         return getPic(run).getNvPicPr()
                           .getCNvPr()
                           .getName();
     }
 
-    /**
-     * Extract the content type of the image from an embedded image run.
-     *
-     * @param run run containing the embedded drawing.
-     *
-     * @return a {@link String} object
-     */
+    /// Extract the content type of the image from an embedded image run.
+    ///
+    /// @param run run containing the embedded drawing.
+    ///
+    /// @return a [String] object
     public String getRunDrawingAltText(R run) {
         return getPic(run).getNvPicPr()
                           .getCNvPr()
                           .getDescr();
     }
 
-    /**
-     * Extract the width of the image from an embedded image run.
-     *
-     * @param run run containing the embedded drawing.
-     *
-     * @return a {@link Integer} object
-     */
+    /// Extract the width of the image from an embedded image run.
+    ///
+    /// @param run run containing the embedded drawing.
+    ///
+    /// @return a [Integer] object
     public Integer getRunDrawingMaxWidth(R run) {
         return (int) getPic(run).getSpPr()
                                 .getXfrm()

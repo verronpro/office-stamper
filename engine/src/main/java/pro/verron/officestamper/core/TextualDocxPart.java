@@ -9,6 +9,7 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.utils.DocumentScanner;
 
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +45,11 @@ public final class TextualDocxPart
                            .flatMap(Collection::stream)
                            .filter(R.class::isInstance)
                            .map(R.class::cast);
+    }
+
+    @Override
+    public DocumentScanner scanner() {
+        return new DocumentScanner(document);
     }
 
 

@@ -6,6 +6,7 @@ import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.utils.DocumentScanner;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -30,6 +31,11 @@ public class PptxPart
 
     @Override public Stream<R> streamRun() {
         return Stream.empty();
+    }
+
+    @Override
+    public DocumentScanner scanner() {
+        return null;
     }
 
     @Override public WordprocessingMLPackage document() {

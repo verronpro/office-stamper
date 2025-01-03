@@ -84,6 +84,12 @@ public class CommentProcessorRegistry {
         part.streamParagraphs()
             .forEach(paragraph -> runProcessorsOnInlineContent(expressionContext, paragraph));
 
+        var scanner = part.scanner();
+        while (scanner.hasNext()) {
+            scanner.next();
+            scanner.process(commentProcessors, expressionContext);
+        }
+
         proceedComments.forEach(CommentUtil::deleteComment);
     }
 

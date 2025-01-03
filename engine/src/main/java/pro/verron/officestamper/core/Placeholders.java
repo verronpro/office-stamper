@@ -29,7 +29,7 @@ public class Placeholders {
 
     /// An ExpressionFinder to find processor expressions.
     /// It is initialized with a specified pattern and matcher.
-    private static final PlaceholderFinder PROC_FINDER = new PlaceholderFinder(PROC_PATTERN, PROC_MATCHER);
+    public static final PlaceholderFinder PROC_FINDER = new PlaceholderFinder(PROC_PATTERN, PROC_MATCHER);
 
     /// A regular expression pattern matching processor expressions.
     /// The pattern search for expressions starting with '${' and ending with

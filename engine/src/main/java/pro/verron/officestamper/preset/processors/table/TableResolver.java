@@ -7,12 +7,12 @@ import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.AbstractCommentProcessor;
-import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.AbstractProcessor;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.api.Processor;
 import pro.verron.officestamper.core.PlaceholderReplacer;
-import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.preset.ProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
 import pro.verron.officestamper.utils.WmlFactory;
 
@@ -30,8 +30,8 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 /// @version ${version}
 /// @since 1.6.2
 public class TableResolver
-        extends AbstractCommentProcessor
-        implements CommentProcessorFactory.ITableResolver {
+        extends AbstractProcessor
+        implements ProcessorFactory.ITableResolver {
     private final Map<Tbl, StampTable> cols = new HashMap<>();
     private final Function<Tbl, List<Object>> nullSupplier;
 
@@ -47,7 +47,7 @@ public class TableResolver
     /// @param pr a [PlaceholderReplacer] instance
     ///
     /// @return a new [TableResolver] instance
-    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
+    public static Processor newInstance(ParagraphPlaceholderReplacer pr) {
         return new TableResolver(pr, table -> Collections.emptyList());
     }
 

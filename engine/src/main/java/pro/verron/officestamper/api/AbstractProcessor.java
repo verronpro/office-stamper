@@ -5,11 +5,11 @@ import org.springframework.lang.Nullable;
 
 import java.util.Objects;
 
-/// AbstractCommentProcessor is an abstract base class for comment processors.
-/// It implements the CommentProcessor interface.
+/// AbstractProcessor is an abstract base class for comment processors.
+/// It implements the Processor interface.
 /// It provides common functionality and fields that subclasses can use.
-public abstract class AbstractCommentProcessor
-        implements CommentProcessor {
+public abstract class AbstractProcessor
+        implements Processor {
 
     /// PlaceholderReplacer used to replace expressions in the comment text.
     protected final ParagraphPlaceholderReplacer placeholderReplacer;
@@ -17,10 +17,10 @@ public abstract class AbstractCommentProcessor
     private R currentRun;
     private Comment currentComment;
 
-    /// Creates an instance of AbstractCommentProcessor with the given ParagraphPlaceholderReplacer.
+    /// Creates an instance of AbstractProcessor with the given ParagraphPlaceholderReplacer.
     ///
     /// @param placeholderReplacer the ParagraphPlaceholderReplacer used to replace expressions in the comment text
-    protected AbstractCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
+    protected AbstractProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
         this.placeholderReplacer = placeholderReplacer;
     }
 

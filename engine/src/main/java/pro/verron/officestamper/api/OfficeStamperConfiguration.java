@@ -40,16 +40,14 @@ public interface OfficeStamperConfiguration {
     /// Adds a comment processor to the OfficeStamperConfiguration. A comment processor is responsible for
     /// processing comments in the document and performing specific operations based on the comment content.
     ///
-    /// @param interfaceClass          the interface class associated with the comment processor
-    /// @param commentProcessorFactory a function that creates a CommentProcessor object based on the
+    /// @param interfaceClass   the interface class associated with the comment processor
+    /// @param processorFactory a function that creates a [Processor] object based on the ParagraphPlaceholderReplacer
+    ///                                                 implementation
     ///
-    ///
-    ///                                ParagraphPlaceholderReplacer implementation
-    ///
-    /// @return the updated OfficeStamperConfiguration object
-    OfficeStamperConfiguration addCommentProcessor(
+    /// @return the updated [OfficeStamperConfiguration] object
+    OfficeStamperConfiguration addProcessor(
             Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
+            Function<ParagraphPlaceholderReplacer, Processor> processorFactory
     );
 
     /// Adds a pre-processor to the OfficeStamperConfiguration. A pre-processor is responsible for
@@ -68,8 +66,11 @@ public interface OfficeStamperConfiguration {
     /// Sets the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL) EvaluationContext.
     ///
     /// @param evaluationContextConfigurer the EvaluationContextConfigurer for configuring the SPEL EvaluationContext.
-    ///                                                                                                          Must
+    ///
+    ///                                                                                                  Must
+    ///
     ///                                    implement the
+    ///
     ///                                                                       evaluateEvaluationContext() method.
     ///
     /// @return the updated OfficeStamperConfiguration object.
@@ -84,7 +85,7 @@ public interface OfficeStamperConfiguration {
     ///
     /// @return The map of comment processors. The keys are the classes, and the values are the corresponding comment
     /// processors.
-    Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors();
+    Map<Class<?>, Function<ParagraphPlaceholderReplacer, Processor>> getProcessors();
 
     /// Retrieves the list of pre-processors.
     ///

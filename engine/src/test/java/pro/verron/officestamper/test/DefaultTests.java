@@ -49,7 +49,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
             pipe.accept(lineBreakReplacementTest(factory));
             pipe.accept(mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(factory));
             pipe.accept(nullPointerResolutionTest_testWithDefaultSpel(factory));
-            pipe.accept(customCommentProcessor(factory));
+            pipe.accept(customProcessor(factory));
             pipe.accept(controls(factory));
         }), Stream.of(nullPointerResolutionTest_testWithCustomSpel(ContextFactory.objectContextFactory())));
     }
@@ -374,11 +374,11 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
     }
 
-    private static Arguments customCommentProcessor(ContextFactory factory) {
+    private static Arguments customProcessor(ContextFactory factory) {
         return arguments("Custom processor Integration test",
-                standard().addCommentProcessor(ICustomCommentProcessor.class, CustomCommentProcessor::new),
+                standard().addProcessor(ICustomProcessor.class, CustomProcessor::new),
                 factory.empty(),
-                getResource(Path.of("CustomCommentProcessorTest.docx")),
+                getResource(Path.of("CustomProcessorTest.docx")),
                 """     
                         == Custom Comment Processor Test
                         

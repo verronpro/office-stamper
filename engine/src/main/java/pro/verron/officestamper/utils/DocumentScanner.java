@@ -100,13 +100,13 @@ public final class DocumentScanner {
     /// Processes the current iteration of the scanner using the specified comment processors,
     /// and an associated expression context while maintaining the iteration index.
     ///
-    /// @param commentProcessors the `CommentProcessors` object containing processor mappings for handling specific
+    /// @param processors the `Processors` object containing processor mappings for handling specific
     ///
     ///
     ///                                                                            comment-related operations.
     /// @param expressionContext the expression context of type `T` used during the processing of comments.
     public <T> void process(
-            CommentProcessors commentProcessors,
+            Processors processors,
             ExpressionResolver expressionResolver,
             T expressionContext
     ) {
@@ -120,7 +120,7 @@ public final class DocumentScanner {
                 var placeholder = new StandardPlaceholder(matcher,
                         value.substring(value.indexOf("${") + 2, value.indexOf("}")));
                 var context = from.processorContext(placeholder);
-                commentProcessors.setContext(context);
+                processors.setContext(context);
                 try {
                     expressionResolver.setContext(expressionContext);
                     var resolve = expressionResolver.resolve(placeholder);

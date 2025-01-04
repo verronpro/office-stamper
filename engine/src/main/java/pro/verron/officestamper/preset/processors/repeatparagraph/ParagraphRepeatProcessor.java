@@ -7,8 +7,8 @@ import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.SectionUtil;
 import pro.verron.officestamper.core.StandardParagraph;
-import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.Paragraphs;
+import pro.verron.officestamper.preset.ProcessorFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,8 +27,8 @@ import static pro.verron.officestamper.core.SectionUtil.hasOddNumberOfSectionBre
 /// @version ${version}
 /// @since 1.2.2
 public class ParagraphRepeatProcessor
-        extends AbstractCommentProcessor
-        implements CommentProcessorFactory.IParagraphRepeatProcessor {
+        extends AbstractProcessor
+        implements ProcessorFactory.IParagraphRepeatProcessor {
 
     /* TODO replace the mapping by a Paragraphs to List<Object> mapping to better reflect the change*/
     private Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>();
@@ -37,12 +37,12 @@ public class ParagraphRepeatProcessor
         super(placeholderReplacer);
     }
 
-    /// Creates a new instance of [CommentProcessor] using the provided [ParagraphPlaceholderReplacer].
+    /// Creates a new instance of [Processor] using the provided [ParagraphPlaceholderReplacer].
     ///
     /// @param placeholderReplacer the replacer to use for processing paragraph placeholders.
     ///
     /// @return a new instance of [ParagraphRepeatProcessor].
-    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
+    public static Processor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
         return new ParagraphRepeatProcessor(placeholderReplacer);
     }
 

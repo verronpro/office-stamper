@@ -3,7 +3,7 @@ package pro.verron.officestamper.preset;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
-import pro.verron.officestamper.preset.CommentProcessorFactory.*;
+import pro.verron.officestamper.preset.ProcessorFactory.*;
 import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
 import pro.verron.officestamper.preset.processors.repeat.RepeatProcessor;
 import pro.verron.officestamper.preset.processors.repeatdocpart.RepeatDocPartProcessor;
@@ -33,13 +33,13 @@ public class OfficeStamperConfigurations {
     public static OfficeStamperConfiguration standard() {
         var configuration = new DocxStamperConfiguration();
 
-        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance)
-                     .addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance)
-                     .addCommentProcessor(IRepeatDocPartProcessor.class,
+        configuration.addProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance)
+                     .addProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance)
+                     .addProcessor(IRepeatDocPartProcessor.class,
                              pr -> RepeatDocPartProcessor.newInstance(pr, configuration))
-                     .addCommentProcessor(ITableResolver.class, TableResolver::newInstance)
-                     .addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance)
-                     .addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);
+                     .addProcessor(ITableResolver.class, TableResolver::newInstance)
+                     .addProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance)
+                     .addProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);
 
         configuration.setResolvers(List.of(Resolvers.image(),
                 Resolvers.legacyDate(),
@@ -135,7 +135,7 @@ public class OfficeStamperConfigurations {
         var configuration = new DocxStamperConfiguration();
         configuration.resetResolvers();
         configuration.setEvaluationContextConfigurer(EvaluationContextConfigurers.defaultConfigurer());
-        configuration.resetCommentProcessors();
+        configuration.resetProcessors();
         return configuration;
     }
 }

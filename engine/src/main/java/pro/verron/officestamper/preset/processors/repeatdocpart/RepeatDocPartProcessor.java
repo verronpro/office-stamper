@@ -10,7 +10,7 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.*;
-import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.preset.ProcessorFactory;
 import pro.verron.officestamper.utils.WmlFactory;
 
 import java.io.IOException;
@@ -41,8 +41,8 @@ import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakI
 /// @version ${version}
 /// @since 1.3.0
 public class RepeatDocPartProcessor
-        extends AbstractCommentProcessor
-        implements CommentProcessorFactory.IRepeatDocPartProcessor {
+        extends AbstractProcessor
+        implements ProcessorFactory.IRepeatDocPartProcessor {
     private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
 
     private final OfficeStamper<WordprocessingMLPackage> stamper;
@@ -59,7 +59,7 @@ public class RepeatDocPartProcessor
         this.nullSupplier = nullSupplier;
     }
 
-    public static CommentProcessor newInstance(
+    public static Processor newInstance(
             ParagraphPlaceholderReplacer pr,
             DocxStamperConfiguration configuration
     ) {
@@ -70,7 +70,7 @@ public class RepeatDocPartProcessor
     /// @param stamper the stamper
     ///
     /// @return a new instance of this processor
-    public static CommentProcessor newInstance(
+    public static Processor newInstance(
             ParagraphPlaceholderReplacer pr, OfficeStamper<WordprocessingMLPackage> stamper
     ) {
         return new RepeatDocPartProcessor(pr, stamper, Collections::emptyList);

@@ -6,7 +6,7 @@ import org.docx4j.wml.Tr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.preset.ProcessorFactory;
 import pro.verron.officestamper.utils.WmlUtils;
 
 import java.util.ArrayList;
@@ -14,15 +14,15 @@ import java.util.List;
 
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
-/// Processor for the [CommentProcessorFactory.IDisplayIfProcessor] comment.
+/// Processor for the [ProcessorFactory.IDisplayIfProcessor] comment.
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
 /// @version ${version}
 /// @since 1.0.0
 public class DisplayIfProcessor
-        extends AbstractCommentProcessor
-        implements CommentProcessorFactory.IDisplayIfProcessor {
+        extends AbstractProcessor
+        implements ProcessorFactory.IDisplayIfProcessor {
 
     private List<Paragraph> paragraphsToBeRemoved = new ArrayList<>();
     private List<Child> elementsToBeRemoved = new ArrayList<>();
@@ -36,7 +36,7 @@ public class DisplayIfProcessor
     /// @param pr the [ParagraphPlaceholderReplacer] used for replacing expressions.
     ///
     /// @return a new DisplayIfProcessor instance.
-    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
+    public static Processor newInstance(ParagraphPlaceholderReplacer pr) {
         return new DisplayIfProcessor(pr);
     }
 

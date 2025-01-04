@@ -12,7 +12,7 @@ import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.StandardParagraph;
-import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.preset.ProcessorFactory;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -31,8 +31,8 @@ import static java.util.Objects.requireNonNull;
 /// @version ${version}
 /// @since 1.0.0
 public class RepeatProcessor
-        extends AbstractCommentProcessor
-        implements CommentProcessorFactory.IRepeatProcessor {
+        extends AbstractProcessor
+        implements ProcessorFactory.IRepeatProcessor {
 
     private final BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier;
     private Map<Tr, Iterable<Object>> tableRowsToRepeat = new HashMap<>();
@@ -51,7 +51,7 @@ public class RepeatProcessor
     /// @param pr The PlaceholderReplacer to use.
     ///
     /// @return A new RepeatProcessor.
-    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
+    public static Processor newInstance(ParagraphPlaceholderReplacer pr) {
         return new RepeatProcessor(pr, (document, row) -> emptyList());
     }
 

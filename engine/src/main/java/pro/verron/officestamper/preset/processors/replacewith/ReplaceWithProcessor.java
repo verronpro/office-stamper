@@ -4,11 +4,11 @@ import org.docx4j.wml.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.AbstractCommentProcessor;
-import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.AbstractProcessor;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
-import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.api.Processor;
+import pro.verron.officestamper.preset.ProcessorFactory;
 
 import java.util.List;
 import java.util.function.Function;
@@ -23,8 +23,8 @@ import static pro.verron.officestamper.utils.WmlFactory.newText;
 /// @version ${version}
 /// @since 1.0.7
 public class ReplaceWithProcessor
-        extends AbstractCommentProcessor
-        implements CommentProcessorFactory.IReplaceWithProcessor {
+        extends AbstractProcessor
+        implements ProcessorFactory.IReplaceWithProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(ReplaceWithProcessor.class);
 
@@ -43,7 +43,7 @@ public class ReplaceWithProcessor
     /// @param pr the placeholder replacer to use
     ///
     /// @return the processor
-    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
+    public static Processor newInstance(ParagraphPlaceholderReplacer pr) {
         return new ReplaceWithProcessor(pr, R::getContent);
     }
 

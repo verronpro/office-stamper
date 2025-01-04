@@ -276,7 +276,7 @@ Chains of such custom functions can enhance the versatility of OfficeStamper, ma
 
 === Custom Comment Processors
 
-For additional flexibility, create your own expression within comments by implementing your `link:{repo}/src/main/java/org/wickedsource/docxstamper/api/commentprocessor/ICommentProcessor.java[ICommentProcessor]`.
+For additional flexibility, create your own expression within comments by implementing your `link:{repo}/src/main/java/org/wickedsource/docxstamper/api/processor/Processor.java[Processor]`.
 
 Here's an example of how to create and register a custom comment processor:
 
@@ -285,17 +285,17 @@ Here's an example of how to create and register a custom comment processor:
 class Main {
     public static void main(String... args) {
         // interface defining the methods to expose to the expression language
-        interface IYourCommentProcessor {
+        interface IYourProcessor {
             void yourComment(String _); // 1+ argument of the type you expect to see in the document
             void yourSecondComment(String _, CustomType _); // theoretically, any number of comment can be added
         }
-        class YourCommentProcessor extends BaseCommentProcessor {
+        class YourProcessor extends BaseProcessor {
             @Override public void commitChanges(WordprocessingMLPackage document) {/*Do something to the document*/}
             @Override public void reset() {/* reset processor state for re-run of the stamper */}
         }
-        var commentProcessor = new YourCommentProcessor();
+        var processor = new YourProcessor();
         var configuration = new DocxStamperConfiguration()
-                .addCommentProcessor(IYourCommentProcessor.class, commentProcessor);
+                .addProcessor(IYourProcessor.class, processor);
         var stamper = OfficeStampers.docxStamper(configuration);
     }
 }

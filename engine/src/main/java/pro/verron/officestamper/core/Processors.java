@@ -1,24 +1,24 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Processor;
 import pro.verron.officestamper.api.ProcessorContext;
 
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
 
-/// The CommentProcessors class serves as a container for managing and interacting with
-/// multiple instances of CommentProcessor implementations. It provides functionality
+/// The Processors class serves as a container for managing and interacting with
+/// multiple instances of Processor implementations. It provides functionality
 /// to set processing context, apply changes to a DocxPart, and reset states for reusability.
 /// This class extends AbstractMap to provide map-like behavior, where the key is the
-/// class of the CommentProcessor and the value is the actual processor instance.
-public class CommentProcessors
-        extends AbstractMap<Class<?>, CommentProcessor> {
+/// class of the Processor and the value is the actual processor instance.
+public class Processors
+        extends AbstractMap<Class<?>, Processor> {
 
-    private final Map<Class<?>, CommentProcessor> processors;
+    private final Map<Class<?>, Processor> processors;
 
-    public CommentProcessors(Map<Class<?>, CommentProcessor> processors) {
+    public Processors(Map<Class<?>, Processor> processors) {
         this.processors = processors;
     }
 
@@ -47,7 +47,8 @@ public class CommentProcessors
         }
     }
 
-    @Override public Set<Entry<Class<?>, CommentProcessor>> entrySet() {
+    @Override
+    public Set<Entry<Class<?>, Processor>> entrySet() {
         return processors.entrySet();
     }
 }

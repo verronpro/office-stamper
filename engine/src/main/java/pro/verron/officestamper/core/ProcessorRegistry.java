@@ -16,40 +16,40 @@ import java.util.*;
 
 import static pro.verron.officestamper.core.Placeholders.findProcessors;
 
-/// Allows registration of [CommentProcessor] objects. Each registered
-/// ICommentProcessor must implement an interface which has to be specified at
+/// Allows registration of [Processor] objects. Each registered
+/// [Processor] must implement an interface, which has to be specified at
 /// registration time. Provides several getter methods to access the registered
-/// [CommentProcessor].
+/// [Processor].
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
 /// @version ${version}
 /// @since 1.0.0
-public class CommentProcessorRegistry {
+public class ProcessorRegistry {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentProcessorRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessorRegistry.class);
     private final DocxPart source;
-    private final CommentProcessors commentProcessors;
+    private final Processors processors;
     private final ExpressionResolver expressionResolver;
     private final ExceptionResolver exceptionResolver;
     private final ObjectResolverRegistry objectResolverRegistry;
 
-    /// Constructs a new CommentProcessorRegistry.
+    /// Constructs a new ProcessorRegistry.
     ///
     /// @param source             the source part of the Word document.
     /// @param expressionResolver the resolver for evaluating expressions.
-    /// @param commentProcessors  map of comment processor instances keyed by their respective class types.
+    /// @param processors         map of comment processor instances keyed by their respective class types.
     /// @param exceptionResolver  the resolver for handling exceptions during processing.
-    public CommentProcessorRegistry(
+    public ProcessorRegistry(
             DocxPart source,
             ExpressionResolver expressionResolver,
-            CommentProcessors commentProcessors,
+            Processors processors,
             ExceptionResolver exceptionResolver,
             ObjectResolverRegistry objectResolverRegistry
     ) {
         this.source = source;
         this.expressionResolver = expressionResolver;
-        this.commentProcessors = commentProcessors;
+        this.processors = processors;
         this.exceptionResolver = exceptionResolver;
         this.objectResolverRegistry = objectResolverRegistry;
     }
@@ -67,7 +67,7 @@ public class CommentProcessorRegistry {
                 var optional = runProcessorsOnRunComment(comments, expressionContext, run, runParent);
                 optional.ifPresent(proceedComments::add);
             });
-        commentProcessors.commitChanges(part);
+        processors.commitChanges(part);
 
         // we run the paragraph afterward so that the comments inside work before the whole paragraph comments
         part.streamParagraphs()
@@ -76,7 +76,7 @@ public class CommentProcessorRegistry {
                 var paragraphComment = p.getComment();
                 paragraphComment.forEach((pc -> {
                     var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
-                    commentProcessors.commitChanges(part);
+                    processors.commitChanges(part);
                     optional.ifPresent(proceedComments::add);
                 }));
             });
@@ -87,7 +87,7 @@ public class CommentProcessorRegistry {
         var scanner = part.scanner();
         while (scanner.hasNext()) {
             scanner.next();
-            scanner.process(commentProcessors, expressionResolver, expressionContext);
+            scanner.process(processors, expressionResolver, expressionContext);
         }
 
         proceedComments.forEach(CommentUtil::deleteComment);
@@ -127,8 +127,8 @@ public class CommentProcessorRegistry {
                               var cPlaceholder = c.asPlaceholder();
                               var cComment = c.getComment();
                               comments.remove(cComment.getId());
-                              commentProcessors.setContext(new ProcessorContext(paragraph, run, c, cPlaceholder));
-                              return runCommentProcessors(expressionContext, cPlaceholder)
+                              processors.setContext(new ProcessorContext(paragraph, run, c, cPlaceholder));
+                              return runProcessors(expressionContext, cPlaceholder)
                                       ? Optional.of(c)
                                       : Optional.empty();
                           });
@@ -136,7 +136,7 @@ public class CommentProcessorRegistry {
 
     /// Takes the first comment on the specified paragraph and tries to evaluate
     /// the string within the comment against all registered
-    /// [CommentProcessor]s.
+    /// [Processor]s.
     ///
     /// @param comments          the comments within the document.
     /// @param expressionContext the context root object
@@ -153,12 +153,12 @@ public class CommentProcessorRegistry {
         var cPlaceholder = c.asPlaceholder();
         var cComment = c.getComment();
         comments.remove(cComment.getId());
-        commentProcessors.setContext(new ProcessorContext(paragraph, null, c, cPlaceholder));
-        return runCommentProcessors(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
+        processors.setContext(new ProcessorContext(paragraph, null, c, cPlaceholder));
+        return runProcessors(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
     }
 
     /// Finds all processor expressions within the specified paragraph and tries
-    /// to evaluate it against all registered [CommentProcessor]s.
+    /// to evaluate it against all registered [Processor]s.
     ///
     /// @param context   the context root object against which evaluation is done
     /// @param paragraph the paragraph to process.
@@ -168,7 +168,7 @@ public class CommentProcessorRegistry {
                                                                     .map(paragraph::processorContext)
                                                                     .toList();
         for (var processorContext : processorContexts) {
-            commentProcessors.setContext(processorContext);
+            processors.setContext(processorContext);
             var placeholder = processorContext.placeholder();
             try {
                 expressionResolver.setContext(context);
@@ -181,7 +181,7 @@ public class CommentProcessorRegistry {
                 var resolution = exceptionResolver.resolve(placeholder, message, e);
                 paragraph.replace(placeholder, WmlFactory.newRun(resolution));
             }
-            commentProcessors.commitChanges(source);
+            processors.commitChanges(source);
         }
     }
 
@@ -235,7 +235,7 @@ public class CommentProcessorRegistry {
         comment.setCommentReference(cr);
     }
 
-    private <T> boolean runCommentProcessors(T context, Placeholder commentPlaceholder) {
+    private <T> boolean runProcessors(T context, Placeholder commentPlaceholder) {
         try {
             expressionResolver.setContext(context);
             expressionResolver.resolve(commentPlaceholder);

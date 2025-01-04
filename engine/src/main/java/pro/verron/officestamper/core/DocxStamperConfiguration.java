@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
 
-    private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors;
+    private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, Processor>> processorSuppliers;
     private final List<ObjectResolver> resolvers;
     private final Map<Class<?>, Object> expressionFunctions;
     private final List<PreProcessor> preprocessors;
@@ -42,7 +42,7 @@ public class DocxStamperConfiguration
     private ExceptionResolver exceptionResolver;
 
     public DocxStamperConfiguration() {
-        commentProcessors = new HashMap<>();
+        processorSuppliers = new HashMap<>();
         resolvers = new ArrayList<>();
         expressionFunctions = new HashMap<>();
         preprocessors = new ArrayList<>();
@@ -54,8 +54,8 @@ public class DocxStamperConfiguration
     }
 
     /// Resets all processors in the configuration.
-    public void resetCommentProcessors() {
-        this.commentProcessors.clear();
+    public void resetProcessors() {
+        this.processorSuppliers.clear();
     }
 
     /// Resets all resolvers in the configuration.
@@ -103,18 +103,18 @@ public class DocxStamperConfiguration
         return this;
     }
 
-    /// Registers the specified ICommentProcessor as an implementation of the specified interface.
+    /// Registers the specified [Processor] as an implementation of the specified interface.
     ///
-    /// @param interfaceClass          the interface, implemented by the commentProcessor.
-    /// @param commentProcessorFactory the commentProcessor factory generating instances of the specified interface.
+    /// @param interfaceClass          the interface, implemented by the [Processor].
+    /// @param processorFactory the [Processor] factory generating instances of the specified interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override
-    public DocxStamperConfiguration addCommentProcessor(
+    public DocxStamperConfiguration addProcessor(
             Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
+            Function<ParagraphPlaceholderReplacer, Processor> processorFactory
     ) {
-        this.commentProcessors.put(interfaceClass, commentProcessorFactory);
+        this.processorSuppliers.put(interfaceClass, processorFactory);
         return this;
     }
 
@@ -152,8 +152,8 @@ public class DocxStamperConfiguration
     }
 
     @Override
-    public Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors() {
-        return commentProcessors;
+    public Map<Class<?>, Function<ParagraphPlaceholderReplacer, Processor>> getProcessors() {
+        return processorSuppliers;
     }
 
     @Override

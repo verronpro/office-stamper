@@ -35,7 +35,7 @@ class RepeatDocPartTest {
             pipe.accept(shouldReplicateImageFromTheMainDocumentInTheSubTemplate(factory));
             pipe.accept(repeatDocPartTest(factory));
             pipe.accept(repeatDocPartNestingTest(factory));
-            pipe.accept(repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate(factory));
+            pipe.accept(repeatDocPartShouldNotUseSameProcessorInstancesForSubtemplate(factory));
             pipe.accept(shouldKeepPageBreakOrientationWithSectionBreaksInsideComment(factory));
             pipe.accept(shouldKeepPageBreakOrientationWithSectionBreaksInsideCommentAndTableLastElement(factory));
             pipe.accept(shouldKeepPageBreakOrientationWithoutSectionBreaksInsideComment(factory));
@@ -440,11 +440,11 @@ class RepeatDocPartTest {
                         """);
     }
 
-    private static Arguments repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate(
+    private static Arguments repeatDocPartShouldNotUseSameProcessorInstancesForSubtemplate(
             ContextFactory factory
     ) {
         var context = factory.tableContext();
-        var template = getResource(Path.of("RepeatDocPartAndCommentProcessorsIsolationTest.docx"));
+        var template = getResource(Path.of("RepeatDocPartAndProcessorsIsolationTest.docx"));
         var expected = """
                 This will stay untouched.
                 
@@ -486,7 +486,7 @@ class RepeatDocPartTest {
         var config = standard();
 
         return arguments(
-                "RepeatDocPartAndCommentProcessorsIsolationTest_repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate",
+                "RepeatDocPartAndProcessorsIsolationTest_repeatDocPartShouldNotUseSameProcessorInstancesForSubtemplate",
                 config,
                 context,
                 template,

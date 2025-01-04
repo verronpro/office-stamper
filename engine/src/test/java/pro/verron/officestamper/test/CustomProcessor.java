@@ -9,7 +9,7 @@ import java.util.List;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
-/// This is an example of a custom [CommentProcessor] implementation.
+/// This is an example of a custom [Processor] implementation.
 ///
 /// Users of the docx-stamper library could use it to understand how they could
 /// leverage the library to create their own custom comment processors.
@@ -23,16 +23,16 @@ import static pro.verron.officestamper.utils.WmlFactory.newRun;
 /// @author Joseph Verron
 /// @version ${version}
 /// @since 1.6.6
-public class CustomCommentProcessor
-        extends AbstractCommentProcessor
-        implements ICustomCommentProcessor {
+public class CustomProcessor
+        extends AbstractProcessor
+        implements ICustomProcessor {
 
     private static final List<Paragraph> visitedParagraphs = new ArrayList<>();
 
-    /// Constructor for CustomCommentProcessor.
+    /// Constructor for CustomProcessor.
     ///
     /// @param placeholderReplacer a [ParagraphPlaceholderReplacer] object
-    public CustomCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
+    public CustomProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
         super(placeholderReplacer);
     }
 

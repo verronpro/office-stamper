@@ -4,8 +4,8 @@ package pro.verron.officestamper.api;
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 
-/// CommentProcessor is an interface that defines the methods for processing comments in a .docx template.
-public interface CommentProcessor {
+/// Processor is an interface that defines the methods for processing comments in a .docx template.
+public interface Processor {
 
     void setProcessorContext(ProcessorContext processorContext);
 

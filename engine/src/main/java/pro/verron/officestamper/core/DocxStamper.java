@@ -128,6 +128,7 @@ public class DocxStamper
                                                             .run(contextObject));
         processorRegistrySupplier.apply(document)
                                  .run(contextObject);
+
         document.streamParts(Namespaces.FOOTER)
                 .forEach(footer -> processorRegistrySupplier.apply(footer)
                                                             .run(contextObject));

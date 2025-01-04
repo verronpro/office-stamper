@@ -103,6 +103,40 @@ public class DocxStamper
         new DocxStamper(configuration).stamp(template, context, output);
     }
 
+    /// Same as [#stamp(InputStream, Object, OutputStream)] except that you
+    /// may pass in a DOCX4J document as a template instead of an InputStream.
+    @Override
+    public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
+        try {
+            var source = new TextualDocxPart(document);
+            preprocess(document);
+            process(source, contextRoot);
+            postprocess(document);
+            document.save(out);
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    private void preprocess(WordprocessingMLPackage document) {
+        preprocessors.forEach(processor -> processor.process(document));
+    }
+
+    private void process(DocxPart document, Object contextObject) {
+        document.streamParts(Namespaces.HEADER)
+                .forEach(header -> processorRegistrySupplier.apply(header)
+                                                            .run(contextObject));
+        processorRegistrySupplier.apply(document)
+                                 .run(contextObject);
+        document.streamParts(Namespaces.FOOTER)
+                .forEach(footer -> processorRegistrySupplier.apply(footer)
+                                                            .run(contextObject));
+    }
+
+    private void postprocess(WordprocessingMLPackage document) {
+        postprocessors.forEach(processor -> processor.process(document));
+    }
+
     /// Reads in a .docx template and "stamps" it into the given OutputStream, using the specified context object to
     /// fill out any expressions it finds.
     ///
@@ -131,38 +165,4 @@ public class DocxStamper
         }
     }
 
-    private void preprocess(WordprocessingMLPackage document) {
-        preprocessors.forEach(processor -> processor.process(document));
-    }
-
-    /// Same as [#stamp(InputStream, Object, OutputStream)] except that you
-    /// may pass in a DOCX4J document as a template instead of an InputStream.
-    @Override
-    public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
-        try {
-            var source = new TextualDocxPart(document);
-            preprocess(document);
-            process(source, contextRoot);
-            postprocess(document);
-            document.save(out);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
-    private void postprocess(WordprocessingMLPackage document) {
-        postprocessors.forEach(processor -> processor.process(document));
-    }
-
-    private void process(DocxPart document, Object contextObject) {
-        document.streamParts(Namespaces.HEADER)
-                .forEach(header -> process(processorRegistrySupplier.apply(header), contextObject));
-        process(processorRegistrySupplier.apply(document), contextObject);
-        document.streamParts(Namespaces.FOOTER)
-                .forEach(footer -> process(processorRegistrySupplier.apply(footer), contextObject));
-    }
-
-    private void process(ProcessorRegistry processorRegistry, Object contextObject) {
-        processorRegistry.run(contextObject);
-    }
 }

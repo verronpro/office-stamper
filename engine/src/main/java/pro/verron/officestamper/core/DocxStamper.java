@@ -156,13 +156,13 @@ public class DocxStamper
 
     private void process(DocxPart document, Object contextObject) {
         document.streamParts(Namespaces.HEADER)
-                .forEach(header -> runProcessors(contextObject, processorRegistrySupplier.apply(header)));
-        runProcessors(contextObject, processorRegistrySupplier.apply(document));
+                .forEach(header -> process(processorRegistrySupplier.apply(header), contextObject));
+        process(processorRegistrySupplier.apply(document), contextObject);
         document.streamParts(Namespaces.FOOTER)
-                .forEach(footer -> runProcessors(contextObject, processorRegistrySupplier.apply(footer)));
+                .forEach(footer -> process(processorRegistrySupplier.apply(footer), contextObject));
     }
 
-    private void runProcessors(Object contextObject, ProcessorRegistry processorRegistry) {
-        processorRegistry.runProcessors(contextObject);
+    private void process(ProcessorRegistry processorRegistry, Object contextObject) {
+        processorRegistry.run(contextObject);
     }
 }

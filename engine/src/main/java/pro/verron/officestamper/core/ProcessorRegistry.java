@@ -54,11 +54,11 @@ public class ProcessorRegistry {
         this.objectResolverRegistry = objectResolverRegistry;
     }
 
-    public <T> void runProcessors(T expressionContext) {
-        runProcessors(expressionContext, source);
+    public <T> void run(T expressionContext) {
+        run(expressionContext, source);
     }
 
-    private <T> void runProcessors(T expressionContext, DocxPart part) {
+    private <T> void run(T expressionContext, DocxPart part) {
         var proceedComments = new ArrayList<Comment>();
         part.streamRun()
             .forEach(run -> {
@@ -128,7 +128,7 @@ public class ProcessorRegistry {
                               var cComment = c.getComment();
                               comments.remove(cComment.getId());
                               processors.setContext(new ProcessorContext(paragraph, run, c, cPlaceholder));
-                              return runProcessors(expressionContext, cPlaceholder)
+                              return run(expressionContext, cPlaceholder)
                                       ? Optional.of(c)
                                       : Optional.empty();
                           });
@@ -154,7 +154,7 @@ public class ProcessorRegistry {
         var cComment = c.getComment();
         comments.remove(cComment.getId());
         processors.setContext(new ProcessorContext(paragraph, null, c, cPlaceholder));
-        return runProcessors(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
+        return run(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
     }
 
     /// Finds all processor expressions within the specified paragraph and tries
@@ -235,7 +235,7 @@ public class ProcessorRegistry {
         comment.setCommentReference(cr);
     }
 
-    private <T> boolean runProcessors(T context, Placeholder commentPlaceholder) {
+    private <T> boolean run(T context, Placeholder commentPlaceholder) {
         try {
             expressionResolver.setContext(context);
             expressionResolver.resolve(commentPlaceholder);

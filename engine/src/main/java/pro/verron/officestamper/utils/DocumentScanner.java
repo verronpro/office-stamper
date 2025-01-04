@@ -1,24 +1,19 @@
 package pro.verron.officestamper.utils;
 
 import jakarta.xml.bind.JAXBElement;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.EndnotesPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.parts.JaxbXmlPart;
+import org.docx4j.openpackaging.parts.Part;
+import org.docx4j.vml.CTTextbox;
+import org.docx4j.vml.VmlShapeElements;
 import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
-import org.docx4j.wml.Text;
-import org.jvnet.jaxb2_commons.ppp.Child;
-import org.springframework.expression.spel.SpelEvaluationException;
-import org.springframework.expression.spel.SpelParseException;
-import pro.verron.officestamper.core.*;
+import org.docx4j.wml.Pict;
+import org.docx4j.wml.SdtElement;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static java.util.Optional.ofNullable;
-import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
 /// The DocumentScanner class provides an iterative mechanism for traversing through the contents
 /// of a WordprocessingMLPackage document. It initializes with the document's main part as well as
@@ -35,29 +30,15 @@ public final class DocumentScanner {
     private final Queue<List<Object>> roots = Collections.asLifoQueue(new LinkedList<>());
     private final Queue<AtomicInteger> queue = Collections.asLifoQueue(new LinkedList<>());
     private final AtomicReference<Object> current = new AtomicReference<>();
-    private final MainDocumentPart mainDocumentPart;
-    private final WordprocessingMLPackage document;
 
     /// Constructs a new instance of the DocumentScanner class, initializing it with the specified
     /// WordprocessingMLPackage document.
     /// This includes collecting the main document part, footnotes and endnotes parts from the provided document to set
     /// up scanning.
     ///
-    /// @param document the WordprocessingMLPackage document containing the main document part, footnotes part, and
-    ///
-    ///                                                 endnotes part
-    public DocumentScanner(WordprocessingMLPackage document) {
-        this.document = document;
-        mainDocumentPart = this.document.getMainDocumentPart();
-        var footnotesPart = mainDocumentPart.getFootnotesPart();
-        var endnotesPart = mainDocumentPart.getEndNotesPart();
-
+    public DocumentScanner(Part part) {
         var mainRoot = new ArrayList<>();
-        mainRoot.add(mainDocumentPart);
-        ofNullable(footnotesPart).map(throwing(FootnotesPart::getContents))
-                                 .ifPresent(mainRoot::add);
-        ofNullable(endnotesPart).map(throwing(EndnotesPart::getContents))
-                                .ifPresent(mainRoot::add);
+        mainRoot.add(part);
         roots.add(mainRoot);
         queue.add(new AtomicInteger(0));
     }
@@ -85,8 +66,25 @@ public final class DocumentScanner {
             roots.add(currentRoot);
             queue.add(indexHolder);
         }
+        if (next instanceof JaxbXmlPart part) {
+            try {
+                next = part.getContents();
+            } catch (Docx4JException e) {
+                throw new OfficeStamperException(e);
+            }
+        }
         if (next instanceof JAXBElement<?> jaxbElement) next = jaxbElement.getValue();
-        if (next instanceof ContentAccessor contentAccessor) {
+        if (next instanceof Pict pict) next = pict.getAnyAndAny();
+        if (next instanceof CTTextbox ctTextbox) next = ctTextbox.getTxbxContent();
+        if (next instanceof VmlShapeElements vmlShapeElements) next = vmlShapeElements.getEGShapeElements();
+        if (next instanceof SdtElement sdtElement) next = sdtElement.getSdtContent();
+        if (next instanceof List list) {
+            if (!list.isEmpty()) {
+                roots.add(list);
+                queue.add(new AtomicInteger(0));
+            }
+        }
+        else if (next instanceof ContentAccessor contentAccessor) {
             var content = contentAccessor.getContent();
             if (!content.isEmpty()) {
                 roots.add(content);
@@ -95,41 +93,5 @@ public final class DocumentScanner {
         }
         this.current.set(next);
         return next;
-    }
-
-    /// Processes the current iteration of the scanner using the specified comment processors,
-    /// and an associated expression context while maintaining the iteration index.
-    ///
-    /// @param processors the `Processors` object containing processor mappings for handling specific
-    ///
-    ///
-    ///                                                                            comment-related operations.
-    /// @param expressionContext the expression context of type `T` used during the processing of comments.
-    public <T> void process(
-            Processors processors,
-            ExpressionResolver expressionResolver,
-            T expressionContext
-    ) {
-        if (current.get() instanceof Text text) {
-            var value = text.getValue();
-            if (value.contains("${") && value.substring(value.indexOf("${"))
-                                             .contains("}")) {
-                var from = StandardParagraph.from(new TextualDocxPart(document),
-                        (P) ((Child) text.getParent()).getParent());
-                var matcher = new Matcher("[#$]\\{", "\\}");
-                var placeholder = new StandardPlaceholder(matcher,
-                        value.substring(value.indexOf("${") + 2, value.indexOf("}")));
-                var context = from.processorContext(placeholder);
-                processors.setContext(context);
-                try {
-                    expressionResolver.setContext(expressionContext);
-                    var resolve = expressionResolver.resolve(placeholder);
-                } catch (SpelEvaluationException | SpelParseException e) {
-                    var message = "Placeholder '%s' failed to process.".formatted(placeholder);
-                }
-            }
-        }
-        // Apply the given context of processing to the current iteration of the scanner, while keeping the iteration
-        // index coherent.
     }
 }

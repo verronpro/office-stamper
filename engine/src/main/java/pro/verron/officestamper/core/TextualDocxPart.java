@@ -49,7 +49,7 @@ public final class TextualDocxPart
 
     @Override
     public DocumentScanner scanner() {
-        return new DocumentScanner(document);
+        return new DocumentScanner(part);
     }
 
 

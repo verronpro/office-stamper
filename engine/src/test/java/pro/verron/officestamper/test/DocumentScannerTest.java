@@ -3,6 +3,7 @@ package pro.verron.officestamper.test;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.docx4j.wml.Document;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.docx4j.wml.Text;
@@ -24,13 +25,13 @@ class DocumentScannerTest {
                 Test2
                 """);
         var loaded = WordprocessingMLPackage.load(test);
-        var iterator = new DocumentScanner(loaded);
+        var iterator = new DocumentScanner(loaded.getMainDocumentPart());
         List<String> actual = new ArrayList<>();
         while (iterator.hasNext()) {
             var current = iterator.next();
             actual.add(stringify(current));
         }
-        List<String> expected = List.of("MainDocumentPart: size=5224",
+        List<String> expected = List.of("Document: document",
                 "P: Test1",
                 "R: size=1",
                 "Text: Test1",
@@ -44,6 +45,7 @@ class DocumentScannerTest {
         Class<?> currentClass = current.getClass();
         var simpleName = currentClass.getSimpleName();
         var representation = switch (current) {
+            case Document ignored -> "document";
             case MainDocumentPart mdp -> "size=" + mdp.getContentLengthAsLoaded();
             case P p -> String.valueOf(p);
             case R r -> "size=" + r.getContent()

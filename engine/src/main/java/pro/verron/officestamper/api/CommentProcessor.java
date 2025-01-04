@@ -39,4 +39,17 @@ public interface CommentProcessor {
 
     /// Resets all states in the comment processor so that it can be re-used in another stamping process.
     void reset();
+
+    /// Applies the necessary processing to a specified DocxPart using the provided ProcessorContext.
+    /// This method sets the processing context, commits changes to the document, and resets the processor state.
+    ///
+    /// @param processorContext The context in which the processor operates, encapsulating information
+    ///                                                 such as the paragraph, run, comment and placeholder being
+    ///                         processed.
+    /// @param docxPart         The part of the .docx document to which changes are applied.
+    default void apply(ProcessorContext processorContext, DocxPart docxPart) {
+        setProcessorContext(processorContext);
+        commitChanges(docxPart);
+        reset();
+    }
 }

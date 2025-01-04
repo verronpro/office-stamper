@@ -4,11 +4,16 @@ import jakarta.xml.bind.JAXBElement;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.EndnotesPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.ContentAccessor;
-import pro.verron.officestamper.core.CommentProcessors;
+import org.docx4j.wml.P;
+import org.docx4j.wml.Text;
+import org.jvnet.jaxb2_commons.ppp.Child;
+import pro.verron.officestamper.core.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Optional.ofNullable;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
@@ -27,6 +32,9 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 public final class DocumentScanner {
     private final Queue<List<Object>> roots = Collections.asLifoQueue(new LinkedList<>());
     private final Queue<AtomicInteger> queue = Collections.asLifoQueue(new LinkedList<>());
+    private final AtomicReference<Object> current = new AtomicReference<>();
+    private final MainDocumentPart mainDocumentPart;
+    private final WordprocessingMLPackage document;
 
     /// Constructs a new instance of the DocumentScanner class, initializing it with the specified
     /// WordprocessingMLPackage document.
@@ -34,9 +42,11 @@ public final class DocumentScanner {
     /// up scanning.
     ///
     /// @param document the WordprocessingMLPackage document containing the main document part, footnotes part, and
-    ///                 endnotes part
+    ///
+    ///                                                 endnotes part
     public DocumentScanner(WordprocessingMLPackage document) {
-        var mainDocumentPart = document.getMainDocumentPart();
+        this.document = document;
+        mainDocumentPart = this.document.getMainDocumentPart();
         var footnotesPart = mainDocumentPart.getFootnotesPart();
         var endnotesPart = mainDocumentPart.getEndNotesPart();
 
@@ -68,31 +78,47 @@ public final class DocumentScanner {
         var currentRoot = roots.remove();
         var indexHolder = queue.remove();
         var index = indexHolder.getAndIncrement();
-        var current = currentRoot.get(index);
+        var next = currentRoot.get(index);
         if (indexHolder.get() < currentRoot.size()) {
             roots.add(currentRoot);
             queue.add(indexHolder);
         }
-        if (current instanceof JAXBElement<?> jaxbElement) current = jaxbElement.getValue();
-        if (current instanceof ContentAccessor contentAccessor) {
+        if (next instanceof JAXBElement<?> jaxbElement) next = jaxbElement.getValue();
+        if (next instanceof ContentAccessor contentAccessor) {
             var content = contentAccessor.getContent();
             if (!content.isEmpty()) {
                 roots.add(content);
                 queue.add(new AtomicInteger(0));
             }
         }
-
-        return current;
+        this.current.set(next);
+        return next;
     }
 
     /// Processes the current iteration of the scanner using the specified comment processors,
     /// and an associated expression context while maintaining the iteration index.
     ///
     /// @param commentProcessors the `CommentProcessors` object containing processor mappings for handling specific
-    ///                          comment-related operations.
+    ///
+    ///
+    ///                                                                            comment-related operations.
     /// @param expressionContext the expression context of type `T` used during the processing of comments.
     public <T> void process(CommentProcessors commentProcessors, T expressionContext) {
-        //Apply the given context of processing to the current iteration of the scanner, while keeping the iteration
+        if (current.get() instanceof Text text) {
+            var value = text.getValue();
+            if (value.contains("${") && value.substring(value.indexOf("${"))
+                                             .contains("}")) {
+                var from = StandardParagraph.from(new TextualDocxPart(document),
+                        (P) ((Child) text.getParent()).getParent());
+                var matcher = new Matcher("[#$]\\{", "\\}");
+                var placeholder = new StandardPlaceholder(matcher,
+                        value.substring(value.indexOf("${") + 2, value.indexOf("}") - 1));
+                var context = from.processorContext(placeholder);
+                commentProcessors.setContext(context);
+
+            }
+        }
+        // Apply the given context of processing to the current iteration of the scanner, while keeping the iteration
         // index coherent.
     }
 }

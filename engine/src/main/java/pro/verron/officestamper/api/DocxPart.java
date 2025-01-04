@@ -15,6 +15,5 @@ public interface DocxPart
     List<Object> content();
     Stream<Paragraph> streamParagraphs();
     Stream<R> streamRun();
-
     DocumentScanner scanner();
 }

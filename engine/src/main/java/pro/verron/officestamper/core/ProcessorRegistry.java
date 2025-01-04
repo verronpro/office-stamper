@@ -81,13 +81,12 @@ public class ProcessorRegistry {
                 }));
             });
 
-        part.streamParagraphs()
-            .forEach(paragraph -> runProcessorsOnInlineContent(expressionContext, paragraph));
-
         var scanner = part.scanner();
         while (scanner.hasNext()) {
-            scanner.next();
-            scanner.process(processors, expressionResolver, expressionContext);
+            var next = scanner.next();
+            if (next instanceof P p) runProcessorsOnInlineContent(expressionContext, StandardParagraph.from(source, p));
+            else if (next instanceof CTSdtContentRun run)
+                runProcessorsOnInlineContent(expressionContext, StandardParagraph.from(source, run));
         }
 
         proceedComments.forEach(CommentUtil::deleteComment);
@@ -128,9 +127,7 @@ public class ProcessorRegistry {
                               var cComment = c.getComment();
                               comments.remove(cComment.getId());
                               processors.setContext(new ProcessorContext(paragraph, run, c, cPlaceholder));
-                              return run(expressionContext, cPlaceholder)
-                                      ? Optional.of(c)
-                                      : Optional.empty();
+                              return run(expressionContext, cPlaceholder) ? Optional.of(c) : Optional.empty();
                           });
     }
 

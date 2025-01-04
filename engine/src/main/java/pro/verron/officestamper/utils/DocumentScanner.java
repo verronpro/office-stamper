@@ -103,7 +103,11 @@ public final class DocumentScanner {
     ///
     ///                                                                            comment-related operations.
     /// @param expressionContext the expression context of type `T` used during the processing of comments.
-    public <T> void process(CommentProcessors commentProcessors, T expressionContext) {
+    public <T> void process(
+            CommentProcessors commentProcessors,
+            ExpressionResolver expressionResolver,
+            T expressionContext
+    ) {
         if (current.get() instanceof Text text) {
             var value = text.getValue();
             if (value.contains("${") && value.substring(value.indexOf("${"))
@@ -115,6 +119,9 @@ public final class DocumentScanner {
                         value.substring(value.indexOf("${") + 2, value.indexOf("}") - 1));
                 var context = from.processorContext(placeholder);
                 commentProcessors.setContext(context);
+                expressionResolver.setContext(expressionContext);
+                var resolve = expressionResolver.resolve(placeholder);
+
 
             }
         }

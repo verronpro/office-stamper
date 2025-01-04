@@ -87,7 +87,7 @@ public class CommentProcessorRegistry {
         var scanner = part.scanner();
         while (scanner.hasNext()) {
             scanner.next();
-            scanner.process(commentProcessors, expressionContext);
+            scanner.process(commentProcessors, expressionResolver, expressionContext);
         }
 
         proceedComments.forEach(CommentUtil::deleteComment);
@@ -173,7 +173,8 @@ public class CommentProcessorRegistry {
             try {
                 expressionResolver.setContext(context);
                 var resolution = expressionResolver.resolve(placeholder);
-                paragraph.replace(placeholder, placeholderReplacer.resolve(source, placeholder, resolution, "error"));
+                var resolve = placeholderReplacer.resolve(source, placeholder, resolution, "error");
+                paragraph.replace(placeholder, resolve);
                 logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
             } catch (SpelEvaluationException | SpelParseException e) {
                 var message = "Placeholder '%s' failed to process.".formatted(placeholder);

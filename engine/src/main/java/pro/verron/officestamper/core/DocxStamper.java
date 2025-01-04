@@ -3,8 +3,7 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
-import org.springframework.expression.spel.SpelParserConfiguration;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.*;
 
@@ -44,8 +43,8 @@ public class DocxStamper
                 configuration.getCommentProcessors(),
                 configuration.getPreprocessors(),
                 configuration.getPostprocessors(),
-                configuration.getSpelParserConfiguration(),
-                configuration.getExceptionResolver());
+                configuration.getExceptionResolver(),
+                configuration.getExpressionParser());
     }
 
     private DocxStamper(
@@ -56,11 +55,9 @@ public class DocxStamper
             Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> configurationCommentProcessors,
             List<PreProcessor> preprocessors,
             List<PostProcessor> postprocessors,
-            SpelParserConfiguration spelParserConfiguration,
-            ExceptionResolver exceptionResolver
+            ExceptionResolver exceptionResolver,
+            ExpressionParser expressionParser
     ) {
-        var expressionParser = new SpelExpressionParser(spelParserConfiguration);
-
         var evaluationContext = new StandardEvaluationContext();
         evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
 
@@ -84,15 +81,6 @@ public class DocxStamper
         this.postprocessors = new ArrayList<>(postprocessors);
     }
 
-    public static void stamp(
-            DocxStamperConfiguration configuration,
-            WordprocessingMLPackage template,
-            Object context,
-            OutputStream output
-    ) {
-        new DocxStamper(configuration).stamp(template, context, output);
-    }
-
     private CommentProcessors buildCommentProcessors(
             Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors,
             PlaceholderReplacer placeholderReplacer
@@ -106,32 +94,13 @@ public class DocxStamper
         return new CommentProcessors(processors);
     }
 
-    /// Reads in a .docx template and "stamps" it into the given OutputStream, using the specified context object to
-    /// fill out any expressions it finds.
-    ///
-    /// In the .docx template you have the following options to influence the "stamping" process:
-    ///   - Use expressions like ${name} or ${person.isOlderThan(18)} in the template's text. These expressions are
-    ///     resolved
-    ///     against the contextRoot object you pass into this method and are replaced by the results.
-    ///   - Use comments within the .docx template to mark certain paragraphs to be manipulated.
-    ///
-    /// Within comments, you can put expressions in which you can use the following methods by default:
-    ///   - _displayParagraphIf(boolean)_ to conditionally display paragraphs or not
-    ///   - _displayTableRowIf(boolean)_ to conditionally display table rows or not
-    ///   - _displayTableIf(boolean)_ to conditionally display whole tables or not
-    ///   - _repeatTableRow(List&lt;Object&gt;)_ to create a new table row for each object in the list and
-    ///     resolve expressions
-    ///     within the table cells against one of the objects within the list.
-    ///
-    /// If you need a wider vocabulary of methods available in the comments, you can create your own ICommentProcessor
-    /// and register it via [OfficeStamperConfiguration#addCommentProcessor(Class, Function)].
-    public void stamp(InputStream template, Object contextRoot, OutputStream out) {
-        try {
-            WordprocessingMLPackage document = WordprocessingMLPackage.load(template);
-            stamp(document, contextRoot, out);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
+    public static void stamp(
+            DocxStamperConfiguration configuration,
+            WordprocessingMLPackage template,
+            Object context,
+            OutputStream output
+    ) {
+        new DocxStamper(configuration).stamp(template, context, output);
     }
 
     /// Same as [#stamp(InputStream, Object, OutputStream)] except that you
@@ -168,5 +137,33 @@ public class DocxStamper
     private void runProcessors(DocxPart source, Object contextObject) {
         var processors = commentProcessorRegistrySupplier.apply(source);
         processors.runProcessors(contextObject);
+    }
+
+    /// Reads in a .docx template and "stamps" it into the given OutputStream, using the specified context object to
+    /// fill out any expressions it finds.
+    ///
+    /// In the .docx template you have the following options to influence the "stamping" process:
+    ///   - Use expressions like ${name} or ${person.isOlderThan(18)} in the template's text. These expressions are
+    ///     resolved
+    ///     against the contextRoot object you pass into this method and are replaced by the results.
+    ///   - Use comments within the .docx template to mark certain paragraphs to be manipulated.
+    ///
+    /// Within comments, you can put expressions in which you can use the following methods by default:
+    ///   - _displayParagraphIf(boolean)_ to conditionally display paragraphs or not
+    ///   - _displayTableRowIf(boolean)_ to conditionally display table rows or not
+    ///   - _displayTableIf(boolean)_ to conditionally display whole tables or not
+    ///   - _repeatTableRow(List&lt;Object&gt;)_ to create a new table row for each object in the list and
+    ///     resolve expressions
+    ///     within the table cells against one of the objects within the list.
+    ///
+    /// If you need a wider vocabulary of methods available in the comments, you can create your own ICommentProcessor
+    /// and register it via [OfficeStamperConfiguration#addCommentProcessor(Class, Function)].
+    public void stamp(InputStream template, Object contextRoot, OutputStream out) {
+        try {
+            WordprocessingMLPackage document = WordprocessingMLPackage.load(template);
+            stamp(document, contextRoot, out);
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException(e);
+        }
     }
 }

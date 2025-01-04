@@ -1,5 +1,6 @@
 package pro.verron.officestamper.api;
 
+import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
@@ -14,6 +15,20 @@ import java.util.function.Supplier;
 /// Interface representing the configuration for the Office Stamper functionality.
 public interface OfficeStamperConfiguration {
 
+    ExpressionParser getExpressionParser();
+
+    /// Retrieves the SpelParserConfiguration used by the OfficeStamperConfiguration.
+    ///
+    /// @return the SpelParserConfiguration object used by the OfficeStamperConfiguration.
+    SpelParserConfiguration getSpelParserConfiguration();
+
+    /// Sets the SpelParserConfiguration used by the OfficeStamperConfiguration.
+    ///
+    /// @param spelParserConfiguration the SpelParserConfiguration to be set
+    ///
+    /// @return the updated OfficeStamperConfiguration object
+    OfficeStamperConfiguration setSpelParserConfiguration(SpelParserConfiguration spelParserConfiguration);
+
     /// Exposes an interface to the expression language.
     ///
     /// @param interfaceClass the interface class to be exposed
@@ -27,6 +42,7 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param interfaceClass          the interface class associated with the comment processor
     /// @param commentProcessorFactory a function that creates a CommentProcessor object based on the
+    ///
     ///
     ///                                ParagraphPlaceholderReplacer implementation
     ///
@@ -52,22 +68,12 @@ public interface OfficeStamperConfiguration {
     /// Sets the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL) EvaluationContext.
     ///
     /// @param evaluationContextConfigurer the EvaluationContextConfigurer for configuring the SPEL EvaluationContext.
-    ///                                    Must implement the evaluateEvaluationContext() method.
+    ///                                                                                                          Must
+    ///                                    implement the
+    ///                                                                       evaluateEvaluationContext() method.
     ///
     /// @return the updated OfficeStamperConfiguration object.
     OfficeStamperConfiguration setEvaluationContextConfigurer(EvaluationContextConfigurer evaluationContextConfigurer);
-
-    /// Retrieves the SpelParserConfiguration used by the OfficeStamperConfiguration.
-    ///
-    /// @return the SpelParserConfiguration object used by the OfficeStamperConfiguration.
-    SpelParserConfiguration getSpelParserConfiguration();
-
-    /// Sets the SpelParserConfiguration used by the OfficeStamperConfiguration.
-    ///
-    /// @param spelParserConfiguration the SpelParserConfiguration to be set
-    ///
-    /// @return the updated OfficeStamperConfiguration object
-    OfficeStamperConfiguration setSpelParserConfiguration(SpelParserConfiguration spelParserConfiguration);
 
     /// Retrieves the map of expression functions associated with their corresponding classes.
     ///

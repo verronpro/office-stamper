@@ -2,7 +2,9 @@ package pro.verron.officestamper.core;
 
 
 import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
@@ -61,11 +63,35 @@ public class DocxStamperConfiguration
         this.resolvers.clear();
     }
 
+    @Override
+    public ExpressionParser getExpressionParser() {
+        return new SpelExpressionParser(spelParserConfiguration);
+    }
+
+    @Override
+    public SpelParserConfiguration getSpelParserConfiguration() {
+        return spelParserConfiguration;
+    }
+
+    /// Sets the [SpelParserConfiguration] used for expression parsing.
+    /// Note that this configuration is the same for all expressions in the document, including expressions in comments.
+    ///
+    /// @param spelParserConfiguration the configuration to use.
+    ///
+    /// @return the configuration object for chaining.
+    @Override
+    public DocxStamperConfiguration setSpelParserConfiguration(
+            SpelParserConfiguration spelParserConfiguration
+    ) {
+        this.spelParserConfiguration = spelParserConfiguration;
+        return this;
+    }
+
     /// Exposes all methods of a given interface to the expression language.
     ///
     /// @param interfaceClass the interface holding methods to expose in the expression language.
     /// @param implementation the implementation to call to evaluate invocations of those methods.
-    ///                       Must implement the mentioned interface.
+    ///                                                                   Must implement the mentioned interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override
@@ -117,25 +143,6 @@ public class DocxStamperConfiguration
             EvaluationContextConfigurer evaluationContextConfigurer
     ) {
         this.evaluationContextConfigurer = evaluationContextConfigurer;
-        return this;
-    }
-
-    @Override
-    public SpelParserConfiguration getSpelParserConfiguration() {
-        return spelParserConfiguration;
-    }
-
-    /// Sets the [SpelParserConfiguration] used for expression parsing.
-    /// Note that this configuration is the same for all expressions in the document, including expressions in comments.
-    ///
-    /// @param spelParserConfiguration the configuration to use.
-    ///
-    /// @return the configuration object for chaining.
-    @Override
-    public DocxStamperConfiguration setSpelParserConfiguration(
-            SpelParserConfiguration spelParserConfiguration
-    ) {
-        this.spelParserConfiguration = spelParserConfiguration;
         return this;
     }
 

@@ -32,7 +32,7 @@ public class CommentProcessorRegistry {
     private final CommentProcessors commentProcessors;
     private final ExpressionResolver expressionResolver;
     private final ExceptionResolver exceptionResolver;
-    private final PlaceholderReplacer placeholderReplacer;
+    private final ObjectResolverRegistry objectResolverRegistry;
 
     /// Constructs a new CommentProcessorRegistry.
     ///
@@ -45,13 +45,13 @@ public class CommentProcessorRegistry {
             ExpressionResolver expressionResolver,
             CommentProcessors commentProcessors,
             ExceptionResolver exceptionResolver,
-            PlaceholderReplacer placeholderReplacer
+            ObjectResolverRegistry objectResolverRegistry
     ) {
         this.source = source;
         this.expressionResolver = expressionResolver;
         this.commentProcessors = commentProcessors;
         this.exceptionResolver = exceptionResolver;
-        this.placeholderReplacer = placeholderReplacer;
+        this.objectResolverRegistry = objectResolverRegistry;
     }
 
     public <T> void runProcessors(T expressionContext) {
@@ -173,7 +173,7 @@ public class CommentProcessorRegistry {
             try {
                 expressionResolver.setContext(context);
                 var resolution = expressionResolver.resolve(placeholder);
-                var resolve = placeholderReplacer.resolve(source, placeholder, resolution, "error");
+                var resolve = objectResolverRegistry.resolve(source, placeholder, resolution, "error");
                 paragraph.replace(placeholder, resolve);
                 logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
             } catch (SpelEvaluationException | SpelParseException e) {

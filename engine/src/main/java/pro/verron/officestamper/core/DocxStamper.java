@@ -65,8 +65,8 @@ public class DocxStamper
         evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
 
         var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
-        var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-        var placeholderReplacer = new PlaceholderReplacer(typeResolverRegistry, expressionResolver, exceptionResolver);
+        var objectResolverRegistry = new ObjectResolverRegistry(resolvers, exceptionResolver);
+        var placeholderReplacer = new PlaceholderReplacer(objectResolverRegistry, expressionResolver);
 
         var commentProcessors = buildCommentProcessors(configurationCommentProcessors, placeholderReplacer);
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
@@ -78,7 +78,7 @@ public class DocxStamper
                 expressionResolver,
                 commentProcessors,
                 exceptionResolver,
-                placeholderReplacer);
+                objectResolverRegistry);
 
         this.preprocessors = new ArrayList<>(preprocessors);
         this.postprocessors = new ArrayList<>(postprocessors);

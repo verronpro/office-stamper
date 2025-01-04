@@ -9,6 +9,8 @@ import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.Text;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import org.springframework.expression.spel.SpelEvaluationException;
+import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.core.*;
 
 import java.util.*;
@@ -116,13 +118,15 @@ public final class DocumentScanner {
                         (P) ((Child) text.getParent()).getParent());
                 var matcher = new Matcher("[#$]\\{", "\\}");
                 var placeholder = new StandardPlaceholder(matcher,
-                        value.substring(value.indexOf("${") + 2, value.indexOf("}") - 1));
+                        value.substring(value.indexOf("${") + 2, value.indexOf("}")));
                 var context = from.processorContext(placeholder);
                 commentProcessors.setContext(context);
-                expressionResolver.setContext(expressionContext);
-                var resolve = expressionResolver.resolve(placeholder);
-
-
+                try {
+                    expressionResolver.setContext(expressionContext);
+                    var resolve = expressionResolver.resolve(placeholder);
+                } catch (SpelEvaluationException | SpelParseException e) {
+                    var message = "Placeholder '%s' failed to process.".formatted(placeholder);
+                }
             }
         }
         // Apply the given context of processing to the current iteration of the scanner, while keeping the iteration

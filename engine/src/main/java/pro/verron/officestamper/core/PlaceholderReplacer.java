@@ -34,46 +34,30 @@ public class PlaceholderReplacer
         this.exceptionResolver = exceptionResolver;
     }
 
-    /// Finds expressions in a document and resolves them against the specified context object.
-    /// The resolved values will then replace the expressions in the document.
-    ///
-    /// @param expressionContext the context root
-    public void resolveExpressions(DocxPart document, Object expressionContext) {
-        document.streamParagraphs()
-                .forEach(paragraph -> resolveExpressionsForParagraph(document, paragraph, expressionContext));
-    }
-
     /// Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.
     ///
     /// @param docxPart  the document in which to replace all expressions.
     /// @param paragraph the paragraph in which to replace expressions.
     /// @param context   the context root
     @Override
-    public void resolveExpressionsForParagraph(
-            DocxPart docxPart,
-            Paragraph paragraph,
-            Object context
-    ) {
-        var expressions = Placeholders.findVariables(paragraph);
-        for (var expression : expressions) {
-            var replacement = resolve(docxPart, context, expression);
-            paragraph.replace(expression, replacement);
+    public void resolveExpressionsForParagraph(DocxPart docxPart, Paragraph paragraph, Object context) {
+        resolver.setContext(context);
+
+        var placeholders = Placeholders.findVariables(paragraph);
+        for (var placeholder : placeholders) {
+            var resolution = resolver.resolve(placeholder);
+            var errMsg = computeErrMsg(context, placeholder);
+            var replacement = resolve(docxPart, placeholder, resolution, errMsg);
+            paragraph.replace(placeholder, replacement);
         }
     }
 
-    public R resolve(DocxPart docxPart, Object context, Placeholder placeholder) {
-        var resolution = getResolution(context, placeholder);
+    private static String computeErrMsg(Object context, Placeholder placeholder) {
         var expression = placeholder.expression();
         var contextClass = context.getClass();
         var contextSimpleName = contextClass.getSimpleName();
-        var errorMessage = "Expression %s could not be resolved against context of type %s".formatted(expression,
-                contextSimpleName);
-        return resolve(docxPart, placeholder, resolution, errorMessage);
-    }
-
-    public @Nullable Object getResolution(Object context, Placeholder placeholder) {
-        resolver.setContext(context);
-        return resolver.resolve(placeholder);
+        var errTemplate = "Expression %s could not be resolved against context of type %s";
+        return errTemplate.formatted(expression, contextSimpleName);
     }
 
     public R resolve(DocxPart docxPart, Placeholder placeholder, @Nullable Object resolution, String errorMessage) {

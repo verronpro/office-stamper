@@ -1,8 +1,10 @@
 package pro.verron.officestamper.core;
 
 
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelParserConfiguration;
-import org.springframework.lang.NonNull;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
@@ -16,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /// The [DocxStamperConfiguration] class represents the configuration for the [DocxStamper] class.
@@ -28,55 +29,32 @@ import java.util.function.Supplier;
 /// @since 1.0.3
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
-    private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors;
+
+    private final Map<Class<?>, Supplier<Processor>> processorSuppliers;
     private final List<ObjectResolver> resolvers;
     private final Map<Class<?>, Object> expressionFunctions;
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final List<CustomFunction> functions;
-    private String lineBreakPlaceholder;
     private EvaluationContextConfigurer evaluationContextConfigurer;
-    private boolean failOnUnresolvedExpression;
-    private boolean leaveEmptyOnExpressionError;
-    private boolean replaceUnresolvedExpressions;
-    private String unresolvedExpressionsDefaultValue;
     private SpelParserConfiguration spelParserConfiguration;
     private ExceptionResolver exceptionResolver;
 
     public DocxStamperConfiguration() {
-        commentProcessors = new HashMap<>();
+        processorSuppliers = new HashMap<>();
         resolvers = new ArrayList<>();
         expressionFunctions = new HashMap<>();
         preprocessors = new ArrayList<>();
         postprocessors = new ArrayList<>();
         functions = new ArrayList<>();
         evaluationContextConfigurer = EvaluationContextConfigurers.defaultConfigurer();
-        lineBreakPlaceholder = "\n";
-        failOnUnresolvedExpression = true;
-        leaveEmptyOnExpressionError = false;
-        replaceUnresolvedExpressions = false;
-        unresolvedExpressionsDefaultValue = null;
         spelParserConfiguration = new SpelParserConfiguration();
-        exceptionResolver = computeExceptionResolver();
-    }
-
-    private ExceptionResolver computeExceptionResolver() {
-        if (failOnUnresolvedExpression) return ExceptionResolvers.throwing();
-        if (replaceWithDefaultOnError()) return ExceptionResolvers.defaulting(replacementDefault());
-        return ExceptionResolvers.passing();
-    }
-
-    private boolean replaceWithDefaultOnError() {
-        return isLeaveEmptyOnExpressionError() || isReplaceUnresolvedExpressions();
-    }
-
-    private String replacementDefault() {
-        return isLeaveEmptyOnExpressionError() ? "" : getUnresolvedExpressionsDefaultValue();
+        exceptionResolver = ExceptionResolvers.throwing();
     }
 
     /// Resets all processors in the configuration.
-    public void resetCommentProcessors() {
-        this.commentProcessors.clear();
+    public void resetProcessors() {
+        this.processorSuppliers.clear();
     }
 
     /// Resets all resolvers in the configuration.
@@ -84,84 +62,22 @@ public class DocxStamperConfiguration
         this.resolvers.clear();
     }
 
-    @Deprecated(since = "2.5", forRemoval = true)
     @Override
-    public boolean isFailOnUnresolvedExpression() {
-        return failOnUnresolvedExpression;
+    public ExpressionParser getExpressionParser() {
+        return new SpelExpressionParser(spelParserConfiguration);
     }
 
-    /// If true, stamper throws an [OfficeStamperException] if an expression within the document can’t be resolved.
-    /// Set to `TRUE` by default.
+    /// Sets the [SpelParserConfiguration] used for expression parsing.
+    /// Note that this configuration is the same for all expressions in the document, including expressions in comments.
     ///
-    /// @param failOnUnresolvedExpression a boolean
+    /// @param spelParserConfiguration the configuration to use.
     ///
-    /// @return the same [DocxStamperConfiguration] object
-    @Deprecated(since = "2.5", forRemoval = true)
+    /// @return the configuration object for chaining.
     @Override
-    public DocxStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression) {
-        this.failOnUnresolvedExpression = failOnUnresolvedExpression;
-        this.exceptionResolver = computeExceptionResolver();
-        return this;
-    }
-
-    @Override
-    public boolean isLeaveEmptyOnExpressionError() {
-        return leaveEmptyOnExpressionError;
-    }
-
-    @Override
-    public boolean isReplaceUnresolvedExpressions() {
-        return replaceUnresolvedExpressions;
-    }
-
-    @Override
-    public String getUnresolvedExpressionsDefaultValue() {
-        return unresolvedExpressionsDefaultValue;
-    }
-
-    /// Default value to use for expressions that doesn't resolve.
-    ///
-    /// @param unresolvedExpressionsDefaultValue value to use instead for expression that doesn't resolve
-    ///
-    /// @return a [DocxStamperConfiguration] object
-    ///
-    /// @see DocxStamperConfiguration#replaceUnresolvedExpressions
-    @Deprecated(since = "2.5", forRemoval = true)
-    @Override
-    public DocxStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue) {
-        this.unresolvedExpressionsDefaultValue = unresolvedExpressionsDefaultValue;
-        this.exceptionResolver = computeExceptionResolver();
-        return this;
-    }
-
-    /// Indicates if a default value should replace expressions that don't resolve.
-    ///
-    /// @param replaceUnresolvedExpressions true to replace expression with resolved value `null`
-    ///
-    ///
-    ///                                                                         false to leave the expression as is.
-    ///
-    /// @return a [DocxStamperConfiguration] object
-    @Deprecated(since = "2.5", forRemoval = true)
-    @Override
-    public DocxStamperConfiguration replaceUnresolvedExpressions(boolean replaceUnresolvedExpressions) {
-        this.replaceUnresolvedExpressions = replaceUnresolvedExpressions;
-        this.exceptionResolver = computeExceptionResolver();
-        return this;
-    }
-
-    /// Indicate if expressions failing during evaluation needs removal.
-    ///
-    /// @param leaveEmpty true to replace expressions with empty string when an error occurs during evaluation.
-    ///
-    /// @return a [DocxStamperConfiguration] object
-    @Deprecated(since = "2.5", forRemoval = true)
-    @Override
-    public DocxStamperConfiguration leaveEmptyOnExpressionError(
-            boolean leaveEmpty
+    public DocxStamperConfiguration setSpelParserConfiguration(
+            SpelParserConfiguration spelParserConfiguration
     ) {
-        this.leaveEmptyOnExpressionError = leaveEmpty;
-        this.exceptionResolver = computeExceptionResolver();
+        this.spelParserConfiguration = spelParserConfiguration;
         return this;
     }
 
@@ -169,9 +85,7 @@ public class DocxStamperConfiguration
     ///
     /// @param interfaceClass the interface holding methods to expose in the expression language.
     /// @param implementation the implementation to call to evaluate invocations of those methods.
-    ///
-    ///                       Must implement the
-    ///                                             mentioned interface.
+    ///                                                                   Must implement the mentioned interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override
@@ -183,18 +97,18 @@ public class DocxStamperConfiguration
         return this;
     }
 
-    /// Registers the specified ICommentProcessor as an implementation of the specified interface.
+    /// Registers the specified [Processor] as an implementation of the specified interface.
     ///
-    /// @param interfaceClass          the interface, implemented by the commentProcessor.
-    /// @param commentProcessorFactory the commentProcessor factory generating instances of the specified interface.
+    /// @param interfaceClass          the interface, implemented by the [Processor].
+    /// @param processorFactory the [Processor] factory generating instances of the specified interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override
-    public DocxStamperConfiguration addCommentProcessor(
+    public DocxStamperConfiguration addProcessor(
             Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
+            Supplier<Processor> processorFactory
     ) {
-        this.commentProcessors.put(interfaceClass, commentProcessorFactory);
+        this.processorSuppliers.put(interfaceClass, processorFactory);
         return this;
     }
 
@@ -202,25 +116,8 @@ public class DocxStamperConfiguration
     ///
     /// @param preprocessor the preprocessor to add.
     @Override
-    public void addPreprocessor(PreProcessor preprocessor) {
+    public OfficeStamperConfiguration addPreprocessor(PreProcessor preprocessor) {
         preprocessors.add(preprocessor);
-    }
-
-
-    @Override
-    public String getLineBreakPlaceholder() {
-        return lineBreakPlaceholder;
-    }
-
-    /// String to replace with a line break when stamping a document.
-    /// By default, `\\n` is the placeholder.
-    ///
-    /// @param lineBreakPlaceholder string to replace with line breaks during stamping.
-    ///
-    /// @return the configuration object for chaining.
-    @Override
-    public DocxStamperConfiguration setLineBreakPlaceholder(@NonNull String lineBreakPlaceholder) {
-        this.lineBreakPlaceholder = lineBreakPlaceholder;
         return this;
     }
 
@@ -244,32 +141,13 @@ public class DocxStamperConfiguration
     }
 
     @Override
-    public SpelParserConfiguration getSpelParserConfiguration() {
-        return spelParserConfiguration;
-    }
-
-    /// Sets the [SpelParserConfiguration] used for expression parsing.
-    /// Note that this configuration is the same for all expressions in the document, including expressions in comments.
-    ///
-    /// @param spelParserConfiguration the configuration to use.
-    ///
-    /// @return the configuration object for chaining.
-    @Override
-    public DocxStamperConfiguration setSpelParserConfiguration(
-            SpelParserConfiguration spelParserConfiguration
-    ) {
-        this.spelParserConfiguration = spelParserConfiguration;
-        return this;
-    }
-
-    @Override
     public Map<Class<?>, Object> getExpressionFunctions() {
         return expressionFunctions;
     }
 
     @Override
-    public Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors() {
-        return commentProcessors;
+    public Map<Class<?>, Supplier<Processor>> getProcessors() {
+        return processorSuppliers;
     }
 
     @Override
@@ -362,7 +240,8 @@ public class DocxStamperConfiguration
     }
 
     @Override
-    public void addPostprocessor(PostProcessor postprocessor) {
+    public OfficeStamperConfiguration addPostprocessor(PostProcessor postprocessor) {
         postprocessors.add(postprocessor);
+        return this;
     }
 }

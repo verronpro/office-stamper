@@ -7,7 +7,7 @@ import org.springframework.lang.Nullable;
 /// @author Joseph Verron
 /// @version ${version}
 /// @since 1.6.4
-public class CommentProcessorFactory {
+public class ProcessorFactory {
     /// Used to resolve a table in the template document.
     /// Take the table passed-in to fill an existing Tbl object in the document.
     ///

@@ -16,6 +16,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.function.ThrowingFunction;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.Paragraph;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -24,60 +25,45 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Stream.Builder;
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
-/**
- * Utility class to retrieve elements from a document.
- *
- * @author Joseph Verron
- * @author DallanMC
- * @version ${version}
- * @since 1.4.7
- */
+/// Utility class to retrieve elements from a document.
+///
+/// @author Joseph Verron
+/// @author DallanMC
+/// @version ${version}
+/// @since 1.4.7
 public class DocumentUtil {
 
     private DocumentUtil() {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
     }
 
-    public static <T> Stream<T> streamObjectElements(DocxPart source, Class<T> elementClass) {
-        ClassFinder finder = new ClassFinder(elementClass);
-        TraversalUtil.visit(source.part(), finder);
-        return finder.results.stream()
-                             .map(elementClass::cast);
-    }
-
-    /**
-     * Retrieve the last element from an object.
-     *
-     * @param subDocument the object to get the last element from
-     *
-     * @return the last element
-     */
+    /// Retrieve the last element from an object.
+    ///
+    /// @param subDocument the object to get the last element from
+    ///
+    /// @return the last element
     public static List<Object> allElements(WordprocessingMLPackage subDocument) {
         return subDocument.getMainDocumentPart()
                           .getContent();
     }
 
-    /**
-     * Recursively walk through a source to find embedded images and import them in the target document.
-     *
-     * @param source source document containing image files.
-     * @param target target document to add image files to.
-     *
-     * @return a {@link Map} object
-     */
+    /// Recursively walk through a source to find embedded images and import them in the target document.
+    ///
+    /// @param source source document containing image files.
+    /// @param target target document to add image files to.
+    ///
+    /// @return a [Map] object
     public static Map<R, R> walkObjectsAndImportImages(WordprocessingMLPackage source, WordprocessingMLPackage target) {
         return walkObjectsAndImportImages(source.getMainDocumentPart(), source, target);
     }
 
-    /**
-     * Recursively walk through source accessor to find embedded images and import the target document.
-     *
-     * @param container source container to walk.
-     * @param source    source document containing image files.
-     * @param target    target document to add image files to.
-     *
-     * @return a {@link Map} object
-     */
+    /// Recursively walk through source accessor to find embedded images and import the target document.
+    ///
+    /// @param container source container to walk.
+    /// @param source    source document containing image files.
+    /// @param target    target document to add image files to.
+    ///
+    /// @return a [Map] object
     public static Map<R, R> walkObjectsAndImportImages(
             ContentAccessor container,
             WordprocessingMLPackage source,
@@ -106,13 +92,11 @@ public class DocumentUtil {
         return replacements;
     }
 
-    /**
-     * Check if a run contains an embedded image.
-     *
-     * @param run the run to analyze
-     *
-     * @return true if the run contains an image, false otherwise.
-     */
+    /// Check if a run contains an embedded image.
+    ///
+    /// @param run the run to analyze
+    ///
+    /// @return true if the run contains an image, false otherwise.
     private static boolean isImageRun(R run) {
         return run.getContent()
                   .stream()
@@ -130,16 +114,14 @@ public class DocumentUtil {
         }
     }
 
-    /**
-     * Finds the smallest common parent between two objects.
-     *
-     * @param o1 the first object
-     * @param o2 the second object
-     *
-     * @return the smallest common parent of the two objects
-     *
-     * @throws OfficeStamperException if there is an error finding the common parent
-     */
+    /// Finds the smallest common parent between two objects.
+    ///
+    /// @param o1 the first object
+    /// @param o2 the second object
+    ///
+    /// @return the smallest common parent of the two objects
+    ///
+    /// @throws OfficeStamperException if there is an error finding the common parent
     public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
         if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
             return findInsertableParent(contentAccessor);
@@ -147,14 +129,12 @@ public class DocumentUtil {
         else throw new OfficeStamperException();
     }
 
-    /**
-     * Recursively searches for an element in a content tree.
-     *
-     * @param searchTarget the element to search for
-     * @param content      the content tree to search in
-     *
-     * @return true if the element is found, false otherwise
-     */
+    /// Recursively searches for an element in a content tree.
+    ///
+    /// @param searchTarget the element to search for
+    /// @param content      the content tree to search in
+    ///
+    /// @return true if the element is found, false otherwise
     public static boolean depthElementSearch(Object searchTarget, Object content) {
         content = XmlUtils.unwrap(content);
         if (searchTarget.equals(content)) {
@@ -212,5 +192,23 @@ public class DocumentUtil {
         ofNullable(hfp.getDefaultFooter()).ifPresent(builder::add);
         ofNullable(hfp.getEvenFooter()).ifPresent(builder::add);
         return builder.build();
+    }
+
+    static Stream<Paragraph> streamParagraphs(TextualDocxPart source) {
+        var paragraphs = streamObjectElements(source, P.class)
+                .map(p -> StandardParagraph.from(source, p));
+        var sdtRuns = streamObjectElements(source, SdtRun.class)
+                .map(SdtRun::getSdtContent)
+                .filter(CTSdtContentRun.class::isInstance)
+                .map(CTSdtContentRun.class::cast)
+                .map(paragraph -> StandardParagraph.from(source, paragraph));
+        return Stream.concat(paragraphs, sdtRuns);
+    }
+
+    public static <T> Stream<T> streamObjectElements(DocxPart source, Class<T> elementClass) {
+        ClassFinder finder = new ClassFinder(elementClass);
+        TraversalUtil.visit(source.part(), finder);
+        return finder.results.stream()
+                             .map(elementClass::cast);
     }
 }

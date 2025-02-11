@@ -93,15 +93,11 @@ public class Stringifier {
                       .collect(joining(",", "[", "]")));
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param spacing a {@link PPrBase.Spacing} object
-     *
-     * @return a {@link Optional} object
-     *
-     * @since 1.6.6
-     */
+    /// @param spacing a [PPrBase.Spacing] object
+    ///
+    /// @return a [Optional] object
+    ///
+    /// @since 1.6.6
     private Optional<String> stringify(PPrBase.Spacing spacing) {
         if (spacing == null) return empty();
         var map = new TreeMap<String, String>();
@@ -136,15 +132,11 @@ public class Stringifier {
         else throw new OfficeStamperException("Unexpected type: " + type);
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param blip a {@link CTBlip} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
+    /// @param blip a [CTBlip] object
+    ///
+    /// @return a [String] object
+    ///
+    /// @since 1.6.6
     private String stringify(CTBlip blip) {
         var image = document().getParts()
                               .getParts()
@@ -165,15 +157,11 @@ public class Stringifier {
                 sha1b64(imageBytes));
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param o a {@link Object} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
+    /// @param o a [Object] object
+    ///
+    /// @return a [String] object
+    ///
+    /// @since 1.6.6
     public String stringify(Object o) {
         if (o instanceof JAXBElement<?> jaxb) return stringify(jaxb.getValue());
         if (o instanceof WordprocessingMLPackage mlPackage) return stringify(mlPackage);
@@ -451,15 +439,11 @@ public class Stringifier {
                    .collect(joining());
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param rPr a {@link RPrAbstract} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
+    /// @param rPr a [RPrAbstract] object
+    ///
+    /// @return a [String] object
+    ///
+    /// @since 1.6.6
     private Optional<String> stringify(RPrAbstract rPr) {
         if (rPr == null) return empty();
         var map = new TreeMap<String, String>();
@@ -501,15 +485,11 @@ public class Stringifier {
         return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param p a {@link P} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
+    /// @param p a [P] object
+    ///
+    /// @return a [String] object
+    ///
+    /// @since 1.6.6
     private String stringify(P p) {
         var runs = stringify(p.getContent());
         var ppr = stringify(p.getPPr());
@@ -575,15 +555,11 @@ public class Stringifier {
         };
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param run a {@link R} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
+    /// @param run a [R] object
+    ///
+    /// @return a [String] object
+    ///
+    /// @since 1.6.6
     private String stringify(R run) {
         String serialized = stringify(run.getContent());
         if (serialized.isEmpty()) return "";

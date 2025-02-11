@@ -1,28 +1,26 @@
-/**
- * This module serves as the main module for the "pro.verron.officestamper" application.
- * It declares the module dependencies and exports the necessary packages.
- * <p>
- * The module requires the following modules:
- * - spring.core
- * - spring.expression
- * - org.docx4j.core
- * <p>
- * It also requires the following modules statically:
- * - org.apache.commons.io
- * - org.slf4j
- * - jakarta.xml.bind
- * <p>
- * The module opens the following packages for reflection and runtime access:
- * - pro.verron.officestamper.api
- * - pro.verron.officestamper.preset
- * <p>
- * The module exports the following packages for use by other modules:
- * - pro.verron.officestamper.api
- * - pro.verron.officestamper.preset
- * <p>
- * Additionally, it opens the "pro.verron.officestamper.core" package to the "pro.verron.officestamper.test" module,
- * and exports it for use by the same module.
- */
+/// This module serves as the main module for the "pro.verron.officestamper" application.
+/// It declares the module dependencies and exports the necessary packages.
+///
+/// The module requires the following modules:
+/// - spring.core
+/// - spring.expression
+/// - org.docx4j.core
+///
+/// It also requires the following modules statically:
+/// - org.apache.commons.io
+/// - org.slf4j
+/// - jakarta.xml.bind
+///
+/// The module opens the following packages for reflection and runtime access:
+/// - pro.verron.officestamper.api
+/// - pro.verron.officestamper.preset
+///
+/// The module exports the following packages for use by other modules:
+/// - pro.verron.officestamper.api
+/// - pro.verron.officestamper.preset
+///
+/// Additionally, it opens the "pro.verron.officestamper.core" package to the "pro.verron.officestamper.test" module,
+/// and exports it for use by the same module.
 module pro.verron.officestamper {
     requires spring.core;
     requires spring.expression;

@@ -7,7 +7,7 @@
     <name>OfficeStamper</name>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>office-stamper</artifactId>
-    <version>2.7.0</version>
+    <version>3.0.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 

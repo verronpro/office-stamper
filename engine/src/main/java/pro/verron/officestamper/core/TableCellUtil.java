@@ -9,14 +9,12 @@ import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.function.Predicate;
 
-/**
- * Utility class for table cells
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.0
- */
+/// Utility class for table cells
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.0
 public class TableCellUtil {
 
     private static final ObjectFactory objectFactory = new ObjectFactory();
@@ -25,13 +23,11 @@ public class TableCellUtil {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
-    /**
-     * Checks if a table cell contains a paragraph or a table
-     *
-     * @param cell the table cell
-     *
-     * @return true if the table cell contains a paragraph or a table, false otherwise
-     */
+    /// Checks if a table cell contains a paragraph or a table
+    ///
+    /// @param cell the table cell
+    ///
+    /// @return true if the table cell contains a paragraph or a table, false otherwise
     public static boolean hasNoParagraphOrTable(Tc cell) {
         Predicate<Object> isP = P.class::isInstance;
         Predicate<Object> isTbl = e -> e instanceof JAXBElement<?> jaxbElement && jaxbElement.getValue() instanceof Tbl;
@@ -40,11 +36,9 @@ public class TableCellUtil {
                    .noneMatch(isP.or(isTbl));
     }
 
-    /**
-     * Checks if a table cell contains a paragraph
-     *
-     * @param cell the table cell
-     */
+    /// Checks if a table cell contains a paragraph
+    ///
+    /// @param cell the table cell
     public static void addEmptyParagraph(Tc cell) {
         P paragraph = objectFactory.createP();
         paragraph.getContent()

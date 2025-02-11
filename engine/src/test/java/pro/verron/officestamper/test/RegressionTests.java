@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.abort;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 class RegressionTests {
@@ -49,7 +48,7 @@ class RegressionTests {
     }
 
     private static OfficeStamperConfiguration givenConfiguration() {
-        return standardWithPreprocessing();
+        return standard();
     }
 
     private static TestDocxStamper<Object> givenStamper(OfficeStamperConfiguration configuration) {

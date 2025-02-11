@@ -37,13 +37,11 @@ abstract class PowerpointVisitor {
         logger.trace("ignored visit of '{}' object", ignored);
     }
 
-    /**
-     * Signal the visited object through the before method,
-     * then apply logic to know the visit next elements or ignore deeper nesting
-     * based on the object type.
-     *
-     * @param object the object to visit
-     */
+    /// Signal the visited object through the before method,
+    /// then apply logic to know the visit next elements or ignore deeper nesting
+    /// based on the object type.
+    ///
+    /// @param object the object to visit
     public final void visit(@Nullable Object object) {
         before(object);
         try {
@@ -87,12 +85,10 @@ abstract class PowerpointVisitor {
         stream(objs).forEach(this::visit);
     }
 
-    /**
-     * This abstract method is responsible for executing some tasks before a specific operation.
-     * It is intended to be implemented by subclasses.
-     *
-     * @param object The optional object that can be used as a parameter for the pre-operation tasks.
-     */
+    /// This abstract method is responsible for executing some tasks before a specific operation.
+    /// It is intended to be implemented by subclasses.
+    ///
+    /// @param object The optional object that can be used as a parameter for the pre-operation tasks.
     protected abstract void before(@Nullable Object object);
 
 }

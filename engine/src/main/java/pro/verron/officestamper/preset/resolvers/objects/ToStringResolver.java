@@ -7,15 +7,13 @@ import pro.verron.officestamper.api.ObjectResolver;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
-/**
- * This class is an implementation of the {@link ObjectResolver} interface
- * that resolves objects by converting them to a string representation using the
- * {@link Object#toString()} method and creating a new run with the resolved content.
- * <p>
- * * @author Joseph Verron
- * * @version ${version}
- * * @since 1.6.7
- */
+/// This class is an implementation of the [ObjectResolver] interface
+/// that resolves objects by converting them to a string representation using the
+/// [#toString()] method and creating a new run with the resolved content.
+///
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.7
 public class ToStringResolver
         implements ObjectResolver {
     @Override

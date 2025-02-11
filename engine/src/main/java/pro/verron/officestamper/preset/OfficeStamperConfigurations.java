@@ -2,9 +2,8 @@ package pro.verron.officestamper.preset;
 
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.core.DocxStamper;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
-import pro.verron.officestamper.preset.CommentProcessorFactory.*;
+import pro.verron.officestamper.preset.ProcessorFactory.*;
 import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
 import pro.verron.officestamper.preset.processors.repeat.RepeatProcessor;
 import pro.verron.officestamper.preset.processors.repeatdocpart.RepeatDocPartProcessor;
@@ -20,51 +19,27 @@ import static java.time.format.FormatStyle.valueOf;
 import static java.util.Locale.forLanguageTag;
 
 
-/**
- * The OfficeStamperConfigurations class provides static methods
- * to create different configurations for the OfficeStamper.
- */
+/// The OfficeStamperConfigurations class provides static methods
+/// to create different configurations for the OfficeStamper.
 public class OfficeStamperConfigurations {
-
 
     private OfficeStamperConfigurations() {
         throw new OfficeStamperException("OfficeStamperConfigurations cannot be instantiated");
     }
 
-    /**
-     * Creates a new OfficeStamperConfiguration with the standard configuration and additional preprocessors.
-     *
-     * @return the OfficeStamperConfiguration
-     *
-     * @see OfficeStamperConfiguration
-     */
-    public static OfficeStamperConfiguration standardWithPreprocessing() {
-        var configuration = standard();
-        configuration.addPreprocessor(Preprocessors.removeLanguageProof());
-        configuration.addPreprocessor(Preprocessors.removeLanguageInfo());
-        configuration.addPreprocessor(Preprocessors.mergeSimilarRuns());
-        configuration.addPostprocessor(Postprocessors.removeOrphanedFootnotes());
-        configuration.addPostprocessor(Postprocessors.removeOrphanedEndnotes());
-        return configuration;
-    }
-
-    /**
-     * Creates a new standard OfficeStamperConfiguration.
-     *
-     * @return the standard OfficeStamperConfiguration
-     */
+    /// Creates a new standard OfficeStamperConfiguration.
+    ///
+    /// @return the standard OfficeStamperConfiguration
     public static OfficeStamperConfiguration standard() {
         var configuration = new DocxStamperConfiguration();
 
-        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance);
-        configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance);
-        configuration.addCommentProcessor(IRepeatDocPartProcessor.class,
-                pr -> RepeatDocPartProcessor.newInstance(pr,
-                        (template, context, output) -> new DocxStamper(configuration)
-                                .stamp(template, context, output)));
-        configuration.addCommentProcessor(ITableResolver.class, TableResolver::newInstance);
-        configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance);
-        configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);
+        configuration.addProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance)
+                     .addProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance)
+                     .addProcessor(IRepeatDocPartProcessor.class,
+                             () -> RepeatDocPartProcessor.newInstance(configuration))
+                     .addProcessor(ITableResolver.class, TableResolver::newInstance)
+                     .addProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance)
+                     .addProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);
 
         configuration.setResolvers(List.of(Resolvers.image(),
                 Resolvers.legacyDate(),
@@ -74,7 +49,14 @@ public class OfficeStamperConfigurations {
                 Resolvers.nullToEmpty(),
                 Resolvers.fallback()));
 
-        configuration.addPreprocessor(Preprocessors.removeMalformedComments());
+        configuration.addPreprocessor(Preprocessors.removeLanguageProof())
+                     .addPreprocessor(Preprocessors.removeLanguageInfo())
+                     .addPreprocessor(Preprocessors.mergeSimilarRuns())
+                     .addPreprocessor(Preprocessors.removeMalformedComments());
+
+        configuration.addPostprocessor(Postprocessors.removeOrphanedFootnotes())
+                     .addPostprocessor(Postprocessors.removeOrphanedEndnotes());
+        configuration.addPostprocessor(Postprocessors.linebreaker("\n"));
 
         configuration.addCustomFunction("ftime", TemporalAccessor.class)
                      .withImplementation(ISO_TIME::format);
@@ -97,10 +79,9 @@ public class OfficeStamperConfigurations {
         configuration.addCustomFunction("flocaldatetime", TemporalAccessor.class)
                      .withImplementation(ISO_LOCAL_DATE_TIME::format);
         configuration.addCustomFunction("flocaldatetime", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedDateTime(valueOf(style)).format(date));
+                     .withImplementation(OfficeStamperConfigurations::localizedDatetimeFormatter);
         configuration.addCustomFunction("flocaldatetime", TemporalAccessor.class, String.class, String.class)
-                     .withImplementation((date, dateStyle, timeStyle) -> ofLocalizedDateTime(valueOf(dateStyle),
-                             valueOf(timeStyle)).format(date));
+                     .withImplementation(OfficeStamperConfigurations::localizedDatetimeFormatter);
         configuration.addCustomFunction("foffsetdatetime", TemporalAccessor.class)
                      .withImplementation(ISO_OFFSET_DATE_TIME::format);
         configuration.addCustomFunction("fzoneddatetime", TemporalAccessor.class)
@@ -112,27 +93,49 @@ public class OfficeStamperConfigurations {
         configuration.addCustomFunction("foffsettime", TemporalAccessor.class)
                      .withImplementation(ISO_OFFSET_TIME::format);
         configuration.addCustomFunction("flocaldate", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedDate(valueOf(style)).format(date));
+                     .withImplementation(OfficeStamperConfigurations::localDateFormatter);
         configuration.addCustomFunction("flocaltime", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedTime(valueOf(style)).format(date));
+                     .withImplementation(OfficeStamperConfigurations::localTimeFormatter);
         configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class)
-                     .withImplementation((date, pattern) -> ofPattern(pattern).format(date));
+                     .withImplementation(OfficeStamperConfigurations::patternFormatter);
         configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class, String.class)
-                     .withImplementation((date, pattern, locale) -> ofPattern(pattern, forLanguageTag(locale))
-                             .format(date));
+                     .withImplementation(OfficeStamperConfigurations::patternFormatter);
         return configuration;
     }
 
-    /**
-     * Creates a new standard OfficeStamperConfiguration.
-     *
-     * @return the standard OfficeStamperConfiguration
-     */
+
+    private static Object localizedDatetimeFormatter(TemporalAccessor date, String style) {
+        return ofLocalizedDateTime(valueOf(style)).format(date);
+    }
+
+    private static Object localizedDatetimeFormatter(TemporalAccessor date, String dateStyle, String timeStyle) {
+        return ofLocalizedDateTime(valueOf(dateStyle), valueOf(timeStyle)).format(date);
+    }
+
+    private static Object localDateFormatter(TemporalAccessor date, String style) {
+        return ofLocalizedDate(valueOf(style)).format(date);
+    }
+
+    private static Object localTimeFormatter(TemporalAccessor date, String style) {
+        return ofLocalizedTime(valueOf(style)).format(date);
+    }
+
+    private static Object patternFormatter(TemporalAccessor date, String pattern) {
+        return ofPattern(pattern).format(date);
+    }
+
+    private static Object patternFormatter(TemporalAccessor date, String pattern, String locale) {
+        return ofPattern(pattern, forLanguageTag(locale)).format(date);
+    }
+
+    /// Creates a new standard OfficeStamperConfiguration.
+    ///
+    /// @return the standard OfficeStamperConfiguration
     public static OfficeStamperConfiguration raw() {
         var configuration = new DocxStamperConfiguration();
         configuration.resetResolvers();
         configuration.setEvaluationContextConfigurer(EvaluationContextConfigurers.defaultConfigurer());
-        configuration.resetCommentProcessors();
+        configuration.resetProcessors();
         return configuration;
     }
 }

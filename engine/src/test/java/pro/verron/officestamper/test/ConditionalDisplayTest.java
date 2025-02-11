@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
@@ -263,7 +262,7 @@ class ConditionalDisplayTest {
                 ---
                 """;
 
-        var config = standardWithPreprocessing();
+        var config = standard();
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);
@@ -325,7 +324,7 @@ class ConditionalDisplayTest {
                 ---
                 """;
 
-        var config = standardWithPreprocessing();
+        var config = standard();
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);

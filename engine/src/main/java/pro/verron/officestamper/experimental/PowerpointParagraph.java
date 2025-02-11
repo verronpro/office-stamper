@@ -21,18 +21,17 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
-/**
- * <p>A "Run" defines a region of text within a docx document with a common set of properties. Word processors are
- * relatively free in splitting a paragraph of text into multiple runs, so there is no strict rule to say over how many
- * runs a word or a string of words is spread.</p>
- * <p>This class aggregates multiple runs so they can be treated as a single text, no matter how many runs the text
- * spans.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.8
- */
+/// A "Run" defines a region of text within a docx document with a common set of properties. Word processors are
+/// relatively free in splitting a paragraph of text into multiple runs, so there is no strict rule to say over how many
+/// runs a word or a string of words is spread.
+///
+/// This class aggregates multiple runs so they can be treated as a single text, no matter how many runs the text
+/// spans.
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.8
 public class PowerpointParagraph
         implements Paragraph {
 
@@ -42,21 +41,17 @@ public class PowerpointParagraph
     private final CTTextParagraph paragraph;
     private int currentPosition = 0;
 
-    /**
-     * Constructs a new ParagraphWrapper for the given paragraph.
-     *
-     * @param paragraph the paragraph to wrap.
-     */
+    /// Constructs a new ParagraphWrapper for the given paragraph.
+    ///
+    /// @param paragraph the paragraph to wrap.
     public PowerpointParagraph(PptxPart source, CTTextParagraph paragraph) {
         this.source = source;
         this.paragraph = paragraph;
         recalculateRuns();
     }
 
-    /**
-     * Recalculates the runs of the paragraph. This method is called automatically by the constructor, but can also be
-     * called manually to recalculate the runs after a modification to the paragraph was done.
-     */
+    /// Recalculates the runs of the paragraph. This method is called automatically by the constructor, but can also be
+    /// called manually to recalculate the runs after a modification to the paragraph was done.
     private void recalculateRuns() {
         currentPosition = 0;
         this.runs.clear();
@@ -70,11 +65,9 @@ public class PowerpointParagraph
         }
     }
 
-    /**
-     * Adds a run to the aggregation.
-     *
-     * @param run the run to add.
-     */
+    /// Adds a run to the aggregation.
+    ///
+    /// @param run the run to add.
     private void addRun(CTRegularTextRun run, int index) {
         int startIndex = currentPosition;
         int endIndex = currentPosition + run.getT()
@@ -140,21 +133,18 @@ public class PowerpointParagraph
         siblings().removeAll(toRemove);
     }
 
-    @Override
-    public P getP() {
+    private P getP() {
         var p = WmlFactory.newParagraph(paragraph.getEGTextRun());
         p.setParent(paragraph.getParent());
         return p;
     }
 
-    /**
-     * Replaces the given expression with the replacement object within
-     * the paragraph.
-     * The replacement object must be a valid DOCX4J Object.
-     *
-     * @param placeholder the expression to be replaced.
-     * @param replacement the object to replace the expression.
-     */
+    /// Replaces the given expression with the replacement object within
+    /// the paragraph.
+    /// The replacement object must be a valid DOCX4J Object.
+    ///
+    /// @param placeholder the expression to be replaced.
+    /// @param replacement the object to replace the expression.
     @Override
     public void replace(Placeholder placeholder, Object replacement) {
         if (!(replacement instanceof CTRegularTextRun replacementRun))
@@ -285,11 +275,9 @@ public class PowerpointParagraph
         run.setRPr(apply(textCharacterProperties));
     }
 
-    /**
-     * Returns the aggregated text over all runs.
-     *
-     * @return the text of all runs.
-     */
+    /// Returns the aggregated text over all runs.
+    ///
+    /// @return the text of all runs.
     @Override
     public String asString() {
         return runs.stream()
@@ -341,9 +329,6 @@ public class PowerpointParagraph
         return StandardComment.create(source.document(), parent, placeholder, id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return asString();

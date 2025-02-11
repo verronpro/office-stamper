@@ -10,18 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-/**
- * <p>IOStreams class.</p>
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.5
- */
+/// IOStreams class.
+///
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.5
 public class IOStreams {
-    /**
-     * Constant <code>KEEP_OUTPUT_FILE=Boolean.parseBoolean(System.getenv()
-     * .getOrDefault(&quot;keepOutputFile&quot;, &quot;false&quot;))</code>
-     */
+
+    /// Constant <code>KEEP_OUTPUT_FILE=Boolean.parseBoolean(System.getenv()
+    /// .getOrDefault(&quot;keepOutputFile&quot;, &quot;false&quot;))</code>
     private static final boolean KEEP_OUTPUT_FILE;
     private static final Map<OutputStream, Supplier<InputStream>> streams = new HashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(IOStreams.class);
@@ -32,14 +29,10 @@ public class IOStreams {
         KEEP_OUTPUT_FILE = Boolean.parseBoolean(keepOutputFile);
     }
 
-    /**
-     * <p>getOutputStream.</p>
-     *
-     * @return a {@link java.io.OutputStream} object
-     *
-     * @throws java.io.IOException if any.
-     * @since 1.6.6
-     */
+    /// @return a [java.io.OutputStream] object
+    ///
+    /// @throws java.io.IOException if any.
+    /// @since 1.6.6
     public static OutputStream getOutputStream()
             throws IOException {
         if (KEEP_OUTPUT_FILE) {
@@ -58,15 +51,11 @@ public class IOStreams {
         }
     }
 
-    /**
-     * <p>getInputStream.</p>
-     *
-     * @param out a {@link java.io.OutputStream} object
-     *
-     * @return a {@link java.io.InputStream} object
-     *
-     * @since 1.6.6
-     */
+    /// @param out a [java.io.OutputStream] object
+    ///
+    /// @return a [java.io.InputStream] object
+    ///
+    /// @since 1.6.6
     public static InputStream getInputStream(OutputStream out) {
         return streams.get(out)
                       .get();

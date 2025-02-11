@@ -13,10 +13,8 @@ import java.io.OutputStream;
 
 import static pro.verron.officestamper.core.Placeholders.findVariables;
 
-/**
- * The ExcelStamper class is an implementation of the OfficeStamper interface for stamping Excel templates.
- * It uses the DOCX4J library to manipulate the template and replace variable expressions with values from the context.
- */
+/// The ExcelStamper class is an implementation of the OfficeStamper interface for stamping Excel templates.
+/// It uses the DOCX4J library to manipulate the template and replace variable expressions with values from the context.
 public class ExcelStamper
         implements OfficeStamper<SpreadsheetMLPackage> {
 

@@ -8,10 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
-import pro.verron.officestamper.preset.EvaluationContextConfigurers;
-import pro.verron.officestamper.preset.ExceptionResolvers;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
-import pro.verron.officestamper.preset.Resolvers;
+import pro.verron.officestamper.preset.*;
 
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -21,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
@@ -53,7 +49,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
             pipe.accept(lineBreakReplacementTest(factory));
             pipe.accept(mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(factory));
             pipe.accept(nullPointerResolutionTest_testWithDefaultSpel(factory));
-            pipe.accept(customCommentProcessor(factory));
+            pipe.accept(customProcessor(factory));
             pipe.accept(controls(factory));
         }), Stream.of(nullPointerResolutionTest_testWithCustomSpel(ContextFactory.objectContextFactory())));
     }
@@ -78,7 +74,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments replaceWordWithIntegrationTest(ContextFactory factory) {
         return of("Replace Word With integration test",
-                OfficeStamperConfigurations.standardWithPreprocessing(),
+                OfficeStamperConfigurations.standard(),
                 factory.name("Simpsons"),
                 getResource(Path.of("ReplaceWordWithIntegrationTest.docx")),
                 """
@@ -254,13 +250,11 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 In this paragraph, the variable name should be resolved to the value Homer Simpson.
                 In this paragraph, the variable foo should not be resolved: <1|unresolvedValueWithComment|1><1|replaceWordWith(foo)>.
                 """;
-        var config = standardWithPreprocessing().setExceptionResolver(ExceptionResolvers.passing());
+        var config = standard().setExceptionResolver(ExceptionResolvers.passing());
         return arguments("Replace Word With Integration test", config, context, template, expected);
     }
 
-    /**
-     * <p>testDateInstantiationAndResolution.</p>
-     */
+    /// testDateInstantiationAndResolution.
     private static Arguments imageReplacementInGlobalParagraphsTest(ContextFactory factory) {
         var context = factory.image(getImage(Path.of("monalisa.jpg")));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
@@ -304,7 +298,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments lineBreakReplacementTest(ContextFactory factory) {
-        var config = standard().setLineBreakPlaceholder("#");
+        var config = standard().addPostprocessor(Postprocessors.linebreaker("#"));
         var context = factory.name(null);
         var template = getResource(Path.of("LineBreakReplacementTest.docx"));
         var expected = """
@@ -347,8 +341,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """;
 
         var defaultValue = "N/C";
-        var config = standard().setLineBreakPlaceholder("\n")
-                               .addResolver(Resolvers.nullToDefault(defaultValue))
+        var config = standard().addResolver(Resolvers.nullToDefault(defaultValue))
                                .setExceptionResolver(ExceptionResolvers.defaulting(defaultValue));
 
         return arguments("Should be able to stamp from a Map<String, Object> context",
@@ -381,11 +374,11 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
     }
 
-    private static Arguments customCommentProcessor(ContextFactory factory) {
+    private static Arguments customProcessor(ContextFactory factory) {
         return arguments("Custom processor Integration test",
-                standard().addCommentProcessor(ICustomCommentProcessor.class, CustomCommentProcessor::new),
+                standard().addProcessor(ICustomProcessor.class, () -> new CustomProcessor()),
                 factory.empty(),
-                getResource(Path.of("CustomCommentProcessorTest.docx")),
+                getResource(Path.of("CustomProcessorTest.docx")),
                 """     
                         == Custom Comment Processor Test
                         

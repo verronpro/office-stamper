@@ -1,6 +1,8 @@
 package pro.verron.officestamper.core;
 
 
+import java.util.regex.Pattern;
+
 /// The Matcher class provides methods to match and strip expressions based on a specified prefix and suffix.
 /// The match() method checks if an expression starts with the prefix
 /// and ends with the suffix.
@@ -15,7 +17,9 @@ public record Matcher(String prefix, String suffix) {
     /// @return `true` if the expression starts with the prefix
     /// and ends with the suffix,`false` otherwise.
     public boolean match(String expression) {
-        return expression.startsWith(prefix) && expression.endsWith(suffix);
+        return Pattern.compile("^" + prefix + "(.*)" + suffix + "$", Pattern.DOTALL)
+                      .matcher(expression)
+                      .matches();
     }
 
     /// Strips the prefix and suffix from the given expression and returns the inner part.
@@ -24,8 +28,9 @@ public record Matcher(String prefix, String suffix) {
     ///
     /// @return the inner part of the expression after stripping the prefix and suffix.
     public String strip(String expression) {
-        int start = prefix.length();
-        int end = expression.length() - suffix.length();
-        return expression.substring(start, end);
+        var pattern = Pattern.compile("^" + prefix + "(.*)" + suffix + "$", Pattern.DOTALL);
+        var matcher = pattern.matcher(expression);
+        matcher.matches();
+        return matcher.group(1);
     }
 }

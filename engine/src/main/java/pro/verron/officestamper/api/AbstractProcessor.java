@@ -11,41 +11,35 @@ import java.util.Objects;
 public abstract class AbstractProcessor
         implements Processor {
 
-    /// PlaceholderReplacer used to replace expressions in the comment text.
-    protected final ParagraphPlaceholderReplacer placeholderReplacer;
     private Paragraph paragraph;
     private R currentRun;
     private Comment currentComment;
-
-    /// Creates an instance of AbstractProcessor with the given ParagraphPlaceholderReplacer.
-    ///
-    /// @param placeholderReplacer the ParagraphPlaceholderReplacer used to replace expressions in the comment text
-    protected AbstractProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
-        this.placeholderReplacer = placeholderReplacer;
-    }
 
     public Comment getCurrentCommentWrapper() {
         return currentComment;
     }
 
-    @Override public void setCurrentCommentWrapper(Comment currentComment) {
-        Objects.requireNonNull(currentComment.getCommentRangeStart());
-        Objects.requireNonNull(currentComment.getCommentRangeEnd());
-        this.currentComment = currentComment;
-    }
-
-    @Override public void setProcessorContext(ProcessorContext processorContext) {
+    @Override
+    public void setProcessorContext(ProcessorContext processorContext) {
         setParagraph(processorContext.paragraph());
         setCurrentRun(processorContext.run());
         setCurrentCommentWrapper(processorContext.comment());
+    }
+
+    @Override
+    public void setCurrentRun(@Nullable R run) {
+        this.currentRun = run;
     }
 
     public R getCurrentRun() {
         return currentRun;
     }
 
-    @Override public void setCurrentRun(@Nullable R run) {
-        this.currentRun = run;
+    @Override
+    public void setCurrentCommentWrapper(Comment currentComment) {
+        Objects.requireNonNull(currentComment.getCommentRangeStart());
+        Objects.requireNonNull(currentComment.getCommentRangeEnd());
+        this.currentComment = currentComment;
     }
 
     public Paragraph getParagraph() {

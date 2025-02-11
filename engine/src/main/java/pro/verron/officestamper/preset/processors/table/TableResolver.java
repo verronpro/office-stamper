@@ -9,9 +9,7 @@ import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.AbstractProcessor;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.api.Processor;
-import pro.verron.officestamper.core.PlaceholderReplacer;
 import pro.verron.officestamper.preset.ProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
 import pro.verron.officestamper.utils.WmlFactory;
@@ -35,30 +33,27 @@ public class TableResolver
     private final Map<Tbl, StampTable> cols = new HashMap<>();
     private final Function<Tbl, List<Object>> nullSupplier;
 
-    private TableResolver(
-            ParagraphPlaceholderReplacer placeholderReplacer, Function<Tbl, List<Object>> nullSupplier
-    ) {
-        super(placeholderReplacer);
+    private TableResolver(Function<Tbl, List<Object>> nullSupplier) {
         this.nullSupplier = nullSupplier;
     }
 
     /// Generate a new [TableResolver] instance where value is replaced by an empty list when <code>null</code>
     ///
-    /// @param pr a [PlaceholderReplacer] instance
-    ///
     /// @return a new [TableResolver] instance
-    public static Processor newInstance(ParagraphPlaceholderReplacer pr) {
-        return new TableResolver(pr, table -> Collections.emptyList());
+    public static Processor newInstance() {
+        return new TableResolver(table -> Collections.emptyList());
     }
 
-    @Override public void resolveTable(@Nullable StampTable givenTable) {
+    @Override
+    public void resolveTable(@Nullable StampTable givenTable) {
         var tbl = this.getParagraph()
                       .parent(Tbl.class)
                       .orElseThrow(throwing("Paragraph is not within a table!"));
         cols.put(tbl, givenTable);
     }
 
-    @Override public void commitChanges(DocxPart document) {
+    @Override
+    public void commitChanges(DocxPart document) {
         for (Map.Entry<Tbl, StampTable> entry : cols.entrySet()) {
             Tbl wordTable = entry.getKey();
 
@@ -76,7 +71,8 @@ public class TableResolver
         }
     }
 
-    @Override public void reset() {
+    @Override
+    public void reset() {
         cols.clear();
     }
 

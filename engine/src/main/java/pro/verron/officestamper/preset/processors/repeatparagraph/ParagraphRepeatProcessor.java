@@ -33,20 +33,19 @@ public class ParagraphRepeatProcessor
     /* TODO replace the mapping by a Paragraphs to List<Object> mapping to better reflect the change*/
     private Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>();
 
-    private ParagraphRepeatProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
-        super(placeholderReplacer);
+    private ParagraphRepeatProcessor() {
+
     }
 
     /// Creates a new instance of [Processor] using the provided [ParagraphPlaceholderReplacer].
     ///
-    /// @param placeholderReplacer the replacer to use for processing paragraph placeholders.
-    ///
     /// @return a new instance of [ParagraphRepeatProcessor].
-    public static Processor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
-        return new ParagraphRepeatProcessor(placeholderReplacer);
+    public static Processor newInstance() {
+        return new ParagraphRepeatProcessor();
     }
 
-    @Override public void repeatParagraph(Iterable<Object> objects) {
+    @Override
+    public void repeatParagraph(Iterable<Object> objects) {
         var paragraph = getParagraph();
         var comment = getCurrentCommentWrapper();
         var elements = comment.getElements();
@@ -57,7 +56,8 @@ public class ParagraphRepeatProcessor
         pToRepeat.put(paragraph, toRepeat);
     }
 
-    @Override public void commitChanges(DocxPart document) {
+    @Override
+    public void commitChanges(DocxPart document) {
         for (Map.Entry<Paragraph, Paragraphs> entry : pToRepeat.entrySet()) {
             var current = entry.getKey();
             var replacement = entry.getValue();
@@ -81,7 +81,12 @@ public class ParagraphRepeatProcessor
                 }
                 if (clone instanceof P p) {
                     var paragraph = StandardParagraph.from(document, p);
-                    placeholderReplacer.resolveExpressionsForParagraph(document, paragraph, expressionContext);
+                    paragraph.apply(para -> {
+                        para.getContent()
+                            .addFirst(new ContextSwitchAdd(expressionContext));
+                        para.getContent()
+                            .addLast(new ContextSwitchRem(expressionContext));
+                    });
                     paragraphsToAdd.add(p);
                 }
             }
@@ -94,7 +99,8 @@ public class ParagraphRepeatProcessor
         return paragraphsToAdd;
     }
 
-    @Override public void reset() {
+    @Override
+    public void reset() {
         pToRepeat = new HashMap<>();
     }
 }

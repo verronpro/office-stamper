@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.AbstractProcessor;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.api.Processor;
 import pro.verron.officestamper.preset.ProcessorFactory;
 
@@ -30,21 +29,15 @@ public class ReplaceWithProcessor
 
     private final Function<R, List<Object>> nullSupplier;
 
-    private ReplaceWithProcessor(
-            ParagraphPlaceholderReplacer placeholderReplacer,
-            Function<R, List<Object>> nullSupplier
-    ) {
-        super(placeholderReplacer);
+    private ReplaceWithProcessor(Function<R, List<Object>> nullSupplier) {
         this.nullSupplier = nullSupplier;
     }
 
     /// Creates a new processor that replaces the current run with the result of the expression.
     ///
-    /// @param pr the placeholder replacer to use
-    ///
     /// @return the processor
-    public static Processor newInstance(ParagraphPlaceholderReplacer pr) {
-        return new ReplaceWithProcessor(pr, R::getContent);
+    public static Processor newInstance() {
+        return new ReplaceWithProcessor(R::getContent);
     }
 
     @Override

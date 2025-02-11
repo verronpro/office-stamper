@@ -36,7 +36,7 @@ public class OfficeStamperConfigurations {
         configuration.addProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance)
                      .addProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance)
                      .addProcessor(IRepeatDocPartProcessor.class,
-                             pr -> RepeatDocPartProcessor.newInstance(pr, configuration))
+                             () -> RepeatDocPartProcessor.newInstance(configuration))
                      .addProcessor(ITableResolver.class, TableResolver::newInstance)
                      .addProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance)
                      .addProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);

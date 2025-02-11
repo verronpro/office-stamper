@@ -3,7 +3,7 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
-import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.*;
 
@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static pro.verron.officestamper.core.Invokers.streamInvokers;
 
@@ -52,20 +53,24 @@ public class DocxStamper
             Map<Class<?>, Object> expressionFunctions,
             List<CustomFunction> functions,
             List<ObjectResolver> resolvers,
-            Map<Class<?>, Function<ParagraphPlaceholderReplacer, Processor>> processorSuppliers,
+            Map<Class<?>, Supplier<Processor>> processorSuppliers,
             List<PreProcessor> preprocessors,
             List<PostProcessor> postprocessors,
             ExceptionResolver exceptionResolver,
-            ExpressionParser expressionParser
+            org.springframework.expression.ExpressionParser expressionParser
     ) {
         var evaluationContext = new StandardEvaluationContext();
         evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
+        Function<Object, EvaluationContext> evaluationContextSupplier = obj -> {
+            evaluationContext.setRootObject(obj);
+            return evaluationContext;
+        };
 
-        var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
+        var expressionResolver = new ExpressionParser(evaluationContextSupplier, expressionParser);
         var objectResolverRegistry = new ObjectResolverRegistry(resolvers, exceptionResolver);
         var placeholderReplacer = new PlaceholderReplacer(objectResolverRegistry, expressionResolver);
 
-        var processors = buildProcessors(processorSuppliers, placeholderReplacer);
+        var processors = buildProcessors(processorSuppliers);
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(processors)));
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
         evaluationContext.addMethodResolver(new Invokers(functions.stream()
@@ -81,15 +86,12 @@ public class DocxStamper
         this.postprocessors = new ArrayList<>(postprocessors);
     }
 
-    private Processors buildProcessors(
-            Map<Class<?>, Function<ParagraphPlaceholderReplacer, Processor>> processorSuppliers,
-            PlaceholderReplacer placeholderReplacer
-    ) {
+    private Processors buildProcessors(Map<Class<?>, Supplier<Processor>> processorSuppliers) {
         var processors = new HashMap<Class<?>, Processor>();
         for (var entry : processorSuppliers.entrySet()) {
-            processors.put(entry.getKey(),
-                    entry.getValue()
-                         .apply(placeholderReplacer));
+            var key = entry.getKey();
+            var value = entry.getValue();
+            processors.put(key, value.get());
         }
         return new Processors(processors);
     }
@@ -100,6 +102,7 @@ public class DocxStamper
             Object context,
             OutputStream output
     ) {
+        template.save();
         new DocxStamper(configuration).stamp(template, context, output);
     }
 

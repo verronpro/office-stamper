@@ -30,25 +30,25 @@ public class ProcessorRegistry {
     private static final Logger logger = LoggerFactory.getLogger(ProcessorRegistry.class);
     private final DocxPart source;
     private final Processors processors;
-    private final ExpressionResolver expressionResolver;
+    private final ExpressionParser expressionParser;
     private final ExceptionResolver exceptionResolver;
     private final ObjectResolverRegistry objectResolverRegistry;
 
     /// Constructs a new ProcessorRegistry.
     ///
     /// @param source             the source part of the Word document.
-    /// @param expressionResolver the resolver for evaluating expressions.
+    /// @param expressionParser the resolver for evaluating expressions.
     /// @param processors         map of comment processor instances keyed by their respective class types.
     /// @param exceptionResolver  the resolver for handling exceptions during processing.
     public ProcessorRegistry(
             DocxPart source,
-            ExpressionResolver expressionResolver,
+            ExpressionParser expressionParser,
             Processors processors,
             ExceptionResolver exceptionResolver,
             ObjectResolverRegistry objectResolverRegistry
     ) {
         this.source = source;
-        this.expressionResolver = expressionResolver;
+        this.expressionParser = expressionParser;
         this.processors = processors;
         this.exceptionResolver = exceptionResolver;
         this.objectResolverRegistry = objectResolverRegistry;
@@ -88,7 +88,6 @@ public class ProcessorRegistry {
             else if (next instanceof CTSdtContentRun run)
                 runProcessorsOnInlineContent(expressionContext, StandardParagraph.from(source, run));
         }
-
         proceedComments.forEach(CommentUtil::deleteComment);
     }
 
@@ -168,8 +167,8 @@ public class ProcessorRegistry {
             processors.setContext(processorContext);
             var placeholder = processorContext.placeholder();
             try {
-                expressionResolver.setContext(context);
-                var resolution = expressionResolver.resolve(placeholder);
+                expressionParser.setContext(context);
+                var resolution = expressionParser.parse(placeholder);
                 var resolve = objectResolverRegistry.resolve(source, placeholder, resolution, "error");
                 paragraph.replace(placeholder, resolve);
                 logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
@@ -234,8 +233,8 @@ public class ProcessorRegistry {
 
     private <T> boolean run(T context, Placeholder commentPlaceholder) {
         try {
-            expressionResolver.setContext(context);
-            expressionResolver.resolve(commentPlaceholder);
+            expressionParser.setContext(context);
+            expressionParser.parse(commentPlaceholder);
             logger.debug("Comment '{}' successfully processed by a comment processor.", commentPlaceholder);
             return true;
         } catch (SpelEvaluationException | SpelParseException e) {

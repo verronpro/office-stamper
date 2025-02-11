@@ -5,7 +5,7 @@ import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.api.Placeholder;
 
-/// Replaces expressions in a document with the values provided by the [ExpressionResolver].
+/// Replaces expressions in a document with the values provided by the [ExpressionParser].
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
@@ -14,14 +14,14 @@ import pro.verron.officestamper.api.Placeholder;
 public class PlaceholderReplacer
         implements ParagraphPlaceholderReplacer {
 
-    private final ExpressionResolver resolver;
+    private final ExpressionParser resolver;
     private final ObjectResolverRegistry registry;
 
     /// Constructor for PlaceholderReplacer.
     ///
     /// @param registry the registry containing all available type resolvers.
     /// @param resolver the expression resolver used to resolve expressions in the document.
-    public PlaceholderReplacer(ObjectResolverRegistry registry, ExpressionResolver resolver) {
+    public PlaceholderReplacer(ObjectResolverRegistry registry, ExpressionParser resolver) {
         this.registry = registry;
         this.resolver = resolver;
     }
@@ -37,7 +37,7 @@ public class PlaceholderReplacer
 
         var placeholders = Placeholders.findVariables(paragraph);
         for (var placeholder : placeholders) {
-            var resolution = resolver.resolve(placeholder);
+            var resolution = resolver.parse(placeholder);
             var errMsg = computeErrMsg(context, placeholder);
             var replacement = registry.resolve(docxPart, placeholder, resolution, errMsg);
             paragraph.replace(placeholder, replacement);

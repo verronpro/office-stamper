@@ -5,7 +5,10 @@ import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.AbstractProcessor;
+import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.Processor;
 import pro.verron.officestamper.preset.ProcessorFactory;
 import pro.verron.officestamper.utils.WmlUtils;
 
@@ -27,17 +30,15 @@ public class DisplayIfProcessor
     private List<Paragraph> paragraphsToBeRemoved = new ArrayList<>();
     private List<Child> elementsToBeRemoved = new ArrayList<>();
 
-    private DisplayIfProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
-        super(placeholderReplacer);
+    private DisplayIfProcessor() {
+
     }
 
     /// Creates a new DisplayIfProcessor instance.
     ///
-    /// @param pr the [ParagraphPlaceholderReplacer] used for replacing expressions.
-    ///
     /// @return a new DisplayIfProcessor instance.
-    public static Processor newInstance(ParagraphPlaceholderReplacer pr) {
-        return new DisplayIfProcessor(pr);
+    public static Processor newInstance() {
+        return new DisplayIfProcessor();
     }
 
     @Override

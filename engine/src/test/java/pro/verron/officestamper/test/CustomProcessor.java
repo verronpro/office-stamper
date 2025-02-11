@@ -29,16 +29,9 @@ public class CustomProcessor
 
     private static final List<Paragraph> visitedParagraphs = new ArrayList<>();
 
-    /// Constructor for CustomProcessor.
-    ///
-    /// @param placeholderReplacer a [ParagraphPlaceholderReplacer] object
-    public CustomProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
-        super(placeholderReplacer);
-    }
-
     @Override
     public void commitChanges(DocxPart document) {
-        visitedParagraphs.forEach(para -> para.apply((P p)->{
+        visitedParagraphs.forEach(para -> para.apply((P p) -> {
             var content = p.getContent();
             content.clear();
             content.add(newRun("Visited"));
@@ -53,12 +46,13 @@ public class CustomProcessor
     public void setCurrentCommentWrapper(Comment comment) {
     }
 
-    @Override public void setParagraph(Paragraph paragraph) {
-        super.setParagraph(paragraph);
+    @Override
+    public void setCurrentRun(R run) {
     }
 
     @Override
-    public void setCurrentRun(R run) {
+    public void setParagraph(Paragraph paragraph) {
+        super.setParagraph(paragraph);
     }
 
     @Override

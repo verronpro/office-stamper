@@ -8,7 +8,6 @@ import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -16,11 +15,6 @@ import java.util.function.Supplier;
 public interface OfficeStamperConfiguration {
 
     ExpressionParser getExpressionParser();
-
-    /// Retrieves the SpelParserConfiguration used by the OfficeStamperConfiguration.
-    ///
-    /// @return the SpelParserConfiguration object used by the OfficeStamperConfiguration.
-    SpelParserConfiguration getSpelParserConfiguration();
 
     /// Sets the SpelParserConfiguration used by the OfficeStamperConfiguration.
     ///
@@ -42,13 +36,10 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param interfaceClass   the interface class associated with the comment processor
     /// @param processorFactory a function that creates a [Processor] object based on the ParagraphPlaceholderReplacer
-    ///                                                 implementation
+    ///                                                                                                 implementation
     ///
     /// @return the updated [OfficeStamperConfiguration] object
-    OfficeStamperConfiguration addProcessor(
-            Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, Processor> processorFactory
-    );
+    OfficeStamperConfiguration addProcessor(Class<?> interfaceClass, Supplier<Processor> processorFactory);
 
     /// Adds a pre-processor to the OfficeStamperConfiguration. A pre-processor is responsible for
     /// processing the document before the actual processing takes place.
@@ -67,9 +58,12 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param evaluationContextConfigurer the EvaluationContextConfigurer for configuring the SPEL EvaluationContext.
     ///
-    ///                                                                                                  Must
+    ///
+    ///                                                                                          Must
+    ///
     ///
     ///                                    implement the
+    ///
     ///
     ///                                                                       evaluateEvaluationContext() method.
     ///
@@ -85,7 +79,7 @@ public interface OfficeStamperConfiguration {
     ///
     /// @return The map of comment processors. The keys are the classes, and the values are the corresponding comment
     /// processors.
-    Map<Class<?>, Function<ParagraphPlaceholderReplacer, Processor>> getProcessors();
+    Map<Class<?>, Supplier<Processor>> getProcessors();
 
     /// Retrieves the list of pre-processors.
     ///

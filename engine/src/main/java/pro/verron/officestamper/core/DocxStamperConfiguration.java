@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /// The [DocxStamperConfiguration] class represents the configuration for the [DocxStamper] class.
@@ -31,7 +30,7 @@ import java.util.function.Supplier;
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
 
-    private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, Processor>> processorSuppliers;
+    private final Map<Class<?>, Supplier<Processor>> processorSuppliers;
     private final List<ObjectResolver> resolvers;
     private final Map<Class<?>, Object> expressionFunctions;
     private final List<PreProcessor> preprocessors;
@@ -66,11 +65,6 @@ public class DocxStamperConfiguration
     @Override
     public ExpressionParser getExpressionParser() {
         return new SpelExpressionParser(spelParserConfiguration);
-    }
-
-    @Override
-    public SpelParserConfiguration getSpelParserConfiguration() {
-        return spelParserConfiguration;
     }
 
     /// Sets the [SpelParserConfiguration] used for expression parsing.
@@ -112,7 +106,7 @@ public class DocxStamperConfiguration
     @Override
     public DocxStamperConfiguration addProcessor(
             Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, Processor> processorFactory
+            Supplier<Processor> processorFactory
     ) {
         this.processorSuppliers.put(interfaceClass, processorFactory);
         return this;
@@ -152,7 +146,7 @@ public class DocxStamperConfiguration
     }
 
     @Override
-    public Map<Class<?>, Function<ParagraphPlaceholderReplacer, Processor>> getProcessors() {
+    public Map<Class<?>, Supplier<Processor>> getProcessors() {
         return processorSuppliers;
     }
 

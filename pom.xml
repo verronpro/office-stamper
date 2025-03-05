@@ -13,7 +13,7 @@
 
     <modules>
         <module>engine</module>
-        <module>examples</module>
+        <module>cli</module>
     </modules>
 
 </project>

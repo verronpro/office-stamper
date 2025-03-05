@@ -23,9 +23,8 @@ class BasicPowerpointTest {
 
         record Person(String name) {}
         var context = new Person("Bart");
-        PresentationMLPackage load = PresentationMLPackage.load(templateStream);
         OutputStream outputStream = getOutputStream();
-        stamper.stamp(load, context, outputStream);
+        stamper.stamp(templateStream, context, outputStream);
         InputStream inputStream = getInputStream(outputStream);
         PresentationMLPackage presentationMLPackage = PresentationMLPackage.load(inputStream);
         Assertions.assertEquals("""

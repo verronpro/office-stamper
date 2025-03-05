@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * The PowerpointStamper class implements the OfficeStamper interface
- * to provide functionality for stamping Powerpoint presentations with
+ * to provide capability for stamping PowerPoint presentations with
  * context and writing the result to an OutputStream.
  */
 public class PowerpointStamper

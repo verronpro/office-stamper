@@ -20,7 +20,7 @@
     </properties>
 
     <build>
-        <finalName>${artifactId}-${version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <pluginManagement>
             <plugins>
 
@@ -30,33 +30,31 @@
                     <version>0.1.5</version>
                     <executions>
                         <execution>
+                            <phase>verify</phase>
                             <goals>
                                 <goal>jpackage</goal>
                             </goals>
                         </execution>
                     </executions>
                     <configuration>
-                        <name>${artifactId}</name>
-                        <appversion>${version}</appversion>
+                        <name>${project.artifactId}</name>
+                        <appversion>${project.version}</appversion>
                         <copyright>${copyright}</copyright>
                         <vendor>${vendor.name}</vendor>
-                        <mainjar>${artifactId}-${version}-jar-with-dependencies.jar</mainjar>
-                        <input>target/</input>
+                        <mainjar>${project.artifactId}-${project.version}-jar-with-dependencies.jar</mainjar>
                         <mainclass>pro.verron.officestamper.Main</mainclass>
-                        <type>EXE</type>
-                        <javaoptions>--enable-preview</javaoptions>
-                        <dest>.</dest>
-                        <icon>${project.basedir}/src/main/resources/app-icon.ico</icon>
-                        <winconsole>false</winconsole>
-                        <winmenu>true</winmenu>
-                        <winshortcut>true</winshortcut>
+                        <input>target/</input>
                     </configuration>
                 </plugin>
 
             </plugins>
         </pluginManagement>
         <plugins>
-
+            <plugin>
+                <groupId>com.github.akman</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>0.1.5</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -93,19 +91,7 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>com.github.akman</groupId>
-                <artifactId>jpackage-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>jpackage-installer</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jpackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
         </plugins>
     </build>
 

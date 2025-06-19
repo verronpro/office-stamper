@@ -5,6 +5,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.DocxStamper;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 import pro.verron.officestamper.preset.CommentProcessorFactory.*;
+import pro.verron.officestamper.preset.preprocessors.googledocscomments.RealignGoogleDocsCommentAnchors;
 import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
 import pro.verron.officestamper.preset.processors.repeat.RepeatProcessor;
 import pro.verron.officestamper.preset.processors.repeatdocpart.RepeatDocPartProcessor;
@@ -74,6 +75,7 @@ public class OfficeStamperConfigurations {
                 Resolvers.nullToEmpty(),
                 Resolvers.fallback()));
 
+        configuration.addPreprocessor(Preprocessors.realignGoogleDocsCommentAnchors());
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
 
         configuration.addCustomFunction("ftime", TemporalAccessor.class)

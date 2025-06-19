@@ -472,7 +472,6 @@ public class Stringifier {
         ofNullable(rPr.getKern()).ifPresent(value -> map.put("kern", String.valueOf(value.getVal())));
         ofNullable(rPr.getLang()).ifPresent(value -> map.put("lang", value.getVal()));
         stringify(rPr.getRFonts()).ifPresent(e -> map.put("rFont", e));
-        ofNullable(rPr.getRPrChange()).ifPresent(value -> map.put("rPrChange", "xxx"));
         ofNullable(rPr.getRStyle()).ifPresent(value -> map.put("rStyle", value.getVal()));
         ofNullable(rPr.getRtl()).ifPresent(value -> map.put("rtl", String.valueOf(value.isVal())));
         ofNullable(rPr.getShadow()).ifPresent(value -> map.put("shadow", String.valueOf(value.isVal())));

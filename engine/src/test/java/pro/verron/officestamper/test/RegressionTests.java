@@ -36,6 +36,24 @@ class RegressionTests {
     }
 
     @Test
+    void testTOC() {
+        var configuration = givenConfiguration();
+        var stamper = givenStamper(configuration);
+        var template = getResource(Path.of("TOC.docx"));
+        var context = givenContext();
+        var actual = stamper.stampAndLoadAndExtract(template, context);
+        assertEquals("\n", actual);
+    }
+
+    private static OfficeStamperConfiguration givenConfiguration() {
+        return standardWithPreprocessing();
+    }
+
+    private static TestDocxStamper<Object> givenStamper(OfficeStamperConfiguration configuration) {
+        return new TestDocxStamper<>(configuration);
+    }
+
+    @Test
     void test64() {
         var configuration = givenConfiguration();
         var testFunction = new TestFunction.TestFunctionImpl();
@@ -46,14 +64,6 @@ class RegressionTests {
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals("\n", actual);
         assertEquals(1, testFunction.counter());
-    }
-
-    private static OfficeStamperConfiguration givenConfiguration() {
-        return standardWithPreprocessing();
-    }
-
-    private static TestDocxStamper<Object> givenStamper(OfficeStamperConfiguration configuration) {
-        return new TestDocxStamper<>(configuration);
     }
 
     private static InputStream givenTemplate(String str) {

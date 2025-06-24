@@ -209,6 +209,10 @@ public class CommentUtil {
             else if (unwrapped instanceof ContentAccessor ca) {
                 deleteCommentFromElements(ca.getContent(), commentId);
             }
+            else if (unwrapped instanceof SdtRun sdtRun) {
+                deleteCommentFromElements(sdtRun.getSdtContent()
+                                                .getContent(), commentId);
+            }
         }
         items.removeAll(elementsToRemove);
     }

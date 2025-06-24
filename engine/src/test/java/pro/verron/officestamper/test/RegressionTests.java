@@ -42,7 +42,40 @@ class RegressionTests {
         var template = getResource(Path.of("TOC.docx"));
         var context = givenContext();
         var actual = stamper.stampAndLoadAndExtract(template, context);
-        assertEquals("\n", actual);
+        var expected = """
+                == Table Of Content
+                
+                [toc 1]  TOC \\o "1-3" \\h \\z \\u [link data=❬Table Of Content❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699773 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1] [link data=❬First Title❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699774 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 1.1❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699775 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1] [link data=❬Second Title❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699776 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 2.1❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699777 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 2.2❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699778 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 2.3❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699779 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1] [link data=❬Third Title❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699780 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 3.1❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699781 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 3.2❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699782 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                == First Title
+                
+                === Subtitle 1.1
+                
+                == Second Title
+                
+                === Subtitle 2.1
+                
+                === Subtitle 2.2
+                
+                === Subtitle 2.3
+                
+                == Third Title
+                
+                === Subtitle 3.1
+                
+                === Subtitle 3.2
+                
+                
+                """;
+        assertEquals(expected, actual);
     }
 
     private static OfficeStamperConfiguration givenConfiguration() {

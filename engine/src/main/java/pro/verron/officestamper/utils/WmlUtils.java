@@ -87,11 +87,18 @@ public final class WmlUtils {
             case ContentAccessor parent -> remove(parent, child);
             case CTFootnotes parent -> remove(parent, child);
             case CTEndnotes parent -> remove(parent, child);
+            case SdtRun parent -> remove(parent, child);
             default -> throw new OfficeStamperException("Unexpected value: " + child.getParent());
         }
         if (child.getParent() instanceof Tc cell && TableCellUtil.hasNoParagraphOrTable(cell)) {
             TableCellUtil.addEmptyParagraph(cell);
         }
+    }
+
+    private static void remove(SdtRun parent, Child child) {
+        parent.getSdtContent()
+              .getContent()
+              .remove(child);
     }
 
     @SuppressWarnings("SuspiciousMethodCalls")

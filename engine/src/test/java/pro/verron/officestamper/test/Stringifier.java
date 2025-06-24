@@ -220,6 +220,8 @@ public class Stringifier {
         if (o instanceof R.ContinuationSeparator) return "\n";
         if (o instanceof R.FootnoteRef) return "";
         if (o instanceof R.EndnoteRef) return "";
+        if (o instanceof FldChar fldChar) return stringify(fldChar).orElse("");
+        if (o instanceof P.Hyperlink hyperlink) return stringify(hyperlink).orElse("");
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
     }
@@ -258,6 +260,16 @@ public class Stringifier {
         } catch (Docx4JException e) {
             throw new OfficeStamperException("Error processing footnotes", e);
         }
+    }
+
+    private Optional<String> stringify(FldChar fldChar) {
+        var fldData = fldChar.getFldData();
+        return ofNullable(fldData).map(Text::getValue)
+                                  .map("[fldchar data=%s]"::formatted);
+    }
+
+    private Optional<String> stringify(P.Hyperlink hyperlink) {
+        return of("[link data=%s]".formatted(stringify(hyperlink.getContent())));
     }
 
     private Optional<String> stringify(CTFtnEdn c) {

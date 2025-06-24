@@ -92,10 +92,11 @@ public class StandardParagraph
     }
 
     @Override public void replace(List<P> toRemove, List<P> toAdd) {
-        int index = siblings().indexOf(p);
+        var siblings = siblings();
+        int index = siblings.indexOf(p);
         if (index < 0) throw new OfficeStamperException("Impossible");
-        siblings().addAll(index, toAdd);
-        siblings().removeAll(toRemove);
+        siblings.addAll(index, toAdd);
+        siblings.removeAll(toRemove);
     }
 
     private List<Object> siblings() {

@@ -80,9 +80,9 @@ public class StandardParagraph
      * @return a new instance of StandardParagraph based on the provided CTSdtContentRun
      */
     public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
-        var p = WmlFactory.newParagraph(paragraph.getContent());
-        p.setParent(paragraph.getParent());
-        return new StandardParagraph(source, paragraph.getContent(), p);
+        var parent = (SdtRun) paragraph.getParent();
+        var parentParent = (P) parent.getParent();
+        return new StandardParagraph(source, paragraph.getContent(), parentParent);
     }
 
     @Override public ProcessorContext processorContext(Placeholder placeholder) {

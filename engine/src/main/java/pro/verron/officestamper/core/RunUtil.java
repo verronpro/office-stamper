@@ -69,6 +69,7 @@ public class RunUtil {
             case R.AnnotationRef ignored -> "";
             case R.CommentReference ignored -> "";
             case Drawing ignored -> "";
+            case FldChar ignored -> "<fldchar>";
             case CTFtnEdnRef ref -> ref.getId()
                                        .toString();
             case R.Sym sym -> "<sym(%s, %s)>".formatted(sym.getFont(), sym.getChar());

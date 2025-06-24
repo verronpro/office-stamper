@@ -12,6 +12,8 @@ import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.function.ThrowingFunction;
 import pro.verron.officestamper.api.DocxPart;
@@ -20,6 +22,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Stream.Builder;
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
@@ -33,6 +36,8 @@ import static pro.verron.officestamper.utils.WmlFactory.newRun;
  * @since 1.4.7
  */
 public class DocumentUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(DocumentUtil.class);
 
     private DocumentUtil() {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
@@ -151,24 +156,26 @@ public class DocumentUtil {
      * Recursively searches for an element in a content tree.
      *
      * @param searchTarget the element to search for
-     * @param content      the content tree to search in
+     * @param searchTree   the content tree to search in
      *
      * @return true if the element is found, false otherwise
      */
-    public static boolean depthElementSearch(Object searchTarget, Object content) {
-        content = XmlUtils.unwrap(content);
-        if (searchTarget.equals(content)) {
-            return true;
-        }
-        else if (content instanceof ContentAccessor contentAccessor) {
-            for (Object object : contentAccessor.getContent()) {
-                Object unwrappedObject = XmlUtils.unwrap(object);
-                if (searchTarget.equals(unwrappedObject) || depthElementSearch(searchTarget, unwrappedObject)) {
-                    return true;
-                }
+    public static boolean depthElementSearch(Object searchTarget, Object searchTree) {
+        var element = XmlUtils.unwrap(searchTree);
+        if (searchTarget.equals(element)) return true;
+
+        var contentContent = switch (element) {
+            case ContentAccessor accessor -> accessor.getContent();
+            case SdtRun sdtRun -> sdtRun.getSdtContent()
+                                        .getContent();
+            default -> {
+                log.warn("Element {} not recognized", element);
+                yield emptyList();
             }
-        }
-        return false;
+        };
+
+        return contentContent.stream()
+                             .anyMatch(obj -> depthElementSearch(searchTarget, obj));
     }
 
     private static ContentAccessor findInsertableParent(Object searchFrom) {

@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -35,9 +36,12 @@ class RegressionTests {
                 arguments(Conditions.values(false, false), "Start\nEnd\nStart\nEnd\n"));
     }
 
+    /**
+     * Test that table of content specific instruction text (instrText) is not modified by error
+     */
     @Test
-    void testTOC() {
-        var configuration = givenConfiguration();
+    void testTableOfContent() {
+        var configuration = OfficeStamperConfigurations.standard();
         var stamper = givenStamper(configuration);
         var template = getResource(Path.of("TOC.docx"));
         var context = givenContext();
@@ -45,16 +49,16 @@ class RegressionTests {
         var expected = """
                 == Table Of Content
                 
-                [toc 1]  TOC \\o "1-3" \\h \\z \\u [link data=❬Table Of Content❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699773 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
-                [toc 1] [link data=❬First Title❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699774 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
-                [toc 2] [link data=❬Subtitle 1.1❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699775 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
-                [toc 1] [link data=❬Second Title❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699776 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
-                [toc 2] [link data=❬Subtitle 2.1❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699777 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
-                [toc 2] [link data=❬Subtitle 2.2❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699778 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
-                [toc 2] [link data=❬Subtitle 2.3❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699779 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
-                [toc 1] [link data=❬Third Title❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699780 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
-                [toc 2] [link data=❬Subtitle 3.1❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699781 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
-                [toc 2] [link data=❬Subtitle 3.2❘{rStyle=Lienhypertexte}❭❬\t❘{webHidden=true}❭❬ PAGEREF _Toc201699782 \\h ❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1] [instrText= TOC \\o "1-3" \\h \\z \\u ][link data=❬Table Of Content❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699773 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1] [link data=❬First Title❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699774 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 1.1❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699775 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1] [link data=❬Second Title❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699776 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 2.1❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699777 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 2.2❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699778 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 2.3❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699779 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1] [link data=❬Third Title❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699780 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 3.1❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699781 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2] [link data=❬Subtitle 3.2❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699782 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
                 == First Title
                 
                 === Subtitle 1.1

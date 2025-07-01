@@ -78,9 +78,8 @@ public class ReplaceWithProcessor
                 List.of(newText(expression)) :
                 nullSupplier.apply(run);
 
-        run.getContent()
-           .clear();
-        run.getContent()
-           .addAll(target);
+        var runContent = run.getContent();
+        runContent.clear();
+        runContent.addAll(target);
     }
 }

@@ -231,7 +231,9 @@ public class StandardParagraph
                                                .listIterator();
             while (runContentIterator.hasNext()) {
                 Object element = runContentIterator.next();
-                if (element instanceof JAXBElement<?> jaxbElement) element = jaxbElement.getValue();
+                if (element instanceof JAXBElement<?> jaxbElement && !jaxbElement.getName().getLocalPart().equals(
+                        "instrText")) element =
+                        jaxbElement.getValue();
                 if (element instanceof Text text) replaceWithBr(placeholder, br, text, runContentIterator);
             }
         }

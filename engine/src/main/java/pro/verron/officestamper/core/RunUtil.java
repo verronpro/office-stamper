@@ -55,7 +55,12 @@ public class RunUtil {
      */
     public static CharSequence getText(Object content) {
         return switch (content) {
-            case JAXBElement<?> jaxbElement -> getText(jaxbElement.getValue());
+            case JAXBElement<?> jaxbElement when jaxbElement.getName()
+                                                            .getLocalPart()
+                                                            .equals("instrText") -> "<instrText>";
+            case JAXBElement<?> jaxbElement when !jaxbElement.getName()
+                                                             .getLocalPart()
+                                                             .equals("instrText") -> getText(jaxbElement.getValue());
             case Text text -> getText(text);
             case R.Tab ignored -> "\t";
             case R.Cr ignored -> "\n";
@@ -84,7 +89,8 @@ public class RunUtil {
         String value = text.getValue();
         String space = text.getSpace();
         return Objects.equals(space, PRESERVE)
-                ? value // keeps spaces if spaces are to be preserved (LibreOffice seems to ignore the "space" property)
+                ? value
+                // keeps spaces if spaces are to be preserved (LibreOffice seems to ignore the "space" property)
                 : value.trim(); // trimming value if spaces are not to be preserved (simulates behavior of Word;)
     }
 
@@ -130,18 +136,15 @@ public class RunUtil {
     }
 
     static int getLength(R run) {
-        return getText(run)
-                .length();
+        return getText(run).length();
     }
 
     static String getSubstring(R run, int beginIndex) {
-        return getText(run)
-                .substring(beginIndex);
+        return getText(run).substring(beginIndex);
     }
 
     static String getSubstring(R run, int beginIndex, int endIndex) {
-        return getText(run)
-                .substring(beginIndex, endIndex);
+        return getText(run).substring(beginIndex, endIndex);
     }
 
     static R create(String text, RPr rPr) {

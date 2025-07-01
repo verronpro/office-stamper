@@ -273,7 +273,7 @@ public class Stringifier {
     private Optional<String> stringify(FldChar fldChar) {
         var fldData = fldChar.getFldData();
         return ofNullable(fldData).map(Text::getValue)
-                                  .map("[fldchar data=%s]"::formatted);
+                                  .map("[fldchar %s]"::formatted);
     }
 
     private Optional<String> stringify(P.Hyperlink hyperlink) {

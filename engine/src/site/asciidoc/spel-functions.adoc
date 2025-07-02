@@ -1,0 +1,90 @@
+= SpEL Functions
+
+OfficeStamper extends the Spring Expression Language (SpEL) with additional functions that can be used in your templates. These functions provide convenient ways to format dates, manipulate strings, and perform other common operations.
+
+== Date and Time Formatting Functions
+
+OfficeStamper provides a rich set of functions for formatting date and time objects:
+
+[cols=">1,4"]
+|===
+| Function | Description
+| `fdate(date)` | Formats a date using ISO_OFFSET_DATE (e.g., "2000-01-12+02:00")
+| `fdatetime(date)` | Formats a date-time using ISO_ZONED_DATE_TIME (e.g., "2000-01-12T23:34:45.000000567+02:00[UTC+02:00]")
+| `ftime(date)` | Formats a time using ISO_OFFSET_TIME (e.g., "23:34:45.000000567+02:00")
+| `finstant(date)` | Formats a date-time as an instant in UTC (e.g., "2000-01-12T21:34:45.000000567Z")
+| `fbasicdate(date)` | Formats a date using BASIC_ISO_DATE (e.g., "20000112+0200")
+| `fordinaldate(date)` | Formats a date using ISO_ORDINAL_DATE (e.g., "2000-012+02:00")
+| `fweekdate(date)` | Formats a date using ISO_WEEK_DATE (e.g., "2000-W02-3+02:00")
+| `f1123datetime(date)` | Formats a date-time using RFC_1123_DATE_TIME (e.g., "Wed, 12 Jan 2000 23:34:45 +0200")
+| `foffsetdate(date)` | Formats a date using ISO_OFFSET_DATE (e.g., "2000-01-12+02:00")
+| `foffsetdatetime(date)` | Formats a date-time using ISO_OFFSET_DATE_TIME (e.g., "2000-01-12T23:34:45.000000567+02:00")
+| `foffsettime(date)` | Formats a time using ISO_OFFSET_TIME (e.g., "23:34:45.000000567+02:00")
+| `fzoneddatetime(date)` | Formats a date-time using ISO_ZONED_DATE_TIME (e.g., "2000-01-12T23:34:45.000000567+02:00[UTC+02:00]")
+| `flocaldate(date)` | Formats a date using ISO_LOCAL_DATE (e.g., "2000-01-12")
+| `flocaldate(date, style)` | Formats a date using the specified style (FULL, LONG, MEDIUM, or SHORT)
+| `flocaltime(date)` | Formats a time using ISO_LOCAL_TIME (e.g., "23:34:45.000000567")
+| `flocaltime(date, style)` | Formats a time using the specified style (FULL, LONG, MEDIUM, or SHORT)
+| `flocaldatetime(date)` | Formats a date-time using ISO_LOCAL_DATE_TIME (e.g., "2000-01-12T23:34:45.000000567")
+| `flocaldatetime(date, style)` | Formats a date-time using the specified style for both date and time
+| `flocaldatetime(date, dateStyle, timeStyle)` | Formats a date-time using the specified styles for date and time separately
+| `fpattern(date, pattern)` | Formats a date-time using a custom pattern
+| `fpattern(date, pattern, locale)` | Formats a date-time using a custom pattern and locale
+|===
+
+=== Examples
+
+[source]
+----
+${fdate(order.date)}
+${flocaldate(invoice.date, 'FULL')}
+${fpattern(meeting.time, 'EEEE, MMMM d, yyyy h:mm a')}
+${fpattern(event.date, 'dd MMMM yyyy', 'fr')}
+----
+
+== Using Functions in Templates
+
+Functions can be used directly in expressions within your templates:
+
+[source]
+----
+Order Date: ${fdate(order.date)}
+Due Date: ${fpattern(order.dueDate, 'MMMM d, yyyy')}
+----
+
+They can also be combined with other SpEL features:
+
+[source]
+----
+${order.status == 'OVERDUE' ? 'OVERDUE as of ' + fdate(order.dueDate) : 'Due on ' + fdate(order.dueDate)}
+----
+
+== Custom Functions
+
+You can add your own custom functions to extend the expression language. See the link:custom-settings.html[Custom Settings] section for more information on how to register custom functions.
+
+=== Examples of Custom Functions
+
+Here are some examples of custom functions you might want to add:
+
+[source,java]
+----
+// Add a function to get the current date
+config.addCustomFunction("today", () -> LocalDate.now());
+
+// Add a function to censor sensitive text
+config.addCustomFunction("censor", String.class, input -> input.replace("f-word", "f**k"));
+
+// Add a function to sum two numbers
+config.addCustomFunction("add", Integer.class, Integer.class, (a, b) -> a + b);
+
+// Add a function to format a date with a pattern and locale
+config.addCustomFunction("format", LocalDate.class, String.class, String.class,
+    (date, pattern, locale) -> DateTimeFormatter.ofPattern(pattern, locale).format(date));
+----
+
+== Next Steps
+
+* Learn about link:custom-settings.html[Custom Settings] for adding your own functions
+* Explore link:advanced-features.html[Advanced Features] for more complex scenarios
+* See link:troubleshooting.html[Troubleshooting] for help with common issues

@@ -1,0 +1,157 @@
+= Troubleshooting
+
+This page provides solutions for common issues you might encounter when using OfficeStamper.
+
+== Common Errors and Solutions
+
+=== Expression Evaluation Errors
+
+==== Symptoms
+- Exception with message like "Failed to evaluate expression: ${...}"
+- Placeholders remain unchanged in the output document
+- `OfficeStamperException` with details about the expression that failed
+
+==== Possible Causes and Solutions
+
+[cols="1,2"]
+|===
+| Cause | Solution
+| Syntax error in expression | Check the expression syntax. Make sure all brackets, quotes, and operators are correctly placed.
+| Missing property in context object | Ensure the property exists in your context object and is accessible (has a getter method or is public).
+| Null value in property chain | Use the safe navigation operator (`?.`) to handle potential null values in property chains, e.g., `${person?.address?.city}`.
+| Type mismatch | Ensure the types in your expressions match the expected types. For example, don't try to call string methods on numbers.
+|===
+
+==== Customizing Error Handling
+
+You can customize how OfficeStamper handles expression evaluation errors:
+
+[source,java]
+----
+// Default behavior: throw an exception
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
+    .setExceptionResolver(ExceptionResolvers.throwing());
+
+// Alternative: leave placeholders unchanged and log the error
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
+    .setExceptionResolver(ExceptionResolvers.passing());
+
+// Alternative: replace failed expressions with a default value
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
+    .setExceptionResolver(ExceptionResolvers.defaulting("ERROR"));
+----
+
+=== Comment Processing Errors
+
+==== Symptoms
+- Exception with message like "Failed to process comment: ..."
+- Comments remain in the output document
+- Unexpected document structure
+
+==== Possible Causes and Solutions
+
+[cols="1,2"]
+|===
+| Cause | Solution
+| Invalid comment syntax | Ensure the comment follows the expected format for the processor you're using.
+| Missing or invalid parameters | Check that the parameters passed to the comment processor are of the correct type and exist in your context.
+| Collection is null or empty | When using `repeatXXX` processors, ensure the collection is not null and contains elements.
+| Condition evaluates to null | When using `displayXXXIf` processors, ensure the condition evaluates to a boolean, not null.
+|===
+
+=== Formatting Issues
+
+==== Symptoms
+- Text appears with unexpected formatting
+- Images are too large or too small
+- Tables have incorrect structure
+
+==== Possible Causes and Solutions
+
+[cols="1,2"]
+|===
+| Cause | Solution
+| Complex formatting in template | Simplify the formatting in your template. Use basic styles and avoid complex nested formatting.
+| Image size not specified | Set the width and height of images using the `Image` class methods.
+| Table structure mismatch | When using `resolveTable`, ensure your `StampTable` structure matches the expected format.
+| Line breaks not working | Ensure you're using the correct line break placeholder (default is `\n`).
+|===
+
+=== Performance Issues
+
+==== Symptoms
+- Slow processing of documents
+- High memory usage
+- OutOfMemoryError
+
+==== Possible Causes and Solutions
+
+[cols="1,2"]
+|===
+| Cause | Solution
+| Large documents | Process documents in smaller chunks if possible.
+| Many repeated sections | Limit the number of repetitions or split the document into multiple smaller documents.
+| Complex expressions | Simplify expressions and avoid unnecessary calculations.
+| Memory leaks | Ensure you're closing all resources properly using try-with-resources.
+|===
+
+== Debugging Techniques
+
+=== Logging
+
+OfficeStamper uses SLF4J for logging. You can configure your logging framework to see more detailed information about what's happening during the stamping process.
+
+Example with Logback:
+
+[source,xml]
+----
+<logger name="pro.verron.officestamper" level="DEBUG" />
+----
+
+=== Inspecting the Template
+
+Sometimes issues arise from the template itself. You can:
+
+1. Open the .docx file in Word
+2. Check for hidden text or fields that might interfere with expressions
+3. Verify that comments are correctly attached to the intended paragraphs or elements
+4. Simplify complex formatting
+
+=== Examining the Context Object
+
+Make sure your context object contains all the expected properties and they have the correct values:
+
+[source,java]
+----
+// Before stamping, log the context object
+System.out.println("Context: " + context);
+
+// Or create a simple test to verify properties
+assert context.getPerson().getName() != null : "Person name is null";
+----
+
+=== Creating a Minimal Reproduction
+
+If you're having trouble identifying the issue, try creating a minimal reproduction:
+
+1. Start with a simple template and context
+2. Add elements one by one until the issue appears
+3. This helps isolate exactly what's causing the problem
+
+== Getting Help
+
+If you're still having issues after trying the solutions above:
+
+1. Check the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] to see if someone else has reported the same problem
+2. Create a new issue with:
+   - A minimal reproduction of the problem
+   - Your template document (if possible)
+   - The code you're using to stamp the document
+   - The full stack trace of any exceptions
+   - Expected vs. actual output
+
+== Next Steps
+
+* Return to the link:index.html[Documentation Home]
+* Check the link:release-notes.html[Release Notes] for known issues in your version
+* See the link:contributing.html[Contributing] guide if you want to help improve OfficeStamper

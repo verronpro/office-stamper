@@ -1,0 +1,90 @@
+= Release Notes
+
+This page provides information about the latest releases of OfficeStamper, including new features, bug fixes, and other changes.
+
+== Latest Release
+
+=== v2.7.0
+
+==== Features
+
+* Add the `PostProcessor` concept to be able to add cleaners or summaries at stamping finish.
+* #68 Filled to `displayXXXIf` panoply with:
+** `displayParagraphIf(boolean)`, `displayParagraphIfPresent(object)` and `displayParagraphIfAbsent(object)`
+** `displayTableRowIf(boolean)`, `displayTableRowIfPresent(object)` and `displayTableRowIfAbsent(object)`
+** `displayTableIf(boolean)`, `displayTableIfPresent(object)` and `displayTableIfAbsent(object)`
+** `displayWordsIf(boolean)`, `displayWordsIfPresent(object)` and `displayWordsIfAbsent(object)`
+** `displayDocPartIf(boolean)`, `displayDocPartIfPresent(object)` and `displayDocPartIfAbsent(object)`
+* The two provided evaluation context configurer now include the classic Get Accessor and the Map Accessor, so the object used as context can be much more flexible.
+** ie. `$+{name}+` can now refer to an object `getName()` method or to a map `get("name")` value.
+
+==== Bugfixes
+
+* BREAKING - `Paragraph#getComment` now returns a Collection instead of an Optional, because one paragraph can have several comments.
+Fixes a bug when commenting several groups of runs by different comments in a single paragraph.
+* #69 Office-stamper is now aware of Footnotes and Endnotes, it only cleans orphaned notes with `standardWithPreprocessing` configuration for now, but probably going to run the stamping as well in future versions.
+* #510 All `repeatXXX` can now accept Iterable as input
+
+==== Dependencies
+
+* Bump `org.docx4j:docx4j-core` from `11.5.0` to `11.5.1`
+* Bump `org.docx4j:docx4j-JAXB-ReferenceImpl` from `11.5.0` to `11.5.1`
+* Bump `org.springframework:spring-expression` from `6.1.14` to `6.2.1`
+* Bump `org.springframework:spring-context` from `6.1.14` to `6.2.1`
+
+==== Continuous Integration
+
+* Bump `org.junit.jupiter:junit-jupiter` from `5.11.3` to `5.11.4`
+* Bump `org.pitest:pitest-maven` from `1.17.0` to `1.17.3`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.1` to `3.5.2`
+* Bump `org.apache.maven.plugins:maven-site-plugin` from `3.20.0` to `3.21.0`
+* Bump `org.apache.maven.plugins:maven-project-info-reports-plugin` from `3.7.0` to `3.8.0`
+* Bump `org.apache.maven.plugins:maven-surefire-report-plugin` from `3.5.1` to `3.5.2`
+* Bump `org.apache.maven.reporting:maven-reporting-exec` from `2.0.0-M14` to `2.0.0`
+* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.1.0` to `3.1.1`
+* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.1` to `3.11.2`
+* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.5` to `3.2.7`
+
+==== Refactorings
+
+* Removed the old `ObjectDeleter` utility class to use mostly `WmlUtils#remove` method instead.
+* All Lang info is removed with `standardWithPreprocessing` configuration now.
+
+==== Tests
+
+* Create the ObjectContextFactory, and the MapContextFactory to test all use cases with POJO Beans and Map equally.
+* Fix a bug in Locale when some test failed
+* Move processors-specific test outside the DefaultTest class
+* #114 added a test to trace this still unresolved issue.
+* Word 2 String now includes comments, endnotes and footnotes
+* String 2 Word now includes comments
+
+== Previous Releases
+
+For information about previous releases, please see the link:https://github.com/verronpro/docx-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
+
+== Upgrading
+
+=== From v2.6.x to v2.7.0
+
+* If you were using `Paragraph#getComment()`, you'll need to update your code to handle a Collection instead of an Optional.
+* Update your dependencies to the latest versions.
+
+=== From v2.5.x to v2.6.x
+
+* No breaking changes.
+* Update your dependencies to the latest versions.
+
+=== From v2.4.x to v2.5.x
+
+* No breaking changes.
+* Update your dependencies to the latest versions.
+
+== Reporting Issues
+
+If you encounter any issues with a release, please report them on the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] page.
+
+== Next Steps
+
+* Return to the link:index.html[Documentation Home]
+* See the link:contributing.html[Contributing] guide if you want to help improve OfficeStamper

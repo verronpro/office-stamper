@@ -1,3 +1,23 @@
-:root: ../../..
+= OfficeStamper Documentation
 
-include::{root}/README.adoc[]
+OfficeStamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
+You design a template using your preferred Word processor; and OfficeStamper will generate documents based on that template.
+
+== Documentation Sections
+
+* link:introduction.html[Introduction]
+* link:getting-started.html[Getting Started]
+* link:template-expressions.html[Template Expressions]
+* link:comment-processors.html[Comment Processors]
+* link:spel-functions.html[SpEL Functions]
+* link:custom-settings.html[Custom Settings]
+* link:advanced-features.html[Advanced Features]
+* link:troubleshooting.html[Troubleshooting]
+* link:release-notes.html[Release Notes]
+* link:contributing.html[Contributing]
+
+== Quick Links
+
+* link:https://github.com/verronpro/docx-stamper[GitHub Repository]
+* link:dependency-info.html[Maven Dependency Information]
+* link:apidocs/index.html[Javadoc API Documentation]

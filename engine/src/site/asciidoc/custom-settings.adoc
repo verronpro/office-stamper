@@ -1,0 +1,195 @@
+= Custom Settings
+
+OfficeStamper provides various ways to customize its behavior to suit your specific needs. This page explains how to configure the library with custom resolvers, functions, comment processors, and more.
+
+== Configuration Basics
+
+OfficeStamper uses a configuration object to customize its behavior. You can create a configuration and pass it to the stamper:
+
+[source,java]
+----
+// Create a configuration with standard settings and preprocessing
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+
+// Customize the configuration
+// ...
+
+// Create a stamper with the custom configuration
+var stamper = OfficeStampers.docxStamper(configuration);
+----
+
+== Custom Resolvers
+
+You can expand the resolution capability by implementing custom `ObjectResolver` interfaces. This allows you to handle specific types or formatting requirements.
+
+[source,java]
+----
+// Create a custom resolver for a specific type
+var customResolver = new StringResolver(YourCustomType.class) {
+    @Override
+    public String resolve(YourCustomType object) {
+        return doYourStuffHere(); // Your implementation
+    }
+};
+
+// Add the resolver to the configuration
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+configuration.addResolver(customResolver);
+
+// Create a stamper with the custom configuration
+var stamper = OfficeStampers.docxStamper(configuration);
+----
+
+== Custom Functions
+
+OfficeStamper lets you add custom functions to the expression language. This is useful for specific formats, calculations, or other operations you need in your templates.
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+
+// Add a function with no parameters
+configuration.addCustomFunction("today", () -> LocalDate.now());
+
+// Add a function with one parameter
+configuration.addCustomFunction("censor", String.class,
+    input -> input.replace("f-word", "f**k"));
+
+// Add a function with two parameters
+configuration.addCustomFunction("add", Integer.class, Integer.class,
+    (a, b) -> a + b);
+
+// Add a function with three parameters
+configuration.addCustomFunction("format", LocalDate.class, String.class, String.class,
+    (date, pattern, locale) -> DateTimeFormatter.ofPattern(pattern, locale).format(date));
+----
+
+You can also expose an entire interface to the expression language:
+
+[source,java]
+----
+// Define an interface with the functions you want to expose
+interface StringFunctionProvider {
+    String toUppercase(String string);
+    String toLowercase(String string);
+}
+
+// Implement the interface
+class StringFunctionProviderImpl implements StringFunctionProvider {
+    public String toUppercase(String string) {
+        return string.toUpperCase();
+    }
+
+    public String toLowercase(String string) {
+        return string.toLowerCase();
+    }
+}
+
+// Expose the interface to the expression language
+configuration.exposeInterfaceToExpressionLanguage(
+    StringFunctionProvider.class,
+    new StringFunctionProviderImpl()
+);
+----
+
+== Custom Comment Processors
+
+For additional flexibility, you can create your own comment processors by implementing the `ICommentProcessor` interface.
+
+[source,java]
+----
+// Define an interface for your comment processor
+interface IYourCommentProcessor {
+    void yourComment(String parameter);
+    void yourSecondComment(String param1, CustomType param2);
+}
+
+// Implement the comment processor
+class YourCommentProcessor extends BaseCommentProcessor implements IYourCommentProcessor {
+    @Override
+    public void yourComment(String parameter) {
+        // Implementation
+    }
+
+    @Override
+    public void yourSecondComment(String param1, CustomType param2) {
+        // Implementation
+    }
+
+    @Override
+    public void commitChanges(WordprocessingMLPackage document) {
+        // Do something to the document
+    }
+
+    @Override
+    public void reset() {
+        // Reset processor state for re-run of the stamper
+    }
+}
+
+// Register the comment processor
+var commentProcessor = new YourCommentProcessor();
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
+    .addCommentProcessor(IYourCommentProcessor.class, commentProcessor);
+----
+
+== Custom SpEL Evaluation Context
+
+At times, you might want more control over how expressions are evaluated. You can customize the Spring `StandardEvaluationContext` according to your requirements.
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+
+// Use the default configurer (safer, with limited features)
+configuration.setEvaluationContextConfigurer(
+    EvaluationContextConfigurers.defaultConfigurer()
+);
+
+// Or use the noop configurer (more features, potentially less safe)
+configuration.setEvaluationContextConfigurer(
+    EvaluationContextConfigurers.noopConfigurer()
+);
+
+// Or create a custom configurer
+configuration.setEvaluationContextConfigurer(ctx -> {
+    // Add a property accessor for maps
+    ctx.addPropertyAccessor(new MapAccessor());
+
+    // Add other customizations
+    // ...
+});
+----
+
+== Error Handling
+
+You can customize how OfficeStamper handles errors during expression evaluation:
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
+    // Throw an exception as soon as an error occurs (default)
+    .setExceptionResolver(ExceptionResolvers.throwing())
+
+    // Or do nothing on error, leaving erroneous placeholders in place
+    //.setExceptionResolver(ExceptionResolvers.passing())
+
+    // Or replace erroneous placeholders with a default value
+    //.setExceptionResolver(ExceptionResolvers.defaulting("ERROR"));
+----
+
+== Linebreak Replacement
+
+You can configure how line breaks are handled in your templates:
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
+    .setLineBreakPlaceholder("\\n"); // Default is "\n"
+----
+
+== Next Steps
+
+* Explore link:advanced-features.html[Advanced Features] for more complex scenarios
+* See link:troubleshooting.html[Troubleshooting] for help with common issues
+* Check out the link:https://github.com/verronpro/docx-stamper/tree/main/engine/src/test/java/pro/verron/officestamper/test[test directory] for examples of various configurations

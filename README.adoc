@@ -1,83 +1,30 @@
 // suppress inspection "AsciiDocLinkResolve" for whole file
 :proj: https://github.com/verronpro/docx-stamper
 :repo: https://github.com/verronpro/docx-stamper/blob/main
-:module: pro.verron.officestamper
-:engine: https://github.com/verronpro/docx-stamper/blob/main/engine/src/main/java/pro/verron/officestamper/
+:docs: https://verronpro.github.io/docx-stamper
 
 = OfficeStamper
+
+image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-os.yml]
+image:{proj}/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-docx4j.yml]
+image:{proj}/actions/workflows/analyze.yml/badge.svg[Build Status,link={proj}/actions/workflows/analyze.yml]
+image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/actions/workflows/pages.yml]
 
 == Introduction
 
 OfficeStamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
 You design a template using your preferred Word processor; and OfficeStamper will generate documents based on that template.
 
-image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-os.yml] image:{proj}/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-docx4j.yml] image:{proj}/actions/workflows/analyze.yml/badge.svg[Build Status,link={proj}/actions/workflows/analyze.yml] image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/actions/workflows/pages.yml]
+== Key Features
 
-== Release Notes
+* **Expression-based templating**: Use Spring Expression Language (SpEL) for powerful template expressions
+* **Comment-based processing**: Add special instructions as comments in your Word documents
+* **Formatting preservation**: All formatting from the original template is preserved
+* **Custom functions**: Extend the templating capabilities with your own functions
+* **Type-safe**: Strong typing for Java integration
+* **Flexible configuration**: Customize the behavior to suit your needs
 
-=== {proj}/releases/tag/v2.7.0[v2.7.0]
-
-==== Features
-
-* Add the `PostProcessor` concept to be able to add cleaners or summaries at stamping finish.
-* #68 Filled to `displayXXXIf` panoply with:
-** `displayParagraphIf(boolean)`, `displayParagraphIfPresent(object)` and `displayParagraphIfAbsent(object)`
-** `displayTableRowIf(boolean)`, `displayTableRowIfPresent(object)` and `displayTableRowIfAbsent(object)`
-** `displayTableIf(boolean)`, `displayTableIfPresent(object)` and `displayTableIfAbsent(object)`
-** `displayWordsIf(boolean)`, `displayWordsIfPresent(object)` and `displayWordsIfAbsent(object)`
-** `displayDocPartIf(boolean)`, `displayDocPartIfPresent(object)` and `displayDocPartIfAbsent(object)`
-* The two provided evaluation context configurer now include the classic Get Accessor and the Map Accessor, so the object used as context can be much more flexible.
-** ie. `$+{name}+` can now refer to an object `getName()` method or to a map `get("name")` value.
-
-==== Bugfixes
-
-* BREAKING - `Paragraph#getComment` now returns a Collection instead of an Optional, because one paragraph can have several comments.
-Fixes a bug when commenting several groups of runs by different comments in a single paragraph.
-* #69 Office-stamper is now aware of Footnotes and Endnotes, it only cleans orphaned notes with `standardWithPreprocessing` configuration for now, but probably going to run the stamping as well in future versions.
-* #510 All `repeatXXX` can now accept Iterable as input
-
-==== Dependencies
-
-* Bump `org.docx4j:docx4j-core` from `11.5.0` to `11.5.1`
-* Bump `org.docx4j:docx4j-JAXB-ReferenceImpl` from `11.5.0` to `11.5.1`
-
-* Bump `org.springframework:spring-expression` from `6.1.14` to `6.2.1`
-* Bump `org.springframework:spring-context` from `6.1.14` to `6.2.1`
-
-==== Continuous Integration
-
-* Bump `org.junit.jupiter:junit-jupiter` from `5.11.3` to `5.11.4`
-* Bump `org.pitest:pitest-maven` from `1.17.0` to `1.17.3`
-* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.1` to `3.5.2`
-
-* Bump `org.apache.maven.plugins:maven-site-plugin` from `3.20.0` to `3.21.0`
-* Bump `org.apache.maven.plugins:maven-project-info-reports-plugin` from `3.7.0` to `3.8.0`
-* Bump `org.apache.maven.plugins:maven-surefire-report-plugin` from `3.5.1` to `3.5.2`
-* Bump `org.apache.maven.reporting:maven-reporting-exec` from `2.0.0-M14` to `2.0.0`
-* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.1.0` to `3.1.1`
-* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.1` to `3.11.2`
-
-* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.5` to `3.2.7`
-
-==== Refactorings
-
-* Removed the old `ObjectDeleter` utility class to use mostly `WmlUtils#remove` method instead.
-* All Lang info is removed with `standardWithPreprocessing` configuration now.
-
-==== Tests
-
-* Create the ObjectContextFactory, and the MapContextFactory to test all use cases with POJO Beans and Map equally.
-* Fix a bug in Locale when some test failed
-* Move processors-specific test outside the DefaultTest class
-* #114 added a test to trace this still unresolved issue.
-* Word 2 String now includes comments, endnotes and footnotes
-* String 2 Word now includes comments
-
-=== Previous releases notes link:RELEASE_NOTES.adoc[here]
-
-== Usage
-
-Here is a code snippet exemplifying how to use OfficeStamper:
+== Quick Start
 
 [source,java]
 ----
@@ -101,292 +48,60 @@ class Example {
 }
 ----
 
-== Template Expressions and Their Usage
-
-The foundation of OfficeStamper lies in its ability to *replace expressions* within the text of a .docx template document.
-Conveniently, add expressions such as `${person.name}` or `${person.name.equals(&quot;Homer&quot;) ? &quot;Duff&quot; :
-&quot;Budweiser&quot;}` in the text of the .docx file you're using as a template.
-Then, provide a context object to resolve the placeholder.
-Don't worry about formatting, OfficeStamper will maintain the original text's formatting in the template.
-You have full access to the extensive feature set of link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[Spring Expression Language (SpEL)].
-
-=== Resolvers Order
-
-[cols="1,2,2",options="header"]
-|===
-| Default Resolvers         | When the placeholder resolves to a | It will be replaced in the document with
-| `Resolvers.image()`       | `link:{engine}preset/Image.java[{module}.preset.Image]` | an inline image
-| `Resolvers.legacyDate()`  | `java.util.Date`                   | a formatted Date string (default "dd.MM.yyyy")
-| `Resolvers.isoDate()`     | `java.time.LocalDate`              | a formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE)
-| `Resolvers.isoTime()`     | `java.time.LocalTime`              | a formatted Date string (default DateTimeFormatter.ISO_LOCAL_TIME)
-| `Resolvers.isoDateTime()` | `java.time.LocalDateTime`          | a formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-| `Resolvers.nullToEmpty()` | `null`                             | an empty string
-| `Resolvers.fallback()`    | `Object`                           | the result of the call to `String.valueOf()` method on the object
-|===
-
-If a placeholder fails to resolve successfully, OfficeStamper will skip it, the placeholder in the document remains the same as its initial state in the template.
-
-=== Comment Processors
-
-Alongside expression replacement, Office-Stamper presents the feature of *processing comments* associated with paragraphs in your .docx template.
-These comments act as directives for manipulating the template.
-As a standard, the following expressions can be used within comments:
-
-.Default activated comment processors
-[cols=">1,4"]
-|===
-| Expression in .docx comment           | Effect on the commented paragraph/paragraphs
-| `displayParagraphIf(boolean)`         | It is only displayed if condition resolves to `true`.
-| `displayTableRowIf(boolean)`          | The table row around it is only displayed if condition resolves to `true`.
-| `displayTableIf(boolean)`             | The whole table around it is only displayed if condition resolves to `true`.
-| `repeatParagraph(List&lt;Object&gt;)` | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list.
-| `repeatTableRow(List&lt;Object&gt;)`  | The table row around it is copied once for each object in the passed-in list. Expressions found in the cells of the table row are evaluated against the object from the list.
-| `repeatDocPart(List&lt;Object&gt;)`   | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
-| `replaceWordWith(expression)`         | Replace the commented word with the value of the given expression.
-| `resolveTable(StampTable)`            | Replace a table (that must have one column and two rows) with the values given by the StampTable. The StampTable contains a list of headers for columns, and a 2-level list of rows containing values for each column.
-|===
-
-By default, an exception is thrown if a comment fails to process.
-However, successfully processed comments are wiped from the document.
-
-=== SpEL functions
-
-Office-stamper provides some function already added to the standard configuration, notably to format date & time objects.
-
-.Default activated comment processors
-[cols=">1,4"]
-|===
-| Function in .docx           | Effect on the January 1st, 2000 at the 23h34m45s 567 nano, and from zone UTC+2 in Korean Locale
-| `fdate(date)`               | ISO: 2000-01-12+02:00
-| `fdatetime(date)`           | ISO: 2000-01-12T23:34:45.000000567+02:00[UTC+02:00]
-| `ftime(date)`               | ISO: 23:34:45.000000567+02:00
-| `finstant(date)`            | ISO: 2000-01-12T21:34:45.000000567Z
-| `fbasicdate(date)`          | ISO: 20000112+0200
-| `fordinaldate(date)`        | ISO: 2000-012+02:00
-| `fweekdate(date)`           | ISO: 2000-W02-3+02:00
-| `f1123datetime(date)`       | Wed, 12 Jan 2000 23:34:45 +0200
-| `foffsetdate(date)`         | ISO: 2000-01-12+02:00
-| `foffsetdatetime(date)`     | ISO: 2000-01-12T23:34:45.000000567+02:00
-| `foffsettime(date)`         | ISO: 23:34:45.000000567+02:00
-| `fzoneddatetime(date)`      | ISO: 2000-01-12T23:34:45.000000567+02:00[UTC+02:00]
-| `flocaldate(date)`          | ISO: 2000-01-12
-| `flocaldate(date, style)`   | Style can be FULL, LONG, MEDIUM or SHORT: 2000년 1월 12일 수요일 to 00. 1. 12.
-| `flocaltime(date)`          | 23:34:45.000000567
-| `flocaltime(date, String)`  | Style can be FULL, LONG, MEDIUM or SHORT: 오후 11시 34분 45초 UTC+02:00 to 오후 11:34
-| `flocaldatetime(date)`      | 2000-01-12T23:34:45.000000567
-| `flocaldatetime(date, style)` | Style can be FULL, LONG, MEDIUM or SHORT for the same effect as flocaldate or flocaltime
-| `flocaldatetime(date, dateStyle, timeStyle)`  | Style can be FULL, LONG, MEDIUM or SHORT for the same effect as flocaldate or flocaltime
-| `fpattern(date, pattern)`            | run your own datetime pattern
-| `fpattern(date, pattern, locale)`            | run your own datetime pattern with a specified locale
-|===
-
-== Custom settings
-
-=== Custom resolvers
-
-You can expand the resolution capability by implementing custom `link:{engine}api/ObjectResolver.java[ObjectResolver]`.
-
-Here's a code snippet on how to proceed:
-
-[source,java]
-----
-class Main {
-    public static void main(String... args) {
-        // instance of your own ObjectResolver implementation
-        var customResolver = new StringResolver(YourCustomType.class){
-            @Override public String resolve(YourCustomType object){
-                return doYourStuffHere(); // this is your implementation detail
-            }
-        };
-
-        var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
-        configuration.addResolver(resolver);
-
-        var stamper = OfficeStampers.docxStamper(configuration);
-    }
-}
-----
-
-=== Custom functions
-
-OfficeStamper lets you add custom functions to the tool's expression language.
-For example, if you need specific formats for numbers or dates, you can register such functions which can then be used in the placeholders throughout your template.
-
-Below is a sample code demonstrating how to extend the expression language with a custom function.
-This particular example adds a function `toUppercase(String)`, enabling you to convert any text in your .docx document to uppercase.
-
-[source,java]
-----
-import java.time.LocalDate;import java.time.format.DateTimeFormatter;class Main {
-    public static void main(String... args) {
-        var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
-
-        // add `today()` function to use in the template to retrieve current date, at time of running the stamping
-        config.addCustomFunction("today", () -> LocalDate.now());
-
-        // add `censor(String)` function, to remove the f-word from resolved template values.
-        config.addCustomFunction("censor", String.class, input -> input.replace("f-word", "f**k"));
-
-        // add `add(Integer, Integer)` function to sum 2 values together after their resolution.
-        config.addCustomFunction("add", Integer.class, Integer.class, (a, b) -> a + b);
-
-        // add `format(Date, String, String)` function to format a date with a pattern and a locale.
-        config.addCustomFunction("format", LocalDate.class, String.class, String.class, (date, pattern, locale) -> DateTimeFormatter.ofPattern(pattern, locale).format(date));
-
-        //
-        interface StringFunctionProvider {
-            String toUppercase(String string);
-            String toLowercase(String string);
-        }
-
-        class StringFunctionProviderImpl implements StringFunctionProvider {
-            String toUppercase(String string){return string.toUpperCase();}
-            String toLowercase(String string){return string.toUpperCase();}
-        }
-
-        configuration.exposeInterfaceToExpressionLanguage(UppercaseFunction.class, new StringFunctionProviderImpl());
-        var stamper = OfficeStampers.docxStamper(configuration);
-    }
-}
-----
-
-Chains of such custom functions can enhance the versatility of OfficeStamper, making it able to handle complex and unique templating situations.
-
-=== Custom Comment Processors
-
-For additional flexibility, create your own expression within comments by implementing your `link:{repo}/src/main/java/org/wickedsource/docxstamper/api/commentprocessor/ICommentProcessor.java[ICommentProcessor]`.
-
-Here's an example of how to create and register a custom comment processor:
-
-[source,java]
-----
-class Main {
-    public static void main(String... args) {
-        // interface defining the methods to expose to the expression language
-        interface IYourCommentProcessor {
-            void yourComment(String _); // 1+ argument of the type you expect to see in the document
-            void yourSecondComment(String _, CustomType _); // theoretically, any number of comment can be added
-        }
-        class YourCommentProcessor extends BaseCommentProcessor {
-            @Override public void commitChanges(WordprocessingMLPackage document) {/*Do something to the document*/}
-            @Override public void reset() {/* reset processor state for re-run of the stamper */}
-        }
-        var commentProcessor = new YourCommentProcessor();
-        var configuration = new DocxStamperConfiguration()
-                .addCommentProcessor(IYourCommentProcessor.class, commentProcessor);
-        var stamper = OfficeStampers.docxStamper(configuration);
-    }
-}
-----
-
-=== Custom SpEL Evaluation Context
-
-At times, you might want to exert more control over how expressions are evaluated.
-With Office-Stamper, there's provision for such scenarios.
-Here’s how:
-
-Implement your own `link:{engine}api/EvaluationContextConfigurer.java[EvaluationContextConfigurer]`.
-This allows you to customize Springs `StandardEvaluationContext` according to your requirements.
-
-Here's a code snippet on how to proceed:
-
-[source,java ]
-----
-import org.springframework.context.expression.MapAccessor;
-class Main {
-    public static void main(String... args) {
-        var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
-
-        // explicitly set the default configurer, that only allows a subset of SpEL features
-        configuration.setEvaluationContextConfigurer(EvaluationContextConfigurers.defaultConfigurer());
-
-        // or choose the more full-featured but potentially unsafe noopConfigurer
-        configuration.setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer());
-
-        // or call other sources, like MapAccessor from org.springframework.context, that allow resolving Map objects
-        configuration.setEvaluationContextConfigurer(ctx -> ctx.addPropertyAccessor(new MapAccessor()));
-
-        var stamper = OfficeStampers.docxStamper(configuration);
-    }
-}
-----
-
-This feature empowers you with greater flexibility and enhanced control over the expression evaluation process, fitting Office-Stamper seamlessly into complex scenarios and requirements.
-
-== Linebreak Replacement
-
-The `setLineBreakPlaceholder(String lineBreakPlaceholder)` method is used to replace the provided placeholder with a line break while stamping the document.
-
-Please note that by default `\n` is provided.
-
-== Conditional and Repetitive Displays within Headers and Footers
-
-The .docx file format doesn’t permit comments within headers or footers.
-But there's a workaround in OfficeStamper.
-If you want to display contents within headers or footers conditionally, or require repetitive elements, all you got to do is :
-
-1. Craft the expression as you would in a comment.
-2. Encapsulate it with "#{}".
-3. Position it at the starting of the paragraph you intend to manipulate.
-
-The assigned expression will be processed in the same way it would be in a comment, allowing you to maximize template customization.
-
-Remember, this workaround unlocks the power of conditional display and repetition in your document's headers and footers, enhancing document dynamics.
-
-== Graceful Error Handling
-
-In general, DocxStamper employs an `OfficeStamperException`
-if there's a failure in resolving an expression within a document or the associated comments.
-However, you can modify this behavior.
-
-Follow the given example to silence the exception and keep OfficeStamper from failing even when it encounters unresolved expressions:
-
-[source,java]
-----
-class Main {
-    public static void main(String... args) {
-        var configuration = OfficeStamperConfiguration
-            .standardWithPreprocessing()
-            .setExceptionResolver(ExceptionResolvers.throwing()); // to throw as soon as an error occurs (default)
-            // .setExceptionResolver(ExceptionResolvers.passing()); // to do nothing on error, leaving erroneous placeholders in place, and log the error
-            // .setExceptionResolver(ExceptionResolvers.defaulting("value")); // to replace erroneous placeholders by a default value, and log the error
-        var stamper = OfficeStampers.docxStamper(configuration);
-    }
-}
-----
-
-This customization allows you to control the failure behavior of DocxStamper according to your specific requirements.
-
-== Sample Code
-
-The source code contains a set of tests show how to use the features.
-If you want to run them yourself, clone the repository and run `mvn test` with the system property `-DkeepOutputFile=true`
-so that the resulting .docx documents will not be cleaned up and let you view them.
-The resulting files will be stored in your local temp folder.
-Watch the logging output for the exact location of the files).
-
-If you want to have a look at the .docx templates used in the tests, have a look at the link:{repo}/test/sources[sources subfolder] in the test folder.
-
-== Maven coordinates
-
-To include docx-stamper in your project, you can use the following maven coordinates in your dependency management system:
-link:https://verronpro.github.io/docx-stamper/dependency-info.html[go to last documented version]
-
-Note that as of version 1.4.0, you have to provide the dependency to your version of Docx4J yourself:
+== Maven Coordinates
 
 [source,xml]
 ----
 <dependency>
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>engine</artifactId>
+    <version>2.7.0</version>
+</dependency>
+
+<!-- You also need to provide a dependency to Docx4J -->
+<dependency>
     <groupId>org.docx4j</groupId>
-    <artifactId>docx4j</artifactId>
-    <version>11.4.11</version>
+    <artifactId>docx4j-core</artifactId>
+    <version>11.5.3</version>
+</dependency>
+<dependency>
+    <groupId>org.docx4j</groupId>
+    <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+    <version>11.5.3</version>
 </dependency>
 ----
 
-This way, you can choose which version of Docx4J you want to use instead of having it dictated by docx-stamper.
+== Documentation
 
-The list of actively integrated docx4j is listed here -> link:{repo}/.github/workflows/integrate-docx4j.yml[Docx4J integration matrix]]
+Comprehensive documentation is available at link:{docs}[verronpro.github.io/docx-stamper].
 
-== Contribute
+* link:{docs}/introduction.html[Introduction]
+* link:{docs}/getting-started.html[Getting Started]
+* link:{docs}/template-expressions.html[Template Expressions]
+* link:{docs}/comment-processors.html[Comment Processors]
+* link:{docs}/spel-functions.html[SpEL Functions]
+* link:{docs}/custom-settings.html[Custom Settings]
+* link:{docs}/advanced-features.html[Advanced Features]
+* link:{docs}/troubleshooting.html[Troubleshooting]
+* link:{docs}/release-notes.html[Release Notes]
+* link:{docs}/contributing.html[Contributing]
 
-If you have an issue or create a comment processor or type resolver that you think deserves to be part of the default distribution, feel free to open an issue or - even better - a pull request with your contribution.
+== Latest Release
+
+The latest release is v2.7.0. See the link:{docs}/release-notes.html[Release Notes] for details.
+
+== Sample Code
+
+The source code contains a set of tests showing how to use the features.
+If you want to run them yourself, clone the repository and run `mvn test` with the system property `-DkeepOutputFile=true`
+so that the resulting .docx documents will not be cleaned up and let you view them.
+
+If you want to have a look at the .docx templates used in the tests, have a look at the link:{repo}/test/sources[sources subfolder] in the test folder.
+
+== Contributing
+
+Contributions are welcome! See the link:{docs}/contributing.html[Contributing Guide] for details on how to contribute to OfficeStamper.
+
+== License
+
+OfficeStamper is released under the MIT License.

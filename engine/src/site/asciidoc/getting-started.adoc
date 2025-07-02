@@ -1,0 +1,105 @@
+= Getting Started with OfficeStamper
+
+This guide will help you get started with OfficeStamper, from adding the dependency to your project to creating your first document.
+
+== Adding OfficeStamper to Your Project
+
+=== Maven
+
+Add the following dependency to your `pom.xml`:
+
+[source,xml]
+----
+<dependency>
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>engine</artifactId>
+    <version>2.7.0</version>
+</dependency>
+----
+
+You also need to provide a dependency to Docx4J:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.docx4j</groupId>
+    <artifactId>docx4j-core</artifactId>
+    <version>11.5.3</version>
+</dependency>
+<dependency>
+    <groupId>org.docx4j</groupId>
+    <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+    <version>11.5.3</version>
+</dependency>
+----
+
+=== Gradle
+
+Add the following to your `build.gradle`:
+
+[source,groovy]
+----
+dependencies {
+    implementation 'pro.verron.office-stamper:engine:2.7.0'
+    implementation 'org.docx4j:docx4j-core:11.5.3'
+    implementation 'org.docx4j:docx4j-JAXB-ReferenceImpl:11.5.3'
+}
+----
+
+== Basic Usage
+
+Here's a simple example of how to use OfficeStamper:
+
+[source,java]
+----
+class Example {
+    public static void main(String[] args) {
+        // a java object to use as context for the expressions found in the template.
+        var context = new YourPojoContext(_, _ , _);
+
+        // an instance of the stamper
+        var stamper = OfficeStampers.docxStamper();
+
+        try(
+            // Path to the .docx template file
+            var template = Files.newInputStream(Paths.get("your/docx/template/file.docx"));
+            // Path to write the resulting .docx document
+            var output = Files.newOutputStream(Paths.get("your/desired/output/path.docx"))
+        ) {
+            stamper.stamp(template, context, output);
+        }
+    }
+}
+----
+
+== Creating a Template
+
+1. Open Microsoft Word or any other word processor that can save in .docx format
+2. Create your document with placeholders for dynamic content
+3. Use expressions like `${person.name}` for simple replacements
+4. Add comments with special instructions for more advanced features
+5. Save the document as a .docx file
+
+=== Example Template
+
+Here's what a simple template might look like:
+
+```
+Dear ${customer.name},
+
+Thank you for your order #${order.id} placed on ${order.date}.
+
+Your order details:
+${order.description}
+
+Total amount: $${order.amount}
+
+Sincerely,
+${company.name}
+```
+
+== Next Steps
+
+* Learn more about link:template-expressions.html[Template Expressions]
+* Explore link:comment-processors.html[Comment Processors] for advanced templating
+* See link:custom-settings.html[Custom Settings] for configuration options

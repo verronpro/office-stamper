@@ -1,0 +1,148 @@
+= Advanced Features
+
+This page covers some of the more advanced features and techniques available in OfficeStamper.
+
+== Headers and Footers
+
+The .docx file format doesn't permit comments within headers or footers. OfficeStamper provides a workaround for this limitation:
+
+1. Craft the expression as you would in a comment
+2. Encapsulate it with "#{}".
+3. Position it at the beginning of the paragraph you want to manipulate
+
+Example:
+[source]
+----
+#{displayParagraphIf(showPageNumbers)} Page ${pageNumber} of ${totalPages}
+----
+
+This allows you to conditionally display content or repeat elements in headers and footers.
+
+== Post Processors
+
+Post processors allow you to perform additional operations after the stamping process is complete. This can be useful for cleaning up the document or adding summaries.
+
+[source,java]
+----
+// Create a custom post processor
+class CustomPostProcessor implements PostProcessor {
+    @Override
+    public void process(WordprocessingMLPackage document) {
+        // Perform operations on the document after stamping
+    }
+}
+
+// Add the post processor to the configuration
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+configuration.addPostProcessor(new CustomPostProcessor());
+----
+
+== Working with Footnotes and Endnotes
+
+As of version 2.7.0, OfficeStamper is aware of footnotes and endnotes. With the `standardWithPreprocessing` configuration, it cleans orphaned notes automatically.
+
+Future versions may include more comprehensive support for stamping within footnotes and endnotes.
+
+== Handling Complex Tables
+
+=== Dynamic Table Generation
+
+The `resolveTable` comment processor allows you to dynamically generate tables from data:
+
+[source]
+----
+resolveTable(report.dataTable)
+----
+
+Where `report.dataTable` is an instance of `StampTable` that contains:
+- A list of headers for columns
+- A 2-level list of rows containing values for each column
+
+=== Table Row Repetition
+
+For tables with existing structure, you can use the `repeatTableRow` processor:
+
+[source]
+----
+repeatTableRow(employees)
+----
+
+This will repeat the row for each item in the collection, evaluating expressions within the cells against each item.
+
+== Document Parts
+
+The `repeatDocPart` processor allows you to repeat more complex structures that may include multiple paragraphs, tables, or other elements:
+
+[source]
+----
+repeatDocPart(chapters)
+----
+
+This is more flexible than `repeatParagraph` or `repeatTableRow` when you need to repeat larger sections of your document.
+
+== Conditional Display
+
+OfficeStamper provides a rich set of conditional display options:
+
+[source]
+----
+// Basic boolean condition
+displayParagraphIf(customer.vip)
+displayTableRowIf(order.items.size() > 0)
+displayTableIf(report.hasData())
+
+// Check if object is present
+displayParagraphIfPresent(customer.address)
+displayTableRowIfPresent(order.discounts)
+displayTableIfPresent(report.data)
+displayWordsIfPresent(customer.middleName)
+displayDocPartIfPresent(chapter.summary)
+
+// Check if object is absent
+displayParagraphIfAbsent(customer.address)
+displayTableRowIfAbsent(order.discounts)
+displayTableIfAbsent(report.data)
+displayWordsIfAbsent(customer.middleName)
+displayDocPartIfAbsent(chapter.summary)
+----
+
+== Working with Images
+
+OfficeStamper can insert images into documents using the `Image` class:
+
+[source,java]
+----
+// Create an image from a file
+var image = new Image(new File("path/to/image.jpg"));
+
+// Or from a byte array
+var image = new Image(imageByteArray);
+
+// Customize the image
+image.setWidth(400);  // Width in points
+image.setHeight(300); // Height in points
+
+// Use in your context object
+class ReportContext {
+    public Image getLogo() {
+        return image;
+    }
+}
+
+// In the template: ${logo}
+----
+
+== Performance Considerations
+
+For large documents or batch processing, consider the following:
+
+1. **Reuse configuration**: Create the configuration once and reuse it for multiple stamping operations
+2. **Minimize context size**: Keep your context objects as small as possible
+3. **Use efficient data structures**: Prefer lists over sets or maps when order matters
+4. **Consider memory usage**: For very large documents, monitor memory usage and consider processing in chunks
+
+== Next Steps
+
+* See link:troubleshooting.html[Troubleshooting] for help with common issues
+* Explore the link:https://github.com/verronpro/docx-stamper/tree/main/engine/src/test/java/pro/verron/officestamper/test[test directory] for examples of advanced usage
+* Check the link:release-notes.html[Release Notes] for information about the latest features

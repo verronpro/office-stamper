@@ -1,0 +1,149 @@
+= Contributing to OfficeStamper
+
+Thank you for your interest in contributing to OfficeStamper! This guide will help you get started with contributing to the project.
+
+== Ways to Contribute
+
+There are many ways to contribute to OfficeStamper:
+
+* Reporting bugs
+* Suggesting enhancements
+* Writing documentation
+* Improving tests
+* Submitting code changes
+* Reviewing pull requests
+
+== Getting Started
+
+=== Setting Up the Development Environment
+
+1. Fork the repository on GitHub
+2. Clone your fork locally
+3. Set up the project in your IDE
+4. Build the project with Maven
+
+[source,bash]
+----
+git clone https://github.com/yourusername/docx-stamper.git
+cd docx-stamper
+mvn clean install
+----
+
+=== Project Structure
+
+* `engine/src/main/java` - Core library code
+* `engine/src/test/java` - Test code
+* `engine/src/test/resources` - Test resources
+* `engine/src/site` - Documentation
+* `cli` - Command-line interface
+
+== Development Workflow
+
+=== Creating a Branch
+
+Create a new branch for your changes:
+
+[source,bash]
+----
+git checkout -b feature/your-feature-name
+----
+
+=== Making Changes
+
+1. Make your changes to the codebase
+2. Add tests for your changes
+3. Ensure all tests pass
+4. Update documentation if necessary
+
+=== Running Tests
+
+Run the tests to ensure your changes don't break existing functionality:
+
+[source,bash]
+----
+mvn test
+----
+
+To keep the output files for inspection:
+
+[source,bash]
+----
+mvn test -DkeepOutputFile=true
+----
+
+=== Submitting a Pull Request
+
+1. Push your changes to your fork
+2. Submit a pull request to the main repository
+3. Describe your changes in detail
+4. Reference any related issues
+
+== Coding Standards
+
+=== Java Style Guide
+
+OfficeStamper follows a set of coding standards to ensure consistency across the codebase. Please refer to the link:../intellij-style.xml[IntelliJ style configuration] for details.
+
+Some key points:
+
+* Use 4 spaces for indentation (not tabs)
+* Follow Java naming conventions
+* Add Javadoc comments for public classes and methods
+* Keep methods focused and concise
+* Write clear, descriptive variable and method names
+
+=== Testing
+
+* Write unit tests for all new functionality
+* Ensure tests are independent and repeatable
+* Use meaningful test names that describe the scenario and expected outcome
+* Follow the Arrange-Act-Assert pattern
+
+=== Documentation
+
+* Update documentation for any new features or changes
+* Use AsciiDoc format for documentation
+* Include examples where appropriate
+* Keep documentation clear and concise
+
+== Reporting Bugs
+
+If you find a bug, please report it by creating an issue on GitHub:
+
+1. Check if the bug has already been reported
+2. Use the bug report template
+3. Include detailed steps to reproduce the bug
+4. Include information about your environment (Java version, OS, etc.)
+5. If possible, include a minimal example that demonstrates the bug
+
+== Suggesting Enhancements
+
+If you have an idea for an enhancement:
+
+1. Check if the enhancement has already been suggested
+2. Use the feature request template
+3. Describe the enhancement in detail
+4. Explain why it would be valuable
+5. Consider how it would be implemented
+
+== Code of Conduct
+
+Please note that this project is released with a link:https://github.com/verronpro/docx-stamper/blob/main/CODE_OF_CONDUCT.md[Contributor Code of Conduct]. By participating in this project you agree to abide by its terms.
+
+== License
+
+OfficeStamper is released under the MIT License. By contributing to OfficeStamper, you agree to license your contributions under the same license.
+
+== Getting Help
+
+If you need help with contributing:
+
+* Ask questions in GitHub issues
+* Reach out to the maintainers
+
+Thank you for contributing to OfficeStamper!
+
+== Next Steps
+
+* Return to the link:index.html[Documentation Home]
+* Check out the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] to find something to work on

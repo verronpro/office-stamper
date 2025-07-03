@@ -12,8 +12,8 @@ image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/acti
 
 == Introduction
 
-OfficeStamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
-You design a template using your preferred Word processor; and OfficeStamper will generate documents based on that template.
+office-stamper (formerly docx-stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
+You design a template using your preferred Word processor; and office-stamper will generate documents based on that template.
 
 == Key Features
 
@@ -30,17 +30,16 @@ You design a template using your preferred Word processor; and OfficeStamper wil
 ----
 class Example {
     public static void main(String[] args) {
-        // a java object to use as context for the expressions found in the template.
+        // an object to use as context for the expressions found in the template.
         var context = new YourPojoContext(_, _ , _);
 
-        // an instance of the stamper
         var stamper = OfficeStampers.docxStamper();
 
+        var templatePath = Paths.get("your/docx/template/file.docx");
+        var outputPath = Paths.get("your/desired/output/path.docx");
         try(
-            // Path to the .docx template file
-            var template = Files.newInputStream(Paths.get("your/docx/template/file.docx"));
-            // Path to write the resulting .docx document
-            var output = Files.newOutputStream(Paths.get("your/desired/output/path.docx"))
+            var template = Files.newInputStream(templatePath);
+            var output = Files.newOutputStream(outputPath);
         ) {
             stamper.stamp(template, context, output);
         }

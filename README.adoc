@@ -1,7 +1,7 @@
 // suppress inspection "AsciiDocLinkResolve" for whole file
-:proj: https://github.com/verronpro/docx-stamper
-:repo: https://github.com/verronpro/docx-stamper/blob/main
-:docs: https://verronpro.github.io/docx-stamper
+:proj: https://github.com/verronpro/office-stamper
+:repo: https://github.com/verronpro/office-stamper/blob/main
+:docs: https://verronpro.github.io/office-stamper
 
 = OfficeStamper
 
@@ -72,7 +72,7 @@ class Example {
 
 == Documentation
 
-Comprehensive documentation is available at link:{docs}[verronpro.github.io/docx-stamper].
+Comprehensive documentation is available at link:{docs}[verronpro.github.io/office-stamper].
 
 * link:{docs}/introduction.html[Introduction]
 * link:{docs}/getting-started.html[Getting Started]

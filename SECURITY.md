@@ -16,7 +16,6 @@ Avoid public disclosure of the issue until it gets addressed.
 
 *Do NOT create GitHub issues for security vulnerabilities*.
 
-Instead, to ensure privacy and efficient communication, email findings directly to link:mailto:
-security@verron.pro[security@verron.pro].
+Instead, to ensure privacy and efficient communication, email findings directly to security@verron.pro.
 Those will be viewed and answered through the same channel.
 Helping ensure the security of the project is appreciated, and will be acknowledged in a timely manner.

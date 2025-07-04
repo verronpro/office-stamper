@@ -1,27 +1,28 @@
 = Comment Processors
 
-Alongside expression replacement, OfficeStamper presents the feature of *processing comments* associated with paragraphs in your .docx template. These comments act as directives for manipulating the template.
+Alongside expression replacement, Office-stamper presents the feature of *processing comments* associated with paragraphs in your .docx template.
+These comments act as directives for manipulating the template.
 
 == How Comment Processors Work
 
-1. You add a comment to a paragraph, table row, or other element in your Word document
-2. In the comment, you write a special expression that tells OfficeStamper what to do with that element
-3. When OfficeStamper processes the document, it finds these comments and applies the specified operations
+1. You add a comment to a paragraph, table row, or other element in your Word document.
+2. In the comment, you write a special expression that tells Office-stamper what to do with that element.
+3. When Office-stamper processes the document, it finds these comments and applies the specified operations.
 4. After processing, the comments are removed from the final document
 
 == Default Comment Processors
 
-OfficeStamper comes with several built-in comment processors that handle common templating needs:
+Office-stamper comes with several built-in comment processors that handle common templating needs:
 
 [cols=">1,4"]
 |===
 | Expression in .docx comment           | Effect on the commented paragraph/paragraphs
 | `displayParagraphIf(boolean)`         | It is only displayed if condition resolves to `true`.
 | `displayTableRowIf(boolean)`          | The table row around it is only displayed if condition resolves to `true`.
-| `displayTableIf(boolean)`             | The whole table around it is only displayed if condition resolves to `true`.
+| `displayTableIf(boolean)`             | The surrounding table is only displayed if condition resolves to `true`.
 | `repeatParagraph(List<Object>)`       | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list.
-| `repeatTableRow(List<Object>)`        | The table row around it is copied once for each object in the passed-in list. Expressions found in the cells of the table row are evaluated against the object from the list.
-| `repeatDocPart(List<Object>)`         | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
+| `repeatTableRow(List<Object>)`        | The surrounding table row is copied once for each object in the passed-in list. Expressions found in the cells of the table row are evaluated against the object from the list.
+| `repeatDocPart(List<Object>)`         | The commented text is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
 | `replaceWordWith(expression)`         | Replace the commented word with the value of the given expression.
 | `resolveTable(StampTable)`            | Replace a table (that must have one column and two rows) with the values given by the StampTable. The StampTable contains a list of headers for columns, and a 2-level list of rows containing values for each column.
 |===
@@ -78,7 +79,9 @@ resolveTable(report.dataTable)
 
 == Headers and Footers
 
-The .docx file format doesn't permit comments within headers or footers. But there's a workaround in OfficeStamper. If you want to display contents within headers or footers conditionally, or require repetitive elements:
+The .docx file format doesn't permit comments within headers or footers.
+But there's a workaround in Office-stamper.
+If you want to display contents within headers or footers conditionally, or require repetitive elements:
 
 1. Craft the expression as you would in a comment.
 2. Encapsulate it with "#{}".

@@ -1,10 +1,11 @@
 = Template Expressions
 
-The foundation of OfficeStamper lies in its ability to *replace expressions* within the text of a .docx template document.
+The foundation of Office-stamper lies in its ability to *replace expressions* within the text of a .docx template document.
 
 == Basic Expression Syntax
 
-OfficeStamper uses the Spring Expression Language (SpEL) for its template expressions. Expressions are enclosed in `${...}` delimiters.
+Office-stamper uses the Spring Expression Language (SpEL) for its template expressions.
+Expressions are enclosed in `${...}` delimiters.
 
 Examples:
 [source]
@@ -16,7 +17,8 @@ ${person.age > 18 ? 'Adult' : 'Minor'}
 
 == Expression Evaluation
 
-When OfficeStamper processes a template, it evaluates each expression against the context object you provide. The result of the evaluation replaces the expression in the output document.
+When Office-stamper processes a template, it evaluates each expression based on context.
+The result of the evaluation replaces the expression in the output document.
 
 === Context Object
 
@@ -28,11 +30,12 @@ The context object is a Java object that contains the data you want to insert in
 
 === Formatting Preservation
 
-OfficeStamper maintains the original text's formatting in the template. This means that if your expression is bold, italic, or has any other formatting, the replacement text will have the same formatting.
+Office-stamper maintains the original text's formatting in the template.
+This means that if your expression is bold, italic, or has any other formatting, the replacement text should receive the same formatting.
 
 == Spring Expression Language Features
 
-OfficeStamper gives you full access to the extensive feature set of link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[Spring Expression Language (SpEL)].
+Office-stamper gives you full access to the extensive feature set of link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[Spring Expression Language (SpEL)].
 
 Some useful SpEL features include:
 
@@ -48,21 +51,22 @@ Some useful SpEL features include:
 
 == Resolvers
 
-OfficeStamper uses a chain of resolvers to convert the result of an expression evaluation into a string that can be inserted into the document. The resolvers are applied in a specific order.
+Office-stamper uses a chain of resolvers to convert the result of an expression evaluation into a string, and insert it into the document.
+Resolvers apply in a certain order.
 
 [cols="1,2,2",options="header"]
 |===
-| Default Resolvers         | When the placeholder resolves to a | It will be replaced in the document with
+| Default Resolvers         | When the placeholder resolves to a | The replacement is
 | `Resolvers.image()`       | `pro.verron.officestamper.preset.Image` | an inline image
-| `Resolvers.legacyDate()`  | `java.util.Date`                   | a formatted Date string (default "dd.MM.yyyy")
-| `Resolvers.isoDate()`     | `java.time.LocalDate`              | a formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE)
-| `Resolvers.isoTime()`     | `java.time.LocalTime`              | a formatted Date string (default DateTimeFormatter.ISO_LOCAL_TIME)
-| `Resolvers.isoDateTime()` | `java.time.LocalDateTime`          | a formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-| `Resolvers.nullToEmpty()` | `null`                             | an empty string
-| `Resolvers.fallback()`    | `Object`                           | the result of the call to `String.valueOf()` method on the object
+| `Resolvers.legacyDate()`  | `java.util.Date`                   | A formatted Date string (default "dd.MM.yyyy")
+| `Resolvers.isoDate()`     | `java.time.LocalDate`              | A formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE)
+| `Resolvers.isoTime()`     | `java.time.LocalTime`              | A formatted Date string (default DateTimeFormatter.ISO_LOCAL_TIME)
+| `Resolvers.isoDateTime()` | `java.time.LocalDateTime`          | A formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+| `Resolvers.nullToEmpty()` | `null`                             | An empty string
+| `Resolvers.fallback()`    | `Object`                           | The result of the call to `String.valueOf()` method on the object
 |===
 
-If a placeholder fails to resolve successfully, OfficeStamper will skip it, and the placeholder in the document remains the same as its initial state in the template.
+If a placeholder fails to resolve successfully, Office-stamper skip it, and the placeholder in the document remains the same as its initial state in the template.
 
 == Custom Resolvers
 
@@ -70,10 +74,12 @@ You can create your own resolvers to handle specific types or formatting require
 
 == Error Handling
 
-By default, if an expression cannot be evaluated (due to syntax errors, missing properties, etc.), OfficeStamper will throw an exception. You can customize this behavior using exception resolvers. See the link:troubleshooting.html[Troubleshooting] section for more details.
+By default, if an expression cannot be evaluated (due to syntax errors, missing properties, and so on), Office-stamper throws an exception.
+You can customize this behavior using exception resolvers.
+See the link:troubleshooting.html[Troubleshooting] section for more details.
 
 == Next Steps
 
 * Learn about link:comment-processors.html[Comment Processors] for advanced templating
-* Explore link:spel-functions.html[SpEL Functions] for additional functionality
+* Explore link:spel-functions.html[SpEL Functions] for additional feature
 * See link:custom-settings.html[Custom Settings] for configuration options

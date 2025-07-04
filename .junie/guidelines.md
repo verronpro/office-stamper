@@ -1,6 +1,6 @@
-# Office-Stamper Java Style Guide
+# Office-stamper Java Style Guide
 
-This document outlines the coding standards and best practices for the Office-Stamper project. Following these
+This document outlines the coding standards and best practices for the Office-stamper project. Following these
 guidelines ensures consistency across the codebase and helps maintain code quality.
 
 ## Table of Contents

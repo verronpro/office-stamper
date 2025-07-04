@@ -1,14 +1,15 @@
 = Advanced Features
 
-This page covers some of the more advanced features and techniques available in OfficeStamper.
+This page covers some more advanced features and techniques available in Office-stamper.
 
 == Headers and Footers
 
-The .docx file format doesn't permit comments within headers or footers. OfficeStamper provides a workaround for this limitation:
+The .docx file format doesn't permit comments within headers or footers.
+Office-stamper provides a workaround for this limitation:
 
 1. Craft the expression as you would in a comment
 2. Encapsulate it with "#{}".
-3. Position it at the beginning of the paragraph you want to manipulate
+3. Position it at the beginning of the paragraph you want to manipulate.
 
 Example:
 [source]
@@ -20,26 +21,30 @@ This allows you to conditionally display content or repeat elements in headers a
 
 == Post Processors
 
-Post processors allow you to perform additional operations after the stamping process is complete. This can be useful for cleaning up the document or adding summaries.
+Post-processors allow you to perform additional operations after the stamping process is complete.
+This can be useful for cleaning up the document or adding summaries.
 
 [source,java]
 ----
-// Create a custom post processor
-class CustomPostProcessor implements PostProcessor {
-    @Override
-    public void process(WordprocessingMLPackage document) {
-        // Perform operations on the document after stamping
+public static void main(String[] args){
+    // Create a custom post processor
+    class CustomPostProcessor implements PostProcessor {
+        @Override
+        public void process(WordprocessingMLPackage document) {
+            // Perform operations on the document after stamping
+        }
     }
-}
 
-// Add the post processor to the configuration
-var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
-configuration.addPostProcessor(new CustomPostProcessor());
+    // Add the post-processor to the configuration
+    var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+    configuration.addPostProcessor(new CustomPostProcessor());
+}
 ----
 
 == Working with Footnotes and Endnotes
 
-As of version 2.7.0, OfficeStamper is aware of footnotes and endnotes. With the `standardWithPreprocessing` configuration, it cleans orphaned notes automatically.
+As of version 2.7.0, Office-stamper is aware of footnotes and endnotes.
+With the `standardWithPreprocessing` configuration, it cleans orphaned notes automatically.
 
 Future versions may include more comprehensive support for stamping within footnotes and endnotes.
 
@@ -56,7 +61,7 @@ resolveTable(report.dataTable)
 
 Where `report.dataTable` is an instance of `StampTable` that contains:
 - A list of headers for columns
-- A 2-level list of rows containing values for each column
+– A 2-level list of rows containing values for each column.
 
 === Table Row Repetition
 
@@ -82,7 +87,7 @@ This is more flexible than `repeatParagraph` or `repeatTableRow` when you need t
 
 == Conditional Display
 
-OfficeStamper provides a rich set of conditional display options:
+Office-stamper provides a rich set of conditional display options:
 
 [source]
 ----
@@ -108,7 +113,7 @@ displayDocPartIfAbsent(chapter.summary)
 
 == Working with Images
 
-OfficeStamper can insert images into documents using the `Image` class:
+Office-stamper can insert images into documents using the `Image` class:
 
 [source,java]
 ----
@@ -136,10 +141,10 @@ class ReportContext {
 
 For large documents or batch processing, consider the following:
 
-1. **Reuse configuration**: Create the configuration once and reuse it for multiple stamping operations
-2. **Minimize context size**: Keep your context objects as small as possible
-3. **Use efficient data structures**: Prefer lists over sets or maps when order matters
-4. **Consider memory usage**: For very large documents, monitor memory usage and consider processing in chunks
+1. **Reuse configuration**: create the configuration once and reuse it for multiple stamping operations.
+2. **Minimize context size**: keep your context objects as small as possible.
+3. **Use efficient data structures**: prefer lists to sets or maps when order matters.
+4. **Consider memory usage**: for large documents, monitor memory usage and consider processing in chunks.
 
 == Next Steps
 

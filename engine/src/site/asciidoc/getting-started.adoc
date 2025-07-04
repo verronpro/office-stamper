@@ -1,8 +1,8 @@
-= Getting Started with OfficeStamper
+= Getting Started with Office-stamper
 
-This guide will help you get started with OfficeStamper, from adding the dependency to your project to creating your first document.
+This guide helps you get started with Office-stamper, from adding the dependency to your project to creating your first document.
 
-== Adding OfficeStamper to Your Project
+== Adding Office-stamper to Your Project
 
 === Maven
 
@@ -48,7 +48,7 @@ dependencies {
 
 == Basic Usage
 
-Here's a simple example of how to use OfficeStamper:
+Here's an example of how to use Office-stamper:
 
 [source,java]
 ----
@@ -74,17 +74,18 @@ class Example {
 
 == Creating a Template
 
-1. Open Microsoft Word or any other word processor that can save in .docx format
+1. Open Microsoft Word or any other word processor that can save in .docx format.
 2. Create your document with placeholders for dynamic content
-3. Use expressions like `${person.name}` for simple replacements
+3. Use expressions like `${person.name}` for natural replacements.
 4. Add comments with special instructions for more advanced features
 5. Save the document as a .docx file
 
 === Example Template
 
-Here's what a simple template might look like:
+Here's what a plain template might look like:
 
-```
+[source]
+----
 Dear ${customer.name},
 
 Thank you for your order #${order.id} placed on ${order.date}.
@@ -96,7 +97,7 @@ Total amount: $${order.amount}
 
 Sincerely,
 ${company.name}
-```
+----
 
 == Next Steps
 

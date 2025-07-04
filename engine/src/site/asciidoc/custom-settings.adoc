@@ -1,10 +1,10 @@
 = Custom Settings
 
-OfficeStamper provides various ways to customize its behavior to suit your specific needs. This page explains how to configure the library with custom resolvers, functions, comment processors, and more.
+Office-stamper provides various ways to customize its behavior to suit your specific needs. This page explains how to configure the library with custom resolvers, functions, comment processors, and more.
 
 == Configuration Basics
 
-OfficeStamper uses a configuration object to customize its behavior. You can create a configuration and pass it to the stamper:
+Office-stamper uses a configuration object to customize its behavior. You can create a configuration and pass it to the stamper:
 
 [source,java]
 ----
@@ -42,7 +42,7 @@ var stamper = OfficeStampers.docxStamper(configuration);
 
 == Custom Functions
 
-OfficeStamper lets you add custom functions to the expression language. This is useful for specific formats, calculations, or other operations you need in your templates.
+Office-stamper lets you add custom functions to the expression language. This is useful for specific formats, calculations, or other operations you need in your templates.
 
 [source,java]
 ----
@@ -163,7 +163,7 @@ configuration.setEvaluationContextConfigurer(ctx -> {
 
 == Error Handling
 
-You can customize how OfficeStamper handles errors during expression evaluation:
+You can customize how Office-stamper handles errors during expression evaluation:
 
 [source,java]
 ----

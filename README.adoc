@@ -3,7 +3,7 @@
 :repo: https://github.com/verronpro/office-stamper/blob/main
 :docs: https://verronpro.github.io/office-stamper
 
-= OfficeStamper
+= Office-stamper
 
 image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-os.yml]
 image:{proj}/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-docx4j.yml]
@@ -12,7 +12,7 @@ image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/acti
 
 == Introduction
 
-office-stamper (formerly docx-stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
+Office-stamper (formerly docx-stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
 You design a template using your preferred Word processor; and office-stamper will generate documents based on that template.
 
 == Key Features
@@ -99,8 +99,8 @@ If you want to have a look at the .docx templates used in the tests, have a look
 
 == Contributing
 
-Contributions are welcome! See the link:{docs}/contributing.html[Contributing Guide] for details on how to contribute to OfficeStamper.
+Contributions are welcome! See the link:{docs}/contributing.html[Contributing Guide] for details on how to contribute to Office-stamper.
 
 == License
 
-OfficeStamper is released under the MIT License.
+Office-stamper is released under the MIT License.

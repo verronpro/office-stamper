@@ -1,10 +1,11 @@
-= Contributing to OfficeStamper
+= Contributing to Office-stamper
 
-Thank you for your interest in contributing to OfficeStamper! This guide will help you get started with contributing to the project.
+Thank you for your interest in contributing to Office-stamper!
+This guide should help you get started with contributing to the project.
 
 == Ways to Contribute
 
-There are many ways to contribute to OfficeStamper:
+There are many ways to contribute to Office-stamper:
 
 * Reporting bugs
 * Suggesting enhancements
@@ -52,7 +53,7 @@ git checkout -b feature/your-feature-name
 
 1. Make your changes to the codebase
 2. Add tests for your changes
-3. Ensure all tests pass
+3. Make sure all the tests pass
 4. Update documentation if necessary
 
 === Running Tests
@@ -82,7 +83,8 @@ mvn test -DkeepOutputFile=true
 
 === Java Style Guide
 
-OfficeStamper follows a set of coding standards to ensure consistency across the codebase. Please refer to the link:../intellij-style.xml[IntelliJ style configuration] for details.
+Office-stamper follows a set of coding standards to ensure consistency across the codebase.
+Please refer to the link:../intellij-style.xml[IntelliJ style configuration] for details.
 
 Some key points:
 
@@ -94,9 +96,9 @@ Some key points:
 
 === Testing
 
-* Write unit tests for all new functionality
-* Ensure tests are independent and repeatable
-* Use meaningful test names that describe the scenario and expected outcome
+* Write unit tests for all new features
+* Make sure the tests are independent and repeatable
+* Use meaningful test names that describe the scenario and expected outcome.
 * Follow the Arrange-Act-Assert pattern
 
 === Documentation
@@ -108,12 +110,12 @@ Some key points:
 
 == Reporting Bugs
 
-If you find a bug, please report it by creating an issue on GitHub:
+If you find any bugs, report them by creating an issue on GitHub:
 
-1. Check if the bug has already been reported
+1. Check if the bug is already reported.
 2. Use the bug report template
 3. Include detailed steps to reproduce the bug
-4. Include information about your environment (Java version, OS, etc.)
+4. Include information about your environment (Java version, OS, and so on)
 5. If possible, include a minimal example that demonstrates the bug
 
 == Suggesting Enhancements
@@ -132,7 +134,8 @@ Please note that this project is released with a link:https://github.com/verronp
 
 == License
 
-OfficeStamper is released under the MIT License. By contributing to OfficeStamper, you agree to license your contributions under the same license.
+Office-stamper is released under the MIT License.
+By contributing to Office-stamper, you agree to license your contributions under the same license.
 
 == Getting Help
 
@@ -141,9 +144,9 @@ If you need help with contributing:
 * Ask questions in GitHub issues
 * Reach out to the maintainers
 
-Thank you for contributing to OfficeStamper!
+Thank you for contributing to Office-stamper!
 
 == Next Steps
 
 * Return to the link:index.html[Documentation Home]
-* Check out the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] to find something to work on
+* Check out the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] to find something to work on.

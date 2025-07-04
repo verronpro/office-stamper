@@ -1,11 +1,11 @@
-= Introduction to OfficeStamper
+= Introduction to Office-stamper
 
-OfficeStamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
-You design a template using your preferred Word processor; and OfficeStamper will generate documents based on that template.
+Office-stamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
+You design a template using your preferred Word processor; and Office-stamper generate documents based on that template.
 
-== What is OfficeStamper?
+== What is Office-stamper?
 
-OfficeStamper is a library that enables you to:
+Office-stamper is a library that enables you to:
 
 * Create dynamic DOCX documents from templates
 * Replace placeholders with actual data
@@ -15,12 +15,12 @@ OfficeStamper is a library that enables you to:
 
 == Key Features
 
-* **Expression-based templating**: Use Spring Expression Language (SpEL) for powerful template expressions
-* **Comment-based processing**: Add special instructions as comments in your Word documents
-* **Formatting preservation**: All formatting from the original template is preserved
-* **Custom functions**: Extend the templating capabilities with your own functions
-* **Type-safe**: Strong typing for Java integration
-* **Flexible configuration**: Customize the behavior to suit your needs
+* **Expression-based templating**: use Spring Expression Language (SpEL) for powerful template expressions.
+* **Comment-based processing**: add special instructions as comments in your Word documents.
+* **Formatting preservation**: all formatting from the original template remains.
+* **Custom functions**: extend the templating capabilities with your own functions
+* **Type-safe**: strong typing for Java integration
+* **Flexible configuration**: customize the behavior to suit your needs
 
 == Project Status
 
@@ -31,10 +31,11 @@ image:https://github.com/verronpro/docx-stamper/actions/workflows/pages.yml/badg
 
 == History
 
-OfficeStamper was forked from the original docx-stamper project and has been enhanced with additional features and improvements. The project is actively maintained and continues to evolve with new capabilities.
+Office-stamper is a fork from the original docx-stamper project and enjoys additional features and improvements.
+This project is active and continues to evolve with new capabilities.
 
 == Next Steps
 
-* Check out the link:getting-started.html[Getting Started] guide to begin using OfficeStamper
-* Explore the link:template-expressions.html[Template Expressions] documentation to learn about the expression syntax
-* See the link:comment-processors.html[Comment Processors] section to understand how to use comments for advanced templating
+* Check out the link:getting-started.html[Getting Started] guide to begin using Office-stamper
+* Explore the link:template-expressions.html[Template Expressions] documentation to learn about the expression syntax.
+* See the link:comment-processors.html[Comment Processors] section to understand how to use comments for advanced templating.

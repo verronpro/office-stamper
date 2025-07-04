@@ -1,6 +1,6 @@
 = Release Notes
 
-This page provides information about the latest releases of OfficeStamper, including new features, bug fixes, and other changes.
+This page provides information about the latest releases of Office-stamper, including new features, bug fixes, and other changes.
 
 == Latest Release
 
@@ -16,7 +16,7 @@ This page provides information about the latest releases of OfficeStamper, inclu
 ** `displayWordsIf(boolean)`, `displayWordsIfPresent(object)` and `displayWordsIfAbsent(object)`
 ** `displayDocPartIf(boolean)`, `displayDocPartIfPresent(object)` and `displayDocPartIfAbsent(object)`
 * The two provided evaluation context configurer now include the classic Get Accessor and the Map Accessor, so the object used as context can be much more flexible.
-** ie. `$+{name}+` can now refer to an object `getName()` method or to a map `get("name")` value.
+** that is`$+{name}+` can now refer to an object `getName()` method or to a map `get("name")` value.
 
 ==== Bugfixes
 
@@ -48,7 +48,7 @@ Fixes a bug when commenting several groups of runs by different comments in a si
 ==== Refactorings
 
 * Removed the old `ObjectDeleter` utility class to use mostly `WmlUtils#remove` method instead.
-* All Lang info is removed with `standardWithPreprocessing` configuration now.
+* The `standardWithPreprocessing` configuration now removes all Lang tags at preprocessing.
 
 ==== Tests
 
@@ -56,12 +56,12 @@ Fixes a bug when commenting several groups of runs by different comments in a si
 * Fix a bug in Locale when some test failed
 * Move processors-specific test outside the DefaultTest class
 * #114 added a test to trace this still unresolved issue.
-* Word 2 String now includes comments, endnotes and footnotes
+* Word 2 String now includes comments, endnotes, and footnotes
 * String 2 Word now includes comments
 
 == Previous Releases
 
-For information about previous releases, please see the link:https://github.com/verronpro/docx-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
+For information about previous releases, see the link:https://github.com/verronpro/docx-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
 
 == Upgrading
 
@@ -82,9 +82,9 @@ For information about previous releases, please see the link:https://github.com/
 
 == Reporting Issues
 
-If you encounter any issues with a release, please report them on the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] page.
+If you encounter any issues with a release, report them on the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] page.
 
 == Next Steps
 
 * Return to the link:index.html[Documentation Home]
-* See the link:contributing.html[Contributing] guide if you want to help improve OfficeStamper
+* See the link:contributing.html[Contributing] guide if you want to help improve Office-stamper

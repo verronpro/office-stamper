@@ -109,7 +109,7 @@ Fixes a bug when commenting several groups of runs by different comments in a si
 
 === Features
 
-* Add a way to set an ExceptionResolver to Office stamper, with `OfficeStamperConfiguration#setExceptionResolver(ExceptionResolver)`
+* Add a way to set an ExceptionResolver to Office-stamper, with `OfficeStamperConfiguration#setExceptionResolver(ExceptionResolver)`
 and allows users to handle errors programmatically as was expressed in the old https://github.com/verronpro/docx-stamper/issues/65[Issue #65]
 ** Added an `ExceptionsResolvers` class providing default implementations
 ** It deprecates `setFailOnUnresolvedExpression(boolean)`, `unresolvedExpressionsDefaultValue(String)`, `replaceUnresolvedExpressions(boolean)` and `leaveEmptyOnExpressionError(boolean)`.

@@ -1,33 +1,34 @@
 = SpEL Functions
 
-OfficeStamper extends the Spring Expression Language (SpEL) with additional functions that can be used in your templates. These functions provide convenient ways to format dates, manipulate strings, and perform other common operations.
+Office-stamper extends the Spring Expression Language (SpEL) with additional functions that you can use in your templates.
+These functions provide convenient ways to format dates, manipulate strings, and perform other common operations.
 
 == Date and Time Formatting Functions
 
-OfficeStamper provides a rich set of functions for formatting date and time objects:
+Office-stamper provides a rich set of functions for formatting date and time objects:
 
 [cols=">1,4"]
 |===
 | Function | Description
-| `fdate(date)` | Formats a date using ISO_OFFSET_DATE (e.g., "2000-01-12+02:00")
-| `fdatetime(date)` | Formats a date-time using ISO_ZONED_DATE_TIME (e.g., "2000-01-12T23:34:45.000000567+02:00[UTC+02:00]")
-| `ftime(date)` | Formats a time using ISO_OFFSET_TIME (e.g., "23:34:45.000000567+02:00")
-| `finstant(date)` | Formats a date-time as an instant in UTC (e.g., "2000-01-12T21:34:45.000000567Z")
-| `fbasicdate(date)` | Formats a date using BASIC_ISO_DATE (e.g., "20000112+0200")
-| `fordinaldate(date)` | Formats a date using ISO_ORDINAL_DATE (e.g., "2000-012+02:00")
-| `fweekdate(date)` | Formats a date using ISO_WEEK_DATE (e.g., "2000-W02-3+02:00")
-| `f1123datetime(date)` | Formats a date-time using RFC_1123_DATE_TIME (e.g., "Wed, 12 Jan 2000 23:34:45 +0200")
-| `foffsetdate(date)` | Formats a date using ISO_OFFSET_DATE (e.g., "2000-01-12+02:00")
-| `foffsetdatetime(date)` | Formats a date-time using ISO_OFFSET_DATE_TIME (e.g., "2000-01-12T23:34:45.000000567+02:00")
-| `foffsettime(date)` | Formats a time using ISO_OFFSET_TIME (e.g., "23:34:45.000000567+02:00")
-| `fzoneddatetime(date)` | Formats a date-time using ISO_ZONED_DATE_TIME (e.g., "2000-01-12T23:34:45.000000567+02:00[UTC+02:00]")
-| `flocaldate(date)` | Formats a date using ISO_LOCAL_DATE (e.g., "2000-01-12")
-| `flocaldate(date, style)` | Formats a date using the specified style (FULL, LONG, MEDIUM, or SHORT)
-| `flocaltime(date)` | Formats a time using ISO_LOCAL_TIME (e.g., "23:34:45.000000567")
+| `fdate(date)` | Formats a date using ISO_OFFSET_DATE, (for example "2000-01-12+02:00".)
+| `fdatetime(date)` | Formats a date-time using ISO_ZONED_DATE_TIME, (for example "2000-01-12T23:34:45.000000567+02:00[UTC+02:00]".)
+| `ftime(date)` | Formats a time using ISO_OFFSET_TIME, (for example "23:34:45.000000567+02:00".)
+| `finstant(date)` | Formats a date-time as an instant in UTC, (for example "2000-01-12T21:34:45.000000567Z".)
+| `fbasicdate(date)` | Formats a date using BASIC_ISO_DATE, (for example "20000112+0200".)
+| `fordinaldate(date)` | Formats a date using ISO_ORDINAL_DATE, (for example "2000-012+02:00".)
+| `fweekdate(date)` | Formats a date using ISO_WEEK_DATE, (for example "2000-W02-3+02:00".)
+| `f1123datetime(date)` | Formats a date-time using RFC_1123_DATE_TIME, (for example, "Wed, 12 Jan 2000 23:34:45 +0200".)
+| `foffsetdate(date)` | Formats a date using ISO_OFFSET_DATE, (for example "2000-01-12+02:00".)
+| `foffsetdatetime(date)` | Formats a date-time using ISO_OFFSET_DATE_TIME, (for example "2000-01-12T23:34:45.000000567+02:00".)
+| `foffsettime(date)` | Formats a time using ISO_OFFSET_TIME, (for example "23:34:45.000000567+02:00".)
+| `fzoneddatetime(date)` | Formats a date-time using ISO_ZONED_DATE_TIME, (for example "2000-01-12T23:34:45.000000567+02:00[UTC+02:00]")
+| `flocaldate(date)` | Formats a date using ISO_LOCAL_DATE, (for example "2000-01-12".)
+| `flocaldate(date, style)` | Formats a date using the specified style (FULL, LONG, MEDIUM, or SHORT.)
+| `flocaltime(date)` | Formats a time using ISO_LOCAL_TIME, (for example "23:34:45.000000567".)
 | `flocaltime(date, style)` | Formats a time using the specified style (FULL, LONG, MEDIUM, or SHORT)
-| `flocaldatetime(date)` | Formats a date-time using ISO_LOCAL_DATE_TIME (e.g., "2000-01-12T23:34:45.000000567")
-| `flocaldatetime(date, style)` | Formats a date-time using the specified style for both date and time
-| `flocaldatetime(date, dateStyle, timeStyle)` | Formats a date-time using the specified styles for date and time separately
+| `flocaldatetime(date)` | Formats a date-time using ISO_LOCAL_DATE_TIME (for example "2000-01-12T23:34:45.000000567".)
+| `flocaldatetime(date, style)` | Formats a date-time using the specified style for both date and time.
+| `flocaldatetime(date, dateStyle, timeStyle)` | Formats a date-time using the specified styles for date and time.
 | `fpattern(date, pattern)` | Formats a date-time using a custom pattern
 | `fpattern(date, pattern, locale)` | Formats a date-time using a custom pattern and locale
 |===
@@ -44,7 +45,7 @@ ${fpattern(event.date, 'dd MMMM yyyy', 'fr')}
 
 == Using Functions in Templates
 
-Functions can be used directly in expressions within your templates:
+Use functions directly in expressions within your templates:
 
 [source]
 ----
@@ -52,7 +53,7 @@ Order Date: ${fdate(order.date)}
 Due Date: ${fpattern(order.dueDate, 'MMMM d, yyyy')}
 ----
 
-They can also be combined with other SpEL features:
+You can also combine them with other SpEL features:
 
 [source]
 ----

@@ -48,7 +48,7 @@ Examples of representing our community include using an official e-mail address,
 posting via an official social media account, or acting as an appointed
 representative at an online or offline event.
 
-== Enforcement
+## Enforcement
 
 Instances of abusive, harassing,
 or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement
@@ -104,7 +104,7 @@ individual, or aggression toward or disparagement of classes.
 *Consequence*: A permanent ban from any sort of public interaction within
 the community.
 
-== Attribution
+## Attribution
 
 This Code of Conduct is adapted from the [Contributor Covenant](https://contributor-covenant.org), version
 [1.4](https://www.contributor-covenant.org/version/1/4/code-of-conduct/code_of_conduct.md)

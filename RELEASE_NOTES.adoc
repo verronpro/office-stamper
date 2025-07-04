@@ -1,5 +1,64 @@
 = Release Notes
-:proj: https://github.com/verronpro/docx-stamper/releases/tag
+:gh: https://github.com
+:os: https://github.com/verronpro/office-stamper
+:proj: https://github.com/verronpro/office-stamper/releases/tag
+
+== {proj}/v2.8.0[v2.8.0]
+
+=== Features
+
+* EXPERIMENTAL - Preparation of a CLI version of Office-stamper, to be able to stamp directly with sensible presets, inspired from the examples folder
+* Added Google Doc to the list of supported editors
+* Improved management of SdtRun as stampable elements of docx
+
+=== Bugfixes
+
+* Fixed management of comment made in Google Doc, as mentioned by @Jushar in #534
+* Fixed management of instrText in TOC, as mentioned by {gh}/tiagobutzke[@tiagobutzke] in {os}/issues/539[#539]
+
+
+=== Dependencies
+
+* Bump `org.docx4j:docx4j-core` from `11.5.1` to `11.5.3`
+* Bump `org.docx4j:docx4j-JAXB-ReferenceImpl` from `11.5.1` to `11.5.3`
+
+* Bump `org.springframework:spring-expression` from `6.2.1` to `6.2.8`
+* Bump `org.springframework:spring-context` from `6.2.1` to `6.2.8`
+
+=== Documentation
+
+* Massive rework of the documentation, now most of it is on the https://verronpro.github.io/office-stamper/[site]
+* Add a Style Guide, notably to improve AI assistants correctness
+* Improve the https://github.com/verronpro/office-stamper/issues/new/choose[bug report form] to include Docx editor used and reduce analysis time
+
+* Bump `org.apache.maven.skins:maven-fluido-skin` from `1.11.1` to `2.1.0`
+* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.1.1` to `3.2.0`
+* Added `org.asciidoctor:asciidoctor-parser-doxia-module` version `3.2.0`
+
+=== Continuous Integration
+
+* Add the sonarlint configuration, for contributors that would like to see the list of issues
+
+* Bump `org.apache.maven.plugins:maven-compiler-plugin` from `3.13.0` to `3.14.0`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.2` to `3.5.3`
+
+* Bump `org.junit.jupiter:junit-jupiter` from `5.11.4` to `5.13.3`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.2` to `3.5.3`
+
+* Bump `org.jacoco:jacoco-maven-plugin` from `0.8.12` to `0.8.13`
+
+* Bump `org.pitest:pitest-maven` from `1.17.3` to `1.20.0`
+* Bump `org.pitest:pitest-junit5-plugin` from `1.2.1` to `1.2.3`
+
+* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.7` to `3.2.8`
+
+* Bump `org.slf4j:slf4j-nop` from `2.0.16` to `2.0.17`
+* Bump `org.slf4j:slf4j-simple` from `2.0.16` to `2.0.17`
+
+=== Refactorings
+
+* Word 2 String now manage FldChar, instrText, and Hyperlink.
+
 
 == {proj}/releases/tag/v2.7.0[v2.7.0]
 

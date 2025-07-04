@@ -9,7 +9,7 @@
         <version>2.1.0</version>
     </skin>
     <body>
-        <menu name="OfficeStamper">
+        <menu name="Office-stamper">
             <item name="Overview" href="index.html"/>
             <item name="Introduction" href="introduction.html"/>
             <item name="Getting Started" href="getting-started.html"/>

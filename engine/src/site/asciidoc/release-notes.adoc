@@ -4,66 +4,72 @@ This page provides information about the latest releases of Office-stamper, incl
 
 == Latest Release
 
-=== v2.7.0
+=== {proj}/v2.8.0[v2.8.0]
 
 ==== Features
 
-* Add the `PostProcessor` concept to be able to add cleaners or summaries at stamping finish.
-* #68 Filled to `displayXXXIf` panoply with:
-** `displayParagraphIf(boolean)`, `displayParagraphIfPresent(object)` and `displayParagraphIfAbsent(object)`
-** `displayTableRowIf(boolean)`, `displayTableRowIfPresent(object)` and `displayTableRowIfAbsent(object)`
-** `displayTableIf(boolean)`, `displayTableIfPresent(object)` and `displayTableIfAbsent(object)`
-** `displayWordsIf(boolean)`, `displayWordsIfPresent(object)` and `displayWordsIfAbsent(object)`
-** `displayDocPartIf(boolean)`, `displayDocPartIfPresent(object)` and `displayDocPartIfAbsent(object)`
-* The two provided evaluation context configurer now include the classic Get Accessor and the Map Accessor, so the object used as context can be much more flexible.
-** that is`$+{name}+` can now refer to an object `getName()` method or to a map `get("name")` value.
+* EXPERIMENTAL - Preparation of a CLI version of Office-stamper, to be able to stamp directly with sensible presets, inspired from the examples folder
+* Added Google Doc to the list of supported editors
+* Improved management of SdtRun as stampable elements of docx
 
 ==== Bugfixes
 
-* BREAKING - `Paragraph#getComment` now returns a Collection instead of an Optional, because one paragraph can have several comments.
-Fixes a bug when commenting several groups of runs by different comments in a single paragraph.
-* #69 Office-stamper is now aware of Footnotes and Endnotes, it only cleans orphaned notes with `standardWithPreprocessing` configuration for now, but probably going to run the stamping as well in future versions.
-* #510 All `repeatXXX` can now accept Iterable as input
+* Fixed management of comment made in Google Doc, as mentioned by @Jushar in #534
+* Fixed management of instrText in TOC, as mentioned by {gh}/tiagobutzke[@tiagobutzke] in {os}/issues/539[#539]
+
 
 ==== Dependencies
 
-* Bump `org.docx4j:docx4j-core` from `11.5.0` to `11.5.1`
-* Bump `org.docx4j:docx4j-JAXB-ReferenceImpl` from `11.5.0` to `11.5.1`
-* Bump `org.springframework:spring-expression` from `6.1.14` to `6.2.1`
-* Bump `org.springframework:spring-context` from `6.1.14` to `6.2.1`
+* Bump `org.docx4j:docx4j-core` from `11.5.1` to `11.5.3`
+* Bump `org.docx4j:docx4j-JAXB-ReferenceImpl` from `11.5.1` to `11.5.3`
+
+* Bump `org.springframework:spring-expression` from `6.2.1` to `6.2.8`
+* Bump `org.springframework:spring-context` from `6.2.1` to `6.2.8`
+
+==== Documentation
+
+* Massive rework of the documentation, now most of it is on the https://verronpro.github.io/office-stamper/[site]
+* Add a Style Guide, notably to improve AI assistants correctness
+* Improve the https://github.com/verronpro/office-stamper/issues/new/choose[bug report form] to include Docx editor used and reduce analysis time
+
+* Bump `org.apache.maven.skins:maven-fluido-skin` from `1.11.1` to `2.1.0`
+* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.1.1` to `3.2.0`
+* Added `org.asciidoctor:asciidoctor-parser-doxia-module` version `3.2.0`
 
 ==== Continuous Integration
 
-* Bump `org.junit.jupiter:junit-jupiter` from `5.11.3` to `5.11.4`
-* Bump `org.pitest:pitest-maven` from `1.17.0` to `1.17.3`
-* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.1` to `3.5.2`
-* Bump `org.apache.maven.plugins:maven-site-plugin` from `3.20.0` to `3.21.0`
-* Bump `org.apache.maven.plugins:maven-project-info-reports-plugin` from `3.7.0` to `3.8.0`
-* Bump `org.apache.maven.plugins:maven-surefire-report-plugin` from `3.5.1` to `3.5.2`
-* Bump `org.apache.maven.reporting:maven-reporting-exec` from `2.0.0-M14` to `2.0.0`
-* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.1.0` to `3.1.1`
-* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.1` to `3.11.2`
-* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.5` to `3.2.7`
+* Add the sonarlint configuration, for contributors that would like to see the list of issues
+
+* Bump `org.apache.maven.plugins:maven-compiler-plugin` from `3.13.0` to `3.14.0`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.2` to `3.5.3`
+
+* Bump `org.junit.jupiter:junit-jupiter` from `5.11.4` to `5.13.3`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.2` to `3.5.3`
+
+* Bump `org.jacoco:jacoco-maven-plugin` from `0.8.12` to `0.8.13`
+
+* Bump `org.pitest:pitest-maven` from `1.17.3` to `1.20.0`
+* Bump `org.pitest:pitest-junit5-plugin` from `1.2.1` to `1.2.3`
+
+* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.7` to `3.2.8`
+
+* Bump `org.slf4j:slf4j-nop` from `2.0.16` to `2.0.17`
+* Bump `org.slf4j:slf4j-simple` from `2.0.16` to `2.0.17`
 
 ==== Refactorings
 
-* Removed the old `ObjectDeleter` utility class to use mostly `WmlUtils#remove` method instead.
-* The `standardWithPreprocessing` configuration now removes all Lang tags at preprocessing.
-
-==== Tests
-
-* Create the ObjectContextFactory, and the MapContextFactory to test all use cases with POJO Beans and Map equally.
-* Fix a bug in Locale when some test failed
-* Move processors-specific test outside the DefaultTest class
-* #114 added a test to trace this still unresolved issue.
-* Word 2 String now includes comments, endnotes, and footnotes
-* String 2 Word now includes comments
+* Word 2 String now manage FldChar, instrText, and Hyperlink.
 
 == Previous Releases
 
 For information about previous releases, see the link:https://github.com/verronpro/docx-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
 
 == Upgrading
+
+=== From v2.7.x to v2.8.0
+
+* No breaking changes.
+* Update your dependencies to the latest versions.
 
 === From v2.6.x to v2.7.0
 

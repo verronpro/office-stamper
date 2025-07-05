@@ -121,10 +121,28 @@
     <developers>
         <developer>
             <email>joseph@verron.pro</email>
-            <name>Caring Coder</name>
-            <url>https://github.com/caring-coder</url>
+            <name>Joseph Verron</name>
+            <url>https://blog.verron.pro</url>
+            <organization>Verron.pro</organization>
+            <organizationUrl>https://verron.pro</organizationUrl>
+            <roles>
+                <role>Lead Developer</role>
+            </roles>
+            <timezone>Beijing</timezone>
         </developer>
     </developers>
+
+    <contributors>
+        <contributor>
+            <name>Youssouf Naciri</name>
+            <email>y@naciri.fr</email>
+            <url>https://youssouf.naciri.fr</url>
+            <organization>YZ Network</organization>
+            <roles>
+                <role>Lead Developer</role>
+            </roles>
+        </contributor>
+    </contributors>
 
     <build>
         <resources>

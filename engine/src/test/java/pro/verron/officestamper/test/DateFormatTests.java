@@ -128,7 +128,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
                 ISO Localized Time (MEDIUM): 오후 11:34:45
                 ISO Localized Time (SHORT): 오후 11:34
                 
-                Julian Calendar (Default Locale): 서기2000012
+                Julian Calendar (Default Locale): AD2000012
                 Julian Calendar (French Locale): ap. J.-C.2000012
                 Julian Calendar (English Locale): AD2000012
                 Julian Calendar (Chinese Locale): 公元2000012

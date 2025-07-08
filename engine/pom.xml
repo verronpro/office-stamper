@@ -204,8 +204,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.3</version>
                 <configuration>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <argLine>@{argLine} --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>>
                 </configuration>
             </plugin>
             <plugin>

@@ -8,6 +8,10 @@ import java.text.StringCharacterIterator;
 import java.util.Base64;
 import java.util.Locale;
 
+/**
+ * Utility class providing common operations for byte manipulation and conversions.
+ * This class is not intended to be instantiated.
+ */
 public class ByteUtils {
 
     private ByteUtils() {
@@ -34,18 +38,21 @@ public class ByteUtils {
         }
     }
 
-    /// Converts a byte count into a human-readable string using SI units.
-    ///
-    /// @param nb the byte quantity
-    ///
-    /// @return a human-readable string representation of the byte count.
-    public static String humanReadableByteCountSI(long nb) {
-        double size = nb;
-        var ci = new StringCharacterIterator(" kMGTPE");
-        while (size <= -1_000 || size >= 1_000) {
-            size /= 1000;
-            ci.next();
+    /**
+     * Converts the size of a byte array into a human-readable string representation
+     * using standard size prefixes (e.g., KB, MB, GB).
+     *
+     * @param imageBytes the input byte array whose size needs to be converted
+     * @return a human-readable string representing the size of the byte array
+     *         in appropriate units (e.g., "1.2KB", "3.4MB")
+     */
+    public static String readableSize(byte[] imageBytes) {
+        double size = imageBytes.length;
+        var prefixes = new StringCharacterIterator(" kMGTPE");
+        while (size >= 1_000) {
+            size /= 1_000;
+            prefixes.next();
         }
-        return String.format(Locale.ROOT, "%.1f%cB", size, ci.current());
+        return String.format(Locale.ROOT, "%.1f%cB", size, prefixes.current());
     }
 }

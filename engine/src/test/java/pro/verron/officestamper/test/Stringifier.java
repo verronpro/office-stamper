@@ -25,6 +25,7 @@ import pro.verron.officestamper.experimental.ExcelCollector;
 import pro.verron.officestamper.experimental.PowerpointCollector;
 import pro.verron.officestamper.experimental.PowerpointParagraph;
 import pro.verron.officestamper.experimental.PptxPart;
+import pro.verron.officestamper.utils.ByteUtils;
 import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
@@ -36,7 +37,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.*;
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.utils.ByteUtils.humanReadableByteCountSI;
+import static pro.verron.officestamper.utils.ByteUtils.readableSize;
 import static pro.verron.officestamper.utils.ByteUtils.sha1b64;
 
 /// @author Joseph Verron
@@ -161,7 +162,7 @@ public class Stringifier {
         return "%s:%s:%s:%s:sha1=%s:cy=$d".formatted(image.getPartName(),
                 blip.getEmbed(),
                 image.getContentType(),
-                humanReadableByteCountSI(imageBytes.length),
+                readableSize(imageBytes),
                 sha1b64(imageBytes));
     }
 

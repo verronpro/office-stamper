@@ -56,10 +56,26 @@ public class OfficeStamperException
         super("Unexpected exception");
     }
 
+    /**
+     * Creates a supplier that returns a new instance of {@link OfficeStamperException} with the specified message.
+     *
+     * @param message the message describing the exception
+     * @return a supplier that provides a new {@link OfficeStamperException} instance
+     */
     public static Supplier<OfficeStamperException> throwing(String message) {
         return () -> new OfficeStamperException(message);
     }
 
+    /**
+     * Wraps a ThrowingFunction into a standard Java Function, converting any checked exceptions
+     * thrown by the original function into an OfficeStamperException.
+     *
+     * @param <T> the type of the input to the function
+     * @param <U> the type of the result of the function
+     * @param function the throwing function to be wrapped
+     * @return a Function that wraps the specified ThrowingFunction and handles exceptions by
+     *         throwing an OfficeStamperException
+     */
     public static <T, U> Function<T, U> throwing(ThrowingFunction<T, U> function) {
         return ThrowingFunction.of(function, OfficeStamperException::new);
     }

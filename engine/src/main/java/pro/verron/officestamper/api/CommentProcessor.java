@@ -6,86 +6,92 @@ import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 
 /**
- * CommentProcessor is an interface that defines the methods for processing comments in a .docx template.
+ * Represents a comment processor for handling context-specific processing and operations
+ * on comments, paragraphs, and runs within a document.
+ * This interface serves as a contract
+ * for implementing custom comment processors.
  */
 public interface CommentProcessor {
 
+    /**
+     * Sets the processing context for the comment processor.
+     * This method serves to pass relevant contextual information, such as the
+     * current paragraph, run, comment, and placeholder being processed.
+     * It's always invoked before any custom methods of the custom
+     * {@link CommentProcessor} interface.
+     *
+     * @param processorContext the context in which the processor operates,
+     *                         containing details about the paragraph, run,
+     *                         comment, and placeholder being processed.
+     */
     void setProcessorContext(ProcessorContext processorContext);
 
     /**
-     * Passes the run that is currently being processed (i.e., the run that is commented in the
-     * .docx template). This method is always called BEFORE the custom
-     * methods of the custom comment processor interface
-     * are called.
+     * Sets the currently processed run in the comment processor.
+     * This method should be called to specify the current run
+     * within the context of processing a document.
      *
-     * @param run coordinates of the currently processed run within the template.
+     * @param run the run object that is currently being processed,
+     *            or null if there is no specific run to set
      */
     void setCurrentRun(@Nullable R run);
 
     /**
-     * This method is called after all comments in the .docx template have been passed to the comment processor.
-     * All manipulations of the .docx document SHOULD BE done in this method.
-     * If certain manipulations are already done
-     * within the custom methods of a comment processor,
-     * the ongoing iteration over the paragraphs in the document
-     * may be disturbed.
-     * <p>
-     * This method replaces the previous {@link #commitChanges(WordprocessingMLPackage)} and called with a DocxPart
-     * as the parameter.
+     * Finalizes the processing of a {@link DocxPart} document and commits any changes made to it.
+     * This method is used to ensure that all modifications performed during the processing
+     * of comments or other operations in the DocxPart are applied to the underlying document.
      *
-     * @param docxPart The DocxPart that can be manipulated by using the DOCX4J api.
+     * @param docxPart the {@link DocxPart} instance representing a part of the document
+     *                 that is being processed; contains the underlying WordprocessingMLPackage
+     *                 document to which the changes are committed
      */
     default void commitChanges(DocxPart docxPart) {
         commitChanges(docxPart.document());
     }
 
     /**
-     * This method is called after all comments in the .docx template have been passed to the comment processor.
-     * All manipulations of the .docx document SHOULD BE done in this method.
-     * If certain manipulations are already done
-     * within the custom methods of a comment processor,
-     * the ongoing iteration over the paragraphs in the document
-     * may be disturbed.
-     * <p>
-     * This method replaces the previous {@link #commitChanges(DocxPart)} and called with a DocxPart
-     * as the parameter.
+     * Commits changes to the provided WordprocessingMLPackage document.
+     * This method is deprecated and should not be used in new implementations.
+     * It is retained only for compatibility with legacy implementations.
      *
-     * @param document The document that can be manipulated by using the DOCX4J api.
-     *
-     * @deprecated replaced by {@link #commitChanges(DocxPart)}
+     * @param document the WordprocessingMLPackage document to which changes were made
+     * @throws OfficeStamperException always thrown, as this method should no longer be called
+     * @deprecated since 2.3; for removal in future versions. Use updated methods or processes instead.
      */
     @Deprecated(since = "2.3", forRemoval = true) default void commitChanges(WordprocessingMLPackage document) {
         throw new OfficeStamperException("Should not be called since deprecation, only legacy implementations have a "
                                          + "reason to keep implementing this");
     }
 
+    /**
+     * Retrieves the current paragraph being processed.
+     *
+     * @return the current {@code Paragraph} object associated with the comment processor
+     */
     Paragraph getParagraph();
 
     /**
-     * Passes the paragraph that is currently being processed (i.e., the paragraph that is commented in the
-     * .docx template). This method is always called BEFORE the custom
-     * methods of the custom comment processor interface
-     * are called.
+     * Sets the current paragraph being processed in the comment processor.
+     * This method is deprecated and scheduled for removal in a future version.
      *
-     * @param paragraph coordinates of the currently processed paragraph within the template.
-     *
-     * @deprecated use {@link #setProcessorContext(ProcessorContext)} instead
+     * @param paragraph the paragraph to set as the current paragraph being processed
      */
     @Deprecated(since = "2.6", forRemoval = true)
     void setParagraph(P paragraph);
 
     /**
-     * Passes the comment range wrapper that is currently being processed
-     * (i.e., the start and end of comment that in the .docx template).
-     * This method is always called BEFORE the custom methods of the custom comment
-     * processor interface are called.
+     * Sets the current comment being processed in the comment processor.
+     * This method is typically invoked to specify the comment object
+     * associated with the current processing context.
      *
-     * @param comment of the currently processed comment within the template.
+     * @param comment the comment object that is currently being processed
      */
     void setCurrentCommentWrapper(Comment comment);
 
     /**
-     * Resets all states in the comment processor so that it can be re-used in another stamping process.
+     * Resets the internal state of the comment processor to its initial state.
+     * This method is intended to clear any stored context or settings,
+     * allowing the processor to be reused for a new processing task.
      */
     void reset();
 }

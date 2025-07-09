@@ -18,9 +18,9 @@ import java.util.Random;
 import static java.util.stream.Collectors.toCollection;
 
 /**
- * WmlFactory is a utility class providing methods to create and manipulate WordML objects.
- * It includes methods for creating paragraphs, runs, text elements, comments, bodies and drawings.
- * This factory encapsulates the complexity of WordML elements and simplifies the process of working with them.
+ * Utility class for creating and configuring various WordML (WML) elements.
+ * Provides static methods to generate paragraphs, runs, comments, text, and other WML structures.
+ * This is intended for handling Office Open XML documents programmatically.
  */
 public class WmlFactory {
     private static final Random RANDOM = new Random();
@@ -30,21 +30,21 @@ public class WmlFactory {
     }
 
     /**
-     * Creates a new paragraph containing a single drawing.
+     * Creates a new paragraph containing a single drawing element.
      *
      * @param drawing The Drawing object to be included in the new paragraph.
      *
-     * @return A new paragraph encapsulating the provided drawing.
+     * @return A new paragraph containing the provided drawing encapsulated in a run.
      */
     public static P newParagraph(Drawing drawing) {
         return newParagraph(List.of(newRun(drawing)));
     }
 
     /**
-     * Creates a new paragraph containing the provided values.
+     * Creates a new paragraph containing the provided list of values.
      *
      * @param values A list of objects to be added to the new paragraph.
-     *
+     *               These objects populate the content of the paragraph.
      * @return A new paragraph containing the provided values.
      */
     public static P newParagraph(List<?> values) {
@@ -65,6 +65,14 @@ public class WmlFactory {
         return newRun(List.of(value));
     }
 
+    /**
+     * Creates a new run containing the provided values deemed worth keeping.
+     *
+     * @param values A list of objects to be added to the new run.
+     *               Objects are filtered based on a predefined criteria to determine if they are worth keeping.
+     *
+     * @return A new run containing the filtered values.
+     */
     public static R newRun(List<Object> values) {
         var run = new R();
         var runContent = run.getContent();
@@ -206,22 +214,6 @@ public class WmlFactory {
     }
 
     /**
-     * Creates a new CommentsPart object.
-     * This method attempts to create a new instance of CommentsPart.
-     * If an InvalidFormatException occurs during the creation process, it wraps the exception in an
-     * OfficeStamperException and throws it.
-     *
-     * @return A new instance of CommentsPart.
-     */
-    public static CommentsPart newCommentsPart() {
-        try {
-            return new CommentsPart();
-        } catch (InvalidFormatException e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
-    /**
      * Creates a new run containing an image with the specified attributes.
      *
      * @param maxWidth      the maximum width of the image, it can be null
@@ -286,6 +278,14 @@ public class WmlFactory {
         return drawing;
     }
 
+    /**
+     * Creates a new CommentRangeStart object with the specified ID and parent.
+     *
+     * @param id     The unique identifier for the CommentRangeStart object.
+     * @param parent The parent element (P) to which this CommentRangeStart belongs.
+     *
+     * @return A new CommentRangeStart object with the specified ID and parent.
+     */
     public static CommentRangeStart newCommentRangeStart(BigInteger id, P parent) {
         var commentRangeStart = new CommentRangeStart();
         commentRangeStart.setId(id);
@@ -293,6 +293,14 @@ public class WmlFactory {
         return commentRangeStart;
     }
 
+    /**
+     * Creates a new CommentRangeEnd object with the specified ID and parent.
+     *
+     * @param id     The unique identifier for the CommentRangeEnd object.
+     * @param parent The parent element (P) to which this CommentRangeEnd belongs.
+     *
+     * @return A new CommentRangeEnd object with the specified ID and parent.
+     */
     public static CommentRangeEnd newCommentRangeEnd(BigInteger id, P parent) {
         var commentRangeEnd = new CommentRangeEnd();
         commentRangeEnd.setId(id);
@@ -300,6 +308,14 @@ public class WmlFactory {
         return commentRangeEnd;
     }
 
+    /**
+     * Creates a new CommentReference object with the specified ID and parent.
+     *
+     * @param id     The unique identifier for the CommentReference.
+     * @param parent The parent element (P) to which this CommentReference belongs.
+     *
+     * @return A new CommentReference object with the specified ID and parent.
+     */
     public static R.CommentReference newCommentReference(BigInteger id, P parent) {
         var commentReference = new R.CommentReference();
         commentReference.setId(id);
@@ -307,18 +323,39 @@ public class WmlFactory {
         return commentReference;
     }
 
+    /**
+     * Creates a new table object.
+     *
+     * @return A new instance of Tbl.
+     */
     public static Tbl newTbl() {
         return new Tbl();
     }
 
+    /**
+     * Creates a new cell object.
+     *
+     * @return A new instance of Tc.
+     */
     public static Tc newCell() {
         return new Tc();
     }
 
+    /**
+     * Creates a new row object.
+     *
+     * @return A new instance of Tr.
+     */
     public static Tr newRow() {
         return new Tr();
     }
 
+    /**
+     * Creates a new WordprocessingMLPackage object initialized with a main document part,
+     * and an empty comments part.
+     *
+     * @return A new instance of WordprocessingMLPackage.
+     */
     public static WordprocessingMLPackage newWord() {
         try {
             var aPackage = WordprocessingMLPackage.createPackage();
@@ -328,6 +365,22 @@ public class WmlFactory {
             cp.setJaxbElement(newComments());
             mainDocumentPart.addTargetPart(cp);
             return aPackage;
+        } catch (InvalidFormatException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    /**
+     * Creates a new CommentsPart object.
+     * This method attempts to create a new instance of CommentsPart.
+     * If an InvalidFormatException occurs during the creation process, it wraps the exception in an
+     * OfficeStamperException and throws it.
+     *
+     * @return A new instance of CommentsPart.
+     */
+    public static CommentsPart newCommentsPart() {
+        try {
+            return new CommentsPart();
         } catch (InvalidFormatException e) {
             throw new OfficeStamperException(e);
         }

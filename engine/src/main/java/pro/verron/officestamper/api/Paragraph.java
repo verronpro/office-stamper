@@ -108,5 +108,10 @@ public interface Paragraph {
      */
     <T> Optional<T> parent(Class<T> aClass);
 
+    /**
+     * Retrieves a collection of comments associated with the paragraph.
+     *
+     * @return a collection of {@code Comments.Comment} objects related to the paragraph
+     */
     Collection<Comments.Comment> getComment();
 }

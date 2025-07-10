@@ -43,6 +43,17 @@ public class DocxStamperConfiguration
     private SpelParserConfiguration spelParserConfiguration;
     private ExceptionResolver exceptionResolver;
 
+    /**
+     * Constructs a new instance of the {@code DocxStamperConfiguration} class
+     * and initializes its default configuration settings.
+     *
+     * This constructor sets up internal structures and default behaviors
+     * for managing document stamping configurations, including:
+     * - Initializing collections for processors, resolvers, and functions.
+     * - Setting default values for expression handling and evaluation.
+     * - Creating and configuring a default {@code SpelParserConfiguration}.
+     * - Establishing resolvers and exception handling strategies.
+     */
     public DocxStamperConfiguration() {
         commentProcessors = new HashMap<>();
         resolvers = new ArrayList<>();

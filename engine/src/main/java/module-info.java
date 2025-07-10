@@ -59,6 +59,7 @@ module pro.verron.officestamper {
     requires static org.apache.commons.io;
     requires static org.slf4j;
     requires static jakarta.xml.bind;
+    requires org.jetbrains.annotations;
 
     opens pro.verron.officestamper.api;
     exports pro.verron.officestamper.api;

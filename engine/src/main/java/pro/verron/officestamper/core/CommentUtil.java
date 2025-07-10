@@ -43,12 +43,11 @@ public class CommentUtil {
     }
 
     /**
-     * Returns the comment the given DOCX4J object is commented with.
+     * Retrieves the comment associated with or around the specified `R` run within a WordprocessingMLPackage document.
      *
-     * @param run      the DOCX4J object whose comment to retrieve.
-     * @param document the document that contains the object.
-     *
-     * @return Optional of the comment, if found, Optional.empty() otherwise.
+     * @param run      the run to search for an associated comment
+     * @param document the WordprocessingMLPackage document containing the run and its possible comments
+     * @return an Optional containing the found comment, or Optional.empty() if no comment is associated
      */
     public static Optional<Comments.Comment> getCommentAround(R run, WordprocessingMLPackage document) {
         ContentAccessor parent = (ContentAccessor) run.getParent();
@@ -72,8 +71,7 @@ public class CommentUtil {
             }
             // else restart
             else {
-                possibleComment = null;// TODO There is  bug here when looking for a commented run and the run has
-                // ProofErr issues
+                possibleComment = null;
                 foundChild = false;
             }
         }

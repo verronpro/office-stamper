@@ -2,11 +2,12 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
+
+import static pro.verron.officestamper.utils.WmlFactory.newBr;
 
 /**
  * Replaces expressions in a document with the values provided by the {@link ExpressionResolver}.
@@ -73,7 +74,7 @@ public class PlaceholderReplacer
             var replacement = resolve(docxPart, context, expression);
             paragraph.replace(expression, replacement);
         }
-        paragraph.replace(lineBreakPlaceholder, getBr());
+        paragraph.replace(lineBreakPlaceholder, newBr());
     }
 
     private R resolve(DocxPart docxPart, Object context, Placeholder placeholder) {
@@ -89,13 +90,6 @@ public class PlaceholderReplacer
             var resolution = exceptionResolver.resolve(placeholder, message, e);
             return WmlFactory.newRun(resolution);
         }
-    }
-
-    private static Child getBr() {
-        var br = new Br();
-        br.setType(STBrType.TEXT_WRAPPING);
-        br.setClear(null);
-        return br;
     }
 
     @Override

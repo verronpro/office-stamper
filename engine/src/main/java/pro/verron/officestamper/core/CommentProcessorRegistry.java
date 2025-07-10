@@ -55,6 +55,14 @@ public class CommentProcessorRegistry {
         this.exceptionResolver = exceptionResolver;
     }
 
+    /**
+     * Processes comments and inline content in the document by evaluating them against all registered
+     * {@link CommentProcessor}s. This method processes runs, paragraphs, and inline content, and applies
+     * changes based on the evaluation results.
+     *
+     * @param <T>               the type of the context root object
+     * @param expressionContext the context root object against which expressions within comments are evaluated
+     */
     public <T> void runProcessors(T expressionContext) {
         var proceedComments = new ArrayList<Comment>();
 
@@ -108,7 +116,10 @@ public class CommentProcessorRegistry {
     }
 
     private <T> Optional<Comment> runProcessorsOnRunComment(
-            Map<BigInteger, Comment> comments, T expressionContext, R run, Paragraph paragraph
+            Map<BigInteger, Comment> comments,
+            T expressionContext,
+            R run,
+            Paragraph paragraph
     ) {
         return CommentUtil.getCommentAround(run, document())
                           .flatMap(c -> Optional.ofNullable(comments.get(c.getId())))
@@ -123,17 +134,11 @@ public class CommentProcessorRegistry {
                           });
     }
 
-    /**
-     * Takes the first comment on the specified paragraph and tries to evaluate
-     * the string within the comment against all registered
-     * {@link CommentProcessor}s.
-     *
-     * @param comments          the comments within the document.
-     * @param expressionContext the context root object
-     * @param <T>               the type of the context root object.
-     */
     private <T> Optional<Comment> runProcessorsOnParagraphComment(
-            Map<BigInteger, Comment> comments, T expressionContext, Paragraph paragraph, BigInteger paragraphCommentId
+            Map<BigInteger, Comment> comments,
+            T expressionContext,
+            Paragraph paragraph,
+            BigInteger paragraphCommentId
     ) {
         if (!comments.containsKey(paragraphCommentId)) return Optional.empty();
 
@@ -145,14 +150,6 @@ public class CommentProcessorRegistry {
         return runCommentProcessors(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
     }
 
-    /**
-     * Finds all processor expressions within the specified paragraph and tries
-     * to evaluate it against all registered {@link CommentProcessor}s.
-     *
-     * @param context   the context root object against which evaluation is done
-     * @param paragraph the paragraph to process.
-     * @param <T>       type of the context root object
-     */
     private <T> void runProcessorsOnInlineContent(T context, Paragraph paragraph) {
         var processorContexts = findProcessors(paragraph.asString()).stream()
                                                                     .map(paragraph::processorContext)
@@ -200,9 +197,7 @@ public class CommentProcessorRegistry {
         stack.add(comment);
     }
 
-    private void onRangeEnd(
-            CommentRangeEnd cre, HashMap<BigInteger, Comment> allComments, Queue<Comment> stack
-    ) {
+    private void onRangeEnd(CommentRangeEnd cre, HashMap<BigInteger, Comment> allComments, Queue<Comment> stack) {
         Comment comment = allComments.get(cre.getId());
         if (comment == null)
             throw new OfficeStamperException("Found a comment range end before the comment range start !");
@@ -237,5 +232,4 @@ public class CommentProcessorRegistry {
             return false;
         }
     }
-
 }

@@ -33,28 +33,25 @@ public class RunUtil {
     }
 
     /**
-     * Returns the text string of a run.
+     * Extracts textual content from a given object, handling various object types,
+     * such as runs, text elements, and other specific constructs.
+     * The method accounts for different cases, such as run breaks, hyphens,
+     * and other document-specific constructs, and converts them into
+     * corresponding string representations.
      *
-     * @param run the run whose text to get.
+     * @param content the object from which text content is to be extracted.
+     *                This could be of various types such as R, JAXBElement, Text,
+     *                or specific document elements.
      *
-     * @return {@link String} representation of the run.
+     * @return a string representation of the extracted textual content.
+     * If the object's type is not handled, an empty string is returned.
      */
-    public static String getText(R run) {
-        return run.getContent()
-                  .stream()
-                  .map(RunUtil::getText)
-                  .collect(joining());
-    }
-
-    /**
-     * Returns the textual representation of a run child
-     *
-     * @param content the run child to represent textually
-     *
-     * @return {@link String} representation of run child
-     */
-    public static CharSequence getText(Object content) {
+    public static String getText(Object content) {
         return switch (content) {
+            case R run -> run.getContent()
+                             .stream()
+                             .map(RunUtil::getText)
+                             .collect(joining());
             case JAXBElement<?> jaxbElement when jaxbElement.getName()
                                                             .getLocalPart()
                                                             .equals("instrText") -> "<instrText>";
@@ -85,13 +82,23 @@ public class RunUtil {
         };
     }
 
-    private static CharSequence getText(Text text) {
-        String value = text.getValue();
-        String space = text.getSpace();
-        return Objects.equals(space, PRESERVE)
-                ? value
-                // keeps spaces if spaces are to be preserved (LibreOffice seems to ignore the "space" property)
-                : value.trim(); // trimming value if spaces are not to be preserved (simulates behavior of Word;)
+    /**
+     * Processes and retrieves text content from a given Text object.
+     * It handles situations where the text may or may not preserve spaces,
+     * trimming the text if spaces are not to be preserved.
+     *
+     * @param text the Text object from which the value is to be processed and returned.
+     *             The object contains the textual value, and an associated space property
+     *             that determines if spaces should be preserved.
+     *
+     * @return a processed string value from the Text object.
+     * If spaces are to be preserved, the original value is returned;
+     * otherwise, the value is trimmed of leading and trailing spaces.
+     */
+    private static String getText(Text text) {
+        var value = text.getValue();
+        var space = text.getSpace();
+        return Objects.equals(space, PRESERVE) ? value : value.trim();
     }
 
     /**
@@ -133,18 +140,6 @@ public class RunUtil {
         Text textObj = newText(text);
         run.getContent()
            .add(textObj);
-    }
-
-    static int getLength(R run) {
-        return getText(run).length();
-    }
-
-    static String getSubstring(R run, int beginIndex) {
-        return getText(run).substring(beginIndex);
-    }
-
-    static String getSubstring(R run, int beginIndex, int endIndex) {
-        return getText(run).substring(beginIndex, endIndex);
     }
 
     static R create(String text, RPr rPr) {

@@ -6,6 +6,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
+import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
@@ -45,6 +46,7 @@ public class WmlFactory {
      *
      * @param values A list of objects to be added to the new paragraph.
      *               These objects populate the content of the paragraph.
+     *
      * @return A new paragraph containing the provided values.
      */
     public static P newParagraph(List<?> values) {
@@ -388,5 +390,17 @@ public class WmlFactory {
 
     private static Comments newComments() {
         return new Comments();
+    }
+
+    /**
+     * Creates a new Br (break) object with text wrapping enabled.
+     *
+     * @return A new Br object with text wrapping type and no clear attribute set.
+     */
+    public static Br newBr() {
+        var br = new Br();
+        br.setType(STBrType.TEXT_WRAPPING);
+        br.setClear(null);
+        return br;
     }
 }

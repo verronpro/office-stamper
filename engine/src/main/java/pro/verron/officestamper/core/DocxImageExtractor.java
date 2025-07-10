@@ -126,32 +126,6 @@ public class DocxImageExtractor {
     }
 
     /**
-     * Extract the name of the image from an embedded image run.
-     *
-     * @param run run containing the embedded drawing.
-     *
-     * @return a {@link String} object
-     */
-    public String getRunDrawingFilename(R run) {
-        return getPic(run).getNvPicPr()
-                          .getCNvPr()
-                          .getName();
-    }
-
-    /**
-     * Extract the content type of the image from an embedded image run.
-     *
-     * @param run run containing the embedded drawing.
-     *
-     * @return a {@link String} object
-     */
-    public String getRunDrawingAltText(R run) {
-        return getPic(run).getNvPicPr()
-                          .getCNvPr()
-                          .getDescr();
-    }
-
-    /**
      * Extract the width of the image from an embedded image run.
      *
      * @param run run containing the embedded drawing.

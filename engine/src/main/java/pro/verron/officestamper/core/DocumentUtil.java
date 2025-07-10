@@ -43,6 +43,15 @@ public class DocumentUtil {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
     }
 
+    /**
+     * Streams the elements of a given class type from the specified DocxPart.
+     *
+     * @param <T>          the type of elements to be streamed
+     * @param source       the source DocxPart containing the elements to be streamed
+     * @param elementClass the class type of the elements to be filtered and streamed.
+     *
+     * @return a Stream of elements of the specified type found within the source DocxPart.
+     */
     public static <T> Stream<T> streamObjectElements(DocxPart source, Class<T> elementClass) {
         ClassFinder finder = new ClassFinder(elementClass);
         TraversalUtil.visit(source.part(), finder);
@@ -51,11 +60,10 @@ public class DocumentUtil {
     }
 
     /**
-     * Retrieve the last element from an object.
+     * Retrieves all elements from the main document part of the specified WordprocessingMLPackage.
      *
-     * @param subDocument the object to get the last element from
-     *
-     * @return the last element
+     * @param subDocument the WordprocessingMLPackage from which to retrieve the elements
+     * @return a list of objects representing the content of the main document part.
      */
     public static List<Object> allElements(WordprocessingMLPackage subDocument) {
         return subDocument.getMainDocumentPart()
@@ -96,7 +104,7 @@ public class DocumentUtil {
             while (!queue.isEmpty()) {
                 Object currentObj = queue.remove();
 
-                if (currentObj instanceof R currentR && isImageRun(currentR)) {
+                if (currentObj instanceof R currentR && containsImage(currentR)) {
                     var docxImageExtractor = new DocxImageExtractor(source);
                     var imageData = docxImageExtractor.getRunDrawingData(currentR);
                     var maxWidth = docxImageExtractor.getRunDrawingMaxWidth(currentR);
@@ -111,14 +119,7 @@ public class DocumentUtil {
         return replacements;
     }
 
-    /**
-     * Check if a run contains an embedded image.
-     *
-     * @param run the run to analyze
-     *
-     * @return true if the run contains an image, false otherwise.
-     */
-    private static boolean isImageRun(R run) {
+    private static boolean containsImage(R run) {
         return run.getContent()
                   .stream()
                   .filter(JAXBElement.class::isInstance)
@@ -187,6 +188,13 @@ public class DocumentUtil {
         };
     }
 
+    /**
+     * Visits the document's main content, header, footer, footnotes, and endnotes using
+     * the specified visitor.
+     *
+     * @param document the WordprocessingMLPackage representing the document to be visited
+     * @param visitor  the TraversalUtilVisitor to be applied to each relevant part of the document
+     */
     public static void visitDocument(WordprocessingMLPackage document, TraversalUtilVisitor<?> visitor) {
         var mainDocumentPart = document.getMainDocumentPart();
         TraversalUtil.visit(mainDocumentPart, visitor);

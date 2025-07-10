@@ -26,6 +26,11 @@ public record CustomFunction(
      * @param <T> the type of the input to the function
      */
     public interface NeedsFunctionImpl<T> {
+        /**
+         * Sets a function implementation that operates on a specific input type and produces a result.
+         *
+         * @param function the function implementation to set; it takes an input of type {@code T} and returns a result.
+         */
         void withImplementation(Function<T, ?> function);
     }
 
@@ -38,6 +43,13 @@ public record CustomFunction(
      * @param <U> the type of the second input to the BiFunction
      */
     public interface NeedsBiFunctionImpl<T, U> {
+        /**
+         * Registers or sets a BiFunction implementation to be used by the client.
+         * The BiFunction accepts two input arguments of types T and U,
+         * and produces a result of an unspecified type.
+         *
+         * @param object the BiFunction implementation that defines the behavior for processing inputs of types T and U
+         */
         void withImplementation(BiFunction<T, U, ?> object);
     }
 
@@ -51,6 +63,14 @@ public record CustomFunction(
      * @param <V> the type of the third input to the TriFunction
      */
     public interface NeedsTriFunctionImpl<T, U, V> {
+        /**
+         * Registers the implementation of a TriFunction that accepts three input arguments
+         * of types T, U, and V and produces a result. This method allows the user to provide
+         * a specific functional behavior to be executed with the given input arguments.
+         *
+         * @param function the implementation of a TriFunction that takes three inputs of
+         *                 types T, U, and V, and produces a result
+         */
         void withImplementation(TriFunction<T, U, V, ?> function);
     }
 }

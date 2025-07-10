@@ -2,6 +2,7 @@ package pro.verron.officestamper.utils;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
+import org.docx4j.XmlUtils;
 import org.docx4j.finders.CommentFinder;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
@@ -35,8 +36,10 @@ public final class WmlUtils {
      * @param child the child element from which the search for a parent begins.
      * @param clazz the class type to match for the parent
      * @param depth the maximum amount levels to traverse up the parent hierarchy
-     * @param <T> the type of the parent class to search for
-     * @return an Optional containing the first parent matching the specified class, or an empty Optional if no match found.
+     * @param <T>   the type of the parent class to search for
+     *
+     * @return an Optional containing the first parent matching the specified class, or an empty Optional if no match
+     * found.
      */
     public static <T> Optional<T> getFirstParentWithClass(Child child, Class<T> clazz, int depth) {
         var parent = child.getParent();
@@ -54,6 +57,7 @@ public final class WmlUtils {
      * Extracts a list of comment elements from the specified WordprocessingMLPackage document.
      *
      * @param document the WordprocessingMLPackage document from which to extract comment elements
+     *
      * @return a list of Child objects representing the extracted comment elements
      */
     public static List<Child> extractCommentElements(WordprocessingMLPackage document) {
@@ -111,6 +115,7 @@ public final class WmlUtils {
      * an empty paragraph is added to the cell.
      *
      * @param child the child element to be removed
+     *
      * @throws OfficeStamperException if the parent of the child element is of an unexpected type
      */
     public static void remove(Child child) {
@@ -159,5 +164,21 @@ public final class WmlUtils {
         if (o1 instanceof JAXBElement<?> e1) o1 = e1.getValue();
         if (o2 instanceof JAXBElement<?> e2) o2 = e2.getValue();
         return Objects.equals(o1, o2);
+    }
+
+    /**
+     * Checks if the given object is serializable to XML.
+     *
+     * @param object the object to be checked for XML serialization
+     *
+     * @return true if the object can be serialized to XML, false otherwise
+     */
+    public static boolean serializable(Object object) {
+        try {
+            XmlUtils.marshaltoString(object);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

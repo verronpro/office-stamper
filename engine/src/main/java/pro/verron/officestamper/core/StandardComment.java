@@ -43,6 +43,16 @@ public class StandardComment
         this.document = document;
     }
 
+    /**
+     * Creates a new instance of a StandardComment and initializes its properties
+     * including the comment, comment range start, comment range end, and comment reference.
+     *
+     * @param document    the WordprocessingMLPackage document where the comment will be created
+     * @param parent      the parent element (P) to which the comment belongs
+     * @param placeholder the placeholder containing the content for the comment
+     * @param id          the unique identifier for the comment
+     * @return a fully initialized StandardComment object
+     */
     public static StandardComment create(
             WordprocessingMLPackage document,
             P parent,
@@ -78,18 +88,10 @@ public class StandardComment
         return Placeholders.raw(string);
     }
 
-    /**
-     * <p>getParent.</p>
-     *
-     * @return the comment's author.
-     */
     @Override public ContentAccessor getParent() {
         return DocumentUtil.findSmallestCommonParent(getCommentRangeStart(), getCommentRangeEnd());
     }
 
-    /**
-     * @return the elements in the document that are between the comment range anchors.
-     */
     @Override public List<Object> getElements() {
         List<Object> elements = new ArrayList<>();
         boolean startFound = false;
@@ -103,15 +105,15 @@ public class StandardComment
         return elements;
     }
 
-    /**
-     * <p>Getter for the field <code>commentRangeEnd</code>.</p>
-     *
-     * @return a {@link CommentRangeEnd} object
-     */
     @Override public CommentRangeEnd getCommentRangeEnd() {
         return commentRangeEnd;
     }
 
+    /**
+     * Sets the comment range end for the current comment.
+     *
+     * @param commentRangeEnd the {@link CommentRangeEnd} object representing the end of the comment range
+     */
     public void setCommentRangeEnd(CommentRangeEnd commentRangeEnd) {
         this.commentRangeEnd = commentRangeEnd;
     }
@@ -125,45 +127,51 @@ public class StandardComment
         return commentRangeStart;
     }
 
+    /**
+     * Sets the starting point of the comment range for the current comment.
+     *
+     * @param commentRangeStart the {@link CommentRangeStart} object representing the beginning of the comment range
+     */
     public void setCommentRangeStart(CommentRangeStart commentRangeStart) {
         this.commentRangeStart = commentRangeStart;
     }
 
-    /**
-     * <p>Getter for the field <code>commentReference</code>.</p>
-     *
-     * @return a {@link CommentReference} object
-     */
     @Override public CommentReference getCommentReference() {
         return commentReference;
     }
 
+    /**
+     * Sets the comment reference for the current comment.
+     *
+     * @param commentReference the {@link CommentReference} object to associate with this comment
+     */
     public void setCommentReference(CommentReference commentReference) {
         this.commentReference = commentReference;
     }
 
-    /**
-     * <p>Getter for the field <code>children</code>.</p>
-     *
-     * @return a {@link Set} object
-     */
     @Override public Set<Comment> getChildren() {
         return children;
     }
 
+    /**
+     * Sets the children of the comment by adding all elements from the provided set
+     * to the existing children set.
+     *
+     * @param children the set of {@link Comment} objects to be added as children
+     */
     public void setChildren(Set<Comment> children) {
         this.children.addAll(children);
     }
 
-    /**
-     * <p>Getter for the field <code>comment</code>.</p>
-     *
-     * @return a {@link Comments.Comment} object
-     */
     @Override public Comments.Comment getComment() {
         return comment;
     }
 
+    /**
+     * Sets the comment for the current StandardComment.
+     *
+     * @param comment the {@link Comments.Comment} object to associate with this StandardComment
+     */
     public void setComment(Comments.Comment comment) {
         this.comment = comment;
     }

@@ -332,7 +332,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
-            <version>6.2.8</version>
+            <version>6.2.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -349,7 +349,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>6.2.8</version>
+            <version>6.2.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>

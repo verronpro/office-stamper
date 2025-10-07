@@ -15,13 +15,11 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
-/**
- * Utility class to handle section breaks in paragraphs.
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.2
- */
+/// Utility class to handle section breaks in paragraphs.
+///
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.2
 public class SectionUtil {
     private static final Logger log = LoggerFactory.getLogger(SectionUtil.class);
 
@@ -29,13 +27,11 @@ public class SectionUtil {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
-    /**
-     * Creates a new section break object.
-     *
-     * @param firstObject a {@link Object} object
-	 * @param parent      a {@link ContentAccessor} object
-     * @return a new section break object.
-     */
+    /// Creates a new section break object.
+    ///
+    /// @param firstObject a [Object] object
+    /// @param parent      a [ContentAccessor] object
+    /// @return a new section break object.
     public static Optional<SectPr> getPreviousSectionBreakIfPresent(Object firstObject, ContentAccessor parent) {
         List<Object> parentContent = parent.getContent();
         int pIndex = parentContent.indexOf(firstObject);
@@ -43,7 +39,7 @@ public class SectionUtil {
         int i = pIndex - 1;
         while (i >= 0) {
             if (parentContent.get(i) instanceof P prevParagraph) {
-                // the first P preceding the object is the one potentially carrying a section break
+                // the first P preceding the object is the one carrying a section break
                 return ofNullable(prevParagraph.getPPr())
                         .map(PPr::getSectPr);
             }
@@ -54,13 +50,11 @@ public class SectionUtil {
         return Optional.empty();
     }
 
-    /**
-     * Creates a new section break object.
-     *
-     * @param objects a {@link List} object
-     *
-     * @return a new section break object.
-     */
+    /// Creates a new section break object.
+    ///
+    /// @param objects a [List] object
+    ///
+    /// @return a new section break object.
     public static boolean hasOddNumberOfSectionBreaks(List<Object> objects) {
         return objects.stream()
                       .filter(P.class::isInstance)
@@ -76,12 +70,10 @@ public class SectionUtil {
         return pPPrSectPr != null;
     }
 
-    /**
-     * Creates a new section break object.
-     *
-     * @param sectPr    a {@link SectPr} object
-     * @param paragraph a {@link P} object
-     */
+    /// Creates a new section break object.
+    ///
+    /// @param sectPr    a [SectPr] object
+    /// @param paragraph a [P] object
     public static void applySectionBreakToParagraph(SectPr sectPr, P paragraph) {
         PPr nextPPr = ofNullable(paragraph.getPPr()).orElseGet(WmlFactory::newPPr);
         nextPPr.setSectPr(XmlUtils.deepCopy(sectPr));

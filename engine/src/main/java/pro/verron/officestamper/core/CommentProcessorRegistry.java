@@ -16,17 +16,15 @@ import java.util.*;
 
 import static pro.verron.officestamper.core.Placeholders.findProcessors;
 
-/**
- * Allows registration of {@link CommentProcessor} objects. Each registered
- * ICommentProcessor must implement an interface which has to be specified at
- * registration time. Provides several getter methods to access the registered
- * {@link CommentProcessor}.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.0
- */
+/// Allows registration of [CommentProcessor] objects. Each registered
+/// ICommentProcessor must implement an interface which has to be specified at
+/// registration time. Provides several getter methods to access the registered
+/// [CommentProcessor].
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.0
 public class CommentProcessorRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentProcessorRegistry.class);
@@ -35,14 +33,12 @@ public class CommentProcessorRegistry {
     private final ExpressionResolver expressionResolver;
     private final ExceptionResolver exceptionResolver;
 
-    /**
-     * Constructs a new CommentProcessorRegistry.
-     *
-     * @param source             the source part of the Word document.
-     * @param expressionResolver the resolver for evaluating expressions.
-     * @param commentProcessors  map of comment processor instances keyed by their respective class types.
-     * @param exceptionResolver  the resolver for handling exceptions during processing.
-     */
+    /// Constructs a new CommentProcessorRegistry.
+    ///
+    /// @param source             the source part of the Word document.
+    /// @param expressionResolver the resolver for evaluating expressions.
+    /// @param commentProcessors  map of comment processor instances keyed by their respective class types.
+    /// @param exceptionResolver  the resolver for handling exceptions during processing.
     public CommentProcessorRegistry(
             DocxPart source,
             ExpressionResolver expressionResolver,
@@ -55,14 +51,12 @@ public class CommentProcessorRegistry {
         this.exceptionResolver = exceptionResolver;
     }
 
-    /**
-     * Processes comments and inline content in the document by evaluating them against all registered
-     * {@link CommentProcessor}s. This method processes runs, paragraphs, and inline content, and applies
-     * changes based on the evaluation results.
-     *
-     * @param <T>               the type of the context root object
-     * @param expressionContext the context root object against which expressions within comments are evaluated
-     */
+    /// Processes comments and inline content in the document by evaluating them against all registered
+    /// [CommentProcessor]s. This method processes runs, paragraphs, and inline content, and applies
+    /// changes based on the evaluation results.
+    ///
+    /// @param <T>               the type of the context root object
+    /// @param expressionContext the context root object against which expressions within comments are evaluated
     public <T> void runProcessors(T expressionContext) {
         var proceedComments = new ArrayList<Comment>();
 

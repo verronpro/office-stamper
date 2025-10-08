@@ -18,7 +18,7 @@
         <url>https://verron.pro</url>
     </organization>
     <properties>
-        <docx4j.version>11.5.5</docx4j.version>
+        <docx4j.version>11.5.6</docx4j.version>
         <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

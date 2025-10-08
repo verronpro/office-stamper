@@ -6,7 +6,6 @@ import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.lang.NonNull;
 import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;
@@ -54,7 +53,7 @@ public class DocxStamper
     }
 
     private DocxStamper(
-            @NonNull String lineBreakPlaceholder,
+            String lineBreakPlaceholder,
             EvaluationContextConfigurer evaluationContextConfigurer,
             Map<Class<?>, Object> expressionFunctions,
             List<CustomFunction> functions,

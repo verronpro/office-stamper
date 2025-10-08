@@ -14,8 +14,7 @@
     <properties>
         <vendor.name>Caring Coder</vendor.name>
         <copyright>Caring Coder@2025</copyright>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

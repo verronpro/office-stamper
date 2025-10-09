@@ -167,7 +167,7 @@ public class CommentUtil {
         }
     }
 
-    public static void deleteCommentFromElements(List<Object> items, BigInteger commentId) {
+    private static void deleteCommentFromElements(List<Object> items, BigInteger commentId) {
         List<Object> elementsToRemove = new ArrayList<>();
         for (Object item : items) {
             Object unwrapped = unwrap(item);
@@ -200,7 +200,7 @@ public class CommentUtil {
         items.removeAll(elementsToRemove);
     }
 
-    private static void deleteCommentFromElements(Comment comment, List<Object> elements) {
+    public static void deleteCommentFromElements(Comment comment, List<Object> elements) {
         var docx4jComment = comment.getComment();
         var commentId = docx4jComment.getId();
         deleteCommentFromElements(elements, commentId);

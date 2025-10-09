@@ -167,10 +167,6 @@ public class CommentUtil {
         }
     }
 
-    /// Returns the string value of the specified comment object.
-    ///
-    /// @param items     a [List] object
-    /// @param commentId a [BigInteger] object
     public static void deleteCommentFromElements(List<Object> items, BigInteger commentId) {
         List<Object> elementsToRemove = new ArrayList<>();
         for (Object item : items) {

@@ -37,10 +37,21 @@ public class Preprocessors {
         return new RemoveProofErrors();
     }
 
+    /**
+     * Returns a PreProcessor object that removes all language informations such as grammatical and orthographics markers in a
+     * WordprocessingMLPackage document.
+     *
+     * @return a PreProcessor object that removes language markers.
+     */
     public static PreProcessor removeLanguageInfo() {
         return new RemoveLang();
     }
 
+    /**
+     * Returns a PreProcessor object that removes comments information that is not conforming to the expected patterns.
+     *
+     * @return a PreProcessor object that removes malformed comments markers.
+     */
     public static PreProcessor removeMalformedComments() {
         return new RemoveMalformedComments();
     }

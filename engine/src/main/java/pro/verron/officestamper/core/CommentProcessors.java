@@ -1,6 +1,8 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.ProcessorContext;
 
 import java.util.AbstractMap;
 import java.util.Map;
@@ -12,7 +14,6 @@ import java.util.Set;
 /// coordinating their lifecycle operations, such as setting contexts and committing changes.
 public class CommentProcessors
         extends AbstractMap<Class<?>, CommentProcessor> {
-
     private final Map<Class<?>, CommentProcessor> processors;
 
     /// Constructs a new CommentProcessors instance with the specified map of processors.
@@ -56,5 +57,15 @@ public class CommentProcessors
     ///         and their corresponding `CommentProcessor` values in this map
     @Override public Set<Entry<Class<?>, CommentProcessor>> entrySet() {
         return processors.entrySet();
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 }

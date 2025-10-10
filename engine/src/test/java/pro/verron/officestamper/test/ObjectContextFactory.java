@@ -142,14 +142,23 @@ public final class ObjectContextFactory
             }
         }
         final class NullishContext {
+            @SuppressWarnings("java:S116") // The nameof the variable is directly used in the corresponding template.
             private String fullish_value;
             private SubContext fullish;
+            @SuppressWarnings("java:S116") // The nameof the variable is directly used in the corresponding template.
             private String nullish_value;
             private SubContext nullish;
 
             public NullishContext() {this(null, null, null, null);}
 
-            NullishContext(String fullish_value, SubContext fullish, String nullish_value, SubContext nullish) {
+
+            @SuppressWarnings("java:S117")
+                // The nameof the variable is directly used in the corresponding template.
+                // TODO: implement stamping of name regardless of case
+            NullishContext(
+                    String fullish_value, SubContext fullish,
+                    String nullish_value, SubContext nullish
+            ) {
                 this.fullish_value = fullish_value;
                 this.fullish = fullish;
                 this.nullish_value = nullish_value;
@@ -158,6 +167,7 @@ public final class ObjectContextFactory
 
             public String getFullish_value() {return fullish_value;}
 
+            @SuppressWarnings("java:S117") // The nameof the variable is directly used in the corresponding template.
             public void setFullish_value(String fullish_value) {this.fullish_value = fullish_value;}
 
             public SubContext getFullish() {return fullish;}
@@ -166,6 +176,7 @@ public final class ObjectContextFactory
 
             public String getNullish_value() {return nullish_value;}
 
+            @SuppressWarnings("java:S117") // The nameof the variable is directly used in the corresponding template.
             public void setNullish_value(String nullish_value) {this.nullish_value = nullish_value;}
 
             public SubContext getNullish() {return nullish;}

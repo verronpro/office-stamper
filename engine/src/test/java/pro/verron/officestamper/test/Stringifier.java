@@ -25,7 +25,6 @@ import pro.verron.officestamper.experimental.ExcelCollector;
 import pro.verron.officestamper.experimental.PowerpointCollector;
 import pro.verron.officestamper.experimental.PowerpointParagraph;
 import pro.verron.officestamper.experimental.PptxPart;
-import pro.verron.officestamper.utils.ByteUtils;
 import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;

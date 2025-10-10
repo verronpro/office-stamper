@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
-public class GoogleDocsSupportTest {
+class GoogleDocsSupportTest {
     @DisplayName("Google Docs support integration test (conditional + repeated paragraphs)")
     @Test
     void conditionalRepeatedParagraphs_createdByGoogleDocs() {

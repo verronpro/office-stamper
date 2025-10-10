@@ -147,7 +147,8 @@ public class StandardParagraph
     /// @param replacement the object to replace the expression.
     @Override
     public void replace(Placeholder placeholder, Object replacement) {
-        assert WmlUtils.serializable(replacement);
+        if (!WmlUtils.serializable(replacement))
+            throw new AssertionError("The replacement object must be a valid DOCX4J Object");
         switch (replacement) {
             case R run -> replaceWithRun(placeholder, run);
             case Br br -> replaceWithBr(placeholder, br);

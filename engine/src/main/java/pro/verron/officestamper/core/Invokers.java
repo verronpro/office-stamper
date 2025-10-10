@@ -7,7 +7,6 @@ import org.springframework.expression.MethodResolver;
 import org.springframework.expression.TypedValue;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CustomFunction;
-import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.ArrayDeque;
 import java.util.List;
@@ -35,7 +34,9 @@ public class Invokers
     /// and argument types to their corresponding executors.
     ///
     /// @param invokerStream a stream of `Invoker` objects, where each invoker encapsulates
-    ///                      the method name, its parameter types, and the associated method executor.
+    ///                                                                the method name, its parameter types, and the
+    ///                      associated method
+    ///                                           executor.
     public Invokers(Stream<Invoker> invokerStream) {
         map = invokerStream.collect(groupingBy(Invoker::name, toMap(Invoker::args, Invoker::executor)));
     }
@@ -44,7 +45,9 @@ public class Invokers
     /// Each entry in the map is processed to generate a flat stream of relevant `Invoker` instances.
     ///
     /// @param interfaces2implementations a map where keys represent interface classes and values represent their
-    ///                                   corresponding implementations, used to derive invoker instances.
+    ///
+    ///                                   corresponding implementations, used to
+    ///                                                                     derive invoker instances.
     ///
     /// @return a stream of `Invoker` objects derived from the provided map entries.
     public static Stream<Invoker> streamInvokers(Map<Class<?>, ?> interfaces2implementations) {
@@ -66,7 +69,7 @@ public class Invokers
     /// and constructs an invoker that can execute the function.
     ///
     /// @param cf the `CustomFunction` providing the function's name, arguments,
-    ///           and implementation to create an `Invoker`.
+    ///                               and implementation to create an `Invoker`.
     ///
     /// @return an `Invoker` encapsulating the function's name, arguments,
     /// and executor for the specified `CustomFunction`.
@@ -82,7 +85,8 @@ public class Invokers
     /// This method attempts to find a matching executor for methods registered with
     /// a specific name and compatible argument types.
     ///
-    /// @param context       the evaluation context in which the method is being resolved, providing necessary state and configuration.
+    /// @param context       the evaluation context in which the method is being resolved, providing necessary state and
+    ///                                           configuration.
     /// @param targetObject  the object on which the resolved method will be invoked.
     /// @param name          the name of the method to resolve.
     /// @param argumentTypes a list of type descriptors representing the argument types of the method to resolve.
@@ -113,6 +117,13 @@ public class Invokers
     private Class typeDescriptor2Class(@Nullable TypeDescriptor typeDescriptor) {
         // When null, consider it as compatible with any type argument, so return Any.class placeholder
         return typeDescriptor == null ? Any.class : typeDescriptor.getType();
+    }
+
+    /// This class represents a placeholder validating all other classes as
+    /// possible candidate for validation. It is not supposed to be
+    /// instantiated.
+    private interface Any {
+
     }
 
     /// Represents argument types associated with method invocation.
@@ -160,22 +171,14 @@ public class Invokers
         /// Executes the method with the provided evaluation context, target object, and arguments.
         /// The method applies the encapsulated function to the arguments and returns the result as a TypedValue.
         ///
-        /// @param context  the evaluation context in which the method is executed.
-        /// @param target   the target object on which the method is invoked, if applicable.
+        /// @param context   the evaluation context in which the method is executed.
+        /// @param target    the target object on which the method is invoked, if applicable.
         /// @param arguments the arguments to be passed to the method during execution.
         ///
         /// @return the result of the method execution encapsulated in a TypedValue.
         @Override
         public TypedValue execute(EvaluationContext context, Object target, Object... arguments) {
             return new TypedValue(function.apply(asList(arguments)));
-        }
-    }
-
-    private static class Any {
-        private Any() {
-            throw new OfficeStamperException("This class represent a placeholder validating all other classes as "
-                                             + "possible candidate for validation. It is not supposed to be "
-                                             + "instantiated.");
         }
     }
 }

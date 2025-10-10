@@ -1,7 +1,6 @@
 package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
-import org.docx4j.dml.Graphic;
 import org.docx4j.dml.picture.Pic;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.exceptions.Docx4JException;

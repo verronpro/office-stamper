@@ -45,6 +45,7 @@ public class PowerpointParagraph
     /**
      * Constructs a new ParagraphWrapper for the given paragraph.
      *
+     * @param source the source of the paragraph.
      * @param paragraph the paragraph to wrap.
      */
     public PowerpointParagraph(PptxPart source, CTTextParagraph paragraph) {

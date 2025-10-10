@@ -21,17 +21,22 @@ import java.util.List;
  */
 public class PowerpointStamper
         implements OfficeStamper<PresentationMLPackage> {
+    /**
+     * Constructs a new instance of the PowerpointStamper class.
+     *
+     * This constructor initializes an instance of PowerpointStamper, which implements
+     * the OfficeStamper interface. The class provides functionality to apply variable-based
+     * stamping on PowerPoint templates and outputs the modified presentation.
+     */
+    public PowerpointStamper() {
+        // Explicit default constructor for Javadoc
+    }
 
     @Override
-    public void stamp(
-            PresentationMLPackage template,
-            Object context,
-            OutputStream outputStream
-    )
+    public void stamp(PresentationMLPackage template, Object context, OutputStream outputStream)
             throws OfficeStamperException {
         Class<CTTextParagraph> ctTextParagraphClass = CTTextParagraph.class;
-        List<CTTextParagraph> ctTextParagraphs = PowerpointCollector.collect(template,
-                ctTextParagraphClass);
+        List<CTTextParagraph> ctTextParagraphs = PowerpointCollector.collect(template, ctTextParagraphClass);
         for (CTTextParagraph paragraph : ctTextParagraphs) {
             PowerpointParagraph paragraph1 = new PowerpointParagraph(new PptxPart(), paragraph);
             String string = paragraph1.asString();

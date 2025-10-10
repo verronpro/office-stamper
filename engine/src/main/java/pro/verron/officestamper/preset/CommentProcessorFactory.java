@@ -90,44 +90,85 @@ public class CommentProcessorFactory {
     /// @since 1.0.0
     public interface IDisplayIfProcessor {
 
-        void displayParagraphIfAbsent(@Nullable Object condition);
-
-        /// @param condition if true, keep the paragraph surrounding the comment, else remove.
+        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given condition.
+        ///
+        /// @param condition if non-null, keep the paragraph surrounding the comment, else remove.
         void displayParagraphIf(@Nullable Boolean condition);
 
+        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given condition.
+        ///
         /// @param condition if non-null, keep the paragraph surrounding the comment, else remove.
         void displayParagraphIfPresent(@Nullable Object condition);
 
+        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given condition.
+        ///
+        /// @param condition if null, keep the paragraph surrounding the comment, else remove.
+        void displayParagraphIfAbsent(@Nullable Object condition);
+
+        /// Displays or removes the table row surrounding a specific comment in a document based on the given condition.
+        ///
         /// @param condition if true, keep the table row surrounding the comment, else remove.
         void displayTableRowIf(@Nullable Boolean condition);
 
+        /// Displays or removes the table row surrounding a specific comment in a document based on the given condition.
+        ///
         /// @param condition if non-null, keep the table row surrounding the comment, else remove.
         void displayTableRowIfPresent(@Nullable Object condition);
 
+        /// Displays or removes the table row surrounding a specific comment in a document based on the given condition.
+        ///
+        /// @param condition if null, keep the table row surrounding the comment, else remove.
         void displayTableRowIfAbsent(@Nullable Object condition);
 
+        /// Displays or removes the table surrounding a specific comment in a document based on the given condition.
+        ///
         /// @param condition if true, keep the table surrounding the comment, else remove.
         void displayTableIf(@Nullable Boolean condition);
 
+        /// Displays or removes the table surrounding a specific comment in a document based on the given condition.
+        ///
         /// @param condition if non-null, keep the table surrounding the comment, else remove.
         void displayTableIfPresent(@Nullable Object condition);
 
+        /// Displays or removes the table surrounding a specific comment in a document based on the given condition.
+        ///
+        /// @param condition if null, keep the table surrounding the comment, else remove.
         void displayTableIfAbsent(@Nullable Object condition);
 
+        /// Displays or removes the selected words surrounding a specific comment in a document based on the given
+        /// condition.
+        ///
         /// @param condition if true, keep the selected words surrounding the comment, else remove.
         void displayWordsIf(@Nullable Boolean condition);
 
+        /// Displays or removes the selected words surrounding a specific comment in a document based on the given
+        /// condition.
+        ///
         /// @param condition if non-null, keep the selected words surrounding the comment, else remove.
         void displayWordsIfPresent(@Nullable Object condition);
 
+        /// Displays or removes the selected words surrounding a specific comment in a document based on the given
+        /// condition.
+        ///
+        /// @param condition if null, keep the selected words surrounding the comment, else remove.
         void displayWordsIfAbsent(@Nullable Object condition);
 
+        /// Displays or removes the selected elements surrounding a specific comment in a document based on the given
+        /// condition.
+        ///
         /// @param condition if true, keep the selected elements surrounding the comment, else remove.
         void displayDocPartIf(@Nullable Boolean condition);
 
+        /// Displays or removes the selected elements surrounding a specific comment in a document based on the given
+        /// condition.
+        ///
         /// @param condition if non-null, keep the selected elements surrounding the comment, else remove.
         void displayDocPartIfPresent(@Nullable Object condition);
 
+        /// Displays or removes the selected elements surrounding a specific comment in a document based on the given
+        /// condition.
+        ///
+        /// @param condition if null, keep the selected elements surrounding the comment, else remove.
         void displayDocPartIfAbsent(@Nullable Object condition);
     }
 }

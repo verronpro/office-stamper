@@ -20,6 +20,18 @@ import static pro.verron.officestamper.core.Placeholders.findVariables;
 public class ExcelStamper
         implements OfficeStamper<SpreadsheetMLPackage> {
 
+    /**
+     * Default constructor for the ExcelStamper class.
+     *
+     * This constructor initializes an instance of the ExcelStamper class,
+     * which implements the OfficeStamper interface for processing and
+     * stamping Excel templates. The class manipulates templates by replacing
+     * variable expressions with values from a given context.
+     */
+    public ExcelStamper(){
+        // Explicit default constructor to hold javadoc
+    }
+
     @Override
     public void stamp(
             SpreadsheetMLPackage template,

@@ -96,6 +96,8 @@ public class DocxStamperConfiguration
 
     /// Determines whether the system should fail when an unresolved expression is encountered.
     ///
+    /// @deprecated use [#getExceptionResolver()] instead
+    ///
     /// @return true if the system is configured to fail on unresolved expressions, false otherwise
     @Deprecated(since = "2.5", forRemoval = true)
     @Override
@@ -107,6 +109,8 @@ public class DocxStamperConfiguration
     /// Set to `TRUE` by default.
     ///
     /// @param failOnUnresolvedExpression a boolean
+    ///
+    /// @deprecated use [#setExceptionResolver(ExceptionResolver)] instead
     ///
     /// @return the same [DocxStamperConfiguration] object
     @Deprecated(since = "2.5", forRemoval = true)
@@ -145,6 +149,8 @@ public class DocxStamperConfiguration
     ///
     /// @param unresolvedExpressionsDefaultValue value to use instead for expression that doesn't resolve
     ///
+    /// @deprecated use [#getExceptionResolver()] instead
+    ///
     /// @return a [DocxStamperConfiguration] object
     ///
     /// @see DocxStamperConfiguration#replaceUnresolvedExpressions
@@ -159,11 +165,9 @@ public class DocxStamperConfiguration
     /// Indicates if a default value should replace expressions that don't resolve.
     ///
     /// @param replaceUnresolvedExpressions true to replace expression with resolved value `null` false to leave the
+    /// expression as is.
     ///
-    ///
-    ///
-    ///
-    ///                                                                         expression as is.
+    /// @deprecated use [#setExceptionResolver(ExceptionResolver)] instead
     ///
     /// @return a [DocxStamperConfiguration] object
     @Deprecated(since = "2.5", forRemoval = true)
@@ -177,6 +181,8 @@ public class DocxStamperConfiguration
     /// Indicate if expressions failing during evaluation needs removal.
     ///
     /// @param leaveEmpty true to replace expressions with empty string when an error occurs during evaluation.
+    ///
+    /// @deprecated use [#setExceptionResolver(ExceptionResolver)] instead
     ///
     /// @return a [DocxStamperConfiguration] object
     @Deprecated(since = "2.5", forRemoval = true)

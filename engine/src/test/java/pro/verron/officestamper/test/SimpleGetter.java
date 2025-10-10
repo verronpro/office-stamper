@@ -74,5 +74,6 @@ public class SimpleGetter implements PropertyAccessor {
             @NonNull String name,
             Object newValue
     ) {
+        throw new RuntimeException("This getter do not support writes");
     }
 }

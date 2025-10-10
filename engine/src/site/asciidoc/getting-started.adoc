@@ -52,22 +52,20 @@ Here's an example of how to use Office-stamper:
 
 [source,java]
 ----
-class Example {
-    public static void main(String[] args) {
-        // a java object to use as context for the expressions found in the template.
-        var context = new YourPojoContext(_, _ , _);
+void main() {
+    // a java object to use as context for the expressions found in the template.
+    var context = new YourPojoContext(_, _ , _);
 
-        // an instance of the stamper
-        var stamper = OfficeStampers.docxStamper();
+    // an instance of the stamper
+    var stamper = OfficeStampers.docxStamper();
 
-        try(
-            // Path to the .docx template file
-            var template = Files.newInputStream(Paths.get("your/docx/template/file.docx"));
-            // Path to write the resulting .docx document
-            var output = Files.newOutputStream(Paths.get("your/desired/output/path.docx"))
-        ) {
-            stamper.stamp(template, context, output);
-        }
+    try(
+        // Path to the .docx template file
+        var template = Files.newInputStream(Paths.get("your/docx/template/file.docx"));
+        // Path to write the resulting .docx document
+        var output = Files.newOutputStream(Paths.get("your/desired/output/path.docx"))
+    ) {
+        stamper.stamp(template, context, output);
     }
 }
 ----
@@ -84,7 +82,7 @@ class Example {
 
 Here's what a plain template might look like:
 
-[source]
+[source, text]
 ----
 Dear ${customer.name},
 

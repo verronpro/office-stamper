@@ -124,11 +124,13 @@ Make sure your context object contains all the expected properties, and they hav
 
 [source,java]
 ----
-// Before stamping, log the context object
-System.out.println("Context: " + context);
+void main(){
+    // Before stamping, log the context object
+    System.out.println("Context: " + context);
 
-// Or create a simple test to verify properties
-assert context.getPerson().getName() != null : "Person name is null";
+    // Or create a simple test to verify properties
+    assert context.getPerson().getName() != null : "Person name is null";
+}
 ----
 
 === Creating a Minimal Reproduction

@@ -70,17 +70,19 @@ Here are some examples of custom functions you might want to add:
 
 [source,java]
 ----
-// Add a function to get the current date
-config.addCustomFunction("today", () -> LocalDate.now());
 
-// Add a function to censor sensitive text
-config.addCustomFunction("censor", String.class, input -> input.replace("f-word", "f**k"));
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
+    // Add a function to get the current date
+    .addCustomFunction("today", () -> LocalDate.now())
 
-// Add a function to sum two numbers
-config.addCustomFunction("add", Integer.class, Integer.class, (a, b) -> a + b);
+    // Add a function to censor sensitive text
+    .addCustomFunction("censor", String.class, input -> input.replace("f-word", "f**k"))
 
-// Add a function to format a date with a pattern and locale
-config.addCustomFunction("format", LocalDate.class, String.class, String.class,
+    // Add a function to sum two numbers
+    .addCustomFunction("add", Integer.class, Integer.class, (a, b) -> a + b)
+
+    // Add a function to format a date with a pattern and locale
+    .addCustomFunction("format", LocalDate.class, String.class, String.class,
     (date, pattern, locale) -> DateTimeFormatter.ofPattern(pattern, locale).format(date));
 ----
 

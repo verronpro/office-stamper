@@ -19,6 +19,28 @@ Example:
 
 This allows you to conditionally display content or repeat elements in headers and footers.
 
+== Preprocessors
+
+Preprocessors allow you to perform operations on the document before the stamping process begins.
+This can be useful for document preparation, validation, or setting up complex transformations.
+
+[source,java]
+----
+void main(String[] args){
+    // Create a custom preprocessor
+    class CustomPreprocessor implements Preprocessor {
+        @Override
+        public void process(WordprocessingMLPackage document) {
+            // Perform operations on the document before stamping
+        }
+    }
+
+    // Add the preprocessor to the configuration
+    var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+    configuration.addPreprocessor(new CustomPreprocessor());
+}
+----
+
 == Post Processors
 
 Post-processors allow you to perform additional operations after the stamping process is complete.
@@ -26,7 +48,7 @@ This can be useful for cleaning up the document or adding summaries.
 
 [source,java]
 ----
-public static void main(String[] args){
+void main(String[] args){
     // Create a custom post processor
     class CustomPostProcessor implements PostProcessor {
         @Override

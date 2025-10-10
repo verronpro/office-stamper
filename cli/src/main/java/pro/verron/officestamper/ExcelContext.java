@@ -5,6 +5,7 @@ import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.parts.SpreadsheetML.WorkbookPart;
 import org.docx4j.openpackaging.parts.SpreadsheetML.WorksheetPart;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
+import org.jetbrains.annotations.NotNull;
 import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
 import org.xlsx4j.sml.Row;
 import org.xlsx4j.sml.Sheet;
@@ -108,7 +109,17 @@ public class ExcelContext
     }
 
     @Override
-    public Set<Entry<String, List<Map<String, String>>>> entrySet() {
+    public @NotNull Set<Entry<String, List<Map<String, String>>>> entrySet() {
         return source.entrySet();
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 }

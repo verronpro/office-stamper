@@ -7,6 +7,7 @@ import org.springframework.expression.MethodResolver;
 import org.springframework.expression.TypedValue;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CustomFunction;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.ArrayDeque;
 import java.util.List;
@@ -132,6 +133,7 @@ public class Invokers
         /// Additionally, the `Any` class serves as a wildcard, making any type compatible.
         ///
         /// @param searchedTypes the list of classes to validate against the source types.
+        ///
         /// @return true if all the searched classes are compatible with the source types; false otherwise.
         @SuppressWarnings("rawtypes")
         public boolean validate(List<Class> searchedTypes) {
@@ -169,6 +171,11 @@ public class Invokers
         }
     }
 
-    /// Represent a placeholder validating all other classes as possible candidate for validation
-    private class Any {}
+    private static class Any {
+        private Any() {
+            throw new OfficeStamperException("This class represent a placeholder validating all other classes as "
+                                             + "possible candidate for validation. It is not supposed to be "
+                                             + "instantiated.");
+        }
+    }
 }

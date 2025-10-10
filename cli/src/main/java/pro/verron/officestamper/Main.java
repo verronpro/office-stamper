@@ -1,18 +1,39 @@
 package pro.verron.officestamper;
 
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import pro.verron.officestamper.api.OfficeStamperException;
+
+import java.io.InputStreamReader;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import static java.nio.file.Files.newOutputStream;
 
@@ -108,20 +129,84 @@ public class Main
         }
     }
 
+    /**
+     * Return a list of objects with the csv properties
+     * @param path
+     * @return
+     */
     private Object processCsv(Path path) {
-        throw new OfficeStamperException("Not yet implemented.");
+        try (var reader = new CSVReader(new InputStreamReader(Files.newInputStream(path)))) {
+            String[] headers = reader.readNext();
+            return reader.readAll()
+                         .stream()
+                         .map(row -> {
+                             Map<String, String> map = new LinkedHashMap<>();
+                             for (int i = 0; i < headers.length; i++) {
+                                 map.put(headers[i], row[i]);
+                             }
+                             return map;
+                         })
+                         .toList();
+        } catch (IOException | CsvException e) {
+            throw new OfficeStamperException(e);
+        }
     }
 
     private Object processProperties(Path path) {
-        throw new OfficeStamperException("Not yet implemented.");
+        var properties = new Properties();
+        try (var inputStream = Files.newInputStream(path)) {
+            properties.load(inputStream);
+            return new LinkedHashMap<>(properties.entrySet()
+                                                 .stream()
+                                                 .collect(Collectors.toMap(
+                                                         e -> String.valueOf(e.getKey()),
+                                                         e -> String.valueOf(e.getValue()),
+                                                         (a, b) -> b,
+                                                         LinkedHashMap::new)));
+        } catch (IOException e) {
+            throw new OfficeStamperException(e);
+        }
     }
 
     private Object processXmlOrHtml(Path path) {
-        throw new OfficeStamperException("Not yet implemented.");
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(Files.newInputStream(path));
+            return processNode(document.getDocumentElement());
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    private Map<String, Object> processNode(Element element) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        NodeList children = element.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+            Node node = children.item(i);
+            if (node instanceof Element childElement) {
+                String name = childElement.getTagName();
+                if (childElement.hasChildNodes() && childElement.getFirstChild()
+                                                                .getNodeType() != Node.TEXT_NODE) {
+                    result.put(name, processNode(childElement));
+                }
+                else {
+                    result.put(name, childElement.getTextContent());
+                }
+            }
+        }
+        return result;
     }
 
     private Object processJson(Path path) {
-        throw new OfficeStamperException("Not yet implemented.");
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            TypeReference<LinkedHashMap<String, Object>> typeRef = new TypeReference<>() {};
+            return mapper.readValue(Files.newInputStream(path), typeRef);
+        } catch (IOException e) {
+            throw new OfficeStamperException(e);
+        }
     }
 
     private Object processExcel(Path path) {

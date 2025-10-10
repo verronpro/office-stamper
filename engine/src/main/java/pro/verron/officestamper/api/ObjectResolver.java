@@ -18,6 +18,13 @@ import org.springframework.lang.Nullable;
  */
 public interface ObjectResolver {
 
+
+    /**
+     * A logger instance used for logging messages and events related to the operations
+     * performed within the ObjectResolver interface.
+     * This helps in tracking, debugging, and analyzing the execution of methods
+     * implemented by classes that use this interface.
+     */
     Logger LOGGER = LoggerFactory.getLogger(ObjectResolver.class);
 
     /**
@@ -63,7 +70,15 @@ public interface ObjectResolver {
     }
 
     /**
-     * @deprecated replaced by {@link #resolve(DocxPart, String, Object)}
+     * Resolves the expression in the given WordprocessingMLPackage document with the provided object.
+     * @deprecated This method is deprecated and should not be called directly. It exists only for legacy
+     * implementations that might still override it.
+     *
+     * @param document   the WordprocessingMLPackage document in which to resolve the expression
+     * @param expression the expression value to be replaced
+     * @param object     the object to be used for resolving the expression
+     * @return the resolved value for the expression
+     * @throws OfficeStamperException if this method is invoked directly
      */
     @Deprecated(since = "2.3", forRemoval = true)
     default R resolve(WordprocessingMLPackage document, String expression, Object object) {

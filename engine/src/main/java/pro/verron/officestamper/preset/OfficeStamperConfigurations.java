@@ -94,11 +94,12 @@ public class OfficeStamperConfigurations {
                      .withImplementation(BASIC_ISO_DATE::format);
         configuration.addCustomFunction("fweekdate", TemporalAccessor.class)
                      .withImplementation(ISO_WEEK_DATE::format);
-        configuration.addCustomFunction("flocaldatetime", TemporalAccessor.class)
+        var fLocalDateTime = "flocaldatetime";
+        configuration.addCustomFunction(fLocalDateTime, TemporalAccessor.class)
                      .withImplementation(ISO_LOCAL_DATE_TIME::format);
-        configuration.addCustomFunction("flocaldatetime", TemporalAccessor.class, String.class)
+        configuration.addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class)
                      .withImplementation((date, style) -> ofLocalizedDateTime(valueOf(style)).format(date));
-        configuration.addCustomFunction("flocaldatetime", TemporalAccessor.class, String.class, String.class)
+        configuration.addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class, String.class)
                      .withImplementation((date, dateStyle, timeStyle) -> ofLocalizedDateTime(valueOf(dateStyle),
                              valueOf(timeStyle)).format(date));
         configuration.addCustomFunction("foffsetdatetime", TemporalAccessor.class)

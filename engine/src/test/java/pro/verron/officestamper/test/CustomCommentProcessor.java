@@ -57,6 +57,7 @@ public class CustomCommentProcessor
      */
     @Override
     public void reset() {
+        // DO NOTHING
     }
 
     /**
@@ -64,6 +65,7 @@ public class CustomCommentProcessor
      */
     @Override
     public void setCurrentCommentWrapper(Comment comment) {
+        // DO NOTHING
     }
 
     @Override public void setParagraph(Paragraph paragraph) {
@@ -75,6 +77,7 @@ public class CustomCommentProcessor
      */
     @Override
     public void setCurrentRun(R run) {
+        // DO NOTHING
     }
 
     /**

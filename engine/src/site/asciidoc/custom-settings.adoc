@@ -33,8 +33,8 @@ var customResolver = new StringResolver(YourCustomType.class) {
 };
 
 // Add the resolver to the configuration
-var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
-configuration.addResolver(customResolver);
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
+    .addResolver(customResolver);
 
 // Create a stamper with the custom configuration
 var stamper = OfficeStampers.docxStamper(configuration);
@@ -46,22 +46,25 @@ Office-stamper lets you add custom functions to the expression language. This is
 
 [source,java]
 ----
-var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+void main(){
+    var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
 
-// Add a function with no parameters
-configuration.addCustomFunction("today", () -> LocalDate.now());
+    // Add a function with no parameters
+    configuration.addCustomFunction("today", () -> LocalDate.now());
 
-// Add a function with one parameter
-configuration.addCustomFunction("censor", String.class,
-    input -> input.replace("f-word", "f**k"));
+    // Add a function with one parameter
+    configuration.addCustomFunction("censor", String.class,
+        input -> input.replace("f-word", "f**k"));
 
-// Add a function with two parameters
-configuration.addCustomFunction("add", Integer.class, Integer.class,
-    (a, b) -> a + b);
+    // Add a function with two parameters
+    configuration.addCustomFunction("add", Integer.class, Integer.class,
+        (a, b) -> a + b);
 
-// Add a function with three parameters
-configuration.addCustomFunction("format", LocalDate.class, String.class, String.class,
-    (date, pattern, locale) -> DateTimeFormatter.ofPattern(pattern, locale).format(date));
+    // Add a function with three parameters
+    configuration.addCustomFunction("format",
+        LocalDate.class, String.class, String.class,
+        (date, pattern, locale) -> DateTimeFormatter.ofPattern(pattern, locale).format(date));
+}
 ----
 
 You can also expose an entire interface to the expression language:
@@ -86,10 +89,8 @@ class StringFunctionProviderImpl implements StringFunctionProvider {
 }
 
 // Expose the interface to the expression language
-configuration.exposeInterfaceToExpressionLanguage(
-    StringFunctionProvider.class,
-    new StringFunctionProviderImpl()
-);
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
+.exposeInterfaceToExpressionLanguage(StringFunctionProvider.class, new StringFunctionProviderImpl());
 ----
 
 == Custom Comment Processors
@@ -139,26 +140,25 @@ At times, you might want more control over how expressions are evaluated. You ca
 
 [source,java]
 ----
-var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+import static pro.verron.officestamper.preset.EvaluationContextConfigurers.defaultConfigurer;
+import static pro.verron.officestamper.preset.EvaluationContextConfigurers.noopConfigurer;
 
-// Use the default configurer (safer, with limited features)
-configuration.setEvaluationContextConfigurer(
-    EvaluationContextConfigurers.defaultConfigurer()
-);
+var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
 
-// Or use the noop configurer (more features, potentially less safe)
-configuration.setEvaluationContextConfigurer(
-    EvaluationContextConfigurers.noopConfigurer()
-);
+    // Use the default configurer (safer, with limited features)
+    .setEvaluationContextConfigurer(defaultConfigurer())
 
-// Or create a custom configurer
-configuration.setEvaluationContextConfigurer(ctx -> {
-    // Add a property accessor for maps
-    ctx.addPropertyAccessor(new MapAccessor());
+    // Or use the noop configurer (more features, potentially less safe)
+    .setEvaluationContextConfigurer(noopConfigurer())
 
-    // Add other customizations
-    // ...
-});
+    // Or create a custom configurer
+     .setEvaluationContextConfigurer(ctx -> {
+        // Add a property accessor for maps
+        ctx.addPropertyAccessor(new MapAccessor());
+
+        // Add other customizations
+        // ...
+    });
 ----
 
 == Error Handling
@@ -172,10 +172,10 @@ var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
     .setExceptionResolver(ExceptionResolvers.throwing())
 
     // Or do nothing on error, leaving erroneous placeholders in place
-    //.setExceptionResolver(ExceptionResolvers.passing())
+    .setExceptionResolver(ExceptionResolvers.passing())
 
     // Or replace erroneous placeholders with a default value
-    //.setExceptionResolver(ExceptionResolvers.defaulting("ERROR"));
+    .setExceptionResolver(ExceptionResolvers.defaulting("ERROR"));
 ----
 
 == Linebreak Replacement

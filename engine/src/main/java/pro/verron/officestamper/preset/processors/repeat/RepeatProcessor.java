@@ -4,7 +4,6 @@ import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
 import org.docx4j.finders.ClassFinder;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.Comments;
 import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
@@ -14,7 +13,6 @@ import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.StandardParagraph;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

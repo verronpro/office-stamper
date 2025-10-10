@@ -95,6 +95,7 @@ public class WmlFactory {
     /**
      * Creates a new comment with the provided value.
      *
+     * @param id    The id to affect to the comment.
      * @param value The string value to be included in the comment.
      *
      * @return A new Comments.Comment object containing the provided value.
@@ -241,6 +242,7 @@ public class WmlFactory {
      * @param imagePart    The binary part abstract image to be used.
      * @param filenameHint A hint for the filename of the image.
      * @param altText      Alternative text for the image.
+     * @param maxWidth     The image width to not exceeds, in point.
      *
      * @return A new Inline object containing the specified image information.
      *

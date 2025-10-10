@@ -173,9 +173,6 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.12.0</version>
                 <configuration>
-                    <defaultAuthor>Joseph Verron</defaultAuthor>
-                    <defaultVersion>${project.version}</defaultVersion>
-                    <defaultSince>${project.version}</defaultSince>
                     <encoding>UTF-8</encoding>
                     <docencoding>UTF-8</docencoding>
                 </configuration>

@@ -9,8 +9,21 @@ import org.springframework.util.Assert;
 
 import java.util.Map;
 
+/**
+ * MapAccessor is an implementation of the {@link PropertyAccessor} interface,
+ * designed for accessing and manipulating properties specifically on Map objects.
+ * It provides functionality to read and write entries in a Map based on the
+ * property name provided.
+ */
 public class MapAccessor
         implements PropertyAccessor {
+
+    /**
+     * Constructs a new instance of {@code MapAccessor}.
+     */
+    public MapAccessor(){
+        // Explicit default constructor for Javadoc
+    }
 
     @Override
     public Class<?>[] getSpecificTargetClasses() {

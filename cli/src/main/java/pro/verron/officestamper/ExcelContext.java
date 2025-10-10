@@ -111,4 +111,14 @@ public class ExcelContext
     public Set<Entry<String, List<Map<String, String>>>> entrySet() {
         return source.entrySet();
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 }

@@ -72,7 +72,7 @@ public interface CommentProcessor {
 
     /**
      * Sets the current paragraph being processed in the comment processor.
-     * This method is deprecated and scheduled for removal in a future version.
+     * @deprecated This method is deprecated and scheduled for removal in a future version.
      *
      * @param paragraph the paragraph to set as the current paragraph being processed
      */

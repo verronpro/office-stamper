@@ -44,12 +44,11 @@ public class DocxImageExtractor {
     }
 
     private static Pic getPic(R run) {
-        for (Object runContent : run.getContent()) {
-            if (!(runContent instanceof JAXBElement<?> runElement)) break;
-            if (!(runElement.getValue() instanceof Drawing drawing)) break;
-            Graphic graphic = getInlineGraphic(drawing);
-            return graphic.getGraphicData()
-                          .getPic();
+        var content = run.getContent();
+        for (Object runContent : content) {
+            if (runContent instanceof JAXBElement<?> runElement && runElement.getValue() instanceof Drawing drawing) {
+                return getPic(drawing);
+            }
         }
         throw new OfficeStamperException("Run drawing not found !");
     }
@@ -97,14 +96,14 @@ public class DocxImageExtractor {
         return Arrays.copyOfRange(data, 0, numRead);
     }
 
-    /// Extract an inline graphic from a drawing.
-    ///
-    /// @param drawing the drawing containing the graphic.
-    private static Graphic getInlineGraphic(Drawing drawing) {
+    private static Pic getPic(Drawing drawing) {
         var anchorOrInline = drawing.getAnchorOrInline();
         if (anchorOrInline.isEmpty()) throw new OfficeStamperException("Anchor or Inline is empty !");
-        if (anchorOrInline.getFirst() instanceof Inline inline) return inline.getGraphic();
-        throw new OfficeStamperException("Don't know how to process anchor !");
+        if (!(anchorOrInline.getFirst() instanceof Inline inline))
+            throw new OfficeStamperException("Don't know how to process anchor !");
+        return inline.getGraphic()
+                     .getGraphicData()
+                     .getPic();
     }
 
     private static int tryRead(InputStream is, byte[] data) {

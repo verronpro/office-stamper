@@ -99,7 +99,9 @@ public class CommentUtil {
     /// Extracts the contents of a given [CommentsPart].
     ///
     /// @param commentsPart the [CommentsPart] from which content will be extracted
+    ///
     /// @return the [Comments] instance containing the content of the provided comments part
+    ///
     /// @throws OfficeStamperException if an error occurs while retrieving the content
     public static Comments extractContent(CommentsPart commentsPart) {
         try {
@@ -167,47 +169,33 @@ public class CommentUtil {
         }
     }
 
-    /// Returns the string value of the specified comment object.
-    ///
-    /// @param items     a [List] object
-    /// @param commentId a [BigInteger] object
-    public static void deleteCommentFromElements(List<Object> items, BigInteger commentId) {
-        List<Object> elementsToRemove = new ArrayList<>();
+    private static List<DeletableItems> findDeletableItemsForComment(List<Object> items, BigInteger commentId) {
+        List<DeletableItems> elementsToRemove = new ArrayList<>();
         for (Object item : items) {
             Object unwrapped = unwrap(item);
-            if (unwrapped instanceof CommentRangeStart crs) {
-                var id = crs.getId();
-                if (id.equals(commentId)) {
-                    elementsToRemove.add(item);
-                }
-            }
-            else if (unwrapped instanceof CommentRangeEnd cre) {
-                var id = cre.getId();
-                if (id.equals(commentId)) {
-                    elementsToRemove.add(item);
-                }
-            }
-            else if (unwrapped instanceof R.CommentReference rcr) {
-                var id = rcr.getId();
-                if (id.equals(commentId)) {
-                    elementsToRemove.add(item);
-                }
-            }
-            else if (unwrapped instanceof ContentAccessor ca) {
-                deleteCommentFromElements(ca.getContent(), commentId);
-            }
-            else if (unwrapped instanceof SdtRun sdtRun) {
-                deleteCommentFromElements(sdtRun.getSdtContent()
-                                                .getContent(), commentId);
-            }
+            if (unwrapped instanceof CommentRangeStart crs && Objects.equals(commentId, crs.getId()))
+                elementsToRemove.add(new DeletableItems(items, List.of(item)));
+            else if (unwrapped instanceof CommentRangeEnd cre && Objects.equals(commentId, cre.getId()))
+                elementsToRemove.add(new DeletableItems(items, List.of(item)));
+            else if (unwrapped instanceof R.CommentReference rcr && Objects.equals(commentId, rcr.getId()))
+                elementsToRemove.add(new DeletableItems(items, List.of(item)));
+            else if (unwrapped instanceof ContentAccessor ca)
+                elementsToRemove.addAll(findDeletableItemsForComment(ca.getContent(), commentId));
+            else if (unwrapped instanceof SdtRun sdtRun)
+                elementsToRemove.addAll(findDeletableItemsForComment(sdtRun.getSdtContent()
+                                                                           .getContent(), commentId));
         }
-        items.removeAll(elementsToRemove);
+        return elementsToRemove;
     }
 
-    private static void deleteCommentFromElements(Comment comment, List<Object> elements) {
+    /// Deletes all elements associated with the specified comment from the provided list of items.
+    ///
+    /// @param comment the comment whose associated elements should be removed
+    /// @param items   the list of items from which elements associated with the comment will be deleted
+    public static void deleteCommentFromElements(Comment comment, List<Object> items) {
         var docx4jComment = comment.getComment();
         var commentId = docx4jComment.getId();
-        deleteCommentFromElements(elements, commentId);
+        findDeletableItemsForComment(items, commentId).forEach(p -> p.container.removeAll(p.items));
     }
 
     /// Creates a sub Word document
@@ -265,4 +253,6 @@ public class CommentUtil {
         }
         return newComments(list);
     }
+
+    private record DeletableItems(List<Object> container, List<Object> items) {}
 }

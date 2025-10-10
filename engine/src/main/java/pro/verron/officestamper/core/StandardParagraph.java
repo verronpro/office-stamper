@@ -87,6 +87,7 @@ public class StandardParagraph
     /// which are then used to construct the ProcessorContext.
     ///
     /// @param placeholder the placeholder being processed, used to generate the related comment.
+    ///
     /// @return a new ProcessorContext instance containing the paragraph, first run, related comment, and placeholder.
     @Override
     public ProcessorContext processorContext(Placeholder placeholder) {
@@ -100,6 +101,7 @@ public class StandardParagraph
     ///
     /// @param toRemove the list of paragraph elements to be removed.
     /// @param toAdd    the list of paragraph elements to be added.
+    ///
     /// @throws OfficeStamperException if the current paragraph object is not found in its siblings.
     @Override
     public void replace(List<P> toRemove, List<P> toAdd) {
@@ -130,6 +132,8 @@ public class StandardParagraph
     /// Retrieves the P object representing the paragraph's structure.
     ///
     /// @return the P object associated with the paragraph.
+    ///
+    /// @deprecated use the inplace edition methods instead
     @Deprecated(since = "2.6", forRemoval = true)
     @Override
     public P getP() {
@@ -143,7 +147,8 @@ public class StandardParagraph
     /// @param replacement the object to replace the expression.
     @Override
     public void replace(Placeholder placeholder, Object replacement) {
-        assert WmlUtils.serializable(replacement);
+        if (!WmlUtils.serializable(replacement))
+            throw new AssertionError("The replacement object must be a valid DOCX4J Object");
         switch (replacement) {
             case R run -> replaceWithRun(placeholder, run);
             case Br br -> replaceWithBr(placeholder, br);
@@ -293,6 +298,7 @@ public class StandardParagraph
     ///
     /// @param aClass the class type of the parent to search for
     /// @param <T>    the generic type of the parent
+    ///
     /// @return an Optional containing the parent of the specified type if found,
     ///         or an empty Optional if no parent of the given type exists
     @Override

@@ -60,7 +60,8 @@ public class RepeatProcessor
     }
 
     /** {@inheritDoc} */
-    @Override public void commitChanges(DocxPart source) {
+    @Override
+    public void commitChanges(DocxPart source) {
         repeatRows(source);
     }
 
@@ -83,9 +84,7 @@ public class RepeatProcessor
                 for (Object expressionContext : expressionContexts) {
                     Tr rowClone = XmlUtils.deepCopy(row);
                     Comment commentWrapper = requireNonNull(tableRowsCommentsToRemove.get(row));
-                    Comments.Comment comment = requireNonNull(commentWrapper.getComment());
-                    BigInteger commentId = comment.getId();
-                    CommentUtil.deleteCommentFromElements(rowClone.getContent(), commentId);
+                    CommentUtil.deleteCommentFromElements(commentWrapper, rowClone.getContent());
                     var classFinder = new ClassFinder(P.class);
                     TraversalUtil.visit(rowClone, classFinder);
                     var objects = classFinder.results;
@@ -102,13 +101,15 @@ public class RepeatProcessor
     }
 
     /** {@inheritDoc} */
-    @Override public void reset() {
+    @Override
+    public void reset() {
         this.tableRowsToRepeat = new HashMap<>();
         this.tableRowsCommentsToRemove = new HashMap<>();
     }
 
     /** {@inheritDoc} */
-    @Override public void repeatTableRow(@Nullable Iterable<Object> objects) {
+    @Override
+    public void repeatTableRow(@Nullable Iterable<Object> objects) {
         var tr = this.getParagraph()
                      .parent(Tr.class)
                      .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));

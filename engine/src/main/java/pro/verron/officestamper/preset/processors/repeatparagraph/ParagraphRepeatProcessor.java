@@ -74,10 +74,8 @@ public class ParagraphRepeatProcessor
             for (Object paragraphToClone : paragraphs.elements()) {
                 Object clone = XmlUtils.deepCopy(paragraphToClone);
                 var comment = paragraphs.comment();
-                var comment1 = comment.getComment();
-                var commentId = comment1.getId();
                 if (clone instanceof ContentAccessor contentAccessor) {
-                    CommentUtil.deleteCommentFromElements(contentAccessor.getContent(), commentId);
+                    CommentUtil.deleteCommentFromElements(comment, contentAccessor.getContent());
                 }
                 if (clone instanceof P p) {
                     var paragraph = StandardParagraph.from(document, p);

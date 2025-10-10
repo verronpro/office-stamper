@@ -19,16 +19,6 @@ import static pro.verron.officestamper.utils.WmlFactory.newRun;
 public record Null2DefaultResolver(String text)
         implements ObjectResolver {
 
-    /**
-     * The Null2DefaultResolver class is an implementation of the ObjectResolver interface
-     * that resolves null objects by creating a run with a default text value.
-     *
-     * @param text The default text value to be used when the resolved object is null
-     */
-    /* package */
-    public Null2DefaultResolver {
-    }
-
     @Override
     public boolean canResolve(@Nullable Object object) {
         return object == null;

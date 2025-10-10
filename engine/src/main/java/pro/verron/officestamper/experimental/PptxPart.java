@@ -10,33 +10,57 @@ import pro.verron.officestamper.api.Paragraph;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * The PptxPart class represents a specific implementation of the DocxPart interface
+ * designed for handling parts within a PowerPoint document.
+ */
 public class PptxPart
         implements DocxPart {
-    @Override public Part part() {
+
+    /**
+     * Constructs a new instance of the PptxPart class.
+     * <p>
+     * This constructor initializes an instance of PptxPart, which represents a specific
+     * implementation of the DocxPart interface tailored for handling parts within
+     * a PowerPoint document. This class provides methods to interact with and manipulate
+     * the content and structure of parts in a PowerPoint file.
+     */
+    public PptxPart() {
+        // Explicit default constructor to add Javadoc
+    }
+
+    @Override
+    public Part part() {
         return null;
     }
 
-    @Override public DocxPart from(ContentAccessor accessor) {
+    @Override
+    public DocxPart from(ContentAccessor accessor) {
         return null;
     }
 
-    @Override public List<Object> content() {
+    @Override
+    public List<Object> content() {
         return List.of();
     }
 
-    @Override public Stream<Paragraph> streamParagraphs() {
+    @Override
+    public Stream<Paragraph> streamParagraphs() {
         return Stream.empty();
     }
 
-    @Override public Stream<R> streamRun() {
+    @Override
+    public Stream<R> streamRun() {
         return Stream.empty();
     }
 
-    @Override public WordprocessingMLPackage document() {
+    @Override
+    public WordprocessingMLPackage document() {
         return null;
     }
 
-    @Override public Stream<DocxPart> streamParts(String type) {
+    @Override
+    public Stream<DocxPart> streamParts(String type) {
         return Stream.empty();
     }
 }

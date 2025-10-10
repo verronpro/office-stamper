@@ -188,6 +188,10 @@ public class CommentUtil {
         return elementsToRemove;
     }
 
+    /// Deletes all elements associated with the specified comment from the provided list of items.
+    ///
+    /// @param comment the comment whose associated elements should be removed
+    /// @param items   the list of items from which elements associated with the comment will be deleted
     public static void deleteCommentFromElements(Comment comment, List<Object> items) {
         var docx4jComment = comment.getComment();
         var commentId = docx4jComment.getId();

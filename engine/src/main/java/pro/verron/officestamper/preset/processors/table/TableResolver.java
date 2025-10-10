@@ -144,6 +144,6 @@ public class TableResolver
     private void setCellText(Tc tableCell, String content) {
         var tableCellContent = tableCell.getContent();
         tableCellContent.clear();
-        tableCellContent.add(WmlFactory.newParagraph(new String[]{content}));
+        tableCellContent.add(WmlFactory.newParagraph(content));
     }
 }

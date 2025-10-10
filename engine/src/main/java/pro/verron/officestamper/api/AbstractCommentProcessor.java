@@ -32,6 +32,11 @@ public abstract class AbstractCommentProcessor
         this.placeholderReplacer = placeholderReplacer;
     }
 
+    /**
+     * Retrieves the current comment wrapper associated with the processor.
+     *
+     * @return the current {@link Comment} object being processed
+     */
     public Comment getCurrentCommentWrapper() {
         return currentComment;
     }
@@ -48,6 +53,11 @@ public abstract class AbstractCommentProcessor
         setCurrentCommentWrapper(processorContext.comment());
     }
 
+    /**
+     * Retrieves the current run being processed.
+     *
+     * @return the current {@link R} object being processed
+     */
     public R getCurrentRun() {
         return currentRun;
     }
@@ -69,6 +79,12 @@ public abstract class AbstractCommentProcessor
         this.paragraph = StandardParagraph.from((DocxPart) paragraph.getParent(), paragraph);
     }
 
+    /**
+     * Sets the current paragraph being processed.
+     *
+     * @param paragraph the Paragraph instance representing the currently processed paragraph
+     * in the document.
+     */
     public void setParagraph(Paragraph paragraph) {
         this.paragraph = paragraph;
     }

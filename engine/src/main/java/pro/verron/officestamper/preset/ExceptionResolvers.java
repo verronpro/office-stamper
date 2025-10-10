@@ -29,7 +29,9 @@ public class ExceptionResolvers {
 
     /**
      * The passing resolver will handle exceptions by returning the placeholder expression.
-     * It logs the exception message, and the stack trace if tracing is enabled.
+     * It logs the exception message and the stack trace if tracing is enabled.
+     *
+     * @return An instance of `ExceptionResolver` that returns the placeholder expression.
      */
     public static ExceptionResolver passing() {
         return new PassingResolver(logger.isTraceEnabled());
@@ -37,7 +39,9 @@ public class ExceptionResolvers {
 
     /**
      * The defaulting resolver class will handle exceptions by returning an empty string.
-     * It logs the exception message, and the stack trace if tracing is enabled.
+     * It logs the exception message and the stack trace if tracing is enabled.
+     *
+     * @return An instance of `ExceptionResolver` that returns an empty string.
      */
     public static ExceptionResolver defaulting() {
         return new DefaultingResolver("", logger.isTraceEnabled());
@@ -45,7 +49,9 @@ public class ExceptionResolvers {
 
     /**
      * The defaulting resolver class will handle exceptions by returning a default value.
-     * It logs the exception message, and the stack trace if tracing is enabled.
+     * It logs the exception message and the stack trace if tracing is enabled.
+     *
+     * @return An instance of `ExceptionResolver` that returns a default value.
      */
     public static ExceptionResolver defaulting(String value) {
         return new DefaultingResolver(value, logger.isTraceEnabled());
@@ -54,6 +60,8 @@ public class ExceptionResolvers {
     /**
      * The throwing resolver will handle exceptions by immediately throwing an OfficeStamperException.
      * It is used to propagate errors encountered during the processing of placeholders in text documents.
+     *
+     * @return An instance of `ExceptionResolver` that throws an exception.
      */
     public static ExceptionResolver throwing() {
         return new ThrowingResolver(logger.isTraceEnabled());

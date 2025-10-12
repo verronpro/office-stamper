@@ -192,13 +192,11 @@ public final class WmlUtils {
         return element instanceof JAXBElement<?> jaxbElement ? jaxbElement.getValue() : element;
     }
 
-    /**
-     * Checks if the given object is serializable to XML.
-     *
-     * @param object the object to be checked for XML serialization
-     *
-     * @return true if the object can be serialized to XML, false otherwise
-     */
+    /// Checks if the given object is serializable to XML.
+    ///
+    /// @param object the object to be checked for XML serialization
+    ///
+    /// @return true if the object can be serialized to XML, false otherwise
     public static boolean serializable(Object object) {
         try {
             XmlUtils.marshaltoString(object);

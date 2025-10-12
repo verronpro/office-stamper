@@ -55,6 +55,11 @@ public class Stringifier {
                                                                   .getStyleDefinitionsPart(true);
     }
 
+    /// Converts the content of a PowerPoint presentation into a string by extracting
+    /// text paragraphs from the presentation and formatting them as strings.
+    ///
+    /// @param presentation the PowerPoint presentation represented as a [PresentationMLPackage].
+    /// @return a string representation of the text content within the PowerPoint presentation.
     public static String stringifyPowerpoint(PresentationMLPackage presentation) {
         var collector = new PowerpointCollector<>(CTTextParagraph.class);
         collector.visit(presentation);
@@ -67,6 +72,11 @@ public class Stringifier {
         return powerpoint.toString();
     }
 
+    /// Converts the content of a SpreadsheetMLPackage into a string by extracting
+    /// and formatting cell data from the Excel file.
+    ///
+    /// @param presentation the Excel file represented as a [SpreadsheetMLPackage]
+    /// @return a string representation of the cell content within the Excel spreadsheet
     public static String stringifyExcel(SpreadsheetMLPackage presentation) {
         var collector = new ExcelCollector<>(Cell.class);
         collector.visit(presentation);
@@ -93,15 +103,14 @@ public class Stringifier {
                       .collect(joining(",", "[", "]")));
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param spacing a {@link PPrBase.Spacing} object
-     *
-     * @return a {@link Optional} object
-     *
-     * @since 1.6.6
-     */
+    /// Converts a [PPrBase.Spacing] object into an optional string representation.
+    /// The method extracts and includes non-null spacing properties such as "after",
+    /// "before", "beforeLines", "afterLines", "line", and "lineRule" in the resulting string.
+    /// If all properties are null, the method returns an empty optional.
+    ///
+    /// @param spacing the [PPrBase.Spacing] object containing paragraph spacing properties; can be null
+    /// @return an [Optional] containing the string representation of the spacing properties,
+    ///         or an empty optional if the spacing object is null or contains no non-null properties
     private Optional<String> stringify(PPrBase.Spacing spacing) {
         if (spacing == null) return empty();
         var map = new TreeMap<String, String>();
@@ -136,15 +145,15 @@ public class Stringifier {
         else throw new OfficeStamperException("Unexpected type: " + type);
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param blip a {@link CTBlip} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
+    /// Converts the given [CTBlip] object into a formatted string representation.
+    /// This method extracts image data associated with the blip, calculates its size,
+    /// and generates a detailed string with metadata including the part name, embed identifier,
+    /// content type, readable size, SHA-1 hash, and a custom value.
+    ///
+    /// @param blip the [CTBlip] object representing an embedded image for which
+    ///             the string representation is to be generated
+    /// @return a formatted string containing metadata about the image extracted
+    ///         from the [CTBlip], including its size and hash
     private String stringify(CTBlip blip) {
         var image = document().getParts()
                               .getParts()
@@ -165,15 +174,23 @@ public class Stringifier {
                 sha1b64(imageBytes));
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param o a {@link Object} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
+    /// Converts the given object into its string representation based on its type.
+    /// The method supports various object types and applies the appropriate
+    /// logic to stringify the content. For unsupported object types,
+    /// an exception is thrown.
+    ///
+    /// @param o the object to be converted into a string representation.
+    ///          It supports specific types including JAXBElement,
+    ///          WordprocessingMLPackage, Tbl, Tr, Tc, MainDocumentPart, Body,
+    ///          List, Text, P, R, Drawing, Inline, Graphic, and other types
+    ///          defined in the method. Passing null or unsupported types
+    ///          will result in an exception.
+    /// @return the string representation of the provided object.
+    ///         For some specific types like `R.LastRenderedPageBreak`
+    ///         or `CTMarkupRange`, an empty string may be returned.
+    ///         For objects like `R.Tab` or `R.Cr`, specific
+    ///         strings such as tab or carriage return characters may be returned.
+    ///         In case of unsupported types or null, an exception is thrown.
     public String stringify(Object o) {
         if (o instanceof JAXBElement<?> jaxb) return stringify(jaxb);
         if (o instanceof WordprocessingMLPackage mlPackage) return stringify(mlPackage);
@@ -471,15 +488,14 @@ public class Stringifier {
                    .collect(joining());
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param rPr a {@link RPrAbstract} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
+    /// Converts the properties of the provided [RPrAbstract] object into a string representation.
+    /// The method extracts various attributes of the [RPrAbstract] object, such as formatting,
+    /// styling, and other properties, and maps them to a key-value representation. If no attributes
+    /// are present or the provided object is null, an empty `Optional` is returned.
+    ///
+    /// @param rPr the [RPrAbstract] object containing formatting and style attributes; can be null
+    /// @return an [Optional<String>] containing the string representation of the given attributes,
+    ///         or an empty [Optional] if the input is null or no attributes are present
     private Optional<String> stringify(RPrAbstract rPr) {
         if (rPr == null) return empty();
         var map = new TreeMap<String, String>();
@@ -520,15 +536,6 @@ public class Stringifier {
         return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param p a {@link P} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
     private String stringify(P p) {
         var runs = stringify(p.getContent());
         var ppr = stringify(p.getPPr());
@@ -594,15 +601,6 @@ public class Stringifier {
         };
     }
 
-    /**
-     * <p>stringify.</p>
-     *
-     * @param run a {@link R} object
-     *
-     * @return a {@link String} object
-     *
-     * @since 1.6.6
-     */
     private String stringify(R run) {
         String serialized = stringify(run.getContent());
         if (serialized.isEmpty()) return "";

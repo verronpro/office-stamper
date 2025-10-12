@@ -139,24 +139,25 @@ Office-stamper can insert images into documents using the `Image` class:
 
 [source,java]
 ----
-// Create an image from a file
-var image = new Image(new File("path/to/image.jpg"));
+void main(){
+    // Create an image from a file
+    var image = new Image(new File("path/to/image.jpg"));
 
-// Or from a byte array
-var image = new Image(imageByteArray);
+    // Or from a byte array
+    var image = new Image(imageByteArray);
 
-// Customize the image
-image.setWidth(400);  // Width in points
-image.setHeight(300); // Height in points
+    // Customize the image
+    image.setWidth(400);  // Width in points
+    image.setHeight(300); // Height in points
 
-// Use in your context object
-class ReportContext {
-    public Image getLogo() {
-        return image;
+    // Use in your context object
+    class ReportContext {
+        public Image getLogo() {
+            return image;
+        }
     }
+    // In the template: ${logo}
 }
-
-// In the template: ${logo}
 ----
 
 == Performance Considerations

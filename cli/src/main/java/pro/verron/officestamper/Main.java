@@ -130,11 +130,9 @@ public class Main
         }
     }
 
-    /**
-     * Return a list of objects with the csv properties
-     * @param path
-     * @return
-     */
+    /// Return a list of objects with the csv properties
+    /// @param path
+    /// @return
     private Object processCsv(Path path) {
         try (var reader = new CSVReader(new InputStreamReader(Files.newInputStream(path)))) {
             String[] headers = reader.readNext();

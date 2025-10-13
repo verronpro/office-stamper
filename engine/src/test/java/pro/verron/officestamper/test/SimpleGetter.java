@@ -5,35 +5,31 @@ import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypedValue;
 import org.springframework.lang.NonNull;
 
-/**
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.6
- */
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.6
 public class SimpleGetter implements PropertyAccessor {
 
     private final String fieldName;
 
     private final Object value;
 
-    /**
-     * <p>Constructor for SimpleGetter.</p>
-     *
-     * @param fieldName a {@link java.lang.String} object
-     * @param value     a {@link java.lang.Object} object
-     */
+    /// Constructor for SimpleGetter.
+    ///
+    /// @param fieldName a [java.lang.String] object
+    /// @param value     a [java.lang.Object] object
     public SimpleGetter(String fieldName, Object value) {
         this.fieldName = fieldName;
         this.value = value;
     }
 
-    /** {@inheritDoc} */
+    /// {@inheritDoc}
     @Override
     public Class<?>[] getSpecificTargetClasses() {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /// {@inheritDoc}
     @Override
     public boolean canRead(
             @NonNull EvaluationContext context,
@@ -43,7 +39,7 @@ public class SimpleGetter implements PropertyAccessor {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /// {@inheritDoc}
     @Override
     @NonNull
     public TypedValue read(
@@ -56,7 +52,7 @@ public class SimpleGetter implements PropertyAccessor {
         }
     }
 
-    /** {@inheritDoc} */
+    /// {@inheritDoc}
     @Override
     public boolean canWrite(
             @NonNull EvaluationContext context,
@@ -66,7 +62,7 @@ public class SimpleGetter implements PropertyAccessor {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /// {@inheritDoc}
     @Override
     public void write(
             @NonNull EvaluationContext context,

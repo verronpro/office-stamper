@@ -9,18 +9,15 @@ import pro.verron.officestamper.api.Placeholder;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
-/**
- * The {@link Null2PlaceholderResolver} class is an implementation of the ObjectResolver interface.
- * It provides a way to resolve null objects by not replacing their expression.
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.7
- */
+/// The [Null2PlaceholderResolver] class is an implementation of the ObjectResolver interface.
+/// It provides a way to resolve null objects by not replacing their expression.
+///
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.7
 public class Null2PlaceholderResolver
         implements ObjectResolver {
 
-    /* package */
     public Null2PlaceholderResolver() {
         //DO NOTHING
     }

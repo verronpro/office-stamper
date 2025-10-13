@@ -9,18 +9,14 @@ import org.springframework.util.Assert;
 
 import java.util.Map;
 
-/**
- * MapAccessor is an implementation of the {@link PropertyAccessor} interface,
- * designed for accessing and manipulating properties specifically on Map objects.
- * It provides functionality to read and write entries in a Map based on the
- * property name provided.
- */
+/// MapAccessor is an implementation of the [PropertyAccessor] interface,
+/// designed for accessing and manipulating properties specifically on Map objects.
+/// It provides functionality to read and write entries in a Map based on the
+/// property name provided.
 public class MapAccessor
         implements PropertyAccessor {
 
-    /**
-     * Constructs a new instance of {@code MapAccessor}.
-     */
+    /// Constructs a new instance of `MapAccessor`.
     public MapAccessor(){
         // Explicit default constructor for Javadoc
     }
@@ -60,10 +56,8 @@ public class MapAccessor
         map.put(name, newValue);
     }
 
-    /**
-     * Exception thrown from {@code read} in order to reset a cached
-     * PropertyAccessor, allowing other accessors to have a try.
-     */
+    /// Exception thrown from `read` in order to reset a cached
+    /// PropertyAccessor, allowing other accessors to have a try.
     private static class MapAccessException
             extends AccessException {
 

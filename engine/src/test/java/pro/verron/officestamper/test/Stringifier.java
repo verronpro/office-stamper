@@ -165,6 +165,19 @@ public class Stringifier {
                 sha1b64(imageBytes));
     }
 
+    private String stringify(PPrBase.Ind ind) {
+        if (ind == null) return "";
+        var map = new TreeMap<String, String>();
+        ofNullable(ind.getLeft()).ifPresent(value -> map.put("l", String.valueOf(value)));
+        ofNullable(ind.getRight()).ifPresent(value -> map.put("r", String.valueOf(value)));
+        ofNullable(ind.getFirstLine()).ifPresent(value -> map.put("fl", String.valueOf(value)));
+        ofNullable(ind.getHanging()).ifPresent(value -> map.put("h", String.valueOf(value)));
+        ofNullable(ind.getEnd()).ifPresent(value -> map.put("e", String.valueOf(value)));
+        ofNullable(ind.getFirstLineChars()).ifPresent(value -> map.put("flc", String.valueOf(value)));
+        ofNullable(ind.getEndChars()).ifPresent(value -> map.put("ec", String.valueOf(value)));
+        return stringify(map);
+    }
+
     /**
      * <p>stringify.</p>
      *
@@ -543,8 +556,7 @@ public class Stringifier {
                 element.getVal()
                        .toString()));
         ofNullable(pPr.getInd()).ifPresent(element -> set.put("ind",
-                element.getLeft()
-                       .toString()));
+                stringify(element)));
         ofNullable(pPr.getKeepLines()).ifPresent(element -> set.put("keepLines", String.valueOf(element.isVal())));
         ofNullable(pPr.getKeepNext()).ifPresent(element -> set.put("keepNext", String.valueOf(element.isVal())));
         ofNullable(pPr.getOutlineLvl()).ifPresent(element -> set.put("outlineLvl",

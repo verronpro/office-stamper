@@ -7,36 +7,28 @@ import pro.verron.officestamper.core.StandardParagraph;
 
 import java.util.Objects;
 
-/**
- * AbstractCommentProcessor is an abstract base class for comment processors.
- * It implements the CommentProcessor interface.
- * It provides common functionality and fields that subclasses can use.
- */
+/// AbstractCommentProcessor is an abstract base class for comment processors.
+/// It implements the CommentProcessor interface.
+/// It provides common functionality and fields that subclasses can use.
 public abstract class AbstractCommentProcessor
         implements CommentProcessor {
 
-    /**
-     * PlaceholderReplacer used to replace expressions in the comment text.
-     */
+    /// PlaceholderReplacer used to replace expressions in the comment text.
     protected final ParagraphPlaceholderReplacer placeholderReplacer;
     private Paragraph paragraph;
     private R currentRun;
     private Comment currentComment;
 
-    /**
-     * Creates an instance of AbstractCommentProcessor with the given ParagraphPlaceholderReplacer.
-     *
-     * @param placeholderReplacer the ParagraphPlaceholderReplacer used to replace expressions in the comment text
-     */
+    /// Creates an instance of AbstractCommentProcessor with the given ParagraphPlaceholderReplacer.
+    ///
+    /// @param placeholderReplacer the ParagraphPlaceholderReplacer used to replace expressions in the comment text
     protected AbstractCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
         this.placeholderReplacer = placeholderReplacer;
     }
 
-    /**
-     * Retrieves the current comment wrapper associated with the processor.
-     *
-     * @return the current {@link Comment} object being processed
-     */
+    /// Retrieves the current comment wrapper associated with the processor.
+    ///
+    /// @return the current [Comment] object being processed
     public Comment getCurrentCommentWrapper() {
         return currentComment;
     }
@@ -53,11 +45,9 @@ public abstract class AbstractCommentProcessor
         setCurrentCommentWrapper(processorContext.comment());
     }
 
-    /**
-     * Retrieves the current run being processed.
-     *
-     * @return the current {@link R} object being processed
-     */
+    /// Retrieves the current run being processed.
+    ///
+    /// @return the current [R] object being processed
     public R getCurrentRun() {
         return currentRun;
     }
@@ -70,21 +60,17 @@ public abstract class AbstractCommentProcessor
         return paragraph;
     }
 
-    /**
-     * @param paragraph coordinates of the currently processed paragraph within the template.
-     *
-     * @deprecated use {@link #setParagraph(Paragraph)} instead
-     */
+    /// @param paragraph coordinates of the currently processed paragraph within the template.
+    ///
+    /// @deprecated use [#setParagraph(Paragraph)] instead
     @Deprecated(since = "2.6", forRemoval = true) public void setParagraph(P paragraph) {
         this.paragraph = StandardParagraph.from((DocxPart) paragraph.getParent(), paragraph);
     }
 
-    /**
-     * Sets the current paragraph being processed.
-     *
-     * @param paragraph the Paragraph instance representing the currently processed paragraph
-     * in the document.
-     */
+    /// Sets the current paragraph being processed.
+    ///
+    /// @param paragraph the Paragraph instance representing the currently processed paragraph
+    /// in the document.
     public void setParagraph(Paragraph paragraph) {
         this.paragraph = paragraph;
     }

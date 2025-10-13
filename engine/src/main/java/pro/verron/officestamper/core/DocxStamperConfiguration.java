@@ -416,16 +416,14 @@ public class DocxStamperConfiguration
         return new FunctionBuilder<>(this, name, class0);
     }
 
-    /**
-     * Adds a custom function with the specified name and input types.
-     *
-     * @param name the name of the custom function to be added
-     * @param class0 the class type of the first input parameter of the custom function
-     * @param class1 the class type of the second input parameter of the custom function
-     * @param <T> the type of the first input parameter
-     * @param <U> the type of the second input parameter
-     * @return an instance of NeedsBiFunctionImpl for further configuration or usage of the custom function
-     */
+    /// Adds a custom function with the specified name and input types.
+    ///
+    /// @param name the name of the custom function to be added
+    /// @param class0 the class type of the first input parameter of the custom function
+    /// @param class1 the class type of the second input parameter of the custom function
+    /// @param <T> the type of the first input parameter
+    /// @param <U> the type of the second input parameter
+    /// @return an instance of NeedsBiFunctionImpl for further configuration or usage of the custom function
     @Override
     public <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1) {
         return new BiFunctionBuilder<>(this, name, class0, class1);

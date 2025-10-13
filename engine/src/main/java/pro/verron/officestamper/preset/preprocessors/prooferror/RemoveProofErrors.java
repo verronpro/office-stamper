@@ -10,9 +10,7 @@ import static pro.verron.officestamper.core.DocumentUtil.visitDocument;
 public class RemoveProofErrors
         implements PreProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public void process(WordprocessingMLPackage document) {
         var visitor = new ProofErrVisitor();

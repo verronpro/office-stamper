@@ -14,20 +14,15 @@ import pro.verron.officestamper.core.Placeholders;
 import java.io.OutputStream;
 import java.util.List;
 
-/**
- * The PowerpointStamper class implements the OfficeStamper interface
- * to provide capability for stamping PowerPoint presentations with
- * context and writing the result to an OutputStream.
- */
+/// The PowerpointStamper class implements the OfficeStamper interface
+/// to provide capability for stamping PowerPoint presentations with
+/// context and writing the result to an OutputStream.
 public class PowerpointStamper
         implements OfficeStamper<PresentationMLPackage> {
-    /**
-     * Constructs a new instance of the PowerpointStamper class.
-     *
-     * This constructor initializes an instance of PowerpointStamper, which implements
-     * the OfficeStamper interface. The class provides functionality to apply variable-based
-     * stamping on PowerPoint templates and outputs the modified presentation.
-     */
+    /// Constructs a new instance of the PowerpointStamper class.
+    /// This constructor initializes an instance of PowerpointStamper, which implements
+    /// the OfficeStamper interface. The class provides functionality to apply variable-based
+    /// stamping on PowerPoint templates and outputs the modified presentation.
     public PowerpointStamper() {
         // Explicit default constructor for Javadoc
     }

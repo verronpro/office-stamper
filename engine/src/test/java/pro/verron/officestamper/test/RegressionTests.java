@@ -36,9 +36,7 @@ class RegressionTests {
                 arguments(Conditions.values(false, false), "Start\nEnd\nStart\nEnd\n"));
     }
 
-    /**
-     * Test that table of content specific instruction text (instrText) is not modified by error
-     */
+    /// Test that table of content specific instruction text (instrText) is not modified by error
     @Test
     void testTableOfContent() {
         var configuration = OfficeStamperConfigurations.standard();

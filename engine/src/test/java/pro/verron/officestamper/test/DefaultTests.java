@@ -258,9 +258,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("Replace Word With Integration test", config, context, template, expected);
     }
 
-    /**
-     * <p>testDateInstantiationAndResolution.</p>
-     */
+    /// testDateInstantiationAndResolution.
     private static Arguments imageReplacementInGlobalParagraphsTest(ContextFactory factory) {
         var context = factory.image(getImage(Path.of("monalisa.jpg")));
         var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));

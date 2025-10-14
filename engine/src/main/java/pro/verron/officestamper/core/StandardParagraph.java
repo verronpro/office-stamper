@@ -168,6 +168,16 @@ public class StandardParagraph
         int matchEndIndex = matchStartIndex + full.length();
         List<StandardRun> affectedRuns = getAffectedRuns(matchStartIndex, matchEndIndex);
 
+        replace(replacement, affectedRuns, full, matchStartIndex, matchEndIndex);
+    }
+
+    private void replace(
+            R replacement,
+            List<StandardRun> affectedRuns,
+            String full,
+            int matchStartIndex,
+            int matchEndIndex
+    ) {
         boolean singleRun = affectedRuns.size() == 1;
 
         if (singleRun) {
@@ -256,6 +266,29 @@ public class StandardParagraph
         lastRun.replace(matchStartIndex, matchEndIndex, "");
     }
 
+    @Override
+    public void replace(Object from, Object to, R run) {
+        if (!contents.contains(from)) {
+            var msg = "The start element (%s) is not in the paragraph (%s)";
+            throw new OfficeStamperException(msg.formatted(from, this));
+        }
+        if (!contents.contains(to)) {
+            var msg = "The end element (%s) is not in the paragraph (%s)";
+            throw new OfficeStamperException(msg.formatted(to, this));
+        }
+
+        var affectedRuns = getAffectedRuns(from, to);
+        var string = affectedRuns.stream()
+                                 .map(StandardRun::getText)
+                                 .collect(joining());
+        replace(run,
+                affectedRuns,
+                string,
+                affectedRuns.getFirst().startIndex,
+                affectedRuns.getLast().startIndex + affectedRuns.getLast()
+                                                                .length());
+    }
+
     private static void replaceWithBr(
             Placeholder placeholder,
             Br br,
@@ -270,6 +303,15 @@ public class StandardParagraph
             runContentIterator.add(subText);
             if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
         }
+    }
+
+    private List<StandardRun> getAffectedRuns(Object from, Object to) {
+        var fromIndex = contents.indexOf(from);
+        var toIndex = contents.indexOf(to);
+        var affectedContents = contents.subList(fromIndex, toIndex + 1);
+        var affectedRuns = new ArrayList<>(runs);
+        affectedRuns.removeIf(run -> !affectedContents.contains(run.run()));
+        return affectedRuns;
     }
 
     /// Returns the aggregated text over all runs.

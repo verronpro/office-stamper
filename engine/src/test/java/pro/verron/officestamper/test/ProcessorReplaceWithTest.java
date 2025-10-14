@@ -15,7 +15,7 @@ class ProcessorReplaceWithTest {
     void notWorking1() {
         var stamperConfiguration = standardWithPreprocessing();
         var stamper = new TestDocxStamper<>(stamperConfiguration);
-        var templateStream = getResource(Path.of("ReplaceWithCommentNotWorking1.docx"));
+        var templateStream = getResource(Path.of("#585_ReplaceWith.docx"));
         var context = Map.of("name", "Homer Simpson");
         var actual = stamper.stampAndLoadAndExtract(templateStream, context);
         var expected = "[Normal] This variable name should be resolved to the value Homer Simpson.<jc=LEFT>\n";

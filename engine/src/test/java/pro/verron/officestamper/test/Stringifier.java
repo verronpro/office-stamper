@@ -174,7 +174,8 @@ public class Stringifier {
         ofNullable(ind.getHanging()).ifPresent(value -> map.put("h", String.valueOf(value)));
         ofNullable(ind.getEnd()).ifPresent(value -> map.put("e", String.valueOf(value)));
         ofNullable(ind.getFirstLineChars()).ifPresent(value -> map.put("flc", String.valueOf(value)));
-        ofNullable(ind.getEndChars()).ifPresent(value -> map.put("ec", String.valueOf(value)));
+        // TODO: no getEndChars() before version 11.5.6 of docx4j, add it to the Treemap when we want to stop
+        //  supporting earlier versions
         return stringify(map);
     }
 

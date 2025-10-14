@@ -8,7 +8,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 
-public class CommentProcessorTest {
+class ProcessorReplaceWithTest {
     @Test
     void notWorking1() {
         var stamperConfiguration = standardWithPreprocessing();

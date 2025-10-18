@@ -268,11 +268,13 @@ public class StandardParagraph
 
     @Override
     public void replace(Object from, Object to, R run) {
-        if (!contents.contains(from)) {
+        var fromIndex = contents.indexOf(from);
+        var toIndex = contents.indexOf(to);
+        if (fromIndex < 0) {
             var msg = "The start element (%s) is not in the paragraph (%s)";
             throw new OfficeStamperException(msg.formatted(from, this));
         }
-        if (!contents.contains(to)) {
+        if (toIndex < 0) {
             var msg = "The end element (%s) is not in the paragraph (%s)";
             throw new OfficeStamperException(msg.formatted(to, this));
         }
@@ -287,6 +289,10 @@ public class StandardParagraph
                 affectedRuns.getFirst().startIndex,
                 affectedRuns.getLast().startIndex + affectedRuns.getLast()
                                                                 .length());
+        if (fromIndex > toIndex) {
+            var msg = "The start element (%s) is after the end element (%s)";
+            throw new OfficeStamperException(msg.formatted(to, this));
+        }
     }
 
     private static void replaceWithBr(

@@ -1,6 +1,7 @@
 package pro.verron.officestamper.preset;
 
 import org.springframework.lang.Nullable;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 /// Factory class to create the correct comment processor for a given comment.
 ///
@@ -8,6 +9,11 @@ import org.springframework.lang.Nullable;
 /// @version ${version}
 /// @since 1.6.4
 public class CommentProcessorFactory {
+
+    private CommentProcessorFactory() {
+        throw new OfficeStamperException("CommentProcessorFactory cannot be instantiated");
+    }
+
     /// Used to resolve a table in the template document.
     /// Take the table passed-in to fill an existing Tbl object in the document.
     ///

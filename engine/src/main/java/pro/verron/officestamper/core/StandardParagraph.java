@@ -157,8 +157,11 @@ public class StandardParagraph
     }
 
     private void replaceWithRun(Placeholder placeholder, R replacement) {
+        replaceExpressionWithRun(placeholder.expression(), replacement);
+    }
+
+    private void replaceExpressionWithRun(String full, R replacement) {
         var text = asString();
-        String full = placeholder.expression();
 
         int matchStartIndex = text.indexOf(full);
         if (matchStartIndex == -1) {

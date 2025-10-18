@@ -7,15 +7,13 @@ import pro.verron.officestamper.api.ObjectResolver;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
-/**
- * The Null2DefaultResolver class is an implementation of the
- * {@link ObjectResolver} interface
- * that resolves null objects by creating a run with a default text value.
- *
- * @author Joseph Verron
- * @version ${version}
- * @since 1.6.7
- */
+/// The Null2DefaultResolver class is an implementation of the
+/// [ObjectResolver] interface
+/// that resolves null objects by creating a run with a default text value.
+///
+/// @author Joseph Verron
+/// @version ${version}
+/// @since 1.6.7
 public record Null2DefaultResolver(String text)
         implements ObjectResolver {
 
@@ -33,11 +31,9 @@ public record Null2DefaultResolver(String text)
         return newRun(text);
     }
 
-    /**
-     * Retrieves the default value of the {@link Null2DefaultResolver} object.
-     *
-     * @return the default value of the {@link Null2DefaultResolver} object as a String
-     */
+    /// Retrieves the default value of the [Null2DefaultResolver] object.
+    ///
+    /// @return the default value of the [Null2DefaultResolver] object as a String
     public String defaultValue() {
         return text;
     }

@@ -29,7 +29,6 @@ public class CommentProcessorFactory {
     /// @version ${version}
     /// @since 1.0.8
     public interface IReplaceWithProcessor {
-
         /// Replace a single word inside a paragraph with an expression defined in the comment.
         /// The comment should apply to a single word for the replacement to take effect.
         ///
@@ -46,7 +45,7 @@ public class CommentProcessorFactory {
     /// @since 1.0.0
     public interface IParagraphRepeatProcessor {
         /// Mark a paragraph to be copied once for each element in the passed-in iterable.
-        /// Within each copy, placeholder evaluation context is the next object in the iterable.
+        /// Within each copy, the placeholder evaluation context is the next object in the iterable.
         ///
         /// @param objects objects serving as evaluation context seeding a new copy.
         void repeatParagraph(@Nullable Iterable<Object> objects);
@@ -61,7 +60,7 @@ public class CommentProcessorFactory {
     /// @since 1.0.0
     public interface IRepeatDocPartProcessor {
         /// Mark a document part to be copied once for each element in the passed-in iterable.
-        /// Within each copy, placeholder evaluation context is the next object in the iterable.
+        /// Within each copy, the placeholder evaluation context is the next object in the iterable.
         ///
         /// @param objects objects serving as evaluation context seeding a new copy.
         void repeatDocPart(@Nullable Iterable<Object> objects);
@@ -76,7 +75,7 @@ public class CommentProcessorFactory {
     /// @since 1.0.0
     public interface IRepeatProcessor {
         /// Mark a table row to be copied once for each element in the passed-in iterable.
-        /// Within each copy, placeholder evaluation context is the next object in the iterable.
+        /// Within each copy, the placeholder evaluation context is the next object in the iterable.
         ///
         /// @param objects objects serving as evaluation context seeding a new copy.
         void repeatTableRow(@Nullable Iterable<Object> objects);

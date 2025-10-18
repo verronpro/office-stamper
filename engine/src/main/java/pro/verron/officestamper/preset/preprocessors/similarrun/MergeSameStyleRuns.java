@@ -12,9 +12,7 @@ import java.util.List;
 public class MergeSameStyleRuns
         implements PreProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public void process(WordprocessingMLPackage document) {
         var visitor = new SimilarRunVisitor();

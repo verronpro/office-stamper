@@ -273,6 +273,8 @@ public interface OfficeStamperConfiguration {
     /// @param name   the name of the custom function to be added
     /// @param class0 the class type for the first parameter of the bi-function
     /// @param class1 the class type for the second parameter of the bi-function
+    /// @param <T>    the type of the first parameter
+    /// @param <U>    the type of the second parameter
     ///
     /// @return an instance of NeedsBiFunctionImpl parameterized with the provided types
     <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1);

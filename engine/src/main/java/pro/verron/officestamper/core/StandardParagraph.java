@@ -435,10 +435,20 @@ public class StandardParagraph
         ///
         /// @return `true` if the current run is touched by the specified range; `false` otherwise.
         public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
-            var startsInRange = (globalStartIndex < startIndex) && (startIndex <= globalEndIndex);
-            var endsInRange = (globalStartIndex < endIndex()) && (endIndex() <= globalEndIndex);
-            var rangeFullyContainsRun = (startIndex <= globalStartIndex) && (globalEndIndex <= endIndex());
-            return startsInRange || endsInRange || rangeFullyContainsRun;
+            return startsInRange(globalStartIndex, globalEndIndex) || endsInRange(globalStartIndex, globalEndIndex)
+                   || englobesRange(globalStartIndex, globalEndIndex);
+        }
+
+        private boolean startsInRange(int globalStartIndex, int globalEndIndex) {
+            return globalStartIndex < startIndex && startIndex <= globalEndIndex;
+        }
+
+        private boolean endsInRange(int globalStartIndex, int globalEndIndex) {
+            return globalStartIndex < endIndex() && endIndex() <= globalEndIndex;
+        }
+
+        private boolean englobesRange(int globalStartIndex, int globalEndIndex) {
+            return startIndex <= globalStartIndex && globalEndIndex <= endIndex();
         }
 
         /// Calculates the end index of the current run based on its start index and length.

@@ -30,7 +30,7 @@ public class ParagraphRepeatProcessor
         extends AbstractCommentProcessor
         implements CommentProcessorFactory.IParagraphRepeatProcessor {
 
-    /* TODO replace the mapping by a Paragraphs to List<Object> mapping to better reflect the change*/
+    // TODO replace the mapping by a Paragraphs to List<Object> mapping to better reflect the change
     private Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>();
 
     private ParagraphRepeatProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {

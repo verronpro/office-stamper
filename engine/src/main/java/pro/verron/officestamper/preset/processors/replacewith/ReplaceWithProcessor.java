@@ -14,15 +14,13 @@ import java.util.function.Function;
 
 import static pro.verron.officestamper.utils.WmlFactory.newText;
 
-/**
- * Processor that replaces the current run with the provided expression.
- * This is useful for replacing an expression in a comment with the result of the expression.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.7
- */
+/// Processor that replaces the current run with the provided expression.
+/// This is useful for replacing an expression in a comment with the result of the expression.
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.7
 public class ReplaceWithProcessor
         extends AbstractCommentProcessor
         implements CommentProcessorFactory.IReplaceWithProcessor {
@@ -36,34 +34,26 @@ public class ReplaceWithProcessor
         this.nullSupplier = nullSupplier;
     }
 
-    /**
-     * Creates a new processor that replaces the current run with the result of the expression.
-     *
-     * @param pr the placeholder replacer to use
-     *
-     * @return the processor
-     */
+    /// Creates a new processor that replaces the current run with the result of the expression.
+    ///
+    /// @param pr the placeholder replacer to use
+    ///
+    /// @return the processor
     public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
         return new ReplaceWithProcessor(pr, R::getContent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override public void commitChanges(DocxPart document) {
         // nothing to commit
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override public void reset() {
         // nothing to reset
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override public void replaceWordWith(@Nullable String expression) {
         R run = this.getCurrentRun();
         if (run != null) { //TODO Remove the run-based secundary case that becomes redundant

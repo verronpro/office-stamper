@@ -28,7 +28,7 @@ class RepeatDocPartBadPlaceholderTest {
 
     @MethodSource("factories")
     @ParameterizedTest
-    @Timeout(10) /* in the case of pipe lock because of unknown exceptions */
+    @Timeout(10) // in the case of pipe lock because of unknown exceptions
     void testBadExpressionShouldNotBlockCallerThread(ContextFactory factory) {
         var template = getResource("RepeatDocPartBadExpressionTest.docx");
         var context = factory.roles("Homer Simpson",

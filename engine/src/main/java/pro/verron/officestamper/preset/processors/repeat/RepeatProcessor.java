@@ -22,14 +22,12 @@ import java.util.function.BiFunction;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
-/**
- * Repeats a table row for each element in a list.
- *
- * @author Joseph Verron
- * @author Tom Hombergs
- * @version ${version}
- * @since 1.0.0
- */
+/// Repeats a table row for each element in a list.
+///
+/// @author Joseph Verron
+/// @author Tom Hombergs
+/// @version ${version}
+/// @since 1.0.0
 public class RepeatProcessor
         extends AbstractCommentProcessor
         implements CommentProcessorFactory.IRepeatProcessor {
@@ -46,18 +44,16 @@ public class RepeatProcessor
         nullSupplier = nullSupplier1;
     }
 
-    /**
-     * Creates a new RepeatProcessor.
-     *
-     * @param pr The PlaceholderReplacer to use.
-     *
-     * @return A new RepeatProcessor.
-     */
+    /// Creates a new RepeatProcessor.
+    ///
+    /// @param pr The PlaceholderReplacer to use.
+    ///
+    /// @return A new RepeatProcessor.
     public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
         return new RepeatProcessor(pr, (document, row) -> emptyList());
     }
 
-    /** {@inheritDoc} */
+    /// {@inheritDoc}
     @Override
     public void commitChanges(DocxPart source) {
         repeatRows(source);
@@ -98,14 +94,14 @@ public class RepeatProcessor
         }
     }
 
-    /** {@inheritDoc} */
+    /// {@inheritDoc}
     @Override
     public void reset() {
         this.tableRowsToRepeat = new HashMap<>();
         this.tableRowsCommentsToRemove = new HashMap<>();
     }
 
-    /** {@inheritDoc} */
+    /// {@inheritDoc}
     @Override
     public void repeatTableRow(@Nullable Iterable<Object> objects) {
         var tr = this.getParagraph()

@@ -107,7 +107,7 @@ public final class Image {
     /// @deprecated use the [#newRun(DocxPart, String, String)] method directly to generate a Run with Inline
     /// Drawing
     @Deprecated(since = "2.6", forRemoval = true)
-    public byte[] getImageBytes(byte test) {
+    public byte[] getImageBytes() {
         return imageBytes;
     }
 }

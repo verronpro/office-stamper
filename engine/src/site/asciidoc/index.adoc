@@ -1,7 +1,7 @@
 = Office-stamper Documentation
 
 Office-stamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
-You design a template using your preferred Word processor; and Office-stamper generate documents based on that template.
+You design a template using your preferred Word processor; and Office-stamper generates documents based on that template.
 
 == Documentation Sections
 

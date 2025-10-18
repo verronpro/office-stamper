@@ -281,21 +281,12 @@ public class StandardParagraph
             var msg = "The end element (%s) is not in the paragraph (%s)";
             throw new OfficeStamperException(msg.formatted(to, this));
         }
-
-        var affectedRuns = getAffectedRuns(from, to);
-        var string = affectedRuns.stream()
-                                 .map(StandardRun::getText)
-                                 .collect(joining());
-        replace(run,
-                affectedRuns,
-                string,
-                affectedRuns.getFirst().startIndex,
-                affectedRuns.getLast().startIndex + affectedRuns.getLast()
-                                                                .length());
         if (fromIndex > toIndex) {
             var msg = "The start element (%s) is after the end element (%s)";
             throw new OfficeStamperException(msg.formatted(to, this));
         }
+        var expression = extractExpression(from, to);
+        replaceExpressionWithRun(expression, run);
     }
 
     private static void replaceWithBr(
@@ -314,13 +305,16 @@ public class StandardParagraph
         }
     }
 
-    private List<StandardRun> getAffectedRuns(Object from, Object to) {
+    private String extractExpression(Object from, Object to) {
         var fromIndex = contents.indexOf(from);
         var toIndex = contents.indexOf(to);
-        var affectedContents = contents.subList(fromIndex, toIndex + 1);
-        var affectedRuns = new ArrayList<>(runs);
-        affectedRuns.removeIf(run -> !affectedContents.contains(run.run()));
-        return affectedRuns;
+        var subContent = contents.subList(fromIndex, toIndex + 1);
+
+        var subRuns = new ArrayList<>(runs);
+        subRuns.removeIf(run -> !subContent.contains(run.run()));
+        return subRuns.stream()
+                      .map(StandardRun::getText)
+                      .collect(joining());
     }
 
     /// Returns the aggregated text over all runs.

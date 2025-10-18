@@ -157,8 +157,11 @@ public class StandardParagraph
     }
 
     private void replaceWithRun(Placeholder placeholder, R replacement) {
+        replaceExpressionWithRun(placeholder.expression(), replacement);
+    }
+
+    private void replaceExpressionWithRun(String full, R replacement) {
         var text = asString();
-        String full = placeholder.expression();
 
         int matchStartIndex = text.indexOf(full);
         if (matchStartIndex == -1) {
@@ -168,6 +171,16 @@ public class StandardParagraph
         int matchEndIndex = matchStartIndex + full.length();
         List<StandardRun> affectedRuns = getAffectedRuns(matchStartIndex, matchEndIndex);
 
+        replace(replacement, affectedRuns, full, matchStartIndex, matchEndIndex);
+    }
+
+    private void replace(
+            R replacement,
+            List<StandardRun> affectedRuns,
+            String full,
+            int matchStartIndex,
+            int matchEndIndex
+    ) {
         boolean singleRun = affectedRuns.size() == 1;
 
         if (singleRun) {
@@ -256,6 +269,26 @@ public class StandardParagraph
         lastRun.replace(matchStartIndex, matchEndIndex, "");
     }
 
+    @Override
+    public void replace(Object from, Object to, R run) {
+        var fromIndex = contents.indexOf(from);
+        var toIndex = contents.indexOf(to);
+        if (fromIndex < 0) {
+            var msg = "The start element (%s) is not in the paragraph (%s)";
+            throw new OfficeStamperException(msg.formatted(from, this));
+        }
+        if (toIndex < 0) {
+            var msg = "The end element (%s) is not in the paragraph (%s)";
+            throw new OfficeStamperException(msg.formatted(to, this));
+        }
+        if (fromIndex > toIndex) {
+            var msg = "The start element (%s) is after the end element (%s)";
+            throw new OfficeStamperException(msg.formatted(to, this));
+        }
+        var expression = extractExpression(from, to);
+        replaceExpressionWithRun(expression, run);
+    }
+
     private static void replaceWithBr(
             Placeholder placeholder,
             Br br,
@@ -270,6 +303,18 @@ public class StandardParagraph
             runContentIterator.add(subText);
             if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
         }
+    }
+
+    private String extractExpression(Object from, Object to) {
+        var fromIndex = contents.indexOf(from);
+        var toIndex = contents.indexOf(to);
+        var subContent = contents.subList(fromIndex, toIndex + 1);
+
+        var subRuns = new ArrayList<>(runs);
+        subRuns.removeIf(run -> !subContent.contains(run.run()));
+        return subRuns.stream()
+                      .map(StandardRun::getText)
+                      .collect(joining());
     }
 
     /// Returns the aggregated text over all runs.
@@ -393,10 +438,20 @@ public class StandardParagraph
         ///
         /// @return `true` if the current run is touched by the specified range; `false` otherwise.
         public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
-            var startsInRange = (globalStartIndex < startIndex) && (startIndex <= globalEndIndex);
-            var endsInRange = (globalStartIndex < endIndex()) && (endIndex() <= globalEndIndex);
-            var rangeFullyContainsRun = (startIndex <= globalStartIndex) && (globalEndIndex <= endIndex());
-            return startsInRange || endsInRange || rangeFullyContainsRun;
+            return startsInRange(globalStartIndex, globalEndIndex) || endsInRange(globalStartIndex, globalEndIndex)
+                   || englobesRange(globalStartIndex, globalEndIndex);
+        }
+
+        private boolean startsInRange(int globalStartIndex, int globalEndIndex) {
+            return globalStartIndex < startIndex && startIndex <= globalEndIndex;
+        }
+
+        private boolean endsInRange(int globalStartIndex, int globalEndIndex) {
+            return globalStartIndex < endIndex() && endIndex() <= globalEndIndex;
+        }
+
+        private boolean englobesRange(int globalStartIndex, int globalEndIndex) {
+            return startIndex <= globalStartIndex && globalEndIndex <= endIndex();
         }
 
         /// Calculates the end index of the current run based on its start index and length.

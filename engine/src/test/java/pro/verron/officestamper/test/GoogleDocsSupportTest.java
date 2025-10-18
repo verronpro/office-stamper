@@ -21,9 +21,9 @@ class GoogleDocsSupportTest {
                 <spacing={after=0,line=276,lineRule=auto}>
                 
                 []❬This block is shown❘{rtl=false}❭
-                ❬List items:❘{rtl=false}❭<ind=0>
-                []❬item 1❘{rtl=false}❭<ind=720><rPr={u=none}>
-                []❬item 2❘{rtl=false}❭<ind=720><rPr={u=none}>
+                ❬List items:❘{rtl=false}❭<ind={fl=0,l=0}>
+                []❬item 1❘{rtl=false}❭<ind={h=360,l=720}><rPr={u=none}>
+                []❬item 2❘{rtl=false}❭<ind={h=360,l=720}><rPr={u=none}>
                 """;
 
         var config = standard();

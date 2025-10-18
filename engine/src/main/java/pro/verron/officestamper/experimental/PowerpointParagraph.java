@@ -309,6 +309,11 @@ public class PowerpointParagraph
         return CommentUtil.getCommentFor(paragraph.getEGTextRun(), source.document());
     }
 
+    @Override
+    public void replace(Object from, Object to, R run) {
+        throw new OfficeStamperException("Not yet implemented");
+    }
+
     private List<PowerpointRun> getAffectedRuns(int startIndex, int endIndex) {
         return runs.stream()
                    .filter(run -> run.isTouchedByRange(startIndex, endIndex))

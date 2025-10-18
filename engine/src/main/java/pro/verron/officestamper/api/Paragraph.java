@@ -68,9 +68,16 @@ public interface Paragraph {
     /// @param replacement The replacement for the placeholder.
     void replace(Placeholder placeholder, Object replacement);
 
-    /// Returns the paragraph as a string.
+    /// Replaces a slice of objects in the given paragraph with the specified replacement.
     ///
-    /// @return the paragraph as a string
+    /// @param from The first object to be replaced.
+    /// @param to The last object for the placeholder.
+    /// @param replacement The replacement for the placeholder.
+    void replace(Object from, Object to, R replacement);
+
+    ///Returns the paragraph as a string.
+    ///
+    ///@return the paragraph as a string
     String asString();
 
     /// Applies the specified consumer function to the paragraph content.

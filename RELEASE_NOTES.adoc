@@ -3,6 +3,61 @@
 :os: https://github.com/verronpro/office-stamper
 :proj: https://github.com/verronpro/office-stamper/releases/tag
 
+== {proj}/v2.9.0[v2.9.0]
+
+=== Features
+
+* EXPERIMENTAL: CLI now implements a crude loading of csv, xml, json and property files.
+
+=== Bugfixes
+
+* MAY BREAK: Changed behaviour of the processor 'replaceWordWith(context)' to be able to handle several test run.
+** It may break the formatting of following paragraphs if there was an empty run with formatting instruction inside the comment selection, but I have not been able to reproduce this theoretical issue with both Word, and WPS writer. Do not hesitate to inform me if you encounter the issue.
+
+=== Dependencies
+
+* Upgrade Java version from 21 to 25
+* Bump org.springframework:spring-expression from 6.2.8 to 6.2.12
+* Bump org.springframework:spring-context from 6.2.8 to 6.2.12
+
+=== Documentation
+
+* Updated all javadoc to use Markdown style
+* Globally added a lot of javadoc, to improve self-documentation and leverage AI capabilities
+* Add documentation avout preprocessors, allowing cleanup of duments before stamping
+
+* Added an .aiignore to improve vibe coding experience
+* Add contributors details to generated documentation site
+
+=== Continuous Integration
+
+* Updated deployment to Maven Central to comply with OSSRH process changes
+** added dependency to plugin org.sonatype.central:central-publishing-maven-plugin:0.9.0
+
+* Bump actions/checkout from v4 to v5
+* Bump actions/setup-java from v4 to v5
+* Bump github/codeql-action/analyze from v3 to v4
+* Bump actions/upload-pages-artifact from v3 to v4
+
+* Bump org.apache.maven.plugins:maven-compiler-plugin from 3.14.0 to 3.14.1
+* Bump org.apache.maven.plugins:maven-javadoc-plugin from 3.11.2 to 3.12.0
+* Bump org.apache.maven.plugins:maven-surefire-plugin from 3.5.3 to 3.5.4
+* Bump org.apache.maven.plugins:maven-surefire-report-plugin from 3.5.3 to 3.5.4
+* Bump org.jacoco:jacoco-maven-plugin from 0.8.13 to 0.8.14
+
+=== Tests
+
+* Improved stringification of indentation informatin of paragraphs (ind elements)
+* Added all recent docx4j version to test matrix (11.5.0..11.5.6)
+* Bump org.pitest:pitest-maven from 1.20.0 to 1.20.1
+* Bump org.junit.jupiter:junit-jupiter from 5.13.3 to 6.0.0
+
+=== Refactorings
+
+* Improved the comment deletion procedure, to make it less complex and do only one pass through all elements
+* Replace the IndexedRun concept by the StandardRun concept
+* MAY BREAK Removed 2 unused public methods from DocxImageExtractor
+
 == {proj}/v2.8.0[v2.8.0]
 
 === Features
@@ -13,7 +68,7 @@
 
 === Bugfixes
 
-* Fixed management of comment made in Google Doc, as mentioned by @Jushar in #534
+* Fixed management of comment made in Google Doc, as mentioned by {gh}/Jushar[@Jushar] in #534
 * Fixed management of instrText in TOC, as mentioned by {gh}/tiagobutzke[@tiagobutzke] in {os}/issues/539[#539]
 
 

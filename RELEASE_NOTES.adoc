@@ -68,7 +68,7 @@
 
 === Bugfixes
 
-* Fixed management of comment made in Google Doc, as mentioned by @Jushar in #534
+* Fixed management of comment made in Google Doc, as mentioned by {gh}/Jushar[@Jushar] in #534
 * Fixed management of instrText in TOC, as mentioned by {gh}/tiagobutzke[@tiagobutzke] in {os}/issues/539[#539]
 
 

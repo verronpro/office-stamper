@@ -55,6 +55,11 @@ public class ReplaceWithProcessor
 
     /// {@inheritDoc}
     @Override public void replaceWordWith(@Nullable String expression) {
+        replaceWith(expression);
+    }
+
+    @Override
+    public void replaceWith(@Nullable String expression) {
         R run = this.getCurrentRun();
         if (run != null) { //TODO Remove the run-based secundary case that becomes redundant
             var target = expression != null ? List.of(newText(expression)) : nullSupplier.apply(run);

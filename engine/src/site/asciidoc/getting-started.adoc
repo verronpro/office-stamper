@@ -13,7 +13,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>engine</artifactId>
-    <version>2.7.0</version>
+    <version>2.9.0</version>
 </dependency>
 ----
 
@@ -24,12 +24,12 @@ You also need to provide a dependency to Docx4J:
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-core</artifactId>
-    <version>11.5.3</version>
+    <version>11.5.6</version>
 </dependency>
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-    <version>11.5.3</version>
+    <version>11.5.6</version>
 </dependency>
 ----
 
@@ -40,9 +40,9 @@ Add the following to your `build.gradle`:
 [source,groovy]
 ----
 dependencies {
-    implementation 'pro.verron.office-stamper:engine:2.7.0'
-    implementation 'org.docx4j:docx4j-core:11.5.3'
-    implementation 'org.docx4j:docx4j-JAXB-ReferenceImpl:11.5.3'
+    implementation 'pro.verron.office-stamper:engine:2.9.0'
+    implementation 'org.docx4j:docx4j-core:11.5.6'
+    implementation 'org.docx4j:docx4j-JAXB-ReferenceImpl:11.5.6'
 }
 ----
 
@@ -53,8 +53,11 @@ Here's an example of how to use Office-stamper:
 [source,java]
 ----
 void main() {
-    // a java object to use as context for the expressions found in the template.
-    var context = new YourPojoContext(_, _ , _);
+    // a java Bean, a record, or a map to use as context for the expressions found in the template.
+    var company = Map.of("name", "Duff");
+    var customer = Map.of("name", "Homer");
+    var order = Map.of("", company, customer, order);
+    var context = Map.of("company"company, customer, order);
 
     // an instance of the stamper
     var stamper = OfficeStampers.docxStamper();

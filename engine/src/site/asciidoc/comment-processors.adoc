@@ -23,7 +23,8 @@ Office-stamper comes with several built-in comment processors that handle common
 | `repeatParagraph(List<Object>)`       | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list.
 | `repeatTableRow(List<Object>)`        | The surrounding table row is copied once for each object in the passed-in list. Expressions found in the cells of the table row are evaluated against the object from the list.
 | `repeatDocPart(List<Object>)`         | The commented text is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
-| `replaceWordWith(expression)`         | Replace the commented word with the value of the given expression.
+| `replaceWordWith(expression)`         | Replace the commented word with the value of the given expression. (obsolete, use replaceWith instead)
+| `replaceWith(expression)`         | Replace the commented word with the value of the given expression. (the selection cannot run over several paragraph)
 | `resolveTable(StampTable)`            | Replace a table (that must have one column and two rows) with the values given by the StampTable. The StampTable contains a list of headers for columns, and a 2-level list of rows containing values for each column.
 |===
 
@@ -61,11 +62,11 @@ When using these processors, expressions within the repeated content are evaluat
 
 === Word Replacement
 
-The `replaceWordWith` processor allows you to replace a specific word with the result of an expression:
+The `replaceWith` processor allows you to replace a specific word with the result of an expression:
 
 [source]
 ----
-replaceWordWith(customer.name)
+replaceWith(customer.name)
 ----
 
 === Table Resolution

@@ -23,16 +23,16 @@ import static pro.verron.officestamper.utils.WmlFactory.newRun;
 /// @author Joseph Verron
 /// @version ${version}
 /// @since 1.6.6
-public class CustomCommentProcessor
+public class ProcessorCustomTest
         extends AbstractCommentProcessor
         implements ICustomCommentProcessor {
 
     private static final List<Paragraph> visitedParagraphs = new ArrayList<>();
 
-    /// Constructor for CustomCommentProcessor.
+    /// Constructor for ProcessorCustomTest.
     ///
     /// @param placeholderReplacer a [ParagraphPlaceholderReplacer] object
-    public CustomCommentProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
+    public ProcessorCustomTest(ParagraphPlaceholderReplacer placeholderReplacer) {
         super(placeholderReplacer);
     }
 

@@ -14,7 +14,7 @@ import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
-class ConditionalDisplayTest {
+class ProcessorDisplayIfTest {
 
     public static Stream<ContextFactory> factories() {
         return Stream.of(objectContextFactory(), mapContextFactory());
@@ -25,7 +25,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfBart(ContextFactory factory) {
         var context = factory.name("Bart");
-        var template = getResource(Path.of("ConditionalDisplayTest.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf.docx"));
         var expected = """
                 == Conditional Display
                 
@@ -212,7 +212,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfFootnotes(ContextFactory factory) {
         var context = factory.name("Bart");
-        var template = getResource(Path.of("footnotes.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf_Footnotes.docx"));
         var expected = """
                 = Springfield Chronicles: The Simpsons Edition
                 
@@ -274,7 +274,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfEndnotes(ContextFactory factory) {
         var context = factory.name("Bart");
-        var template = getResource(Path.of("endnotes.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf_Endnotes.docx"));
         var expected = """
                 = Springfield Chronicles: The Simpsons Edition
                 
@@ -336,7 +336,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfHomer(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayTest.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf.docx"));
         var expected = """
                 == Conditional Display
                 
@@ -487,7 +487,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfAbsentValue(ContextFactory factory) {
         var context = factory.name(null);
-        var template = getResource(Path.of("ConditionalDisplayTest.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf.docx"));
         var expected = """
                 == Conditional Display
                 
@@ -638,7 +638,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf_Inlined.docx"));
         var expected = """
                 == Conditional Display of Paragraphs
                 
@@ -674,7 +674,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(ContextFactory factory) {
         var context = factory.name("Bart");
-        var template = getResource(Path.of("ConditionalDisplayOfParagraphsWithoutCommentTest.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf_Inlined.docx"));
         var expected = """
                 == Conditional Display of Paragraphs
                 
@@ -712,7 +712,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfTableRowsTest(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfTableRowsTest.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf_TableRows.docx"));
         var expected = """
                 == Conditional Display of Table Rows
                 
@@ -746,7 +746,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfTableBug32Test(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfTablesBug32Test.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf_#32.docx"));
         var expected = """
                 == Conditional Display of Tables
                 
@@ -784,7 +784,7 @@ class ConditionalDisplayTest {
     @MethodSource("factories")
     void conditionalDisplayOfTableTest(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ConditionalDisplayOfTablesTest.docx"));
+        var template = getResource(Path.of("ProcessorDisplayIf_Tables.docx"));
         var expected = """
                 == Conditional Display of Tables
                 

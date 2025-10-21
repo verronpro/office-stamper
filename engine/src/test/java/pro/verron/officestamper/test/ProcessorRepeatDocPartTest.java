@@ -25,8 +25,8 @@ import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
 
-class RepeatDocPartTest {
-    private static final Logger log = LoggerFactory.getLogger(RepeatDocPartTest.class);
+class ProcessorRepeatDocPartTest {
+    private static final Logger log = LoggerFactory.getLogger(ProcessorRepeatDocPartTest.class);
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
 
     private static Stream<Arguments> tests() {
@@ -50,7 +50,7 @@ class RepeatDocPartTest {
         var butterfly = getImage(Path.of("butterfly.png"));
         var cartography = getImage(Path.of("map.jpg"));
         var context = factory.units(butterfly, cartography);
-        var template = getResource(Path.of("RepeatDocPartWithImageTest.docx"));
+        var template = getResource(Path.of("ProcessorRepeatDocPart_Image.docx"));
         var expected = """
                 
                 /word/media/document_image_rId11.png:rId11:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
@@ -77,7 +77,7 @@ class RepeatDocPartTest {
         return of("repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
                 standard(),
                 factory.subDocPartContext(),
-                getResource(Path.of("RepeatDocPartWithImagesInSourceTest.docx")),
+                getResource(Path.of("ProcessorRepeatDocPart_ImageSubTemplate.docx")),
                 """
                         This is not repeated
                         This should be repeated : first doc part
@@ -105,7 +105,7 @@ class RepeatDocPartTest {
                         "Hank Azaria",
                         "Krusty the Clown",
                         "Dan Castellaneta"),
-                getResource(Path.of("RepeatDocPartTest.docx")),
+                getResource(Path.of("ProcessorRepeatDocPart.docx")),
                 """
                         = Repeating Doc Part
                         
@@ -185,7 +185,7 @@ class RepeatDocPartTest {
         return of("Repeat Doc Part Integration Test, with nested comments",
                 OfficeStamperConfigurations.standardWithPreprocessing(),
                 factory.schoolContext(),
-                getResource(Path.of("RepeatDocPartNestingTest.docx")),
+                getResource(Path.of("ProcessorRepeatDocPart_Nesting.docx")),
                 """
                         = Repeating Doc Part
                         
@@ -444,7 +444,7 @@ class RepeatDocPartTest {
             ContextFactory factory
     ) {
         var context = factory.tableContext();
-        var template = getResource(Path.of("RepeatDocPartAndCommentProcessorsIsolationTest.docx"));
+        var template = getResource(Path.of("ProcessorRepeatDocPart_Isolation.docx"));
         var expected = """
                 This will stay untouched.
                 
@@ -499,7 +499,7 @@ class RepeatDocPartTest {
         return arguments("In multiple layouts, keeps section orientations outside RepeatDocPart comments",
                 standard(),
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
-                getResource(Path.of("ChangingPageLayoutInRepeatDocPartTest.docx")),
+                getResource(Path.of("ProcessorRepeatDocPart_InLayout.docx")),
                 """
                         First page is portrait.
                         
@@ -538,7 +538,7 @@ class RepeatDocPartTest {
                 standard(),
 
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
-                getResource(Path.of("ChangingPageLayoutInRepeatDocPartWithTableLastElementTest.docx")),
+                getResource(Path.of("ProcessorRepeatDocPart_InLayoutAndTable.docx")),
                 """
                         First page is portrait.
                         
@@ -586,7 +586,7 @@ class RepeatDocPartTest {
         return arguments("In multiple layouts, keeps section orientation outside RepeatDocPart comment",
                 standard(),
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
-                getResource(Path.of("ChangingPageLayoutOutsideRepeatDocPartTest.docx")),
+                getResource(Path.of("ProcessorRepeatDocPart_OutLayout.docx")),
                 """
                         First page is landscape.
                         

@@ -24,9 +24,9 @@ import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
-class RepeatParagraphTest {
+class ProcessorRepeatParagraphTest {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
-    private static final Logger log = LoggerFactory.getLogger(RepeatParagraphTest.class);
+    private static final Logger log = LoggerFactory.getLogger(ProcessorRepeatParagraphTest.class);
 
     private static Stream<Arguments> tests() {
         return factories().mapMulti((factory, pipe) -> {
@@ -53,7 +53,7 @@ class RepeatParagraphTest {
                 "Hank Azaria",
                 "Krusty the Clown",
                 "Dan Castellaneta");
-        var template = getResource(Path.of("RepeatParagraphTest.docx"));
+        var template = getResource(Path.of("ProcessorRepeatParagraph.docx"));
         var expected = """
                 == Characters 1 line
                 
@@ -96,7 +96,7 @@ class RepeatParagraphTest {
         return arguments("In multiple layouts, keeps section orientations outside RepeatParagraph comments",
                 standard(),
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
-                getResource(Path.of("ChangingPageLayoutOutsideRepeatParagraphTest.docx")),
+                getResource(Path.of("ProcessorRepeatParagraph_OutLayout.docx")),
                 """
                         First page is landscape.
                         
@@ -126,7 +126,7 @@ class RepeatParagraphTest {
             ContextFactory factory
     ) {
         var context = factory.coupleContext();
-        var template = getResource(Path.of("ChangingPageLayoutInRepeatParagraphTest.docx"));
+        var template = getResource(Path.of("ProcessorRepeatParagraph_InLayout.docx"));
         var expected = """
                 First page is landscape.
                 

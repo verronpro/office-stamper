@@ -23,9 +23,9 @@ import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
-class RepeatTableRowTest {
+class ProcessorRepeatTableRowTest {
     private static final ObjectContextFactory FACTORY = new ObjectContextFactory();
-    private static final Logger log = LoggerFactory.getLogger(RepeatTableRowTest.class);
+    private static final Logger log = LoggerFactory.getLogger(ProcessorRepeatTableRowTest.class);
 
     private static Stream<Arguments> tests() {
         return factories().mapMulti((factory, pipe) -> {
@@ -54,7 +54,7 @@ class RepeatTableRowTest {
                         "Hank Azaria",
                         "Krusty the Clown",
                         "Dan Castellaneta"),
-                getResource(Path.of("RepeatTableRowTest.docx")),
+                getResource(Path.of("ProcessorRepeatTableRow.docx")),
                 """
                         Repeating Table Rows
                         List of Simpsons characters
@@ -102,7 +102,7 @@ class RepeatTableRowTest {
                         "Hank\n\nAzaria",
                         "Krusty the Clown",
                         "Dan\nCastellaneta"),
-                getResource(Path.of("RepeatTableRowTest.docx")),
+                getResource(Path.of("ProcessorRepeatTableRow.docx")),
                 """
                         Repeating Table Rows
                         List of Simpsons characters
@@ -148,7 +148,7 @@ class RepeatTableRowTest {
         return of("Repeat Table row Integration test (keeps formatting)",
                 standard(),
                 factory.show(),
-                getResource(Path.of("RepeatTableRowKeepsFormatTest.docx")),
+                getResource(Path.of("ProcessorRepeatTableRow_KeepsFormatTest.docx")),
                 """
                         |===
                         |1❬st❘{vertAlign=superscript}❭ Homer Simpson-❬Dan Castellaneta❘{b=true}❭

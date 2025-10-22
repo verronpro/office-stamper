@@ -61,12 +61,12 @@ class Example {
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-core</artifactId>
-    <version>11.5.3</version>
+    <version>11.5.6</version>
 </dependency>
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-    <version>11.5.3</version>
+    <version>11.5.6</version>
 </dependency>
 ----
 

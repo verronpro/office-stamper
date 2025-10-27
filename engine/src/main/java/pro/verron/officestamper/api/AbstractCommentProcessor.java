@@ -16,6 +16,9 @@ public abstract class AbstractCommentProcessor
     /// PlaceholderReplacer used to replace expressions in the comment text.
     protected final ParagraphPlaceholderReplacer placeholderReplacer;
     private Paragraph paragraph;
+    /// @deprecated This method was only used by the "replaceWith" processor, which now can manage multiple runs at
+    /// once, making this single-run tracking method obsolete
+    @Deprecated(since = "2.10", forRemoval = true)
     private R currentRun;
     private Comment currentComment;
 
@@ -41,17 +44,22 @@ public abstract class AbstractCommentProcessor
 
     @Override public void setProcessorContext(ProcessorContext processorContext) {
         setParagraph(processorContext.paragraph());
-        setCurrentRun(processorContext.run());
         setCurrentCommentWrapper(processorContext.comment());
     }
 
     /// Retrieves the current run being processed.
     ///
     /// @return the current [R] object being processed
+    /// @deprecated This method was only used by the "replaceWith" processor, which now can manage multiple runs at
+    /// once, making this single-run tracking method obsolete
+    @Deprecated(since = "2.10", forRemoval = true)
     public R getCurrentRun() {
         return currentRun;
     }
 
+    /// @deprecated This method was only used by the "replaceWith" processor, which now can manage multiple runs at
+    /// once, making this single-run tracking method obsolete
+    @Deprecated(since = "2.10", forRemoval = true)
     @Override public void setCurrentRun(@Nullable R run) {
         this.currentRun = run;
     }

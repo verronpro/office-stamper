@@ -28,6 +28,9 @@ public interface CommentProcessor {
     ///
     /// @param run the run object that is currently being processed,
     ///            or null if there is no specific run to set
+    /// @deprecated This method was only used by the "replaceWith" processor, which now can manage multiple runs at
+    /// once, making this single-run tracking method obsolete
+    @Deprecated(since = "2.10", forRemoval = true)
     void setCurrentRun(@Nullable R run);
 
     /// Finalizes the processing of a [DocxPart] document and commits any changes made to it.

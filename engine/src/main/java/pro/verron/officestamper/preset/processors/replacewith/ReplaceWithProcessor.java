@@ -12,8 +12,6 @@ import pro.verron.officestamper.utils.WmlFactory;
 import java.util.List;
 import java.util.function.Function;
 
-import static pro.verron.officestamper.utils.WmlFactory.newText;
-
 /// Processor that replaces the current run with the provided expression.
 /// This is useful for replacing an expression in a comment with the result of the expression.
 ///
@@ -28,7 +26,8 @@ public class ReplaceWithProcessor
     private final Function<R, List<Object>> nullSupplier;
 
     private ReplaceWithProcessor(
-            ParagraphPlaceholderReplacer placeholderReplacer, Function<R, List<Object>> nullSupplier
+            ParagraphPlaceholderReplacer placeholderReplacer,
+            Function<R, List<Object>> nullSupplier
     ) {
         super(placeholderReplacer);
         this.nullSupplier = nullSupplier;
@@ -44,34 +43,28 @@ public class ReplaceWithProcessor
     }
 
     /// {@inheritDoc}
-    @Override public void commitChanges(DocxPart document) {
+    @Override
+    public void commitChanges(DocxPart document) {
         // nothing to commit
     }
 
     /// {@inheritDoc}
-    @Override public void reset() {
+    @Override
+    public void reset() {
         // nothing to reset
     }
 
     /// {@inheritDoc}
-    @Override public void replaceWordWith(@Nullable String expression) {
+    @Override
+    public void replaceWordWith(@Nullable String expression) {
         replaceWith(expression);
     }
 
     @Override
     public void replaceWith(@Nullable String expression) {
-        R run = this.getCurrentRun();
-        if (run != null) { //TODO Remove the run-based secundary case that becomes redundant
-            var target = expression != null ? List.of(newText(expression)) : nullSupplier.apply(run);
-            var runContent = run.getContent();
-            runContent.clear();
-            runContent.addAll(target);
-        }
-        else {
-            var comment = this.getCurrentCommentWrapper();
-            var from = comment.getCommentRangeStart();
-            var to = comment.getCommentRangeEnd();
-            getParagraph().replace(from, to, WmlFactory.newRun(expression));
-        }
+        var comment = this.getCurrentCommentWrapper();
+        var from = comment.getCommentRangeStart();
+        var to = comment.getCommentRangeEnd();
+        getParagraph().replace(from, to, WmlFactory.newRun(expression));
     }
 }

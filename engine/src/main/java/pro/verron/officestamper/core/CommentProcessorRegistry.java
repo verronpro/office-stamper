@@ -60,16 +60,6 @@ public class CommentProcessorRegistry {
     public <T> void runProcessors(T expressionContext) {
         var proceedComments = new ArrayList<Comment>();
 
-        source.streamRun()
-              .forEach(run -> {
-                  var comments = collectComments();
-                  var runParent = StandardParagraph.from(source, (P) run.getParent());
-                  var optional = runProcessorsOnRunComment(comments, expressionContext, run, runParent);
-                  optional.ifPresent(proceedComments::add);
-              });
-        commentProcessors.commitChanges(source);
-
-        // we run the paragraph afterward so that the comments inside work before the whole paragraph comments
         source.streamParagraphs()
               .forEach(p -> {
                   var comments = collectComments();
@@ -107,25 +97,6 @@ public class CommentProcessorRegistry {
                    .forEach(comment -> allComments.get(comment.getId())
                                                   .setComment(comment));
         return new HashMap<>(rootComments);
-    }
-
-    private <T> Optional<Comment> runProcessorsOnRunComment(
-            Map<BigInteger, Comment> comments,
-            T expressionContext,
-            R run,
-            Paragraph paragraph
-    ) {
-        return CommentUtil.getCommentAround(run, document())
-                          .flatMap(c -> Optional.ofNullable(comments.get(c.getId())))
-                          .flatMap(c -> {
-                              var cPlaceholder = c.asPlaceholder();
-                              var cComment = c.getComment();
-                              comments.remove(cComment.getId());
-                              commentProcessors.setContext(new ProcessorContext(paragraph, run, c, cPlaceholder));
-                              return runCommentProcessors(expressionContext, cPlaceholder)
-                                      ? Optional.of(c)
-                                      : Optional.empty();
-                          });
     }
 
     private <T> Optional<Comment> runProcessorsOnParagraphComment(

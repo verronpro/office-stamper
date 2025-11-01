@@ -11,6 +11,8 @@ import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.math.BigInteger;
@@ -20,9 +22,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static java.util.stream.Collectors.joining;
+
 /// Utility class with methods to help in the interaction with WordprocessingMLPackage documents
 /// and their elements, such as comments, parents, and child elements.
 public final class WmlUtils {
+
+    private static final String PRESERVE = "preserve";
+    private static final Logger log = LoggerFactory.getLogger(WmlUtils.class);
+
     private WmlUtils() {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
@@ -118,8 +126,7 @@ public final class WmlUtils {
             case SdtRun parent -> remove(parent, child);
             default -> throw new OfficeStamperException("Unexpected value: " + child.getParent());
         }
-        if (child.getParent() instanceof Tc cell)
-            ensureValidity(cell);
+        if (child.getParent() instanceof Tc cell) ensureValidity(cell);
     }
 
     private static void remove(ContentAccessor parent, Child child) {
@@ -204,5 +211,71 @@ public final class WmlUtils {
         } catch (Exception _) {
             return false;
         }
+    }
+
+    /// Extracts textual content from a given object, handling various object types,
+    /// such as runs, text elements, and other specific constructs.
+    /// The method accounts for different cases, such as run breaks, hyphens,
+    /// and other document-specific constructs, and converts them into
+    /// corresponding string representations.
+    ///
+    /// @param content the object from which text content is to be extracted. This could be of various types such as
+    ///                               R, JAXBElement, Text, or specific document elements.
+    ///
+    /// @return a string representation of the extracted textual content.
+    /// If the object's type is not handled, an empty string is returned.
+    public static String asString(Object content) {
+        return switch (content) {
+            case P paragraph -> asString(paragraph.getContent());
+            case R run -> asString(run.getContent());
+            case JAXBElement<?> jaxbElement when jaxbElement.getName()
+                                                            .getLocalPart()
+                                                            .equals("instrText") -> "<instrText>";
+            case JAXBElement<?> jaxbElement when !jaxbElement.getName()
+                                                             .getLocalPart()
+                                                             .equals("instrText") -> asString(jaxbElement.getValue());
+            case Text text -> asString(text);
+            case R.Tab _ -> "\t";
+            case R.Cr _ -> "\n";
+            case Br br when br.getType() == null -> "\n";
+            case Br br when br.getType() == STBrType.PAGE -> "\n";
+            case Br br when br.getType() == STBrType.COLUMN -> "\n";
+            case Br br when br.getType() == STBrType.TEXT_WRAPPING -> "\n";
+            case R.NoBreakHyphen _ -> "‑";
+            case R.SoftHyphen _ -> "\u00AD";
+            case R.LastRenderedPageBreak _, R.AnnotationRef _, R.CommentReference _, Drawing _ -> "";
+            case FldChar _ -> "<fldchar>";
+            case CTFtnEdnRef ref -> "<ref(%s)>".formatted(ref.getId());
+            case R.Sym sym -> "<sym(%s, %s)>".formatted(sym.getFont(), sym.getChar());
+            default -> {
+                log.debug("Unhandled object type: {}", content.getClass());
+                yield "";
+            }
+        };
+    }
+
+    private static String asString(List<Object> paragraph) {
+        return paragraph.stream()
+                        .map(WmlUtils::asString)
+                        .collect(joining());
+    }
+
+    private static String asString(Text text) {
+        // According to specs, 'space' value can be empty or 'preserve'.
+        // In the first case, we are supposed to ignore spaces around the 'text' value.
+        var value = text.getValue();
+        var space = text.getSpace();
+        return Objects.equals(space, PRESERVE) ? value : value.trim();
+    }
+
+    public static void addSmartTag(P paragraph, int start, int end) {
+        List<Object> prefix = paragraph.getContent()
+                                       .subList(0, start);
+        List<Object> select = paragraph.getContent()
+                                       .subList(start, end);
+        List<Object> suffix = paragraph.getContent()
+                                       .subList(end,
+                                               paragraph.getContent()
+                                                        .size());
     }
 }

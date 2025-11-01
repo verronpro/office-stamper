@@ -420,7 +420,7 @@ public class StandardParagraph
         ///
         /// @return [String] representation of the run.
         public String getText() {
-            return RunUtil.getText(run);
+            return WmlUtils.asString(run);
         }
 
         /// Retrieves the properties associated with this run.

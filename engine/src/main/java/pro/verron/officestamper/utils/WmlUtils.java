@@ -220,7 +220,7 @@ public final class WmlUtils {
     /// corresponding string representations.
     ///
     /// @param content the object from which text content is to be extracted.
-    /// This could be of various types such as R, JAXBElement, Text or specific document elements.
+    ///                This could be of various types such as R, JAXBElement, Text or specific document elements.
     ///
     /// @return a string representation of the extracted textual content.
     /// If the object's type is not handled, an empty string is returned.
@@ -265,15 +265,11 @@ public final class WmlUtils {
         return Objects.equals(space, PRESERVE) ? value : value.trim();
     }
 
-    public static void addSmartTag(P paragraph, int start, int end) {
-        List<Object> prefix = paragraph.getContent()
-                                       .subList(0, start);
-        List<Object> select = paragraph.getContent()
-                                       .subList(start, end);
-        List<Object> suffix = paragraph.getContent()
-                                       .subList(end,
-                                               paragraph.getContent()
-                                                        .size());
+    public static List<Object> insertSmartTag(P paragraph, String expression, int start, int end) {
+        var run = newRun(expression);
+        var smartTag = newSmartTag(expression, run);
+        findFirstAffectedRunPr(paragraph.getContent(), start, end).ifPresent(run::setRPr);
+        return replace(paragraph.getContent(), smartTag, start, end);
     }
 
     public static Optional<RPr> findFirstAffectedRunPr(List<Object> contents, int start, int end) {
@@ -313,8 +309,6 @@ public final class WmlUtils {
                 contents.set(firstRun.indexInParent(), replacement);
             }
             else if (expressionAtStartOfRun) {
-                run.replace(matchStartIndex, matchEndIndex, "");
-                contents.add(run.indexInParent(), replacement);
                 firstRun.replace(startIndex, endIndex, "");
                 contents.add(firstRun.indexInParent(), replacement);
             }

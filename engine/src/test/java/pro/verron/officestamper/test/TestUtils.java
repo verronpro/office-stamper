@@ -1,7 +1,9 @@
 package pro.verron.officestamper.test;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
+import org.jspecify.annotations.NonNull;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.utils.WmlFactory;
@@ -59,6 +61,22 @@ public class TestUtils {
     }
 
     public static InputStream makeResource(String content) {
+        var aPackage = makeDocx(content);
+        OutputStream outputStream;
+        try {
+            outputStream = IOStreams.getOutputStream();
+        } catch (IOException e) {
+            throw new OfficeStamperException(e);
+        }
+        try {
+            aPackage.save(outputStream);
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException(e);
+        }
+        return IOStreams.getInputStream(outputStream);
+    }
+
+    public static @NonNull WordprocessingMLPackage makeDocx(String content) {
         var aPackage = newWord();
         var mainDocumentPart = aPackage.getMainDocumentPart();
         var parent = new AtomicReference<ContentAccessor>(mainDocumentPart);
@@ -77,10 +95,7 @@ public class TestUtils {
                            var accessor = parent.get();
                            if (accessor instanceof Tc tc) parent.set((ContentAccessor) tc.getParent());
                            if (accessor instanceof Tr tr) parent.set((ContentAccessor) tr.getParent());
-                           if (accessor instanceof Tbl tbl) {
-                               parent.set((ContentAccessor) tbl.getParent());
-                               return;
-                           }
+                           if (accessor instanceof Tbl tbl) parent.set((ContentAccessor) tbl.getParent());
                            else {
                                var newTbl = newTbl();
                                var newRow = newRow();
@@ -90,8 +105,8 @@ public class TestUtils {
                                      .getContent()
                                      .add(newTbl);
                                parent.set(newRow);
-                               return;
                            }
+                           return;
                        }
                        else if (cellMatcher.matches()) {
                            var newCell = newCell();
@@ -183,18 +198,7 @@ public class TestUtils {
                          .getContent()
                          .add(p1);
                });
-        OutputStream outputStream;
-        try {
-            outputStream = IOStreams.getOutputStream();
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
-        try {
-            aPackage.save(outputStream);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
-        return IOStreams.getInputStream(outputStream);
+        return aPackage;
     }
 
     static Image getImage(Path path) {

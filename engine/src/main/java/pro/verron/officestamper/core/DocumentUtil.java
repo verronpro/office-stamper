@@ -155,6 +155,7 @@ public class DocumentUtil {
             case ContentAccessor accessor -> accessor.getContent();
             case SdtRun sdtRun -> sdtRun.getSdtContent()
                                         .getContent();
+            case Text _, R.CommentReference _, CommentRangeEnd _, CommentRangeStart _ -> emptyList();
             default -> {
                 log.warn("Element {} not recognized", element);
                 yield emptyList();

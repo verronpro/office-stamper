@@ -1,7 +1,11 @@
-package pro.verron.officestamper.utils;
+package pro.verron.officestamper.core;
 
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
+import pro.verron.officestamper.utils.WmlUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /// Represents a run (i.e., a text fragment) in a paragraph. The run is indexed relative to the containing paragraph
 /// and also relative to the containing document.
@@ -14,7 +18,28 @@ import org.docx4j.wml.RPr;
 /// @author Tom Hombergs
 /// @version ${version}
 /// @since 1.0.0
-public record Run(int startIndex, int indexInParent, R run) {
+public record StandardRun(int startIndex, int indexInParent, R run) {
+
+    /// Initializes a list of StandardRun objects based on the given list of objects.
+    /// Iterates over the provided list of objects, identifies instances of type R,
+    /// and constructs StandardRun objects while keeping track of their lengths.
+    ///
+    /// @param objects the list of objects to be iterated over and processed into StandardRun instances
+    ///
+    /// @return a list of StandardRun objects created from the given input list
+    public static List<StandardRun> wrap(List<Object> objects) {
+        var currentLength = 0;
+        var runList = new ArrayList<StandardRun>(objects.size());
+        for (int i = 0; i < objects.size(); i++) {
+            var object = objects.get(i);
+            if (object instanceof R run) {
+                var currentRun = new StandardRun(currentLength, i, run);
+                runList.add(currentRun);
+                currentLength += currentRun.length();
+            }
+        }
+        return runList;
+    }
 
     /// Finds the index of the first occurrence of the specified substring in the text of the current run.
     ///
@@ -95,7 +120,7 @@ public record Run(int startIndex, int indexInParent, R run) {
     ///                       for the extracted substring.
     /// @return a substring of the run's text, starting at the beginning and ending at the
     ///         specified localized index.
-    String left(int globalEndIndex) {
+    public String left(int globalEndIndex) {
         return getText().substring(0, localize(globalEndIndex));
     }
 
@@ -108,7 +133,7 @@ public record Run(int startIndex, int indexInParent, R run) {
      * @return a substring of the run's text starting from the localized index
      *         corresponding to the provided global start index.
      */
-    String right(int globalStartIndex) {
+    public String right(int globalStartIndex) {
         return getText().substring(localize(globalStartIndex));
     }
 

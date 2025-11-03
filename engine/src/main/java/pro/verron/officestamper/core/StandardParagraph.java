@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.utils.Run;
 import pro.verron.officestamper.utils.WmlFactory;
 import pro.verron.officestamper.utils.WmlUtils;
 
@@ -141,7 +140,7 @@ public class StandardParagraph
     }
 
     private void replaceWithBr(Placeholder placeholder, Br br) {
-        for (Run run : WmlUtils.wrap(contents)) {
+        for (StandardRun run : StandardRun.wrap(contents)) {
             var runContentIterator = run.run()
                                         .getContent()
                                         .listIterator();
@@ -199,10 +198,10 @@ public class StandardParagraph
         var toIndex = contents.indexOf(to);
         var subContent = contents.subList(fromIndex, toIndex + 1);
 
-        var runs = WmlUtils.wrap(contents);
+        var runs = StandardRun.wrap(contents);
         runs.removeIf(run -> !subContent.contains(run.run()));
         return runs.stream()
-                   .map(Run::getText)
+                   .map(StandardRun::getText)
                    .collect(joining());
     }
 

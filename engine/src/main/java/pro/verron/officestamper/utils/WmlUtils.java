@@ -22,8 +22,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
-import static pro.verron.officestamper.utils.WmlFactory.newText;
+import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /// Utility class with methods to help in the interaction with WordprocessingMLPackage documents
 /// and their elements, such as comments, parents, and child elements.
@@ -277,57 +276,64 @@ public final class WmlUtils {
                                                         .size());
     }
 
-    public static List<Object> replace(
-            List<Object> contents,
-            String full,
-            R replacement,
-            int matchStartIndex,
-            int matchEndIndex
-    ) {
+    public static Optional<RPr> findFirstAffectedRunPr(List<Object> contents, int start, int end) {
         var runs = wrap(contents);
         var affectedRuns = runs.stream()
-                               .filter(run -> run.isTouchedByRange(matchStartIndex, matchEndIndex))
+                               .filter(run -> run.isTouchedByRange(start, end))
                                .toList();
 
+        Run firstRun = affectedRuns.getFirst();
+        var firstRunPr = firstRun.getPr();
+        return Optional.ofNullable(firstRunPr);
+    }
+
+    public static List<Object> replace(
+            List<Object> inputContents,
+            Object replacement,
+            int startIndex,
+            int endIndex
+    ) {
+        var contents = new ArrayList<>(inputContents);
+        var runs = wrap(contents);
+        var affectedRuns = runs.stream()
+                               .filter(run -> run.isTouchedByRange(startIndex, endIndex))
+                               .toList();
+
+        Run firstRun = affectedRuns.getFirst();
+
         boolean singleRun = affectedRuns.size() == 1;
-
         if (singleRun) {
-            Run run = affectedRuns.getFirst();
-
-            boolean expressionSpansCompleteRun = full.length() == run.length();
-            boolean expressionAtStartOfRun = matchStartIndex == run.startIndex();
-            boolean expressionAtEndOfRun = matchEndIndex == run.endIndex();
-            boolean expressionWithinRun = matchStartIndex > run.startIndex() && matchEndIndex <= run.endIndex();
-
-            replacement.setRPr(run.getPr());
+            boolean expressionSpansCompleteRun = endIndex - startIndex == firstRun.length();
+            boolean expressionAtStartOfRun = startIndex == firstRun.startIndex();
+            boolean expressionAtEndOfRun = endIndex == firstRun.endIndex();
+            boolean expressionWithinRun =
+                    startIndex > firstRun.startIndex() && endIndex <= firstRun.endIndex();
 
             if (expressionSpansCompleteRun) {
-                contents.set(run.indexInParent(), replacement);
+                contents.set(firstRun.indexInParent(), replacement);
             }
             else if (expressionAtStartOfRun) {
                 run.replace(matchStartIndex, matchEndIndex, "");
                 contents.add(run.indexInParent(), replacement);
+                firstRun.replace(startIndex, endIndex, "");
+                contents.add(firstRun.indexInParent(), replacement);
             }
             else if (expressionAtEndOfRun) {
-                run.replace(matchStartIndex, matchEndIndex, "");
-                contents.add(run.indexInParent() + 1, replacement);
+                firstRun.replace(startIndex, endIndex, "");
+                contents.add(firstRun.indexInParent() + 1, replacement);
             }
             else if (expressionWithinRun) {
-                int startIndex = run.indexOf(full);
-                int endIndex = startIndex + full.length();
-                var originalRun = run.run();
+                var originalRun = firstRun.run();
                 var originalRPr = originalRun.getRPr();
-                var newStartRun = create(run.substring(0, startIndex), originalRPr);
-                var newEndRun = create(run.substring(endIndex), originalRPr);
-                contents.remove(run.indexInParent());
-                contents.addAll(run.indexInParent(), List.of(newStartRun, replacement, newEndRun));
+                var newStartRun = create(firstRun.left(startIndex), originalRPr);
+                var newEndRun = create(firstRun.right(endIndex), originalRPr);
+                contents.remove(firstRun.indexInParent());
+                contents.addAll(firstRun.indexInParent(), List.of(newStartRun, replacement, newEndRun));
             }
         }
         else {
-            Run firstRun = affectedRuns.getFirst();
             Run lastRun = affectedRuns.getLast();
-            replacement.setRPr(firstRun.getPr());
-            removeExpression(contents, firstRun, matchStartIndex, matchEndIndex, lastRun, affectedRuns);
+            removeExpression(contents, firstRun, startIndex, endIndex, lastRun, affectedRuns);
             // add replacement run between first and last run
             contents.add(firstRun.indexInParent() + 1, replacement);
         }
@@ -419,5 +425,17 @@ public final class WmlUtils {
         Text textObj = newText(text);
         run.getContent()
            .add(textObj);
+    }
+
+    public static List<Object> replaceExpressionWithRun(List<Object> inputContents, String expression, R run) {
+        var text = asString(inputContents);
+        int matchStartIndex = text.indexOf(expression);
+        if (matchStartIndex == -1) {
+            // nothing to replace
+            return inputContents;
+        }
+        int matchEndIndex = matchStartIndex + expression.length();
+        findFirstAffectedRunPr(inputContents, matchStartIndex, matchEndIndex).ifPresent(run::setRPr);
+        return replace(inputContents, run, matchStartIndex, matchEndIndex);
     }
 }

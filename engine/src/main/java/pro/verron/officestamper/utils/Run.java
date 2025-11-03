@@ -16,26 +16,6 @@ import org.docx4j.wml.RPr;
 /// @since 1.0.0
 public record Run(int startIndex, int indexInParent, R run) {
 
-    /// Retrieves a substring from the text content of this run, starting at the specified begin index.
-    ///
-    /// @param beginIndex the beginning index, inclusive, for the substring.
-    ///
-    /// @return the substring of the run's text starting from the specified begin index to the end of the text.
-    public String substring(int beginIndex) {
-        return getText().substring(beginIndex);
-    }
-
-    /// Retrieves a substring from the text content of this run, starting
-    /// at the specified begin index and ending at the specified end index.
-    ///
-    /// @param beginIndex the beginning index, inclusive, for the substring.
-    /// @param endIndex   the ending index, exclusive, for the substring.
-    ///
-    /// @return the substring of the run's text from the specified begin index to the specified end index.
-    public String substring(int beginIndex, int endIndex) {
-        return getText().substring(beginIndex, endIndex);
-    }
-
     /// Finds the index of the first occurrence of the specified substring in the text of the current run.
     ///
     /// @param full the substring to search for within the run's text.
@@ -104,15 +84,32 @@ public record Run(int startIndex, int indexInParent, R run) {
     /// @param globalEndIndex   the global index at which to end the replacement.
     /// @param replacement      the string to replace the substring at the specified global index.
     public void replace(int globalStartIndex, int globalEndIndex, String replacement) {
-        int localStartIndex = globalIndexToLocalIndex(globalStartIndex);
-        int localEndIndex = globalIndexToLocalIndex(globalEndIndex);
-        var text = substring(0, localStartIndex);
-        text += replacement;
-        String runText = getText();
-        if (!runText.isEmpty()) {
-            text += substring(localEndIndex);
-        }
+        var text = left(globalStartIndex) + replacement + right(globalEndIndex);
         WmlUtils.setText(run, text);
+    }
+
+    /// Extracts a substring of the run's text, starting from the beginning
+    /// and extending up to the localized index of the specified global end index.
+    ///
+    /// @param globalEndIndex the global end index used to determine the cutoff point
+    ///                       for the extracted substring.
+    /// @return a substring of the run's text, starting at the beginning and ending at the
+    ///         specified localized index.
+    String left(int globalEndIndex) {
+        return getText().substring(0, localize(globalEndIndex));
+    }
+
+    /**
+     * Extracts a substring of the run's text, starting from the localized index
+     * of the specified global start index to the end of the run's text.
+     *
+     * @param globalStartIndex the global index specifying the starting point for the
+     *                         substring in the run's text.
+     * @return a substring of the run's text starting from the localized index
+     *         corresponding to the provided global start index.
+     */
+    String right(int globalStartIndex) {
+        return getText().substring(localize(globalStartIndex));
     }
 
     /// Converts a global index to a local index within the context of this run.
@@ -121,7 +118,7 @@ public record Run(int startIndex, int indexInParent, R run) {
     /// @param globalIndex the global index to convert.
     ///
     /// @return the local index corresponding to the given global index.
-    private int globalIndexToLocalIndex(int globalIndex) {
+    private int localize(int globalIndex) {
         if (globalIndex < startIndex) return 0;
         else if (globalIndex > endIndex()) return length();
         else return globalIndex - startIndex;

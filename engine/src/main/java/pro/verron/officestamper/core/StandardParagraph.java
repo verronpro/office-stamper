@@ -135,34 +135,12 @@ public class StandardParagraph
     }
 
     private void replaceWithRun(Placeholder placeholder, R replacement) {
-        replaceExpressionWithRun(placeholder.expression(), replacement);
-    }
-
-
-
-    private void replaceExpressionWithRun(String full, R replacement) {
-        var text = asString();
-
-        int matchStartIndex = text.indexOf(full);
-        if (matchStartIndex == -1) {
-            // nothing to replace
-            return;
-        }
-        int matchEndIndex = matchStartIndex + full.length();
-
-        var newContents = WmlUtils.replace(new ArrayList<>(contents),
-                full,
-                replacement,
-                matchStartIndex,
-                matchEndIndex);
+        var newContents = WmlUtils.replaceExpressionWithRun(contents, placeholder.expression(), replacement);
         contents.clear();
         contents.addAll(newContents);
     }
 
-
-
-
-   private void replaceWithBr(Placeholder placeholder, Br br) {
+    private void replaceWithBr(Placeholder placeholder, Br br) {
         for (Run run : WmlUtils.wrap(contents)) {
             var runContentIterator = run.run()
                                         .getContent()
@@ -177,6 +155,7 @@ public class StandardParagraph
             }
         }
     }
+
     @Override
     public void replace(Object from, Object to, R run) {
         var fromIndex = contents.indexOf(from);
@@ -194,9 +173,12 @@ public class StandardParagraph
             throw new OfficeStamperException(msg.formatted(to, this));
         }
         var expression = extractExpression(from, to);
-        replaceExpressionWithRun(expression, run);
+        var newContents = WmlUtils.replaceExpressionWithRun(contents, expression, run);
+        contents.clear();
+        contents.addAll(newContents);
     }
-private static void replaceWithBr(
+
+    private static void replaceWithBr(
             Placeholder placeholder,
             Br br,
             Text text,
@@ -211,6 +193,7 @@ private static void replaceWithBr(
             if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
         }
     }
+
     private String extractExpression(Object from, Object to) {
         var fromIndex = contents.indexOf(from);
         var toIndex = contents.indexOf(to);
@@ -228,10 +211,7 @@ private static void replaceWithBr(
     /// @return the text of all runs.
     @Override
     public String asString() {
-        return WmlUtils.wrap(contents)
-                       .stream()
-                       .map(Run::getText)
-                       .collect(joining());
+        return WmlUtils.asString(contents);
     }
 
     /// Applies the given consumer to the paragraph represented by the current instance.

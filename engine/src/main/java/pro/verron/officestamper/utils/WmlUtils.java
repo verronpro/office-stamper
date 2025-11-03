@@ -248,17 +248,14 @@ public final class WmlUtils {
             case FldChar _ -> "<fldchar>";
             case CTFtnEdnRef ref -> "<ref(%s)>".formatted(ref.getId());
             case R.Sym sym -> "<sym(%s, %s)>".formatted(sym.getFont(), sym.getChar());
+            case List<?> list -> list.stream()
+                                     .map(WmlUtils::asString)
+                                     .collect(joining());
             default -> {
                 log.debug("Unhandled object type: {}", content.getClass());
                 yield "";
             }
         };
-    }
-
-    private static String asString(List<Object> paragraph) {
-        return paragraph.stream()
-                        .map(WmlUtils::asString)
-                        .collect(joining());
     }
 
     private static String asString(Text text) {

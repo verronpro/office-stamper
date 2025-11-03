@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.core.StandardRun;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -273,12 +274,12 @@ public final class WmlUtils {
     }
 
     public static Optional<RPr> findFirstAffectedRunPr(List<Object> contents, int start, int end) {
-        var runs = wrap(contents);
+        var runs = StandardRun.wrap(contents);
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(start, end))
                                .toList();
 
-        Run firstRun = affectedRuns.getFirst();
+        StandardRun firstRun = affectedRuns.getFirst();
         var firstRunPr = firstRun.getPr();
         return Optional.ofNullable(firstRunPr);
     }
@@ -290,12 +291,12 @@ public final class WmlUtils {
             int endIndex
     ) {
         var contents = new ArrayList<>(inputContents);
-        var runs = wrap(contents);
+        var runs = StandardRun.wrap(contents);
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(startIndex, endIndex))
                                .toList();
 
-        Run firstRun = affectedRuns.getFirst();
+        StandardRun firstRun = affectedRuns.getFirst();
 
         boolean singleRun = affectedRuns.size() == 1;
         if (singleRun) {
@@ -326,33 +327,12 @@ public final class WmlUtils {
             }
         }
         else {
-            Run lastRun = affectedRuns.getLast();
+            StandardRun lastRun = affectedRuns.getLast();
             removeExpression(contents, firstRun, startIndex, endIndex, lastRun, affectedRuns);
             // add replacement run between first and last run
             contents.add(firstRun.indexInParent() + 1, replacement);
         }
         return contents;
-    }
-
-    /// Initializes a list of Run objects based on the given list of objects.
-    /// Iterates over the provided list of objects, identifies instances of type R,
-    /// and constructs Run objects while keeping track of their lengths.
-    ///
-    /// @param objects the list of objects to be iterated over and processed into Run instances
-    ///
-    /// @return a list of Run objects created from the given input list
-    public static List<Run> wrap(List<Object> objects) {
-        var currentLength = 0;
-        var runList = new ArrayList<Run>(objects.size());
-        for (int i = 0; i < objects.size(); i++) {
-            var object = objects.get(i);
-            if (object instanceof R run) {
-                var currentRun = new Run(currentLength, i, run);
-                runList.add(currentRun);
-                currentLength += currentRun.length();
-            }
-        }
-        return runList;
     }
 
     /// Creates a new run with the specified text and the specified run style.
@@ -368,16 +348,16 @@ public final class WmlUtils {
 
     private static void removeExpression(
             List<Object> contents,
-            Run firstRun,
+            StandardRun firstRun,
             int matchStartIndex,
             int matchEndIndex,
-            Run lastRun,
-            List<Run> affectedRuns
+            StandardRun lastRun,
+            List<StandardRun> affectedRuns
     ) {
         // remove the expression from the first run
         firstRun.replace(matchStartIndex, matchEndIndex, "");
         // remove all runs between first and last
-        for (Run run : affectedRuns) {
+        for (StandardRun run : affectedRuns) {
             if (!Objects.equals(run, firstRun) && !Objects.equals(run, lastRun)) {
                 contents.remove(run.run());
             }

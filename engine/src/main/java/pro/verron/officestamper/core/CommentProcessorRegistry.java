@@ -71,8 +71,14 @@ public class CommentProcessorRegistry {
                   }));
               });
 
-        source.streamParagraphs()
-              .forEach(paragraph -> runProcessorsOnInlineContent(expressionContext, paragraph));
+        // Intriduce the usage of a resetable iterator to make docx updates more manageable in future versions of the
+        // library, it has vocation to replace all paragraph streaming features.
+        var iterator = DocxIterator.ofParagraphs(source);
+        while (iterator.hasNext()) {
+            var paragraph = iterator.next();
+            if (runProcessorsOnInlineContent(expressionContext, paragraph) > 0) iterator.reset();
+        }
+
 
         proceedComments.forEach(CommentUtil::deleteComment);
     }
@@ -115,7 +121,7 @@ public class CommentProcessorRegistry {
         return runCommentProcessors(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
     }
 
-    private <T> void runProcessorsOnInlineContent(T context, Paragraph paragraph) {
+    private <T> int runProcessorsOnInlineContent(T context, Paragraph paragraph) {
         var processorContexts = findProcessors(paragraph.asString()).stream()
                                                                     .map(paragraph::processorContext)
                                                                     .toList();
@@ -133,6 +139,7 @@ public class CommentProcessorRegistry {
             }
             commentProcessors.commitChanges(source);
         }
+        return processorContexts.size();
     }
 
     private WordprocessingMLPackage document() {

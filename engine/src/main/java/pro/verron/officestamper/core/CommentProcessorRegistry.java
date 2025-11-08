@@ -61,16 +61,13 @@ public class CommentProcessorRegistry {
     /// @param <T>               the type of the context root object
     /// @param expressionContext the context root object against which expressions within comments are evaluated
     public <T> void runProcessors(T expressionContext) {
-        var proceedComments = new ArrayList<Comment>();
-
         source.streamParagraphs()
               .forEach(p -> {
                   var comments = collectComments();
                   var paragraphComment = p.getComment();
-                  paragraphComment.forEach((pc -> {
-                      var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
-                      optional.ifPresent(proceedComments::add);
-                  }));
+                  for (Comments.Comment pc : paragraphComment) {
+                      runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
+                  }
               });
 
         var iterator = DocxIterator.ofParagraphs(source);
@@ -78,8 +75,6 @@ public class CommentProcessorRegistry {
             var paragraph = iterator.next();
             if (runProcessorsOnInlineContent(expressionContext, paragraph) > 0) iterator.reset();
         }
-
-        proceedComments.forEach(CommentUtil::deleteComment);
     }
 
     private Map<BigInteger, Comment> collectComments() {
@@ -104,24 +99,25 @@ public class CommentProcessorRegistry {
         return new HashMap<>(rootComments);
     }
 
-    private <T> Optional<Comment> runProcessorsOnParagraphComment(
+    private <T> int runProcessorsOnParagraphComment(
             Map<BigInteger, Comment> comments,
             T expressionContext,
             Paragraph paragraph,
             BigInteger paragraphCommentId
     ) {
-        if (!comments.containsKey(paragraphCommentId)) return Optional.empty();
+        if (!comments.containsKey(paragraphCommentId)) return 0;
 
         var c = comments.get(paragraphCommentId);
         var cPlaceholder = c.asPlaceholder();
         var cComment = c.getComment();
         comments.remove(cComment.getId());
         commentProcessors.setContext(new ProcessorContext(paragraph, null, c, cPlaceholder));
-        Optional<Comment> processed = runCommentProcessors(expressionContext, c.asPlaceholder())
-                ? Optional.of(c)
-                : Optional.empty();
+
+        if (!runCommentProcessors(expressionContext, c.asPlaceholder())) return 0;
+
         commentProcessors.commitChanges(source);
-        return processed;
+        CommentUtil.deleteComment(c);
+        return 1;
     }
 
     private <T> int runProcessorsOnInlineContent(T context, Paragraph paragraph) {

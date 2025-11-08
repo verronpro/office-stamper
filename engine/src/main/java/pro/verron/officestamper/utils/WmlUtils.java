@@ -251,6 +251,7 @@ public final class WmlUtils {
             case List<?> list -> list.stream()
                                      .map(WmlUtils::asString)
                                      .collect(joining());
+            case ProofErr _ -> "";
             default -> {
                 log.debug("Unhandled object type: {}", content.getClass());
                 yield "";

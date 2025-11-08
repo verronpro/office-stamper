@@ -1,38 +1,77 @@
-= From Code to Guide: Turning a Feature into Documentation-as-Code
-Joseph Verron <dev@officestamper>
+= November 2025 — From Code to Guide: Turning a Feature into Documentation‑as‑Code (Solo‑maintainer Edition)
+Joseph Verron <caring-coder@verron.pro>
 2025-11-09
-:page-tags: docs-as-code, knowledge-sharing, developer-experience, word-automation
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, maintenance, extensibility, developer-experience
 
 Commit: https://github.com/verronpro/office-stamper/commit/04e2de1[04e2de1]
 
-== Why this commit is interesting
+== Why this commit stands out
 
-This commit adds a comprehensive guide for building custom comment processors and placeholder resolvers. It’s a great example of documentation-as-code: the guide is versioned alongside the feature, references concrete package names, and is written in AsciiDoc so it composes with the rest of the site.
+Agility isn’t only about adding features quickly; it’s about enabling others to move quickly without you. As a project
+maintained by one person and used sporadically in big‑company projects, Office‑stamper succeeds when teams can extend it
+without waiting for my availability. This commit ships a comprehensive, versioned guide that shows how to build custom
+comment processors and placeholder resolvers—the two core extension seams of the engine. It is documentation‑as‑code in
+practice: the guide lives next to the implementation, references real packages and types, and evolves in the same PRs
+that change the APIs.
 
-For Agile teams, this illustrates “working software over comprehensive documentation” without sacrificing shared understanding. The documentation is:
+That proximity matters for enterprise adopters. Security reviews and procurement processes often ask "how do we extend
+this safely?" Now there’s a single, linkable page that explains the design intent, the contracts, and the minimal code
+needed to implement something like `watermark("CONFIDENTIAL")` or a resolver for a custom value type. Because examples
+compile against public APIs, reviewers can literally copy them into tests—tightening feedback loops and increasing trust.
 
-- Close to the code (same repo, same PR).
-- Testable by proximity (examples map to real classes and tests).
-- Evolvable as the code evolves (refactors update docs in the same change).
+== What actually changed
 
-== What changed
+- A detailed AsciiDoc tutorial explains the extension model: `CommentProcessor`, `AbstractCommentProcessor`,
+  `ObjectResolver`, `StringResolver<T>`, and `ExpressionResolver`.
+- It points to wiring components—`CommentProcessorRegistry`, `CommentProcessors`, and `DocxStamperConfiguration`—so a
+  newcomer can navigate from concept to code in seconds.
+- It includes small, copy‑pastable snippets that compile, with guidance on traversal, placeholder handling, and
+  processor lifecycle.
+- The guide is part of the build: it’s rendered by the same Maven/Asciidoctor pipeline that publishes the rest of the
+  site, so link rot is caught early.
 
-A new AsciiDoc tutorial explains how to implement custom processors and resolvers.
-It anchors newcomers by pointing them to the exact extension points: `CommentProcessor`, `AbstractCommentProcessor`, `ObjectResolver`, and `ExpressionResolver`, and to wiring components like `CommentProcessorRegistry` and `DocxStamperConfiguration`.
+== Craftsmanship and Agile impact
 
-== Craftsmanship takeaways
+- Build the pit of success. If creating a processor or resolver takes <30 minutes with a minimal template, downstream
+  feature work accelerates and support requests fall.
+- Prefer intent‑revealing APIs and examples. The guide shows method names that read like actions (`highlightIf`,
+  `replaceRange`, `resolveImage`). When the DSL reads like English, the rest of the code and tests follow suit.
+- Treat docs as executable knowledge. Co‑located snippets that compile act like tests for the docs—examples break when
+  APIs drift, alerting us to update both together.
 
-- Treat docs as first-class artifacts. Keep them versioned, reviewed, and built with the product.
-- Document the “why” (design intent) as much as the “how” (API/steps). It reduces onboarding time and defect rates.
-- Prefer runnable or copy-pastable snippets that compile against your public API.
+== Solo maintainer + enterprise usage angle
 
-== Agile practice in action
+As a solo maintainer, my throughput is finite. The best way to scale is to turn answers into artifacts. This guide is
+where repeated explanations now live. When an engineer at a large company needs a custom processor for a one‑off report,
+I can point to a stable, reviewed document that matches the code in the same commit. That reduces meetings, keeps work
+asynchronously trackable, and lets people ship on their schedule rather than mine.
 
-- Definition of Done includes updated docs.
-- The guide lowers cycle time for plugin authors—users can self-serve instead of waiting on maintainers.
+For enterprise teams, this document lowers adoption risk. It clarifies what’s supported, what’s extension, and what’s
+internal, so platform and compliance reviewers can separate “safe to extend” seams from "please don’t patch" internals.
+By naming the extension points explicitly and showing their lifecycles, we enable safer customization and more focused
+code reviews.
 
-== How you can apply this
+== Risks and mitigations
 
-- Co-locate your docs with code using AsciiDoc or Markdown.
-- Link to exact source paths and tests. Keep examples minimal and idiomatic.
-- Automate site generation in CI so documentation drifts less.
+- Risk: duplication and drift between Javadoc and the site. Mitigation: link, don’t copy. Javadoc explains contracts;
+  the site explains workflows and examples. Each page points to the other.
+- Risk: examples become kitchen‑sink and age poorly. Mitigation: keep snippets small and idiomatic; test them or include
+  them from real source files wherever possible.
+- Risk: unclear ownership of extension points. Mitigation: document supported vs. internal APIs, and codify them in
+  package visibility and module boundaries.
+
+== How to apply this in your project
+
+- Co‑locate docs and code. If a symbol moves, update the docs in the same PR. Make a docs update part of Definition of
+  Done for user‑visible changes.
+- Start with a “golden path” per extension point: one end‑to‑end, minimal example linking to a test. Resist the urge to
+  document every edge case; link to tests that already do.
+- Automate docs in CI: build the site, validate links, and—if feasible—compile snippets. Treat failing docs like failing
+  tests.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/04e2de1[04e2de1]
+- Code: `pro.verron.officestamper.api.CommentProcessor`, `AbstractCommentProcessor`, `ObjectResolver`,
+  `ExpressionResolver`; wiring in `CommentProcessorRegistry`, `CommentProcessors`, `DocxStamperConfiguration`
+- Docs: the new guide under `engine/src/site/asciidoc/how-to-custom.adoc`

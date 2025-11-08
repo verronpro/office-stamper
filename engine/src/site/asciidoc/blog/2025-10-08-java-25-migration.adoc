@@ -1,25 +1,68 @@
-= Upgrading the Toolchain: Migrating to Java 25
-Joseph Verron <dev@officestamper>
+= October 2025 — Upgrading the Toolchain: Migrating to Java 25 as a Solo Maintainer
+Joseph Verron <caring-coder@verron.pro>
 2025-10-08
-:page-tags: platform, ci-cd, modernization, risk-management
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, maintenance, platform, ci-cd, risk-management
 
 Commit: https://github.com/verronpro/office-stamper/commit/d0495ba[d0495ba]
 
-== Why this commit is interesting
+== Why this upgrade matters
 
-Platform upgrades are classic “change the engine while driving.” Migrating the codebase and workflows from Java 21 to 25 keeps the project current with the ecosystem while validating that our abstractions are portable and our build is reproducible.
+Platform upgrades are the software equivalent of “change the engine while driving.” Moving from Java 21 to 25 keeps the
+project current with the ecosystem while validating that our abstractions are portable and our build is reproducible.
+For Office‑stamper, the stakes are practical. The project is maintained by one person and used intermittently in big
+companies where security baselines and supported JDKs are set by centralized platform teams. If the toolchain lags, the
+friction shows up as exceptions on locked‑down build agents, more time negotiating with security, and a higher support
+load when a sporadic adopter discovers mismatches. Upgrading on a predictable cadence is part of the product.
 
 == What changed
 
-- Bumped Java version across Maven configuration and CI workflows.
-- Aligned plugin/toolchain versions and matrix builds.
+- Bumped the Java baseline from 21 to 25 across Maven configuration and CI workflows.
+- Aligned plugin/toolchain versions, compiler flags, and matrix builds to reflect the new baseline.
+- Ran the full test suite and static analysis on multiple vendors (where practical) to catch subtle runtime differences.
+- Touched documentation to keep the “Getting started” and CLI notes aligned with the new baseline.
+
+The change was deliberately split into small, verifiable steps: update CI images, bump toolchains, fix any warnings,
+then raise the project’s declared baseline. The sequence makes failure modes obvious and keeps the repo in a releasable
+state throughout.
 
 == Agile and craftsmanship angles
 
-- Make platform work visible and incremental—this migration was split into small, verifiable steps with CI as the safety net.
-- Tests and static analysis act as guardrails during wide-reaching changes.
+- Make platform work visible and incremental. A series of small PRs is easier to review and to rollback than a single
+  mega‑upgrade. CI stays green; users see steady progress.
+- Treat tests and static analysis as guardrails. Wide‑reaching changes are safe when correctness lives in the test
+  suite and the code is kept simple and intention‑revealing.
+- Prefer boring choices. For infrastructure decisions, predictability beats cleverness. Using the mainstream JDK and
+  widely supported plugins reduces surprises for future contributors and enterprise adopters.
 
-== Tips for your team
+== Solo maintainer + enterprise usage angle
 
-- Upgrade early and often; small leaps are cheaper than big jumps.
-- Maintain a green CI matrix across supported JDKs before, during, and after the migration.
+As a solo maintainer, my goal is to keep the build boring and the adoption path predictable. Large companies often pin
+on a specific JDK for quarters at a time, and they run tools in sandboxed CI where outbound network access is limited.
+By aligning Office‑stamper with a current LTS‑adjacent release and keeping the CI matrix explicit, I reduce the need for
+back‑and‑forth when a sporadic team wants to use the CLI or the engine in a vendor‑controlled environment. The upgrade
+also helps me triage issues faster: when a bug report cites Java 25, I’m debugging on the same baseline.
+
+== Risks and mitigations
+
+- Risk: subtle runtime behavior changes across JDKs (e.g., XML processing defaults, reflection edges). Mitigation:
+  run the test suite against multiple vendors where possible; centralize XML factory creation with explicit secure
+  settings so behavior is uniform.
+- Risk: dependency drift and plugin incompatibilities. Mitigation: upgrade plugins in lockstep; keep the plugin surface
+  area small; prefer widely used versions that receive timely fixes.
+- Risk: downstream friction for users stuck on older JDKs. Mitigation: document the minimum runtime for the CLI and the
+  engine; provide clear error messages when an unsupported JDK is detected; keep previous release notes easy to find.
+
+== How to apply this in your team
+
+- Plan upgrades as a sequence of small, independently verifiable steps: update CI images, bump the compiler, align
+  plugins, fix warnings, then raise the baseline. Ship each step with CI green.
+- Build a tiny smoke‑test matrix in CI that exercises critical paths (parsing, stamping, CLI execution) on the supported
+  JDKs/vendors your users care about.
+- Keep documentation co‑located and versioned. When the baseline changes, update the docs in the same PR; treat docs as
+  code so reviewers can reason about the full impact.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/d0495ba[d0495ba]
+- Related posts: security‑by‑default for XML parsing; CLI multi‑format support; modularized CLI
+- Build: Maven toolchains, Surefire, Asciidoctor site build

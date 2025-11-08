@@ -1,0 +1,71 @@
+= January 2023 — Nested Repeats in Word Templates: Making repeatDocPart Robust
+Joseph Verron <caring-coder@verron.pro>
+2023-01-25
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, maintenance, wordprocessingml, repetition
+
+Commit: https://github.com/verronpro/office-stamper/commit/0a774c1[0a774c1]
+
+== Why this stands out
+
+In enterprise templates, once you enable “repeat this section” you quickly get a request to nest that behavior: repeat a
+row inside a table that itself repeats per department, or render a checklist per employee inside a team list. This
+commit adds nesting support for `repeatDocPart` when the control expression is embedded in a comment wrapper. It’s a
+small line in the changelog, but it unlocks a realistic modeling pattern for actual business documents.
+
+From an Agile point of view, this is user value captured in a single slice. Rather than building a general-purpose
+pipeline for all conceivable nesting, the implementation targets the most frequent pattern and lands tests around it.
+That keeps the batch small and the feedback loop fast.
+
+== What changed
+
+- `repeatDocPart` gains the ability to operate correctly when the repeated region sits inside another repeated region.
+- The processor correctly identifies the boundaries of the inner range even when comments and fields interleave.
+- Tests demonstrate scenarios you encounter in large companies: nested tables, lists, and paragraphs with style
+  differences, all driven by comment expressions.
+
+Under the hood, this builds on a simple design tenet: when you traverse the WordprocessingML tree, determine the start
+and end markers once, cache them, and operate on a snapshot. That way, mutations from the outer repeat do not invalidate
+cursors for the inner repeat.
+
+== Agile/craftsmanship/docs-as-code lens
+
+- Slice by behavior, not by component. The change is focused: nested repeats when driven by comments. That produces a
+  clear before/after story and a small surface for regression.
+- Tests are documentation. The added fixtures show exactly how to author a template for nested repeats. When the code
+  evolves, these examples evolve with it—documentation-as-code.
+- Boundaries matter. The logic codifies a contract: comments act as control metadata; once consumed, the system should
+  keep ranges stable while it mutates content. That stability is what makes nesting possible.
+
+== Solo maintainer + enterprise usage angle
+
+Office-stamper is maintained by one person, and it’s used in sporadic, high-stakes projects at big companies. Nested
+repeats look trivial until a real template arrives with house styles, list numbering, content controls (SDTs), and a
+mix of fields. This feature reduces risk for those “week two” surprises: the maintainer can reason about nested flows,
+reproduce them with a focused test, and deliver a fix without coordinating a large team.
+
+For enterprise adoption, the message is predictability. If your procurement report needs a per-division table of
+per-team lists (a common shape), you can model it directly in the template. That removes glue code from the
+application, reduces review overhead with compliance teams, and localizes change: business authors iterate on the
+document, not on a custom rendering pipeline.
+
+== Risks and mitigations
+
+- Risk: off-by-one errors when inner/outer ranges share boundaries. Mitigation: compute and store both ranges before
+  mutating; prefer idempotent operations and explicit preconditions.
+- Risk: performance regressions on deeply nested structures. Mitigation: bound traversal to the known ranges and avoid
+  global scans; characterize large templates in tests.
+- Risk: accidental carry-over of control metadata (dangling comments). Mitigation: remove comment scaffolding after a
+  repeat, close to where the mutation occurs.
+
+== How to apply this
+
+- Model nested repeats directly in your `.docx`: outer comment drives the outer loop, inner comment drives the inner.
+- Keep repeated regions as tight as possible; put control comments right at the boundary of the content you want.
+- Use predictable styles. While the engine does not depend on styles, consistency makes templates easier to debug and
+  collaborate on across teams.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/0a774c1[0a774c1]
+- Concepts: comment-driven processors, `repeatDocPart`
+- Related docs: placeholders and comment processors in the site documentation

@@ -1,0 +1,76 @@
+= March 2023 — Text Replacement Inside Table Cells: Turning a Bug Report into a Safer Primitive
+Joseph Verron <caring-coder@verron.pro>
+2023-03-06
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, maintenance, wordprocessingml, tables
+
+Commit: https://github.com/verronpro/office-stamper/commit/7b387f5[7b387f5]
+
+== Why this stands out
+
+In real documents, tables are where structure meets density: price lists, KPIs, approval matrices, nested bullet points.
+They also concentrate complexity—runs split, numbering and styles interleave, content controls (SDTs) appear, and
+comments act as control metadata. In that context, “replace this text” is deceptively tricky. March 2023 addressed a
+user‑visible defect: `replaceWordWith` did not work reliably inside a table cell. What reads like a narrow bug fix is
+actually a step toward a safer primitive for all text surgery in WordprocessingML.
+
+For Agile practice, a well‑scoped fix like this is the unit of delivery that matters: short feedback loop, targeted
+regression tests, and a clearer contract at the edge of the system. For software craftsmanship, the lesson is to remove
+foot‑guns from call sites: move fragile algorithms behind an intention‑revealing method, codify invariants, and leave
+callers with a readable API.
+
+== What changed
+
+- Fixed the algorithm that locates and replaces text ranges when the range lives inside a `w:tc` (table cell).
+- Hardened boundary detection so replacements do not cross cell borders even when runs are split by fields, hyperlinks,
+  or comment references.
+- Added tests covering common enterprise shapes: multi‑paragraph cells, list items within cells, and cells containing
+  SDTs or footnote references.
+- Laid groundwork for future consolidation into a single `Paragraph.replace` style API used across the codebase.
+
+The change reduces incidental complexity at call sites. Instead of re‑implementing range math in the presence of tables,
+callers can rely on a tested path that understands WordprocessingML quirks. That paves the way for a uniform abstraction
+where replacement reads like English and correctness lives in one place.
+
+== Agile/craftsmanship/docs-as-code lens
+
+- Start from the user’s vocabulary. The test names mirror the issue description (“replace within a table cell”), which
+  keeps the conversation honest and the behavior discoverable.
+- Tests as living docs. The fixtures show how content is laid out in real templates: split runs, nested structures,
+  and control comments. Anyone reading the tests learns both the API and the constraints.
+- Hide the algorithm, expose intent. The replacement code knows about run splitting, fields, and cell boundaries; the
+  caller should not. This is how we keep features shippable by one maintainer.
+
+== Solo maintainer + enterprise usage angle
+
+Office‑stamper is maintained by a single person and used in sporadic projects at large companies. Table issues are a
+perfect example of “tiny description, big impact.” When a report fails to replace text in a single cell, the perceived
+quality drops quickly—even if everything else works. A tight, well‑tested fix restores confidence and reduces support
+load. Because the maintainer owns the abstraction, a defect report can be translated into a contract change and a set of
+characterization tests within a day, with no coordination overhead.
+
+For enterprise adopters, the signal is reliability in the hard cases. Templates can be authored with lists, mixed runs,
+fields, and comments inside cells without worrying that replacement logic will step out of bounds. That makes audits
+and handovers easier: content authors can reason about the document like authors, not like XML engineers.
+
+== Risks and mitigations
+
+- Risk: false positives—replacing across boundaries when text spans multiple cells. Mitigation: explicit guards that
+  anchor on `w:tc` ancestors; unit tests for multi‑cell patterns.
+- Risk: performance regressions on wide tables. Mitigation: bound traversal to the cell scope; avoid global scans.
+- Risk: drifting call sites that bypass the safer API. Mitigation: deprecate ad‑hoc helpers; document and link to the
+  canonical replacement path.
+
+== How to apply this
+
+- Prefer a single, intention‑revealing replacement method; make it the seam where tests attach. Treat direct DOM surgery
+  as an implementation detail.
+- Add characterization tests from your production templates—especially for tables. These tests become your living
+  documentation and guard future refactors.
+- Keep control metadata (comments) as close as possible to the content they drive. Clean them up once the transformation
+  completes to avoid accidental matches in later passes.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/7b387f5[7b387f5]
+- Related topics: `Paragraph.replace`, SDTs (content controls), comment‑driven processors
+- Tests: look for table‑focused replacement tests added around March 2023

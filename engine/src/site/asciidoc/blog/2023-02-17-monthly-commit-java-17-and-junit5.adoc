@@ -1,0 +1,73 @@
+= February 2023 — Leveling Up the Toolchain: Java 17, JUnit 5, and a Dev Container
+Joseph Verron <caring-coder@verron.pro>
+2023-02-17
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, maintenance, platform, ci-cd
+
+Commits:
+- Java 17: https://github.com/verronpro/office-stamper/commit/49b6c09[49b6c09]
+- JUnit 5: https://github.com/verronpro/office-stamper/commit/428d5d5[428d5d5]
+- Devcontainer docs: https://github.com/verronpro/office-stamper/commit/2f53681[2f53681]
+
+== Why this stands out
+
+Upgrading the foundation of a project is rarely glamorous, but it’s exactly what keeps a small codebase alive and
+useful to large organizations over time. In February 2023, the project moved to Java 17 (the then‑current LTS), ported
+its tests to JUnit 5, and documented a ready‑to‑code dev container. The combination matters: a modern runtime unlocks
+language and performance improvements; a modern test stack streamlines developer experience; and a containerized setup
+makes sporadic contributors effective within minutes instead of hours.
+
+For a solo‑maintained project used in big‑company projects, those are not “nice to have” tweaks—they are survival tools.
+Enterprises typically pin on LTS JDKs and require predictable builds; contractors rotate in and out; security scanners
+and compliance checks look for sane defaults. Shipping these changes in one focused epoch reduces friction for everyone
+who touches the code or the CLI.
+
+== What changed
+
+- Java baseline upgraded to 17, aligning with the LTS many enterprises adopt.
+- Unit test framework migrated to JUnit 5, enabling cleaner parameterized tests and modern extensions.
+- A devcontainer document was added so newcomers can spin up a working environment with the correct JDK, Maven plugins,
+  and editor settings—no manual yak shaving.
+- Alongside, the project simplified some generics and build settings to play nicely with the new stack.
+
+== Agile/craftsmanship/docs-as-code lens
+
+- Make the *change surface* small and verifiable. Grouping platform changes behind CI protects the solo maintainer from
+  death by a thousand follow‑ups.
+- Prefer clarity over cleverness. JUnit 5’s parameterized tests and extensions make intent visible while keeping tests
+  fast and local. When the tests read like documentation, they double as documentation‑as‑code.
+- Eliminate setup tax. The dev container is a form of executable documentation. It encodes the environment contract so a
+  contributor (or future you) doesn’t rediscover it on every machine.
+
+== Solo maintainer + enterprise usage angle
+
+When you’re the only maintainer, the build must be boring. Java 17 is broadly supported by corporate JDK distributions
+and build farms; JUnit 5 is the default in most organizations. That means fewer surprises when a large company consumes
+Office‑stamper in a sporadic project or invokes the CLI in a constrained CI runner. The dev container, meanwhile, is a
+welcome mat: it tells a security or platform team exactly what is needed to reproduce the environment.
+
+For teams adopting the tool, this translates into predictable onboarding. A developer can clone the repo, open the
+container, run tests, and start reading code that uses the same testing style they use elsewhere. That minimizes context
+switching and builds confidence.
+
+== Risks and mitigations
+
+- Risk: dependency drift or subtle runtime changes. Mitigation: run the full test suite on multiple JDK vendors; pin
+  versions in the Maven build; document supported JDKs explicitly.
+- Risk: contributors stuck on older JDKs. Mitigation: keep the CLI distributable runnable on standard JREs; document the
+  minimal runtime for end users separately from the development baseline.
+- Risk: devcontainer lock‑in. Mitigation: treat it as optional scaffolding; keep plain Maven commands the source of
+  truth so local builds without the container remain first‑class.
+
+== How to apply this
+
+- Plan platform upgrades as small, testable steps: upgrade the JDK, fix the build, migrate tests, then document the
+  environment. Ship each step with CI green.
+- Use JUnit 5 features to make tests intention‑revealing (parameterized tests, `@Nested`, temporary directories).
+- Provide an executable environment spec (devcontainer, `Dockerfile`, or a Gradle/Maven wrapper) that a newcomer can run
+  untouched. Pair it with a short "Getting started" doc.
+
+== References
+
+- Commits: 49b6c09 (Java 17), 428d5d5 (JUnit 5), 2f53681 (devcontainer)
+- Build: Maven + Surefire/JUnit 5
+- Docs: CONTRIBUTING and the devcontainer documentation

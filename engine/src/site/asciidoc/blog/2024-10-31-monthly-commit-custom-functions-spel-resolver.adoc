@@ -1,0 +1,72 @@
+:= October 2024 — Extending Expressions Safely: Custom Functions and Suppliers in the SpEL Resolver
+Joseph Verron <caring-coder@verron.pro>
+2024-10-31
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, spel, extensibility, expressions
+
+Commits:
+- Add custom function support to SpEL resolver: https://github.com/verronpro/office-stamper/commit/e438ddc[e438ddc]
+- Add custom lambda functions and suppliers: https://github.com/verronpro/office-stamper/commit/c7fbf1d[c7fbf1d]
+
+== Why this is October’s highlight
+
+Template engines become exponentially more useful when the expression language can call well-defined, safe utilities.
+In October 2024, Office‑stamper added support for registering custom functions and suppliers into the Spring Expression
+Language (SpEL) pipeline that drives placeholders and comment processors. Instead of hardcoding one-off behaviors or
+pushing complex transformations into business code, teams can now expose vetted functions (formatting, lookups, guardrails)
+that are available to all templates via `${fn:...}` style calls.
+
+The goal is agility with safety: empower template authors and reviewers without turning the expression sandbox into a
+Turing tarpit. The implementation strikes that balance by keeping registration explicit, contracts documented in Javadoc,
+and defaults conservative.
+
+== What changed
+
+- SpEL resolver gained an extension surface to register functions and suppliers in a controlled manner. Functions can be
+  simple statics (e.g., `format.money(...)`) or thin adapters that call into domain services if you choose to expose them.
+- The wiring ensures functions are namespaced and discoverable. You can curate a small “standard library” of helpers for
+  your organization without leaking implementation details into templates.
+- Examples and docs clarify how to register a function and call it from a template, with guidance on nullability and
+  failure modes. The impact is immediate: less glue code, clearer templates, more reuse.
+
+== Agile and craftsmanship lens
+
+- Make the pit of success shallow. When a common task appears across templates (dates, currencies, safety checks), provide
+  a tiny, intention‑revealing function and document it. Template authors get to value faster.
+- Keep boundaries crisp. The engine resolves expressions; domain complexity should sit behind purpose‑built functions with
+  narrow signatures. This keeps templates readable and audits straightforward.
+- Treat functions as part of the contract. Version them, test them, and publish examples in the docs. The site and the
+  Javadoc should speak the same vocabulary.
+
+== Solo‑maintainer + enterprise usage angle
+
+As a solo maintainer, I need changes that reduce future support. A curated set of functions does exactly that: fewer
+obscure SpEL fragments in templates and fewer bespoke replacements in application code. For big‑company adopters, this is
+also a governance win. Security and platform teams can review a single list of functions, see tests, and approve them
+once. Templates written by different teams can share the same vocabulary, which reduces review friction and improves
+consistency across programs.
+
+== Risks and mitigations
+
+- Risk: Function sprawl and inconsistent naming. Mitigation: namespace helpers (`fn.money`, `fn.date`, `fn.safe`), publish
+  a short naming guide, and prune aggressively.
+- Risk: Hidden side effects or data access from expressions. Mitigation: keep functions pure where possible; if a supplier
+  must reach out (e.g., to a clock or environment), make that explicit and test it; avoid network/IO in template
+  evaluation.
+- Risk: Security surprises. Mitigation: register only whitelisted functions; avoid reflection‑based “open” resolvers;
+  document allowed helpers and fail fast on unknown names.
+
+== How to apply in your project
+
+- Start with three helpers you know your users need: date formatting, money formatting, and a `safe` wrapper that returns
+  defaults instead of throwing in friendly runs. Make them pure and deterministic.
+- Document the function catalog in your repo (docs‑as‑code). For each entry: name, signature, example call, behavior on
+  `null`/absence, and failure modes.
+- Add a tiny test per function showing invocation from SpEL; treat this as part of your public contract.
+- Offer a single registration point in configuration (e.g., `DocxStamperConfiguration`), and keep it discoverable from
+  your documentation index.
+
+== References
+
+- Commits: e438ddc (custom function support), c7fbf1d (lambda functions and suppliers)
+- APIs: SpEL integration in the resolver; configuration entry points to add functions/suppliers
+- Related posts: TraversalUtil integration (Nov 2024); Post‑processing pipeline (Dec 2024); Custom processors/resolvers guide (Nov 2025)

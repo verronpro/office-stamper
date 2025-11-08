@@ -1,0 +1,75 @@
+:= August 2024 — Docs‑as‑Code Checklists for Solo Maintainers in Enterprise Contexts
+Joseph Verron <caring-coder@verron.pro>
+2024-08-21
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, governance, checklists
+
+Note: August 2024 did not land a headline human‑authored commit in the repository. This article captures the checklists I
+use to keep Office‑stamper’s documentation reliable and auditable while maintaining velocity as a solo maintainer.
+
+== Why this stands out
+
+Documentation is the most leveraged artifact in a solo‑maintained project used sporadically in big companies. It scales
+answers, reduces meeting load, and compresses onboarding for contributors who appear once every few months. Checklists
+turn the vague goal of “keep docs good” into specific, repeatable steps that travel across PRs and releases. Over time,
+these micro‑rituals save hours of interruptions and make enterprise adoption smoother because expectations are explicit.
+
+== The core checklists
+
+=== A. Change PR checklist (feature or refactor)
+
+- Update the relevant site page(s) under `engine/src/site/asciidoc/` in the same PR as the code change.
+- Add/adjust Javadoc for any public API touchpoints (`pro.verron.officestamper.api.*`). Keep contracts, pre/postconditions,
+  and failure modes explicit.
+- Provide one minimal, copy‑pastable example that compiles against public types. Keep it under 15 lines; link to deeper
+  references rather than duplicating them.
+- Validate AsciiDoc locally: build the site; fix broken anchors; keep line width near 120 chars for readability.
+- If behavior impacts safety/robustness (XML parsing, iteration, placeholders), note the risk and mitigation in the docs.
+
+=== B. Release checklist
+
+- Update `RELEASE_NOTES.adoc` with a short value narrative (what users gain) and any migration notes.
+- Ensure the site highlights the month’s most impactful change; link to the exact commit on GitHub.
+- Rebuild the site and run a link check script to guard against rot (links to Javadoc packages, commit URLs, external docs).
+- Verify examples still compile with the release version (snippets or small test harnesses).
+- Add a short “Upgrade notes” section if contracts changed, with code before/after.
+
+=== C. Template change checklist (docs and examples)
+
+- Show before/after for templates that rely on comments or SDTs; label control metadata explicitly.
+- Use consistent styles and tight boundaries for control comments in examples; remove them in the “after” view.
+- Prefer `Paragraph.replace` and `DocxIterator` in examples; avoid low‑level DOM manipulation that readers could misapply.
+
+== Agile/craftsmanship/docs‑as‑code lens
+
+- Smaller batches, clearer intent. When docs ship with code, reviewers can evaluate the whole change: contract, narrative,
+  and example. That makes PRs smaller and decisions easier.
+- Shared language. Align site, Javadoc, and code terms—one noun, one meaning. Fewer synonyms mean fewer bugs.
+- Executable knowledge. Treat examples as tests; when APIs drift, the example fails and points to the missing doc update.
+
+== Solo‑maintainer + enterprise usage angle
+
+A solo project lives or dies by how well it teaches itself. In big‑company settings, teams inherit tools mid‑project and
+need to be productive within hours. These checklists ensure the docs always present a truthful, security‑/compliance‑
+friendly picture of the system: what’s supported, where to extend, and what to avoid. They also help me say “no” to
+scope creep in docs—every item must pay for itself in reduced support or faster reviews.
+
+== Risks and mitigations
+
+- Risk: Checklist fatigue; steps get skipped when under time pressure. Mitigation: keep lists short; automate what you can
+  (site build, link checker); make checkboxes part of the PR template.
+- Risk: Duplication between Javadoc and site. Mitigation: link, don’t copy. Contracts in Javadoc; workflows on the site.
+- Risk: Stale examples. Mitigation: prefer small, compilable snippets; where feasible, include from source.
+
+== How to apply
+
+- Start with one PR checklist and one release checklist. Trim ruthlessly—every line must protect user value.
+- Add a docs gate in CI: build AsciiDoc, validate internal anchors, and curl commit links to ensure 200s.
+- Encourage reviewers to request doc adjustments in the same PR. If a line of code triggers a “why,” the answer belongs
+  in the docs before merge.
+
+== References
+
+- Site folder: `engine/src/site/asciidoc/`
+- Public APIs: `pro.verron.officestamper.api.*`
+- Examples of good doc PRs: TraversalUtil integration (Nov 2024), Post‑processing pipeline (Dec 2024), Custom processors
+  and resolvers guide (Nov 2025)

@@ -1,25 +1,74 @@
-= One Place for WordprocessingML Utilities: Consolidating into WmlUtils
-Joseph Verron <dev@officestamper>
+= November 2025 — One Place for WordprocessingML Utilities: Consolidating into WmlUtils (Solo‑maintainer Edition)
+Joseph Verron <caring-coder@verron.pro>
 2025-11-02
-:page-tags: refactoring, api-design, cohesion, maintainability
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, refactoring, api-design, cohesion, maintainability
 
 Commit: https://github.com/verronpro/office-stamper/commit/d832b84[d832b84]
 
-== Why this commit is interesting
+== Why this refactor matters
 
-Utility sprawl is a maintenance tax. This refactor consolidates run-related helpers into `WmlUtils` and removes the separate `RunUtil` class. It’s a textbook application of cohesion: related behavior lives together with clear naming and consistent semantics.
+Utility sprawl is a maintenance tax that compounds. Over time, small helper methods grow in different corners of a codebase:
+copying text, splitting runs, finding the smallest common parent, creating comments, or normalizing whitespace. When those
+helpers live in multiple classes with near‑duplicate names (or subtly different semantics), even experienced contributors
+pay a discovery tax—and solo maintainers pay it twice. This change consolidates run‑ and paragraph‑related helpers into a
+single `WmlUtils` home and removes the separate `RunUtil` class.
 
-== What changed
+From a craftsmanship perspective, this is classic cohesion: related behavior lives together with clear naming and
+consistent semantics. From an Agile perspective, it is about reducing the size of a change. Instead of touching three
+utility classes and five call sites per improvement, most work now targets one module with one vocabulary. Reviews get
+faster; regressions become less likely because there is one canonical implementation to harden with tests.
 
-- Moved fragmented run utilities into `WmlUtils`.
-- Deleted `RunUtil` and updated call sites to a single, coherent API.
+== What actually changed
 
-== Agile and craftsmanship angles
+- Consolidated helpers into `WmlUtils` and removed `RunUtil`.
+- Standardized method names and pre/postconditions; cleaned up edge‑case handling (nulls, empty runs, field/hyperlink
+  interleavings) so call sites need fewer defensive checks.
+- Aligned iterator helpers with `DocxIterator`/`TraversalUtil` so traversal patterns read the same everywhere in the code.
+- Updated call sites to use the unified API and added Javadoc on the consolidated methods so contracts are explicit.
 
-- A cohesive utility module reduces discovery time for new contributors.
-- Fewer classes and fewer names reduce friction during code reviews and refactors.
+Taken together, the codebase now has one place to look for run/paragraph utilities. When a subtle bug appears in a tricky
+WordprocessingML structure (nested SDTs, interleaved comments/fields), we fix it once and every user benefits.
 
-== Practice this yourself
+== Agile/craftsmanship/docs‑as‑code lens
 
-- Periodically map hotspots where helpers duplicate or drift. Consolidate and standardize naming.
-- Add lightweight tests that protect utility behavior before moving code.
+- One noun, one meaning. By deleting duplicate names and centralizing behavior, we make discussions and reviews crisper.
+- Stronger seams. Tests hang off a single module; examples in the documentation can reference `WmlUtils` without hedging.
+- Lower WIP. Developers touch fewer files per change, which shortens review cycles and lowers merge conflict risk.
+- Docs‑as‑code friendly. The site and Javadoc can link to one place; examples stay accurate as the implementation evolves.
+
+== Solo‑maintainer + enterprise usage angle
+
+Office‑stamper is maintained by one person and used in sporadic projects inside big companies. Consolidation is how I keep
+support affordable. When a contributor shows up every few months, they should not have to guess which helper to use or
+relearn subtle differences. Similarly, when a large organization evaluates an extension, one utility module with clear
+contracts is easier to audit than a scatter of helpers. Procurement and compliance reviewers can read the names, see
+preconditions, and follow links to tests.
+
+For me as the maintainer, this is about sustainable speed. Fewer names mean fewer places to break, fewer docs to update,
+and less cognitive overhead when triaging issues. When a user reports a run‑splitting bug, I open `WmlUtils`, fix the
+implementation behind a well‑named method, extend a test, and move on.
+
+== Risks and mitigations
+
+- Risk: Hidden behavior changes during consolidation. Mitigation: port characterization tests before merging; keep the
+  behavior of public helpers stable; flag breaking changes loudly in release notes if any are unavoidable.
+- Risk: Overgrowth—`WmlUtils` becomes a kitchen sink. Mitigation: keep a tiny acceptance bar: utilities that operate on
+  WordprocessingML primitives (runs/paragraphs/comments) and are broadly used belong here; niche helpers stay local.
+- Risk: Naming churn confuses contributors. Mitigation: provide a short table in the docs mapping old names to new ones and
+  prefer deprecations with clear replacements over silent renames.
+
+== How to apply this in your project
+
+- Map the hotspots where similar helpers have drifted. Consolidate into one module with intentional naming.
+- Add lightweight tests on the utility surface before moving code; copy a couple of real‑world fixtures into tests so you
+  guard against regressions that matter.
+- Document the utility catalogue in your site (one page listing categories: traversal, run surgery, comments). Link to
+  Javadoc. Keep examples small, copy‑pastable, and aligned with `DocxIterator` patterns.
+- Treat the utilities as a public contract. If a helper becomes internal, move it, but keep the user‑facing surface stable
+  and explained.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/d832b84[d832b84]
+- Traversal: docx4j `TraversalUtil`; project iterators in `DocxIterator`
+- Related posts: Paragraph.replace API (Oct 2025); TraversalUtil integration (Nov 2024); Post‑processing pipeline (Dec 2024)

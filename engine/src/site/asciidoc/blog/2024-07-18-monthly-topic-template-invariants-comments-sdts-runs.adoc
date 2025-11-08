@@ -1,0 +1,71 @@
+:= July 2024 — Template Invariants That Make WordprocessingML Behave (Comments, SDTs, Runs)
+Joseph Verron <caring-coder@verron.pro>
+2024-07-18
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, wordprocessingml, invariants, templates
+
+Note: July 2024 did not land a headline human-authored commit in the repository. This article distills battle-tested
+practices for keeping `.docx` templates predictable in Office‑stamper, drawing on real docs, tests, and refactors shipped
+in 2024.
+
+== Why this stands out
+
+In WordprocessingML, tiny details decide whether your pipeline feels robust or haunted. Comments act as control metadata,
+Structured Document Tags (SDTs) demarcate regions, and text is split across runs with interleaved fields and hyperlinks.
+If you treat those pieces as incidental, edge cases multiply; if you treat them as invariants, everything downstream gets
+simpler. As a solo maintainer serving sporadic projects in big companies, my throughput depends on templates that obey a
+few simple rules—rules that auditors and new contributors can understand quickly.
+
+== What to standardize (the invariants)
+
+- Comments are control, not content. Keep control comments (e.g., `displayIf(...)`, `repeatDocPart(...)`, `replaceWith`) as
+  close as possible to the region they govern. Place the start/end markers tightly around the intended text or block.
+- SDTs are boundaries. Use SDTs to encapsulate logical regions (tables, list items, paragraphs) when business authors need
+  clarity. After processing, remove control comments so no stale selectors remain inside SDTs.
+- Runs are implementation detail. Don’t assume visible words map 1:1 to runs. Styles, fields, and hyperlinks split text.
+  Favor APIs like `Paragraph.replace` (introduced and hardened across 2024–2025) and utilities in `WmlUtils` to avoid
+  hand-rolled run arithmetic.
+- Traversal is centralized. Prefer `DocxIterator` and docx4j’s `TraversalUtil` over bespoke walking code. That keeps visit
+  semantics consistent and reduces bug surfaces.
+- Idempotent cleanups. Post-processing steps (e.g., removing dangling comments or normalizing runs) should be safe to run
+  zero, one, or many times. This guarantees predictable outcomes in multi-processor pipelines.
+
+== Agile/craftsmanship/docs-as-code lens
+
+- Lower the cognitive load. When templates obey invariants, tests and examples read like intent instead of defensive code.
+- Tighten feedback loops. A template that fails a simple invariant (e.g., control comment not at a boundary) should fail
+  fast with a clear message and a documentation pointer.
+- Documentation-as-code. Keep examples in the repo alongside implementation and tests. When a rule changes, the example
+  changes in the same PR, and CI reveals drift.
+
+== Solo‑maintainer + enterprise usage angle
+
+Big-company usage is often sporadic: a team decides in week 3 that the quarterly report must repeat sections and hide
+rows conditionally. I cannot hop on every call, so the system must teach itself. Clear invariants serve as the contract
+between authors and the engine, and they scale my support. For enterprise reviewers, invariants are compliance hooks:
+what’s allowed, what’s discouraged, and where extension points live. That shortens review cycles and lowers perceived risk.
+
+== Risks and mitigations
+
+- Risk: Overly permissive templates that embed control comments far from their targets. Mitigation: document “tight
+  boundaries,” provide before/after examples, and add validation in processors to refuse ambiguous layouts.
+- Risk: Drift between tests and real templates. Mitigation: keep characterization tests drawn from real documents and run
+  them in CI; add new fixtures whenever support questions expose a pattern.
+- Risk: Cleanup steps hiding upstream defects. Mitigation: make cleanups observable (debug counters, metrics in tests) and
+  surface unusual activity in logs or reports.
+
+== How to apply
+
+- Teach authors to put control comments right at the boundary and keep regions minimal. Small regions make intent obvious
+  and errors local.
+- Prefer engine-level APIs over DOM surgery: `Paragraph.replace`, iterator factories in `DocxIterator`, and helpers in
+  `WmlUtils`. If you find yourself counting runs, stop and ask if an abstraction already exists.
+- Remove control metadata once consumed. Treat comments as ephemeral—valuable at transformation time, invisible afterward.
+- Encode these rules in a short “Template Invariants” page in your repo, with copy‑pastable examples that align with
+  code and tests.
+
+== References
+
+- Traversal: `docx4j.TraversalUtil`, project iterators under `DocxIterator`
+- Utilities: `WmlUtils` helpers for run/parent operations
+- APIs: `Paragraph.replace` in `StandardParagraph`
+- Docs: post‑processing pipeline (Dec 2024), TraversalUtil integration (Nov 2024)

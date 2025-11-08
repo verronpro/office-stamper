@@ -1,25 +1,68 @@
-= Making Iteration Robust: ResetableIterator + DocxIterator
-Joseph Verron <dev@officestamper>
+= November 2025 — Making Iteration Robust: ResetableIterator + DocxIterator (Solo‑maintainer Edition)
+Joseph Verron <caring-coder@verron.pro>
 2025-11-08
-:page-tags: refactoring, api-design, iteration, reliability
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, refactoring, api-design, iteration, reliability
 
 Commit: https://github.com/verronpro/office-stamper/commit/a0fa512[a0fa512]
 
-== Why this commit is interesting
+== Why this commit matters
 
-Processing Word documents involves walking a mutable tree while you’re also transforming it. That’s a breeding ground for iterator invalidation and off-by-one bugs. This change introduces a `ResetableIterator` and routes paragraph traversal through `DocxIterator` so processors can safely re-iterate after structural changes.
+Walking and mutating a WordprocessingML tree at the same time invites iterator invalidation, off‑by‑one bugs, and subtle
+skips when nodes are inserted or removed. In real templates—lists, SDTs, hyperlinks, comments, fields—structure shifts as
+processors do their work. This change introduces a `ResetableIterator` and routes paragraph traversal through
+`DocxIterator` so processors can safely re‑iterate after structural changes. The result is less incidental complexity at
+call sites and a shared, testable contract for traversal across the codebase.
 
-== What changed
+For a solo‑maintained project used sporadically in big companies, this is the kind of investment that pays back quickly.
+A single, intention‑revealing traversal primitive reduces review time for contributors who appear every few months and
+lowers the chance of regressions in enterprise templates with tricky interleavings.
 
-- New `ResetableIterator` abstraction allows rewinding to a known state after a mutation.
-- Core paragraph processing switches to `DocxIterator`, centralizing traversal and enabling safe resets.
+== What actually changed
 
-== Agile and craftsmanship angles
+- Added a `ResetableIterator` abstraction capable of rewinding to a known position after a mutation, making it safe to
+  re‑visit ranges when processors split or merge runs, or delete nodes.
+- Centralized traversal with `DocxIterator` and aligned its behavior with docx4j’s `TraversalUtil` so “what to visit” is
+  declarative while “how to walk” is uniform.
+- Updated core paragraph processing to rely on these primitives, reducing bespoke loops and duplicated state.
+- Strengthened invariants: iterators expose a minimal surface (next, hasNext, reset) and own the tricky parts of
+  navigating around `w:commentRangeStart/End`, fields, and hyperlinks.
 
-- Reducing incidental complexity improves developer flow and lowers cycle time for new processors.
-- Encapsulating iteration details honors the Single Responsibility Principle and strengthens invariants.
+== Agile and craftsmanship lens
 
-== How to apply this in your codebase
+- Delete to accelerate. Replacing ad‑hoc loops with a narrow iterator reduces the amount of code you need to reason about
+  per feature. Smaller diffs, faster reviews, fewer regressions.
+- Push complexity to the seam. Iteration rules belong in an iterator; processors should read like intent (`repeat`,
+  `replace`, `displayIf`) without re‑implementing cursor math.
+- Tests as documentation. Iterator behavior can be demonstrated in tiny fixtures (e.g., nested SDTs with comments).
+  Those tests become the examples we link to from docs—documentation‑as‑code.
 
-- When transforming collections you also traverse, encapsulate the cursor logic behind a small interface.
-- Provide a reset/rewind semantic if transformations can change traversal boundaries.
+== Solo‑maintainer + enterprise usage angle
+
+When a large company adopts Office‑stamper for a short project, they need predictability more than novelty. A shared
+iterator abstraction gives reviewers (and my future self) a focal point: if traversal is wrong, there is one place to fix
+it. It also enables better support: a bug report can reference a specific iterator test, and the fix improves all
+processors that rely on it.
+
+== Risks and mitigations
+
+- Risk: Hidden behavior changes when switching call sites to the iterator. Mitigation: port characterization tests and run
+  them on representative documents; keep a changelog of iterator semantics.
+- Risk: Over‑generalizing the iterator. Mitigation: keep the surface minimal (iteration + reset); build specific factories
+  like `DocxIterator.ofCRS` for clarity rather than flags.
+- Risk: Performance regressions in very large documents. Mitigation: bound iteration scope; prefer visitor patterns with
+  early exits; profile with real templates.
+
+== How to apply this idea in your codebase
+
+- When you transform a collection while walking it, hide the cursor logic behind a tiny interface and provide a reset
+  capability if mutations can invalidate positions.
+- Prefer declarative selection: create small factories for “what to visit” (comments, fields, runs) and keep walking
+  uniform across the codebase.
+- Back your iterators with micro‑tests that mirror production shapes. Link those tests from the docs so behavior is
+  discoverable and teachable.
+
+== References
+
+- Commit: a0fa512
+- Iteration helpers: `DocxIterator`, `DocxIterator.ofCRS` for comment starts, docx4j `TraversalUtil`
+- Related posts: comment retrieval via `DocxIterator` (Nov 2025); targeted traversal with `ofCRS` (Nov 2025)

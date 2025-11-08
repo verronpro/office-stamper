@@ -1,0 +1,71 @@
+:= September 2024 — Resolver Safety in Practice: Optional, Nullability, and Smart Defaults
+Joseph Verron <caring-coder@verron.pro>
+2024-09-19
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, resolvers, null-safety
+
+Note: September 2024 did not land a headline human‑authored commit in the repository. This article documents pragmatic
+patterns for building resilient resolvers in Office‑stamper—drawn from incidents, tests, and refactors shipped across
+2024–2025.
+
+== Why this stands out
+
+Placeholders are your public API. When a template says `${invoice.total}` or `${image(customer.photo)}`, the resolver layer
+translates domain values into concrete document content (strings, images, numbers with locale, or custom renderings). If
+resolvers behave unpredictably on `null`, missing keys, or exotic types, production surprises follow. For a solo‑maintained
+project used sporadically inside big companies, predictable failure modes and helpful defaults are the difference between a
+calm release and a midnight support thread.
+
+== Principles for safe resolvers
+
+- Be explicit about absence. Don’t overuse `null` for legitimate "no value" states; prefer Java’s `Optional` at method
+  boundaries where the meaning matters. Internally, convert early to a known representation.
+- Separate detection from rendering. First decide whether the resolver can handle a value (type check, marker interface),
+  then render. This avoids partial work that leaks half‑rendered artifacts.
+- Fail fast and loud at configuration boundaries. Unknown placeholder functions or unresolved expressions should surface
+  as clear exceptions with actionable messages (what was expected, where it failed, and a doc link).
+- Provide smart, minimal defaults. If a string resolver meets `null`, choose between: render empty string, render a marker
+  (e.g., "—"), or throw with context. Pick one per installation and document it. For images, empty should not insert a
+  broken picture—either skip the block cleanly or render a placeholder badge.
+- Keep resolvers idempotent and side‑effect free. Given the same input, they should produce the same output with no hidden
+  state; this makes tests simple and pipelines predictable.
+
+== Agile/craftsmanship/docs‑as‑code lens
+
+- A shared contract speeds reviews. When resolvers document their nullability and absence semantics, reviewers focus on
+  user intent, not plumbing.
+- Tests as living documentation. Characterization tests for `Optional.empty()`, missing map keys, and `null` images are
+  easy to read and prevent regressions; they also serve as snippets for the site.
+- Single source for truth. Keep contracts in Javadoc (`pro.verron.officestamper.api.ObjectResolver`, `StringResolver<T>`) and
+  link from the site’s resolver guide. Avoid duplicating long explanations across docs.
+
+== Solo‑maintainer + enterprise usage angle
+
+In enterprise projects, teams often extend resolvers to support domain types (money, percentages, local dates with house
+format). I can’t review every extension. By codifying how absence is handled and by providing minimal examples, I make it
+much harder to misuse the API. Security and compliance reviewers also have an easier time: if a resolver decides to skip
+rendering for `null` images or empty lists, that behavior is documented and testable—not folklore.
+
+== Risks and mitigations
+
+- Risk: Silent data loss (e.g., empty string rendered where a value was required). Mitigation: make required placeholders
+  explicit (`${required(invoice.total)}`) and fail fast when not present; provide a migration guide.
+- Risk: Divergent defaults across modules. Mitigation: centralize defaults in configuration (`DocxStamperConfiguration`),
+  expose them as explicit toggles, and document the installation’s chosen policy.
+- Risk: Over‑eager exceptions causing brittle templates. Mitigation: distinguish user authoring mistakes from runtime
+  absence; allow soft‑fail rendering modes for exploratory runs but keep strict mode for CI.
+
+== How to apply
+
+- Audit your resolvers: list the types handled, the absence/null policy, and what is rendered for each case. Turn this into
+  a short table in your docs.
+- Add tests for empties and edge cases: empty lists in `repeat`, unknown keys in maps, `Optional.empty()`, and `null`
+  images. Keep these fixtures small and named like user stories.
+- Provide a single configuration point for defaults. Document recommended settings for local development vs. CI.
+- Link tests to docs. When a behavior evolves (e.g., new default for empty strings), update the doc and the test in the
+  same PR so drift cannot occur.
+
+== References
+
+- APIs: `pro.verron.officestamper.api.ObjectResolver`, `StringResolver<T>`, `ExpressionResolver`
+- Configuration: `DocxStamperConfiguration` defaults and toggles
+- Related posts: CLI multi‑format adapters (Oct 2025), Post‑processing pipeline (Dec 2024), Custom processors/resolvers guide (Nov 2025)

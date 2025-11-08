@@ -35,6 +35,10 @@ The commitment here isn’t just “use a library.” It’s “speak the librar
 
 This refactor makes examples easier to write and understand. Documentation can show a minimal visitor that finds the elements of interest, and the code will look like the examples users find in docx4j’s ecosystem. Fewer custom concepts in the docs means less cognitive overhead and fewer opportunities for drift between “how the docs say it works” and “how it actually works.”
 
+== Solo‑maintainer + enterprise usage angle
+
+Office‑stamper is maintained by one person and adopted sporadically by teams inside big companies. Standardizing on `TraversalUtil` has two concrete benefits in that context. First, it lowers onboarding time for occasional contributors: engineers who already know docx4j can read our visitors and iterators without deciphering a home‑grown walker. Second, it simplifies audits and design reviews: platform teams can assess our traversal strategy against widely known library semantics instead of learning a private abstraction. Fewer custom primitives also means fewer docs to maintain—our site can link to stable, upstream references and keep local guidance focused on domain concepts (comments, runs, SDTs) and invariants.
+
 == Risks and mitigations
 
 - Risk: missing behaviors the custom walker handled. Mitigation: port unit tests, add characterization tests, and audit call sites for assumptions. Where necessary, add thin adapters around `TraversalUtil` to preserve behavior.

@@ -113,13 +113,12 @@ public class CommentUtil {
 
     /// Retrieves the comment associated with a given paragraph content within a WordprocessingMLPackage document.
     ///
-    /// @param paragraphContent the content of the paragraph to search for a comment.
-    /// @param document         the WordprocessingMLPackage document containing the paragraph and its comments.
+    /// @param document the WordprocessingMLPackage document containing the paragraph and its comments.
     ///
     /// @return an Optional containing the found comment, or Optional.empty() if no comment is associated with the given
     /// paragraph content.
     public static Collection<Comments.Comment> getCommentFor(
-            List<Object> paragraphContent,
+            ContentAccessor contentAccessor,
             WordprocessingMLPackage document
     ) {
         var comments = getCommentsPart(document.getParts()).map(CommentUtil::extractContent)
@@ -128,12 +127,13 @@ public class CommentUtil {
                                                            .flatMap(Collection::stream)
                                                            .toList();
 
-        return paragraphContent.stream()
-                               .filter(CommentRangeStart.class::isInstance)
-                               .map(CommentRangeStart.class::cast)
-                               .map(CommentRangeStart::getId)
-                               .flatMap(commentId -> findCommentById(comments, commentId).stream())
-                               .toList();
+        var result = new ArrayList<Comments.Comment>();
+        var commentIterator = DocxIterator.ofCRS(document, document.getMainDocumentPart(), contentAccessor);
+        while (commentIterator.hasNext()) {
+            var crs = commentIterator.next();
+            findCommentById(comments, crs.getId()).ifPresent(result::add);
+        }
+        return result;
     }
 
     private static Optional<Comments.Comment> findCommentById(List<Comments.Comment> comments, BigInteger id) {

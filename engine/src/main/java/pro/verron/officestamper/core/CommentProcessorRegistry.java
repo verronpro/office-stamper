@@ -1,7 +1,10 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.*;
+import org.docx4j.wml.CommentRangeEnd;
+import org.docx4j.wml.CommentRangeStart;
+import org.docx4j.wml.Comments;
+import org.docx4j.wml.R;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,19 +69,15 @@ public class CommentProcessorRegistry {
                   var paragraphComment = p.getComment();
                   paragraphComment.forEach((pc -> {
                       var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
-                      commentProcessors.commitChanges(source);
                       optional.ifPresent(proceedComments::add);
                   }));
               });
 
-        // Intriduce the usage of a resetable iterator to make docx updates more manageable in future versions of the
-        // library, it has vocation to replace all paragraph streaming features.
         var iterator = DocxIterator.ofParagraphs(source);
         while (iterator.hasNext()) {
             var paragraph = iterator.next();
             if (runProcessorsOnInlineContent(expressionContext, paragraph) > 0) iterator.reset();
         }
-
 
         proceedComments.forEach(CommentUtil::deleteComment);
     }
@@ -118,7 +117,11 @@ public class CommentProcessorRegistry {
         var cComment = c.getComment();
         comments.remove(cComment.getId());
         commentProcessors.setContext(new ProcessorContext(paragraph, null, c, cPlaceholder));
-        return runCommentProcessors(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
+        Optional<Comment> processed = runCommentProcessors(expressionContext, c.asPlaceholder())
+                ? Optional.of(c)
+                : Optional.empty();
+        commentProcessors.commitChanges(source);
+        return processed;
     }
 
     private <T> int runProcessorsOnInlineContent(T context, Paragraph paragraph) {

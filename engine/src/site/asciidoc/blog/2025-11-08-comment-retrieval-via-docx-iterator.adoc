@@ -1,25 +1,65 @@
-= Declarative Comment Retrieval with DocxIterator
-Joseph Verron <dev@officestamper>
+= November 2025 — Declarative Comment Retrieval with DocxIterator
+Joseph Verron <caring-coder@verron.pro>
 2025-11-08
-:page-tags: refactoring, api-design, clarity, maintainability
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, refactoring, api-design, clarity, maintainability
 
 Commit: https://github.com/verronpro/office-stamper/commit/640d654[640d654]
 
-== Why this commit is interesting
+== Why this stands out
 
-Fetching comments in WordprocessingML used to be a tangle of tree walking and type checks sprinkled across the codebase. By routing retrieval through `DocxIterator`, we concentrate knowledge in one place and let the rest of the code read like intent.
+Fetching comments in WordprocessingML used to be a tangle of tree walking, `instanceof` checks, and duplicated filters
+sprinkled across the codebase. Comments aren’t just annotations in Office‑stamper; they are how users express control
+metadata that drives processors like `displayIf`, `repeat`, and `replaceWith`. When retrieval is scattered, behavior is
+hard to reason about and even harder to test. This change routes comment discovery through a single, intention‑revealing
+primitive—`DocxIterator`—so the rest of the code can read like intent instead of plumbing.
 
-== What changed
+For a solo‑maintained project used sporadically inside big companies, that consolidation is leverage. It reduces the
+surface area of traversal logic that a contributor must understand, improves predictability in tricky templates (nested
+SDTs, interleaved fields/hyperlinks), and turns a source of “heisenbugs” into a coherent contract.
 
-- Comment discovery now uses `DocxIterator`, replacing ad‑hoc traversal.
-- Call sites become smaller and more expressive; fewer moving parts per feature.
+== What actually changed
 
-== Agile and craftsmanship angles
+- Centralized comment discovery behind `DocxIterator`, replacing ad‑hoc loops and type checks at call sites.
+- Introduced named factories (e.g., `DocxIterator.ofCRS`) to state selection intent explicitly ("iterate comment starts").
+- Aligned discovery with our traversal approach based on docx4j’s `TraversalUtil`: callers specify what to visit; the
+  iterator handles how to walk safely.
+- Simplified call sites and removed redundant utility code; retrieval now returns well‑typed elements in a predictable
+  order, ready for processors to consume.
 
-- Centralizing traversal logic reduces cognitive load for reviewers and new contributors.
-- Fewer bespoke loops means fewer bug surfaces and faster iterations.
+== Agile/craftsmanship/docs‑as‑code lens
 
-== What you can emulate
+- Delete to accelerate: removing bespoke traversal reduces code touched per change and clarifies reviews.
+- One place to learn: documentation, Javadoc, and examples can point to `DocxIterator` and its factories. When behavior
+  changes by design, examples and code evolve together—documentation‑as‑code.
+- Safer refactors: with selection rules centralized, characterization tests can lock behavior at the seam; internal
+  improvements don’t require auditing dozens of call sites.
 
-- Introduce small, composable iterators for complex DOMs. Keep call sites declarative.
-- Measure the reduction in lines and branches touched per change to validate simplification.
+== Solo maintainer + enterprise usage angle
+
+Office‑stamper is maintained by one person and adopted in short bursts by enterprise teams. A predictable comment
+retrieval path means a reviewer can focus on business intent rather than deciphering traversal. When something goes odd in
+production (“a comment wasn’t found in this SDT”), I can reproduce with a tiny fixture and test the iterator contract
+first. Fixing the iterator helps everyone downstream. For enterprise audits, a named, documented iterator is easier to
+explain than scattered loops—it conveys intent and boundaries quickly.
+
+== Risks and mitigations
+
+- Risk: Hidden behavior drift during consolidation. Mitigation: port characterization tests for comment patterns (across
+  SDTs, hyperlinks, fields) and document ordering/containment guarantees.
+- Risk: Over‑generalization of iterators. Mitigation: keep factories small and specific (`ofCRS`, `ofComments`, etc.) and
+  resist adding flags that conflate concerns.
+- Risk: Performance regressions on large documents. Mitigation: bound traversal scope to relevant ancestors; benchmark on
+  representative templates; avoid quadratic filters.
+
+== How to apply this in your project
+
+- Centralize selection. Write a tiny iterator or visitor per selection you rely on; make call sites declarative.
+- Prefer named factories over boolean flags. `ofCommentStarts()` is clearer and safer than `iterator(filter=COMMENT_START)`.
+- Back iterators with micro‑tests that mirror your production shapes (nested SDTs, interleaved runs). Link those tests from
+  your docs so behavior remains discoverable.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/640d654[640d654]
+- Related posts: `DocxIterator.ofCRS` (Nov 2025); Resetable iterator + traversal contract (Nov 2025); TraversalUtil
+  integration (Nov 2024)

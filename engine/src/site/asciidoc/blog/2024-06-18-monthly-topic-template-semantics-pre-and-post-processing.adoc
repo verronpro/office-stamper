@@ -1,0 +1,73 @@
+:= June 2024 — Template Semantics that Scale: Pre‑ and Post‑Processing as First‑Class Stages
+Joseph Verron <caring-coder@verron.pro>
+2024-06-18
+:page-tags: pipeline, agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, preprocessing, postprocessing
+
+== Why this topic for June
+
+If you’ve ever debugged a puzzling stamping result, you’ve seen it: the input template is a little messy (split runs,
+interleaved fields and comments, SDTs with inconsistent boundaries) and the output looks almost right—except for that one
+edge case. In June 2024, I doubled‑down on a practice that keeps Office‑stamper changeable and predictable across those
+situations: treat pre‑processing and post‑processing as first‑class stages with explicit contracts. This isn’t just an
+engineering preference; it’s the most affordable way for a solo‑maintained project to serve sporadic enterprise teams
+without bespoke debugging marathons.
+
+== The problem in plain terms
+
+- Real templates are authored by many hands. Copy‑paste introduces invisible formatting; comments wander; runs split in odd
+  places; fields show up where you least expect them.
+- Processors want clean inputs. The less they know about incidental quirks, the easier they are to reason about and test.
+- Users want polished outputs. After core transformations, they expect whitespace normalized, scaffolding removed, and
+  artifacts collapsed.
+
+When you push all of this into the processors themselves, you create complex, stateful code with lots of local exceptions
+and ambiguous responsibilities. Pre‑ and post‑processing let us separate concerns and harden invariants.
+
+== A practical contract for each stage
+
+- Pre‑processing (normalize inputs)
+  - Make placeholders atomic: consolidate split runs so tokens are contiguous when feasible.
+  - Clarify boundaries: adjust or flag comment ranges that cross SDTs; mark regions explicitly.
+  - Enforce cheap invariants: no zero‑length placeholders; no duplicated control tags in a single region.
+  - Keep it idempotent and fast: running twice should be harmless; complexity should be near linear.
+
+- Core processing (apply the business intent)
+  - Evaluate expressions and run comment‑driven processors (`displayIf`, `repeat`, `replaceWith`).
+  - Lean on stable abstractions (`Paragraph.replace`, iterators for comments and CRS) so call sites are small.
+
+- Post‑processing (polish outputs)
+  - Remove scaffolding: delete processor comments and any control metadata not meant for end users.
+  - Tidy structure: collapse empty paragraphs, normalize adjacent runs when safe, prune orphaned references (foot/endnotes).
+  - Leave breadcrumbs for diagnostics: optionally emit lightweight metrics (counts of removed artifacts) in debug builds.
+
+== Agile and craftsmanship lens
+
+- Make correctness cheap. When normalization and cleanup are explicit stages, processors can be simpler and more obviously
+  correct. Tests focus on end‑to‑end invariants rather than incidental structures.
+- Favor idempotence and locality. Stages that can run multiple times without harm are easier to compose and parallelize.
+- Treat docs as part of the pipeline. Each stage should have a one‑page guide with before/after examples that reviewers can
+  reference during PRs.
+
+== Solo maintainer + enterprise usage angle
+
+A clear pipeline lets me help more people in less time. If a team shares a minimal `.docx` that reproduces a glitch, I can
+run pre → core → post and see which stage failed the contract. Because the stages are small and intention‑revealing, fixes
+are localized, and improvements benefit everyone. Enterprise platform and security reviewers also like boundaries: they can
+see where inputs are tamed and where outputs are polished, which reduces risk in downstream workflows.
+
+== How to apply this now
+
+- Add a pre‑normalization step to your stamping configuration. Start with placeholder cleanup and boundary checks. If
+  you’re using Office‑stamper, look at `PreparePlaceholders` as the blueprint.
+- Make post‑processors small and composable. Prefer two focused steps (e.g., `RemoveDanglingComments`, `CollapseEmptyParagraphs`)
+  over a kitchen‑sink fixer.
+- Build characterization tests with tricky fixtures (nested SDTs, interleaved fields/comments). Assert semantic properties
+  across the full pipeline: clean in, correct transform, tidy out.
+- Document stage contracts next to the code. A tiny page with “inputs, guarantees, examples” saves hours later.
+
+== References
+
+- Related features: `PreparePlaceholders` preprocessor; post‑processing hook in `DocxStamper` with cleanups for notes and
+  comments.
+- See also: December 2024 post “Post‑Processing in DocxStamper” for concrete implementations; June 2025 post on deleting
+  comments from `SdtRun` for a focused cleanup utility.

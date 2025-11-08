@@ -1,0 +1,61 @@
+:= November 2023 — Keeping Pace with the Platform: Moving to Java 21 LTS
+Joseph Verron <caring-coder@verron.pro>
+2023-11-01
+:page-tags: agility, craftsmanship, solo-maintainer, enterprise, platform, ci-cd, risk-management
+
+Commit: https://github.com/verronpro/office-stamper/commit/631ab27[631ab27]
+
+== Why this is November’s standout
+
+Platform upgrades are the kind of invisible work that either builds trust or erodes it. In November 2023, Office‑stamper
+moved to the then‑latest LTS baseline, Java 21. For a project stewarded by a single maintainer and used in sporadic
+projects inside big companies, this decision is about more than shiny new language features. It’s about reducing friction:
+keeping CI images predictable, aligning with corporate JDK baselines, and ensuring developers can run the toolchain on
+locked‑down machines where “latest” often means “the last approved LTS.”
+
+An upgrade like this is also a test of engineering hygiene. If abstractions are clear and tests are meaningful, the code
+remains portable across JDKs. If not, a new baseline surfaces brittle assumptions (reflection quirks, XML factory defaults,
+module rules). This migration confirmed the health of our boundaries and pushed documentation to explicitly state the
+supported baseline.
+
+== What actually changed
+
+- Raised the project’s Java baseline to 21 and updated build configuration to match.
+- Adjusted CI workflows to validate the suite on the new baseline across supported OS targets.
+- Reviewed dependencies for compatibility; documented minimum runtime requirements for the CLI and library.
+- Tidied a few warnings and modernized minor idioms where it clarified intent without adding risk.
+
+The sequence followed a boring playbook: update CI first, run the suite, address warnings, then bump the declared
+baseline. This keeps `main` green and reduces the blast radius if something goes wrong.
+
+== Agile and craftsmanship lens
+
+- Make platform work visible and incremental. Ship upgrades as small steps you can reason about.
+- Let tests be your leverage. A meaningful suite lets you change the ground under your feet without losing balance.
+- Prefer clarity over cleverness. Migration time is not the moment to introduce exotic flags or plugins.
+
+== Solo maintainer + enterprise usage angle
+
+As a solo maintainer, I need to minimize “works on my machine” surprises. Aligning with Java 21 means I debug the same
+baseline many adopters run. For enterprise teams, this change de‑risks adoption: platform and security reviews can point to
+an LTS with known support windows, and build engineers can use standard images. The fewer custom knobs we require, the
+faster a sporadic project can ship.
+
+== Risks and mitigations
+
+- Risk: Behavior changes across JDKs (XML parsing defaults, reflection edges). Mitigation: centralize parser factories with
+  explicit, secure settings; run tests on multiple vendors where relevant.
+- Risk: Downstream users pinned to older JDKs. Mitigation: document minimum versions clearly; keep previous release notes
+  accessible; offer clear error messages when an unsupported runtime is detected.
+- Risk: Slipping scope into refactors. Mitigation: keep the migration PRs small; defer opportunistic cleanup to later.
+
+== How to apply this in your project
+
+- Treat platform upgrades as a series: update CI images, align compiler/toolchain, fix warnings, then raise the baseline.
+- Build a small smoke test suite that reflects your real usage: stamping docs, running the CLI, parsing inputs.
+- Co‑locate docs and code. When the baseline changes, update the README and site pages in the same PR.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/631ab27[631ab27]
+- Related CI commits on 2023‑11‑01: Windows/Ubuntu integration flows.

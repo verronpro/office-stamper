@@ -1,0 +1,66 @@
+:= December 2023 — ADRs for Extension Points: Documenting Decisions as Operating Leverage
+Joseph Verron <caring-coder@verron.pro>
+2023-12-12
+:page-tags: docs-as-code, agility, craftsmanship, solo-maintainer, enterprise, governance, adr, extensibility
+
+== Why this topic for December
+
+December closed a year of steady, pragmatic improvements. Some months were feature‑heavy; others were about the system’s
+operability. This post tackles a practice that quietly compounds value for a solo‑maintained project used in sporadic
+enterprise projects: Architecture Decision Records (ADRs) focused on extension points. If comment processors and resolvers
+are the seams where users extend Office‑stamper, ADRs are the documents that explain why those seams exist, what is stable,
+and what should not be relied upon. For teams who may only touch the code once a quarter, ADRs are a map and a contract.
+
+== The problem: tacit intent is expensive
+
+When a single maintainer evolves an API, a lot of the “why” lives in their head or behind short commit messages. That’s
+fine until an external team needs to extend behavior, or a future refactor risks breaking an implicit constraint. Without
+an explicit record, reviewers debate taste instead of intent; contributors re‑learn context; and adopters cargo‑cult
+examples without understanding which are supported and which are just convenient hacks. In enterprise settings, this slows
+security and architecture reviews and increases the perceived risk of adoption.
+
+== ADRs as the minimum viable governance
+
+ADRs are lightweight—one page per decision, written in plain language, stored in the repo. For extension points, an ADR
+answers:
+
+- What problem are we solving? (e.g., users need to inject custom value rendering → resolvers)
+- What options did we consider? (e.g., subclassing vs. composition vs. strategy interfaces)
+- What did we choose and why? (e.g., `ObjectResolver`/`StringResolver<T>` with explicit registration)
+- What is in scope and out of scope? (e.g., resolvers must be pure and idempotent; no side effects or network calls)
+- What are the stability guarantees? (e.g., method signatures are stable across minor versions; packages are public API)
+- How do users apply this? (e.g., code snippet with `DocxStamperConfiguration` wiring)
+
+This is governance without ceremony. It gives contributors a rubric for proposals, helps reviewers align on principles, and
+reassures adopters that today’s extension won’t become tomorrow’s breaking change.
+
+== Agile and craftsmanship lens
+
+- Shorten feedback loops: ADRs prevent design debates from re‑starting on every PR. Link an ADR and move on.
+- Prefer explicit constraints over folklore: write down invariants for processors (idempotency, locality) and resolvers
+  (determinism, purity, performance expectations). When a change challenges an invariant, the ADR becomes the forum.
+- Keep it simple: one page, a few headings, a commit link to the first implementation, and references to tests.
+
+== Solo maintainer + enterprise usage angle
+
+As a solo maintainer, ADRs let me scale my intent across time zones and quarters. I can point a sporadic enterprise team to
+an ADR that says, “Here is the sanctioned way to plug in a custom resolver; here is what we promise to keep stable.”
+Procurement and platform reviewers appreciate the traceability: a decision with rationale, alternatives considered, and a
+record of when it shipped. That clarity reduces meeting load and speeds up “go/no‑go” calls on using the library or CLI in
+regulated environments.
+
+== How to apply this now
+
+- Start with two ADRs: one for comment processors, one for resolvers. Capture problem, options, decision, consequences,
+  stability guarantees, and examples.
+- Place ADRs under `docs/adr` or alongside the site docs; link them from `how-to-custom.adoc` and relevant Javadoc.
+- Establish a tiny workflow: new extension‑related PRs must reference an ADR (existing or new). Reviewers ask for ADR
+  updates when behavior shifts.
+- Keep ADRs living: update when guarantees change; note deprecations and migration tips. Keep them terse—aim for a page.
+
+== References
+
+- Related docs: `engine/src/site/asciidoc/how-to-custom.adoc`
+- Core APIs: `pro.verron.officestamper.api.CommentProcessor`, `ObjectResolver`, `StringResolver<T>`, configuration wiring in
+  `DocxStamperConfiguration`
+- Inspiration: Michael Nygard’s ADRs; "Decisions, not discussions" as a team habit.

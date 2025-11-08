@@ -1,0 +1,71 @@
+= May 2024 — Drawing Firm Boundaries: Modular Re‑org and Intentional Breaking Changes
+Joseph Verron <caring-coder@verron.pro>
+2024-05-15
+:page-tags: architecture, agility, craftsmanship, solo-maintainer, enterprise, modules, breaking-change, docs-as-code
+
+Commits:
+- https://github.com/verronpro/office-stamper/commit/bfa7877[bfa7877] — Refactor `DocxStamper` to new package (BREAKING)
+- https://github.com/verronpro/office-stamper/commit/5cb94a1[5cb94a1] — Refactor and relocate `DocxStamperConfiguration` (BREAKING)
+- https://github.com/verronpro/office-stamper/commit/6bbcd21[6bbcd21] — Relocate sources under `engine/`
+- https://github.com/verronpro/office-stamper/commit/45d6fb8[45d6fb8] — Add `WordprocessingMLPackage` to `StandardComment`
+- https://github.com/verronpro/office-stamper/commit/592bd73[592bd73] — Update engine version to `2.0-SNAPSHOT`
+
+== Why this is May’s highlight
+
+Sustainable agility depends on boundaries you can explain and defend. In May 2024 I undertook a deliberate, sweeping
+re‑organization: introducing an `engine` module, relocating core types (notably `DocxStamper` and
+`DocxStamperConfiguration`) to their rightful packages, and pruning the long tail of deprecated APIs. These were
+breaking changes by design, communicated as such, because the architecture had evolved to a point where clarity was worth
+more than backwards compatibility glue.
+
+For a solo‑maintained project used intermittently in enterprises, this sort of re‑org is the responsible choice when it
+reduces incidental complexity. Contributors arrive every few months; they should find a layout and namespaces that reveal
+intent. Users should be able to wire the engine without spelunking through legacy shims. This month was about drawing
+firmer lines so the next year of work could move faster.
+
+== What actually changed
+
+- Introduced a clearer multi‑module structure; code moved under `engine/` and `examples/`, with POMs reflecting the new
+  boundaries.
+- Moved `DocxStamper` and `DocxStamperConfiguration` to stable packages under `pro.verron.officestamper.core` and
+  related namespaces. Deprecated packages were removed; import paths are now intention‑revealing.
+- Removed a suite of deprecated types (e.g., legacy resolvers and helpers) that confused discovery and increased the
+  test surface without adding value.
+- Updated tests, examples, and the site documentation to match the new layout and names.
+
+Each change was small and verifiable, but the sequence added up to a cleaner mental model. The code reads closer to the
+concepts we teach in the docs; the docs can link to packages that are meant to be public API; and the examples compile
+against the same contracts users should rely on.
+
+== Agile and craftsmanship lens
+
+- Prefer explicit seams over tacit conventions. Modules and packages are user‑facing design decisions; treat them that way.
+- Delete to accelerate. Removing deprecated branches reduces decision fatigue for contributors and reviewers.
+- Communicate breaks with intent. Marking changes as BREAKING in messages is a courtesy to adopters and your future self.
+
+== Solo maintainer + enterprise usage angle
+
+Enterprises care about stability and clarity. A leaner, better‑named engine reduces the cost of security reviews and the
+chance of misuse under time pressure. As the sole maintainer, I also get leverage: fewer shims to carry, fewer places to
+update, and a smaller surface for regressions. Because docs are co‑located and built in CI, the repository becomes a
+single source of truth about “how to integrate the engine in 2024+.”
+
+== Risks and mitigations
+
+- Risk: Upgrade friction for existing users. Mitigation: provide a concise migration guide (old → new package names,
+  removed types, recommended replacements) and keep semantic changes minimal.
+- Risk: Missed internal coupling after moves. Mitigation: run the full suite, build the site, and add characterization
+  tests around hot paths before and after moves.
+- Risk: Over‑eager deletions. Mitigation: remove in stages; prefer deprecate → migrate → delete across minor releases.
+
+== How to apply this in your project
+
+- Map your code by responsibilities and change frequency. Move toward modules/namespaces that reflect those boundaries.
+- Remove deprecated code once migration paths exist; every extra path is cognitive debt.
+- Update docs and examples in the same PR as the moves. Treat broken links as build failures.
+
+== References
+
+- Commits: see the list above around 2024‑05‑14 → 2024‑05‑17.
+- Code: `engine/pom.xml`, `pro.verron.officestamper.core.*` packages.
+- Docs: updated AsciiDoc under `engine/src/site/asciidoc/`.

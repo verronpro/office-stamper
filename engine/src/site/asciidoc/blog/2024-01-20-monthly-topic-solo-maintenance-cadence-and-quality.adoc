@@ -1,0 +1,76 @@
+:= January 2024 — Sustainable Solo‑Maintenance: Cadence, Quality, and Saying No
+Joseph Verron <caring-coder@verron.pro>
+2024-01-20
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, process, quality
+
+== Why this topic for January
+
+Office‑stamper is maintained by one person and used in sporadic projects at large companies. That reality shapes the way
+work gets done: bursts of activity around real-world needs, long quiet periods, and occasional contributions every two or
+three months. In that environment, “productivity” isn’t about maximizing commit count—it’s about keeping the system easy to
+change without burning out the maintainer or confusing adopters. January is a good moment to write down the practices that
+keep the project healthy between sprints and across quarters.
+
+== The operating constraints
+
+- Sporadic enterprise usage: teams arrive with a goal, integrate the engine or CLI, ship, and go quiet. Months later a new
+  team appears with a different set of constraints (locked-down CI, internal JDK baseline, custom templates).
+- Single maintainer: there is no 24/7 support desk; context switching is expensive; deep changes must be staged.
+- Occasional external contributions: valuable, but they require a predictable path to land safely.
+
+If we optimize for sustained changeability rather than constant motion, we get a system that is welcoming when it matters.
+
+== Cadence that compounds
+
+- Time‑boxed maintenance windows
+  Group chores (dependency bumps, small refactors, test cleanup) into focused blocks. Keep `main` green at all times and
+  avoid dragging partial changes across weeks. This reduces context loss and keeps releases predictable.
+
+- ADRs for decisions that stick
+  Record why extension points exist and what guarantees they offer. ADRs make reviews faster and reduce re‑litigating the
+  same debates months later.
+
+- Docs‑as‑code as a first‑class practice
+  Co‑locate AsciiDoc with code; require docs updates for user‑visible changes. This ensures sporadic adopters can self‑serve
+  without scheduling time together.
+
+- Small, verifiable steps
+  Split work into PRs that each keep the repo releasable. Platform upgrades? Update CI first, then the toolchain, then the
+  declared baseline. Refactors? Characterize behavior with tests, then change one seam at a time.
+
+== Quality guardrails that scale
+
+- Invariants over implementations
+  Tests assert properties users care about (no leftover control comments, placeholders remain atomic, SDT boundaries are
+  respected), not just exact object graph shapes. This keeps the suite resilient to benign changes and focused on intent.
+
+- Pre‑ and post‑processing
+  Normalize inputs with a preprocessor like `PreparePlaceholders`. Clean up artifacts at the end (collapse empty paragraphs,
+  remove scaffolding) with post‑processors. These phases localize complexity and keep core logic simpler.
+
+- Minimal, expressive APIs
+  Hide complexity behind intention‑revealing methods (`Paragraph.replace`, iterator factories for comments/CRS). Good names
+  reduce the need for extra documentation and make tests smaller.
+
+== Saying no (strategically)
+
+As a solo maintainer, every feature is a maintenance contract. Saying “no for now” or “yes, behind an adapter” protects the
+core from format‑specific leakage or niche behaviors that aren’t broadly useful. For enterprise adopters, that restraint is
+a benefit: a smaller, stable surface area is easier to review, approve, and operate under constraints.
+
+== How enterprise teams can help
+
+- Bring a tiny repro: a minimal `.docx` fixture or a code snippet with `WmlFactory` helpers accelerates triage.
+- Align on invariants: if a template pattern breaks an invariant, we can fix the template or improve the pre/post steps.
+- Expect asynchronous review: keep context in the issue/PR; link to commits and docs pages you consulted.
+
+== How to apply this in your project
+
+- Establish a sustainable cadence: weekly maintenance hour, monthly release window, quarterly platform audit.
+- Make docs and tests carry more weight than meetings: they scale better across time zones and firewalls.
+- Prefer invariants, small APIs, and co‑located docs: they are the cheapest way to keep complex systems changeable.
+
+== References
+
+- Practices referenced throughout 2024: ADRs for extension points; `PreparePlaceholders`; post‑processing in `DocxStamper`;
+  iterator helpers under `DocxIterator`; expressive domain APIs (e.g., `Paragraph.replace`).

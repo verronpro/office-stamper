@@ -1,0 +1,67 @@
+:= July 2023 — Fewer Magic Annotations, Clearer Contracts: Removing Lombok and Aligning Javadoc
+Joseph Verron <caring-coder@verron.pro>
+2023-07-29
+:page-tags: craftsmanship, agility, docs-as-code, api-design, solo-maintainer, enterprise, maintainability
+
+Commit: https://github.com/verronpro/office-stamper/commit/d04ea83[d04ea83]
+
+== Why this is July’s standout
+
+Solo‑maintained projects live or die by clarity. In July 2023 I removed Lombok and aligned Javadoc with explicit defaults
+across the codebase. This is mundane work that pays compound interest: fewer magic annotations, clearer constructor and
+getter semantics, and documentation that matches what the compiler sees. For enterprise teams who will adopt Office‑stamper
+for a short project and then disappear for months, explicit code is a feature—onboarding is faster, IDE navigation is
+predictable, and debugging doesn’t require a Lombok mental model.
+
+Lombok can be a pragmatic accelerator, but it introduces invisible structure: generated methods, implicit nullability
+assumptions, and annotations that sometimes surprise build tools or static analysis. By removing it, we trade terse class
+bodies for explicitness and toolchain portability. Javadoc then becomes a reliable companion: it documents what the code
+really does, and readers don’t have to cross‑reference Lombok’s rules to understand whether a field is mutable or which
+constructor exists.
+
+== What actually changed
+
+- Removed Lombok dependencies from module builds and source files.
+- Reintroduced explicit constructors, getters, and builders where needed, using idiomatic Java.
+- Updated Javadoc to reflect defaults and invariants that were previously implicit via annotations.
+- Tidied tests and configuration to align with the new explicit APIs.
+
+While these bullets sound like housekeeping, the effect is broader: stack traces are clearer, reflective code behaves more
+predictably, and grep‑based discovery works again. It also simplifies contribution: a developer scanning the repo doesn’t
+need Lombok knowledge to modify a type safely.
+
+== Agile and craftsmanship lens
+
+- Make implicit explicit. Externalizing hidden machinery reduces surprises and accelerates reviews.
+- Optimize for maintainability over brevity. Fewer layers (annotation processors, configuration) means fewer failure modes.
+- Keep docs and code aligned. When defaults are documented in Javadoc and implemented in code without indirection,
+  the cognitive cost of context‑switching shrinks.
+
+== Solo maintainer + enterprise usage angle
+
+As a solo maintainer, my time is best spent on core features and sharp edges users actually hit. Fighting CI quirks or IDE
+plugins because of an annotation processor is not a good trade. For big‑company adopters, audit and security processes are
+simpler when the code is plain Java without compile‑time code generation. Explicit constructors and accessors make it
+obvious how to instantiate types in restricted environments (locked‑down CI agents, vendor‑approved IDEs), and they reduce
+“works on my machine” discrepancies.
+
+== Risks and mitigations
+
+- Risk: Boilerplate growth. Mitigation: centralize common patterns in small helpers and favor composition over inheritance.
+- Risk: Behavior changes when replacing generated equals/hashCode. Mitigation: write targeted tests for value objects and
+  rely on IDE‑generated, reviewed implementations where needed.
+- Risk: Performance regressions due to additional copying. Mitigation: prefer immutable types with explicit builders; be
+  mindful of hot paths and measure before optimizing.
+
+== How to apply this in your project
+
+- Audit your code for compile‑time code generation (annotation processors, bytecode weaving). Remove them where the value
+  is marginal compared to the complexity they add.
+- Make defaults and invariants explicit in both code and Javadoc. If a field is non‑null, say it and enforce it.
+- Rebuild your contribution docs: document how to navigate the code without special plugins; keep the on‑ramp smooth for
+  sporadic contributors.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/d04ea83[d04ea83]
+- Related commits around July 2023: updates to test setup and CI to align with explicit APIs.

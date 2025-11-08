@@ -1,0 +1,70 @@
+:= February 2024 — CI for Document Processing in Constrained Environments
+Joseph Verron <caring-coder@verron.pro>
+2024-02-15
+:page-tags: ci-cd, agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, windows, ubuntu
+
+== Why this topic for February
+
+Office‑stamper is often adopted by teams inside large companies with restrictive CI environments: outbound network locked
+down, custom certificate stores, no desktop apps installed, and strict JDK baselines. In February 2024 I invested time in
+codifying a CI approach that keeps the pipeline reliable under those constraints. For a solo‑maintained project with
+sporadic adopters, CI doubles as both guardrail and documentation: it has to be readable, reproducible, and portable
+between Windows and Linux runners.
+
+== The constraints we design for
+
+- No interactive tools: everything must run headless and deterministically.
+- Limited network: builds can’t fetch arbitrary URLs; dependencies must come from configured repositories.
+- OS diversity: users run Windows and Linux; tests should pass on both.
+- Standard images only: organizations prefer stock runners (GitHub/enterprise runners) with minimal customizations.
+
+These constraints shape how we structure tests and scripts. If CI passes in this environment, chances are high that the
+library and CLI will work in the adopter’s pipeline without tickets to platform teams.
+
+== A pragmatic CI blueprint
+
+- Keep the build boring
+  Use mainstream plugins (Maven Surefire, Failsafe, Asciidoctor) and avoid exotic runners. Prefer LTS JDKs and explicit
+  toolchain configuration so the compiler/version is unambiguous.
+
+- Test on Windows and Ubuntu
+  Matrix your workflow to run the full build on both OSes. This catches path, encoding, and file‑system differences early.
+  If a test is platform‑sensitive, document why and fix the root cause rather than ignore it.
+
+- Treat docs as part of the build
+  Build the AsciiDoc site in CI. Broken anchors or includes should fail the build; docs drift is a functional failure in a
+  project where documentation is a primary interface for sporadic adopters.
+
+- Validate formats like a user would
+  Exercise the CLI with small samples (CSV, JSON, XML/HTML, Properties) so adapters are verified end‑to‑end. Keep samples
+  tiny and committed to the repo to avoid network dependencies.
+
+- Emit helpful logs by default
+  When a test fails in CI, the logs should explain what happened in domain terms. Reuse the generalized result description
+  helpers from tests so failures are actionable without reproducing locally.
+
+== Agile and craftsmanship lens
+
+- Optimize for changeability under constraints: tests that run in narrow environments are a forcing function toward simpler
+  code and clearer contracts.
+- Keep feedback loops short: fast, platform‑diverse CI turns “works on my machine” into “works in our reality.”
+- Prefer explicitness: pinned toolchains, explicit JDK vendors, and versioned docs make reviews and audits easier.
+
+== Solo maintainer + enterprise usage angle
+
+As a solo maintainer, a readable CI file is my runbook and my support playbook. When an enterprise team reports an issue,
+I can point to a workflow that demonstrates how we build, test, and publish—no secrets, no snowflakes. For adopters, this
+transparency reduces risk: they see a pipeline that mirrors their constraints, which shortens the path to approval and
+lowers the chance of surprises after integration.
+
+== How to apply this now
+
+- Start with a two‑axis matrix (OS × JDK LTS). Keep it minimal but representative of your users.
+- Build docs in CI and treat failures as regressions. It’s cheaper than answering the same questions in tickets.
+- Add a small CLI smoke test that stamps a template with a tiny dataset for each supported format.
+- Document the workflow in your repository and link to it from your contribution guide.
+
+== References
+
+- Example CI entries in this repository around late 2023/early 2024 show Windows + Ubuntu integration.
+- Related posts: Java 21 migration (Nov 2023); Post‑processing in `DocxStamper` (Dec 2024); Multi‑format CLI support (Oct 2025).

@@ -1,0 +1,68 @@
+:= August 2023 — Testing WordprocessingML the Practical Way: Characterization Tests and Fixtures
+Joseph Verron <caring-coder@verron.pro>
+2023-08-20
+:page-tags: testing, craftsmanship, agility, docs-as-code, solo-maintainer, enterprise, wordprocessingml
+
+== Why this topic for August
+
+Not every month yields a flashy feature commit, but every month offers a chance to strengthen the foundation. In August
+2023, the most valuable work was codifying how we test changes to WordprocessingML behaviors—especially in a project used
+sporadically inside large organizations. Teams come and go, templates vary wildly, and yet the engine must behave
+predictably. This post documents a pragmatic approach to testing that has kept Office‑stamper changeable without turning
+into a museum of brittle assertions.
+
+== The testing problem in this domain
+
+DOCX files are trees of paragraphs, runs, fields, comments, SDTs, footnotes, and oddities from copy‑paste history. Small
+refactors can surface as layout shifts, run splits/merges, or different ordering of equivalent nodes. Tests that assert a
+precise object graph tend to be noisy and fragile. On the other hand, tests that only look at final text risk missing
+structural invariants we care about (comment ranges, placeholder boundaries, SDT containment).
+
+== A characterization‑first strategy
+
+- Start with the real thing
+  Build tiny, realistic fixtures that model a single tricky pattern: a comment crossing SDT boundaries, a paragraph with
+  interleaved fields and comments, a nested repeat section. Keep fixtures focused and hand‑crafted so intent is obvious.
+
+- Characterize current behavior, then lock it in
+  Before refactoring, write a test that stamps the fixture and records what matters: the presence/absence of control
+  comments after processing, the text content, and a few structural predicates (e.g., no `w:commentRangeStart` remains
+  inside the target SDT). Don’t over‑specify the exact sequence of runs unless your feature depends on it.
+
+- Assert invariants, not accidents
+  Focus on properties you want to preserve: idempotency, containment (no cross‑SDT spans), atomic placeholders, removal of
+  control scaffolding. If multiple object‑graph shapes are equivalent for users, prefer semantic checks.
+
+- Test specific helpers with focused unit tests
+  For utilities like `WmlUtils` or `Paragraph.replace`, add small, direct tests. When you refactor, these tests tell you if
+  you’ve broken the contract, while higher‑level characterization tests keep feature intent intact.
+
+== Agile and docs‑as‑code lens
+
+- Faster iterations
+  Characterization tests let you make confident, incremental changes. They capture what the system does today (warts and
+  all) and provide a safe baseline to improve it tomorrow.
+
+- Living documentation
+  Each test is a runnable example that shows how a specific pattern behaves. Link to them from the docs, or embed snippets
+  in AsciiDoc so reader and compiler agree. When behavior changes by design, update both together.
+
+== Solo maintainer + enterprise usage angle
+
+As a solo maintainer, I can’t afford fragile tests that turn refactors into hostage situations. I also can’t afford tests
+that miss regressions users will notice. Enterprises adopting Office‑stamper for a few weeks need predictable behavior and
+clear error messages; they also appreciate when we can point to a failing test that mirrors their case. By grounding tests
+in small, realistic fixtures and asserting invariants, I keep the suite resilient and the maintenance load sane.
+
+== How to apply this now
+
+- Identify your top three tricky patterns from user templates. Build one fixture per pattern.
+- Add invariants to your suite: “no leftover control comments,” “placeholders remain atomic,” “no cross‑SDT spans.”
+- Introduce semantic helpers for assertions (e.g., `hasNoCommentRangesIn(Node)`, `placeholderCount()`), so test intent is
+  readable and resilient to benign graph changes.
+- Wire test references into your docs. A short “see test X for before/after” note saves hours of support later.
+
+== References
+
+- Related posts: Post‑processing in `DocxStamper` (Dec 2024), Delete comments from `SdtRun` (Jun 2025), PreparePlaceholders preprocessor (Nov 2025).
+- Code areas: `WmlUtils`, `Paragraph.replace`, iterators under `DocxIterator`.

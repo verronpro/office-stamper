@@ -1,0 +1,50 @@
+:= May 2023 — Making Knowledge a Feature: Improved Site Documentation (#174)
+Joseph Verron <caring-coder@verron.pro>
+2023-05-10
+:page-tags: docs-as-code, agility, craftsmanship, solo-maintainer, enterprise, developer-experience
+
+Commit: https://github.com/verronpro/office-stamper/commit/8243bd7[8243bd7]
+
+== Why this is May’s highlight
+
+For a project maintained by one person and adopted sporadically inside big companies, documentation is not an accessory—it is a force multiplier. In May 2023, I invested in the site documentation with a series of incremental improvements that made Office‑stamper easier to learn, evaluate, and extend. The immediate payoff was fewer “how do I…?” questions and faster onboarding for occasional contributors who only pop in every few months. The longer‑term payoff is stability: when the docs express intent clearly, the code can evolve without leaving users behind.
+
+Docs‑as‑code is the theme. The same repository that ships the engine also ships the site; docs are reviewed, versioned, and built alongside the code. That makes documentation a first‑class citizen. When APIs change, the docs change in the same PR. When examples age, CI catches the drift. Enterprise teams value that trail: they can link an internal ticket directly to a specific page and commit, and auditors can see how guidance evolved.
+
+== What actually changed
+
+- Reworked sections that explain core concepts (placeholders, comment processors, resolvers) with more task‑oriented headings.
+- Added small, copy‑pastable examples that compile against public types—no pseudo‑code, fewer surprises.
+- Tightened terminology so the names in Javadoc and the site align (one noun, one meaning).
+- Improved structure and navigation to reduce pogo‑sticking between pages.
+- Cleaned up rendering/layout glitches and link targets that made deep‑linking awkward.
+
+Each of these looks minor in isolation; together they form a coherent experience. The site now guides new users from “What can this do?” to “How do I stamp my first document?” to “How do I extend it safely?” without boiling the ocean.
+
+== Agile and craftsmanship lens
+
+- Short feedback loops: turning ambiguous explanations into runnable examples helps readers self‑serve. Fewer back‑and‑forths means more time building.
+- Single source of truth: the site links to Javadoc for contracts; Javadoc links back to task‑oriented guides for workflows. No duplication, no drift.
+- Small, steady improvements: treat the docs like product code—ship narrow changes that make one path better at a time.
+
+== Solo‑maintainer + enterprise usage angle
+
+As a solo maintainer, I cannot be the help desk. The best way to scale is to convert recurring answers into durable artifacts. When a team at a large company picks up Office‑stamper for a short‑lived project, they need clarity without calls or meetings. These doc upgrades are designed for that moment: self‑contained pages with clear prerequisites, realistic examples, and direct links to the API. Procurement and security reviewers also benefit: co‑located docs reveal design intent and extension boundaries, which lowers adoption risk and accelerates internal approvals.
+
+== Risks and mitigations
+
+- Risk: duplicated explanations between the site and code comments. Mitigation: push contracts and edge cases to Javadoc; keep the site focused on “how” and “why,” linking to the authoritative API docs.
+- Risk: examples drifting as APIs evolve. Mitigation: prefer examples that compile, and wire AsciiDoctor builds into CI so broken anchors or includes fail fast.
+- Risk: too much content. Mitigation: prune aggressively and bias toward task‑oriented flows over encyclopedic coverage.
+
+== How to apply this in your project
+
+- Co‑locate docs with code. If a symbol moves or a method is renamed, update the docs in the same commit.
+- Write the guide you wish you had when you first implemented a feature. Keep it short; include one runnable example; link to deeper references.
+- Tag your docs with clear ownership. When a page references `CommentProcessor` contracts, say so and point to the package.
+- Add a “docs checklist” to your Definition of Done for user‑visible changes: updated page, updated Javadoc, link validated in CI.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/8243bd7[8243bd7]
+- Related: site layout, concept pages under `engine/src/site/asciidoc/`; Javadoc packages for `pro.verron.officestamper.api` and `core`.

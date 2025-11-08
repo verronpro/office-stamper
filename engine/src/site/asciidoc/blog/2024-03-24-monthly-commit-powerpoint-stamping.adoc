@@ -1,0 +1,65 @@
+= March 2024 — Slides, Not Just Docs: Implementing PowerPoint (PPTX) Stamping
+Joseph Verron <caring-coder@verron.pro>
+2024-03-24
+:page-tags: product-thinking, agility, craftsmanship, interoperability, solo-maintainer, enterprise, powerpoint
+
+Commit: https://github.com/verronpro/office-stamper/commit/b748e83[b748e83]
+
+== Why this is March’s highlight
+
+Agility often means meeting users where they already work. In many enterprises, important narratives live in slide decks as
+much as in documents. In March 2024, Office‑stamper grew beyond Word: this commit implemented support for stamping
+PowerPoint (PPTX) presentations. The goal was not to clone every Word feature in slides; it was to prove that our core
+abstractions—placeholders, resolvers, and a clean traversal/execution pipeline—scale to a second format without leaking
+format‑specific quirks back into the engine.
+
+For a solo‑maintained project with sporadic, enterprise‑grade usage, this is the kind of extension that adds surface area
+while testing the quality of the model. If the model is right, new formats feel like adapters at the edges, not invasive
+forks in the middle. This work validated that design.
+
+== What actually changed
+
+- Introduced a first implementation of PowerPoint stamping with a dedicated visitor and adapter layer.
+- Mapped slide placeholders and text runs to the engine’s placeholder resolution semantics, preserving the same mental
+  model users already know from DOCX.
+- Ensured examples and tests exercise realistic slide scenarios (titles, bullets, notes) with the same resolver APIs.
+- Kept the engine surface format‑agnostic; PPTX behavior is encapsulated, with clear seams for evolution.
+
+The result is pragmatic interoperability: teams can reuse data and scripts to stamp both documents and decks with minimal
+relearning. Docs and tests were updated in lockstep so adopters can copy examples and iterate quickly.
+
+== Agile and craftsmanship lens
+
+- One language, many canvases: keeping the domain model stable (placeholders, resolvers, pre/post processing) across
+  formats reduces cognitive load for users and contributors. That is a craftsmanship win.
+- Slice by capability, not by file type: the first PPTX milestone focuses on text content with a high signal‑to‑noise
+  ratio. Broader media or layout features can follow behind stable seams.
+- Tests as truth: behavior is locked by fixtures and characterization tests so future refactors remain safe.
+
+== Solo maintainer + enterprise usage angle
+
+Enterprises often need a quarterly results deck and a narrative report that share numbers and labels. Supporting PPTX means
+those workflows can standardize on Office‑stamper and a single pipeline. As a solo maintainer, I can guide users to the
+same set of concepts and helper APIs across formats, shortening support conversations and avoiding divergent docs. Because
+format specifics are isolated behind adapters, I can evolve slide support safely in small PRs without risking DOCX
+stability.
+
+== Risks and mitigations
+
+- Risk: Feature skew (Word features not yet present in slides). Mitigation: document parity clearly; maintain a capability
+  matrix; prioritize based on user demand.
+- Risk: Performance on media‑heavy decks. Mitigation: profile real decks; bound traversal; avoid quadratic behavior when
+  modifying runs/shapes.
+- Risk: API leakage across formats. Mitigation: keep the engine domain pure; add format‑specific adapters at the boundary
+  and test both sides.
+
+== How to apply this in your project
+
+- Start with the shared language of your domain (insert text, repeat section, resolve image) and map it across formats.
+- Keep adapters narrow and explicit; push complexity to pre/post processors when possible.
+- Document and test the “golden path” first: stamp a small deck with text placeholders and bullets. Expand from there.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/b748e83[b748e83]
+- Related work in March 2024 around PowerPoint and examples; see `engine/src/site/asciidoc` for format notes and samples.

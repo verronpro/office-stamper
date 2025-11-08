@@ -1,0 +1,66 @@
+= April 2024 — Make Text Surgery Boring: Enforcing Run Replacements in StandardParagraph
+Joseph Verron <caring-coder@verron.pro>
+2024-04-30
+:page-tags: craftsmanship, agility, wordprocessingml, docs-as-code, solo-maintainer, enterprise, correctness
+
+Commit: https://github.com/verronpro/office-stamper/commit/5c309df[5c309df]
+
+== Why this is April’s highlight
+
+Most real problems in WordprocessingML come down to a deceptively simple task: changing text inside a paragraph without
+breaking the surrounding structure. Runs split; styles interleave; comments, fields, and SDTs thread through your target
+range. In April 2024, I tightened the `StandardParagraph` internals to enforce correct run replacement semantics. It’s a
+small step that aims for a big outcome: make “text surgery” boring and safe.
+
+For a solo‑maintained project used sporadically in enterprises, boring is a feature. When a team integrates Office‑stamper
+for a quarter, they need APIs that fail loudly on misuse and keep invariants intact by default. This change moves logic out
+of ad‑hoc call sites and into the paragraph abstraction, where we can centralize correctness and improve it over time.
+
+== What actually changed
+
+- Hardened `StandardParagraph` so replacing text consistently rewrites runs within clearly defined bounds.
+- Consolidated logic that previously lived at call sites into a single, intention‑revealing place.
+- Clarified preconditions and postconditions around replacement (valid ranges, no cross‑SDT side effects, stable
+  formatting where expected).
+- Laid groundwork for clearer error messages and characterization tests focused on invariants rather than incidental shape.
+
+These tweaks reduce the number of bespoke loops that each try to “just fix the text here.” Fewer custom paths means fewer
+surprises for reviewers and future contributors.
+
+== Agile and craftsmanship lens
+
+- Encapsulate complexity at the right seam. The `Paragraph` abstraction is where text manipulation belongs. When callers
+  express intent—"replace [from..to] with X"—the class owns the details.
+- Prefer invariants over cleverness. Correctness checks at the boundary produce fast, useful failures and easier triage.
+- Invest in changeability. Centralized code is easier to optimize and test; the suite can assert properties once instead of
+  in every processor.
+
+== Solo maintainer + enterprise usage angle
+
+I often receive bug reports that are really “template plus edge case” stories. By enforcing run replacement semantics in
+one place, I can ship fixes that help everyone, not just the specific reporter. Enterprise teams benefit because behavior
+stays predictable across templates: the same placeholder replacement won’t randomly break when a paragraph contains a
+hyperlink or a footnote marker.
+
+== Risks and mitigations
+
+- Risk: Over‑normalization changes visual layout. Mitigation: scope replacements narrowly; preserve run properties unless
+  the caller asks for formatting changes; add tests for common interleavings (fields, comments, hyperlinks).
+- Risk: Performance on paragraphs with many short runs. Mitigation: profile typical documents and avoid quadratic merging
+  strategies; keep operations linear where possible.
+- Risk: Hidden call‑site assumptions. Mitigation: port characterization tests and add precondition validations that turn
+  silent misuses into clear exceptions.
+
+== How to apply this in your project
+
+- Wrap low‑level structures behind domain types and enforce invariants there. Don’t let every caller tinker with raw lists
+  of runs.
+- Add a single API for text replacement (`replace`), and route all callers through it. Document preconditions and return
+  types so intent is obvious in code review.
+- Test the API boundary with fixtures that include comments, fields, and SDTs. Assert high‑level properties (no leftover
+  control comments; placeholders remain atomic) rather than exact run shapes.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/5c309df[5c309df]
+- Related April 2024 refactors around `StandardParagraph`, PowerPoint visitors, and package docs.

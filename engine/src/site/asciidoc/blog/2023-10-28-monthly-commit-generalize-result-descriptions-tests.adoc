@@ -1,0 +1,62 @@
+:= October 2023 — Make Tests Tell a Story: Generalizing Result Descriptions
+Joseph Verron <caring-coder@verron.pro>
+2023-10-28
+:page-tags: testing, craftsmanship, agility, docs-as-code, solo-maintainer, enterprise, readability
+
+Commit: https://github.com/verronpro/office-stamper/commit/7afd857[7afd857]
+
+== Why this is October’s standout
+
+When projects are maintained by one person and used sporadically inside big companies, tests are not only a safety net—
+they are one of the main ways new contributors learn how the system behaves. In October 2023 I generalized the string‑
+based description of test results to increase readability and intent. It sounds small, but the impact is real: reviewers
+understand failures faster, contributors spend less time deciphering assertion details, and future me can triage a red CI
+job without mentally reconstructing the expected state from raw object graphs.
+
+Tests often fail “usefully” when the failure message explains what the system intended to do in domain words, not in
+low‑level structures. Instead of a brittle dump of runs, fields, and comment markers, a generalized description routine can
+say: “expected one placeholder replaced in paragraph 3, found none,” or “expected no comment ranges in SDT X, found 1.”
+That is a better conversation starter in code reviews and issue triage.
+
+== What actually changed
+
+- Centralized the stringification of test results so assertions share a common, intention‑revealing vocabulary.
+- Rewrote several tests to use the generalized description builder, reducing bespoke assertion messages and duplication.
+- Tuned formatting to surface domain concepts (placeholders, comment ranges, SDTs, runs) in a predictable order.
+- Simplified expected/actual diffs so failures highlight the meaningful delta rather than noise.
+
+These improvements make tests read like documentation‑as‑code. When someone opens a test to understand how `Paragraph.replace`
+behaves or how comments are removed from `SdtRun`, the narrative is easier to follow. It also helps keep PRs focused: when
+assertion messages are clear, reviewers can debate intent rather than re‑derive it from low‑level details.
+
+== Agile and craftsmanship lens
+
+- Optimize for feedback clarity. A crisp failure message is a rapid feedback loop; it tells you what to fix and where.
+- DRY the narrative. A single description engine avoids tiny divergences across tests that confuse future readers.
+- Test as teaching. When tests read like a short story about the behavior, they onboard contributors and document design.
+
+== Solo maintainer + enterprise usage angle
+
+As the sole maintainer, I rely on tests to double as living documentation. When an enterprise team reports a bug, I often
+encode their scenario as a fixture and a test. If that test’s failure explains the mismatch in domain terms, we can align
+faster—sometimes asynchronously, without meetings. For contributors dropping in every few months, a consistent assertion
+vocabulary lowers cognitive load: they can pattern‑match on familiar phrasing and focus on the change at hand.
+
+== Risks and mitigations
+
+- Risk: Over‑abstracting failure details. Mitigation: keep a debug mode or attach raw structures when needed; default to
+  concise summaries with pointers to deeper logs.
+- Risk: Description drift vs. code. Mitigation: build descriptions from the same domain primitives the engine uses (e.g.,
+  `Paragraph`, `DocxIterator` helpers) so they evolve together.
+- Risk: Hard‑to‑read diffs. Mitigation: normalize ordering and whitespace; prefer line‑by‑line sections per concept.
+
+== How to apply this in your project
+
+- Write a small “result description” helper that takes your domain objects and renders meaningful summaries.
+- Replace bespoke assertion messages with calls to this helper; keep a single vocabulary.
+- Include one or two examples of failure messages in your docs so contributors know what to expect from CI.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/7afd857[7afd857]
+- Related commits: tightening test setup and generalized descriptions around 2023‑10‑16 and 2023‑10‑25.

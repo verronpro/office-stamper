@@ -1,0 +1,46 @@
+= February 2025 — Expanding Horizons: PowerPoint and Excel Stamping
+Joseph Verron <caring-coder@verron.pro>
+2025-02-12
+:page-tags: product-thinking, agility, craftsmanship, interoperability
+
+Commit: https://github.com/verronpro/office-stamper/commit/8e046c8[8e046c8]
+
+== Why this is February’s highlight
+
+Agility is about meeting users where they are. Many organizations don’t live in a Word‑only world—presentations and spreadsheets are part of their daily workflows. This commit brings PowerPoint (PPTX) and Excel (XLSX) stamping to Office‑stamper, along with CLI improvements that make the new capabilities immediately accessible. It widens the product’s aperture without bloating the core: the engine remains focused on robust stamping semantics while format‑specific details are encapsulated at the boundary.
+
+From a software craftsmanship perspective, adding formats is risky when it leaks implementation quirks throughout the codebase. The design here keeps responsibilities clean. The engine exposes consistent abstractions (placeholders, resolvers, processors where applicable), and the format adapters/CLI do the heavy lifting to translate user inputs into those abstractions. Users gain power; the core stays cohesive.
+
+== What changed
+
+- Introduced PowerPoint stamping support to programmatically fill presentation templates.
+- Added Excel stamping support to populate sheets and ranges, aligning with placeholder semantics users already know.
+- Improved CLI experience so the new formats are first‑class: clearer flags, examples, and helpful error messages.
+- Preserved a stable, format‑agnostic engine surface so business logic doesn’t fork by file type.
+
+== Agility and developer experience
+
+- Broader value, same mental model: teams can standardize on a single templating approach across documents, slides, and spreadsheets. That translates into fewer tools to learn and less context switching.
+- Smaller learning curve: existing knowledge (e.g., placeholders, expression evaluation) applies across formats. Docs and examples scale better because the core ideas are shared.
+- Cleaner PRs: format handling lives in adapters and the CLI, allowing targeted changes and tests per format without touching the engine’s heart.
+
+This change also advances documentation‑as‑code. Each new capability ships with examples and CLI guidance aligned with the engine’s terminology. When users run `--help` or check the docs, they see the same nouns and verbs used throughout the codebase.
+
+== Practical guidance
+
+- Treat each file format as a boundary module. Translate external representation (slide placeholders, cell ranges) into the engine’s abstract operations and back—nowhere else.
+- Provide format‑specific examples in the docs that mirror common user tasks (e.g., “populate a quarterly results deck,” “fill a forecast spreadsheet”). Keep them minimal and runnable.
+- Validate your abstractions by attempting the same business task across formats. If you can stamp the same dataset into DOCX, PPTX, and XLSX with similar commands, you’ve likely landed on a good model.
+
+== Risks and mitigations
+
+- Risk: feature skew—Word features not yet available in slides/sheets. Mitigation: document current parity transparently; maintain a public matrix and prioritize based on user demand.
+- Risk: performance pitfalls on large workbooks or media‑heavy decks. Mitigation: profile real files, stream where possible, and add tests capturing memory constraints.
+- Risk: UX fragmentation in the CLI. Mitigation: reuse flag names and error patterns; keep subcommands parallel across formats.
+
+== How to apply this thinking
+
+- Start with domain language, not file types. Define the operations users need (insert text, table, image, repeat section), then map them across formats.
+- Keep your engine ignorant of transport: it should not know if the caller is Word, PowerPoint, or Excel. That ignorance is what keeps the design resilient as the product evolves.
+
+This commit is a pragmatic expansion. It increases the usefulness of the tool without diluting its conceptual core, allowing teams to move faster across a wider set of business documents with a single, learnable approach.

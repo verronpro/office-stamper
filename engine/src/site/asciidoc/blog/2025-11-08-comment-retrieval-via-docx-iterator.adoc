@@ -1,0 +1,25 @@
+= Declarative Comment Retrieval with DocxIterator
+Joseph Verron <dev@officestamper>
+2025-11-08
+:page-tags: refactoring, api-design, clarity, maintainability
+
+Commit: https://github.com/verronpro/office-stamper/commit/640d654[640d654]
+
+== Why this commit is interesting
+
+Fetching comments in WordprocessingML used to be a tangle of tree walking and type checks sprinkled across the codebase. By routing retrieval through `DocxIterator`, we concentrate knowledge in one place and let the rest of the code read like intent.
+
+== What changed
+
+- Comment discovery now uses `DocxIterator`, replacing ad‑hoc traversal.
+- Call sites become smaller and more expressive; fewer moving parts per feature.
+
+== Agile and craftsmanship angles
+
+- Centralizing traversal logic reduces cognitive load for reviewers and new contributors.
+- Fewer bespoke loops means fewer bug surfaces and faster iterations.
+
+== What you can emulate
+
+- Introduce small, composable iterators for complex DOMs. Keep call sites declarative.
+- Measure the reduction in lines and branches touched per change to validate simplification.

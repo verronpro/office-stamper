@@ -1,0 +1,25 @@
+= Upgrading the Toolchain: Migrating to Java 25
+Joseph Verron <dev@officestamper>
+2025-10-08
+:page-tags: platform, ci-cd, modernization, risk-management
+
+Commit: https://github.com/verronpro/office-stamper/commit/d0495ba[d0495ba]
+
+== Why this commit is interesting
+
+Platform upgrades are classic “change the engine while driving.” Migrating the codebase and workflows from Java 21 to 25 keeps the project current with the ecosystem while validating that our abstractions are portable and our build is reproducible.
+
+== What changed
+
+- Bumped Java version across Maven configuration and CI workflows.
+- Aligned plugin/toolchain versions and matrix builds.
+
+== Agile and craftsmanship angles
+
+- Make platform work visible and incremental—this migration was split into small, verifiable steps with CI as the safety net.
+- Tests and static analysis act as guardrails during wide-reaching changes.
+
+== Tips for your team
+
+- Upgrade early and often; small leaps are cheaper than big jumps.
+- Maintain a green CI matrix across supported JDKs before, during, and after the migration.

@@ -1,0 +1,28 @@
+= Targeted Traversal in Word Docs: `DocxIterator.ofCRS`
+Joseph Verron <dev@officestamper>
+2025-11-08
+:page-tags: api-design, refactoring, word-comments, selection
+
+Commit: https://github.com/verronpro/office-stamper/commit/8550bfb[8550bfb]
+
+== Why this commit is interesting
+
+Selecting exactly the right nodes in a complex document tree is half the battle. This commit adds `DocxIterator.ofCRS`, a focused factory for iterating `CommentRangeStart` elements. It tightens intent: code that needs comment starts can say so explicitly.
+
+== What changed
+
+- Introduced a typed filter/factory `ofCRS` to enumerate `w:commentRangeStart` elements.
+- Callers remove ad‑hoc filtering and gain a self‑documenting API.
+
+== Craftsmanship insights
+
+- Provide named constructors/factories that express selection intent; it reduces bugs from mismatched filters.
+- Small APIs that read like English nudge the rest of the code toward clarity.
+
+== Agile angle
+
+- Narrow, composable iteration primitives make features easier to slice—teams can ship improvements without touching global iteration logic.
+
+== Try this yourself
+
+- Replace boolean flags and loosely typed filters with specific factory methods that return the right iterator for the job.

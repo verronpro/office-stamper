@@ -1,0 +1,25 @@
+= Making Iteration Robust: ResetableIterator + DocxIterator
+Joseph Verron <dev@officestamper>
+2025-11-08
+:page-tags: refactoring, api-design, iteration, reliability
+
+Commit: https://github.com/verronpro/office-stamper/commit/a0fa512[a0fa512]
+
+== Why this commit is interesting
+
+Processing Word documents involves walking a mutable tree while you’re also transforming it. That’s a breeding ground for iterator invalidation and off-by-one bugs. This change introduces a `ResetableIterator` and routes paragraph traversal through `DocxIterator` so processors can safely re-iterate after structural changes.
+
+== What changed
+
+- New `ResetableIterator` abstraction allows rewinding to a known state after a mutation.
+- Core paragraph processing switches to `DocxIterator`, centralizing traversal and enabling safe resets.
+
+== Agile and craftsmanship angles
+
+- Reducing incidental complexity improves developer flow and lowers cycle time for new processors.
+- Encapsulating iteration details honors the Single Responsibility Principle and strengthens invariants.
+
+== How to apply this in your codebase
+
+- When transforming collections you also traverse, encapsulate the cursor logic behind a small interface.
+- Provide a reset/rewind semantic if transformations can change traversal boundaries.

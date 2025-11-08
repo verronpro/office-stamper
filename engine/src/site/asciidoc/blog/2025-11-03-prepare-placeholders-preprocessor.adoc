@@ -1,0 +1,24 @@
+= Preparing the Field: A Preprocessor for Safer Placeholder Handling
+Joseph Verron <dev@officestamper>
+2025-11-03
+:page-tags: design, preprocessing, robustness, template-safety
+
+Commit: https://github.com/verronpro/office-stamper/commit/822eff5[822eff5]
+
+== Why this commit is interesting
+
+Real-world templates are messy. Users mix fields, comments, and arbitrary text. The new `PreparePlaceholders` preprocessor normalizes placeholder regions before stamping, which reduces edge cases later in the pipeline.
+
+== What changed
+
+- Introduced a dedicated preprocessor that scans and prepares placeholder boundaries.
+- Encapsulated heuristics and cleanup so processors downstream can assume cleaner inputs.
+
+== Agile + craftsmanship lens
+
+- Shift-left on quality: catch inconsistencies early instead of complicating stamp-time processors.
+- Improves flow by turning “unknown unknowns” (template quirks) into known, well-tested steps.
+
+== How to apply this
+
+- Add a pre-normalization phase for user-controlled inputs. Keep it deterministic, idempotent, and fast.

@@ -1,0 +1,28 @@
+= Modeling Word Features: A `newSmartTag` Factory
+Joseph Verron <dev@officestamper>
+2025-11-03
+:page-tags: domain-modeling, api-design, docx4j, word-features
+
+Commit: https://github.com/verronpro/office-stamper/commit/21e9451[21e9451]
+
+== Why this commit is interesting
+
+WordprocessingML exposes rich features like Smart Tags, but their construction is verbose. This commit introduces a `newSmartTag` factory that creates and configures `CTSmartTagRun` instances in a single, expressive place.
+
+== What changed
+
+- Added a focused factory to build a Smart Tag run with sensible defaults.
+- Co-located configuration so callers don’t duplicate low-level wiring.
+
+== Craftsmanship perspective
+
+- Give domain concepts a first-class API instead of leaking raw XML details.
+- Expressive factories reduce misuse and make tests smaller and clearer.
+
+== Agile angle
+
+- Improving the “pit of success” for feature usage accelerates delivery—fewer review comments, fewer bugs.
+
+== Apply this idea
+
+- Wrap verbose third-party constructs in small, intention-revealing builders or factories.

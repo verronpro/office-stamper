@@ -1,0 +1,28 @@
+= From Raw Runs to StandardRun: Strengthening the Abstraction
+Joseph Verron <dev@officestamper>
+2025-11-03
+:page-tags: refactoring, domain-modeling, robustness, readability
+
+Commit: https://github.com/verronpro/office-stamper/commit/dc47832[dc47832]
+
+== Why this commit is interesting
+
+Refactors that replace third‑party primitives with project‑level abstractions are high‑leverage. Switching from `Run` to `StandardRun` gives us a home for invariants, helpers, and a consistent mental model—without sprinkling docx4j specifics everywhere.
+
+== What changed
+
+- Replaced usages of low‑level `Run` with `StandardRun`.
+- Centralized text/run behaviors behind a stable API we control.
+
+== Craftsmanship benefits
+
+- Improves readability and testability: helpers belong with the concept they serve.
+- Eases future changes: we can optimize or validate internals without touching call sites.
+
+== Agile angle
+
+- This raises the “changeability” of the code. Features that manipulate runs now evolve faster with fewer regressions.
+
+== Apply this idea
+
+- Wrap third‑party classes in thin domain wrappers where you need invariants, helpers, or a safer API surface.

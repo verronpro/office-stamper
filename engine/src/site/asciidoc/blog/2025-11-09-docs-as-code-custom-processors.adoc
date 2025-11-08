@@ -1,0 +1,38 @@
+= From Code to Guide: Turning a Feature into Documentation-as-Code
+Joseph Verron <dev@officestamper>
+2025-11-09
+:page-tags: docs-as-code, knowledge-sharing, developer-experience, word-automation
+
+Commit: https://github.com/verronpro/office-stamper/commit/04e2de1[04e2de1]
+
+== Why this commit is interesting
+
+This commit adds a comprehensive guide for building custom comment processors and placeholder resolvers. It’s a great example of documentation-as-code: the guide is versioned alongside the feature, references concrete package names, and is written in AsciiDoc so it composes with the rest of the site.
+
+For Agile teams, this illustrates “working software over comprehensive documentation” without sacrificing shared understanding. The documentation is:
+
+- Close to the code (same repo, same PR).
+- Testable by proximity (examples map to real classes and tests).
+- Evolvable as the code evolves (refactors update docs in the same change).
+
+== What changed
+
+A new AsciiDoc tutorial explains how to implement custom processors and resolvers.
+It anchors newcomers by pointing them to the exact extension points: `CommentProcessor`, `AbstractCommentProcessor`, `ObjectResolver`, and `ExpressionResolver`, and to wiring components like `CommentProcessorRegistry` and `DocxStamperConfiguration`.
+
+== Craftsmanship takeaways
+
+- Treat docs as first-class artifacts. Keep them versioned, reviewed, and built with the product.
+- Document the “why” (design intent) as much as the “how” (API/steps). It reduces onboarding time and defect rates.
+- Prefer runnable or copy-pastable snippets that compile against your public API.
+
+== Agile practice in action
+
+- Definition of Done includes updated docs.
+- The guide lowers cycle time for plugin authors—users can self-serve instead of waiting on maintainers.
+
+== How you can apply this
+
+- Co-locate your docs with code using AsciiDoc or Markdown.
+- Link to exact source paths and tests. Keep examples minimal and idiomatic.
+- Automate site generation in CI so documentation drifts less.

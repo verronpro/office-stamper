@@ -1,0 +1,25 @@
+= One Place for WordprocessingML Utilities: Consolidating into WmlUtils
+Joseph Verron <dev@officestamper>
+2025-11-02
+:page-tags: refactoring, api-design, cohesion, maintainability
+
+Commit: https://github.com/verronpro/office-stamper/commit/d832b84[d832b84]
+
+== Why this commit is interesting
+
+Utility sprawl is a maintenance tax. This refactor consolidates run-related helpers into `WmlUtils` and removes the separate `RunUtil` class. It’s a textbook application of cohesion: related behavior lives together with clear naming and consistent semantics.
+
+== What changed
+
+- Moved fragmented run utilities into `WmlUtils`.
+- Deleted `RunUtil` and updated call sites to a single, coherent API.
+
+== Agile and craftsmanship angles
+
+- A cohesive utility module reduces discovery time for new contributors.
+- Fewer classes and fewer names reduce friction during code reviews and refactors.
+
+== Practice this yourself
+
+- Periodically map hotspots where helpers duplicate or drift. Consolidate and standardize naming.
+- Add lightweight tests that protect utility behavior before moving code.

@@ -1,0 +1,25 @@
+= One CLI, Many Inputs: CSV, JSON, XML/HTML, and Properties
+Joseph Verron <dev@officestamper>
+2025-10-10
+:page-tags: product-thinking, ux, cli, interoperability
+
+Commit: https://github.com/verronpro/office-stamper/commit/aa33652[aa33652]
+
+== Why this commit is interesting
+
+Teams live in heterogeneous data worlds. By teaching the CLI to process CSV, JSON, XML/HTML, and Java properties, we meet users where their data already is. This is pragmatic agility: reducing integration friction matters more than theoretical purity.
+
+== What changed
+
+- Extended the CLI’s input adapters to parse multiple common formats.
+- Unified the stamping flow so format differences do not leak into downstream logic.
+
+== Craftsmanship and Agile angle
+
+- A single, cohesive user experience backed by small, testable adapters.
+- User value first: choosing formats users already have dramatically cuts onboarding time.
+
+== Tips for your project
+
+- Treat format support as adapters at the boundary. Keep the domain model stable and format-agnostic.
+- Provide helpful error messages and minimal examples for each format in the docs.

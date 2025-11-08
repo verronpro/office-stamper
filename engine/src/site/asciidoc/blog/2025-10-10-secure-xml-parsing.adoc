@@ -1,0 +1,25 @@
+= Security by Default: Enabling Secure XML Processing
+Joseph Verron <dev@officestamper>
+2025-10-10
+:page-tags: security, robustness, xml, defaults
+
+Commit: https://github.com/verronpro/office-stamper/commit/0d18a0f[0d18a0f]
+
+== Why this commit is interesting
+
+When your input format is XML, parser settings are security settings. This change enables secure processing to harden the XML pipeline against known classes of attacks (e.g., entity expansion, external entity resolution).
+
+== What changed
+
+- Enabled secure processing flags when creating XML parsers.
+- Adopted safer defaults without burdening callers.
+
+== Agile and craftsmanship angles
+
+- Security is part of quality. Make safe defaults the path of least resistance and test them.
+- Tracer bullets: small, testable changes that incrementally raise the baseline.
+
+== Practical tips
+
+- Centralize parser creation behind a factory so you can enforce secure settings in one place.
+- Treat configuration as code; commit the change, describe the threat model in the docs, and let CI verify it.

@@ -1,0 +1,45 @@
+= October 2025 — A Safer API for Text Surgery: Paragraph.replace
+Joseph Verron <caring-coder@verron.pro>
+2025-10-14
+:page-tags: api-design, agility, craftsmanship, wordprocessingml
+
+Commit: https://github.com/verronpro/office-stamper/commit/a54e7b1[a54e7b1]
+
+== Why this commit is the month’s standout
+
+In WordprocessingML, nothing is as simple as it looks—least of all replacing text. Paragraphs are split across runs; styles, fields, and comments interleave content; and off‑by‑one errors are frighteningly easy. This commit introduces `Paragraph.replace`, a single, intention‑revealing API that centralizes the gnarly details behind a stable boundary. From an Agile perspective, this tightens our feedback loops: code that once required bespoke “text surgery” per feature can now be expressed as one call, tested in isolation, and reasoned about predictably.
+
+Craftsmanship here means refusing to repeat fragile sequences at call sites. The new method codifies invariants (valid ranges, consistent run boundaries) and collapses ceremony. The result is fewer regressions, faster reviews, and clearer diff intent whenever we manipulate paragraph content.
+
+== What changed
+
+- Added `replace` to the `Paragraph` abstraction and implemented it in `StandardParagraph`.
+- Centralized range calculations and validations that used to sprawl across processors.
+- Simplified call sites by replacing multi‑step manipulations with a single method call.
+- Introduced tests and refactors around related helpers to reinforce correctness.
+
+== Agility and developer experience
+
+- Smaller batch size: features requiring text replacement now touch fewer branches and classes.
+- Safer refactors: correctness lives in one place, so we can evolve internals without risking scattered breakage.
+- Clearer code reviews: `Paragraph.replace(from, to, replacement)` reads like intent. Reviewers can focus on whether the replacement is correct rather than re‑checking run arithmetic.
+
+This is also documentation‑as‑code by design: an API that reads like prose reduces the surface area of external docs. Javadoc and a few examples often suffice when the primitive itself is expressive.
+
+== Practical guidance for your codebase
+
+- When you spot repeated, fragile mutation sequences, stop and design an API that captures the invariant. Hide the algorithm; expose the intention.
+- Add precondition checks and precise error messages. They turn unpredictable failure modes into fast, actionable feedback during development.
+- Write tests that target the new API boundary, not just internal helpers. This is how you keep the seam safe as implementation details evolve.
+
+== Risks and mitigations
+
+- Risk: Over‑fitting to current use cases. Mitigation: keep `replace` minimal and composable—no formatting side effects, no unexpected normalization.
+- Risk: Performance regressions in pathological paragraphs. Mitigation: micro‑bench with real templates and avoid accidental quadratic behavior when splitting/merging runs.
+
+== How to apply this thinking
+
+- Audit your code for “microscripts” that repeat across features (e.g., DOM rewrites, collection surgery). Design a slim, well‑named method or type to contain them.
+- Favor types owned by your domain (here, `Paragraph`) over raw third‑party primitives. Owning the abstraction gives you a safe home for invariants and helpers.
+
+This commit exemplifies pragmatic craftsmanship: encapsulate complexity, optimize for clarity, and let strong boundaries accelerate your team. By turning text surgery into a one‑liner, we trade improvisation for a reliable instrument—and that’s real agility in day‑to‑day engineering.

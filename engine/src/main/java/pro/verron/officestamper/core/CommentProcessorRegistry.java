@@ -61,19 +61,21 @@ public class CommentProcessorRegistry {
     /// @param <T>               the type of the context root object
     /// @param expressionContext the context root object against which expressions within comments are evaluated
     public <T> void runProcessors(T expressionContext) {
-        var it = DocxIterator.ofParagraphs(source);
-        while (it.hasNext()) {
-            var p = it.next();
+        var iterator = DocxIterator.ofParagraphs(source);
+
+        while (iterator.hasNext()) {
+            var p = iterator.next();
             var comments = collectComments();
             var paragraphComment = p.getComment();
             var updates = 0;
             for (Comments.Comment pc : paragraphComment) {
                 updates += runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
             }
-            if (updates > 0) it.reset();
+            if (updates > 0) iterator.reset();
         }
 
-        var iterator = DocxIterator.ofParagraphs(source);
+        iterator.reset();
+
         while (iterator.hasNext()) {
             var paragraph = iterator.next();
             if (runProcessorsOnInlineContent(expressionContext, paragraph) > 0) iterator.reset();

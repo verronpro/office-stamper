@@ -242,7 +242,7 @@ public class StandardParagraph
     /// @return a collection of [Comments.Comment] objects related to the paragraph.
     @Override
     public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(contents, source.document());
+        return CommentUtil.getCommentFor(p, source.document());
     }
 
     private Comment comment(Placeholder placeholder) {

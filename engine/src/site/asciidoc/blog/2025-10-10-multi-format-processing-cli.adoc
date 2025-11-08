@@ -1,25 +1,59 @@
-= One CLI, Many Inputs: CSV, JSON, XML/HTML, and Properties
-Joseph Verron <dev@officestamper>
+= October 2025 — One CLI, Many Inputs: CSV, JSON, XML/HTML, and Properties
+Joseph Verron <caring-coder@verron.pro>
 2025-10-10
-:page-tags: product-thinking, ux, cli, interoperability
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, product-thinking, ux, cli, interoperability
 
 Commit: https://github.com/verronpro/office-stamper/commit/aa33652[aa33652]
 
-== Why this commit is interesting
+== Why this commit stands out
 
-Teams live in heterogeneous data worlds. By teaching the CLI to process CSV, JSON, XML/HTML, and Java properties, we meet users where their data already is. This is pragmatic agility: reducing integration friction matters more than theoretical purity.
+Teams live in heterogeneous data worlds. By teaching the CLI to process CSV, JSON, XML/HTML, and Java properties, we meet
+users where their data already is. This is pragmatic agility: reduce integration friction first, then refine. The change
+makes the CLI a better front door for sporadic enterprise adopters—no need to write convertors or custom scripts before you
+see value. You point the CLI to a template and a data file in the format you already have.
 
-== What changed
+For a solo‑maintained project, the key is leverage with safety. Format differences are handled by small adapters at the
+boundary; the engine’s domain stays stable. That means clearer tests, fewer places for bugs to hide, and a user experience
+that feels cohesive across formats.
 
-- Extended the CLI’s input adapters to parse multiple common formats.
-- Unified the stamping flow so format differences do not leak into downstream logic.
+== What actually changed
 
-== Craftsmanship and Agile angle
+- Extended the CLI’s input adapters to parse multiple common formats (CSV, JSON, XML/HTML, Java properties).
+- Unified the stamping flow so format differences do not leak into downstream logic; the engine sees the same abstraction.
+- Improved CLI help and error messages with minimal, copy‑pastable examples for each format.
+- Updated docs and examples so teams can adopt the new capability without spelunking through source.
 
-- A single, cohesive user experience backed by small, testable adapters.
-- User value first: choosing formats users already have dramatically cuts onboarding time.
+== Agile/craftsmanship/docs‑as‑code lens
 
-== Tips for your project
+- Optimize for first value. A single CLI that accepts the data you already have compresses onboarding; fewer handoffs, less
+  yak‑shaving.
+- Keep the engine pure. Adapters live at the edges; the domain model (placeholders, resolvers, processors) remains
+  format‑agnostic, which preserves testability and refactor safety.
+- Documentation‑as‑code. Examples ship with the change and compile against public API; the site and `--help` show the same
+  vocabulary.
 
-- Treat format support as adapters at the boundary. Keep the domain model stable and format-agnostic.
-- Provide helpful error messages and minimal examples for each format in the docs.
+== Solo‑maintainer + enterprise usage angle
+
+Enterprises often have strict pipelines and legacy data sources. Giving the CLI first‑class support for common formats
+removes reasons to fork or wrap the tool. As the sole maintainer, I avoid a support queue of “how do I convert X to Y?”
+Instead, I can point to a tiny example per format and a stable interface. Platform teams reviewing the tool can scan the
+adapters once and approve their use across projects.
+
+== Risks and mitigations
+
+- Risk: Adapter sprawl and inconsistent behavior. Mitigation: keep adapters small, tested, and documented; enforce a single
+  abstraction at the engine boundary.
+- Risk: Divergent error reporting per format. Mitigation: normalize error messages and exit codes; add tests per adapter.
+- Risk: Performance on very large inputs. Mitigation: stream where applicable; document limits and provide guidance.
+
+== How to apply this in your project
+
+- Treat format support as adapters at the boundary. Keep the domain model stable and format‑agnostic.
+- Provide helpful error messages and minimal examples for each format in the docs and `--help` output.
+- Add a smoke test per format that exercises the happy path. Keep samples tiny and vendor‑neutral.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/aa33652[aa33652]
+- Related posts: CLI modularization (Mar 2025); Java 25 migration (platform); Resolver safety (Sep 2024)
+- Code: CLI module adapters and engine abstractions

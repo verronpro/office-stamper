@@ -1,28 +1,67 @@
-= Modeling Word Features: A `newSmartTag` Factory
-Joseph Verron <dev@officestamper>
+= November 2025 — Modeling Word Features the Right Way: a `newSmartTag` Factory
+Joseph Verron <caring-coder@verron.pro>
 2025-11-03
-:page-tags: domain-modeling, api-design, docx4j, word-features
+:page-tags: agility, craftsmanship, docs-as-code, solo-maintainer, enterprise, domain-modeling, api-design, docx4j, word-features
 
 Commit: https://github.com/verronpro/office-stamper/commit/21e9451[21e9451]
 
-== Why this commit is interesting
+== Why this commit stands out
 
-WordprocessingML exposes rich features like Smart Tags, but their construction is verbose. This commit introduces a `newSmartTag` factory that creates and configures `CTSmartTagRun` instances in a single, expressive place.
+WordprocessingML exposes rich features like Smart Tags, but constructing them directly is verbose and easy to misuse. A
+few lines of low‑level code can hide a lot of intent: namespaces, tag names, child runs, and edge‑case defaults. This
+commit introduces a small, intention‑revealing factory `newSmartTag` that creates and configures `CTSmartTagRun`
+instances in one place. The goal isn’t to add bells and whistles—it’s to make a common capability obvious, safe, and
+repeatable.
 
-== What changed
+For a project maintained by one person and used sporadically inside big companies, these “tiny factories” are leverage.
+They give contributors (who might show up every few months) a way to express domain intent without spelunking through raw
+XML classes. They also give auditors and reviewers a single, documented path for a Word feature: less variation at call
+sites, fewer bugs, and faster reviews.
 
-- Added a focused factory to build a Smart Tag run with sensible defaults.
-- Co-located configuration so callers don’t duplicate low-level wiring.
+== What actually changed
 
-== Craftsmanship perspective
+- Added a focused factory to build a Smart Tag run with sensible defaults (tag name, attributes, and child run setup).
+- Co‑located configuration so callers don’t duplicate low‑level wiring across the codebase.
+- Documented the factory with clear pre/postconditions and a short example showing how to wrap an existing run.
+- Aligned naming with related helpers so usage reads like a sentence ("wrap this run with a Smart Tag named X").
 
-- Give domain concepts a first-class API instead of leaking raw XML details.
-- Expressive factories reduce misuse and make tests smaller and clearer.
+== Agile/craftsmanship/docs‑as‑code lens
 
-== Agile angle
+- One noun, one meaning. By giving “Smart Tag run” a first‑class factory, we delete scattered sequences of raw
+  `CTSmartTagRun` construction. This reduces the code touched per change and makes intent visible.
+- Prefer expressive seams. Call sites now say what they mean—"new smart tag around this run"—and the factory guards the
+  invariants. Tests can target the seam with small fixtures instead of asserting low‑level wiring.
+- Documentation‑as‑code. The example for `newSmartTag` lives next to the implementation and in the site. When the
+  underlying docx4j types change or our defaults evolve, the same PR updates code and docs.
 
-- Improving the “pit of success” for feature usage accelerates delivery—fewer review comments, fewer bugs.
+== Solo‑maintainer + enterprise usage angle
 
-== Apply this idea
+As the sole maintainer, I optimize for repeatability. A factory like this reduces support questions of the form “How do I
+add feature X without breaking Y?” Because enterprises adopt Office‑stamper in bursts, a well‑named, documented factory is
+self‑service—engineers can copy a snippet into a test and move forward. For reviewers in large organizations, a single
+construction path is easier to audit: the factory declares what it sets, what it leaves alone, and how it behaves on
+edge cases (null text, whitespace, nested runs).
 
-- Wrap verbose third-party constructs in small, intention-revealing builders or factories.
+== Risks and mitigations
+
+- Risk: Factory becomes a kitchen sink. Mitigation: keep it tiny; if a variant appears, prefer an overload or a
+  separate factory (e.g., `newSmartTagWithMeta`) rather than boolean flags.
+- Risk: Hidden behavior changes if defaults shift. Mitigation: document defaults explicitly (attributes, casing, child
+  run policy) and add a characterization test that asserts the serialized XML.
+- Risk: Divergence from docx4j expectations. Mitigation: cross‑link the relevant `docx4j` types and verify examples
+  against the library’s own samples.
+
+== How to apply this in your project
+
+- Wrap verbose third‑party constructs in small, intention‑revealing factories. Name them after the domain concept, not the
+  implementation detail.
+- Keep factories honest with a couple of tiny, realistic tests (before/after XML or run structure). Link those tests from
+  your docs so behavior stays discoverable.
+- Document preconditions (e.g., non‑null run, tag name rules) and postconditions (child order, attributes) right in the
+  Javadoc and the site page. Treat this as part of the public contract.
+
+== References
+
+- Commit: https://github.com/verronpro/office-stamper/commit/21e9451[21e9451]
+- Related APIs: `WmlUtils` helpers; paragraph/run abstractions; `TraversalUtil` for safe traversal when inserting tags
+- Docs: site examples under feature modelling; Smart Tag usage notes

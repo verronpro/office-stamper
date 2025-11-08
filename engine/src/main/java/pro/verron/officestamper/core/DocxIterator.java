@@ -32,7 +32,7 @@ public class DocxIterator
                                        .iterator();
         this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
         this.iteratorQueue.add(startingIterator);
-        this.next = startingIterator.hasNext() ? startingIterator.next() : null;
+        this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
     }
 
     /// Creates a ResetableIterator of StandardParagraph instances from the given DocxPart.
@@ -90,6 +90,6 @@ public class DocxIterator
                                        .iterator();
         this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
         this.iteratorQueue.add(startingIterator);
-        this.next = startingIterator.hasNext() ? startingIterator.next() : null;
+        this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
     }
 }

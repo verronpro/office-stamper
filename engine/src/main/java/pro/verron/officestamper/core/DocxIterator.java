@@ -1,9 +1,8 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.wml.CTSdtContentRun;
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
-import org.docx4j.wml.SdtRun;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.Part;
+import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
 
@@ -35,11 +34,12 @@ public class DocxIterator
         this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
     }
 
-    /// Creates a ResetableIterator of StandardParagraph instances from the given DocxPart.
-    /// Extracts elements of type P or CTSdtContentRun from the DocxPart and maps them to StandardParagraph objects.
+    /// Creates a [ResetableIterator] of [StandardParagraph] instances from the given [DocxPart].
+    /// Extracts [P] or [CTSdtContentRun] elements from the [DocxPart] and maps them to [StandardParagraph]
+    ///  objects.
     ///
-    /// @param docxPart the DocxPart object from which paragraphs will be extracted
-    /// @return a [ResetableIterator] containing the extracted and mapped StandardParagraph instances
+    /// @param docxPart the [DocxPart] object from which paragraphs will be extracted
+    /// @return a [ResetableIterator] containing the extracted and mapped [StandardParagraph] instances
     public static ResetableIterator<StandardParagraph> ofParagraphs(DocxPart docxPart) {
         var iterator = new DocxIterator(docxPart);
         Predicate<Object> isParagraph = P.class::isInstance;
@@ -51,6 +51,21 @@ public class DocxIterator
             default -> throw new OfficeStamperException("Unexpected element type: " + o.getClass());
         };
         return new FilterMapperIterator<>(iterator, predicate, mapper);
+    }
+
+    /// Creates a [ResetableIterator] of [CommentRangeStart] instances from the given [WordprocessingMLPackage] document.
+    /// This method leverages a [DocxIterator] to iterate through the contents of the specified document part
+    /// and filters for [CommentRangeStart] elements.
+    ///
+    /// @param document the [WordprocessingMLPackage] that contains the document structure and content
+    /// @param part the specific part of the [WordprocessingMLPackage] to be processed
+    /// @param contentAccessor a [ContentAccessor] used to access the content within the specified part
+    /// @return a [ResetableIterator] containing the [CommentRangeStart] elements found in the provided content
+    public static ResetableIterator<CommentRangeStart> ofCRS(WordprocessingMLPackage document,
+            Part part,
+            ContentAccessor contentAccessor) {
+        var iterator = new DocxIterator(new TextualDocxPart(document, part, contentAccessor));
+        return new FilterMapperIterator<>(iterator, CommentRangeStart.class::isInstance, CommentRangeStart.class::cast);
     }
 
     @Override

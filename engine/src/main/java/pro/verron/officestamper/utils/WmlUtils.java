@@ -270,12 +270,13 @@ public final class WmlUtils {
     public static List<Object> insertSmartTag(P paragraph, String expression, int start, int end) {
         var run = newRun(expression);
         var smartTag = newSmartTag(expression, run);
-        findFirstAffectedRunPr(paragraph.getContent(), start, end).ifPresent(run::setRPr);
-        return replace(paragraph.getContent(), smartTag, start, end);
+        findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
+        return replace(paragraph, smartTag, start, end);
     }
 
-    public static Optional<RPr> findFirstAffectedRunPr(List<Object> contents, int start, int end) {
-        var runs = StandardRun.wrap(contents);
+    public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
+        var runs = StandardRun.wrap(contentAccessor);
+
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(start, end))
                                .toList();
@@ -285,55 +286,51 @@ public final class WmlUtils {
         return Optional.ofNullable(firstRunPr);
     }
 
-    public static List<Object> replace(
-            List<Object> inputContents,
-            Object replacement,
-            int startIndex,
-            int endIndex
-    ) {
-        var contents = new ArrayList<>(inputContents);
-        var runs = StandardRun.wrap(contents);
+    public static List<Object> replace(ContentAccessor contentAccessor, Object replacement, int startIndex, int endIndex) {
+        var runs = StandardRun.wrap(contentAccessor::getContent);
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(startIndex, endIndex))
                                .toList();
 
-        StandardRun firstRun = affectedRuns.getFirst();
+        var firstRun = affectedRuns.getFirst();
+        var firstR = firstRun.run();
+        var firstSiblings = ((ContentAccessor) firstR.getParent()).getContent();
+        var firstIndex = firstSiblings.indexOf(firstRun.run());
 
         boolean singleRun = affectedRuns.size() == 1;
         if (singleRun) {
             boolean expressionSpansCompleteRun = endIndex - startIndex == firstRun.length();
             boolean expressionAtStartOfRun = startIndex == firstRun.startIndex();
             boolean expressionAtEndOfRun = endIndex == firstRun.endIndex();
-            boolean expressionWithinRun =
-                    startIndex > firstRun.startIndex() && endIndex <= firstRun.endIndex();
+            boolean expressionWithinRun = startIndex > firstRun.startIndex() && endIndex <= firstRun.endIndex();
 
             if (expressionSpansCompleteRun) {
-                contents.set(firstRun.indexInParent(), replacement);
+                firstSiblings.set(firstIndex, replacement);
             }
             else if (expressionAtStartOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                contents.add(firstRun.indexInParent(), replacement);
+                firstSiblings.add(firstIndex, replacement);
             }
             else if (expressionAtEndOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                contents.add(firstRun.indexInParent() + 1, replacement);
+                firstSiblings.add(firstIndex + 1, replacement);
             }
             else if (expressionWithinRun) {
                 var originalRun = firstRun.run();
                 var originalRPr = originalRun.getRPr();
                 var newStartRun = create(firstRun.left(startIndex), originalRPr);
                 var newEndRun = create(firstRun.right(endIndex), originalRPr);
-                contents.remove(firstRun.indexInParent());
-                contents.addAll(firstRun.indexInParent(), List.of(newStartRun, replacement, newEndRun));
+                firstSiblings.remove(firstIndex);
+                firstSiblings.addAll(firstIndex, List.of(newStartRun, replacement, newEndRun));
             }
         }
         else {
             StandardRun lastRun = affectedRuns.getLast();
-            removeExpression(contents, firstRun, startIndex, endIndex, lastRun, affectedRuns);
+            removeExpression(firstSiblings, firstRun, startIndex, endIndex, lastRun, affectedRuns);
             // add replacement run between first and last run
-            contents.add(firstRun.indexInParent() + 1, replacement);
+            firstSiblings.add(firstIndex + 1, replacement);
         }
-        return contents;
+        return new ArrayList<>(contentAccessor.getContent());
     }
 
     /// Creates a new run with the specified text and the specified run style.

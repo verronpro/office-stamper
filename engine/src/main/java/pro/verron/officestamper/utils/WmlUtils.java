@@ -407,15 +407,15 @@ public final class WmlUtils {
            .add(textObj);
     }
 
-    public static List<Object> replaceExpressionWithRun(List<Object> inputContents, String expression, R run) {
-        var text = asString(inputContents);
+    public static List<Object> replaceExpressionWithRun(ContentAccessor contentAccessor, String expression, R run) {
+        var text = asString(contentAccessor);
         int matchStartIndex = text.indexOf(expression);
         if (matchStartIndex == -1) {
             // nothing to replace
-            return inputContents;
+            return new ArrayList<>(contentAccessor.getContent());
         }
         int matchEndIndex = matchStartIndex + expression.length();
-        findFirstAffectedRunPr(inputContents, matchStartIndex, matchEndIndex).ifPresent(run::setRPr);
-        return replace(inputContents, run, matchStartIndex, matchEndIndex);
+        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(run::setRPr);
+        return replace(contentAccessor, run, matchStartIndex, matchEndIndex);
     }
 }

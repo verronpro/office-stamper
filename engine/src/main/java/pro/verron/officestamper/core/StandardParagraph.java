@@ -134,7 +134,7 @@ public class StandardParagraph
     }
 
     private void replaceWithRun(Placeholder placeholder, R replacement) {
-        var newContents = WmlUtils.replaceExpressionWithRun(contents, placeholder.expression(), replacement);
+        var newContents = WmlUtils.replaceExpressionWithRun(p, placeholder.expression(), replacement);
         contents.clear();
         contents.addAll(newContents);
     }
@@ -172,7 +172,7 @@ public class StandardParagraph
             throw new OfficeStamperException(msg.formatted(to, this));
         }
         var expression = extractExpression(from, to);
-        var newContents = WmlUtils.replaceExpressionWithRun(contents, expression, run);
+        var newContents = WmlUtils.replaceExpressionWithRun(p, expression, run);
         contents.clear();
         contents.addAll(newContents);
     }

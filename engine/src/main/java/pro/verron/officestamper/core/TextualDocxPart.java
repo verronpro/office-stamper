@@ -44,10 +44,6 @@ public final class TextualDocxPart
         this.contentAccessor = contentAccessor;
     }
 
-    public TextualDocxPart(ContentAccessor contentAccessor) {
-        this(null, null, contentAccessor);
-    }
-
     /// Returns the WordprocessingMLPackage instance representing the document
     /// associated with this part.
     ///

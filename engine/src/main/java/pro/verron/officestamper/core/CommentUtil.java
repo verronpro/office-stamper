@@ -128,7 +128,7 @@ public class CommentUtil {
                                                            .toList();
 
         var result = new ArrayList<Comments.Comment>();
-        var commentIterator = DocxIterator.ofCRS(document, document.getMainDocumentPart(), contentAccessor);
+        var commentIterator = DocxIterator.ofCRS(contentAccessor);
         while (commentIterator.hasNext()) {
             var crs = commentIterator.next();
             findCommentById(comments, crs.getId()).ifPresent(result::add);

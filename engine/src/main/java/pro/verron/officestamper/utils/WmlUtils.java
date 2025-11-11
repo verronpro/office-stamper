@@ -10,6 +10,9 @@ import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
+import org.docx4j.vml.CTShadow;
+import org.docx4j.vml.CTTextbox;
+import org.docx4j.vml.VmlShapeElements;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
@@ -251,7 +254,12 @@ public final class WmlUtils {
             case List<?> list -> list.stream()
                                      .map(WmlUtils::asString)
                                      .collect(joining());
-            case ProofErr _ -> "";
+            case ProofErr _, CTShadow _ -> "";
+            case SdtRun sdtRun -> asString(sdtRun.getSdtContent());
+            case ContentAccessor contentAccessor -> asString(contentAccessor.getContent());
+            case Pict pict -> asString(pict.getAnyAndAny());
+            case VmlShapeElements vmlShapeElements -> asString(vmlShapeElements.getEGShapeElements());
+            case CTTextbox textbox -> asString(textbox.getTxbxContent());
             default -> {
                 log.debug("Unhandled object type: {}", content.getClass());
                 yield "";

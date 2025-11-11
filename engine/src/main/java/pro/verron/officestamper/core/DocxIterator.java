@@ -1,7 +1,6 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -9,6 +8,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static org.docx4j.XmlUtils.unwrap;
 
@@ -21,14 +21,13 @@ import static org.docx4j.XmlUtils.unwrap;
 public class DocxIterator
         implements ResetableIterator<Object> {
 
-    private final DocxPart docxPart;
+    private final Supplier<Iterator<Object>> supplier;
     private Queue<Iterator<?>> iteratorQueue;
     private Object next;
 
-    private DocxIterator(DocxPart docxPart) {
-        this.docxPart = docxPart;
-        var startingIterator = docxPart.content()
-                                       .iterator();
+    private DocxIterator(Supplier<Iterator<Object>> supplier) {
+        this.supplier = supplier;
+        var startingIterator = supplier.get();
         this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
         this.iteratorQueue.add(startingIterator);
         this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
@@ -39,9 +38,11 @@ public class DocxIterator
     ///  objects.
     ///
     /// @param docxPart the [DocxPart] object from which paragraphs will be extracted
+    ///
     /// @return a [ResetableIterator] containing the extracted and mapped [StandardParagraph] instances
     public static ResetableIterator<StandardParagraph> ofParagraphs(DocxPart docxPart) {
-        var iterator = new DocxIterator(docxPart);
+        var iterator = new DocxIterator(() -> docxPart.content()
+                                                      .iterator());
         Predicate<Object> isParagraph = P.class::isInstance;
         Predicate<Object> isSdtRun = CTSdtContentRun.class::isInstance;
         var predicate = isParagraph.or(isSdtRun);
@@ -53,23 +54,21 @@ public class DocxIterator
         return new FilterMapperIterator<>(iterator, predicate, mapper);
     }
 
-    /// Creates a [ResetableIterator] of [CommentRangeStart] instances from the given [WordprocessingMLPackage] document.
+    /// Creates a [ResetableIterator] of [CommentRangeStart] instances from the given [WordprocessingMLPackage]
+    /// document.
     /// This method leverages a [DocxIterator] to iterate through the contents of the specified document part
     /// and filters for [CommentRangeStart] elements.
     ///
-    /// @param document the [WordprocessingMLPackage] that contains the document structure and content
-    /// @param part the specific part of the [WordprocessingMLPackage] to be processed
     /// @param contentAccessor a [ContentAccessor] used to access the content within the specified part
+    ///
     /// @return a [ResetableIterator] containing the [CommentRangeStart] elements found in the provided content
-    public static ResetableIterator<CommentRangeStart> ofCRS(WordprocessingMLPackage document,
-            Part part,
-            ContentAccessor contentAccessor) {
-        var iterator = new DocxIterator(new TextualDocxPart(document, part, contentAccessor));
+    public static ResetableIterator<CommentRangeStart> ofCRS(ContentAccessor contentAccessor) {
+        var iterator = new DocxIterator(contentAccessor.getContent()::iterator);
         return new FilterMapperIterator<>(iterator, CommentRangeStart.class::isInstance, CommentRangeStart.class::cast);
     }
 
     public static Iterator<R> ofRun(ContentAccessor contentAccessor) {
-        var iterator = new DocxIterator(new TextualDocxPart(contentAccessor));
+        var iterator = new DocxIterator(contentAccessor.getContent()::iterator);
         return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
     }
 
@@ -95,7 +94,8 @@ public class DocxIterator
                 iteratorQueue.add(content.iterator());
             }
             case SdtBlock sdtBlock -> {
-                var content = sdtBlock.getSdtContent().getContent();
+                var content = sdtBlock.getSdtContent()
+                                      .getContent();
                 iteratorQueue.add(content.iterator());
             }
             case Pict pict -> {
@@ -118,8 +118,7 @@ public class DocxIterator
 
     @Override
     public void reset() {
-        var startingIterator = docxPart.content()
-                                       .iterator();
+        var startingIterator = supplier.get();
         this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
         this.iteratorQueue.add(startingIterator);
         this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;

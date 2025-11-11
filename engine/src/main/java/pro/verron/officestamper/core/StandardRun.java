@@ -1,5 +1,6 @@
 package pro.verron.officestamper.core;
 
+import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import pro.verron.officestamper.utils.WmlUtils;
@@ -11,32 +12,30 @@ import java.util.List;
 /// and also relative to the containing document.
 ///
 /// @param startIndex    the start index of the run relative to the containing paragraph.
-/// @param indexInParent the index of the run relative to the containing document.
 /// @param run           the run itself.
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
 /// @version ${version}
 /// @since 1.0.0
-public record StandardRun(int startIndex, int indexInParent, R run) {
+public record StandardRun(int startIndex, R run) {
 
     /// Initializes a list of StandardRun objects based on the given list of objects.
     /// Iterates over the provided list of objects, identifies instances of type R,
     /// and constructs StandardRun objects while keeping track of their lengths.
     ///
-    /// @param objects the list of objects to be iterated over and processed into StandardRun instances
+    /// @param contentAccessor the list of objects to be iterated over and processed into StandardRun instances
     ///
     /// @return a list of StandardRun objects created from the given input list
-    public static List<StandardRun> wrap(List<Object> objects) {
+    public static List<StandardRun> wrap(ContentAccessor contentAccessor) {
         var currentLength = 0;
-        var runList = new ArrayList<StandardRun>(objects.size());
-        for (int i = 0; i < objects.size(); i++) {
-            var object = objects.get(i);
-            if (object instanceof R run) {
-                var currentRun = new StandardRun(currentLength, i, run);
-                runList.add(currentRun);
-                currentLength += currentRun.length();
-            }
+        var runList = new ArrayList<StandardRun>(contentAccessor.getContent().size());
+        var iterator = DocxIterator.ofRun(contentAccessor);
+        while (iterator.hasNext()){
+            var run = iterator.next();
+            var currentRun = new StandardRun(currentLength, run);
+            runList.add(currentRun);
+            currentLength += currentRun.length();
         }
         return runList;
     }

@@ -68,6 +68,11 @@ public class DocxIterator
         return new FilterMapperIterator<>(iterator, CommentRangeStart.class::isInstance, CommentRangeStart.class::cast);
     }
 
+    public static Iterator<R> ofRun(ContentAccessor contentAccessor) {
+        var iterator = new DocxIterator(new TextualDocxPart(contentAccessor));
+        return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
+    }
+
     @Override
     public boolean hasNext() {
         return next != null;
@@ -79,14 +84,26 @@ public class DocxIterator
 
         var result = next;
         next = null;
-        if (result instanceof ContentAccessor contentAccessor) {
-            var content = contentAccessor.getContent();
-            iteratorQueue.add(content.iterator());
-        }
-        else if (result instanceof SdtRun sdtRun) {
-            var content = sdtRun.getSdtContent()
-                                .getContent();
-            iteratorQueue.add(content.iterator());
+        switch (result) {
+            case ContentAccessor contentAccessor -> {
+                var content = contentAccessor.getContent();
+                iteratorQueue.add(content.iterator());
+            }
+            case SdtRun sdtRun -> {
+                var content = sdtRun.getSdtContent()
+                                    .getContent();
+                iteratorQueue.add(content.iterator());
+            }
+            case SdtBlock sdtBlock -> {
+                var content = sdtBlock.getSdtContent().getContent();
+                iteratorQueue.add(content.iterator());
+            }
+            case Pict pict -> {
+                var content = pict.getAnyAndAny();
+                iteratorQueue.add(content.iterator());
+            }
+            default -> {
+            }
         }
         while (!iteratorQueue.isEmpty() && next == null) {
             var nextIterator = iteratorQueue.poll();

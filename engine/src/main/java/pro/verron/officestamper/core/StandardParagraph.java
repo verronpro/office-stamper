@@ -140,7 +140,7 @@ public class StandardParagraph
     }
 
     private void replaceWithBr(Placeholder placeholder, Br br) {
-        for (StandardRun run : StandardRun.wrap(contents)) {
+        for (StandardRun run : StandardRun.wrap(p)) {
             var runContentIterator = run.run()
                                         .getContent()
                                         .listIterator();
@@ -198,7 +198,7 @@ public class StandardParagraph
         var toIndex = contents.indexOf(to);
         var subContent = contents.subList(fromIndex, toIndex + 1);
 
-        var runs = StandardRun.wrap(contents);
+        var runs = StandardRun.wrap(p);
         runs.removeIf(run -> !subContent.contains(run.run()));
         return runs.stream()
                    .map(StandardRun::getText)

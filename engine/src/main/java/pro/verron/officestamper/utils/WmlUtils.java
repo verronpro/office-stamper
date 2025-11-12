@@ -4,25 +4,37 @@ import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
 import org.docx4j.finders.CommentFinder;
+import org.docx4j.model.styles.StyleUtil;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
+import org.docx4j.vml.CTShadow;
+import org.docx4j.vml.CTTextbox;
+import org.docx4j.vml.VmlShapeElements;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.core.StandardRun;
 
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.joining;
+import static pro.verron.officestamper.utils.WmlFactory.*;
 
 /// Utility class with methods to help in the interaction with WordprocessingMLPackage documents
 /// and their elements, such as comments, parents, and child elements.
 public final class WmlUtils {
+
+    private static final String PRESERVE = "preserve";
+    private static final Logger log = LoggerFactory.getLogger(WmlUtils.class);
+
     private WmlUtils() {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
@@ -118,8 +130,7 @@ public final class WmlUtils {
             case SdtRun parent -> remove(parent, child);
             default -> throw new OfficeStamperException("Unexpected value: " + child.getParent());
         }
-        if (child.getParent() instanceof Tc cell)
-            ensureValidity(cell);
+        if (child.getParent() instanceof Tc cell) ensureValidity(cell);
     }
 
     private static void remove(ContentAccessor parent, Child child) {
@@ -204,5 +215,207 @@ public final class WmlUtils {
         } catch (Exception _) {
             return false;
         }
+    }
+
+    /// Extracts textual content from a given object, handling various object types,
+    /// such as runs, text elements, and other specific constructs.
+    /// The method accounts for different cases, such as run breaks, hyphens,
+    /// and other document-specific constructs, and converts them into
+    /// corresponding string representations.
+    ///
+    /// @param content the object from which text content is to be extracted.
+    ///                This could be of various types such as R, JAXBElement, Text or specific document elements.
+    ///
+    /// @return a string representation of the extracted textual content.
+    /// If the object's type is not handled, an empty string is returned.
+    public static String asString(Object content) {
+        return switch (content) {
+            case P paragraph -> asString(paragraph.getContent());
+            case R run -> asString(run.getContent());
+            case JAXBElement<?> jaxbElement when jaxbElement.getName()
+                                                            .getLocalPart()
+                                                            .equals("instrText") -> "<instrText>";
+            case JAXBElement<?> jaxbElement when !jaxbElement.getName()
+                                                             .getLocalPart()
+                                                             .equals("instrText") -> asString(jaxbElement.getValue());
+            case Text text -> asString(text);
+            case R.Tab _ -> "\t";
+            case R.Cr _ -> "\n";
+            case Br br when br.getType() == null -> "\n";
+            case Br br when br.getType() == STBrType.PAGE -> "\n";
+            case Br br when br.getType() == STBrType.COLUMN -> "\n";
+            case Br br when br.getType() == STBrType.TEXT_WRAPPING -> "\n";
+            case R.NoBreakHyphen _ -> "‑";
+            case R.SoftHyphen _ -> "\u00AD";
+            case R.LastRenderedPageBreak _, R.AnnotationRef _, R.CommentReference _, Drawing _ -> "";
+            case FldChar _ -> "<fldchar>";
+            case CTFtnEdnRef ref -> "<ref(%s)>".formatted(ref.getId());
+            case R.Sym sym -> "<sym(%s, %s)>".formatted(sym.getFont(), sym.getChar());
+            case List<?> list -> list.stream()
+                                     .map(WmlUtils::asString)
+                                     .collect(joining());
+            case ProofErr _, CTShadow _ -> "";
+            case SdtRun sdtRun -> asString(sdtRun.getSdtContent());
+            case ContentAccessor contentAccessor -> asString(contentAccessor.getContent());
+            case Pict pict -> asString(pict.getAnyAndAny());
+            case VmlShapeElements vmlShapeElements -> asString(vmlShapeElements.getEGShapeElements());
+            case CTTextbox textbox -> asString(textbox.getTxbxContent());
+            default -> {
+                log.debug("Unhandled object type: {}", content.getClass());
+                yield "";
+            }
+        };
+    }
+
+    private static String asString(Text text) {
+        // According to specs, 'space' value can be empty or 'preserve'.
+        // In the first case, we are supposed to ignore spaces around the 'text' value.
+        var value = text.getValue();
+        var space = text.getSpace();
+        return Objects.equals(space, PRESERVE) ? value : value.trim();
+    }
+
+    public static List<Object> insertSmartTag(P paragraph, String expression, int start, int end) {
+        var run = newRun(expression);
+        var smartTag = newSmartTag(expression, run);
+        findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
+        return replace(paragraph, smartTag, start, end);
+    }
+
+    public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
+        var runs = StandardRun.wrap(contentAccessor);
+
+        var affectedRuns = runs.stream()
+                               .filter(run -> run.isTouchedByRange(start, end))
+                               .toList();
+
+        StandardRun firstRun = affectedRuns.getFirst();
+        var firstRunPr = firstRun.getPr();
+        return Optional.ofNullable(firstRunPr);
+    }
+
+    public static List<Object> replace(ContentAccessor contentAccessor, Object replacement, int startIndex, int endIndex) {
+        var runs = StandardRun.wrap(contentAccessor::getContent);
+        var affectedRuns = runs.stream()
+                               .filter(run -> run.isTouchedByRange(startIndex, endIndex))
+                               .toList();
+
+        var firstRun = affectedRuns.getFirst();
+        var firstR = firstRun.run();
+        var firstSiblings = ((ContentAccessor) firstR.getParent()).getContent();
+        var firstIndex = firstSiblings.indexOf(firstRun.run());
+
+        boolean singleRun = affectedRuns.size() == 1;
+        if (singleRun) {
+            boolean expressionSpansCompleteRun = endIndex - startIndex == firstRun.length();
+            boolean expressionAtStartOfRun = startIndex == firstRun.startIndex();
+            boolean expressionAtEndOfRun = endIndex == firstRun.endIndex();
+            boolean expressionWithinRun = startIndex > firstRun.startIndex() && endIndex <= firstRun.endIndex();
+
+            if (expressionSpansCompleteRun) {
+                firstSiblings.set(firstIndex, replacement);
+            }
+            else if (expressionAtStartOfRun) {
+                firstRun.replace(startIndex, endIndex, "");
+                firstSiblings.add(firstIndex, replacement);
+            }
+            else if (expressionAtEndOfRun) {
+                firstRun.replace(startIndex, endIndex, "");
+                firstSiblings.add(firstIndex + 1, replacement);
+            }
+            else if (expressionWithinRun) {
+                var originalRun = firstRun.run();
+                var originalRPr = originalRun.getRPr();
+                var newStartRun = create(firstRun.left(startIndex), originalRPr);
+                var newEndRun = create(firstRun.right(endIndex), originalRPr);
+                firstSiblings.remove(firstIndex);
+                firstSiblings.addAll(firstIndex, List.of(newStartRun, replacement, newEndRun));
+            }
+        }
+        else {
+            StandardRun lastRun = affectedRuns.getLast();
+            removeExpression(firstSiblings, firstRun, startIndex, endIndex, lastRun, affectedRuns);
+            // add replacement run between first and last run
+            firstSiblings.add(firstIndex + 1, replacement);
+        }
+        return new ArrayList<>(contentAccessor.getContent());
+    }
+
+    /// Creates a new run with the specified text and the specified run style.
+    ///
+    /// @param text the initial text of the run.
+    ///
+    /// @return the newly created run.
+    public static R create(String text, RPr rPr) {
+        R newStartRun = newRun(text);
+        newStartRun.setRPr(rPr);
+        return newStartRun;
+    }
+
+    private static void removeExpression(
+            List<Object> contents,
+            StandardRun firstRun,
+            int matchStartIndex,
+            int matchEndIndex,
+            StandardRun lastRun,
+            List<StandardRun> affectedRuns
+    ) {
+        // remove the expression from the first run
+        firstRun.replace(matchStartIndex, matchEndIndex, "");
+        // remove all runs between first and last
+        for (StandardRun run : affectedRuns) {
+            if (!Objects.equals(run, firstRun) && !Objects.equals(run, lastRun)) {
+                contents.remove(run.run());
+            }
+        }
+        // remove the expression from the last run
+        lastRun.replace(matchStartIndex, matchEndIndex, "");
+    }
+
+    /// Creates a new run with the specified text and inherits the style of the parent paragraph.
+    ///
+    /// @param text the initial text of the run.
+    ///
+    /// @return the newly created run.
+    public static R create(String text, PPr paragraphPr) {
+        R run = newRun(text);
+        applyParagraphStyle(run, paragraphPr);
+        return run;
+    }
+
+    /// Applies the style of the given paragraph to the given content object (if the content object is a Run).
+    ///
+    /// @param run the Run to which the style should be applied.
+    public static void applyParagraphStyle(R run, @Nullable PPr paragraphPr) {
+        if (paragraphPr == null) return;
+        var runPr = paragraphPr.getRPr();
+        if (runPr == null) return;
+        RPr runProperties = new RPr();
+        StyleUtil.apply(runPr, runProperties);
+        run.setRPr(runProperties);
+    }
+
+    /// Sets the text of the given run to the given value.
+    ///
+    /// @param run  the run whose text to change.
+    /// @param text the text to set.
+    public static void setText(R run, String text) {
+        run.getContent()
+           .clear();
+        Text textObj = newText(text);
+        run.getContent()
+           .add(textObj);
+    }
+
+    public static List<Object> replaceExpressionWithRun(ContentAccessor contentAccessor, String expression, R run) {
+        var text = asString(contentAccessor);
+        int matchStartIndex = text.indexOf(expression);
+        if (matchStartIndex == -1) {
+            // nothing to replace
+            return new ArrayList<>(contentAccessor.getContent());
+        }
+        int matchEndIndex = matchStartIndex + expression.length();
+        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(run::setRPr);
+        return replace(contentAccessor, run, matchStartIndex, matchEndIndex);
     }
 }

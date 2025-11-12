@@ -4,6 +4,7 @@ import org.docx4j.wml.ProofErr;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PreProcessor;
 import pro.verron.officestamper.preset.preprocessors.malformedcomments.RemoveMalformedComments;
+import pro.verron.officestamper.preset.preprocessors.placeholders.PreparePlaceholders;
 import pro.verron.officestamper.preset.preprocessors.prooferror.RemoveProofErrors;
 import pro.verron.officestamper.preset.preprocessors.rmlang.RemoveLang;
 import pro.verron.officestamper.preset.preprocessors.similarrun.MergeSameStyleRuns;
@@ -44,5 +45,9 @@ public class Preprocessors {
     /// @return a PreProcessor object that removes malformed comments markers.
     public static PreProcessor removeMalformedComments() {
         return new RemoveMalformedComments();
+    }
+
+    public static PreProcessor preparePlaceholders() {
+        return new PreparePlaceholders();
     }
 }

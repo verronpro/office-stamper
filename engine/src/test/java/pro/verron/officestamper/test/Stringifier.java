@@ -18,6 +18,7 @@ import org.docx4j.vml.CTShapetype;
 import org.docx4j.vml.CTTextbox;
 import org.docx4j.vml.VmlShapeElements;
 import org.docx4j.wml.*;
+import org.jspecify.annotations.NonNull;
 import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
 import org.xlsx4j.sml.Cell;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -59,6 +60,7 @@ public class Stringifier {
     /// text paragraphs from the presentation and formatting them as strings.
     ///
     /// @param presentation the PowerPoint presentation represented as a [PresentationMLPackage].
+    ///
     /// @return a string representation of the text content within the PowerPoint presentation.
     public static String stringifyPowerpoint(PresentationMLPackage presentation) {
         var collector = new PowerpointCollector<>(CTTextParagraph.class);
@@ -76,6 +78,7 @@ public class Stringifier {
     /// and formatting cell data from the Excel file.
     ///
     /// @param presentation the Excel file represented as a [SpreadsheetMLPackage]
+    ///
     /// @return a string representation of the cell content within the Excel spreadsheet
     public static String stringifyExcel(SpreadsheetMLPackage presentation) {
         var collector = new ExcelCollector<>(Cell.class);
@@ -109,6 +112,7 @@ public class Stringifier {
     /// If all properties are null, the method returns an empty optional.
     ///
     /// @param spacing the [PPrBase.Spacing] object containing paragraph spacing properties; can be null
+    ///
     /// @return an [Optional] containing the string representation of the spacing properties,
     ///         or an empty optional if the spacing object is null or contains no non-null properties
     private Optional<String> stringify(PPrBase.Spacing spacing) {
@@ -151,7 +155,8 @@ public class Stringifier {
     /// content type, readable size, SHA-1 hash, and a custom value.
     ///
     /// @param blip the [CTBlip] object representing an embedded image for which
-    ///             the string representation is to be generated
+    ///                                                             the string representation is to be generated
+    ///
     /// @return a formatted string containing metadata about the image extracted
     ///         from the [CTBlip], including its size and hash
     private String stringify(CTBlip blip) {
@@ -198,6 +203,7 @@ public class Stringifier {
     ///          List, Text, P, R, Drawing, Inline, Graphic, and other types
     ///          defined in the method. Passing null or unsupported types
     ///          will result in an exception.
+    ///
     /// @return the string representation of the provided object.
     ///         For some specific types like `R.LastRenderedPageBreak`
     ///         or `CTMarkupRange`, an empty string may be returned.
@@ -252,8 +258,13 @@ public class Stringifier {
         if (o instanceof R.EndnoteRef) return "";
         if (o instanceof FldChar fldChar) return stringify(fldChar).orElse("");
         if (o instanceof P.Hyperlink hyperlink) return stringify(hyperlink).orElse("");
+        if (o instanceof CTSmartTagRun smartTagRun) return stringify(smartTagRun);
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
+    }
+
+    private @NonNull String stringify(CTSmartTagRun smartTagRun) {
+        return "<tag element=\"%s\">%s<\\tag>".formatted(smartTagRun.getElement(), stringify(smartTagRun.getContent()));
     }
 
     private Optional<String> stringify(EndnotesPart endnotesPart) {
@@ -268,7 +279,6 @@ public class Stringifier {
             if (list.isEmpty()) return Optional.empty();
             return Optional.of(list.stream()
                                    .collect(joining("\n", "[endnotes]\n---\n", "\n---\n")));
-
         } catch (Docx4JException e) {
             throw new OfficeStamperException("Error processing footnotes", e);
         }
@@ -507,6 +517,7 @@ public class Stringifier {
     /// are present or the provided object is null, an empty `Optional` is returned.
     ///
     /// @param rPr the [RPrAbstract] object containing formatting and style attributes; can be null
+    ///
     /// @return an [Optional<String>] containing the string representation of the given attributes,
     ///         or an empty [Optional] if the input is null or no attributes are present
     private Optional<String> stringify(RPrAbstract rPr) {
@@ -562,8 +573,7 @@ public class Stringifier {
         ofNullable(pPr.getJc()).ifPresent(element -> set.put("jc",
                 element.getVal()
                        .toString()));
-        ofNullable(pPr.getInd()).ifPresent(element -> set.put("ind",
-                stringify(element)));
+        ofNullable(pPr.getInd()).ifPresent(element -> set.put("ind", stringify(element)));
         ofNullable(pPr.getKeepLines()).ifPresent(element -> set.put("keepLines", String.valueOf(element.isVal())));
         ofNullable(pPr.getKeepNext()).ifPresent(element -> set.put("keepNext", String.valueOf(element.isVal())));
         ofNullable(pPr.getOutlineLvl()).ifPresent(element -> set.put("outlineLvl",

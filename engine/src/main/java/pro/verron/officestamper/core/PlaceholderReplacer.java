@@ -47,8 +47,11 @@ public class PlaceholderReplacer
     ///
     /// @param expressionContext the context root
     public void resolveExpressions(DocxPart document, Object expressionContext) {
-        document.streamParagraphs()
-                .forEach(paragraph -> resolveExpressionsForParagraph(document, paragraph, expressionContext));
+        var iterator = DocxIterator.ofParagraphs(document);
+        while (iterator.hasNext()) {
+            var paragraph = iterator.next();
+            resolveExpressionsForParagraph(document, paragraph, expressionContext);
+        }
     }
 
     /// Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.

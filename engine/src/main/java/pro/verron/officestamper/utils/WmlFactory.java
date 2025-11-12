@@ -350,4 +350,12 @@ public class WmlFactory {
         br.setClear(null);
         return br;
     }
+
+    public static CTSmartTagRun newSmartTag(String element, R run) {
+        var smartTag = new CTSmartTagRun();
+        var smartTagContent = smartTag.getContent();
+        smartTag.setElement(element);
+        smartTagContent.add(run);
+        return smartTag;
+    }
 }

@@ -295,7 +295,7 @@ public class PowerpointParagraph
 
     @Override
     public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(paragraph.getEGTextRun(), source.document());
+        return CommentUtil.getCommentFor(paragraph::getEGTextRun, source.document());
     }
 
     @Override

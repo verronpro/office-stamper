@@ -25,7 +25,6 @@ public class StandardParagraph
     private final DocxPart source;
     private final List<Object> contents;
     private final P p;
-    private List<StandardRun> runs;
 
     /// Constructs a new instance of the StandardParagraph class.
     ///
@@ -36,28 +35,6 @@ public class StandardParagraph
         this.source = source;
         this.contents = paragraphContent;
         this.p = p;
-        this.runs = initializeRunList(contents);
-    }
-
-    /// Initializes a list of StandardRun objects based on the given list of objects.
-    /// Iterates over the provided list of objects, identifies instances of type R,
-    /// and constructs StandardRun objects while keeping track of their lengths.
-    ///
-    /// @param objects the list of objects to be iterated over and processed into StandardRun instances
-    ///
-    /// @return a list of StandardRun objects created from the given input list
-    private static List<StandardRun> initializeRunList(List<Object> objects) {
-        var currentLength = 0;
-        var runList = new ArrayList<StandardRun>(objects.size());
-        for (int i = 0; i < objects.size(); i++) {
-            var object = objects.get(i);
-            if (object instanceof R run) {
-                var currentRun = new StandardRun(currentLength, i, run);
-                runList.add(currentRun);
-                currentLength += currentRun.length();
-            }
-        }
-        return runList;
     }
 
     /// Creates a new instance of StandardParagraph using the provided DocxPart and P objects.
@@ -157,82 +134,16 @@ public class StandardParagraph
     }
 
     private void replaceWithRun(Placeholder placeholder, R replacement) {
-        replaceExpressionWithRun(placeholder.expression(), replacement);
-    }
-
-    private void replaceExpressionWithRun(String full, R replacement) {
-        var text = asString();
-
-        int matchStartIndex = text.indexOf(full);
-        if (matchStartIndex == -1) {
-            // nothing to replace
-            return;
-        }
-        int matchEndIndex = matchStartIndex + full.length();
-        List<StandardRun> affectedRuns = getAffectedRuns(matchStartIndex, matchEndIndex);
-
-        replace(replacement, affectedRuns, full, matchStartIndex, matchEndIndex);
-    }
-
-    private void replace(
-            R replacement,
-            List<StandardRun> affectedRuns,
-            String full,
-            int matchStartIndex,
-            int matchEndIndex
-    ) {
-        boolean singleRun = affectedRuns.size() == 1;
-
-        if (singleRun) {
-            StandardRun run = affectedRuns.getFirst();
-
-            boolean expressionSpansCompleteRun = full.length() == run.length();
-            boolean expressionAtStartOfRun = matchStartIndex == run.startIndex();
-            boolean expressionAtEndOfRun = matchEndIndex == run.endIndex();
-            boolean expressionWithinRun = matchStartIndex > run.startIndex() && matchEndIndex <= run.endIndex();
-
-            replacement.setRPr(run.getPr());
-
-            if (expressionSpansCompleteRun) {
-                contents.set(run.indexInParent(), replacement);
-            }
-            else if (expressionAtStartOfRun) {
-                run.replace(matchStartIndex, matchEndIndex, "");
-                contents.add(run.indexInParent(), replacement);
-            }
-            else if (expressionAtEndOfRun) {
-                run.replace(matchStartIndex, matchEndIndex, "");
-                contents.add(run.indexInParent() + 1, replacement);
-            }
-            else if (expressionWithinRun) {
-                int startIndex = run.indexOf(full);
-                int endIndex = startIndex + full.length();
-                var newStartRun = RunUtil.create(run.substring(0, startIndex),
-                        run.run()
-                           .getRPr());
-                var newEndRun = RunUtil.create(run.substring(endIndex),
-                        run.run()
-                           .getRPr());
-                contents.remove(run.indexInParent());
-                contents.addAll(run.indexInParent(), List.of(newStartRun, replacement, newEndRun));
-            }
-        }
-        else {
-            StandardRun firstRun = affectedRuns.getFirst();
-            StandardRun lastRun = affectedRuns.getLast();
-            replacement.setRPr(firstRun.getPr());
-            removeExpression(firstRun, matchStartIndex, matchEndIndex, lastRun, affectedRuns);
-            // add replacement run between first and last run
-            contents.add(firstRun.indexInParent() + 1, replacement);
-        }
-        this.runs = initializeRunList(contents);
+        var newContents = WmlUtils.replaceExpressionWithRun(p, placeholder.expression(), replacement);
+        contents.clear();
+        contents.addAll(newContents);
     }
 
     private void replaceWithBr(Placeholder placeholder, Br br) {
-        for (StandardRun standardRun : runs) {
-            var runContentIterator = standardRun.run()
-                                                .getContent()
-                                                .listIterator();
+        for (StandardRun run : StandardRun.wrap(p)) {
+            var runContentIterator = run.run()
+                                        .getContent()
+                                        .listIterator();
             while (runContentIterator.hasNext()) {
                 Object element = runContentIterator.next();
                 if (element instanceof JAXBElement<?> jaxbElement && !jaxbElement.getName()
@@ -242,31 +153,6 @@ public class StandardParagraph
                 if (element instanceof Text text) replaceWithBr(placeholder, br, text, runContentIterator);
             }
         }
-    }
-
-    private List<StandardRun> getAffectedRuns(int startIndex, int endIndex) {
-        return runs.stream()
-                   .filter(run -> run.isTouchedByRange(startIndex, endIndex))
-                   .toList();
-    }
-
-    private void removeExpression(
-            StandardRun firstRun,
-            int matchStartIndex,
-            int matchEndIndex,
-            StandardRun lastRun,
-            List<StandardRun> affectedRuns
-    ) {
-        // remove the expression from the first run
-        firstRun.replace(matchStartIndex, matchEndIndex, "");
-        // remove all runs between first and last
-        for (StandardRun run : affectedRuns) {
-            if (!Objects.equals(run, firstRun) && !Objects.equals(run, lastRun)) {
-                contents.remove(run.run());
-            }
-        }
-        // remove the expression from the last run
-        lastRun.replace(matchStartIndex, matchEndIndex, "");
     }
 
     @Override
@@ -286,7 +172,9 @@ public class StandardParagraph
             throw new OfficeStamperException(msg.formatted(to, this));
         }
         var expression = extractExpression(from, to);
-        replaceExpressionWithRun(expression, run);
+        var newContents = WmlUtils.replaceExpressionWithRun(p, expression, run);
+        contents.clear();
+        contents.addAll(newContents);
     }
 
     private static void replaceWithBr(
@@ -310,11 +198,11 @@ public class StandardParagraph
         var toIndex = contents.indexOf(to);
         var subContent = contents.subList(fromIndex, toIndex + 1);
 
-        var subRuns = new ArrayList<>(runs);
-        subRuns.removeIf(run -> !subContent.contains(run.run()));
-        return subRuns.stream()
-                      .map(StandardRun::getText)
-                      .collect(joining());
+        var runs = StandardRun.wrap(p);
+        runs.removeIf(run -> !subContent.contains(run.run()));
+        return runs.stream()
+                   .map(StandardRun::getText)
+                   .collect(joining());
     }
 
     /// Returns the aggregated text over all runs.
@@ -322,9 +210,7 @@ public class StandardParagraph
     /// @return the text of all runs.
     @Override
     public String asString() {
-        return runs.stream()
-                   .map(StandardRun::getText)
-                   .collect(joining());
+        return WmlUtils.asString(contents);
     }
 
     /// Applies the given consumer to the paragraph represented by the current instance.
@@ -356,7 +242,7 @@ public class StandardParagraph
     /// @return a collection of [Comments.Comment] objects related to the paragraph.
     @Override
     public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(contents, source.document());
+        return CommentUtil.getCommentFor(p, source.document());
     }
 
     private Comment comment(Placeholder placeholder) {
@@ -371,130 +257,5 @@ public class StandardParagraph
     @Override
     public String toString() {
         return asString();
-    }
-
-    /// Represents a run (i.e., a text fragment) in a paragraph. The run is indexed relative to the containing paragraph
-    /// and also relative to the containing document.
-    ///
-    /// @param startIndex    the start index of the run relative to the containing paragraph.
-    /// @param indexInParent the index of the run relative to the containing document.
-    /// @param run           the run itself.
-    ///
-    /// @author Joseph Verron
-    /// @author Tom Hombergs
-    /// @version ${version}
-    /// @since 1.0.0
-    public record StandardRun(int startIndex, int indexInParent, R run) {
-
-        /// Retrieves a substring from the text content of this run, starting at the specified begin index.
-        ///
-        /// @param beginIndex the beginning index, inclusive, for the substring.
-        ///
-        /// @return the substring of the run's text starting from the specified begin index to the end of the text.
-        public String substring(int beginIndex) {
-            return getText().substring(beginIndex);
-        }
-
-        /// Retrieves a substring from the text content of this run, starting
-        /// at the specified begin index and ending at the specified end index.
-        ///
-        /// @param beginIndex the beginning index, inclusive, for the substring.
-        /// @param endIndex   the ending index, exclusive, for the substring.
-        ///
-        /// @return the substring of the run's text from the specified begin index to the specified end index.
-        public String substring(int beginIndex, int endIndex) {
-            return getText().substring(beginIndex, endIndex);
-        }
-
-        /// Finds the index of the first occurrence of the specified substring in the text of the current run.
-        ///
-        /// @param full the substring to search for within the run's text.
-        ///
-        /// @return the index of the first occurrence of the specified substring,
-        /// or &ndash;1 if the substring is not found.
-        public int indexOf(String full) {
-            return getText().indexOf(full);
-        }
-
-        /// Returns the text string of a run.
-        ///
-        /// @return [String] representation of the run.
-        public String getText() {
-            return RunUtil.getText(run);
-        }
-
-        /// Retrieves the properties associated with this run.
-        ///
-        /// @return the [RPr] object representing the properties of the run.
-        public RPr getPr() {
-            return run.getRPr();
-        }
-
-        /// Determines whether the current run is affected by the specified range of global start and end indices.
-        /// A run is considered "touched" if any part of it overlaps with the given range.
-        ///
-        /// @param globalStartIndex the global start index of the range.
-        /// @param globalEndIndex   the global end index of the range.
-        ///
-        /// @return `true` if the current run is touched by the specified range; `false` otherwise.
-        public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
-            return startsInRange(globalStartIndex, globalEndIndex) || endsInRange(globalStartIndex, globalEndIndex)
-                   || englobesRange(globalStartIndex, globalEndIndex);
-        }
-
-        private boolean startsInRange(int globalStartIndex, int globalEndIndex) {
-            return globalStartIndex < startIndex && startIndex <= globalEndIndex;
-        }
-
-        private boolean endsInRange(int globalStartIndex, int globalEndIndex) {
-            return globalStartIndex < endIndex() && endIndex() <= globalEndIndex;
-        }
-
-        private boolean englobesRange(int globalStartIndex, int globalEndIndex) {
-            return startIndex <= globalStartIndex && globalEndIndex <= endIndex();
-        }
-
-        /// Calculates the end index of the current run based on its start index and length.
-        ///
-        /// @return the end index of the run.
-        public int endIndex() {
-            return startIndex + length();
-        }
-
-        /// Calculates the length of the text content of this run.
-        ///
-        /// @return the length of the text in the current run.
-        public int length() {
-            return getText().length();
-        }
-
-        /// Replaces the substring starting at the given index with the given replacement string.
-        ///
-        /// @param globalStartIndex the global index at which to start the replacement.
-        /// @param globalEndIndex   the global index at which to end the replacement.
-        /// @param replacement      the string to replace the substring at the specified global index.
-        public void replace(int globalStartIndex, int globalEndIndex, String replacement) {
-            int localStartIndex = globalIndexToLocalIndex(globalStartIndex);
-            int localEndIndex = globalIndexToLocalIndex(globalEndIndex);
-            var text = substring(0, localStartIndex);
-            text += replacement;
-            String runText = getText();
-            if (!runText.isEmpty()) {
-                text += substring(localEndIndex);
-            }
-            RunUtil.setText(run, text);
-        }
-
-        /// Converts a global index to a local index within the context of this run.
-        /// (meaning the index relative to multiple aggregated runs)
-        ///
-        /// @param globalIndex the global index to convert.
-        ///
-        /// @return the local index corresponding to the given global index.
-        private int globalIndexToLocalIndex(int globalIndex) {
-            if (globalIndex < startIndex) return 0;
-            else if (globalIndex > endIndex()) return length();
-            else return globalIndex - startIndex;
-        }
     }
 }

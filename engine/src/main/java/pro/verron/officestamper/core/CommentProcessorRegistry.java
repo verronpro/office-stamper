@@ -1,7 +1,10 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.*;
+import org.docx4j.wml.CommentRangeEnd;
+import org.docx4j.wml.CommentRangeStart;
+import org.docx4j.wml.Comments;
+import org.docx4j.wml.R;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,23 +61,25 @@ public class CommentProcessorRegistry {
     /// @param <T>               the type of the context root object
     /// @param expressionContext the context root object against which expressions within comments are evaluated
     public <T> void runProcessors(T expressionContext) {
-        var proceedComments = new ArrayList<Comment>();
+        var iterator = DocxIterator.ofParagraphs(source);
 
-        source.streamParagraphs()
-              .forEach(p -> {
-                  var comments = collectComments();
-                  var paragraphComment = p.getComment();
-                  paragraphComment.forEach((pc -> {
-                      var optional = runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
-                      commentProcessors.commitChanges(source);
-                      optional.ifPresent(proceedComments::add);
-                  }));
-              });
+        while (iterator.hasNext()) {
+            var p = iterator.next();
+            var comments = collectComments();
+            var paragraphComment = p.getComment();
+            var updates = 0;
+            for (Comments.Comment pc : paragraphComment) {
+                updates += runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
+            }
+            if (updates > 0) iterator.reset();
+        }
 
-        source.streamParagraphs()
-              .forEach(paragraph -> runProcessorsOnInlineContent(expressionContext, paragraph));
+        iterator.reset();
 
-        proceedComments.forEach(CommentUtil::deleteComment);
+        while (iterator.hasNext()) {
+            var paragraph = iterator.next();
+            if (runProcessorsOnInlineContent(expressionContext, paragraph) > 0) iterator.reset();
+        }
     }
 
     private Map<BigInteger, Comment> collectComments() {
@@ -99,23 +104,28 @@ public class CommentProcessorRegistry {
         return new HashMap<>(rootComments);
     }
 
-    private <T> Optional<Comment> runProcessorsOnParagraphComment(
+    private <T> int runProcessorsOnParagraphComment(
             Map<BigInteger, Comment> comments,
             T expressionContext,
             Paragraph paragraph,
             BigInteger paragraphCommentId
     ) {
-        if (!comments.containsKey(paragraphCommentId)) return Optional.empty();
+        if (!comments.containsKey(paragraphCommentId)) return 0;
 
         var c = comments.get(paragraphCommentId);
         var cPlaceholder = c.asPlaceholder();
         var cComment = c.getComment();
         comments.remove(cComment.getId());
         commentProcessors.setContext(new ProcessorContext(paragraph, null, c, cPlaceholder));
-        return runCommentProcessors(expressionContext, c.asPlaceholder()) ? Optional.of(c) : Optional.empty();
+
+        if (!runCommentProcessors(expressionContext, c.asPlaceholder())) return 0;
+
+        commentProcessors.commitChanges(source);
+        CommentUtil.deleteComment(c);
+        return 1;
     }
 
-    private <T> void runProcessorsOnInlineContent(T context, Paragraph paragraph) {
+    private <T> int runProcessorsOnInlineContent(T context, Paragraph paragraph) {
         var processorContexts = findProcessors(paragraph.asString()).stream()
                                                                     .map(paragraph::processorContext)
                                                                     .toList();
@@ -133,6 +143,7 @@ public class CommentProcessorRegistry {
             }
             commentProcessors.commitChanges(source);
         }
+        return processorContexts.size();
     }
 
     private WordprocessingMLPackage document() {

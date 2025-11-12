@@ -8,11 +8,13 @@ import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.Parts;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
+import org.docx4j.wml.R.CommentReference;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.docx4j.XmlUtils.unwrap;
@@ -38,53 +40,6 @@ public class CommentUtil {
 
     private CommentUtil() {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
-    }
-
-    /// Retrieves the comment associated with or around the specified `R` run within a WordprocessingMLPackage document.
-    ///
-    /// @param run      the run to search for an associated comment
-    /// @param document the WordprocessingMLPackage document containing the run and its possible comments
-    ///
-    /// @return an Optional containing the found comment, or Optional.empty() if no comment is associated
-    public static Optional<Comments.Comment> getCommentAround(R run, WordprocessingMLPackage document) {
-        ContentAccessor parent = (ContentAccessor) run.getParent();
-        if (parent == null) return Optional.empty();
-        return getComment(run, document, parent);
-    }
-
-    private static Optional<Comments.Comment> getComment(
-            R run,
-            WordprocessingMLPackage document,
-            ContentAccessor parent
-    ) {
-        CommentRangeStart possibleComment = null;
-        boolean foundChild = false;
-        for (Object contentElement : parent.getContent()) {
-            // so first we look for the start of the comment
-            if (unwrap(contentElement) instanceof CommentRangeStart crs) possibleComment = crs;
-                // then we check if the child we are looking for is ours
-            else if (possibleComment != null && run.equals(contentElement)) foundChild = true;
-                // and then, if we have an end of a comment, we are good!
-            else if (possibleComment != null && foundChild && unwrap(contentElement) instanceof CommentRangeEnd) {
-                return findComment(document, possibleComment.getId());
-            }
-            // else restart
-            else {
-                possibleComment = null;
-                foundChild = false;
-            }
-        }
-        return Optional.empty();
-    }
-
-    private static Optional<Comments.Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
-        return getCommentsPart(document.getParts()).map(CommentUtil::extractContent)
-                                                   .map(Comments::getComment)
-                                                   .stream()
-                                                   .flatMap(Collection::stream)
-                                                   .filter(comment -> id.equals(comment.getId()))
-                                                   .findFirst();
-
     }
 
     /// Retrieves the CommentsPart from the given Parts object.
@@ -113,13 +68,12 @@ public class CommentUtil {
 
     /// Retrieves the comment associated with a given paragraph content within a WordprocessingMLPackage document.
     ///
-    /// @param paragraphContent the content of the paragraph to search for a comment.
-    /// @param document         the WordprocessingMLPackage document containing the paragraph and its comments.
+    /// @param document the WordprocessingMLPackage document containing the paragraph and its comments.
     ///
     /// @return an Optional containing the found comment, or Optional.empty() if no comment is associated with the given
     /// paragraph content.
     public static Collection<Comments.Comment> getCommentFor(
-            List<Object> paragraphContent,
+            ContentAccessor contentAccessor,
             WordprocessingMLPackage document
     ) {
         var comments = getCommentsPart(document.getParts()).map(CommentUtil::extractContent)
@@ -128,12 +82,13 @@ public class CommentUtil {
                                                            .flatMap(Collection::stream)
                                                            .toList();
 
-        return paragraphContent.stream()
-                               .filter(CommentRangeStart.class::isInstance)
-                               .map(CommentRangeStart.class::cast)
-                               .map(CommentRangeStart::getId)
-                               .flatMap(commentId -> findCommentById(comments, commentId).stream())
-                               .toList();
+        var result = new ArrayList<Comments.Comment>();
+        var commentIterator = DocxIterator.ofCRS(contentAccessor);
+        while (commentIterator.hasNext()) {
+            var crs = commentIterator.next();
+            findCommentById(comments, crs.getId()).ifPresent(result::add);
+        }
+        return result;
     }
 
     private static Optional<Comments.Comment> findCommentById(List<Comments.Comment> comments, BigInteger id) {
@@ -161,41 +116,12 @@ public class CommentUtil {
             startParent.getContent()
                        .remove(start);
         }
-        R.CommentReference reference = comment.getCommentReference();
+        CommentReference reference = comment.getCommentReference();
         if (reference != null) {
             ContentAccessor referenceParent = (ContentAccessor) reference.getParent();
             referenceParent.getContent()
                            .remove(reference);
         }
-    }
-
-    private static List<DeletableItems> findDeletableItemsForComment(List<Object> items, BigInteger commentId) {
-        List<DeletableItems> elementsToRemove = new ArrayList<>();
-        for (Object item : items) {
-            Object unwrapped = unwrap(item);
-            if (unwrapped instanceof CommentRangeStart crs && Objects.equals(commentId, crs.getId()))
-                elementsToRemove.add(new DeletableItems(items, List.of(item)));
-            else if (unwrapped instanceof CommentRangeEnd cre && Objects.equals(commentId, cre.getId()))
-                elementsToRemove.add(new DeletableItems(items, List.of(item)));
-            else if (unwrapped instanceof R.CommentReference rcr && Objects.equals(commentId, rcr.getId()))
-                elementsToRemove.add(new DeletableItems(items, List.of(item)));
-            else if (unwrapped instanceof ContentAccessor ca)
-                elementsToRemove.addAll(findDeletableItemsForComment(ca.getContent(), commentId));
-            else if (unwrapped instanceof SdtRun sdtRun)
-                elementsToRemove.addAll(findDeletableItemsForComment(sdtRun.getSdtContent()
-                                                                           .getContent(), commentId));
-        }
-        return elementsToRemove;
-    }
-
-    /// Deletes all elements associated with the specified comment from the provided list of items.
-    ///
-    /// @param comment the comment whose associated elements should be removed
-    /// @param items   the list of items from which elements associated with the comment will be deleted
-    public static void deleteCommentFromElements(Comment comment, List<Object> items) {
-        var docx4jComment = comment.getComment();
-        var commentId = docx4jComment.getId();
-        findDeletableItemsForComment(items, commentId).forEach(p -> p.container.removeAll(p.items));
     }
 
     /// Creates a sub Word document
@@ -241,6 +167,47 @@ public class CommentUtil {
         }
     }
 
+    /// Deletes all elements associated with the specified comment from the provided list of items.
+    ///
+    /// @param comment the comment whose associated elements should be removed
+    /// @param items   the list of items from which elements associated with the comment will be deleted
+    public static void deleteCommentFromElements(Comment comment, List<Object> items) {
+        record DeletableItems(List<Object> container, List<Object> items) {
+            static List<DeletableItems> findAll(List<Object> items, BigInteger commentId) {
+                Predicate<BigInteger> predicate = bi -> Objects.equals(bi, commentId);
+                List<DeletableItems> elementsToRemove = new ArrayList<>();
+                items.forEach(item -> {
+                    Object unwrapped = unwrap(item);
+                    elementsToRemove.addAll(switch (unwrapped) {
+                        case CommentRangeStart crs when predicate.test(crs.getId()) -> from(items, item);
+                        case CommentRangeEnd cre when predicate.test(cre.getId()) -> from(items, item);
+                        case CommentReference rcr when predicate.test(rcr.getId()) -> from(items, item);
+                        case ContentAccessor ca -> findAll(ca, commentId);
+                        case SdtRun sdtRun -> findAll(sdtRun, commentId);
+                        default -> Collections.emptyList();
+                    });
+                });
+                return elementsToRemove;
+            }
+
+            private static Collection<DeletableItems> findAll(SdtRun sdtRun, BigInteger commentId) {
+                return findAll(sdtRun.getSdtContent(), commentId);
+            }
+
+            private static Collection<DeletableItems> findAll(ContentAccessor ca, BigInteger commentId) {
+                return findAll(ca.getContent(), commentId);
+            }
+
+            private static List<DeletableItems> from(List<Object> items, Object item) {
+                return Collections.singletonList(new DeletableItems(items, List.of(item)));
+            }
+        }
+        var docx4jComment = comment.getComment();
+        var commentId = docx4jComment.getId();
+        DeletableItems.findAll(items, commentId)
+                      .forEach(p -> p.container.removeAll(p.items));
+    }
+
     private static Comments extractComments(Set<Comment> commentChildren) {
         var list = new ArrayList<Comments.Comment>();
         var queue = new ArrayDeque<>(commentChildren);
@@ -254,5 +221,5 @@ public class CommentUtil {
         return newComments(list);
     }
 
-    private record DeletableItems(List<Object> container, List<Object> items) {}
+
 }

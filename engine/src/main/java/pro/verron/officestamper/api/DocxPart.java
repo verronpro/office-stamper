@@ -33,10 +33,10 @@ public interface DocxPart
     /// Streams all paragraphs contained within the WordprocessingML-based document part.
     ///
     /// @return a stream of [Paragraph] objects representing the paragraphs in the document part
-    Stream<Paragraph> streamParagraphs();
+    @Deprecated Stream<Paragraph> streamParagraphs();
 
     /// Streams all run elements contained within the WordprocessingML-based document part.
     ///
     /// @return a stream of [R] objects representing the run elements in the document part
-    Stream<R> streamRun();
+    @Deprecated Stream<R> streamRun();
 }

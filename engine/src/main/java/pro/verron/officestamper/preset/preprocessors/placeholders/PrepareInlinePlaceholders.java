@@ -14,13 +14,15 @@ public class PrepareInlinePlaceholders
         implements PreProcessor {
 
     private final Pattern pattern;
+    private final String element;
 
-    public PrepareInlinePlaceholders(String regex) {
-        this(Pattern.compile(regex, Pattern.DOTALL));
+    public PrepareInlinePlaceholders(String regex, String element) {
+        this(Pattern.compile(regex, Pattern.DOTALL), element);
     }
 
-    public PrepareInlinePlaceholders(Pattern pattern) {
+    public PrepareInlinePlaceholders(Pattern pattern, String element) {
         this.pattern = pattern;
+        this.element = element;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class PrepareInlinePlaceholders
                 var start = matcher.start(1);
                 var end = matcher.end(1);
                 var placeholder = matcher.group(2);
-                var newContent = insertSmartTag(paragraph, placeholder, start, end);
+                var newContent = insertSmartTag(element, paragraph, placeholder, start, end);
                 var content = paragraph.getContent();
                 content.clear();
                 content.addAll(newContent);

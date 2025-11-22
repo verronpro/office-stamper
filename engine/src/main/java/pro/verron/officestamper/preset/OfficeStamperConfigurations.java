@@ -69,7 +69,8 @@ public class OfficeStamperConfigurations {
                 Resolvers.fallback()));
 
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
-        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "processor"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("($\\{([^{]+?)})", "placeholder"));
 
         configuration.addCustomFunction("ftime", TemporalAccessor.class)
                      .withImplementation(ISO_TIME::format);

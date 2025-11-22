@@ -10,6 +10,8 @@ import pro.verron.officestamper.api.Placeholder;
 
 import java.math.BigInteger;
 
+import static pro.verron.officestamper.utils.WmlUtils.asString;
+
 /// Represents a Tag entity consisting of a DocxPart and a CTSmartTagRun.
 /// A Tag provides functionality to manipulate and retrieve information
 /// related to smart tags embedded within a WordprocessingML-based document.
@@ -21,8 +23,7 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
 
     /// Creates a new Tag instance using the provided DocxPart and CTSmartTagRun.
     ///
-    /// @param docxPart the DocxPart instance representing the part of the document
-    ///                                                 associated with the new Tag.
+    /// @param docxPart the DocxPart instance representing the part of the document associated with the new Tag.
     /// @param tag      the CTSmartTagRun representing the smart tag element in the document.
     ///
     /// @return a new Tag instance initialized with the given DocxPart and CTSmartTagRun.
@@ -63,6 +64,6 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     ///
     /// @return a Placeholder object representing the raw placeholder based on the tag's element.
     public Placeholder asPlaceholder() {
-        return Placeholders.raw(tag.getElement());
+        return Placeholders.raw(asString(tag.getContent()));
     }
 }

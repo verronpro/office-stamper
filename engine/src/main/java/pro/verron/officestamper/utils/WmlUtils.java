@@ -275,9 +275,9 @@ public final class WmlUtils {
         return Objects.equals(space, PRESERVE) ? value : value.trim();
     }
 
-    public static List<Object> insertSmartTag(P paragraph, String expression, int start, int end) {
+    public static List<Object> insertSmartTag(String element, P paragraph, String expression, int start, int end) {
         var run = newRun(expression);
-        var smartTag = newSmartTag(expression, run);
+        var smartTag = newSmartTag(element, run);
         findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
         return replace(paragraph, smartTag, start, end);
     }

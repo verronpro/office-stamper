@@ -10,7 +10,7 @@ class PrepareInlinePlaceholdersTest {
 
     @Test
     void process() {
-        var preparePlaceholders = new PrepareInlinePlaceholders("(#\\{([^{]+?)})");
+        var preparePlaceholders = new PrepareInlinePlaceholders("(#\\{([^{]+?)})", "processor");
         var document = makeDocx("Hello, #{name}!");
         var stringifier = new Stringifier(() -> document);
         var before = stringifier.stringify(document);
@@ -18,7 +18,7 @@ class PrepareInlinePlaceholdersTest {
         preparePlaceholders.process(document);
         var actual = stringifier.stringify(document);
         assertEquals("""
-                Hello, <tag element="name">name<\\tag>!
+                Hello, <tag element="processor">name<\\tag>!
                 """, actual);
     }
 }

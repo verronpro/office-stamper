@@ -28,7 +28,7 @@ public class ParagraphCollector
         }
     }
 
-    public List<P> getParagraphWithPlaceholders() {
+    public List<P> paragraphs() {
         return results;
     }
 }

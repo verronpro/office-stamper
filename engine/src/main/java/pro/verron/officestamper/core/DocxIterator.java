@@ -72,10 +72,10 @@ public class DocxIterator
         return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
     }
 
-    public static Iterator<pro.verron.officestamper.core.Tag> ofTags(DocxPart docxPart) {
+    public static Iterator<pro.verron.officestamper.core.Tag> ofTags(DocxPart docxPart, String type) {
         var iterator = new DocxIterator(() -> docxPart.content()
                                                       .iterator());
-        Predicate<Object> predicate = CTSmartTagRun.class::isInstance;
+        Predicate<Object> predicate = o -> o instanceof CTSmartTagRun tag && type.equals(tag.getElement());
         Function<Object, CTSmartTagRun> caster = CTSmartTagRun.class::cast;
         Function<Object, Tag> mapper = caster.andThen((CTSmartTagRun tag) -> Tag.of(docxPart, tag));
         return new FilterMapperIterator<>(iterator, predicate, mapper);

@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 import static pro.verron.officestamper.utils.WmlUtils.asString;
 import static pro.verron.officestamper.utils.WmlUtils.insertSmartTag;
 
-public class PreparePlaceholders
+public class PrepareInlineProcessors
         implements PreProcessor {
     @Override
     public void process(WordprocessingMLPackage document) {
-        var pattern = Pattern.compile("(\\$\\{([^{]+?)})", Pattern.DOTALL);
-        var visitor = new ParagraphWithPlaceholdersCollector(pattern);
+        var pattern = Pattern.compile("(#\\{([^{]+?)})", Pattern.DOTALL);
+        var visitor = new ParagraphCollector(pattern);
         DocumentUtil.visitDocument(document, visitor);
         for (P paragraphWithPlaceholders : visitor.getParagraphWithPlaceholders()) {
             var string = asString(paragraphWithPlaceholders);

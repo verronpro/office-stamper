@@ -9,13 +9,13 @@ import java.util.regex.Pattern;
 
 import static pro.verron.officestamper.utils.WmlUtils.asString;
 
-public class ParagraphWithPlaceholdersCollector
+public class ParagraphCollector
         extends TraversalUtilVisitor<P> {
 
     public final Pattern pattern;
     private final List<P> results = new ArrayList<>();
 
-    public ParagraphWithPlaceholdersCollector(Pattern pattern) {
+    public ParagraphCollector(Pattern pattern) {
         this.pattern = pattern;
     }
 

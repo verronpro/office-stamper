@@ -4,16 +4,11 @@ import org.docx4j.XmlUtils;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.SectionUtil;
-import pro.verron.officestamper.core.StandardParagraph;
+import pro.verron.officestamper.core.*;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.Paragraphs;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Collections.emptyIterator;
 import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakIfPresent;
@@ -78,8 +73,11 @@ public class ParagraphRepeatProcessor
                     CommentUtil.deleteCommentFromElements(comment, contentAccessor.getContent());
                 }
                 if (clone instanceof P p) {
-                    var paragraph = StandardParagraph.from(document, p);
-                    placeholderReplacer.resolveExpressionsForParagraph(document, paragraph, expressionContext);
+                    var tagIterator = DocxIterator.ofTags(p, "placeholder", new TextualDocxPart(comment.getDocument()));
+                    while (tagIterator.hasNext()) {
+                        var tag = tagIterator.next();
+                        placeholderReplacer.resolveExpressionsForParagraph(document, tag, expressionContext);
+                    }
                     paragraphsToAdd.add(p);
                 }
             }

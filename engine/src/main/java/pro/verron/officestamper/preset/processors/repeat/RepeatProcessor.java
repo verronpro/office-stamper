@@ -1,16 +1,13 @@
 package pro.verron.officestamper.preset.processors.repeat;
 
-import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
-import org.docx4j.finders.ClassFinder;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.StandardParagraph;
+import pro.verron.officestamper.core.DocxIterator;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 import java.util.ArrayList;
@@ -79,13 +76,10 @@ public class RepeatProcessor
                     Tr rowClone = XmlUtils.deepCopy(row);
                     Comment commentWrapper = requireNonNull(tableRowsCommentsToRemove.get(row));
                     CommentUtil.deleteCommentFromElements(commentWrapper, rowClone.getContent());
-                    var classFinder = new ClassFinder(P.class);
-                    TraversalUtil.visit(rowClone, classFinder);
-                    var objects = classFinder.results;
-                    for (Object object : objects) {
-                        P result = (P) object;
-                        StandardParagraph paragraph = StandardParagraph.from(source, result);
-                        placeholderReplacer.resolveExpressionsForParagraph(source, paragraph, expressionContext);
+                    var tagIterator = DocxIterator.ofTags(rowClone, "placeholder", source);
+                    while (tagIterator.hasNext()) {
+                        var tag = tagIterator.next();
+                        placeholderReplacer.resolveExpressionsForParagraph(source, tag, expressionContext);
                     }
                     changes.add(rowClone);
                 }

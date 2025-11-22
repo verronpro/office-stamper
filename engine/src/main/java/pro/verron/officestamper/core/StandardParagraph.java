@@ -247,7 +247,7 @@ public class StandardParagraph
 
     private Comment comment(Placeholder placeholder) {
         var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(source.document(), p, placeholder, id);
+        return StandardComment.create(source, p, placeholder, id);
     }
 
     /// Returns the string representation of the paragraph.

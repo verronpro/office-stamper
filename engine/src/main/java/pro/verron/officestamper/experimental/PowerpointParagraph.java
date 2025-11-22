@@ -333,7 +333,7 @@ public class PowerpointParagraph
     private Comment comment(Placeholder placeholder) {
         var parent = getP();
         var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(source.document(), parent, placeholder, id);
+        return StandardComment.create(source, parent, placeholder, id);
     }
 
     /// {@inheritDoc}

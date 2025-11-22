@@ -3,6 +3,7 @@ package pro.verron.officestamper.core;
 import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
+import org.docx4j.wml.R;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
@@ -65,5 +66,15 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     /// @return a Placeholder object representing the raw placeholder based on the tag's element.
     public Placeholder asPlaceholder() {
         return Placeholders.raw(asString(tag.getContent()));
+    }
+
+    /// Replaces the current tag with the provided replacement in its parent's content list.
+    ///
+    /// @param replacement the replacement element to be set in place of the current tag.
+    public void replace(R replacement) {
+        var parent = (ContentAccessor) tag.getParent();
+        var siblings = parent.getContent();
+        var index = siblings.indexOf(tag);
+        siblings.set(index, replacement);
     }
 }

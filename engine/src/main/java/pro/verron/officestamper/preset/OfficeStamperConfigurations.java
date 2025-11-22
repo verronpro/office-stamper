@@ -70,7 +70,7 @@ public class OfficeStamperConfigurations {
 
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
         configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "processor"));
-        configuration.addPreprocessor(Preprocessors.preparePlaceholders("($\\{([^{]+?)})", "placeholder"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
 
         configuration.addCustomFunction("ftime", TemporalAccessor.class)
                      .withImplementation(ISO_TIME::format);

@@ -71,7 +71,7 @@ public class CommentProcessorRegistry {
             if (updates > 0) paragraphIterator.reset();
         }
 
-        var tagIterator = DocxIterator.ofTags(source, "processor");
+        var tagIterator = DocxIterator.ofTags(source::content, "processor", source);
         while (tagIterator.hasNext()) {
             var tag = tagIterator.next();
             runProcessorsOnInlineContent(expressionContext, tag);

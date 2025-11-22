@@ -5,6 +5,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Placeholder;
 
 import java.math.BigInteger;
@@ -26,7 +27,7 @@ import static pro.verron.officestamper.utils.WmlFactory.*;
 public class StandardComment
         implements Comment {
     private final Set<Comment> children = new HashSet<>();
-    private final WordprocessingMLPackage document;
+    private final DocxPart docxPart;
     private Comments.Comment comment;
     private CommentRangeStart commentRangeStart;
     private CommentRangeEnd commentRangeEnd;
@@ -34,9 +35,9 @@ public class StandardComment
 
     /// Constructs a new StandardComment object.
     ///
-    /// @param document the WordprocessingMLPackage document instance
-    public StandardComment(WordprocessingMLPackage document) {
-        this.document = document;
+    /// @param docxPart the WordprocessingMLPackage document instance
+    public StandardComment(DocxPart docxPart) {
+        this.docxPart = docxPart;
     }
 
     /// Creates a new instance of a StandardComment and initializes its properties
@@ -48,7 +49,7 @@ public class StandardComment
     /// @param id          the unique identifier for the comment
     /// @return a fully initialized StandardComment object
     public static StandardComment create(
-            WordprocessingMLPackage document,
+            DocxPart document,
             P parent,
             Placeholder placeholder,
             BigInteger id
@@ -87,7 +88,7 @@ public class StandardComment
                             .stream()
                             .filter(P.class::isInstance)
                             .map(P.class::cast)
-                            .map(p -> StandardParagraph.from(new TextualDocxPart(document), p))
+                            .map(p -> StandardParagraph.from(new TextualDocxPart(docxPart.document()), p))
                             .map(StandardParagraph::asString)
                             .collect(joining());
         return Placeholders.raw(string);
@@ -196,6 +197,7 @@ public class StandardComment
     ///
     /// @return the WordprocessingMLPackage document associated with this StandardComment instance
     @Override public WordprocessingMLPackage getDocument() {
-        return document;
+        return docxPart.document();
     }
+
 }

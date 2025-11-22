@@ -32,7 +32,8 @@ public class Preprocessors {
         return new RemoveProofErrors();
     }
 
-    /// Returns a PreProcessor object that removes all language informations such as grammatical and orthographics markers in a
+    /// Returns a PreProcessor object that removes all language informations such as grammatical and orthographics
+    /// markers in a
     /// WordprocessingMLPackage document.
     ///
     /// @return a PreProcessor object that removes language markers.
@@ -47,7 +48,7 @@ public class Preprocessors {
         return new RemoveMalformedComments();
     }
 
-    public static PreProcessor preparePlaceholders(String regex) {
-        return new PrepareInlinePlaceholders(regex);
+    public static PreProcessor preparePlaceholders(String regex, String element) {
+        return new PrepareInlinePlaceholders(regex, element);
     }
 }

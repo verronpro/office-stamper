@@ -69,6 +69,7 @@ public class OfficeStamperConfigurations {
                 Resolvers.fallback()));
 
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders());
 
         configuration.addCustomFunction("ftime", TemporalAccessor.class)
                      .withImplementation(ISO_TIME::format);

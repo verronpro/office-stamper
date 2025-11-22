@@ -11,13 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.utils.WmlFactory;
 import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.*;
-
-import static pro.verron.officestamper.core.Placeholders.findProcessors;
 
 /// Allows registration of [CommentProcessor] objects. Each registered
 /// ICommentProcessor must implement an interface which has to be specified at
@@ -61,24 +58,24 @@ public class CommentProcessorRegistry {
     /// @param <T>               the type of the context root object
     /// @param expressionContext the context root object against which expressions within comments are evaluated
     public <T> void runProcessors(T expressionContext) {
-        var iterator = DocxIterator.ofParagraphs(source);
+        var paragraphIterator = DocxIterator.ofParagraphs(source);
 
-        while (iterator.hasNext()) {
-            var p = iterator.next();
+        while (paragraphIterator.hasNext()) {
+            var p = paragraphIterator.next();
             var comments = collectComments();
             var paragraphComment = p.getComment();
             var updates = 0;
             for (Comments.Comment pc : paragraphComment) {
                 updates += runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
             }
-            if (updates > 0) iterator.reset();
+            if (updates > 0) paragraphIterator.reset();
         }
 
-        iterator.reset();
-
-        while (iterator.hasNext()) {
-            var paragraph = iterator.next();
-            if (runProcessorsOnInlineContent(expressionContext, paragraph) > 0) iterator.reset();
+        var tagIterator = DocxIterator.ofTags(source);
+        while (tagIterator.hasNext()) {
+            var tag = tagIterator.next();
+            runProcessorsOnInlineContent(expressionContext, tag);
+            paragraphIterator.reset();
         }
     }
 
@@ -125,25 +122,19 @@ public class CommentProcessorRegistry {
         return 1;
     }
 
-    private <T> int runProcessorsOnInlineContent(T context, Paragraph paragraph) {
-        var processorContexts = findProcessors(paragraph.asString()).stream()
-                                                                    .map(paragraph::processorContext)
-                                                                    .toList();
-        for (var processorContext : processorContexts) {
-            commentProcessors.setContext(processorContext);
-            var placeholder = processorContext.placeholder();
-            try {
-                expressionResolver.setContext(context);
-                expressionResolver.resolve(placeholder);
-                paragraph.replace(placeholder, WmlFactory.newRun(""));
-                logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
-            } catch (SpelEvaluationException | SpelParseException e) {
-                var message = "Placeholder '%s' failed to process.".formatted(placeholder);
-                exceptionResolver.resolve(placeholder, message, e);
-            }
-            commentProcessors.commitChanges(source);
+    private <T> void runProcessorsOnInlineContent(T context, Tag tag) {
+        Placeholder placeholder = tag.asPlaceholder();
+        commentProcessors.setContext(new ProcessorContext(tag.getParagraph(), null, tag.asComment(), placeholder));
+        try {
+            expressionResolver.setContext(context);
+            expressionResolver.resolve(placeholder);
+            tag.remove();
+            logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
+        } catch (SpelEvaluationException | SpelParseException e) {
+            var message = "Placeholder '%s' failed to process.".formatted(placeholder);
+            exceptionResolver.resolve(placeholder, message, e);
         }
-        return processorContexts.size();
+        commentProcessors.commitChanges(source);
     }
 
     private WordprocessingMLPackage document() {
@@ -158,7 +149,7 @@ public class CommentProcessorRegistry {
     ) {
         Comment comment = allComments.get(crs.getId());
         if (comment == null) {
-            comment = new StandardComment(document());
+            comment = new StandardComment(source);
             allComments.put(crs.getId(), comment);
             if (stack.isEmpty()) {
                 rootComments.put(crs.getId(), comment);
@@ -190,7 +181,7 @@ public class CommentProcessorRegistry {
     private void onReference(R.CommentReference cr, HashMap<BigInteger, Comment> allComments) {
         Comment comment = allComments.get(cr.getId());
         if (comment == null) {
-            comment = new StandardComment(document());
+            comment = new StandardComment(source);
             allComments.put(cr.getId(), comment);
         }
         comment.setCommentReference(cr);

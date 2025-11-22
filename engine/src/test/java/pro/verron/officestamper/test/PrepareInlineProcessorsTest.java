@@ -11,10 +11,10 @@ class PrepareInlineProcessorsTest {
     @Test
     void process() {
         var preparePlaceholders = new PrepareInlineProcessors();
-        var document = makeDocx("Hello, ${name}!");
+        var document = makeDocx("Hello, #{name}!");
         var stringifier = new Stringifier(() -> document);
         var before = stringifier.stringify(document);
-        assertEquals("Hello, ${name}!\n", before);
+        assertEquals("Hello, #{name}!\n", before);
         preparePlaceholders.process(document);
         var actual = stringifier.stringify(document);
         assertEquals("""

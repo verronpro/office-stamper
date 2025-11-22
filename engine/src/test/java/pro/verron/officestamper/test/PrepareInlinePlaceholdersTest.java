@@ -1,16 +1,16 @@
 package pro.verron.officestamper.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.officestamper.preset.preprocessors.placeholders.PrepareInlineProcessors;
+import pro.verron.officestamper.preset.preprocessors.placeholders.PrepareInlinePlaceholders;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.test.TestUtils.makeDocx;
 
-class PrepareInlineProcessorsTest {
+class PrepareInlinePlaceholdersTest {
 
     @Test
     void process() {
-        var preparePlaceholders = new PrepareInlineProcessors();
+        var preparePlaceholders = new PrepareInlinePlaceholders("(#\\{([^{]+?)})");
         var document = makeDocx("Hello, #{name}!");
         var stringifier = new Stringifier(() -> document);
         var before = stringifier.stringify(document);

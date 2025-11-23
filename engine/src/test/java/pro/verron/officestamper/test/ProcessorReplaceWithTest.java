@@ -18,7 +18,7 @@ class ProcessorReplaceWithTest {
         var templateStream = getResource(Path.of("ProcessorReplaceWith_#585.docx"));
         var context = Map.of("name", "Homer Simpson");
         var actual = stamper.stampAndLoadAndExtract(templateStream, context);
-        var expected = "[Normal] This variable name should be resolved to the value Homer Simpson.<jc=LEFT>\n";
+        var expected = "This variable name should be resolved to the value Homer Simpson.\n";
         assertEquals(expected, actual);
     }
 }

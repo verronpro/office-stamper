@@ -55,12 +55,6 @@ public class ReplaceWithProcessor
         // nothing to reset
     }
 
-    /// {@inheritDoc}
-    @Override
-    public void replaceWordWith(@Nullable String expression) {
-        replaceWith(expression);
-    }
-
     @Override
     public void replaceWith(@Nullable String expression) {
         var comment = this.getCurrentCommentWrapper();

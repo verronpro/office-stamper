@@ -88,26 +88,4 @@ public final class Image {
             throw new OfficeStamperException("Failed to create an ImagePart", e);
         }
     }
-
-    /// Getter for the field <code>maxWidth</code>.
-    ///
-    /// @return a [Integer] object
-    ///
-    /// @deprecated use the [#newRun(DocxPart, String, String)] method directly to generate a Run with Inline
-    /// Drawing
-    @Deprecated(since = "2.6", forRemoval = true)
-    public Integer getMaxWidth() {
-        return maxWidth;
-    }
-
-    /// Getter for the field <code>imageBytes</code>.
-    ///
-    /// @return an array of <code>byte</code> object
-    ///
-    /// @deprecated use the [#newRun(DocxPart, String, String)] method directly to generate a Run with Inline
-    /// Drawing
-    @Deprecated(since = "2.6", forRemoval = true)
-    public byte[] getImageBytes() {
-        return imageBytes;
-    }
 }

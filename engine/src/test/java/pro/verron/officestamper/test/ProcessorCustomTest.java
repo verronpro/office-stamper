@@ -65,12 +65,6 @@ public class ProcessorCustomTest
 
     /// {@inheritDoc}
     @Override
-    public void setCurrentRun(R run) {
-        // DO NOTHING
-    }
-
-    /// {@inheritDoc}
-    @Override
     public void visitParagraph() {
         visitedParagraphs.add(getParagraph());
     }

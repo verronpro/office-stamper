@@ -57,29 +57,6 @@ public class ExceptionResolvers {
         return new ThrowingResolver(logger.isTraceEnabled());
     }
 
-        /// Provides a legacy behavior for creating an appropriate `ExceptionResolver` based on the input parameters.
-        /// @deprecated This method is deprecated and scheduled for removal in future versions. Use more specific factory
-        /// methods instead.
-        ///
-        /// @param shouldFail       if `true`, returns a resolver that throws an exception.
-        /// @param emptyOnError     if `true`, returns a resolver that provides an empty string on error.
-        /// @param shouldReplace    if `true`, returns a resolver that uses the specified replacement value.
-        /// @param replacementValue the replacement value to be used if `shouldReplace` is `true`.
-        ///                         This parameter is ignored if `shouldReplace` is `false`.
-        /// @return an `ExceptionResolver` instance that behaves according to the specified parameters.
-        @Deprecated(since="2.5", forRemoval = true)
-    public static ExceptionResolver legacyBehavior(
-            boolean shouldFail,
-            boolean emptyOnError,
-            boolean shouldReplace,
-            String replacementValue
-    ) {
-        if (shouldFail) return new ThrowingResolver(logger.isTraceEnabled());
-        if (emptyOnError) return new DefaultingResolver("", logger.isTraceEnabled());
-        if (shouldReplace) return new DefaultingResolver(replacementValue, logger.isTraceEnabled());
-        return new PassingResolver(logger.isTraceEnabled(), "${%s}");
-    }
-
     private record DefaultingResolver(String value, boolean tracing)
             implements ExceptionResolver {
 

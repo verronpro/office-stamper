@@ -41,16 +41,6 @@ public class PptxPart
     }
 
     @Override
-    public Stream<Paragraph> streamParagraphs() {
-        return Stream.empty();
-    }
-
-    @Override
-    public Stream<R> streamRun() {
-        return Stream.empty();
-    }
-
-    @Override
     public WordprocessingMLPackage document() {
         return null;
     }

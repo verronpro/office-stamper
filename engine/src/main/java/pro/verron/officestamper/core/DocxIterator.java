@@ -67,12 +67,12 @@ public class DocxIterator
         return new FilterMapperIterator<>(iterator, CommentRangeStart.class::isInstance, CommentRangeStart.class::cast);
     }
 
-    public static Iterator<R> ofRun(ContentAccessor contentAccessor) {
+    public static ResetableIterator<R> ofRun(ContentAccessor contentAccessor) {
         var iterator = new DocxIterator(contentAccessor.getContent()::iterator);
         return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
     }
 
-    public static Iterator<pro.verron.officestamper.core.Tag> ofTags(ContentAccessor contentAccessor, String type,
+    public static ResetableIterator<pro.verron.officestamper.core.Tag> ofTags(ContentAccessor contentAccessor, String type,
             DocxPart docxPart
     ) {
         var iterator = new DocxIterator(() -> contentAccessor.getContent()

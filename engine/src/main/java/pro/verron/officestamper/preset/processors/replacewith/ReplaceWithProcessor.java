@@ -7,6 +7,7 @@ import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.utils.Inserts;
 import pro.verron.officestamper.utils.WmlFactory;
 
 import java.util.List;
@@ -65,6 +66,6 @@ public class ReplaceWithProcessor
         var comment = this.getCurrentCommentWrapper();
         var from = comment.getCommentRangeStart();
         var to = comment.getCommentRangeEnd();
-        getParagraph().replace(from, to, WmlFactory.newRun(expression));
+        getParagraph().replace(from, to, Inserts.of(WmlFactory.newRun(expression)));
     }
 }

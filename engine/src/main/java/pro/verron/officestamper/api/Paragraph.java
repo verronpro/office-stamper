@@ -1,6 +1,7 @@
 package pro.verron.officestamper.api;
 
 import org.docx4j.wml.Comments;
+import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 
@@ -38,19 +39,6 @@ public interface Paragraph {
     @Deprecated(since = "2.6", forRemoval = true)
     P getP(); // TODO replace with API not exposing the docx4j API directly
 
-    /// Replaces all occurrences of a placeholder with a specified replacement value within a paragraph.
-    ///
-    /// @param placeholder The placeholder to be replaced.
-    /// @param replacement The replacement value for the placeholder.
-    ///
-    /// @deprecated was used by the core to deal with multiline paragraphs, users should fallback to
-    /// [#replace(Placeholder, Object)] only
-    @Deprecated(since = "2.4", forRemoval = true) default void replaceAll(Placeholder placeholder, R replacement) {
-        while (contains(placeholder.expression())) {
-            replace(placeholder, replacement);
-        }
-    }
-
     /// Returns true if the given expression is found within the paragraph, otherwise returns false.
     ///
     /// @param expression The string to search for within the paragraph.
@@ -66,14 +54,14 @@ public interface Paragraph {
     ///
     /// @param placeholder The placeholder to be replaced.
     /// @param replacement The replacement for the placeholder.
-    void replace(Placeholder placeholder, Object replacement);
+    void replace(Placeholder placeholder, Insert insert);
 
     /// Replaces a slice of objects in the given paragraph with the specified replacement.
     ///
     /// @param from The first object to be replaced.
     /// @param to The last object for the placeholder.
     /// @param replacement The replacement for the placeholder.
-    void replace(Object from, Object to, R replacement);
+    void replace(Object from, Object to, Insert insert);
 
     ///Returns the paragraph as a string.
     ///
@@ -83,7 +71,7 @@ public interface Paragraph {
     /// Applies the specified consumer function to the paragraph content.
     ///
     /// @param pConsumer The consumer function to apply to the paragraph content.
-    void apply(Consumer<P> pConsumer);
+    void apply(Consumer<ContentAccessor> pConsumer);
 
     /// Retrieves the parent of the current paragraph that matches the specified class type.
     ///

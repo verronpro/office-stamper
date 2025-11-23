@@ -50,7 +50,7 @@ public class StandardComment
     /// @return a fully initialized StandardComment object
     public static StandardComment create(
             DocxPart document,
-            P parent,
+            ContentAccessor parent,
             Placeholder placeholder,
             BigInteger id
     ) {

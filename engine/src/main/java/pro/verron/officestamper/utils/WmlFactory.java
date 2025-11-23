@@ -251,7 +251,7 @@ public class WmlFactory {
     /// @param parent The parent element (P) to which this CommentRangeStart belongs.
     ///
     /// @return A new CommentRangeStart object with the specified ID and parent.
-    public static CommentRangeStart newCommentRangeStart(BigInteger id, P parent) {
+    public static CommentRangeStart newCommentRangeStart(BigInteger id, ContentAccessor parent) {
         var commentRangeStart = new CommentRangeStart();
         commentRangeStart.setId(id);
         commentRangeStart.setParent(parent);
@@ -264,7 +264,7 @@ public class WmlFactory {
     /// @param parent The parent element (P) to which this CommentRangeEnd belongs.
     ///
     /// @return A new CommentRangeEnd object with the specified ID and parent.
-    public static CommentRangeEnd newCommentRangeEnd(BigInteger id, P parent) {
+    public static CommentRangeEnd newCommentRangeEnd(BigInteger id, ContentAccessor parent) {
         var commentRangeEnd = new CommentRangeEnd();
         commentRangeEnd.setId(id);
         commentRangeEnd.setParent(parent);
@@ -277,7 +277,7 @@ public class WmlFactory {
     /// @param parent The parent element (P) to which this CommentReference belongs.
     ///
     /// @return A new CommentReference object with the specified ID and parent.
-    public static R.CommentReference newCommentReference(BigInteger id, P parent) {
+    public static R.CommentReference newCommentReference(BigInteger id, ContentAccessor parent) {
         var commentReference = new R.CommentReference();
         commentReference.setId(id);
         commentReference.setParent(parent);

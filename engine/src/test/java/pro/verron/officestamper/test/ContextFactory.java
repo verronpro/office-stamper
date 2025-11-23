@@ -48,4 +48,6 @@ public sealed interface ContextFactory
     Object sectionName(String firstName, String secondName);
 
     Object imagedName(String name, Image image);
+
+    Object sentence(String sentence);
 }

@@ -30,7 +30,7 @@ public class ExceptionResolvers {
     ///
     /// @return An instance of `ExceptionResolver` that returns the placeholder expression.
     public static ExceptionResolver passing() {
-        return new PassingResolver(logger.isTraceEnabled());
+        return new PassingResolver(logger.isTraceEnabled(), "${%s}");
     }
 
     /// The defaulting resolver class will handle exceptions by returning an empty string.
@@ -77,7 +77,7 @@ public class ExceptionResolvers {
         if (shouldFail) return new ThrowingResolver(logger.isTraceEnabled());
         if (emptyOnError) return new DefaultingResolver("", logger.isTraceEnabled());
         if (shouldReplace) return new DefaultingResolver(replacementValue, logger.isTraceEnabled());
-        return new PassingResolver(logger.isTraceEnabled());
+        return new PassingResolver(logger.isTraceEnabled(), "${%s}");
     }
 
     private record DefaultingResolver(String value, boolean tracing)
@@ -92,13 +92,13 @@ public class ExceptionResolvers {
         }
     }
 
-    private record PassingResolver(boolean tracing)
+    private record PassingResolver(boolean tracing, String template)
             implements ExceptionResolver {
 
         @Override public String resolve(Placeholder placeholder, String message, Exception cause) {
             if (tracing) logger.warn(message, cause);
             else logger.warn(message);
-            return placeholder.expression();
+            return template.formatted(placeholder.expression());
         }
     }
 

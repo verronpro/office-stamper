@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import pro.verron.officestamper.api.*;
@@ -39,7 +40,7 @@ public class ProcessorCustomTest
     /// {@inheritDoc}
     @Override
     public void commitChanges(DocxPart document) {
-        visitedParagraphs.forEach(para -> para.apply((P p)->{
+        visitedParagraphs.forEach(para -> para.apply((ContentAccessor p)->{
             var content = p.getContent();
             content.clear();
             content.add(newRun("Visited"));

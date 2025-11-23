@@ -116,9 +116,7 @@ public class PowerpointParagraph
     @Override
     public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
-        var firstRun = (R) paragraph.getEGTextRun()
-                                    .getFirst();
-        return new ProcessorContext(this, firstRun, comment, placeholder);
+        return new ProcessorContext(this, comment, placeholder);
     }
 
     @Override

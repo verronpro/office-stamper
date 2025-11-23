@@ -60,6 +60,7 @@ module pro.verron.officestamper {
     requires static org.slf4j;
     requires static jakarta.xml.bind;
     requires org.jetbrains.annotations;
+    requires org.docx4j.openxml_objects;
 
     opens pro.verron.officestamper.api;
     exports pro.verron.officestamper.api;

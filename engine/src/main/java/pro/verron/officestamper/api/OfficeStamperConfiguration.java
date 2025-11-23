@@ -150,18 +150,6 @@ public interface OfficeStamperConfiguration {
     /// @param preprocessor the pre-processor to add
     void addPreprocessor(PreProcessor preprocessor);
 
-    /// Retrieves the line break placeholder used in the OfficeStamper configuration.
-    ///
-    /// @return the line break placeholder as a String.
-    String getLineBreakPlaceholder();
-
-    /// Sets the line break placeholder used in the OfficeStamper configuration.
-    ///
-    /// @param lineBreakPlaceholder the line break placeholder as a String
-    ///
-    /// @return the updated OfficeStamperConfiguration object
-    OfficeStamperConfiguration setLineBreakPlaceholder(String lineBreakPlaceholder);
-
     /// Retrieves the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL)
     /// EvaluationContext
     /// used by the docxstamper.

@@ -34,8 +34,9 @@ public class Resolvers {
     /// of objects.
     ///
     /// @return An instance of [ObjectResolver]
-    public static ObjectResolver fallback() {
-        return new ToStringResolver();
+    /// @param linebreakPlaceholder
+    public static ObjectResolver fallback(String linebreakPlaceholder) {
+        return new ToStringResolver(linebreakPlaceholder);
     }
 
     /// Returns an instance of [ObjectResolver] that replaces null values with an empty string.
@@ -60,7 +61,7 @@ public class Resolvers {
     ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver nullToPlaceholder() {
-        return new Null2PlaceholderResolver();
+        return new Null2PlaceholderResolver("${%s}");
     }
 
     /// Returns an instance of [ObjectResolver] that resolves

@@ -76,10 +76,6 @@ public class TableResolver
         }
     }
 
-    @Override public void commitChanges(WordprocessingMLPackage document) {
-        throw new OfficeStamperException("Should not be called, since deprecation");
-    }
-
     /// {@inheritDoc}
     @Override public void reset() {
         cols.clear();

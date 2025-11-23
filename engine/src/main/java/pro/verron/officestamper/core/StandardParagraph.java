@@ -70,8 +70,7 @@ public class StandardParagraph
     @Override
     public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
-        var firstRun = (R) contents.getFirst();
-        return new ProcessorContext(this, firstRun, comment, placeholder);
+        return new ProcessorContext(this, comment, placeholder);
     }
 
     /// Replaces a set of paragraph elements with new ones within the current paragraph's siblings.

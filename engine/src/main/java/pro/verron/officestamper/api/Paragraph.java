@@ -39,17 +39,6 @@ public interface Paragraph {
     @Deprecated(since = "2.6", forRemoval = true)
     P getP(); // TODO replace with API not exposing the docx4j API directly
 
-    /// Returns true if the given expression is found within the paragraph, otherwise returns false.
-    ///
-    /// @param expression The string to search for within the paragraph.
-    ///
-    /// @return true if the given expression is found within the paragraph, otherwise false.
-    ///
-    /// @deprecated was used by the core to deal with multiline paragraphs
-    @Deprecated(since = "2.4", forRemoval = true) default boolean contains(String expression) {
-        return asString().contains(expression);
-    }
-
     /// Replaces a placeholder in the given paragraph with the specified replacement.
     ///
     /// @param placeholder The placeholder to be replaced.

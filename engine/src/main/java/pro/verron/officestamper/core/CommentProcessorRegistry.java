@@ -113,7 +113,7 @@ public class CommentProcessorRegistry {
         var cPlaceholder = c.asPlaceholder();
         var cComment = c.getComment();
         comments.remove(cComment.getId());
-        commentProcessors.setContext(new ProcessorContext(paragraph, null, c, cPlaceholder));
+        commentProcessors.setContext(new ProcessorContext(paragraph, c, cPlaceholder));
 
         if (!runCommentProcessors(expressionContext, c.asPlaceholder())) return 0;
 
@@ -124,7 +124,7 @@ public class CommentProcessorRegistry {
 
     private <T> void runProcessorsOnInlineContent(T context, Tag tag) {
         Placeholder placeholder = tag.asPlaceholder();
-        commentProcessors.setContext(new ProcessorContext(tag.getParagraph(), null, tag.asComment(), placeholder));
+        commentProcessors.setContext(new ProcessorContext(tag.getParagraph(), tag.asComment(), placeholder));
         try {
             expressionResolver.setContext(context);
             expressionResolver.resolve(placeholder);

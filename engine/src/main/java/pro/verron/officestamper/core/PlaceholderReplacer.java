@@ -72,15 +72,4 @@ public class PlaceholderReplacer
             return Inserts.of(WmlFactory.newRun(resolution));
         }
     }
-
-    /// Resolves expressions in the given paragraph using the specified context and document.
-    /// This method is deprecated and should not be called. Calling it will result in an exception.
-    ///
-    /// @param paragraph the paragraph in which expressions were expected to be resolved
-    /// @param context   the context object used for expression resolution
-    /// @param document  the WordprocessingMLPackage document associated with the paragraph
-    @Override
-    public void resolveExpressionsForParagraph(Tag paragraph, Object context, WordprocessingMLPackage document) {
-        throw new OfficeStamperException("Should not be called, since deprecated");
-    }
 }

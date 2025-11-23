@@ -114,21 +114,6 @@ public final class TextualDocxPart
                             .map(paragraph -> StandardParagraph.from(this, paragraph)));
     }
 
-    /// Streams and processes the run elements contained within the document part.
-    /// The method filters object elements within the document content, ensuring only
-    /// elements of type `R` are included in the result. It achieves this by mapping
-    /// and casting elements of type `P` and further processing their content.
-    ///
-    /// @return a stream of `R` instances derived from the document's run elements.
-    @Override
-    public Stream<R> streamRun() {
-        return DocumentUtil.streamObjectElements(this, P.class)
-                           .map(P::getContent)
-                           .flatMap(Collection::stream)
-                           .filter(R.class::isInstance)
-                           .map(R.class::cast);
-    }
-
     /// Computes the hash code for this object based on the `document`, `part`,
     /// and `contentAccessor` fields.
     ///

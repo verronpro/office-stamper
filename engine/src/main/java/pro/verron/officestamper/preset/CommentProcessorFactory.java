@@ -35,15 +35,6 @@ public class CommentProcessorFactory {
     /// @version ${version}
     /// @since 1.0.8
     public interface IReplaceWithProcessor {
-        /// Replace a single word inside a paragraph with an expression defined in the comment.
-        /// The comment should apply to a single word for the replacement to take effect.
-        ///
-        /// @param expression the expression to replace the text with
-        /// @deprecated since change in behaviour, it is replace by replaceWith, that does not li;it itself to only
-        /// one run in the Paragraph
-        @Deprecated(since = "2.9", forRemoval = true)
-        void replaceWordWith(@Nullable String expression);
-
         /// Replaces content with the specified expression.Works only in a single paragraph.
         ///
         /// @param expression the expression to replace the content with; it may be null.

@@ -77,6 +77,7 @@ public class ParagraphRepeatProcessor
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
                         placeholderReplacer.resolveExpressionsForParagraph(document, tag, expressionContext);
+                        tagIterator.reset();
                     }
                     paragraphsToAdd.add(p);
                 }

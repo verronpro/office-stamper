@@ -18,6 +18,7 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
+import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.StandardRun;
 
@@ -224,7 +225,9 @@ public final class WmlUtils {
     /// corresponding string representations.
     ///
     /// @param content the object from which text content is to be extracted.
-    ///                This could be of various types such as R, JAXBElement, Text or specific document elements.
+    ///                                              This could be of various types such as R, JAXBElement, Text or
+    ///                specific document
+    ///                               elements.
     ///
     /// @return a string representation of the extracted textual content.
     /// If the object's type is not handled, an empty string is returned.
@@ -279,7 +282,7 @@ public final class WmlUtils {
         var run = newRun(expression);
         var smartTag = newSmartTag(element, run);
         findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
-        return replace(paragraph, smartTag, start, end);
+        return replace(paragraph, Inserts.of(smartTag), start, end);
     }
 
     public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
@@ -294,7 +297,10 @@ public final class WmlUtils {
         return Optional.ofNullable(firstRunPr);
     }
 
-    public static List<Object> replace(ContentAccessor contentAccessor, Object replacement, int startIndex, int endIndex) {
+    public static List<Object> replace(
+            ContentAccessor contentAccessor, Insert insert, int startIndex,
+            int endIndex
+    ) {
         var runs = StandardRun.wrap(contentAccessor::getContent);
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(startIndex, endIndex))
@@ -313,15 +319,16 @@ public final class WmlUtils {
             boolean expressionWithinRun = startIndex > firstRun.startIndex() && endIndex <= firstRun.endIndex();
 
             if (expressionSpansCompleteRun) {
-                firstSiblings.set(firstIndex, replacement);
+                firstRun.replace(startIndex, endIndex, "");
+                firstSiblings.addAll(firstIndex, insert.getElements());
             }
             else if (expressionAtStartOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.add(firstIndex, replacement);
+                firstSiblings.addAll(firstIndex, insert.getElements());
             }
             else if (expressionAtEndOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.add(firstIndex + 1, replacement);
+                firstSiblings.addAll(firstIndex + 1, insert.getElements());
             }
             else if (expressionWithinRun) {
                 var originalRun = firstRun.run();
@@ -329,19 +336,19 @@ public final class WmlUtils {
                 var newStartRun = create(firstRun.left(startIndex), originalRPr);
                 var newEndRun = create(firstRun.right(endIndex), originalRPr);
                 firstSiblings.remove(firstIndex);
-                firstSiblings.addAll(firstIndex, List.of(newStartRun, replacement, newEndRun));
+                firstSiblings.addAll(firstIndex, wrap(newStartRun, insert.getElements(), newEndRun));
             }
         }
         else {
             StandardRun lastRun = affectedRuns.getLast();
             removeExpression(firstSiblings, firstRun, startIndex, endIndex, lastRun, affectedRuns);
             // add replacement run between first and last run
-            firstSiblings.add(firstIndex + 1, replacement);
+            firstSiblings.addAll(firstIndex + 1, insert.getElements());
         }
         return new ArrayList<>(contentAccessor.getContent());
     }
 
-    /// Creates a new run with the specified text and the specified run style.
+    /// Creates a new run with the specified text, and the specified run style.
     ///
     /// @param text the initial text of the run.
     ///
@@ -350,6 +357,14 @@ public final class WmlUtils {
         R newStartRun = newRun(text);
         newStartRun.setRPr(rPr);
         return newStartRun;
+    }
+
+    private static Collection<?> wrap(R prefix, Collection<?> elements, R suffix) {
+        var merge = new ArrayList<>();
+        merge.add(prefix);
+        merge.addAll(elements);
+        merge.add(suffix);
+        return merge;
     }
 
     private static void removeExpression(
@@ -407,7 +422,10 @@ public final class WmlUtils {
            .add(textObj);
     }
 
-    public static List<Object> replaceExpressionWithRun(ContentAccessor contentAccessor, String expression, R run) {
+    public static List<Object> replaceExpressionWithRun(
+            ContentAccessor contentAccessor, String expression,
+            Insert insert
+    ) {
         var text = asString(contentAccessor);
         int matchStartIndex = text.indexOf(expression);
         if (matchStartIndex == -1) {
@@ -415,7 +433,7 @@ public final class WmlUtils {
             return new ArrayList<>(contentAccessor.getContent());
         }
         int matchEndIndex = matchStartIndex + expression.length();
-        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(run::setRPr);
-        return replace(contentAccessor, run, matchStartIndex, matchEndIndex);
+        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(insert::setRPr);
+        return replace(contentAccessor, insert, matchStartIndex, matchEndIndex);
     }
 }

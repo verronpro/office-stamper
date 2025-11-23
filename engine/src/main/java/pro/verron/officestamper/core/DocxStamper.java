@@ -39,7 +39,6 @@ public class DocxStamper
     /// @param configuration the configuration to use for this DocxStamper.
     public DocxStamper(OfficeStamperConfiguration configuration) {
         this(
-                configuration.getLineBreakPlaceholder(),
                 configuration.getEvaluationContextConfigurer(),
                 configuration.getExpressionFunctions(),
                 configuration.customFunctions(),
@@ -53,7 +52,6 @@ public class DocxStamper
     }
 
     private DocxStamper(
-            String lineBreakPlaceholder,
             EvaluationContextConfigurer evaluationContextConfigurer,
             Map<Class<?>, Object> expressionFunctions,
             List<CustomFunction> functions,
@@ -74,7 +72,6 @@ public class DocxStamper
         this.placeholderReplacer = new PlaceholderReplacer(
                 typeResolverRegistry,
                 expressionResolver,
-                Placeholders.raw(lineBreakPlaceholder),
                 exceptionResolver);
 
         var commentProcessors = buildCommentProcessors(configurationCommentProcessors);

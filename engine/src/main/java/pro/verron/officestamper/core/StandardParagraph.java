@@ -2,6 +2,7 @@ package pro.verron.officestamper.core;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
+import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.WmlFactory;
 import pro.verron.officestamper.utils.WmlUtils;
@@ -24,14 +25,14 @@ public class StandardParagraph
     private static final Random RANDOM = new Random();
     private final DocxPart source;
     private final List<Object> contents;
-    private final P p;
+    private final ArrayListWml<Object> p;
 
     /// Constructs a new instance of the StandardParagraph class.
     ///
     /// @param source           the source DocxPart that contains the paragraph content.
     /// @param paragraphContent the list of objects representing the paragraph content.
     /// @param p                the P object representing the paragraph's structure.
-    private StandardParagraph(DocxPart source, List<Object> paragraphContent, P p) {
+    private StandardParagraph(DocxPart source, List<Object> paragraphContent, ArrayListWml<Object> p) {
         this.source = source;
         this.contents = paragraphContent;
         this.p = p;
@@ -44,7 +45,7 @@ public class StandardParagraph
     ///
     /// @return a new instance of StandardParagraph constructed based on the provided source and paragraph.
     public static StandardParagraph from(DocxPart source, P paragraph) {
-        return new StandardParagraph(source, paragraph.getContent(), paragraph);
+        return new StandardParagraph(source, paragraph.getContent(), (ArrayListWml<Object>) paragraph.getContent());
     }
 
     /// Creates a new instance of StandardParagraph from the provided DocxPart and CTSdtContentRun objects.
@@ -56,7 +57,7 @@ public class StandardParagraph
     public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
         var parent = (SdtRun) paragraph.getParent();
         var parentParent = (P) parent.getParent();
-        return new StandardParagraph(source, paragraph.getContent(), parentParent);
+        return new StandardParagraph(source, paragraph.getContent(), (ArrayListWml<Object>) parentParent.getContent());
     }
 
     /// Creates a new instance of ProcessorContext for the current paragraph.
@@ -83,7 +84,7 @@ public class StandardParagraph
     @Override
     public void replace(List<P> toRemove, List<P> toAdd) {
         var siblings = siblings();
-        int index = siblings.indexOf(p);
+        int index = siblings.indexOf(p.getParent());
         if (index < 0) throw new OfficeStamperException("Impossible");
         siblings.addAll(index, toAdd);
         siblings.removeAll(toRemove);
@@ -96,14 +97,14 @@ public class StandardParagraph
     }
 
     private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        return getFirstParentWithClass(p, aClass, depth);
+        return getFirstParentWithClass((Child) p.getParent(), aClass, depth);
     }
 
     /// Removes the paragraph represented by the current instance.
     /// Delegates the removal process to a utility method that handles the underlying P object.
     @Override
     public void remove() {
-        WmlUtils.remove(p);
+        WmlUtils.remove((Child) p.getParent());
     }
 
     /// Retrieves the P object representing the paragraph's structure.
@@ -114,7 +115,7 @@ public class StandardParagraph
     @Deprecated(since = "2.6", forRemoval = true)
     @Override
     public P getP() {
-        return p;
+        return (P) p.getParent();
     }
 
     /// Replaces the given expression with the replacement object within the paragraph.
@@ -123,40 +124,15 @@ public class StandardParagraph
     /// @param placeholder the expression to be replaced.
     /// @param replacement the object to replace the expression.
     @Override
-    public void replace(Placeholder placeholder, Object replacement) {
-        if (!WmlUtils.serializable(replacement))
-            throw new AssertionError("The replacement object must be a valid DOCX4J Object");
-        switch (replacement) {
-            case R run -> replaceWithRun(placeholder, run);
-            case Br br -> replaceWithBr(placeholder, br);
-            default -> throw new AssertionError("Replacement must be a R or Br, but was a " + replacement.getClass());
-        }
-    }
-
-    private void replaceWithRun(Placeholder placeholder, R replacement) {
-        var newContents = WmlUtils.replaceExpressionWithRun(p, placeholder.expression(), replacement);
+    public void replace(Placeholder placeholder, Insert insert) {
+        insert.assertSerializable(); // TODO Move the check at instance creation
+        var newContents = WmlUtils.replaceExpressionWithRun(() -> p, placeholder.expression(), insert);
         contents.clear();
         contents.addAll(newContents);
     }
 
-    private void replaceWithBr(Placeholder placeholder, Br br) {
-        for (StandardRun run : StandardRun.wrap(p)) {
-            var runContentIterator = run.run()
-                                        .getContent()
-                                        .listIterator();
-            while (runContentIterator.hasNext()) {
-                Object element = runContentIterator.next();
-                if (element instanceof JAXBElement<?> jaxbElement && !jaxbElement.getName()
-                                                                                 .getLocalPart()
-                                                                                 .equals("instrText"))
-                    element = jaxbElement.getValue();
-                if (element instanceof Text text) replaceWithBr(placeholder, br, text, runContentIterator);
-            }
-        }
-    }
-
     @Override
-    public void replace(Object from, Object to, R run) {
+    public void replace(Object from, Object to, Insert insert) {
         var fromIndex = contents.indexOf(from);
         var toIndex = contents.indexOf(to);
         if (fromIndex < 0) {
@@ -172,25 +148,9 @@ public class StandardParagraph
             throw new OfficeStamperException(msg.formatted(to, this));
         }
         var expression = extractExpression(from, to);
-        var newContents = WmlUtils.replaceExpressionWithRun(p, expression, run);
+        var newContents = WmlUtils.replaceExpressionWithRun(() -> p, expression, insert);
         contents.clear();
         contents.addAll(newContents);
-    }
-
-    private static void replaceWithBr(
-            Placeholder placeholder,
-            Br br,
-            Text text,
-            ListIterator<Object> runContentIterator
-    ) {
-        var value = text.getValue();
-        runContentIterator.remove();
-        var runLinebreakIterator = stream(value.split(placeholder.expression())).iterator();
-        while (runLinebreakIterator.hasNext()) {
-            var subText = WmlFactory.newText(runLinebreakIterator.next());
-            runContentIterator.add(subText);
-            if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
-        }
     }
 
     private String extractExpression(Object from, Object to) {
@@ -198,7 +158,7 @@ public class StandardParagraph
         var toIndex = contents.indexOf(to);
         var subContent = contents.subList(fromIndex, toIndex + 1);
 
-        var runs = StandardRun.wrap(p);
+        var runs = StandardRun.wrap(() -> p);
         runs.removeIf(run -> !subContent.contains(run.run()));
         return runs.stream()
                    .map(StandardRun::getText)
@@ -219,8 +179,8 @@ public class StandardParagraph
     ///
     /// @param pConsumer the consumer function to apply to the paragraph's structure.
     @Override
-    public void apply(Consumer<P> pConsumer) {
-        pConsumer.accept(p);
+    public void apply(Consumer<ContentAccessor> pConsumer) {
+        pConsumer.accept(() -> p);
     }
 
     /// Retrieves the nearest parent of the specified type for the current paragraph.
@@ -242,12 +202,44 @@ public class StandardParagraph
     /// @return a collection of [Comments.Comment] objects related to the paragraph.
     @Override
     public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(p, source.document());
+        return CommentUtil.getCommentFor(() -> p, source.document());
     }
 
     private Comment comment(Placeholder placeholder) {
         var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(source, p, placeholder, id);
+        return StandardComment.create(source, () -> p, placeholder, id);
+    }
+
+    private void replaceWithBr(Placeholder placeholder, Br br) {
+        for (StandardRun run : StandardRun.wrap(() -> p)) {
+            var runContentIterator = run.run()
+                                        .getContent()
+                                        .listIterator();
+            while (runContentIterator.hasNext()) {
+                Object element = runContentIterator.next();
+                if (element instanceof JAXBElement<?> jaxbElement && !jaxbElement.getName()
+                                                                                 .getLocalPart()
+                                                                                 .equals("instrText"))
+                    element = jaxbElement.getValue();
+                if (element instanceof Text text) replaceWithBr(placeholder, br, text, runContentIterator);
+            }
+        }
+    }
+
+    private static void replaceWithBr(
+            Placeholder placeholder,
+            Br br,
+            Text text,
+            ListIterator<Object> runContentIterator
+    ) {
+        var value = text.getValue();
+        runContentIterator.remove();
+        var runLinebreakIterator = stream(value.split(placeholder.expression())).iterator();
+        while (runLinebreakIterator.hasNext()) {
+            var subText = WmlFactory.newText(runLinebreakIterator.next());
+            runContentIterator.add(subText);
+            if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
+        }
     }
 
     /// Returns the string representation of the paragraph.

@@ -10,6 +10,7 @@ import org.docx4j.wml.R;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.StandardComment;
+import pro.verron.officestamper.utils.Inserts;
 import pro.verron.officestamper.utils.WmlFactory;
 import pro.verron.officestamper.utils.WmlUtils;
 
@@ -148,9 +149,9 @@ public class PowerpointParagraph
     /// @param placeholder the expression to be replaced.
     /// @param replacement the object to replace the expression.
     @Override
-    public void replace(Placeholder placeholder, Object replacement) {
-        if (!(replacement instanceof CTRegularTextRun replacementRun))
-            throw new AssertionError("replacement is not a CTRegularTextRun");
+    public void replace(Placeholder placeholder, Insert insert) {
+        var replacementRun = insert.assertInstanceOf(CTRegularTextRun.class);
+
         String text = asString();
         String full = placeholder.expression();
         int matchStartIndex = text.indexOf(full);
@@ -167,14 +168,14 @@ public class PowerpointParagraph
         replacementRun.setRPr(affectedRuns.getFirst()
                                           .run()
                                           .getRPr());
-        if (singleRun) singleRun(replacement,
+        if (singleRun) singleRun(replacementRun,
                 full,
                 matchStartIndex,
                 matchEndIndex,
                 textRun,
                 affectedRuns.getFirst(),
                 affectedRuns.getLast());
-        else multipleRuns(replacement,
+        else multipleRuns(replacementRun,
                 affectedRuns,
                 matchStartIndex,
                 matchEndIndex,
@@ -289,7 +290,7 @@ public class PowerpointParagraph
     }
 
     @Override
-    public void apply(Consumer<P> pConsumer) {
+    public void apply(Consumer<ContentAccessor> pConsumer) {
         pConsumer.accept(getP());
     }
 
@@ -299,7 +300,7 @@ public class PowerpointParagraph
     }
 
     @Override
-    public void replace(Object from, Object to, R run) {
+    public void replace(Object from, Object to, Insert insert) {
         throw new OfficeStamperException("Not yet implemented");
     }
 

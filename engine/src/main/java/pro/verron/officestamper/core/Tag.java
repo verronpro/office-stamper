@@ -4,10 +4,7 @@ import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
-import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Paragraph;
-import pro.verron.officestamper.api.Placeholder;
+import pro.verron.officestamper.api.*;
 
 import java.math.BigInteger;
 
@@ -71,10 +68,13 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     /// Replaces the current tag with the provided replacement in its parent's content list.
     ///
     /// @param replacement the replacement element to be set in place of the current tag.
-    public void replace(R replacement) {
+    public void replace(Insert insert) {
+        insert.setRPr(((R) tag.getContent().getFirst()).getRPr());
+        // TODO merge exisitng and created style to allow generation of styled runs
         var parent = (ContentAccessor) tag.getParent();
         var siblings = parent.getContent();
         var index = siblings.indexOf(tag);
-        siblings.set(index, replacement);
+        siblings.remove(index);
+        siblings.addAll(index, insert.getElements());
     }
 }

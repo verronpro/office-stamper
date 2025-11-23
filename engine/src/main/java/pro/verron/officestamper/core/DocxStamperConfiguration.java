@@ -233,27 +233,6 @@ public class DocxStamperConfiguration
         preprocessors.add(preprocessor);
     }
 
-
-    /// Retrieves the placeholder string used for line breaks.
-    ///
-    /// @return the line break placeholder as a string
-    @Override
-    public String getLineBreakPlaceholder() {
-        return lineBreakPlaceholder;
-    }
-
-    /// String to replace with a line break when stamping a document.
-    /// By default, `\\n` is the placeholder.
-    ///
-    /// @param lineBreakPlaceholder string to replace with line breaks during stamping.
-    ///
-    /// @return the configuration object for chaining.
-    @Override
-    public DocxStamperConfiguration setLineBreakPlaceholder(@NonNull String lineBreakPlaceholder) {
-        this.lineBreakPlaceholder = lineBreakPlaceholder;
-        return this;
-    }
-
     /// Retrieves the configured EvaluationContextConfigurer instance.
     ///
     /// @return an instance of EvaluationContextConfigurer used for configuring evaluation contexts

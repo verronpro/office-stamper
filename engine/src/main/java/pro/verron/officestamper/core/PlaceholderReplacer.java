@@ -1,13 +1,11 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.R;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.utils.Inserts;
 import pro.verron.officestamper.utils.WmlFactory;
-
-import static pro.verron.officestamper.utils.WmlFactory.newBr;
 
 /// Replaces expressions in a document with the values provided by the [ExpressionResolver].
 ///
@@ -20,26 +18,19 @@ public class PlaceholderReplacer
 
     private final ExpressionResolver resolver;
     private final ObjectResolverRegistry registry;
-    private final Placeholder lineBreakPlaceholder;
     private final ExceptionResolver exceptionResolver;
 
     /// Constructor for PlaceholderReplacer.
     ///
     /// @param registry             the registry containing all available type resolvers.
     /// @param resolver             the expression resolver used to resolve expressions in the document.
-    /// @param linebreakPlaceholder if set to a non-null value,
-    ///                                                                                     all occurrences of this
-    ///                             placeholder will be
-    ///                                                                                     replaced with a line break.
     public PlaceholderReplacer(
             ObjectResolverRegistry registry,
             ExpressionResolver resolver,
-            Placeholder linebreakPlaceholder,
             ExceptionResolver exceptionResolver
     ) {
         this.registry = registry;
         this.resolver = resolver;
-        this.lineBreakPlaceholder = linebreakPlaceholder;
         this.exceptionResolver = exceptionResolver;
     }
 
@@ -52,6 +43,7 @@ public class PlaceholderReplacer
         while (tagIterator.hasNext()) {
             var tag = tagIterator.next();
             resolveExpressionsForParagraph(document, tag, expressionContext);
+            tagIterator.reset();
         }
     }
 
@@ -62,13 +54,11 @@ public class PlaceholderReplacer
     /// @param context   the context root
     @Override
     public void resolveExpressionsForParagraph(DocxPart docxPart, Tag tag, Object context) {
-
         var replacement = resolve(docxPart, context, tag.asPlaceholder());
         tag.replace(replacement);
-        tag.getParagraph().replace(lineBreakPlaceholder, newBr()); //TODO: move this line somewhere better
     }
 
-    private R resolve(DocxPart docxPart, Object context, Placeholder placeholder) {
+    private Insert resolve(DocxPart docxPart, Object context, Placeholder placeholder) {
         try {
             resolver.setContext(context);
             var resolution = resolver.resolve(placeholder);
@@ -79,7 +69,7 @@ public class PlaceholderReplacer
                     context.getClass()
                            .getSimpleName());
             var resolution = exceptionResolver.resolve(placeholder, message, e);
-            return WmlFactory.newRun(resolution);
+            return Inserts.of(WmlFactory.newRun(resolution));
         }
     }
 

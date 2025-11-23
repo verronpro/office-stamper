@@ -80,6 +80,7 @@ public class RepeatProcessor
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
                         placeholderReplacer.resolveExpressionsForParagraph(source, tag, expressionContext);
+                        tagIterator.reset();
                     }
                     changes.add(rowClone);
                 }

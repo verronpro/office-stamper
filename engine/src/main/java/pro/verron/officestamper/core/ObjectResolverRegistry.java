@@ -2,10 +2,7 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.Placeholder;
+import pro.verron.officestamper.api.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +30,7 @@ public final class ObjectResolverRegistry {
     /// @param object     the object to be used for resolving the expression
     /// @return the resolved value for the expression
     /// @throws OfficeStamperException if no resolver is found for the object
-    public R resolve(
+    public Insert resolve(
             DocxPart document,
             Placeholder placeholder,
             @Nullable Object object

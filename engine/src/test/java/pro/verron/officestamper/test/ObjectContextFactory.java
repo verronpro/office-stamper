@@ -263,4 +263,10 @@ public final class ObjectContextFactory
         record ImagedName(String name, Image butterfly) {}
         return new ImagedName(name, image);
     }
+
+    @Override
+    public Object sentence(String sentence) {
+        record Sentence(String sentence) {}
+        return new Sentence(sentence);
+    }
 }

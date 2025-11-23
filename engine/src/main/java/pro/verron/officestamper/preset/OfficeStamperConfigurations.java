@@ -1,5 +1,7 @@
 package pro.verron.officestamper.preset;
 
+import org.jetbrains.annotations.NotNull;
+import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.DocxStamper;
@@ -48,6 +50,11 @@ public class OfficeStamperConfigurations {
     ///
     /// @return the standard OfficeStamperConfiguration
     public static OfficeStamperConfiguration standard() {
+        var fallback = Resolvers.fallback("\n");
+        return standardWithFallback(fallback);
+    }
+
+    public static DocxStamperConfiguration standardWithFallback(ObjectResolver fallback) {
         var configuration = new DocxStamperConfiguration();
 
         configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance);
@@ -66,7 +73,7 @@ public class OfficeStamperConfigurations {
                 Resolvers.isoTime(),
                 Resolvers.isoDateTime(),
                 Resolvers.nullToEmpty(),
-                Resolvers.fallback()));
+                fallback));
 
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
         configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "processor"));

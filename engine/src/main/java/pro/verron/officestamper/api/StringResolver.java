@@ -1,7 +1,7 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
+import pro.verron.officestamper.utils.Inserts;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
@@ -36,12 +36,12 @@ public abstract class StringResolver<T>
     ///
     /// @return the newly created run with the resolved string as content
     @Override
-    public final R resolve(
+    public final Insert resolve(
             DocxPart document,
             String expression,
             Object object
     ) {
-        return newRun(resolve(type.cast(object)));
+        return Inserts.of(newRun(resolve(type.cast(object))));
     }
 
     /// Determines if the given object can be resolved by the StringResolver.

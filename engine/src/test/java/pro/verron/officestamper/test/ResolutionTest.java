@@ -8,6 +8,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.StringResolver;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.Preprocessors;
 
 import java.nio.file.Path;
 
@@ -137,6 +138,7 @@ class ResolutionTest {
         var resource = getResource(Path.of(template));
 
         var configuration = OfficeStamperConfigurations.raw();
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
         configuration.setExceptionResolver(ExceptionResolvers.legacyBehavior(
                         shouldFail,
                         emptyOnError,

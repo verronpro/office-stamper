@@ -5,8 +5,8 @@ import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.DocxPart;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 /// The PptxPart class represents a specific implementation of the DocxPart interface
 /// designed for handling parts within a PowerPoint document.
@@ -44,7 +44,7 @@ public class PptxPart
     }
 
     @Override
-    public Stream<DocxPart> streamParts(String type) {
-        return Stream.empty();
+    public List<DocxPart> parts(String type) {
+        return Collections.emptyList();
     }
 }

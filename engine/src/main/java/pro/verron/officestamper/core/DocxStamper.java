@@ -137,10 +137,8 @@ public class DocxStamper
     @Override
     public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
         try {
-            var source = new TextualDocxPart(document);
             preprocess(document);
-            processComments(source, contextRoot);
-            replaceExpressions(source, contextRoot);
+            process(document, contextRoot);
             postprocess(document);
             document.save(out);
         } catch (Docx4JException e) {
@@ -152,28 +150,26 @@ public class DocxStamper
         preprocessors.forEach(processor -> processor.process(document));
     }
 
-    private void processComments(DocxPart document, Object contextObject) {
-        document.streamParts(Namespaces.HEADER)
-                .forEach(header -> runProcessors(header, contextObject));
-        runProcessors(document, contextObject);
-        document.streamParts(Namespaces.FOOTER)
-                .forEach(footer -> runProcessors(footer, contextObject));
-    }
+    private void process(WordprocessingMLPackage document, Object contextRoot) {
+        var source = new TextualDocxPart(document);
 
-    private void replaceExpressions(DocxPart document, Object contextObject) {
-        document.streamParts(Namespaces.HEADER)
-                .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
-        placeholderReplacer.resolveExpressions(document, contextObject);
-        document.streamParts(Namespaces.FOOTER)
-                .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
-    }
+        var headers = source.parts(Namespaces.HEADER);
+        headers.forEach(header -> processPart(header, contextRoot));
 
-    private void runProcessors(DocxPart source, Object contextObject) {
-        var processors = commentProcessorRegistrySupplier.apply(source);
-        processors.runProcessors(contextObject);
+        var footers = source.parts(Namespaces.FOOTER);
+        footers.forEach(footer -> processPart(footer, contextRoot));
+
+        processPart(source, contextRoot);
     }
 
     private void postprocess(WordprocessingMLPackage document) {
         postprocessors.forEach(processor -> processor.process(document));
     }
+
+    private void processPart(DocxPart part, Object contextRoot) {
+        var processors = commentProcessorRegistrySupplier.apply(part);
+        processors.runProcessors(contextRoot);
+        placeholderReplacer.resolveExpressions(part, contextRoot);
+    }
+
 }

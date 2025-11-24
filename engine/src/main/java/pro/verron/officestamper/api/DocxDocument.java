@@ -2,7 +2,7 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /// The DocxDocument interface represents a WordprocessingML-based document,
 /// providing methods to access the document and stream its parts by type.
@@ -18,5 +18,5 @@ public interface DocxDocument {
     /// @param type the type of parts to stream, typically used to filter specific types of document parts
     ///
     /// @return a stream of `DocxPart` objects that match the specified type
-    Stream<DocxPart> streamParts(String type);
+    List<DocxPart> parts(String type);
 }

@@ -106,17 +106,6 @@ public class StandardParagraph
         WmlUtils.remove((Child) p.getParent());
     }
 
-    /// Retrieves the P object representing the paragraph's structure.
-    ///
-    /// @return the P object associated with the paragraph.
-    ///
-    /// @deprecated use the inplace edition methods instead
-    @Deprecated(since = "2.6", forRemoval = true)
-    @Override
-    public P getP() {
-        return (P) p.getParent();
-    }
-
     /// Replaces the given expression with the replacement object within the paragraph.
     /// The replacement object must be a valid DOCX4J Object.
     ///

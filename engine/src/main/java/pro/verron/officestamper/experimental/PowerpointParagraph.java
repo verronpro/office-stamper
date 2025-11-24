@@ -6,12 +6,9 @@ import org.docx4j.dml.CTTextParagraph;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import org.docx4j.wml.R;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.StandardComment;
-import pro.verron.officestamper.utils.Inserts;
-import pro.verron.officestamper.utils.WmlFactory;
 import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
@@ -121,23 +118,16 @@ public class PowerpointParagraph
 
     @Override
     public void remove() {
-        WmlUtils.remove(getP());
+        WmlUtils.remove(paragraph);
     }
 
     @Override
     public void replace(List<P> toRemove, List<P> toAdd) {
-        int index = siblings().indexOf(getP());
+        int index = siblings().indexOf(paragraph);
         if (index < 0) throw new OfficeStamperException("Impossible");
 
         siblings().addAll(index, toAdd);
         siblings().removeAll(toRemove);
-    }
-
-    @Override
-    public P getP() {
-        var p = WmlFactory.newParagraph(paragraph.getEGTextRun());
-        p.setParent(paragraph.getParent());
-        return p;
     }
 
     /// Replaces the given expression with the replacement object within
@@ -289,7 +279,7 @@ public class PowerpointParagraph
 
     @Override
     public void apply(Consumer<ContentAccessor> pConsumer) {
-        pConsumer.accept(getP());
+        pConsumer.accept(paragraph::getEGTextRun);
     }
 
     @Override
@@ -326,13 +316,12 @@ public class PowerpointParagraph
     }
 
     private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        return WmlUtils.getFirstParentWithClass(getP(), aClass, depth);
+        return WmlUtils.getFirstParentWithClass(paragraph, aClass, depth);
     }
 
     private Comment comment(Placeholder placeholder) {
-        var parent = getP();
         var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(source, parent, placeholder, id);
+        return StandardComment.create(source, paragraph::getEGTextRun, placeholder, id);
     }
 
     /// {@inheritDoc}

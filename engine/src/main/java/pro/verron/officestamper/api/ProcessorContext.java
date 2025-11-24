@@ -1,10 +1,9 @@
 package pro.verron.officestamper.api;
 
-/// Represents the context in which a processor operates in a text document.
-/// Contains information about the paragraph, run, comment, and placeholder being processed.
+/// Represents a context for processing a placeholder within a specific paragraph and comment in a document.
+/// This immutable record encapsulates essential components required to manipulate placeholders.
 ///
-/// @param paragraph   The paragraph associated with this context.
-/// @param run         The run object representing a run of text.
-/// @param comment     The comment associated with this context.
-/// @param placeholder The placeholder being processed in this context.
+/// @param paragraph   The paragraph in which the placeholder exists.
+/// @param comment     The comment associated with the placeholder.
+/// @param placeholder The placeholder to be processed within the paragraph.
 public record ProcessorContext(Paragraph paragraph, Comment comment, Placeholder placeholder) {}

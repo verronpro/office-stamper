@@ -1,10 +1,9 @@
-package pro.verron.officestamper.core;
+package pro.verron.officestamper.api;
 
-import org.docx4j.wml.CTSmartTagRun;
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
-import pro.verron.officestamper.api.*;
+import org.docx4j.wml.*;
+import pro.verron.officestamper.core.Placeholders;
+import pro.verron.officestamper.core.StandardComment;
+import pro.verron.officestamper.core.StandardParagraph;
 
 import java.math.BigInteger;
 
@@ -65,9 +64,12 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
         return Placeholders.raw(asString(tag.getContent()));
     }
 
-    /// Replaces the current tag with the provided replacement in its parent's content list.
+    /// Replaces the current tag with the provided Insert object in the parent's content list.
+    /// It sets the Run Properties [RPr] of the provided Insert object, and then removes
+    /// the current tag and inserts the elements from the Insert object at the appropriate position.
     ///
-    /// @param replacement the replacement element to be set in place of the current tag.
+    /// @param insert the Insert object containing elements to replace the current tag.
+    ///               It also provides the ability to set Run Properties [RPr] for styling purposes.
     public void replace(Insert insert) {
         insert.setRPr(((R) tag.getContent().getFirst()).getRPr());
         // TODO merge exisitng and created style to allow generation of styled runs

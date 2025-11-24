@@ -1,6 +1,5 @@
 package pro.verron.officestamper.preset.processors.replacewith;
 
-import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.AbstractCommentProcessor;
 import pro.verron.officestamper.api.CommentProcessor;
@@ -9,9 +8,6 @@ import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.utils.Inserts;
 import pro.verron.officestamper.utils.WmlFactory;
-
-import java.util.List;
-import java.util.function.Function;
 
 /// Processor that replaces the current run with the provided expression.
 /// This is useful for replacing an expression in a comment with the result of the expression.
@@ -24,14 +20,8 @@ public class ReplaceWithProcessor
         extends AbstractCommentProcessor
         implements CommentProcessorFactory.IReplaceWithProcessor {
 
-    private final Function<R, List<Object>> nullSupplier;
-
-    private ReplaceWithProcessor(
-            ParagraphPlaceholderReplacer placeholderReplacer,
-            Function<R, List<Object>> nullSupplier
-    ) {
+    private ReplaceWithProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
         super(placeholderReplacer);
-        this.nullSupplier = nullSupplier;
     }
 
     /// Creates a new processor that replaces the current run with the result of the expression.
@@ -40,7 +30,7 @@ public class ReplaceWithProcessor
     ///
     /// @return the processor
     public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
-        return new ReplaceWithProcessor(pr, R::getContent);
+        return new ReplaceWithProcessor(pr);
     }
 
     /// {@inheritDoc}

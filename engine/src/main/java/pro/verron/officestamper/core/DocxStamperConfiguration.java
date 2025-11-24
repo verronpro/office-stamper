@@ -36,10 +36,6 @@ public class DocxStamperConfiguration
     private final List<PostProcessor> postprocessors;
     private final List<CustomFunction> functions;
     private EvaluationContextConfigurer evaluationContextConfigurer;
-    private boolean failOnUnresolvedExpression;
-    private boolean leaveEmptyOnExpressionError;
-    private boolean replaceUnresolvedExpressions;
-    private String unresolvedExpressionsDefaultValue;
     private SpelParserConfiguration spelParserConfiguration;
     private ExceptionResolver exceptionResolver;
 
@@ -59,10 +55,6 @@ public class DocxStamperConfiguration
         postprocessors = new ArrayList<>();
         functions = new ArrayList<>();
         evaluationContextConfigurer = EvaluationContextConfigurers.defaultConfigurer();
-        failOnUnresolvedExpression = true;
-        leaveEmptyOnExpressionError = false;
-        replaceUnresolvedExpressions = false;
-        unresolvedExpressionsDefaultValue = null;
         spelParserConfiguration = new SpelParserConfiguration();
         exceptionResolver = ExceptionResolvers.throwing();
     }

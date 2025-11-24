@@ -1,6 +1,5 @@
 package pro.verron.officestamper.preset;
 
-import org.jetbrains.annotations.NotNull;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -54,7 +53,7 @@ public class OfficeStamperConfigurations {
         return standardWithFallback(fallback);
     }
 
-    public static DocxStamperConfiguration standardWithFallback(ObjectResolver fallback) {
+    public static OfficeStamperConfiguration standardWithFallback(ObjectResolver fallback) {
         var configuration = new DocxStamperConfiguration();
 
         configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance);

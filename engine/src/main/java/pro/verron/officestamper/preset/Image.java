@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/// This class describes an image which will be inserted into a document.
+/// This class describes an image, which will be inserted into a document.
 ///
 /// @author Joseph Verron
 /// @author Romster

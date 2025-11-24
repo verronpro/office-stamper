@@ -1,6 +1,5 @@
 package pro.verron.officestamper.preset.resolvers.nulls;
 
-import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.Inserts;

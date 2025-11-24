@@ -3,9 +3,7 @@ package pro.verron.officestamper.experimental;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.R;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Paragraph;
 
 import java.util.List;
 import java.util.stream.Stream;

@@ -301,7 +301,7 @@ public final class WmlUtils {
             ContentAccessor contentAccessor, Insert insert, int startIndex,
             int endIndex
     ) {
-        var runs = StandardRun.wrap(contentAccessor::getContent);
+        var runs = StandardRun.wrap(contentAccessor);
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(startIndex, endIndex))
                                .toList();

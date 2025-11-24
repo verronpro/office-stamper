@@ -34,9 +34,11 @@ public class Invokers
     /// and argument types to their corresponding executors.
     ///
     /// @param invokerStream a stream of `Invoker` objects, where each invoker encapsulates
-    ///                                                                the method name, its parameter types, and the
-    ///                      associated method
-    ///                                           executor.
+    ///                                                                                                          the
+    ///                      method name, its
+    ///                                           parameter types, and the
+    ///                                                                associated method
+    ///                                                                                     executor.
     public Invokers(Stream<Invoker> invokerStream) {
         map = invokerStream.collect(groupingBy(Invoker::name, toMap(Invoker::args, Invoker::executor)));
     }
@@ -46,8 +48,11 @@ public class Invokers
     ///
     /// @param interfaces2implementations a map where keys represent interface classes and values represent their
     ///
+    ///
     ///                                   corresponding implementations, used to
-    ///                                                                     derive invoker instances.
+    ///
+    ///                                                          derive
+    ///                                                                     invoker instances.
     ///
     /// @return a stream of `Invoker` objects derived from the provided map entries.
     public static Stream<Invoker> streamInvokers(Map<Class<?>, ?> interfaces2implementations) {
@@ -69,7 +74,7 @@ public class Invokers
     /// and constructs an invoker that can execute the function.
     ///
     /// @param cf the `CustomFunction` providing the function's name, arguments,
-    ///                               and implementation to create an `Invoker`.
+    ///                                                   and implementation to create an `Invoker`.
     ///
     /// @return an `Invoker` encapsulating the function's name, arguments,
     /// and executor for the specified `CustomFunction`.
@@ -86,7 +91,7 @@ public class Invokers
     /// a specific name and compatible argument types.
     ///
     /// @param context       the evaluation context in which the method is being resolved, providing necessary state and
-    ///                                           configuration.
+    ///                                                                                     configuration.
     /// @param targetObject  the object on which the resolved method will be invoked.
     /// @param name          the name of the method to resolve.
     /// @param argumentTypes a list of type descriptors representing the argument types of the method to resolve.
@@ -94,6 +99,7 @@ public class Invokers
     /// @return the resolved [MethodExecutor] if a compatible method is found;
     ///         otherwise, returns `null`.
     @Override
+    @Nullable
     public MethodExecutor resolve(
             EvaluationContext context,
             Object targetObject,

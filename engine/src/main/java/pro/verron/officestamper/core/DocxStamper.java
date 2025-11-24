@@ -36,7 +36,7 @@ public class DocxStamper
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final PlaceholderReplacer placeholderReplacer;
-    private final CommentProcessorRegistry commentProcessorRegistry;
+    private final CommentProcessorRegistry processors;
 
     /// Creates a new DocxStamper with the given configuration.
     ///
@@ -79,9 +79,7 @@ public class DocxStamper
         evaluationContext.addMethodResolver(new Invokers(functions.stream()
                                                                   .map(Invokers::ofCustomFunction)));
 
-        this.commentProcessorRegistry = new CommentProcessorRegistry(expressionResolver,
-                commentProcessors,
-                exceptionResolver);
+        this.processors = new CommentProcessorRegistry(expressionResolver, commentProcessors, exceptionResolver);
 
         this.preprocessors = new ArrayList<>(preprocessors);
         this.postprocessors = new ArrayList<>(postprocessors);
@@ -90,13 +88,13 @@ public class DocxStamper
     private CommentProcessors buildCommentProcessors(
             Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors
     ) {
-        var processors = new HashMap<Class<?>, CommentProcessor>();
+        var map = new HashMap<Class<?>, CommentProcessor>();
         for (var entry : commentProcessors.entrySet()) {
-            processors.put(entry.getKey(),
+            map.put(entry.getKey(),
                     entry.getValue()
                          .apply(placeholderReplacer));
         }
-        return new CommentProcessors(processors);
+        return new CommentProcessors(map);
     }
 
     /// Reads in a .docx template and "stamps" it into the given OutputStream, using the specified context object to
@@ -163,8 +161,6 @@ public class DocxStamper
     }
 
     private void processTextualPart(DocxPart part, Object contextRoot) {
-        var processors = commentProcessorRegistry;
-
         var paragraphIterator = DocxIterator.ofParagraphs(part);
         while (paragraphIterator.hasNext()) {
             var p = paragraphIterator.next();

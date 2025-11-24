@@ -33,7 +33,7 @@ import static java.util.stream.Collectors.toMap;
 import static pro.verron.officestamper.core.DocumentUtil.walkObjectsAndImportImages;
 import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakIfPresent;
 
-/// This class is responsible for processing the &lt;ds: repeat&gt; tag.
+/// This class processes the &lt;ds: repeat&gt; tag.
 /// It uses the [OfficeStamper] to stamp the sub document and then
 /// copies the resulting sub document to the correct position in the
 /// main document.

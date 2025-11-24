@@ -1,7 +1,5 @@
 package pro.verron.officestamper.preset;
 
-import org.springframework.lang.NonNull;
-
 import java.util.*;
 
 import static java.util.Collections.singletonList;
@@ -16,18 +14,6 @@ public class StampTable
     private final List<String> headers;
     private final List<List<String>> records;
 
-    @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        StampTable lists = (StampTable) o;
-        return Objects.equals(headers, lists.headers) && Objects.equals(records, lists.records);
-    }
-
-    @Override public int hashCode() {
-        return Objects.hash(super.hashCode(), headers, records);
-    }
-
     /// Instantiate an empty table
     public StampTable() {
         this.headers = new ArrayList<>();
@@ -38,12 +24,30 @@ public class StampTable
     ///
     /// @param headers the header lines
     /// @param records the lines that the table should contain
-    public StampTable(
-            @NonNull List<String> headers,
-            @NonNull List<List<String>> records
-    ) {
+    public StampTable(List<String> headers, List<List<String>> records) {
         this.headers = headers;
         this.records = records;
+    }
+
+    /// empty.
+    ///
+    /// @return a [StampTable] object
+    public static StampTable empty() {
+        return new StampTable(singletonList("placeholder"), singletonList(singletonList("placeholder")));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        StampTable lists = (StampTable) o;
+        return Objects.equals(headers, lists.headers) && Objects.equals(records, lists.records);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), headers, records);
     }
 
     @Override
@@ -52,19 +56,8 @@ public class StampTable
     }
 
     @Override
-    @NonNull
     public ListIterator<List<String>> listIterator(int index) {
         return records.listIterator(index);
-    }
-
-    /// empty.
-    ///
-    /// @return a [StampTable] object
-    public static StampTable empty() {
-        return new StampTable(
-                singletonList("placeholder"),
-                singletonList(singletonList("placeholder"))
-        );
     }
 
     /// headers.

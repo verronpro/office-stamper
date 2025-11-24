@@ -2,7 +2,8 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.relationships.Namespaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static org.docx4j.openpackaging.parts.relationships.Namespaces.*;
 import static pro.verron.officestamper.core.Invokers.streamInvokers;
 
 /// The DocxStamper class is an implementation of the [OfficeStamper]
@@ -29,6 +31,7 @@ import static pro.verron.officestamper.core.Invokers.streamInvokers;
 public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
 
+    private static final Logger log = LoggerFactory.getLogger(DocxStamper.class);
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final PlaceholderReplacer placeholderReplacer;
@@ -131,7 +134,7 @@ public class DocxStamper
     public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
         try {
             preprocess(document);
-            process(document, contextRoot);
+            process(new TextualDocxPart(document), contextRoot);
             postprocess(document);
             document.save(out);
         } catch (Docx4JException e) {
@@ -143,16 +146,8 @@ public class DocxStamper
         preprocessors.forEach(processor -> processor.process(document));
     }
 
-    private void process(WordprocessingMLPackage document, Object contextRoot) {
-        var source = new TextualDocxPart(document);
-
-        var headers = source.parts(Namespaces.HEADER);
-        headers.forEach(header -> processPart(header, contextRoot));
-
-        var footers = source.parts(Namespaces.FOOTER);
-        footers.forEach(footer -> processPart(footer, contextRoot));
-
-        processPart(source, contextRoot);
+    private void process(DocxDocument document, Object contextRoot) {
+        document.process(part -> processPart(part, contextRoot));
     }
 
     private void postprocess(WordprocessingMLPackage document) {
@@ -160,6 +155,15 @@ public class DocxStamper
     }
 
     private void processPart(DocxPart part, Object contextRoot) {
+        var type = part.type();
+        switch (type){
+            case DOCUMENT, HEADER, FOOTER -> processTextualPart(part, contextRoot);
+            default -> log.info("Unknown part type: {}", type);
+        }
+
+    }
+
+    private void processTextualPart(DocxPart part, Object contextRoot) {
         var processors = commentProcessorRegistrySupplier.apply(part);
         processors.runProcessors(contextRoot);
         placeholderReplacer.resolveExpressions(part, contextRoot);

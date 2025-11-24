@@ -33,19 +33,6 @@ public class PlaceholderReplacer
         this.exceptionResolver = exceptionResolver;
     }
 
-    /// Finds expressions in a document and resolves them against the specified context object.
-    /// The resolved values will then replace the expressions in the document.
-    ///
-    /// @param expressionContext the context root
-    public void resolveExpressions(DocxPart document, Object expressionContext) {
-        var tagIterator = DocxIterator.ofTags(document::content, "placeholder", document);
-        while (tagIterator.hasNext()) {
-            var tag = tagIterator.next();
-            resolveExpressionsForParagraph(document, tag, expressionContext);
-            tagIterator.reset();
-        }
-    }
-
     /// Resolves and replaces placeholder expressions within a specified paragraph tag.
     /// This method uses the provided context and document part to find and substitute
     /// placeholder expressions in the given tag with the corresponding resolved values.

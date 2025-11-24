@@ -27,4 +27,6 @@ public interface DocxPart
     ///
     /// @return a list of objects representing the document's content
     List<Object> content();
+
+    String type();
 }

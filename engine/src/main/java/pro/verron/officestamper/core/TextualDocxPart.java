@@ -7,8 +7,12 @@ import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.DocxPart;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
+
+import static java.util.Arrays.stream;
 
 /// Represents a textual part of a DOCX document, encapsulating the content and structure of
 /// the part while enabling various operations such as accessing paragraphs, runs, and related parts.
@@ -50,19 +54,38 @@ public final class TextualDocxPart
     /// Streams the parts of the document that match the specified relationship type, converting them
     /// into instances of [TextualDocxPart].
     ///
-    /// @param type the type of relationship to filter and stream parts for.
+    /// @param types the type of relationship to filter and stream parts for.
     ///
     /// @return a stream of [DocxPart] instances representing the filtered and processed parts
     ///         of the document.
-    public List<DocxPart> parts(String type) {
-        return document.getMainDocumentPart()
-                       .getRelationshipsPart()
-                       .getRelationshipsByType(type)
-                       .stream()
-                       .map(this::getPart)
-                       .map(p -> new TextualDocxPart(document, p, (ContentAccessor) p))
-                       .map(DocxPart.class::cast)
-                       .toList();
+    @Override
+    public List<DocxPart> parts(String... types) {
+        var mainDocument = document.getMainDocumentPart();
+        var mainRelationships = mainDocument.getRelationshipsPart();
+
+        return stream(types).map(mainRelationships::getRelationshipsByType)
+                            .flatMap(Collection::stream)
+                            .map(this::getPart)
+                            .map(p -> new TextualDocxPart(document, p, (ContentAccessor) p))
+                            .map(DocxPart.class::cast)
+                            .toList();
+
+    }
+
+    @Override
+    public void process(Consumer<DocxPart> processor) {
+        var mainDocumentPart = document.getMainDocumentPart();
+        processor.accept(new TextualDocxPart(document, mainDocumentPart, mainDocumentPart));
+
+        mainDocumentPart.getRelationshipsPart()
+                        .getRelationships()
+                        .getRelationship()
+                        .stream()
+                        .map(this::getPart)
+                        .filter(ContentAccessor.class::isInstance)
+                        .map(p -> new TextualDocxPart(document, p, (ContentAccessor) p))
+                        .forEach(processor);
+
     }
 
     /// Retrieves the part associated with the specified relationship from the relationships part.
@@ -100,6 +123,11 @@ public final class TextualDocxPart
     /// @return a list of objects representing the content of the document part.
     @Override
     public List<Object> content() {return contentAccessor.getContent();}
+
+    @Override
+    public String type() {
+        return part.getRelationshipType();
+    }
 
     /// Computes the hash code for this object based on the `document`, `part`,
     /// and `contentAccessor` fields.

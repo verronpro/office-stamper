@@ -7,6 +7,7 @@ import pro.verron.officestamper.api.DocxPart;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /// The PptxPart class represents a specific implementation of the DocxPart interface
 /// designed for handling parts within a PowerPoint document.
@@ -39,12 +40,22 @@ public class PptxPart
     }
 
     @Override
+    public String type() {
+        return "";
+    }
+
+    @Override
     public WordprocessingMLPackage document() {
         return null;
     }
 
     @Override
-    public List<DocxPart> parts(String type) {
+    public List<DocxPart> parts(String... types) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public void process(Consumer<DocxPart> processor) {
+
     }
 }

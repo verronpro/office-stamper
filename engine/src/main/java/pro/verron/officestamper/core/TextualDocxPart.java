@@ -4,12 +4,15 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
-import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.*;
+import org.jvnet.jaxb2_commons.ppp.Child;
+import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.WmlUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.util.Arrays.stream;
@@ -43,6 +46,77 @@ public final class TextualDocxPart
         this.document = document;
         this.part = part;
         this.contentAccessor = contentAccessor;
+    }
+
+    @Override
+    public Map<BigInteger, Comment> comments() {
+        var rootComments = new HashMap<BigInteger, Comment>();
+        var allComments = new HashMap<BigInteger, Comment>();
+        var stack = Collections.asLifoQueue(new ArrayDeque<Comment>());
+
+        var list = WmlUtils.extractCommentElements(document);
+        for (Child commentElement : list) {
+            if (commentElement instanceof CommentRangeStart crs)
+                onRangeStart(this, crs, allComments, stack, rootComments);
+            else if (commentElement instanceof CommentRangeEnd cre) onRangeEnd(cre, allComments, stack);
+            else if (commentElement instanceof R.CommentReference cr) onReference(this, cr, allComments);
+        }
+        CommentUtil.getCommentsPart(document.getParts())
+                   .map(CommentUtil::extractContent)
+                   .map(Comments::getComment)
+                   .stream()
+                   .flatMap(Collection::stream)
+                   .filter(comment -> allComments.containsKey(comment.getId()))
+                   .forEach(comment -> allComments.get(comment.getId())
+                                                  .setComment(comment));
+        return new HashMap<>(rootComments);
+    }
+
+    static void onRangeStart(
+            DocxPart source,
+            CommentRangeStart crs,
+            HashMap<BigInteger, Comment> allComments,
+            Queue<Comment> stack,
+            HashMap<BigInteger, Comment> rootComments
+    ) {
+        Comment comment = allComments.get(crs.getId());
+        if (comment == null) {
+            comment = new StandardComment(source);
+            allComments.put(crs.getId(), comment);
+            if (stack.isEmpty()) {
+                rootComments.put(crs.getId(), comment);
+            }
+            else {
+                stack.peek()
+                     .getChildren()
+                     .add(comment);
+            }
+        }
+        comment.setCommentRangeStart(crs);
+        stack.add(comment);
+    }
+
+    static void onRangeEnd(CommentRangeEnd cre, HashMap<BigInteger, Comment> allComments, Queue<Comment> stack) {
+        Comment comment = allComments.get(cre.getId());
+        if (comment == null)
+            throw new OfficeStamperException("Found a comment range end before the comment range start !");
+
+        comment.setCommentRangeEnd(cre);
+
+        if (!stack.isEmpty()) {
+            var peek = stack.peek();
+            if (peek.equals(comment)) stack.remove();
+            else throw new OfficeStamperException("Cannot figure which comment contains the other !");
+        }
+    }
+
+    static void onReference(DocxPart source, R.CommentReference cr, HashMap<BigInteger, Comment> allComments) {
+        Comment comment = allComments.get(cr.getId());
+        if (comment == null) {
+            comment = new StandardComment(source);
+            allComments.put(cr.getId(), comment);
+        }
+        comment.setCommentReference(cr);
     }
 
     /// Returns the WordprocessingMLPackage instance representing the document

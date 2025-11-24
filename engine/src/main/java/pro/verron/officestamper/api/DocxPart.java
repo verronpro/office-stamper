@@ -3,7 +3,9 @@ package pro.verron.officestamper.api;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 /// Represents a part of a WordprocessingML-based document. This interface extends the
 /// DocxDocument interface and provides additional methods to retrieve specific parts,
@@ -29,4 +31,6 @@ public interface DocxPart
     List<Object> content();
 
     String type();
+
+    Map<BigInteger, Comment> comments();
 }

@@ -6,9 +6,7 @@ import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Paragraph;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -98,21 +96,6 @@ public final class TextualDocxPart
     /// @return a list of objects representing the content of the document part.
     @Override
     public List<Object> content() {return contentAccessor.getContent();}
-
-    /// Streams all paragraphs contained in the document's main content or structured document tags (SDT).
-    /// The paragraphs are processed and transformed into instances of [Paragraph].
-    /// This method combines paragraphs directly present in the document and paragraphs within SDT runs.
-    ///
-    /// @return a stream of [Paragraph] objects representing the paragraphs found within the document.
-    public Stream<Paragraph> streamParagraphs() {
-        return Stream.concat(DocumentUtil.streamObjectElements(this, P.class)
-                                         .map(p -> StandardParagraph.from(this, p)),
-                DocumentUtil.streamObjectElements(this, SdtRun.class)
-                            .map(SdtRun::getSdtContent)
-                            .filter(CTSdtContentRun.class::isInstance)
-                            .map(CTSdtContentRun.class::cast)
-                            .map(paragraph -> StandardParagraph.from(this, paragraph)));
-    }
 
     /// Computes the hash code for this object based on the `document`, `part`,
     /// and `contentAccessor` fields.

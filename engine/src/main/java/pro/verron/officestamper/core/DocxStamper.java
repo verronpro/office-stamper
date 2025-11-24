@@ -166,7 +166,12 @@ public class DocxStamper
     private void processTextualPart(DocxPart part, Object contextRoot) {
         var processors = commentProcessorRegistrySupplier.apply(part);
         processors.runProcessors(contextRoot);
-        placeholderReplacer.resolveExpressions(part, contextRoot);
+        var tagIterator = DocxIterator.ofTags(part::content, "placeholder", part);
+        while (tagIterator.hasNext()) {
+            var tag = tagIterator.next();
+            placeholderReplacer.resolveExpressionsForParagraph(part, tag, contextRoot);
+            tagIterator.reset();
+        }
     }
 
 }

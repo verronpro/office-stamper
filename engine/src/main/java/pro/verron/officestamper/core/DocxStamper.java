@@ -2,6 +2,7 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.wml.Comments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
@@ -165,12 +166,31 @@ public class DocxStamper
 
     private void processTextualPart(DocxPart part, Object contextRoot) {
         var processors = commentProcessorRegistrySupplier.apply(part);
-        processors.runProcessors(contextRoot);
-        var tagIterator = DocxIterator.ofTags(part::content, "placeholder", part);
-        while (tagIterator.hasNext()) {
-            var tag = tagIterator.next();
+
+        var paragraphIterator = DocxIterator.ofParagraphs(part);
+        while (paragraphIterator.hasNext()) {
+            var p = paragraphIterator.next();
+            var comments = processors.collectComments();
+            var paragraphComment = p.getComment();
+            var updates = 0;
+            for (Comments.Comment pc : paragraphComment) {
+                updates += processors.runProcessorsOnParagraphComment(comments, contextRoot, p, pc.getId());
+            }
+            if (updates > 0) paragraphIterator.reset();
+        }
+
+        var processorTagIterator = DocxIterator.ofTags(part::content, "processor", part);
+        while (processorTagIterator.hasNext()) {
+            var tag1 = processorTagIterator.next();
+            processors.runProcessorsOnInlineContent(contextRoot, tag1);
+            paragraphIterator.reset();
+        }
+
+        var placeholderTagIterator = DocxIterator.ofTags(part::content, "placeholder", part);
+        while (placeholderTagIterator.hasNext()) {
+            var tag = placeholderTagIterator.next();
             placeholderReplacer.resolveExpressionsForParagraph(part, tag, contextRoot);
-            tagIterator.reset();
+            placeholderTagIterator.reset();
         }
     }
 

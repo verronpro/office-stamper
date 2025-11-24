@@ -50,35 +50,7 @@ public class CommentProcessorRegistry {
         this.exceptionResolver = exceptionResolver;
     }
 
-    /// Processes comments and inline content in the document by evaluating them against all registered
-    /// [CommentProcessor]s. This method processes runs, paragraphs, and inline content, and applies
-    /// changes based on the evaluation results.
-    ///
-    /// @param <T>               the type of the context root object
-    /// @param expressionContext the context root object against which expressions within comments are evaluated
-    public <T> void runProcessors(T expressionContext) {
-        var paragraphIterator = DocxIterator.ofParagraphs(source);
-
-        while (paragraphIterator.hasNext()) {
-            var p = paragraphIterator.next();
-            var comments = collectComments();
-            var paragraphComment = p.getComment();
-            var updates = 0;
-            for (Comments.Comment pc : paragraphComment) {
-                updates += runProcessorsOnParagraphComment(comments, expressionContext, p, pc.getId());
-            }
-            if (updates > 0) paragraphIterator.reset();
-        }
-
-        var tagIterator = DocxIterator.ofTags(source::content, "processor", source);
-        while (tagIterator.hasNext()) {
-            var tag = tagIterator.next();
-            runProcessorsOnInlineContent(expressionContext, tag);
-            paragraphIterator.reset();
-        }
-    }
-
-    private Map<BigInteger, Comment> collectComments() {
+    Map<BigInteger, Comment> collectComments() {
         var rootComments = new HashMap<BigInteger, Comment>();
         var allComments = new HashMap<BigInteger, Comment>();
         var stack = Collections.asLifoQueue(new ArrayDeque<Comment>());
@@ -100,7 +72,7 @@ public class CommentProcessorRegistry {
         return new HashMap<>(rootComments);
     }
 
-    private <T> int runProcessorsOnParagraphComment(
+    <T> int runProcessorsOnParagraphComment(
             Map<BigInteger, Comment> comments,
             T expressionContext,
             Paragraph paragraph,
@@ -121,7 +93,7 @@ public class CommentProcessorRegistry {
         return 1;
     }
 
-    private <T> void runProcessorsOnInlineContent(T context, Tag tag) {
+    <T> void runProcessorsOnInlineContent(T context, Tag tag) {
         Placeholder placeholder = tag.asPlaceholder();
         commentProcessors.setContext(new ProcessorContext(tag.getParagraph(), tag.asComment(), placeholder));
         try {

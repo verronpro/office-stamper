@@ -1,7 +1,6 @@
 package pro.verron.officestamper.preset.resolvers.image;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;

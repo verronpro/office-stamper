@@ -3,7 +3,6 @@ package pro.verron.officestamper.api;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import org.docx4j.wml.R;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,18 +28,19 @@ public interface Paragraph {
     /// This method is intended to be used when a paragraph needs to be deleted.
     void remove();
 
-    /// Replaces a placeholder in the given paragraph with the specified replacement.
+    /// Replaces a specified placeholder within the paragraph with the provided insert.
     ///
-    /// @param placeholder The placeholder to be replaced.
-    /// @param replacement The replacement for the placeholder.
+    /// @param placeholder the placeholder to be replaced
+    /// @param insert      the insert containing elements that will replace the placeholder
     void replace(Placeholder placeholder, Insert insert);
 
-    /// Replaces a slice of objects in the given paragraph with the specified replacement.
+    /// Replaces a section of elements within the document, defined by the start and end objects,
+    /// with the elements provided by the given insert.
     ///
-    /// @param from The first object to be replaced.
-    /// @param to The last object for the placeholder.
-    /// @param replacement The replacement for the placeholder.
-    void replace(Object from, Object to, Insert insert);
+    /// @param start  the starting object marking the beginning of the section to replace.
+    /// @param end    the ending object marking the end of the section to replace.
+    /// @param insert the insert containing the elements that will replace the specified section.
+    void replace(Object start, Object end, Insert insert);
 
     ///Returns the paragraph as a string.
     ///

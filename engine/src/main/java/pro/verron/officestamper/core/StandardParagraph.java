@@ -106,11 +106,11 @@ public class StandardParagraph
         WmlUtils.remove((Child) p.getParent());
     }
 
-    /// Replaces the given expression with the replacement object within the paragraph.
-    /// The replacement object must be a valid DOCX4J Object.
+    /// Replaces a placeholder in the paragraph with the provided insert content.
+    /// The placeholder expression is matched and replaced with the new content.
     ///
-    /// @param placeholder the expression to be replaced.
-    /// @param replacement the object to replace the expression.
+    /// @param placeholder the placeholder to be replaced, containing the expression to match
+    /// @param insert      the content to be inserted in place of the placeholder; must be serializable
     @Override
     public void replace(Placeholder placeholder, Insert insert) {
         insert.assertSerializable(); // TODO Move the check at instance creation
@@ -120,22 +120,22 @@ public class StandardParagraph
     }
 
     @Override
-    public void replace(Object from, Object to, Insert insert) {
-        var fromIndex = contents.indexOf(from);
-        var toIndex = contents.indexOf(to);
+    public void replace(Object start, Object end, Insert insert) {
+        var fromIndex = contents.indexOf(start);
+        var toIndex = contents.indexOf(end);
         if (fromIndex < 0) {
             var msg = "The start element (%s) is not in the paragraph (%s)";
-            throw new OfficeStamperException(msg.formatted(from, this));
+            throw new OfficeStamperException(msg.formatted(start, this));
         }
         if (toIndex < 0) {
             var msg = "The end element (%s) is not in the paragraph (%s)";
-            throw new OfficeStamperException(msg.formatted(to, this));
+            throw new OfficeStamperException(msg.formatted(end, this));
         }
         if (fromIndex > toIndex) {
             var msg = "The start element (%s) is after the end element (%s)";
-            throw new OfficeStamperException(msg.formatted(to, this));
+            throw new OfficeStamperException(msg.formatted(end, this));
         }
-        var expression = extractExpression(from, to);
+        var expression = extractExpression(start, end);
         var newContents = WmlUtils.replaceExpressionWithRun(() -> p, expression, insert);
         contents.clear();
         contents.addAll(newContents);

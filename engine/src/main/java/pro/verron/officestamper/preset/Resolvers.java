@@ -34,7 +34,7 @@ public class Resolvers {
     /// of objects.
     ///
     /// @return An instance of [ObjectResolver]
-    /// @param linebreakPlaceholder
+    /// @param linebreakPlaceholder The placeholder to use for linebreaks.
     public static ObjectResolver fallback(String linebreakPlaceholder) {
         return new ToStringResolver(linebreakPlaceholder);
     }

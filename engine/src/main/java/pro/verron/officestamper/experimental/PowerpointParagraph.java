@@ -41,7 +41,7 @@ public class PowerpointParagraph
 
     /// Constructs a new ParagraphWrapper for the given paragraph.
     ///
-    /// @param source the source of the paragraph.
+    /// @param source    the source of the paragraph.
     /// @param paragraph the paragraph to wrap.
     public PowerpointParagraph(PptxPart source, CTTextParagraph paragraph) {
         this.source = source;
@@ -110,15 +110,33 @@ public class PowerpointParagraph
         return destination;
     }
 
+    private static CTRegularTextRun create(String text, CTTextParagraph parentParagraph) {
+        CTRegularTextRun run = new CTRegularTextRun();
+        run.setT(text);
+        applyParagraphStyle(parentParagraph, run);
+        return run;
+    }
+
+    private static void applyParagraphStyle(CTTextParagraph p, CTRegularTextRun run) {
+        var properties = p.getPPr();
+        if (properties == null) return;
+
+        var textCharacterProperties = properties.getDefRPr();
+        if (textCharacterProperties == null) return;
+
+        run.setRPr(apply(textCharacterProperties));
+    }
+
+    private static CTTextCharacterProperties apply(
+            CTTextCharacterProperties source
+    ) {
+        return apply(source, new CTTextCharacterProperties());
+    }
+
     @Override
     public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
         return new ProcessorContext(this, comment, placeholder);
-    }
-
-    @Override
-    public void remove() {
-        WmlUtils.remove(paragraph);
     }
 
     @Override
@@ -130,12 +148,15 @@ public class PowerpointParagraph
         siblings().removeAll(toRemove);
     }
 
-    /// Replaces the given expression with the replacement object within
-    /// the paragraph.
-    /// The replacement object must be a valid DOCX4J Object.
+    @Override
+    public void remove() {
+        WmlUtils.remove(paragraph);
+    }
+
+    /// Replaces a placeholder within the paragraph with the content from the given insert, preserving formatting.
     ///
-    /// @param placeholder the expression to be replaced.
-    /// @param replacement the object to replace the expression.
+    /// @param placeholder the placeholder to be replaced; its expression is used to locate the section to replace
+    /// @param insert      the content to replace the placeholder with; must be a valid and compatible text run
     @Override
     public void replace(Placeholder placeholder, Insert insert) {
         var replacementRun = insert.assertInstanceOf(CTRegularTextRun.class);
@@ -171,6 +192,52 @@ public class PowerpointParagraph
                 affectedRuns.getFirst(),
                 affectedRuns.getLast());
 
+    }
+
+    @Override
+    public void replace(Object from, Object to, Insert insert) {
+        throw new OfficeStamperException("Not yet implemented");
+    }
+
+    /// Returns the aggregated text over all runs.
+    ///
+    /// @return the text of all runs.
+    @Override
+    public String asString() {
+        return runs.stream()
+                   .map(PowerpointRun::run)
+                   .map(CTRegularTextRun::getT)
+                   .collect(joining()) + "\n";
+    }
+
+    @Override
+    public void apply(Consumer<ContentAccessor> pConsumer) {
+        pConsumer.accept(paragraph::getEGTextRun);
+    }
+
+    @Override
+    public <T> Optional<T> parent(Class<T> aClass) {
+        return parent(aClass, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public Collection<Comments.Comment> getComment() {
+        return CommentUtil.getCommentFor(paragraph::getEGTextRun, source.document());
+    }
+
+    private List<Object> siblings() {
+        return this.parent(ContentAccessor.class, 1)
+                   .orElseThrow(throwing("Not a standard Child with common parent"))
+                   .getContent();
+    }
+
+    private <T> Optional<T> parent(Class<T> aClass, int depth) {
+        return WmlUtils.getFirstParentWithClass(paragraph, aClass, depth);
+    }
+
+    private Comment comment(Placeholder placeholder) {
+        var id = new BigInteger(16, RANDOM);
+        return StandardComment.create(source, paragraph::getEGTextRun, placeholder, id);
     }
 
     private void singleRun(
@@ -249,79 +316,10 @@ public class PowerpointParagraph
         recalculateRuns();
     }
 
-    private static CTRegularTextRun create(String text, CTTextParagraph parentParagraph) {
-        CTRegularTextRun run = new CTRegularTextRun();
-        run.setT(text);
-        applyParagraphStyle(parentParagraph, run);
-        return run;
-    }
-
-    private static void applyParagraphStyle(CTTextParagraph p, CTRegularTextRun run) {
-        var properties = p.getPPr();
-        if (properties == null) return;
-
-        var textCharacterProperties = properties.getDefRPr();
-        if (textCharacterProperties == null) return;
-
-        run.setRPr(apply(textCharacterProperties));
-    }
-
-    /// Returns the aggregated text over all runs.
-    ///
-    /// @return the text of all runs.
-    @Override
-    public String asString() {
-        return runs.stream()
-                   .map(PowerpointRun::run)
-                   .map(CTRegularTextRun::getT)
-                   .collect(joining()) + "\n";
-    }
-
-    @Override
-    public void apply(Consumer<ContentAccessor> pConsumer) {
-        pConsumer.accept(paragraph::getEGTextRun);
-    }
-
-    @Override
-    public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(paragraph::getEGTextRun, source.document());
-    }
-
-    @Override
-    public void replace(Object from, Object to, Insert insert) {
-        throw new OfficeStamperException("Not yet implemented");
-    }
-
     private List<PowerpointRun> getAffectedRuns(int startIndex, int endIndex) {
         return runs.stream()
                    .filter(run -> run.isTouchedByRange(startIndex, endIndex))
                    .toList();
-    }
-
-    @Override
-    public <T> Optional<T> parent(Class<T> aClass) {
-        return parent(aClass, Integer.MAX_VALUE);
-    }
-
-    private List<Object> siblings() {
-        return this.parent(ContentAccessor.class, 1)
-                   .orElseThrow(throwing("Not a standard Child with common parent"))
-                   .getContent();
-    }
-
-    private static CTTextCharacterProperties apply(
-            CTTextCharacterProperties source
-    ) {
-        return apply(source, new CTTextCharacterProperties());
-    }
-
-    private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        return WmlUtils.getFirstParentWithClass(paragraph, aClass, depth);
-    }
-
-    private Comment comment(Placeholder placeholder) {
-        var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(source, paragraph::getEGTextRun, placeholder, id);
     }
 
     /// {@inheritDoc}

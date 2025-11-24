@@ -10,24 +10,18 @@ import java.util.List;
 import java.util.SequencedCollection;
 
 public class Inserts {
-    public static Insert of(CTSmartTagRun ctSmartTagRun) {
-        return new Insert() {
-            @Override
-            public SequencedCollection<?> getElements() {
-                return List.of(ctSmartTagRun);
-            }
+    private Inserts() {
+        throw new AssertionError("No instances");
+    }
 
-            @Override
-            public void setRPr(RPr rPr) {
-                // DO NOTHING
-            }
-        };
+    public static Insert of(CTSmartTagRun ctSmartTagRun) {
+        return () -> List.of(ctSmartTagRun);
     }
 
     public static Insert of(R r) {
         return new Insert() {
             @Override
-            public SequencedCollection<?> getElements() {
+            public SequencedCollection<Object> getElements() {
                 return List.of(r);
             }
 
@@ -39,24 +33,14 @@ public class Inserts {
     }
 
     public static Insert of(CTRegularTextRun ctRegularTextRun) {
-        return new Insert() {
-            @Override
-            public SequencedCollection<?> getElements() {
-                return List.of(ctRegularTextRun);
-            }
-
-            @Override
-            public void setRPr(RPr rPr) {
-                // DO NOTHING
-            }
-        };
+        return () -> List.of(ctRegularTextRun);
     }
 
     public static Insert of(SequencedCollection<Object> elements) {
         return new Insert() {
 
             @Override
-            public SequencedCollection<?> getElements() {
+            public SequencedCollection<Object> getElements() {
                 return elements;
             }
 

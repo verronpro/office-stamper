@@ -1,6 +1,5 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.*;
@@ -47,11 +46,13 @@ public class PlaceholderReplacer
         }
     }
 
-    /// Finds expressions in the given paragraph and replaces them with the values provided by the expression resolver.
+    /// Resolves and replaces placeholder expressions within a specified paragraph tag.
+    /// This method uses the provided context and document part to find and substitute
+    /// placeholder expressions in the given tag with the corresponding resolved values.
     ///
-    /// @param docxPart  the document in which to replace all expressions.
-    /// @param paragraph the paragraph in which to replace expressions.
-    /// @param context   the context root
+    /// @param docxPart the part of the document containing the paragraph and associated content.
+    /// @param tag      the tag representing the placeholder to be resolved and replaced.
+    /// @param context  the context object that provides data for resolving the placeholder expressions.
     @Override
     public void resolveExpressionsForParagraph(DocxPart docxPart, Tag tag, Object context) {
         var replacement = resolve(docxPart, context, tag.asPlaceholder());

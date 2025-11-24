@@ -1,6 +1,5 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 

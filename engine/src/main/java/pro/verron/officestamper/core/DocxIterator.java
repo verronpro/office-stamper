@@ -4,6 +4,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.Tag;
 
 import java.util.*;
 import java.util.function.Function;
@@ -72,14 +73,16 @@ public class DocxIterator
         return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
     }
 
-    public static ResetableIterator<pro.verron.officestamper.core.Tag> ofTags(ContentAccessor contentAccessor, String type,
+    public static ResetableIterator<pro.verron.officestamper.api.Tag> ofTags(
+            ContentAccessor contentAccessor,
+            String type,
             DocxPart docxPart
     ) {
         var iterator = new DocxIterator(() -> contentAccessor.getContent()
                                                              .iterator());
         Predicate<Object> predicate = o -> o instanceof CTSmartTagRun tag && type.equals(tag.getElement());
         Function<Object, CTSmartTagRun> caster = CTSmartTagRun.class::cast;
-        Function<Object, Tag> mapper = caster.andThen((CTSmartTagRun tag) -> Tag.of(docxPart, tag));
+        Function<Object, pro.verron.officestamper.api.Tag> mapper = caster.andThen((CTSmartTagRun tag) -> Tag.of(docxPart, tag));
         return new FilterMapperIterator<>(iterator, predicate, mapper);
     }
 
@@ -113,8 +116,7 @@ public class DocxIterator
                 var content = pict.getAnyAndAny();
                 iteratorQueue.add(content.iterator());
             }
-            default -> {
-            }
+            default -> { /* DO NOTHING */ }
         }
         while (!iteratorQueue.isEmpty() && next == null) {
             var nextIterator = iteratorQueue.poll();

@@ -29,16 +29,6 @@ public interface Paragraph {
     /// This method is intended to be used when a paragraph needs to be deleted.
     void remove();
 
-    /// Retrieves the paragraph associated with this object.
-    /// TODO replace with API not exposing the docx4j API directly
-    ///
-    /// @return the paragraph object
-    ///
-    /// @deprecated As of version 2.6, due to its direct exposure of the docx4j API. It is scheduled for removal in
-    /// the future.
-    @Deprecated(since = "2.6", forRemoval = true)
-    P getP(); // TODO replace with API not exposing the docx4j API directly
-
     /// Replaces a placeholder in the given paragraph with the specified replacement.
     ///
     /// @param placeholder The placeholder to be replaced.

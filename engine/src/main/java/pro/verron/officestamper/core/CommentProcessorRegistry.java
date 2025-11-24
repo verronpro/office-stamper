@@ -1,6 +1,5 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.CommentRangeEnd;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.Comments;
@@ -27,41 +26,40 @@ import java.util.*;
 public class CommentProcessorRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentProcessorRegistry.class);
-    private final DocxPart source;
     private final CommentProcessors commentProcessors;
     private final ExpressionResolver expressionResolver;
     private final ExceptionResolver exceptionResolver;
 
     /// Constructs a new CommentProcessorRegistry.
     ///
-    /// @param source             the source part of the Word document.
     /// @param expressionResolver the resolver for evaluating expressions.
     /// @param commentProcessors  map of comment processor instances keyed by their respective class types.
     /// @param exceptionResolver  the resolver for handling exceptions during processing.
     public CommentProcessorRegistry(
-            DocxPart source,
             ExpressionResolver expressionResolver,
             CommentProcessors commentProcessors,
             ExceptionResolver exceptionResolver
     ) {
-        this.source = source;
         this.expressionResolver = expressionResolver;
         this.commentProcessors = commentProcessors;
         this.exceptionResolver = exceptionResolver;
     }
 
-    Map<BigInteger, Comment> collectComments() {
+    Map<BigInteger, Comment> collectComments(DocxPart part) {
+        var document = part.document();
+
         var rootComments = new HashMap<BigInteger, Comment>();
         var allComments = new HashMap<BigInteger, Comment>();
         var stack = Collections.asLifoQueue(new ArrayDeque<Comment>());
 
-        var list = WmlUtils.extractCommentElements(document());
+        var list = WmlUtils.extractCommentElements(document);
         for (Child commentElement : list) {
-            if (commentElement instanceof CommentRangeStart crs) onRangeStart(crs, allComments, stack, rootComments);
+            if (commentElement instanceof CommentRangeStart crs) onRangeStart(part, crs, allComments, stack,
+                    rootComments);
             else if (commentElement instanceof CommentRangeEnd cre) onRangeEnd(cre, allComments, stack);
-            else if (commentElement instanceof R.CommentReference cr) onReference(cr, allComments);
+            else if (commentElement instanceof R.CommentReference cr) onReference(part, cr, allComments);
         }
-        CommentUtil.getCommentsPart(document().getParts())
+        CommentUtil.getCommentsPart(document.getParts())
                    .map(CommentUtil::extractContent)
                    .map(Comments::getComment)
                    .stream()
@@ -72,47 +70,8 @@ public class CommentProcessorRegistry {
         return new HashMap<>(rootComments);
     }
 
-    <T> int runProcessorsOnParagraphComment(
-            Map<BigInteger, Comment> comments,
-            T expressionContext,
-            Paragraph paragraph,
-            BigInteger paragraphCommentId
-    ) {
-        if (!comments.containsKey(paragraphCommentId)) return 0;
-
-        var c = comments.get(paragraphCommentId);
-        var cPlaceholder = c.asPlaceholder();
-        var cComment = c.getComment();
-        comments.remove(cComment.getId());
-        commentProcessors.setContext(new ProcessorContext(paragraph, c, cPlaceholder));
-
-        if (!runCommentProcessors(expressionContext, c.asPlaceholder())) return 0;
-
-        commentProcessors.commitChanges(source);
-        CommentUtil.deleteComment(c);
-        return 1;
-    }
-
-    <T> void runProcessorsOnInlineContent(T context, Tag tag) {
-        Placeholder placeholder = tag.asPlaceholder();
-        commentProcessors.setContext(new ProcessorContext(tag.getParagraph(), tag.asComment(), placeholder));
-        try {
-            expressionResolver.setContext(context);
-            expressionResolver.resolve(placeholder);
-            tag.remove();
-            logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
-        } catch (SpelEvaluationException | SpelParseException e) {
-            var message = "Placeholder '%s' failed to process.".formatted(placeholder);
-            exceptionResolver.resolve(placeholder, message, e);
-        }
-        commentProcessors.commitChanges(source);
-    }
-
-    private WordprocessingMLPackage document() {
-        return source.document();
-    }
-
     private void onRangeStart(
+            DocxPart source,
             CommentRangeStart crs,
             HashMap<BigInteger, Comment> allComments,
             Queue<Comment> stack,
@@ -149,13 +108,50 @@ public class CommentProcessorRegistry {
         }
     }
 
-    private void onReference(R.CommentReference cr, HashMap<BigInteger, Comment> allComments) {
+    private void onReference(DocxPart source, R.CommentReference cr, HashMap<BigInteger, Comment> allComments) {
         Comment comment = allComments.get(cr.getId());
         if (comment == null) {
             comment = new StandardComment(source);
             allComments.put(cr.getId(), comment);
         }
         comment.setCommentReference(cr);
+    }
+
+    <T> int runProcessorsOnParagraphComment(
+            DocxPart source,
+            Map<BigInteger, Comment> comments,
+            T expressionContext,
+            Paragraph paragraph,
+            BigInteger paragraphCommentId
+    ) {
+        if (!comments.containsKey(paragraphCommentId)) return 0;
+
+        var c = comments.get(paragraphCommentId);
+        var cPlaceholder = c.asPlaceholder();
+        var cComment = c.getComment();
+        comments.remove(cComment.getId());
+        commentProcessors.setContext(new ProcessorContext(paragraph, c, cPlaceholder));
+
+        if (!runCommentProcessors(expressionContext, c.asPlaceholder())) return 0;
+
+        commentProcessors.commitChanges(source);
+        CommentUtil.deleteComment(c);
+        return 1;
+    }
+
+    <T> void runProcessorsOnInlineContent(DocxPart source, T context, Tag tag) {
+        Placeholder placeholder = tag.asPlaceholder();
+        commentProcessors.setContext(new ProcessorContext(tag.getParagraph(), tag.asComment(), placeholder));
+        try {
+            expressionResolver.setContext(context);
+            expressionResolver.resolve(placeholder);
+            tag.remove();
+            logger.debug("Placeholder '{}' successfully processed by a comment processor.", placeholder);
+        } catch (SpelEvaluationException | SpelParseException e) {
+            var message = "Placeholder '%s' failed to process.".formatted(placeholder);
+            exceptionResolver.resolve(placeholder, message, e);
+        }
+        commentProcessors.commitChanges(source);
     }
 
     private <T> boolean runCommentProcessors(T context, Placeholder commentPlaceholder) {

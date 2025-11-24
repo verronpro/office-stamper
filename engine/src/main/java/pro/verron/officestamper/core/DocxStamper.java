@@ -36,7 +36,7 @@ public class DocxStamper
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final PlaceholderReplacer placeholderReplacer;
-    private final Function<DocxPart, CommentProcessorRegistry> commentProcessorRegistrySupplier;
+    private final CommentProcessorRegistry commentProcessorRegistry;
 
     /// Creates a new DocxStamper with the given configuration.
     ///
@@ -79,8 +79,7 @@ public class DocxStamper
         evaluationContext.addMethodResolver(new Invokers(functions.stream()
                                                                   .map(Invokers::ofCustomFunction)));
 
-        this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(source,
-                expressionResolver,
+        this.commentProcessorRegistry = new CommentProcessorRegistry(expressionResolver,
                 commentProcessors,
                 exceptionResolver);
 
@@ -157,7 +156,7 @@ public class DocxStamper
 
     private void processPart(DocxPart part, Object contextRoot) {
         var type = part.type();
-        switch (type){
+        switch (type) {
             case DOCUMENT, HEADER, FOOTER -> processTextualPart(part, contextRoot);
             default -> log.info("Unknown part type: {}", type);
         }
@@ -165,16 +164,16 @@ public class DocxStamper
     }
 
     private void processTextualPart(DocxPart part, Object contextRoot) {
-        var processors = commentProcessorRegistrySupplier.apply(part);
+        var processors = commentProcessorRegistry;
 
         var paragraphIterator = DocxIterator.ofParagraphs(part);
         while (paragraphIterator.hasNext()) {
             var p = paragraphIterator.next();
-            var comments = processors.collectComments();
+            var comments = processors.collectComments(part);
             var paragraphComment = p.getComment();
             var updates = 0;
             for (Comments.Comment pc : paragraphComment) {
-                updates += processors.runProcessorsOnParagraphComment(comments, contextRoot, p, pc.getId());
+                updates += processors.runProcessorsOnParagraphComment(part, comments, contextRoot, p, pc.getId());
             }
             if (updates > 0) paragraphIterator.reset();
         }
@@ -182,7 +181,7 @@ public class DocxStamper
         var processorTagIterator = DocxIterator.ofTags(part::content, "processor", part);
         while (processorTagIterator.hasNext()) {
             var tag1 = processorTagIterator.next();
-            processors.runProcessorsOnInlineContent(contextRoot, tag1);
+            processors.runProcessorsOnInlineContent(part, contextRoot, tag1);
             paragraphIterator.reset();
         }
 

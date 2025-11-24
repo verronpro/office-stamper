@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
-import org.docx4j.finders.ClassFinder;
 import org.docx4j.model.structure.HeaderFooterPolicy;
 import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -16,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.function.ThrowingFunction;
-import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.*;
@@ -39,20 +37,6 @@ public class DocumentUtil {
 
     private DocumentUtil() {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
-    }
-
-    /// Streams the elements of a given class type from the specified DocxPart.
-    ///
-    /// @param <T>          the type of elements to be streamed
-    /// @param source       the source DocxPart containing the elements to be streamed
-    /// @param elementClass the class type of the elements to be filtered and streamed.
-    ///
-    /// @return a Stream of elements of the specified type found within the source DocxPart.
-    public static <T> Stream<T> streamObjectElements(DocxPart source, Class<T> elementClass) {
-        ClassFinder finder = new ClassFinder(elementClass);
-        TraversalUtil.visit(source.part(), finder);
-        return finder.results.stream()
-                             .map(elementClass::cast);
     }
 
     /// Retrieves all elements from the main document part of the specified WordprocessingMLPackage.

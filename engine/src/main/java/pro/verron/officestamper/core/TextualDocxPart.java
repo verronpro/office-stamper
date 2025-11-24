@@ -4,12 +4,11 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
-import org.docx4j.wml.*;
+import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.DocxPart;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 /// Represents a textual part of a DOCX document, encapsulating the content and structure of
 /// the part while enabling various operations such as accessing paragraphs, runs, and related parts.
@@ -33,8 +32,8 @@ public final class TextualDocxPart
     /// Constructs a `TextualDocxPart` using the specified `document`, `part`,
     /// and `contentAccessor`.
     ///
-    /// @param document       the WordprocessingMLPackage representing the document to be processed.
-    /// @param part           the specific part of the document being processed.
+    /// @param document        the WordprocessingMLPackage representing the document to be processed.
+    /// @param part            the specific part of the document being processed.
     /// @param contentAccessor the content accessor associated with the document part.
     public TextualDocxPart(WordprocessingMLPackage document, Part part, ContentAccessor contentAccessor) {
         this.document = document;
@@ -69,6 +68,7 @@ public final class TextualDocxPart
     /// Retrieves the part associated with the specified relationship from the relationships part.
     ///
     /// @param r the relationship for which the associated part is to be retrieved.
+    ///
     /// @return the part corresponding to the given relationship.
     public Part getPart(Relationship r) {
         return getRelationshipsPart().getPart(r);
@@ -87,6 +87,7 @@ public final class TextualDocxPart
     /// Creates a new instance of [DocxPart] using the provided [ContentAccessor].
     ///
     /// @param accessor the content accessor associated with the document part to derive a new instance.
+    ///
     /// @return a new instance of [DocxPart], specifically a [TextualDocxPart],
     ///         initialized with the given content accessor.
     @Override
@@ -113,6 +114,7 @@ public final class TextualDocxPart
     /// the `document`, `part`, and `contentAccessor` fields of both objects.
     ///
     /// @param obj the object to be compared for equality with this instance.
+    ///
     /// @return true if the specified object is equal to this object; false otherwise.
     @Override
     public boolean equals(Object obj) {

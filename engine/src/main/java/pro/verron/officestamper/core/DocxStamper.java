@@ -38,8 +38,7 @@ public class DocxStamper
     ///
     /// @param configuration the configuration to use for this DocxStamper.
     public DocxStamper(OfficeStamperConfiguration configuration) {
-        this(
-                configuration.getEvaluationContextConfigurer(),
+        this(configuration.getEvaluationContextConfigurer(),
                 configuration.getExpressionFunctions(),
                 configuration.customFunctions(),
                 configuration.getResolvers(),
@@ -47,8 +46,7 @@ public class DocxStamper
                 configuration.getPreprocessors(),
                 configuration.getPostprocessors(),
                 configuration.getSpelParserConfiguration(),
-                configuration.getExceptionResolver()
-        );
+                configuration.getExceptionResolver());
     }
 
     private DocxStamper(
@@ -69,10 +67,7 @@ public class DocxStamper
 
         var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
         var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-        this.placeholderReplacer = new PlaceholderReplacer(
-                typeResolverRegistry,
-                expressionResolver,
-                exceptionResolver);
+        this.placeholderReplacer = new PlaceholderReplacer(typeResolverRegistry, expressionResolver, exceptionResolver);
 
         var commentProcessors = buildCommentProcessors(configurationCommentProcessors);
         evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
@@ -80,8 +75,7 @@ public class DocxStamper
         evaluationContext.addMethodResolver(new Invokers(functions.stream()
                                                                   .map(Invokers::ofCustomFunction)));
 
-        this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(
-                source,
+        this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(source,
                 expressionResolver,
                 commentProcessors,
                 exceptionResolver);
@@ -95,8 +89,7 @@ public class DocxStamper
     ) {
         var processors = new HashMap<Class<?>, CommentProcessor>();
         for (var entry : commentProcessors.entrySet()) {
-            processors.put(
-                    entry.getKey(),
+            processors.put(entry.getKey(),
                     entry.getValue()
                          .apply(placeholderReplacer));
         }

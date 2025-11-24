@@ -16,10 +16,9 @@ import pro.verron.officestamper.utils.WmlUtils;
 import java.math.BigInteger;
 import java.util.*;
 
-/// Allows registration of [CommentProcessor] objects. Each registered
-/// ICommentProcessor must implement an interface which has to be specified at
-/// registration time. Provides several getter methods to access the registered
-/// [CommentProcessor].
+/// Allows registration of [CommentProcessor] objects.
+/// Each registered [CommentProcessor] must implement an interface specified at registration time.
+/// Provides several getter methods to access the registered [CommentProcessor].
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs

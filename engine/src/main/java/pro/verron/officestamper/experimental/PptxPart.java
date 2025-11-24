@@ -3,10 +3,13 @@ package pro.verron.officestamper.experimental;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
+import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /// The PptxPart class represents a specific implementation of the DocxPart interface
@@ -42,6 +45,11 @@ public class PptxPart
     @Override
     public String type() {
         return "";
+    }
+
+    @Override
+    public Map<BigInteger, Comment> comments() {
+        return Map.of();
     }
 
     @Override

@@ -52,15 +52,18 @@ public final class TextualDocxPart
     /// into instances of [TextualDocxPart].
     ///
     /// @param type the type of relationship to filter and stream parts for.
+    ///
     /// @return a stream of [DocxPart] instances representing the filtered and processed parts
     ///         of the document.
-    public Stream<DocxPart> streamParts(String type) {
+    public List<DocxPart> parts(String type) {
         return document.getMainDocumentPart()
                        .getRelationshipsPart()
                        .getRelationshipsByType(type)
                        .stream()
                        .map(this::getPart)
-                       .map(p -> new TextualDocxPart(document, p, (ContentAccessor) p));
+                       .map(p -> new TextualDocxPart(document, p, (ContentAccessor) p))
+                       .map(DocxPart.class::cast)
+                       .toList();
     }
 
     /// Retrieves the part associated with the specified relationship from the relationships part.

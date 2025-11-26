@@ -7,7 +7,6 @@ import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -26,15 +25,12 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param interfaceClass          the interface class associated with the comment processor
     /// @param commentProcessorFactory a function that creates a CommentProcessor object based on the
-    ///
-    ///
-    ///
     ///                                ParagraphPlaceholderReplacer implementation
     ///
     /// @return the updated OfficeStamperConfiguration object
     OfficeStamperConfiguration addCommentProcessor(
             Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
+            CommentProcessorFactory commentProcessorFactory
     );
 
     /// Adds a pre-processor to the OfficeStamperConfiguration. A pre-processor is responsible for
@@ -53,15 +49,7 @@ public interface OfficeStamperConfiguration {
     /// Sets the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL) EvaluationContext.
     ///
     /// @param evaluationContextConfigurer the EvaluationContextConfigurer for configuring the SPEL EvaluationContext.
-    ///
-    ///
-    ///                                                                                          Must
-    ///
-    ///
-    ///                                    implement the
-    ///
-    ///
-    ///                                                                       evaluateEvaluationContext() method.
+    /// Must implement the evaluateEvaluationContext() method.
     ///
     /// @return the updated OfficeStamperConfiguration object.
     OfficeStamperConfiguration setEvaluationContextConfigurer(EvaluationContextConfigurer evaluationContextConfigurer);
@@ -86,8 +74,8 @@ public interface OfficeStamperConfiguration {
     /// Returns a map of comment processors associated with their respective classes.
     ///
     /// @return The map of comment processors. The keys are the classes, and the values are the corresponding comment
-    /// processors.
-    Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors();
+    ///         processor factories.
+    Map<Class<?>, CommentProcessorFactory> getCommentProcessors();
 
     /// Retrieves the list of pre-processors.
     ///

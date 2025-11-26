@@ -377,7 +377,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments customCommentProcessor(ContextFactory factory) {
         return arguments("Custom processor Integration test",
-                standard().addCommentProcessor(ICustomCommentProcessor.class, ProcessorCustomTest::new),
+                standard().addCommentProcessor(ICustomCommentProcessor.class, CustomCommentProcessor::newInstance),
                 factory.empty(),
                 getResource(Path.of("CustomCommentProcessorTest.docx")),
                 """     

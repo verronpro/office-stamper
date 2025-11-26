@@ -6,4 +6,4 @@ package pro.verron.officestamper.api;
 /// @param paragraph   The paragraph in which the placeholder exists.
 /// @param comment     The comment associated with the placeholder.
 /// @param placeholder The placeholder to be processed within the paragraph.
-public record ProcessorContext(Paragraph paragraph, Comment comment, Placeholder placeholder) {}
+public record ProcessorContext(DocxPart part, Paragraph paragraph, Comment comment, Placeholder placeholder) {}

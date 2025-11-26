@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /// The [DocxStamperConfiguration] class represents the configuration for the [DocxStamper] class.
@@ -29,7 +28,7 @@ import java.util.function.Supplier;
 /// @since 1.0.3
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
-    private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors;
+    private final Map<Class<?>, CommentProcessorFactory> commentProcessors;
     private final List<ObjectResolver> resolvers;
     private final Map<Class<?>, Object> expressionFunctions;
     private final List<PreProcessor> preprocessors;
@@ -86,7 +85,7 @@ public class DocxStamperConfiguration
     @Override
     public DocxStamperConfiguration addCommentProcessor(
             Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
+            CommentProcessorFactory commentProcessorFactory
     ) {
         this.commentProcessors.put(interfaceClass, commentProcessorFactory);
         return this;
@@ -155,7 +154,7 @@ public class DocxStamperConfiguration
     /// @return a map where the key is the class associated with a specific type of placeholder
     ///         and the value is a function that creates a CommentProcessor for that placeholder.
     @Override
-    public Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors() {
+    public Map<Class<?>, CommentProcessorFactory> getCommentProcessors() {
         return commentProcessors;
     }
 

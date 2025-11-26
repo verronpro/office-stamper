@@ -1,6 +1,9 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.*;
+import org.docx4j.wml.CTSmartTagRun;
+import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.R;
+import org.docx4j.wml.RPr;
 import pro.verron.officestamper.core.Placeholders;
 import pro.verron.officestamper.core.StandardComment;
 import pro.verron.officestamper.core.StandardParagraph;
@@ -43,7 +46,7 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     ///
     /// @return the Paragraph object representing the parent element of the smart tag
     public Paragraph getParagraph() {
-        return StandardParagraph.from(docxPart, (P) tag.getParent());
+        return StandardParagraph.from(docxPart, tag.getParent());
     }
 
     /// Converts the current tag entity into a Comment representation.
@@ -54,7 +57,7 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     ///
     /// @return a Comment object representing the current tag
     public Comment asComment() {
-        return StandardComment.create(docxPart, (P) tag.getParent(), asPlaceholder(), BigInteger.ZERO);
+        return StandardComment.create(docxPart, (ContentAccessor) tag.getParent(), asPlaceholder(), BigInteger.ZERO);
     }
 
     /// Converts the current tag entity into a raw placeholder representation.

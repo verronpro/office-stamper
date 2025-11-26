@@ -59,9 +59,11 @@ public class OfficeStamperConfigurations {
         configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance);
         configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance);
         configuration.addCommentProcessor(IRepeatDocPartProcessor.class,
-                pr -> RepeatDocPartProcessor.newInstance(pr,
-                        (template, context, output) -> new DocxStamper(configuration)
-                                .stamp(template, context, output)));
+                (processorContext, pr) -> RepeatDocPartProcessor.newInstance(processorContext,
+                        pr,
+                        (template, context, output) -> new DocxStamper(configuration).stamp(template,
+                                context,
+                                output)));
         configuration.addCommentProcessor(ITableResolver.class, TableResolver::newInstance);
         configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance);
         configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);
@@ -121,8 +123,8 @@ public class OfficeStamperConfigurations {
         configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class)
                      .withImplementation((date, pattern) -> ofPattern(pattern).format(date));
         configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class, String.class)
-                     .withImplementation((date, pattern, locale) -> ofPattern(pattern, forLanguageTag(locale))
-                             .format(date));
+                     .withImplementation((date, pattern, locale) -> ofPattern(pattern, forLanguageTag(locale)).format(
+                             date));
         return configuration;
     }
 

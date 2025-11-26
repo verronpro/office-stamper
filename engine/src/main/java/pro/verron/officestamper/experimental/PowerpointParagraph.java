@@ -34,7 +34,7 @@ public class PowerpointParagraph
         implements Paragraph {
 
     private static final Random RANDOM = new Random();
-    private final DocxPart source;
+    private final DocxPart part;
     private final List<PowerpointRun> runs = new ArrayList<>();
     private final CTTextParagraph paragraph;
     private int currentPosition = 0;
@@ -43,8 +43,8 @@ public class PowerpointParagraph
     ///
     /// @param source    the source of the paragraph.
     /// @param paragraph the paragraph to wrap.
-    public PowerpointParagraph(PptxPart source, CTTextParagraph paragraph) {
-        this.source = source;
+    public PowerpointParagraph(PptxPart part, CTTextParagraph paragraph) {
+        this.part = part;
         this.paragraph = paragraph;
         recalculateRuns();
     }
@@ -136,7 +136,7 @@ public class PowerpointParagraph
     @Override
     public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
-        return new ProcessorContext(this, comment, placeholder);
+        return new ProcessorContext(part, this, comment, placeholder);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class PowerpointParagraph
 
     @Override
     public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(paragraph::getEGTextRun, source.document());
+        return CommentUtil.getCommentFor(paragraph::getEGTextRun, part.document());
     }
 
     private List<Object> siblings() {
@@ -237,7 +237,7 @@ public class PowerpointParagraph
 
     private Comment comment(Placeholder placeholder) {
         var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(source, paragraph::getEGTextRun, placeholder, id);
+        return StandardComment.create(part, paragraph::getEGTextRun, placeholder, id);
     }
 
     private void singleRun(

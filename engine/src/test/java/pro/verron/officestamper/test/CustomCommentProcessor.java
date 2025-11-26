@@ -1,9 +1,10 @@
 package pro.verron.officestamper.test;
 
 import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.PlaceholderReplacer;
+import pro.verron.officestamper.api.ProcessorContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,48 +25,34 @@ import static pro.verron.officestamper.utils.WmlFactory.newRun;
 /// @author Joseph Verron
 /// @version ${version}
 /// @since 1.6.6
-public class ProcessorCustomTest
-        extends AbstractCommentProcessor
+public class CustomCommentProcessor
+        extends CommentProcessor
         implements ICustomCommentProcessor {
 
     private static final List<Paragraph> visitedParagraphs = new ArrayList<>();
 
-    /// Constructor for ProcessorCustomTest.
+    /// Constructor for CustomCommentProcessor.
     ///
-    /// @param placeholderReplacer a [ParagraphPlaceholderReplacer] object
-    public ProcessorCustomTest(ParagraphPlaceholderReplacer placeholderReplacer) {
-        super(placeholderReplacer);
+    /// @param placeholderReplacer a [PlaceholderReplacer] object
+    public CustomCommentProcessor(ProcessorContext processorContext, PlaceholderReplacer placeholderReplacer) {
+        super(processorContext, placeholderReplacer);
     }
 
-    /// {@inheritDoc}
-    @Override
-    public void commitChanges(DocxPart document) {
-        visitedParagraphs.forEach(para -> para.apply((ContentAccessor p)->{
-            var content = p.getContent();
-            content.clear();
-            content.add(newRun("Visited"));
-        }));
-    }
-
-    /// {@inheritDoc}
-    @Override
-    public void reset() {
-        // DO NOTHING
-    }
-
-    /// {@inheritDoc}
-    @Override
-    public void setCurrentCommentWrapper(Comment comment) {
-        // DO NOTHING
-    }
-
-    @Override public void setParagraph(Paragraph paragraph) {
-        super.setParagraph(paragraph);
+    public static CommentProcessor newInstance(
+            ProcessorContext processorContext,
+            PlaceholderReplacer placeholderReplacer
+    ) {
+        return new CustomCommentProcessor(processorContext, placeholderReplacer);
     }
 
     /// {@inheritDoc}
     @Override
     public void visitParagraph() {
-        visitedParagraphs.add(getParagraph());
+        visitedParagraphs.add(paragraph());
+        visitedParagraphs.forEach(para -> para.apply((ContentAccessor p) -> {
+            var content = p.getContent();
+            content.clear();
+            content.add(newRun("Visited"));
+        }));
     }
 }

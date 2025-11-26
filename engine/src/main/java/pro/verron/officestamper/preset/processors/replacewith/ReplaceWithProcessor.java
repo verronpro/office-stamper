@@ -1,10 +1,9 @@
 package pro.verron.officestamper.preset.processors.replacewith;
 
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.AbstractCommentProcessor;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ParagraphPlaceholderReplacer;
+import pro.verron.officestamper.api.PlaceholderReplacer;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.utils.Inserts;
 import pro.verron.officestamper.utils.WmlFactory;
@@ -17,11 +16,11 @@ import pro.verron.officestamper.utils.WmlFactory;
 /// @version ${version}
 /// @since 1.0.7
 public class ReplaceWithProcessor
-        extends AbstractCommentProcessor
+        extends CommentProcessor
         implements CommentProcessorFactory.IReplaceWithProcessor {
 
-    private ReplaceWithProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
-        super(placeholderReplacer);
+    private ReplaceWithProcessor(ProcessorContext processorContext, PlaceholderReplacer placeholderReplacer) {
+        super(processorContext, placeholderReplacer);
     }
 
     /// Creates a new processor that replaces the current run with the result of the expression.
@@ -29,27 +28,14 @@ public class ReplaceWithProcessor
     /// @param pr the placeholder replacer to use
     ///
     /// @return the processor
-    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
-        return new ReplaceWithProcessor(pr);
-    }
-
-    /// {@inheritDoc}
-    @Override
-    public void commitChanges(DocxPart document) {
-        // nothing to commit
-    }
-
-    /// {@inheritDoc}
-    @Override
-    public void reset() {
-        // nothing to reset
+    public static CommentProcessor newInstance(ProcessorContext processorContext, PlaceholderReplacer pr) {
+        return new ReplaceWithProcessor(processorContext, pr);
     }
 
     @Override
     public void replaceWith(@Nullable String expression) {
-        var comment = this.getCurrentCommentWrapper();
-        var from = comment.getCommentRangeStart();
-        var to = comment.getCommentRangeEnd();
-        getParagraph().replace(from, to, Inserts.of(WmlFactory.newRun(expression)));
+        var from = comment().getCommentRangeStart();
+        var to = comment().getCommentRangeEnd();
+        paragraph().replace(from, to, Inserts.of(WmlFactory.newRun(expression)));
     }
 }

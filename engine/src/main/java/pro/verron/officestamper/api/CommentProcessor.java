@@ -1,48 +1,50 @@
 package pro.verron.officestamper.api;
 
-/// Represents a comment processor for handling context-specific processing and operations
-/// on comments, paragraphs, and runs within a document.
-/// This interface serves as a contract
-/// for implementing custom comment processors.
-public interface CommentProcessor {
+/// Abstract base class for processing comments within a paragraph.
+///
+/// The CommentProcessor represents a mechanism to manipulate or interpret
+/// comments and associated content such as placeholders found within a
+/// paragraph structure.
+///
+///
+/// Subclasses must implement specific processing logic.
+public abstract class CommentProcessor {
 
-    /// Sets the processing context for the comment processor.
-    /// This method serves to pass relevant contextual information, such as the
-    /// current paragraph, run, comment, and placeholder being processed.
-    /// It's always invoked before any custom methods of the custom
-    /// [CommentProcessor] interface.
-    ///
-    /// @param processorContext the context in which the processor operates,
-    ///                                                                         containing details about the paragraph,
-    ///                         run,
-    ///                                                                         comment, and placeholder being
-    ///                         processed.
-    void setProcessorContext(ProcessorContext processorContext);
+    /// The processing context for this CommentProcessor instance.
+    private final ProcessorContext context;
+    /// The replacer used to replace placeholder expressions in paragraphs.
+    private final PlaceholderReplacer replacer;
 
-    /// Finalizes the processing of a [DocxPart] document and commits any changes made to it.
-    /// This method is used to ensure that all modifications performed during the processing
-    /// of comments or other operations in the DocxPart are applied to the underlying document.
-    ///
-    /// @param docxPart the [DocxPart] instance representing a part of the document
-    ///                                                 that is being processed; contains the underlying
-    ///                 WordprocessingMLPackage
-    ///                                                 document to which the changes are committed
-    void commitChanges(DocxPart docxPart);
+    /**
+     * Constructs a new instance of CommentProcessor to process comments and placeholders
+     * within a paragraph.
+     * <p>
+     * It initializes the replacer, paragraph, and comment fields
+     * using the provided ProcessorContext and ParagraphPlaceholderReplacer objects.
+     * Ensures that the associated CommentRangeStart and CommentRangeEnd elements of the
+     * comment are not null.
+     *
+     * @param context             the context containing the paragraph, comment, and placeholder
+     *                            associated with the processing of this CommentProcessor.
+     * @param placeholderReplacer an implementation of ParagraphPlaceholderReplacer used to
+     *                            resolve and replace placeholders in the paragraph.
+     *
+     * @throws NullPointerException if the comment's CommentRangeStart or CommentRangeEnd is null.
+     */
+    protected CommentProcessor(ProcessorContext context, PlaceholderReplacer placeholderReplacer) {
+        this.context = context;
+        this.replacer = placeholderReplacer;
+    }
 
-    /// Retrieves the current paragraph being processed.
-    ///
-    /// @return the current `Paragraph` object associated with the comment processor
-    Paragraph getParagraph();
+    protected Paragraph paragraph() {
+        return context.paragraph();
+    }
 
-    /// Sets the current comment being processed in the comment processor.
-    /// This method is typically invoked to specify the comment object
-    /// associated with the current processing context.
-    ///
-    /// @param comment the comment object that is currently being processed
-    void setCurrentCommentWrapper(Comment comment);
+    protected Comment comment() {
+        return context.comment();
+    }
 
-    /// Resets the internal state of the comment processor to its initial state.
-    /// This method is intended to clear any stored context or settings,
-    /// allowing the processor to be reused for a new processing task.
-    void reset();
+    protected PlaceholderReplacer replacer() {
+        return replacer;
+    }
 }

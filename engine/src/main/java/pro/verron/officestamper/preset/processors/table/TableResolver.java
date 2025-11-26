@@ -2,14 +2,14 @@ package pro.verron.officestamper.preset.processors.table;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.XmlUtils;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.core.PlaceholderReplacer;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.PlaceholderReplacer;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
 import pro.verron.officestamper.utils.WmlFactory;
@@ -28,15 +28,17 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 /// @version ${version}
 /// @since 1.6.2
 public class TableResolver
-        extends AbstractCommentProcessor
+        extends CommentProcessor
         implements CommentProcessorFactory.ITableResolver {
     private final Map<Tbl, StampTable> cols = new HashMap<>();
     private final Function<Tbl, List<Object>> nullSupplier;
 
     private TableResolver(
-            ParagraphPlaceholderReplacer placeholderReplacer, Function<Tbl, List<Object>> nullSupplier
+            ProcessorContext processorContext,
+            PlaceholderReplacer placeholderReplacer,
+            Function<Tbl, List<Object>> nullSupplier
     ) {
-        super(placeholderReplacer);
+        super(processorContext, placeholderReplacer);
         this.nullSupplier = nullSupplier;
     }
 
@@ -45,20 +47,20 @@ public class TableResolver
     /// @param pr a [PlaceholderReplacer] instance
     ///
     /// @return a new [TableResolver] instance
-    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
-        return new TableResolver(pr, table -> Collections.emptyList());
+    public static CommentProcessor newInstance(ProcessorContext processorContext, PlaceholderReplacer pr) {
+        return new TableResolver(processorContext, pr, _ -> Collections.emptyList());
     }
 
     /// {@inheritDoc}
-    @Override public void resolveTable(@Nullable StampTable givenTable) {
-        var tbl = this.getParagraph()
-                      .parent(Tbl.class)
-                      .orElseThrow(throwing("Paragraph is not within a table!"));
+    @Override
+    public void resolveTable(@Nullable StampTable givenTable) {
+        var tbl = paragraph().parent(Tbl.class)
+                             .orElseThrow(throwing("Paragraph is not within a table!"));
         cols.put(tbl, givenTable);
+        commitChanges();
     }
 
-    /// {@inheritDoc}
-    @Override public void commitChanges(DocxPart document) {
+    public void commitChanges() {
         for (Map.Entry<Tbl, StampTable> entry : cols.entrySet()) {
             Tbl wordTable = entry.getKey();
 
@@ -74,11 +76,6 @@ public class TableResolver
                 tableParentContent.set(tablePosition, toInsert);
             }
         }
-    }
-
-    /// {@inheritDoc}
-    @Override public void reset() {
-        cols.clear();
     }
 
     private void replaceTableInplace(Tbl wordTable, StampTable stampedTable) {

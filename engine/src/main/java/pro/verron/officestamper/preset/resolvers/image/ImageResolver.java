@@ -1,12 +1,13 @@
 package pro.verron.officestamper.preset.resolvers.image;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;
+import pro.verron.officestamper.utils.Inserts;
 
 /// This [ObjectResolver] allows context objects to return objects of
 /// type [Image]. An expression that resolves to an [Image]
@@ -25,7 +26,7 @@ public class ImageResolver
     }
 
     @Override
-    public R resolve(
+    public Insert resolve(
             DocxPart document,
             String expression,
             Object object
@@ -44,9 +45,9 @@ public class ImageResolver
     /// @return The run containing the added image
     ///
     /// @throws OfficeStamperException If an error occurs while adding the image to the document
-    private R resolve(DocxPart document, Image image) {
+    private Insert resolve(DocxPart document, Image image) {
         try {
-            return image.newRun(document, "dummyFileName", "dummyAltText");
+            return Inserts.of(image.newRun(document, "dummyFileName", "dummyAltText"));
         } catch (Exception e) {
             throw new OfficeStamperException("Error while adding image to document!", e);
         }

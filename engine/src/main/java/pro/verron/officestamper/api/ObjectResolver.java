@@ -2,7 +2,6 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.TextUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
@@ -32,8 +31,8 @@ public interface ObjectResolver {
     /// @return the resolved value for the expression
     ///
     /// @throws OfficeStamperException if no resolver is found for the object
-    default R resolve(DocxPart document, Placeholder placeholder, Object object) {
-        R resolution = resolve(document, placeholder.content(), object);
+    default Insert resolve(DocxPart document, Placeholder placeholder, Object object) {
+        Insert resolution = resolve(document, placeholder.content(), object);
         if (LOGGER.isDebugEnabled()) {
             var message = "Expression '{}' replaced by '{}' with resolver {}";
             var expression = placeholder.expression();
@@ -56,23 +55,7 @@ public interface ObjectResolver {
     /// @return the resolved value for the expression
     ///
     /// @throws OfficeStamperException if no resolver is found for the object
-    default R resolve(DocxPart docxPart, String expression, Object object) {
-        return resolve(docxPart.document(), expression, object);
-    }
-
-    /// Resolves the expression in the given WordprocessingMLPackage document with the provided object.
-    /// @deprecated This method is deprecated and should not be called directly. It exists only for legacy
-    /// implementations that might still override it.
-    ///
-    /// @param document   the WordprocessingMLPackage document in which to resolve the expression
-    /// @param expression the expression value to be replaced
-    /// @param object     the object to be used for resolving the expression
-    /// @return the resolved value for the expression
-    /// @throws OfficeStamperException if this method is invoked directly
-    @Deprecated(since = "2.3", forRemoval = true)
-    default R resolve(WordprocessingMLPackage document, String expression, Object object) {
-        throw new OfficeStamperException("Should not be called, only legacy implementation might still override this");
-    }
+    Insert resolve(DocxPart docxPart, String expression, Object object);
 
     /// Checks if the given object can be resolved.
     ///

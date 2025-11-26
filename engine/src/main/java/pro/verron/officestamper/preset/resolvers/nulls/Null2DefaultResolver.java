@@ -1,9 +1,10 @@
 package pro.verron.officestamper.preset.resolvers.nulls;
 
-import org.docx4j.wml.R;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
+import pro.verron.officestamper.utils.Inserts;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
@@ -14,7 +15,7 @@ import static pro.verron.officestamper.utils.WmlFactory.newRun;
 /// @author Joseph Verron
 /// @version ${version}
 /// @since 1.6.7
-public record Null2DefaultResolver(String text)
+public record Null2DefaultResolver(String defaultValue)
         implements ObjectResolver {
 
     @Override
@@ -23,18 +24,11 @@ public record Null2DefaultResolver(String text)
     }
 
     @Override
-    public R resolve(
+    public Insert resolve(
             DocxPart document,
             String expression,
             Object object
     ) {
-        return newRun(text);
-    }
-
-    /// Retrieves the default value of the [Null2DefaultResolver] object.
-    ///
-    /// @return the default value of the [Null2DefaultResolver] object as a String
-    public String defaultValue() {
-        return text;
+        return Inserts.of(newRun(defaultValue));
     }
 }

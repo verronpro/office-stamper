@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/// This class describes an image which will be inserted into a document.
+/// This class describes an image, which will be inserted into a document.
 ///
 /// @author Joseph Verron
 /// @author Romster
@@ -87,27 +87,5 @@ public final class Image {
         } catch (Exception e) {
             throw new OfficeStamperException("Failed to create an ImagePart", e);
         }
-    }
-
-    /// Getter for the field <code>maxWidth</code>.
-    ///
-    /// @return a [Integer] object
-    ///
-    /// @deprecated use the [#newRun(DocxPart, String, String)] method directly to generate a Run with Inline
-    /// Drawing
-    @Deprecated(since = "2.6", forRemoval = true)
-    public Integer getMaxWidth() {
-        return maxWidth;
-    }
-
-    /// Getter for the field <code>imageBytes</code>.
-    ///
-    /// @return an array of <code>byte</code> object
-    ///
-    /// @deprecated use the [#newRun(DocxPart, String, String)] method directly to generate a Run with Inline
-    /// Drawing
-    @Deprecated(since = "2.6", forRemoval = true)
-    public byte[] getImageBytes() {
-        return imageBytes;
     }
 }

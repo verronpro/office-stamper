@@ -5,8 +5,9 @@ import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
+import pro.verron.officestamper.core.DocxIterator;
 import pro.verron.officestamper.core.SectionUtil;
-import pro.verron.officestamper.core.StandardParagraph;
+import pro.verron.officestamper.core.TextualDocxPart;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.Paragraphs;
 
@@ -27,42 +28,50 @@ import static pro.verron.officestamper.core.SectionUtil.hasOddNumberOfSectionBre
 /// @version ${version}
 /// @since 1.2.2
 public class ParagraphRepeatProcessor
-        extends AbstractCommentProcessor
+        extends CommentProcessor
         implements CommentProcessorFactory.IParagraphRepeatProcessor {
 
+    private final ProcessorContext processorContext;
     // TODO replace the mapping by a Paragraphs to List<Object> mapping to better reflect the change
-    private Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>();
+    private final Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>();
 
-    private ParagraphRepeatProcessor(ParagraphPlaceholderReplacer placeholderReplacer) {
-        super(placeholderReplacer);
+    private ParagraphRepeatProcessor(
+            ProcessorContext processorContext,
+            PlaceholderReplacer placeholderReplacer
+    ) {
+        super(processorContext, placeholderReplacer);
+        this.processorContext = processorContext;
     }
 
-    /// Creates a new instance of [CommentProcessor] using the provided [ParagraphPlaceholderReplacer].
+    /// Creates a new instance of [CommentProcessor] using the provided [PlaceholderReplacer].
     ///
     /// @param placeholderReplacer the replacer to use for processing paragraph placeholders.
     ///
     /// @return a new instance of [ParagraphRepeatProcessor].
-    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer placeholderReplacer) {
-        return new ParagraphRepeatProcessor(placeholderReplacer);
+    public static CommentProcessor newInstance(
+            ProcessorContext processorContext,
+            PlaceholderReplacer placeholderReplacer
+    ) {
+        return new ParagraphRepeatProcessor(processorContext, placeholderReplacer);
     }
 
-    @Override public void repeatParagraph(Iterable<Object> objects) {
-        var paragraph = getParagraph();
-        var comment = getCurrentCommentWrapper();
-        var elements = comment.getElements();
-        var previousSectionBreak = getPreviousSectionBreakIfPresent(elements.getFirst(), comment.getParent());
+    @Override
+    public void repeatParagraph(Iterable<Object> objects) {
+        var elements = comment().getElements();
+        var previousSectionBreak = getPreviousSectionBreakIfPresent(elements.getFirst(), comment().getParent());
         var oddNumberOfBreaks = hasOddNumberOfSectionBreaks(elements);
         var iterator = objects == null ? emptyIterator() : objects.iterator();
-        var toRepeat = new Paragraphs(comment, iterator, elements, previousSectionBreak, oddNumberOfBreaks);
-        pToRepeat.put(paragraph, toRepeat);
+        var toRepeat = new Paragraphs(comment(), iterator, elements, previousSectionBreak, oddNumberOfBreaks);
+        pToRepeat.put(paragraph(), toRepeat);
+        commitChanges();
     }
 
-    @Override public void commitChanges(DocxPart document) {
+    public void commitChanges() {
         for (Map.Entry<Paragraph, Paragraphs> entry : pToRepeat.entrySet()) {
             var current = entry.getKey();
             var replacement = entry.getValue();
             var toRemove = replacement.elements(P.class);
-            var toAdd = generateParagraphsToAdd(document, replacement);
+            var toAdd = generateParagraphsToAdd(processorContext.part(), replacement);
             current.replace(toRemove, toAdd);
         }
     }
@@ -78,8 +87,13 @@ public class ParagraphRepeatProcessor
                     CommentUtil.deleteCommentFromElements(comment, contentAccessor.getContent());
                 }
                 if (clone instanceof P p) {
-                    var paragraph = StandardParagraph.from(document, p);
-                    placeholderReplacer.resolveExpressionsForParagraph(document, paragraph, expressionContext);
+                    var tagIterator = DocxIterator.ofTags(p, "placeholder", new TextualDocxPart(comment.getDocument()));
+                    while (tagIterator.hasNext()) {
+                        var tag = tagIterator.next();
+                        var insert = replacer().resolve(document, tag, expressionContext);
+                        tag.replace(insert);
+                        tagIterator.reset();
+                    }
                     paragraphsToAdd.add(p);
                 }
             }
@@ -90,9 +104,5 @@ public class ParagraphRepeatProcessor
             }
         }
         return paragraphsToAdd;
-    }
-
-    @Override public void reset() {
-        pToRepeat = new HashMap<>();
     }
 }

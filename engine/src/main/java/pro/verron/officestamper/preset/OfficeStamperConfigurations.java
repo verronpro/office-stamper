@@ -1,5 +1,6 @@
 package pro.verron.officestamper.preset;
 
+import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.DocxStamper;
@@ -48,14 +49,21 @@ public class OfficeStamperConfigurations {
     ///
     /// @return the standard OfficeStamperConfiguration
     public static OfficeStamperConfiguration standard() {
+        var fallback = Resolvers.fallback("\n");
+        return standardWithFallback(fallback);
+    }
+
+    public static OfficeStamperConfiguration standardWithFallback(ObjectResolver fallback) {
         var configuration = new DocxStamperConfiguration();
 
         configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance);
         configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance);
         configuration.addCommentProcessor(IRepeatDocPartProcessor.class,
-                pr -> RepeatDocPartProcessor.newInstance(pr,
-                        (template, context, output) -> new DocxStamper(configuration)
-                                .stamp(template, context, output)));
+                (processorContext, pr) -> RepeatDocPartProcessor.newInstance(processorContext,
+                        pr,
+                        (template, context, output) -> new DocxStamper(configuration).stamp(template,
+                                context,
+                                output)));
         configuration.addCommentProcessor(ITableResolver.class, TableResolver::newInstance);
         configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance);
         configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);
@@ -66,9 +74,11 @@ public class OfficeStamperConfigurations {
                 Resolvers.isoTime(),
                 Resolvers.isoDateTime(),
                 Resolvers.nullToEmpty(),
-                Resolvers.fallback()));
+                fallback));
 
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "processor"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
 
         configuration.addCustomFunction("ftime", TemporalAccessor.class)
                      .withImplementation(ISO_TIME::format);
@@ -113,8 +123,8 @@ public class OfficeStamperConfigurations {
         configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class)
                      .withImplementation((date, pattern) -> ofPattern(pattern).format(date));
         configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class, String.class)
-                     .withImplementation((date, pattern, locale) -> ofPattern(pattern, forLanguageTag(locale))
-                             .format(date));
+                     .withImplementation((date, pattern, locale) -> ofPattern(pattern, forLanguageTag(locale)).format(
+                             date));
         return configuration;
     }
 

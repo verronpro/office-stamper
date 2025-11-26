@@ -3,12 +3,14 @@ package pro.verron.officestamper.experimental;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.R;
+import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Paragraph;
 
+import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /// The PptxPart class represents a specific implementation of the DocxPart interface
 /// designed for handling parts within a PowerPoint document.
@@ -41,13 +43,13 @@ public class PptxPart
     }
 
     @Override
-    public Stream<Paragraph> streamParagraphs() {
-        return Stream.empty();
+    public String type() {
+        return "";
     }
 
     @Override
-    public Stream<R> streamRun() {
-        return Stream.empty();
+    public Map<BigInteger, Comment> comments() {
+        return Map.of();
     }
 
     @Override
@@ -56,7 +58,12 @@ public class PptxPart
     }
 
     @Override
-    public Stream<DocxPart> streamParts(String type) {
-        return Stream.empty();
+    public List<DocxPart> parts(String... types) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void process(Consumer<DocxPart> processor) {
+
     }
 }

@@ -5,30 +5,42 @@ import org.docx4j.wml.P;
 import pro.verron.officestamper.api.PreProcessor;
 import pro.verron.officestamper.core.DocumentUtil;
 
-
 import java.util.regex.Pattern;
 
 import static pro.verron.officestamper.utils.WmlUtils.asString;
 import static pro.verron.officestamper.utils.WmlUtils.insertSmartTag;
 
-public class PreparePlaceholders
+public class PrepareInlinePlaceholders
         implements PreProcessor {
+
+    private final Pattern pattern;
+    private final String element;
+
+    public PrepareInlinePlaceholders(String regex, String element) {
+        this(Pattern.compile(regex, Pattern.DOTALL), element);
+    }
+
+    public PrepareInlinePlaceholders(Pattern pattern, String element) {
+        this.pattern = pattern;
+        this.element = element;
+    }
+
     @Override
     public void process(WordprocessingMLPackage document) {
-        var pattern = Pattern.compile("(\\$\\{([^{]+?)})", Pattern.DOTALL);
-        var visitor = new ParagraphWithPlaceholdersCollector(pattern);
+        var visitor = new ParagraphCollector(pattern);
         DocumentUtil.visitDocument(document, visitor);
-        for (P paragraphWithPlaceholders : visitor.getParagraphWithPlaceholders()) {
-            var string = asString(paragraphWithPlaceholders);
+        for (P paragraph : visitor.paragraphs()) {
+            var string = asString(paragraph);
             var matcher = pattern.matcher(string);
             while (matcher.find()) {
                 var start = matcher.start(1);
                 var end = matcher.end(1);
                 var placeholder = matcher.group(2);
-                var newContent = insertSmartTag(paragraphWithPlaceholders, placeholder, start, end);
-                paragraphWithPlaceholders.getContent().clear();
-                paragraphWithPlaceholders.getContent().addAll(newContent);
-                string = asString(paragraphWithPlaceholders);
+                var newContent = insertSmartTag(element, paragraph, placeholder, start, end);
+                var content = paragraph.getContent();
+                content.clear();
+                content.addAll(newContent);
+                string = asString(paragraph);
                 matcher = pattern.matcher(string);
             }
         }

@@ -1,16 +1,13 @@
 package pro.verron.officestamper.preset.processors.repeat;
 
-import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
-import org.docx4j.finders.ClassFinder;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.StandardParagraph;
+import pro.verron.officestamper.core.DocxIterator;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 import java.util.ArrayList;
@@ -29,18 +26,21 @@ import static java.util.Objects.requireNonNull;
 /// @version ${version}
 /// @since 1.0.0
 public class RepeatProcessor
-        extends AbstractCommentProcessor
+        extends CommentProcessor
         implements CommentProcessorFactory.IRepeatProcessor {
 
+    private final ProcessorContext processorContext;
     private final BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier;
-    private Map<Tr, Iterable<Object>> tableRowsToRepeat = new HashMap<>();
-    private Map<Tr, Comment> tableRowsCommentsToRemove = new HashMap<>();
+    private final Map<Tr, Iterable<Object>> tableRowsToRepeat = new HashMap<>();
+    private final Map<Tr, Comment> tableRowsCommentsToRemove = new HashMap<>();
 
     private RepeatProcessor(
-            ParagraphPlaceholderReplacer placeholderReplacer,
+            ProcessorContext processorContext,
+            PlaceholderReplacer placeholderReplacer,
             BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier1
     ) {
-        super(placeholderReplacer);
+        super(processorContext, placeholderReplacer);
+        this.processorContext = processorContext;
         nullSupplier = nullSupplier1;
     }
 
@@ -49,14 +49,18 @@ public class RepeatProcessor
     /// @param pr The PlaceholderReplacer to use.
     ///
     /// @return A new RepeatProcessor.
-    public static CommentProcessor newInstance(ParagraphPlaceholderReplacer pr) {
-        return new RepeatProcessor(pr, (document, row) -> emptyList());
+    public static CommentProcessor newInstance(ProcessorContext processorContext, PlaceholderReplacer pr) {
+        return new RepeatProcessor(processorContext, pr, (_, _) -> emptyList());
     }
 
     /// {@inheritDoc}
     @Override
-    public void commitChanges(DocxPart source) {
-        repeatRows(source);
+    public void repeatTableRow(@Nullable Iterable<Object> objects) {
+        var tr = paragraph().parent(Tr.class)
+                            .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));
+        tableRowsToRepeat.put(tr, objects);
+        tableRowsCommentsToRemove.put(tr, comment());
+        repeatRows(processorContext.part());
     }
 
     private void repeatRows(DocxPart source) {
@@ -79,13 +83,12 @@ public class RepeatProcessor
                     Tr rowClone = XmlUtils.deepCopy(row);
                     Comment commentWrapper = requireNonNull(tableRowsCommentsToRemove.get(row));
                     CommentUtil.deleteCommentFromElements(commentWrapper, rowClone.getContent());
-                    var classFinder = new ClassFinder(P.class);
-                    TraversalUtil.visit(rowClone, classFinder);
-                    var objects = classFinder.results;
-                    for (Object object : objects) {
-                        P result = (P) object;
-                        StandardParagraph paragraph = StandardParagraph.from(source, result);
-                        placeholderReplacer.resolveExpressionsForParagraph(source, paragraph, expressionContext);
+                    var tagIterator = DocxIterator.ofTags(rowClone, "placeholder", source);
+                    while (tagIterator.hasNext()) {
+                        var tag = tagIterator.next();
+                        var insert = replacer().resolve(source, tag, expressionContext);
+                        tag.replace(insert);
+                        tagIterator.reset();
                     }
                     changes.add(rowClone);
                 }
@@ -93,22 +96,4 @@ public class RepeatProcessor
             content.addAll(index, changes);
         }
     }
-
-    /// {@inheritDoc}
-    @Override
-    public void reset() {
-        this.tableRowsToRepeat = new HashMap<>();
-        this.tableRowsCommentsToRemove = new HashMap<>();
-    }
-
-    /// {@inheritDoc}
-    @Override
-    public void repeatTableRow(@Nullable Iterable<Object> objects) {
-        var tr = this.getParagraph()
-                     .parent(Tr.class)
-                     .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));
-        tableRowsToRepeat.put(tr, objects);
-        tableRowsCommentsToRemove.put(tr, getCurrentCommentWrapper());
-    }
-
 }

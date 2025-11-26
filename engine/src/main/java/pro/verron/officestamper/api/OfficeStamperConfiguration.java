@@ -7,119 +7,11 @@ import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 
 /// Interface representing the configuration for the Office Stamper functionality.
 public interface OfficeStamperConfiguration {
-    /// Checks if the failOnUnresolvedExpression flag is set to true or false.
-    ///
-    /// @return true if failOnUnresolvedExpression is set to true, false otherwise.
-    ///
-    /// @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
-    /// It is replaced by [#setExceptionResolver(ExceptionResolver)] , which provides
-    /// complete customization over the behavior during resolution failures. The new method
-    /// allows you to define how unresolved expressions are handled in a more flexible and
-    /// comprehensive manner.
-    @Deprecated(since = "2.5", forRemoval = true)
-    boolean isFailOnUnresolvedExpression();
-
-    /// Sets the failOnUnresolvedExpression flag to determine whether unresolved expressions should
-    /// cause an exception to be thrown.
-    ///
-    /// @param failOnUnresolvedExpression flag indicating whether to fail on unresolved expressions
-    ///
-    /// @return the updated OfficeStamperConfiguration object
-    ///
-    /// @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
-    /// It is replaced by [#setExceptionResolver(ExceptionResolver)] , which provides
-    /// complete customization over the behavior during resolution failures. The new method
-    /// allows you to define how unresolved expressions are handled in a more flexible and
-    /// comprehensive manner.
-    @Deprecated(since = "2.5", forRemoval = true)
-    OfficeStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression);
-
-    /// Determines whether to leave empty on expression error.
-    ///
-    /// @return true if expression errors are left empty, false otherwise
-    ///
-    /// @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
-    /// It is replaced by [#setExceptionResolver(ExceptionResolver)], which provides
-    /// complete customization over the behavior during resolution failures. The new method
-    /// allows you to define how unresolved expressions are handled in a more flexible and
-    /// comprehensive manner.
-    @Deprecated(since = "2.5", forRemoval = true)
-    boolean isLeaveEmptyOnExpressionError();
-
-    /// Determines whether unresolved expressions in the OfficeStamper configuration should be replaced.
-    ///
-    /// @return true if unresolved expressions should be replaced, false otherwise.
-    ///
-    /// @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
-    /// It is replaced by [#setExceptionResolver(ExceptionResolver)], which provides
-    /// complete customization over the behavior during resolution failures. The new method
-    /// allows you to define how unresolved expressions are handled in a more flexible and
-    /// comprehensive manner.
-    @Deprecated(since = "2.5", forRemoval = true)
-    boolean isReplaceUnresolvedExpressions();
-
-    /// Retrieves the default value for unresolved expressions.
-    ///
-    /// @return the default value for unresolved expressions
-    ///
-    /// @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
-    /// It is replaced by [#setExceptionResolver(ExceptionResolver)] , which provides
-    /// complete customization over the behavior during resolution failures. The new method
-    /// allows you to define how unresolved expressions are handled in a more flexible and
-    /// comprehensive manner.
-    @Deprecated(since = "2.5", forRemoval = true)
-    String getUnresolvedExpressionsDefaultValue();
-
-    /// Sets the default value for unresolved expressions in the OfficeStamperConfiguration object.
-    ///
-    /// @param unresolvedExpressionsDefaultValue the default value for unresolved expressions
-    ///
-    /// @return the updated OfficeStamperConfiguration object
-    ///
-    /// @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
-    /// It is replaced by [#setExceptionResolver(ExceptionResolver)] , which provides
-    /// complete customization over the behavior during resolution failures. The new method
-    /// allows you to define how unresolved expressions are handled in a more flexible and
-    /// comprehensive manner.
-    @Deprecated(since = "2.5", forRemoval = true)
-    OfficeStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue);
-
-    /// Replaces unresolved expressions in the OfficeStamperConfiguration object.
-    ///
-    /// @param replaceUnresolvedExpressions flag indicating whether to replace unresolved expressions
-    ///
-    /// @return the updated OfficeStamperConfiguration object
-    ///
-    /// @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
-    /// It is replaced by [#setExceptionResolver(ExceptionResolver)] , which provides
-    /// complete customization over the behavior during resolution failures. The new method
-    /// allows you to define how unresolved expressions are handled in a more flexible and
-    /// comprehensive manner.
-    @Deprecated(since = "2.5", forRemoval = true)
-    OfficeStamperConfiguration replaceUnresolvedExpressions(
-            boolean replaceUnresolvedExpressions
-    );
-
-    /// Configures whether to leave empty on expression error.
-    ///
-    /// @param leaveEmpty boolean value indicating whether to leave empty on expression error
-    ///
-    /// @return the updated OfficeStamperConfiguration object
-    ///
-    /// @deprecated This method is deprecated because it offers limited functionality by just checking a flag.
-    /// It is replaced by [#setExceptionResolver(ExceptionResolver)] , which provides
-    /// complete customization over the behavior during resolution failures. The new method
-    /// allows you to define how unresolved expressions are handled in a more flexible and
-    /// comprehensive manner.
-    @Deprecated(since = "2.5", forRemoval = true)
-    OfficeStamperConfiguration leaveEmptyOnExpressionError(boolean leaveEmpty);
-
     /// Exposes an interface to the expression language.
     ///
     /// @param interfaceClass the interface class to be exposed
@@ -133,15 +25,12 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param interfaceClass          the interface class associated with the comment processor
     /// @param commentProcessorFactory a function that creates a CommentProcessor object based on the
-    ///
-    ///
-    ///
     ///                                ParagraphPlaceholderReplacer implementation
     ///
     /// @return the updated OfficeStamperConfiguration object
     OfficeStamperConfiguration addCommentProcessor(
             Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
+            CommentProcessorFactory commentProcessorFactory
     );
 
     /// Adds a pre-processor to the OfficeStamperConfiguration. A pre-processor is responsible for
@@ -149,18 +38,6 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param preprocessor the pre-processor to add
     void addPreprocessor(PreProcessor preprocessor);
-
-    /// Retrieves the line break placeholder used in the OfficeStamper configuration.
-    ///
-    /// @return the line break placeholder as a String.
-    String getLineBreakPlaceholder();
-
-    /// Sets the line break placeholder used in the OfficeStamper configuration.
-    ///
-    /// @param lineBreakPlaceholder the line break placeholder as a String
-    ///
-    /// @return the updated OfficeStamperConfiguration object
-    OfficeStamperConfiguration setLineBreakPlaceholder(String lineBreakPlaceholder);
 
     /// Retrieves the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL)
     /// EvaluationContext
@@ -172,15 +49,7 @@ public interface OfficeStamperConfiguration {
     /// Sets the EvaluationContextConfigurer for configuring the Spring Expression Language (SPEL) EvaluationContext.
     ///
     /// @param evaluationContextConfigurer the EvaluationContextConfigurer for configuring the SPEL EvaluationContext.
-    ///
-    ///
-    ///                                                                                          Must
-    ///
-    ///
-    ///                                    implement the
-    ///
-    ///
-    ///                                                                       evaluateEvaluationContext() method.
+    /// Must implement the evaluateEvaluationContext() method.
     ///
     /// @return the updated OfficeStamperConfiguration object.
     OfficeStamperConfiguration setEvaluationContextConfigurer(EvaluationContextConfigurer evaluationContextConfigurer);
@@ -205,8 +74,8 @@ public interface OfficeStamperConfiguration {
     /// Returns a map of comment processors associated with their respective classes.
     ///
     /// @return The map of comment processors. The keys are the classes, and the values are the corresponding comment
-    /// processors.
-    Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors();
+    ///         processor factories.
+    Map<Class<?>, CommentProcessorFactory> getCommentProcessors();
 
     /// Retrieves the list of pre-processors.
     ///

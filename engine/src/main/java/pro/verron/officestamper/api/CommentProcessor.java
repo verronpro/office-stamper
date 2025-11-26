@@ -1,82 +1,50 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
-import org.springframework.lang.Nullable;
+/// Abstract base class for processing comments within a paragraph.
+///
+/// The CommentProcessor represents a mechanism to manipulate or interpret
+/// comments and associated content such as placeholders found within a
+/// paragraph structure.
+///
+///
+/// Subclasses must implement specific processing logic.
+public abstract class CommentProcessor {
 
-/// Represents a comment processor for handling context-specific processing and operations
-/// on comments, paragraphs, and runs within a document.
-/// This interface serves as a contract
-/// for implementing custom comment processors.
-public interface CommentProcessor {
+    /// The processing context for this CommentProcessor instance.
+    private final ProcessorContext context;
+    /// The replacer used to replace placeholder expressions in paragraphs.
+    private final PlaceholderReplacer replacer;
 
-    /// Sets the processing context for the comment processor.
-    /// This method serves to pass relevant contextual information, such as the
-    /// current paragraph, run, comment, and placeholder being processed.
-    /// It's always invoked before any custom methods of the custom
-    /// [CommentProcessor] interface.
-    ///
-    /// @param processorContext the context in which the processor operates,
-    ///                         containing details about the paragraph, run,
-    ///                         comment, and placeholder being processed.
-    void setProcessorContext(ProcessorContext processorContext);
-
-    /// Sets the currently processed run in the comment processor.
-    /// This method should be called to specify the current run
-    /// within the context of processing a document.
-    ///
-    /// @param run the run object that is currently being processed,
-    ///            or null if there is no specific run to set
-    /// @deprecated This method was only used by the "replaceWith" processor, which now can manage multiple runs at
-    /// once, making this single-run tracking method obsolete
-    @Deprecated(since = "2.10", forRemoval = true)
-    void setCurrentRun(@Nullable R run);
-
-    /// Finalizes the processing of a [DocxPart] document and commits any changes made to it.
-    /// This method is used to ensure that all modifications performed during the processing
-    /// of comments or other operations in the DocxPart are applied to the underlying document.
-    ///
-    /// @param docxPart the [DocxPart] instance representing a part of the document
-    ///                 that is being processed; contains the underlying WordprocessingMLPackage
-    ///                 document to which the changes are committed
-    default void commitChanges(DocxPart docxPart) {
-        commitChanges(docxPart.document());
+    /**
+     * Constructs a new instance of CommentProcessor to process comments and placeholders
+     * within a paragraph.
+     * <p>
+     * It initializes the replacer, paragraph, and comment fields
+     * using the provided ProcessorContext and ParagraphPlaceholderReplacer objects.
+     * Ensures that the associated CommentRangeStart and CommentRangeEnd elements of the
+     * comment are not null.
+     *
+     * @param context             the context containing the paragraph, comment, and placeholder
+     *                            associated with the processing of this CommentProcessor.
+     * @param placeholderReplacer an implementation of ParagraphPlaceholderReplacer used to
+     *                            resolve and replace placeholders in the paragraph.
+     *
+     * @throws NullPointerException if the comment's CommentRangeStart or CommentRangeEnd is null.
+     */
+    protected CommentProcessor(ProcessorContext context, PlaceholderReplacer placeholderReplacer) {
+        this.context = context;
+        this.replacer = placeholderReplacer;
     }
 
-    /// Commits changes to the provided WordprocessingMLPackage document.
-    /// This method is deprecated and should not be used in new implementations.
-    /// It is retained only for compatibility with legacy implementations.
-    ///
-    /// @param document the WordprocessingMLPackage document to which changes were made
-    /// @throws OfficeStamperException always thrown, as this method should no longer be called
-    /// @deprecated since 2.3; for removal in future versions. Use updated methods or processes instead.
-    @Deprecated(since = "2.3", forRemoval = true) default void commitChanges(WordprocessingMLPackage document) {
-        throw new OfficeStamperException("Should not be called since deprecation, only legacy implementations have a "
-                                         + "reason to keep implementing this");
+    protected Paragraph paragraph() {
+        return context.paragraph();
     }
 
-    /// Retrieves the current paragraph being processed.
-    ///
-    /// @return the current `Paragraph` object associated with the comment processor
-    Paragraph getParagraph();
+    protected Comment comment() {
+        return context.comment();
+    }
 
-    /// Sets the current paragraph being processed in the comment processor.
-    /// @deprecated This method is deprecated and scheduled for removal in a future version.
-    ///
-    /// @param paragraph the paragraph to set as the current paragraph being processed
-    @Deprecated(since = "2.6", forRemoval = true)
-    void setParagraph(P paragraph);
-
-    /// Sets the current comment being processed in the comment processor.
-    /// This method is typically invoked to specify the comment object
-    /// associated with the current processing context.
-    ///
-    /// @param comment the comment object that is currently being processed
-    void setCurrentCommentWrapper(Comment comment);
-
-    /// Resets the internal state of the comment processor to its initial state.
-    /// This method is intended to clear any stored context or settings,
-    /// allowing the processor to be reused for a new processing task.
-    void reset();
+    protected PlaceholderReplacer replacer() {
+        return replacer;
+    }
 }

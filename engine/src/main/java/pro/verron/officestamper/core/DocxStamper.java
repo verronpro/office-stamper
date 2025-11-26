@@ -2,7 +2,9 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.relationships.Namespaces;
+import org.docx4j.wml.Comments;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -10,12 +12,14 @@ import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static java.util.stream.Collectors.toMap;
+import static org.docx4j.openpackaging.parts.relationships.Namespaces.*;
 import static pro.verron.officestamper.core.Invokers.streamInvokers;
 
 /// The DocxStamper class is an implementation of the [OfficeStamper]
@@ -29,18 +33,16 @@ import static pro.verron.officestamper.core.Invokers.streamInvokers;
 public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
 
+    private static final Logger log = LoggerFactory.getLogger(DocxStamper.class);
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
-    private final PlaceholderReplacer placeholderReplacer;
-    private final Function<DocxPart, CommentProcessorRegistry> commentProcessorRegistrySupplier;
+    private final Function<ProcessorContext, Engine> engineFactory;
 
     /// Creates a new DocxStamper with the given configuration.
     ///
     /// @param configuration the configuration to use for this DocxStamper.
     public DocxStamper(OfficeStamperConfiguration configuration) {
-        this(
-                configuration.getLineBreakPlaceholder(),
-                configuration.getEvaluationContextConfigurer(),
+        this(configuration.getEvaluationContextConfigurer(),
                 configuration.getExpressionFunctions(),
                 configuration.customFunctions(),
                 configuration.getResolvers(),
@@ -48,17 +50,15 @@ public class DocxStamper
                 configuration.getPreprocessors(),
                 configuration.getPostprocessors(),
                 configuration.getSpelParserConfiguration(),
-                configuration.getExceptionResolver()
-        );
+                configuration.getExceptionResolver());
     }
 
     private DocxStamper(
-            String lineBreakPlaceholder,
             EvaluationContextConfigurer evaluationContextConfigurer,
             Map<Class<?>, Object> expressionFunctions,
             List<CustomFunction> functions,
             List<ObjectResolver> resolvers,
-            Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> configurationCommentProcessors,
+            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
             List<PreProcessor> preprocessors,
             List<PostProcessor> postprocessors,
             SpelParserConfiguration spelParserConfiguration,
@@ -66,44 +66,64 @@ public class DocxStamper
     ) {
         var expressionParser = new SpelExpressionParser(spelParserConfiguration);
 
-        var evaluationContext = new StandardEvaluationContext();
-        evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
-
-        var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
-        var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-        this.placeholderReplacer = new PlaceholderReplacer(
-                typeResolverRegistry,
-                expressionResolver,
-                Placeholders.raw(lineBreakPlaceholder),
-                exceptionResolver);
-
-        var commentProcessors = buildCommentProcessors(configurationCommentProcessors);
-        evaluationContext.addMethodResolver(new Invokers(streamInvokers(commentProcessors)));
-        evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
-        evaluationContext.addMethodResolver(new Invokers(functions.stream()
-                                                                  .map(Invokers::ofCustomFunction)));
-
-        this.commentProcessorRegistrySupplier = source -> new CommentProcessorRegistry(
-                source,
-                expressionResolver,
-                commentProcessors,
-                exceptionResolver);
-
+        engineFactory = computeEngine(evaluationContextConfigurer,
+                expressionFunctions,
+                functions,
+                resolvers,
+                configurationCommentProcessors,
+                exceptionResolver,
+                expressionParser);
         this.preprocessors = new ArrayList<>(preprocessors);
         this.postprocessors = new ArrayList<>(postprocessors);
     }
 
-    private CommentProcessors buildCommentProcessors(
-            Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors
+    private Function<ProcessorContext, Engine> computeEngine(
+            EvaluationContextConfigurer evaluationContextConfigurer,
+            Map<Class<?>, Object> expressionFunctions,
+            List<CustomFunction> functions,
+            List<ObjectResolver> resolvers,
+            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
+            ExceptionResolver exceptionResolver,
+            SpelExpressionParser expressionParser
     ) {
-        var processors = new HashMap<Class<?>, CommentProcessor>();
-        for (var entry : commentProcessors.entrySet()) {
-            processors.put(
-                    entry.getKey(),
-                    entry.getValue()
-                         .apply(placeholderReplacer));
-        }
-        return new CommentProcessors(processors);
+        return processorContext -> {
+            var evaluationContext = new StandardEvaluationContext();
+            evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
+
+            var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
+            var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
+            var engine = new Engine(expressionResolver, exceptionResolver, typeResolverRegistry);
+
+            var processors = instantiate(configurationCommentProcessors, processorContext, engine);
+            var processorResolvers = new Invokers(streamInvokers(processors));
+            evaluationContext.addMethodResolver(processorResolvers);
+            evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
+            evaluationContext.addMethodResolver(new Invokers(functions.stream()
+                                                                      .map(Invokers::ofCustomFunction)));
+
+            return engine;
+        };
+    }
+
+    /// Returns a set view of the mappings contained in this map.
+    /// Each entry in the set is a mapping between a `Class<?>` key and its associated
+    /// `CommentProcessor` value.
+    ///
+    /// @return a set of map entries representing the associations between `Class<?>` keys
+    ///         and their corresponding `CommentProcessor` values in this map
+
+    private static Map<Class<?>, CommentProcessor> instantiate(
+            Map<Class<?>, CommentProcessorFactory> processorFactoryMap,
+            ProcessorContext processorContext,
+            PlaceholderReplacer placeholderReplacer
+    ) {
+        return processorFactoryMap.entrySet()
+                                  .stream()
+                                  .collect(toMap(Map.Entry::getKey,
+                                          entry -> entry.getValue()
+                                                        .create(processorContext, placeholderReplacer)));
+
+
     }
 
     /// Reads in a .docx template and "stamps" it into the given OutputStream, using the specified context object to
@@ -134,16 +154,13 @@ public class DocxStamper
         }
     }
 
-
     /// Same as [#stamp(InputStream, Object, OutputStream)] except that you
     /// may pass in a DOCX4J document as a template instead of an InputStream.
     @Override
     public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
         try {
-            var source = new TextualDocxPart(document);
             preprocess(document);
-            processComments(source, contextRoot);
-            replaceExpressions(source, contextRoot);
+            process(new TextualDocxPart(document), contextRoot);
             postprocess(document);
             document.save(out);
         } catch (Docx4JException e) {
@@ -155,28 +172,75 @@ public class DocxStamper
         preprocessors.forEach(processor -> processor.process(document));
     }
 
-    private void processComments(DocxPart document, Object contextObject) {
-        document.streamParts(Namespaces.HEADER)
-                .forEach(header -> runProcessors(header, contextObject));
-        runProcessors(document, contextObject);
-        document.streamParts(Namespaces.FOOTER)
-                .forEach(footer -> runProcessors(footer, contextObject));
-    }
-
-    private void replaceExpressions(DocxPart document, Object contextObject) {
-        document.streamParts(Namespaces.HEADER)
-                .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
-        placeholderReplacer.resolveExpressions(document, contextObject);
-        document.streamParts(Namespaces.FOOTER)
-                .forEach(s -> placeholderReplacer.resolveExpressions(s, contextObject));
-    }
-
-    private void runProcessors(DocxPart source, Object contextObject) {
-        var processors = commentProcessorRegistrySupplier.apply(source);
-        processors.runProcessors(contextObject);
+    private void process(DocxDocument document, Object contextRoot) {
+        document.process(part -> processPart(part, contextRoot));
     }
 
     private void postprocess(WordprocessingMLPackage document) {
         postprocessors.forEach(processor -> processor.process(document));
     }
+
+    private void processPart(DocxPart part, Object contextRoot) {
+        var type = part.type();
+        switch (type) {
+            case DOCUMENT, HEADER, FOOTER -> processTextualPart(part, contextRoot);
+            default -> log.info("Unknown part type: {}", type);
+        }
+
+    }
+
+    private void processTextualPart(DocxPart part, Object contextRoot) {
+        var paragraphIterator = DocxIterator.ofParagraphs(part);
+        while (paragraphIterator.hasNext()) {
+            var p = paragraphIterator.next();
+            var comments = part.comments();
+            var paragraphComment = p.getComment();
+            var updates = 0;
+            for (Comments.Comment pc : paragraphComment) {
+                int result = 0;
+                BigInteger paragraphCommentId = pc.getId();
+                if (comments.containsKey(paragraphCommentId)) {
+                    var c = comments.get(paragraphCommentId);
+                    var cPlaceholder = c.asPlaceholder();
+                    var cComment = c.getComment();
+                    comments.remove(cComment.getId());
+                    var processorContext = new ProcessorContext(part, p, c, cPlaceholder);
+
+                    Engine engine = engineFactory.apply(processorContext);
+                    if (engine.process(contextRoot, c.asPlaceholder())) {
+                        CommentUtil.deleteComment(c);
+                        result = 1;
+                    }
+                }
+
+                updates += result;
+            }
+            if (updates > 0) paragraphIterator.reset();
+        }
+
+        var processorTagIterator = DocxIterator.ofTags(part::content, "processor", part);
+        while (processorTagIterator.hasNext()) {
+            var tag1 = processorTagIterator.next();
+            var processorContext1 = new ProcessorContext(part,
+                    tag1.getParagraph(),
+                    tag1.asComment(),
+                    tag1.asPlaceholder());
+            if (engineFactory.apply(processorContext1)
+                             .process(contextRoot, tag1.asPlaceholder())) tag1.remove();
+            paragraphIterator.reset();
+        }
+
+        var placeholderTagIterator = DocxIterator.ofTags(part::content, "placeholder", part);
+        while (placeholderTagIterator.hasNext()) {
+            var tag = placeholderTagIterator.next();
+            var insert = engineFactory.apply(new ProcessorContext(part,
+                                              tag.getParagraph(),
+                                              tag.asComment(),
+                                              tag.asPlaceholder()))
+                                      .resolve(part, tag, contextRoot);
+            tag.replace(insert);
+            placeholderTagIterator.reset();
+        }
+    }
+
 }

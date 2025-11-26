@@ -20,10 +20,7 @@ public class ExpressionResolver {
     /// Creates a new ExpressionResolver with the given SpEL parser configuration.
     ///
     /// @param standardEvaluationContext a [StandardEvaluationContext] object
-    public ExpressionResolver(
-            StandardEvaluationContext standardEvaluationContext,
-            ExpressionParser expressionParser
-    ) {
+    public ExpressionResolver(StandardEvaluationContext standardEvaluationContext, ExpressionParser expressionParser) {
         this.parser = expressionParser;
         this.evaluationContext = standardEvaluationContext;
     }
@@ -33,16 +30,11 @@ public class ExpressionResolver {
     /// @param placeholder the placeholder to resolve
     ///
     /// @return the resolved value of the placeholder
-    @Nullable public Object resolve(Placeholder placeholder) {
+    @Nullable
+    public Object resolve(Object contextRoot, Placeholder placeholder) {
+        evaluationContext.setRootObject(contextRoot);
         var expressionString = placeholder.content();
         var expression = parser.parseExpression(expressionString);
         return expression.getValue(evaluationContext);
-    }
-
-    /// Sets the context object against which expressions will be resolved.
-    ///
-    /// @param contextRoot the context object to set as the root.
-    public void setContext(Object contextRoot) {
-        evaluationContext.setRootObject(contextRoot);
     }
 }

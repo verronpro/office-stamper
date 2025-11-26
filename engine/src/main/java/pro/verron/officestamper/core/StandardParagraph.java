@@ -23,8 +23,8 @@ public class StandardParagraph
         implements Paragraph {
 
     private static final Random RANDOM = new Random();
-    private final DocxPart source;
-    private final List<Object> contents;
+    private final DocxPart part;
+    private final ContentAccessor contents;
     private final ArrayListWml<Object> p;
 
     /// Constructs a new instance of the StandardParagraph class.
@@ -32,10 +32,18 @@ public class StandardParagraph
     /// @param source           the source DocxPart that contains the paragraph content.
     /// @param paragraphContent the list of objects representing the paragraph content.
     /// @param p                the P object representing the paragraph's structure.
-    private StandardParagraph(DocxPart source, List<Object> paragraphContent, ArrayListWml<Object> p) {
-        this.source = source;
+    private StandardParagraph(DocxPart part, ContentAccessor paragraphContent, ArrayListWml<Object> p) {
+        this.part = part;
         this.contents = paragraphContent;
         this.p = p;
+    }
+
+    public static StandardParagraph from(DocxPart part, Object parent) {
+        return switch (parent) {
+            case P p -> from(part, p);
+            case CTSdtContentRun contentRun -> from(part, contentRun);
+            default -> throw new OfficeStamperException("Unsupported parent type");
+        };
     }
 
     /// Creates a new instance of StandardParagraph using the provided DocxPart and P objects.
@@ -45,7 +53,7 @@ public class StandardParagraph
     ///
     /// @return a new instance of StandardParagraph constructed based on the provided source and paragraph.
     public static StandardParagraph from(DocxPart source, P paragraph) {
-        return new StandardParagraph(source, paragraph.getContent(), (ArrayListWml<Object>) paragraph.getContent());
+        return new StandardParagraph(source, paragraph, (ArrayListWml<Object>) paragraph.getContent());
     }
 
     /// Creates a new instance of StandardParagraph from the provided DocxPart and CTSdtContentRun objects.
@@ -57,7 +65,7 @@ public class StandardParagraph
     public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
         var parent = (SdtRun) paragraph.getParent();
         var parentParent = (P) parent.getParent();
-        return new StandardParagraph(source, paragraph.getContent(), (ArrayListWml<Object>) parentParent.getContent());
+        return new StandardParagraph(source, paragraph, (ArrayListWml<Object>) parentParent.getContent());
     }
 
     /// Creates a new instance of ProcessorContext for the current paragraph.
@@ -70,7 +78,7 @@ public class StandardParagraph
     @Override
     public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
-        return new ProcessorContext(this, comment, placeholder);
+        return new ProcessorContext(part, this, comment, placeholder);
     }
 
     /// Replaces a set of paragraph elements with new ones within the current paragraph's siblings.
@@ -115,14 +123,18 @@ public class StandardParagraph
     public void replace(Placeholder placeholder, Insert insert) {
         insert.assertSerializable(); // TODO Move the check at instance creation
         var newContents = WmlUtils.replaceExpressionWithRun(() -> p, placeholder.expression(), insert);
-        contents.clear();
-        contents.addAll(newContents);
+        contents.getContent()
+                .clear();
+        contents.getContent()
+                .addAll(newContents);
     }
 
     @Override
     public void replace(Object start, Object end, Insert insert) {
-        var fromIndex = contents.indexOf(start);
-        var toIndex = contents.indexOf(end);
+        var fromIndex = contents.getContent()
+                                .indexOf(start);
+        var toIndex = contents.getContent()
+                              .indexOf(end);
         if (fromIndex < 0) {
             var msg = "The start element (%s) is not in the paragraph (%s)";
             throw new OfficeStamperException(msg.formatted(start, this));
@@ -137,14 +149,19 @@ public class StandardParagraph
         }
         var expression = extractExpression(start, end);
         var newContents = WmlUtils.replaceExpressionWithRun(() -> p, expression, insert);
-        contents.clear();
-        contents.addAll(newContents);
+        contents.getContent()
+                .clear();
+        contents.getContent()
+                .addAll(newContents);
     }
 
     private String extractExpression(Object from, Object to) {
-        var fromIndex = contents.indexOf(from);
-        var toIndex = contents.indexOf(to);
-        var subContent = contents.subList(fromIndex, toIndex + 1);
+        var fromIndex = contents.getContent()
+                                .indexOf(from);
+        var toIndex = contents.getContent()
+                              .indexOf(to);
+        var subContent = contents.getContent()
+                                 .subList(fromIndex, toIndex + 1);
 
         var runs = StandardRun.wrap(() -> p);
         runs.removeIf(run -> !subContent.contains(run.run()));
@@ -190,12 +207,12 @@ public class StandardParagraph
     /// @return a collection of [Comments.Comment] objects related to the paragraph.
     @Override
     public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(() -> p, source.document());
+        return CommentUtil.getCommentFor(() -> p, part.document());
     }
 
     private Comment comment(Placeholder placeholder) {
         var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(source, () -> p, placeholder, id);
+        return StandardComment.create(part, () -> p, placeholder, id);
     }
 
     private void replaceWithBr(Placeholder placeholder, Br br) {

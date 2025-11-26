@@ -82,8 +82,10 @@ public class DocumentUtil {
                     var docxImageExtractor = new DocxImageExtractor(source);
                     var imageData = docxImageExtractor.getRunDrawingData(currentR);
                     var maxWidth = docxImageExtractor.getRunDrawingMaxWidth(currentR);
+                    var filename = docxImageExtractor.getRunDrawingFilename(currentR);
+                    var altText = docxImageExtractor.getRunDrawingAltText(currentR);
                     var imagePart = tryCreateImagePart(target, imageData);
-                    var runWithImage = newRun(maxWidth, imagePart, "dummyFileName", "dummyAltText");
+                    var runWithImage = newRun(maxWidth, imagePart, filename, altText);
                     replacements.put(currentR, runWithImage);
                 }
                 else if (currentObj instanceof ContentAccessor contentAccessor)

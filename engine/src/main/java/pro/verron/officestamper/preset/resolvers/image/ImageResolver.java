@@ -21,20 +21,15 @@ public class ImageResolver
         implements ObjectResolver {
 
     @Override
-    public boolean canResolve(@Nullable Object object) {
-        return object instanceof Image;
+    public Insert resolve(DocxPart part, String expression, Object object) {
+        if (object instanceof Image image) return resolve(part, image);
+        String message = "Expected %s to be an Image".formatted(object);
+        throw new OfficeStamperException(message);
     }
 
     @Override
-    public Insert resolve(
-            DocxPart document,
-            String expression,
-            Object object
-    ) {
-        if (object instanceof Image image)
-            return resolve(document, image);
-        String message = "Expected %s to be an Image".formatted(object);
-        throw new OfficeStamperException(message);
+    public boolean canResolve(@Nullable Object object) {
+        return object instanceof Image;
     }
 
     /// Resolves an image and adds it to a [WordprocessingMLPackage]
@@ -45,9 +40,9 @@ public class ImageResolver
     /// @return The run containing the added image
     ///
     /// @throws OfficeStamperException If an error occurs while adding the image to the document
-    private Insert resolve(DocxPart document, Image image) {
+    private Insert resolve(DocxPart part, Image image) {
         try {
-            return Inserts.of(image.newRun(document, "dummyFileName", "dummyAltText"));
+            return Inserts.of(image.newRun(part));
         } catch (Exception e) {
             throw new OfficeStamperException("Error while adding image to document!", e);
         }

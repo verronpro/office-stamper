@@ -124,4 +124,34 @@ public class DocxImageExtractor {
                                 .getExt()
                                 .getCx();
     }
+
+    public String getRunDrawingFilename(R run) {
+        var content = run.getContent();
+        for (Object runContent : content) {
+            if (runContent instanceof JAXBElement<?> runElement && runElement.getValue() instanceof Drawing drawing) {
+                var anchorOrInline = drawing.getAnchorOrInline();
+                if (anchorOrInline.isEmpty()) throw new OfficeStamperException("Anchor or Inline is empty !");
+                if (!(anchorOrInline.getFirst() instanceof Inline inline))
+                    throw new OfficeStamperException("Don't know how to process anchor !");
+                return inline.getDocPr()
+                             .getName();
+            }
+        }
+        throw new OfficeStamperException("Run drawing not found !");
+    }
+
+    public String getRunDrawingAltText(R run) {
+        var content = run.getContent();
+        for (Object runContent : content) {
+            if (runContent instanceof JAXBElement<?> runElement && runElement.getValue() instanceof Drawing drawing) {
+                var anchorOrInline = drawing.getAnchorOrInline();
+                if (anchorOrInline.isEmpty()) throw new OfficeStamperException("Anchor or Inline is empty !");
+                if (!(anchorOrInline.getFirst() instanceof Inline inline))
+                    throw new OfficeStamperException("Don't know how to process anchor !");
+                return inline.getDocPr()
+                             .getDescr();
+            }
+        }
+        throw new OfficeStamperException("Run drawing not found !");
+    }
 }

@@ -6,7 +6,6 @@ package pro.verron.officestamper.api;
 /// comments and associated content such as placeholders found within a
 /// paragraph structure.
 ///
-///
 /// Subclasses must implement specific processing logic.
 public abstract class CommentProcessor {
 
@@ -15,22 +14,13 @@ public abstract class CommentProcessor {
     /// The replacer used to replace placeholder expressions in paragraphs.
     private final PlaceholderReplacer replacer;
 
-    /**
-     * Constructs a new instance of CommentProcessor to process comments and placeholders
-     * within a paragraph.
-     * <p>
-     * It initializes the replacer, paragraph, and comment fields
-     * using the provided ProcessorContext and ParagraphPlaceholderReplacer objects.
-     * Ensures that the associated CommentRangeStart and CommentRangeEnd elements of the
-     * comment are not null.
-     *
-     * @param context             the context containing the paragraph, comment, and placeholder
-     *                            associated with the processing of this CommentProcessor.
-     * @param placeholderReplacer an implementation of ParagraphPlaceholderReplacer used to
-     *                            resolve and replace placeholders in the paragraph.
-     *
-     * @throws NullPointerException if the comment's CommentRangeStart or CommentRangeEnd is null.
-     */
+    /// Constructs a new instance of CommentProcessor to process comments and placeholders
+    /// within a paragraph.
+    ///
+    /// @param context             the context containing the paragraph, comment, and placeholder
+    ///                                           associated with the processing of this CommentProcessor.
+    /// @param placeholderReplacer an implementation of PlaceholderReplacer used to
+    ///                                                        resolve and replace placeholders in the paragraph.
     protected CommentProcessor(ProcessorContext context, PlaceholderReplacer placeholderReplacer) {
         this.context = context;
         this.replacer = placeholderReplacer;

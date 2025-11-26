@@ -35,7 +35,7 @@ public interface ObjectResolver {
         Insert resolution = resolve(document, placeholder.content(), object);
         if (LOGGER.isDebugEnabled()) {
             var message = "Expression '{}' replaced by '{}' with resolver {}";
-            var expression = placeholder.expression();
+            var expression = placeholder.content();
             var text = TextUtils.getText(resolution);
             var resolverName = getClass().getSimpleName();
             LOGGER.debug(message, expression, text, resolverName);

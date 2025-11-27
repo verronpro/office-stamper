@@ -1,7 +1,9 @@
 package pro.verron.officestamper.preset.resolvers.nulls;
 
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.utils.Inserts;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
@@ -22,25 +24,12 @@ public class Null2PlaceholderResolver
     }
 
     @Override
-    public Insert resolve(
-            DocxPart document,
-            Placeholder placeholder,
-            Object object
-    ) {
-        return Inserts.of(newRun(placeholderTemplate.formatted(placeholder.expression())));
+    public Insert resolve(DocxPart document, String expression, Object object) {
+        return Inserts.of(newRun(placeholderTemplate.formatted(expression)));
     }
 
     @Override
     public boolean canResolve(@Nullable Object object) {
         return object == null;
-    }
-
-    @Override
-    public Insert resolve(
-            DocxPart document,
-            String expression,
-            Object object
-    ) {
-        throw new OfficeStamperException("Should not be called");
     }
 }

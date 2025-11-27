@@ -36,7 +36,7 @@ public final class ObjectResolverRegistry {
     ) {
         for (ObjectResolver resolver : resolvers)
             if (resolver.canResolve(object))
-                return resolver.resolve(document, placeholder, object);
+                return resolver.resolve(document, placeholder.content(), object);
         throw new OfficeStamperException("No resolver for %s".formatted(object));
     }
 }

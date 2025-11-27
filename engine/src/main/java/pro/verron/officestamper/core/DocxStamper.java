@@ -14,11 +14,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.toMap;
 import static org.docx4j.openpackaging.parts.relationships.Namespaces.*;
 import static pro.verron.officestamper.core.Invokers.streamInvokers;
 
@@ -117,11 +117,14 @@ public class DocxStamper
             ProcessorContext processorContext,
             PlaceholderReplacer placeholderReplacer
     ) {
-        return processorFactoryMap.entrySet()
-                                  .stream()
-                                  .collect(toMap(Map.Entry::getKey,
-                                          entry -> entry.getValue()
-                                                        .create(processorContext, placeholderReplacer)));
+        Map<Class<?>, CommentProcessor> map = new HashMap<>();
+        for (Map.Entry<Class<?>, CommentProcessorFactory> entry : processorFactoryMap.entrySet()) {
+            var processorClass = entry.getKey();
+            var processorFactory = entry.getValue();
+            var processor = processorFactory.create(processorContext, placeholderReplacer);
+            map.put(processorClass, processor);
+        }
+        return map;
 
 
     }

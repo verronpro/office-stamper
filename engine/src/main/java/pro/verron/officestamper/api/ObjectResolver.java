@@ -1,9 +1,6 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.TextUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 
 /// The ObjectResolver interface provides a contract for resolving objects to create a run
@@ -14,34 +11,6 @@ import org.springframework.lang.Nullable;
 /// @version ${version}
 /// @since 1.6.7
 public interface ObjectResolver {
-
-    /// A logger instance used for logging messages and events related to the operations
-    /// performed within the ObjectResolver interface.
-    /// This helps in tracking, debugging, and analyzing the execution of methods
-    /// implemented by classes that use this interface.
-    Logger LOGGER = LoggerFactory.getLogger(ObjectResolver.class);
-
-    /// Resolves the expression in the given document with the provided object.
-    ///
-    /// @param document    the [WordprocessingMLPackage] document in
-    ///                    which to resolve the expression
-    /// @param placeholder the expression value to be replaced
-    /// @param object      the object to be used for resolving the expression
-    ///
-    /// @return the resolved value for the expression
-    ///
-    /// @throws OfficeStamperException if no resolver is found for the object
-    default Insert resolve(DocxPart document, Placeholder placeholder, Object object) {
-        Insert resolution = resolve(document, placeholder.content(), object);
-        if (LOGGER.isDebugEnabled()) {
-            var message = "Expression '{}' replaced by '{}' with resolver {}";
-            var expression = placeholder.content();
-            var text = TextUtils.getText(resolution);
-            var resolverName = getClass().getSimpleName();
-            LOGGER.debug(message, expression, text, resolverName);
-        }
-        return resolution;
-    }
 
     /// Resolves the expression in the given document with the provided object.
     ///

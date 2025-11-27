@@ -19,16 +19,12 @@ public record Null2DefaultResolver(String defaultValue)
         implements ObjectResolver {
 
     @Override
-    public boolean canResolve(@Nullable Object object) {
-        return object == null;
+    public Insert resolve(DocxPart document, String expression, Object object) {
+        return Inserts.of(newRun(defaultValue));
     }
 
     @Override
-    public Insert resolve(
-            DocxPart document,
-            String expression,
-            Object object
-    ) {
-        return Inserts.of(newRun(defaultValue));
+    public boolean canResolve(@Nullable Object object) {
+        return object == null;
     }
 }

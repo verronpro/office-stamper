@@ -26,6 +26,10 @@ public abstract class CommentProcessor {
         this.replacer = placeholderReplacer;
     }
 
+    protected ProcessorContext context() {
+        return context;
+    }
+
     protected Paragraph paragraph() {
         return context.paragraph();
     }

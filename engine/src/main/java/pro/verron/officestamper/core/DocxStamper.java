@@ -219,24 +219,21 @@ public class DocxStamper
             if (updates > 0) paragraphIterator.reset();
         }
 
-        var processorTagIterator = DocxIterator.ofTags(part::content, "processor", part);
-        while (processorTagIterator.hasNext()) {
-            var tag = processorTagIterator.next();
+        var tagIterator = DocxIterator.ofTags(part::content, part);
+        while (tagIterator.hasNext()) {
+            var tag = tagIterator.next();
             var processorContext = new ProcessorContext(part, tag.getParagraph(), tag.asComment(), tag.asPlaceholder());
             var engine = engineFactory.apply(processorContext);
-            if (engine.process(contextRoot, tag.asPlaceholder())) tag.remove();
-            processorTagIterator.reset();
-        }
-
-        var placeholderTagIterator = DocxIterator.ofTags(part::content, "placeholder", part);
-        while (placeholderTagIterator.hasNext()) {
-            var tag = placeholderTagIterator.next();
-            var processorContext = new ProcessorContext(part, tag.getParagraph(), tag.asComment(), tag.asPlaceholder());
-            var engine = engineFactory.apply(processorContext);
-            var insert = engine.resolve(part, tag, contextRoot);
-            tag.replace(insert);
-            placeholderTagIterator.reset();
+            var tagType = tag.type()
+                             .orElse(null);
+            if ("processor".equals(tagType)) {
+                if (engine.process(contextRoot, tag.asPlaceholder())) tag.remove();
+            }
+            else if ("placeholder".equals(tagType)) {
+                var insert = engine.resolve(part, tag, contextRoot);
+                tag.replace(insert);
+            }
+            tagIterator.reset();
         }
     }
-
 }

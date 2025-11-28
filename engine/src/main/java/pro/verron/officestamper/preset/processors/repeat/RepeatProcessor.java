@@ -83,12 +83,16 @@ public class RepeatProcessor
                     Tr rowClone = XmlUtils.deepCopy(row);
                     Comment commentWrapper = requireNonNull(tableRowsCommentsToRemove.get(row));
                     CommentUtil.deleteCommentFromElements(commentWrapper, rowClone.getContent());
-                    var tagIterator = DocxIterator.ofTags(rowClone, "placeholder", source);
+                    var tagIterator = DocxIterator.ofTags(rowClone, source);
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
-                        var insert = replacer().resolve(source, tag, expressionContext);
-                        tag.replace(insert);
-                        tagIterator.reset();
+                        if (tag.type()
+                               .filter("placeholder"::equals)
+                               .isPresent()) {
+                            var insert = replacer().resolve(source, tag, expressionContext);
+                            tag.replace(insert);
+                            tagIterator.reset();
+                        }
                     }
                     changes.add(rowClone);
                 }

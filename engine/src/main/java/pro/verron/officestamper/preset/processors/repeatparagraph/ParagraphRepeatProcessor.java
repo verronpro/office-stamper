@@ -35,10 +35,7 @@ public class ParagraphRepeatProcessor
     // TODO replace the mapping by a Paragraphs to List<Object> mapping to better reflect the change
     private final Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>();
 
-    private ParagraphRepeatProcessor(
-            ProcessorContext processorContext,
-            PlaceholderReplacer placeholderReplacer
-    ) {
+    private ParagraphRepeatProcessor(ProcessorContext processorContext, PlaceholderReplacer placeholderReplacer) {
         super(processorContext, placeholderReplacer);
         this.processorContext = processorContext;
     }
@@ -87,12 +84,16 @@ public class ParagraphRepeatProcessor
                     CommentUtil.deleteCommentFromElements(comment, contentAccessor.getContent());
                 }
                 if (clone instanceof P p) {
-                    var tagIterator = DocxIterator.ofTags(p, "placeholder", new TextualDocxPart(comment.getDocument()));
+                    var tagIterator = DocxIterator.ofTags(p, new TextualDocxPart(comment.getDocument()));
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
-                        var insert = replacer().resolve(document, tag, expressionContext);
-                        tag.replace(insert);
-                        tagIterator.reset();
+                        if (tag.type()
+                               .filter("placeholder"::equals)
+                               .isPresent()) {
+                            var insert = replacer().resolve(document, tag, expressionContext);
+                            tag.replace(insert);
+                            tagIterator.reset();
+                        }
                     }
                     paragraphsToAdd.add(p);
                 }

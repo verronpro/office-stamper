@@ -1,14 +1,12 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.CTSmartTagRun;
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.R;
-import org.docx4j.wml.RPr;
+import org.docx4j.wml.*;
 import pro.verron.officestamper.core.Placeholders;
 import pro.verron.officestamper.core.StandardComment;
 import pro.verron.officestamper.core.StandardParagraph;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 import static pro.verron.officestamper.utils.WmlUtils.asString;
 
@@ -81,5 +79,15 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
         var index = siblings.indexOf(tag);
         siblings.remove(index);
         siblings.addAll(index, insert.getElements());
+    }
+
+    public Optional<String> type() {
+        return tag.getSmartTagPr()
+                  .getAttr()
+                  .stream()
+                  .filter(a -> a.getName()
+                                .equals("type"))
+                  .map(CTAttr::getVal)
+                  .findFirst();
     }
 }

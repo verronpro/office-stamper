@@ -214,9 +214,7 @@ public class CommentUtil {
         while (!queue.isEmpty()) {
             var comment = queue.remove();
             list.add(comment.getComment());
-            if (comment.getChildren() != null) {
-                queue.addAll(comment.getChildren());
-            }
+            queue.addAll(comment.getChildren());
         }
         return newComments(list);
     }

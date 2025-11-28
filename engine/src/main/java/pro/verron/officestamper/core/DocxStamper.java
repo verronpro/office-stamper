@@ -12,7 +12,6 @@ import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -201,15 +200,14 @@ public class DocxStamper
             var updates = 0;
             for (Comments.Comment pc : paragraphComment) {
                 int result = 0;
-                BigInteger paragraphCommentId = pc.getId();
+                var paragraphCommentId = pc.getId();
                 if (comments.containsKey(paragraphCommentId)) {
                     var c = comments.get(paragraphCommentId);
                     var cPlaceholder = c.asPlaceholder();
                     var cComment = c.getComment();
                     comments.remove(cComment.getId());
                     var processorContext = new ProcessorContext(part, p, c, cPlaceholder);
-
-                    Engine engine = engineFactory.apply(processorContext);
+                    var engine = engineFactory.apply(processorContext);
                     if (engine.process(contextRoot, c.asPlaceholder())) {
                         CommentUtil.deleteComment(c);
                         result = 1;
@@ -223,24 +221,19 @@ public class DocxStamper
 
         var processorTagIterator = DocxIterator.ofTags(part::content, "processor", part);
         while (processorTagIterator.hasNext()) {
-            var tag1 = processorTagIterator.next();
-            var processorContext1 = new ProcessorContext(part,
-                    tag1.getParagraph(),
-                    tag1.asComment(),
-                    tag1.asPlaceholder());
-            if (engineFactory.apply(processorContext1)
-                             .process(contextRoot, tag1.asPlaceholder())) tag1.remove();
-            paragraphIterator.reset();
+            var tag = processorTagIterator.next();
+            var processorContext = new ProcessorContext(part, tag.getParagraph(), tag.asComment(), tag.asPlaceholder());
+            var engine = engineFactory.apply(processorContext);
+            if (engine.process(contextRoot, tag.asPlaceholder())) tag.remove();
+            processorTagIterator.reset();
         }
 
         var placeholderTagIterator = DocxIterator.ofTags(part::content, "placeholder", part);
         while (placeholderTagIterator.hasNext()) {
             var tag = placeholderTagIterator.next();
-            var insert = engineFactory.apply(new ProcessorContext(part,
-                                              tag.getParagraph(),
-                                              tag.asComment(),
-                                              tag.asPlaceholder()))
-                                      .resolve(part, tag, contextRoot);
+            var processorContext = new ProcessorContext(part, tag.getParagraph(), tag.asComment(), tag.asPlaceholder());
+            var engine = engineFactory.apply(processorContext);
+            var insert = engine.resolve(part, tag, contextRoot);
             tag.replace(insert);
             placeholderTagIterator.reset();
         }

@@ -39,7 +39,7 @@ public class WmlFactory {
     /// Creates a new paragraph containing the provided list of values.
     ///
     /// @param values A list of objects to be added to the new paragraph.
-    ///               These objects populate the content of the paragraph.
+    ///                                           These objects populate the content of the paragraph.
     ///
     /// @return A new paragraph containing the provided values.
     public static P newParagraph(List<?> values) {
@@ -351,10 +351,17 @@ public class WmlFactory {
         return br;
     }
 
-    public static CTSmartTagRun newSmartTag(String element, R run) {
+    public static CTSmartTagRun newSmartTag(String type, R run) {
         var smartTag = new CTSmartTagRun();
+        var smartTagPr = new CTSmartTagPr();
+        var smartTagPrAttr = smartTagPr.getAttr();
+        var ctAttr = new CTAttr();
+        ctAttr.setName("type");
+        ctAttr.setVal(type);
+        smartTagPrAttr.add(ctAttr);
         var smartTagContent = smartTag.getContent();
-        smartTag.setElement(element);
+        smartTag.setElement("officestamper");
+        smartTag.setSmartTagPr(smartTagPr);
         smartTagContent.add(run);
         return smartTag;
     }

@@ -19,7 +19,7 @@ import static java.util.Arrays.stream;
 
 /// Represents a textual part of a DOCX document, encapsulating the content and structure of
 /// the part while enabling various operations such as accessing paragraphs, runs, and related parts.
-/// This class functions as a concrete implementation of the `DocxPart` interface.
+/// This class functions as a concrete implementation of the [DocxPart] interface.
 /// It manages the association with the XML structure of a DOCX document.
 public final class TextualDocxPart
         implements DocxPart {
@@ -27,19 +27,19 @@ public final class TextualDocxPart
     private final Part part;
     private final ContentAccessor contentAccessor;
 
-    /// Constructs a `TextualDocxPart` using the provided `document`.
+    /// Constructs a [TextualDocxPart] using the provided `document`.
     /// This constructor initializes the instance with the main document part and content accessor
     /// derived from the provided `WordprocessingMLPackage`.
     ///
-    /// @param document the WordprocessingMLPackage representing the document to be processed.
+    /// @param document the [WordprocessingMLPackage] representing the document to be processed.
     public TextualDocxPart(WordprocessingMLPackage document) {
         this(document, document.getMainDocumentPart(), document.getMainDocumentPart());
     }
 
-    /// Constructs a `TextualDocxPart` using the specified `document`, `part`,
+    /// Constructs a [TextualDocxPart] using the specified `document`, `part`,
     /// and `contentAccessor`.
     ///
-    /// @param document        the WordprocessingMLPackage representing the document to be processed.
+    /// @param document        the [WordprocessingMLPackage] representing the document to be processed.
     /// @param part            the specific part of the document being processed.
     /// @param contentAccessor the content accessor associated with the document part.
     public TextualDocxPart(WordprocessingMLPackage document, Part part, ContentAccessor contentAccessor) {
@@ -51,7 +51,7 @@ public final class TextualDocxPart
     /// Returns the [WordprocessingMLPackage] instance representing the document
     /// associated with this part.
     ///
-    /// @return the WordprocessingMLPackage instance representing the document.
+    /// @return the [WordprocessingMLPackage] instance representing the document.
     public WordprocessingMLPackage document() {return document;}
 
     /// Streams the parts of the document that match the specified relationship type, converting them
@@ -106,7 +106,7 @@ public final class TextualDocxPart
 
     /// Retrieves the part associated with this instance of the document part.
     ///
-    /// @return the Part object representing the specific part associated with this instance.
+    /// @return the [Part] object representing the specific part associated with this instance.
     @Override
     public Part part() {return part;}
 
@@ -231,8 +231,8 @@ public final class TextualDocxPart
                 that.contentAccessor);
     }
 
-    /// Converts this instance of the `TextualDocxPart` class to its string representation.
-    /// The string representation includes the name of the document and the name of the part
+    /// Converts this instance of the [TextualDocxPart] class to its string representation.
+    /// The string representation includes the name of the document, and the name of the part
     /// associated with this instance.
     ///
     /// @return a string representation of this instance, including the document name

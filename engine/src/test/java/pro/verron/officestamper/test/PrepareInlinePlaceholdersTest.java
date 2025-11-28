@@ -18,7 +18,7 @@ class PrepareInlinePlaceholdersTest {
         preparePlaceholders.process(document);
         var actual = stringifier.stringify(document);
         assertEquals("""
-                Hello, <tag element="processor">name<\\tag>!
+                Hello, <tag element="officestamper" attr="type:processor">name<\\tag>!
                 """, actual);
     }
 }

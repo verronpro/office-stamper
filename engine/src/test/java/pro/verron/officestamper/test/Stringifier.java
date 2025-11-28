@@ -154,8 +154,8 @@ public class Stringifier {
     /// and generates a detailed string with metadata including the part name, embed identifier,
     /// content type, readable size, SHA-1 hash, and a custom value.
     ///
-    /// @param blip the [CTBlip] object representing an embedded image for which
-    ///                                                             the string representation is to be generated
+    /// @param blip the [CTBlip] object representing an embedded image for which the string representation is to be
+    /// generated.
     ///
     /// @return a formatted string containing metadata about the image extracted
     ///         from the [CTBlip], including its size and hash
@@ -259,12 +259,20 @@ public class Stringifier {
         if (o instanceof FldChar fldChar) return stringify(fldChar).orElse("");
         if (o instanceof P.Hyperlink hyperlink) return stringify(hyperlink).orElse("");
         if (o instanceof CTSmartTagRun smartTagRun) return stringify(smartTagRun);
+        if (o instanceof CTAttr ctAttr) return stringify(ctAttr);
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
     }
 
+    private @NonNull String stringify(CTAttr ctAttr) {
+        return "%s:%s".formatted(ctAttr.getName(), ctAttr.getVal());
+    }
+
     private @NonNull String stringify(CTSmartTagRun smartTagRun) {
-        return "<tag element=\"%s\">%s<\\tag>".formatted(smartTagRun.getElement(), stringify(smartTagRun.getContent()));
+        return "<tag element=\"%s\" attr=\"%s\">%s<\\tag>".formatted(smartTagRun.getElement(),
+                stringify(smartTagRun.getSmartTagPr()
+                                     .getAttr()),
+                stringify(smartTagRun.getContent()));
     }
 
     private Optional<String> stringify(EndnotesPart endnotesPart) {

@@ -33,21 +33,22 @@ public class StandardComment
     private CommentRangeEnd commentRangeEnd;
     private CommentReference commentReference;
 
-    /// Constructs a new StandardComment object.
+    /// Constructs a new [StandardComment] object.
     ///
-    /// @param docxPart the WordprocessingMLPackage document instance
+    /// @param docxPart the [WordprocessingMLPackage] document instance
     public StandardComment(DocxPart docxPart) {
         this.docxPart = docxPart;
     }
 
-    /// Creates a new instance of a StandardComment and initializes its properties
+    /// Creates a new instance of a [StandardComment] and initializes its properties
     /// including the comment, comment range start, comment range end, and comment reference.
     ///
-    /// @param document    the WordprocessingMLPackage document where the comment will be created
-    /// @param parent      the parent element (P) to which the comment belongs
+    /// @param document    the [WordprocessingMLPackage] document where the comment will be created
+    /// @param parent      the parent element [P] to which the comment belongs
     /// @param placeholder the placeholder containing the content for the comment
     /// @param id          the unique identifier for the comment
-    /// @return a fully initialized StandardComment object
+    ///
+    /// @return a fully initialized [StandardComment] object
     public static StandardComment create(
             DocxPart document,
             ContentAccessor parent,
@@ -171,15 +172,7 @@ public class StandardComment
         return children;
     }
 
-    /// Sets the children of the comment by adding all elements from the provided set
-    /// to the existing children set.
-    ///
-    /// @param children the set of [Comment] objects to be added as children
-    public void setChildren(Set<Comment> children) {
-        this.children.addAll(children);
-    }
-
-    /// Retrieves the comment associated with this StandardComment.
+    /// Retrieves the comment associated with this [StandardComment].
     ///
     /// @return the Comments.Comment object representing the associated comment
     @Override public Comments.Comment getComment() {
@@ -200,4 +193,10 @@ public class StandardComment
         return docxPart.document();
     }
 
+    /// Adds a [Comment] to this comment children set.
+    ///
+    /// @param comment the child comment to be added
+    public void addChild(Comment comment) {
+        children.add(comment);
+    }
 }

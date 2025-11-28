@@ -63,10 +63,10 @@ public class StandardComment
         return commentWrapper;
     }
 
-    /// Generates a string representation of the StandardComment object, including its ID,
-    /// content, and the number of children comments.
+    /// Generates a string representation of the [StandardComment] object, including its ID,
+    /// content, and the amount children comments.
     ///
-    /// @return a formatted string describing the StandardComment's properties,
+    /// @return a formatted string describing the [StandardComment]'s properties,
     ///         including its ID, content, and the size of its children.
     @Override public String toString() {
         return "StandardComment{comment={id=%s, content=%s, children=%s}}}".formatted(comment.getId(),
@@ -77,13 +77,14 @@ public class StandardComment
                 children.size());
     }
 
-    /// Converts the current comment into a Placeholder representation.
+    /// Converts the current comment into a [Placeholder] representation.
     /// This method processes the content of the associated comment, extracts specific elements
-    /// that are instances of the `P` class, transforms them into strings, and combines them
-    /// to create a raw placeholder using `Placeholders.raw`.
+    /// that are instances of the [P] class, transforms them into strings, and combines them
+    /// to create a raw placeholder using [Placeholders#raw].
     ///
     /// @return a [Placeholder] instance containing the combined string representation of the comment content
-    @Override public Placeholder asPlaceholder() {
+    @Override
+    public Placeholder asPlaceholder() {
         String string = this.getComment()
                             .getContent()
                             .stream()
@@ -100,7 +101,8 @@ public class StandardComment
     ///
     /// @return the ContentAccessor representing the smallest common parent of
     ///         the comment range start and end, or null if no common parent exists
-    @Override public ContentAccessor getParent() {
+    @Override
+    public ContentAccessor getParent() {
         return DocumentUtil.findSmallestCommonParent(getCommentRangeStart(), getCommentRangeEnd());
     }
 
@@ -110,7 +112,8 @@ public class StandardComment
     /// collecting elements starting from the range start to the range end.
     ///
     /// @return a list of elements between the comment range start and comment range end
-    @Override public List<Object> getElements() {
+    @Override
+    public List<Object> getElements() {
         List<Object> elements = new ArrayList<>();
         boolean startFound = false;
         boolean endFound = false;
@@ -123,10 +126,11 @@ public class StandardComment
         return elements;
     }
 
-    /// Retrieves the CommentRangeEnd object associated with this comment.
+    /// Retrieves the [CommentRangeEnd] object associated with this comment.
     ///
-    /// @return the CommentRangeEnd object representing the end of the comment range
-    @Override public CommentRangeEnd getCommentRangeEnd() {
+    /// @return the [CommentRangeEnd] object representing the end of the comment range
+    @Override
+    public CommentRangeEnd getCommentRangeEnd() {
         return commentRangeEnd;
     }
 
@@ -137,10 +141,11 @@ public class StandardComment
         this.commentRangeEnd = commentRangeEnd;
     }
 
-    /// Getter for the field <code>commentRangeStart</code>.
+    /// Getter for the field [#commentRangeStart].
     ///
     /// @return a [CommentRangeStart] object
-    @Override public CommentRangeStart getCommentRangeStart() {
+    @Override
+    public CommentRangeStart getCommentRangeStart() {
         return commentRangeStart;
     }
 
@@ -153,8 +158,9 @@ public class StandardComment
 
     /// Retrieves the comment reference associated with this comment.
     ///
-    /// @return the CommentReference object linked to this comment
-    @Override public CommentReference getCommentReference() {
+    /// @return the [CommentReference] object linked to this comment
+    @Override
+    public CommentReference getCommentReference() {
         return commentReference;
     }
 
@@ -168,28 +174,31 @@ public class StandardComment
     /// Retrieves the set of child comments associated with this comment.
     ///
     /// @return a set containing the child comments of the current comment
-    @Override public Set<Comment> getChildren() {
+    @Override
+    public Set<Comment> getChildren() {
         return children;
     }
 
     /// Retrieves the comment associated with this [StandardComment].
     ///
-    /// @return the Comments.Comment object representing the associated comment
-    @Override public Comments.Comment getComment() {
+    /// @return the [Comments.Comment] object representing the associated comment
+    @Override
+    public Comments.Comment getComment() {
         return comment;
     }
 
-    /// Sets the comment for the current StandardComment.
+    /// Sets the comment for the current [StandardComment].
     ///
-    /// @param comment the [Comments.Comment] object to associate with this StandardComment
+    /// @param comment the [Comments.Comment] object to associate with this [StandardComment]
     public void setComment(Comments.Comment comment) {
         this.comment = comment;
     }
 
-    /// Retrieves the WordprocessingMLPackage document associated with this StandardComment instance.
+    /// Retrieves the [WordprocessingMLPackage] document associated with this [StandardComment] instance.
     ///
-    /// @return the WordprocessingMLPackage document associated with this StandardComment instance
-    @Override public WordprocessingMLPackage getDocument() {
+    /// @return the [WordprocessingMLPackage] document associated with this [StandardComment] instance
+    @Override
+    public WordprocessingMLPackage getDocument() {
         return docxPart.document();
     }
 

@@ -73,17 +73,33 @@ public class DocxIterator
         return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
     }
 
-    public static ResetableIterator<pro.verron.officestamper.api.Tag> ofTags(
-            ContentAccessor contentAccessor,
-            String type,
-            DocxPart docxPart
-    ) {
+    public static ResetableIterator<Tag> ofTags(ContentAccessor contentAccessor, String type, DocxPart docxPart) {
         var iterator = new DocxIterator(() -> contentAccessor.getContent()
                                                              .iterator());
-        Predicate<Object> predicate = o -> o instanceof CTSmartTagRun tag && type.equals(tag.getElement());
+        var element = "officestamper";
+        Predicate<Object> predicate = o -> o instanceof CTSmartTagRun tag  //
+                                           && isTagElement(tag, element) //
+                                           && isTagType(tag, type);
         Function<Object, CTSmartTagRun> caster = CTSmartTagRun.class::cast;
-        Function<Object, pro.verron.officestamper.api.Tag> mapper = caster.andThen((CTSmartTagRun tag) -> Tag.of(docxPart, tag));
+        Function<Object, Tag> mapper = caster.andThen((CTSmartTagRun tag) -> Tag.of(docxPart, tag));
         return new FilterMapperIterator<>(iterator, predicate, mapper);
+    }
+
+    private static boolean isTagElement(CTSmartTagRun tag, String element) {
+        var actualElement = tag.getElement();
+        var expectedElement = element;
+        return Objects.equals(expectedElement, actualElement);
+    }
+
+    private static boolean isTagType(CTSmartTagRun tag, String expectedType) {
+        var actualType = tag.getSmartTagPr()
+                            .getAttr()
+                            .stream()
+                            .filter(ctAttr -> "type".equals(ctAttr.getName()))
+                            .map(CTAttr::getVal)
+                            .findFirst()
+                            .orElse(null);
+        return Objects.equals(expectedType, actualType);
     }
 
     @Override

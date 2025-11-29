@@ -2,12 +2,19 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
+import pro.verron.officestamper.core.StandardParagraph;
 
 import java.util.List;
 import java.util.Set;
 
 /// The Comment interface provides methods for managing comments in a document.
 public interface Comment {
+
+    default Paragraph getParagraph(DocxPart part) {
+        var commentRangeStart = getCommentRangeStart();
+        var parent = commentRangeStart.getParent();
+        return StandardParagraph.from(part, parent);
+    }
 
     /// Converts the comment to a Placeholder representation.
     ///

@@ -1,17 +1,19 @@
 package pro.verron.officestamper.core;
 
-import jakarta.xml.bind.JAXBElement;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.utils.WmlFactory;
 import pro.verron.officestamper.utils.WmlUtils;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.function.Consumer;
 
-import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 import static pro.verron.officestamper.utils.WmlUtils.getFirstParentWithClass;
@@ -22,6 +24,7 @@ import static pro.verron.officestamper.utils.WmlUtils.getFirstParentWithClass;
 public class StandardParagraph
         implements Paragraph {
 
+    private static final Logger log = LoggerFactory.getLogger(StandardParagraph.class);
     private static final Random RANDOM = new Random();
     private final DocxPart part;
     private final ContentAccessor contents;
@@ -29,7 +32,7 @@ public class StandardParagraph
 
     /// Constructs a new instance of the StandardParagraph class.
     ///
-    /// @param source           the source DocxPart that contains the paragraph content.
+    /// @param part             the source DocxPart that contains the paragraph content.
     /// @param paragraphContent the list of objects representing the paragraph content.
     /// @param p                the P object representing the paragraph's structure.
     private StandardParagraph(DocxPart part, ContentAccessor paragraphContent, ArrayListWml<Object> p) {
@@ -42,7 +45,7 @@ public class StandardParagraph
         return switch (parent) {
             case P p -> from(part, p);
             case CTSdtContentRun contentRun -> from(part, contentRun);
-            default -> throw new OfficeStamperException("Unsupported parent type");
+            default -> throw new OfficeStamperException("Unsupported parent type: " + parent.getClass());
         };
     }
 
@@ -123,10 +126,9 @@ public class StandardParagraph
     public void replace(Placeholder placeholder, Insert insert) {
         insert.assertSerializable(); // TODO Move the check at instance creation
         var newContents = WmlUtils.replaceExpressionWithRun(() -> p, placeholder.expression(), insert);
-        contents.getContent()
-                .clear();
-        contents.getContent()
-                .addAll(newContents);
+        var content = contents.getContent();
+        content.clear();
+        content.addAll(newContents);
     }
 
     @Override
@@ -213,38 +215,6 @@ public class StandardParagraph
     private Comment comment(Placeholder placeholder) {
         var id = new BigInteger(16, RANDOM);
         return StandardComment.create(part, () -> p, placeholder, id);
-    }
-
-    private void replaceWithBr(Placeholder placeholder, Br br) {
-        for (StandardRun run : StandardRun.wrap(() -> p)) {
-            var runContentIterator = run.run()
-                                        .getContent()
-                                        .listIterator();
-            while (runContentIterator.hasNext()) {
-                Object element = runContentIterator.next();
-                if (element instanceof JAXBElement<?> jaxbElement && !jaxbElement.getName()
-                                                                                 .getLocalPart()
-                                                                                 .equals("instrText"))
-                    element = jaxbElement.getValue();
-                if (element instanceof Text text) replaceWithBr(placeholder, br, text, runContentIterator);
-            }
-        }
-    }
-
-    private static void replaceWithBr(
-            Placeholder placeholder,
-            Br br,
-            Text text,
-            ListIterator<Object> runContentIterator
-    ) {
-        var value = text.getValue();
-        runContentIterator.remove();
-        var runLinebreakIterator = stream(value.split(placeholder.expression())).iterator();
-        while (runLinebreakIterator.hasNext()) {
-            var subText = WmlFactory.newText(runLinebreakIterator.next());
-            runContentIterator.add(subText);
-            if (runLinebreakIterator.hasNext()) runContentIterator.add(br);
-        }
     }
 
     /// Returns the string representation of the paragraph.

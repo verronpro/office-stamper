@@ -263,6 +263,7 @@ public final class WmlUtils {
             case Pict pict -> asString(pict.getAnyAndAny());
             case VmlShapeElements vmlShapeElements -> asString(vmlShapeElements.getEGShapeElements());
             case CTTextbox textbox -> asString(textbox.getTxbxContent());
+            case CommentRangeStart _, CommentRangeEnd _ -> "";
             default -> {
                 log.debug("Unhandled object type: {}", content.getClass());
                 yield "";

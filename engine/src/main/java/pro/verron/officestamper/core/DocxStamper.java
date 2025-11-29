@@ -191,39 +191,10 @@ public class DocxStamper
     }
 
     private void processTextualPart(DocxPart part, Object contextRoot) {
-        var commentIterator = DocxIterator.ofComments(part::content, part);
-        while (commentIterator.hasNext()) {
-            var comment = commentIterator.next();
-            var paragraph = comment.getParagraph(part);
-            var placeholder = comment.asPlaceholder();
-            var processorContext = new ProcessorContext(part, paragraph, comment, placeholder);
-            var engine = engineFactory.apply(processorContext);
-            if (engine.process(contextRoot, placeholder)) {
-                CommentUtil.deleteComment(comment);
-                commentIterator.reset();
-            }
-        }
-
-        var tagIterator = DocxIterator.ofTags(part::content, part);
-        while (tagIterator.hasNext()) {
-            var tag = tagIterator.next();
-            var comment = tag.asComment();
-            var paragraph = tag.getParagraph();
-            var placeholder = tag.asPlaceholder();
-            var processorContext = new ProcessorContext(part, paragraph, comment, placeholder);
-            var engine = engineFactory.apply(processorContext);
-            var tagType = tag.type()
-                             .orElse(null);
-            if ("processor".equals(tagType)) {
-                engine.process(contextRoot, placeholder);
-                tag.remove();
-            }
-            else if ("placeholder".equals(tagType)) {
-                var insert = engine.resolve(part, tag, contextRoot);
-                tag.replace(insert);
-            }
-            tagIterator.reset();
+        var iterator = DocxIterator.ofHooks(part::content, part);
+        while (iterator.hasNext()) {
+            var hook = iterator.next();
+            hook.ifPresent(h -> {if (h.run(engineFactory, contextRoot)) iterator.reset();});
         }
     }
-
 }

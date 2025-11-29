@@ -42,6 +42,7 @@ public class DocumentUtil {
     /// Retrieves all elements from the main document part of the specified WordprocessingMLPackage.
     ///
     /// @param subDocument the WordprocessingMLPackage from which to retrieve the elements
+    ///
     /// @return a list of objects representing the content of the main document part.
     public static List<Object> allElements(WordprocessingMLPackage subDocument) {
         return subDocument.getMainDocumentPart()

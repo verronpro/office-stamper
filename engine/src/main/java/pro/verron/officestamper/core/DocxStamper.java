@@ -2,7 +2,6 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.Comments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
@@ -192,26 +191,18 @@ public class DocxStamper
     }
 
     private void processTextualPart(DocxPart part, Object contextRoot) {
-        var paragraphIterator = DocxIterator.ofParagraphs(part);
-        while (paragraphIterator.hasNext()) {
-            var p = paragraphIterator.next();
-            var comments = part.comments();
-            var paragraphComment = p.getComment();
-
-            for (Comments.Comment pc : paragraphComment) {
-                var paragraphCommentId = pc.getId();
-                if (comments.containsKey(paragraphCommentId)) {
-                    var c = comments.get(paragraphCommentId);
-                    var cPlaceholder = c.asPlaceholder();
-                    var cComment = c.getComment();
-                    comments.remove(cComment.getId());
-                    var processorContext = new ProcessorContext(part, p, c, cPlaceholder);
-                    var engine = engineFactory.apply(processorContext);
-                    if (engine.process(contextRoot, c.asPlaceholder())) {
-                        CommentUtil.deleteComment(c);
-                        paragraphIterator.reset();
-                    }
-                }
+        var commentIterator = DocxIterator.ofComments(part::content, part);
+        while (commentIterator.hasNext()) {
+            var c = commentIterator.next();
+            var cPlaceholder = c.asPlaceholder();
+            var paragraph = StandardParagraph.from(part,
+                    c.getCommentRangeStart()
+                     .getParent());
+            var processorContext = new ProcessorContext(part, paragraph, c, cPlaceholder);
+            var engine = engineFactory.apply(processorContext);
+            if (engine.process(contextRoot, c.asPlaceholder())) {
+                CommentUtil.deleteComment(c);
+                commentIterator.reset();
             }
         }
 

@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /// The PptxPart class represents a specific implementation of the DocxPart interface
@@ -65,5 +66,10 @@ public class PptxPart
     @Override
     public void process(Consumer<DocxPart> processor) {
 
+    }
+
+    @Override
+    public Optional<Comment> comment(BigInteger id) {
+        return Optional.empty();
     }
 }

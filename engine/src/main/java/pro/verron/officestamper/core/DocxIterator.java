@@ -79,23 +79,24 @@ public class DocxIterator
                                                              .iterator());
         var element = "officestamper";
         Predicate<Object> predicate = o -> o instanceof CTSmartTagRun tag  //
-                                           && isTagElement(tag, element);
+                                           && Hook.isTagElement(tag, element);
         Function<Object, CTSmartTagRun> caster = CTSmartTagRun.class::cast;
         Function<Object, Tag> mapper = caster.andThen((CTSmartTagRun tag) -> Tag.of(part, tag));
         return new FilterMapperIterator<>(iterator, predicate, mapper);
     }
 
-    private static boolean isTagElement(CTSmartTagRun tag, String expectedElement) {
-        var actualElement = tag.getElement();
-        return Objects.equals(expectedElement, actualElement);
-    }
-
-    public static ResetableIterator<Comment> ofComments(ContentAccessor contentAccessor, DocxPart part) {
+    public static ResetableIterator<Optional<Comment>> ofComments(ContentAccessor contentAccessor, DocxPart part) {
         var iterator = new DocxIterator(() -> contentAccessor.getContent()
                                                              .iterator());
         var commentRangeStartClass = CommentRangeStart.class;
         var commentRangeStartIterator = new FilterMapperIterator<>(iterator, commentRangeStartClass);
         return commentRangeStartIterator.refilter(part::hasComment, part::getComment);
+    }
+
+    public static ResetableIterator<Optional<Hook>> ofHooks(ContentAccessor contentAccessor, DocxPart part) {
+        var iterator = new DocxIterator(() -> contentAccessor.getContent()
+                                                             .iterator());
+        return new FilterMapperIterator<>(iterator, Hook.filter(part));
     }
 
     @Override

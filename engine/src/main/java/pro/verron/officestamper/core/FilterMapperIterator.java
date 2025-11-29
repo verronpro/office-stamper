@@ -21,7 +21,11 @@ public class FilterMapperIterator<S, T>
     T next;
 
     public FilterMapperIterator(ResetableIterator<S> source, Class<T> clazz) {
-        this(source, clazz::isInstance, clazz::cast);
+        this(source, Filter.simple(clazz::isInstance, clazz::cast));
+    }
+
+    public FilterMapperIterator(ResetableIterator<S> source, Filter<S, T> filter) {
+        this(source, filter.filter(), filter.mapper());
     }
 
     /// Constructs a FilterMapperIterator with a parent iterator, a filtering condition, and a mapping function.

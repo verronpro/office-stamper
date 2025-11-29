@@ -197,9 +197,8 @@ public class DocxStamper
             var p = paragraphIterator.next();
             var comments = part.comments();
             var paragraphComment = p.getComment();
-            var updates = 0;
+
             for (Comments.Comment pc : paragraphComment) {
-                int result = 0;
                 var paragraphCommentId = pc.getId();
                 if (comments.containsKey(paragraphCommentId)) {
                     var c = comments.get(paragraphCommentId);
@@ -210,13 +209,10 @@ public class DocxStamper
                     var engine = engineFactory.apply(processorContext);
                     if (engine.process(contextRoot, c.asPlaceholder())) {
                         CommentUtil.deleteComment(c);
-                        result = 1;
+                        paragraphIterator.reset();
                     }
                 }
-
-                updates += result;
             }
-            if (updates > 0) paragraphIterator.reset();
         }
 
         var tagIterator = DocxIterator.ofTags(part::content, part);
@@ -227,7 +223,8 @@ public class DocxStamper
             var tagType = tag.type()
                              .orElse(null);
             if ("processor".equals(tagType)) {
-                if (engine.process(contextRoot, tag.asPlaceholder())) tag.remove();
+                engine.process(contextRoot, tag.asPlaceholder());
+                tag.remove();
             }
             else if ("placeholder".equals(tagType)) {
                 var insert = engine.resolve(part, tag, contextRoot);

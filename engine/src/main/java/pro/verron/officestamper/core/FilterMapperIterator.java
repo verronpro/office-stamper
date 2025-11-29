@@ -17,16 +17,20 @@ public class FilterMapperIterator<S, T>
         implements ResetableIterator<T> {
     private final Predicate<S> filter;
     private final Function<S, T> mapper;
-    private final ResetableIterator<S> parent;
+    private final ResetableIterator<S> source;
     T next;
+
+    public FilterMapperIterator(ResetableIterator<S> source, Class<T> clazz) {
+        this(source, clazz::isInstance, clazz::cast);
+    }
 
     /// Constructs a FilterMapperIterator with a parent iterator, a filtering condition, and a mapping function.
     ///
-    /// @param parent the underlying ResetableIterator containing the source elements
+    /// @param source the underlying ResetableIterator containing the source elements
     /// @param filter a predicate to filter elements from the parent iterator based on specific conditions
     /// @param mapper a function to transform the filtered elements into a different type
-    public FilterMapperIterator(ResetableIterator<S> parent, Predicate<S> filter, Function<S, T> mapper) {
-        this.parent = parent;
+    public FilterMapperIterator(ResetableIterator<S> source, Predicate<S> filter, Function<S, T> mapper) {
+        this.source = source;
         this.filter = filter;
         this.mapper = mapper;
         findNext();
@@ -34,10 +38,14 @@ public class FilterMapperIterator<S, T>
 
     private void findNext() {
         next = null;
-        while (parent.hasNext() && next == null) {
-            var o = parent.next();
+        while (source.hasNext() && next == null) {
+            var o = source.next();
             if (filter.test(o)) next = mapper.apply(o);
         }
+    }
+
+    public <O> FilterMapperIterator<T, O> refilter(Predicate<T> filter, Function<T, O> mapper) {
+        return new FilterMapperIterator<>(this, filter, mapper);
     }
 
     @Override
@@ -55,7 +63,7 @@ public class FilterMapperIterator<S, T>
 
     @Override
     public void reset() {
-        parent.reset();
+        source.reset();
         findNext();
     }
 }

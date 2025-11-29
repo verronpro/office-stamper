@@ -2,6 +2,7 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
+import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Tag;
@@ -73,20 +74,19 @@ public class DocxIterator
         return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
     }
 
-    public static ResetableIterator<Tag> ofTags(ContentAccessor contentAccessor, DocxPart docxPart) {
+    public static ResetableIterator<Tag> ofTags(ContentAccessor contentAccessor, DocxPart part) {
         var iterator = new DocxIterator(() -> contentAccessor.getContent()
                                                              .iterator());
         var element = "officestamper";
         Predicate<Object> predicate = o -> o instanceof CTSmartTagRun tag  //
                                            && isTagElement(tag, element);
         Function<Object, CTSmartTagRun> caster = CTSmartTagRun.class::cast;
-        Function<Object, Tag> mapper = caster.andThen((CTSmartTagRun tag) -> Tag.of(docxPart, tag));
+        Function<Object, Tag> mapper = caster.andThen((CTSmartTagRun tag) -> Tag.of(part, tag));
         return new FilterMapperIterator<>(iterator, predicate, mapper);
     }
 
-    private static boolean isTagElement(CTSmartTagRun tag, String element) {
+    private static boolean isTagElement(CTSmartTagRun tag, String expectedElement) {
         var actualElement = tag.getElement();
-        var expectedElement = element;
         return Objects.equals(expectedElement, actualElement);
     }
 

@@ -90,6 +90,14 @@ public class DocxIterator
         return Objects.equals(expectedElement, actualElement);
     }
 
+    public static ResetableIterator<Comment> ofComments(ContentAccessor contentAccessor, DocxPart part) {
+        var iterator = new DocxIterator(() -> contentAccessor.getContent()
+                                                             .iterator());
+        var commentRangeStartClass = CommentRangeStart.class;
+        var commentRangeStartIterator = new FilterMapperIterator<>(iterator, commentRangeStartClass);
+        return commentRangeStartIterator.refilter(part::hasComment, part::getComment);
+    }
+
     @Override
     public boolean hasNext() {
         return next != null;

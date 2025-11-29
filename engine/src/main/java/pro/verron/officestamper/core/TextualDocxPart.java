@@ -65,21 +65,18 @@ public final class TextualDocxPart
     public List<DocxPart> parts(String... types) {
         var mainDocument = document.getMainDocumentPart();
         var mainRelationships = mainDocument.getRelationshipsPart();
-
         return stream(types).map(mainRelationships::getRelationshipsByType)
                             .flatMap(Collection::stream)
                             .map(this::getPart)
                             .map(p -> new TextualDocxPart(document, p, (ContentAccessor) p))
                             .map(DocxPart.class::cast)
                             .toList();
-
     }
 
     @Override
     public void process(Consumer<DocxPart> processor) {
         var mainDocumentPart = document.getMainDocumentPart();
         processor.accept(new TextualDocxPart(document, mainDocumentPart, mainDocumentPart));
-
         mainDocumentPart.getRelationshipsPart()
                         .getRelationships()
                         .getRelationship()
@@ -88,7 +85,11 @@ public final class TextualDocxPart
                         .filter(ContentAccessor.class::isInstance)
                         .map(p -> new TextualDocxPart(document, p, (ContentAccessor) p))
                         .forEach(processor);
+    }
 
+    @Override
+    public Optional<Comment> comment(BigInteger id) {
+        return Optional.ofNullable(comments().get(id));
     }
 
     /// Retrieves the part associated with the specified relationship from the relationships part.
@@ -241,5 +242,4 @@ public final class TextualDocxPart
     public String toString() {
         return "DocxPart{doc=%s, part=%s}".formatted(document.name(), part.getPartName());
     }
-
 }

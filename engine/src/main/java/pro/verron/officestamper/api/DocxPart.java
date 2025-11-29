@@ -1,6 +1,7 @@
 package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.parts.Part;
+import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;
 
 import java.math.BigInteger;
@@ -12,6 +13,16 @@ import java.util.Map;
 /// manipulate document content, and stream elements such as paragraphs and runs.
 public interface DocxPart
         extends DocxDocument {
+    default Comment getComment(CommentRangeStart crs) {
+        return comment(crs.getId())
+                .get();
+    }
+
+    default boolean hasComment(CommentRangeStart crs) {
+        return comment(crs.getId())
+                .isPresent();
+    }
+
     /// Retrieves the part of the WordprocessingML-based document.
     ///
     /// @return the part of the document

@@ -2,7 +2,9 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /// The DocxDocument interface represents a WordprocessingML-based document,
@@ -22,4 +24,6 @@ public interface DocxDocument {
     List<DocxPart> parts(String... types);
 
     void process(Consumer<DocxPart> processor);
+
+    Optional<Comment> comment(BigInteger id);
 }

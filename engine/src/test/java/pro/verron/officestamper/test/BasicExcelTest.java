@@ -1,6 +1,7 @@
 package pro.verron.officestamper.test;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,9 +14,10 @@ import static pro.verron.officestamper.test.IOStreams.getInputStream;
 import static pro.verron.officestamper.test.IOStreams.getOutputStream;
 import static pro.verron.officestamper.test.Stringifier.stringifyExcel;
 
-class BasicExcelTest {
+@DisplayName("Basic Excel Test") class BasicExcelTest {
 
     @Test
+    @DisplayName("Should stamp an Excel document")
     void testStamper()
             throws IOException, Docx4JException {
 

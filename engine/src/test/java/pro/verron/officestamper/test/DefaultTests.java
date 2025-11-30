@@ -25,11 +25,6 @@ import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
 
-/// DefaultTests class.
-///
-/// @author Joseph Verron
-/// @version ${version}
-/// @since 1.6.6
 @DisplayName("Core Features") class DefaultTests {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);

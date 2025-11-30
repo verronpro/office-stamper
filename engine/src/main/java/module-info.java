@@ -1,55 +1,26 @@
-/// # Office-stamper – A powerful Java template engine for dynamic DOCX document generation.
+/// The module descriptor for the `pro.verron.officestamper` module.
 ///
-/// Office Stamper lets developers create dynamic DOCX documents at runtime using templates
-/// designed in any Word processor.
-/// The library uses Spring Expression Language (SpEL) for powerful template expressions, preserves
-///  all formatting from the original template, and offers extensive customization options.
+/// This module provides functionalities related to office document manipulation
+/// and stamping, leveraging libraries like docx4j and Spring Framework.
 ///
-/// ## Key Features:
-///     - Expression-based templating using Spring Expression Language (SpEL)
-///     - Comment-based processing for special document instructions
-///     - Complete preservation of original template formatting
-///     - Extensible with custom functions
-///     - Type-safe Java integration
-///     - Flexible configuration options
+/// Requirements:
+/// - Requires `spring.core` and `spring.expression` for using Spring Framework functionalities.
+/// - Requires `org.docx4j.core` transitively for handling office document processing.
+/// - Optionally requires `org.apache.commons.io`, `org.slf4j`, and `jakarta.xml.bind` as static dependencies.
+/// - Requires `org.jetbrains.annotations` for annotation support.
+/// - Requires `org.docx4j.openxml_objects` for OpenXML document handling.
 ///
-/// ## Quick Start Example:
-/// <pre>
-/// var context = new YourPojoContext(param1, param2, param3);
-/// var stamper = OfficeStampers.docxStamper();
-/// var templatePath = Paths.get("template.docx");
-/// var outputPath = Paths.get("output.docx");
-/// try(
-///     var template = Files.newInputStream(templatePath);
-///     var output = Files.newOutputStream(outputPath);
-/// ) {
-///     stamper.stamp(template, context, output);
-/// }
-/// </pre>
+/// Module Exports:
+/// - Exports `pro.verron.officestamper.api` for public API access.
+/// - Exports `pro.verron.officestamper.preset` for predefined document processing utilities.
+/// - Exports `pro.verron.officestamper.experimental` and `pro.verron.officestamper.preset.preprocessors.placeholders`
+///   to `pro.verron.officestamper.test` for experimental features and testing purposes.
+/// - Exports `pro.verron.officestamper.utils` for utility functionalities.
 ///
-/// This module definition declares the `pro.verron.officestamper` module and configures
-/// its dependencies, exports, and encapsulated packages.
-/// Module Dependencies:
-/// - `spring.core`: used for core Spring framework features.
-/// - `spring.expression`: used for supporting Spring expression language functionality.
-/// - `org.docx4j.core`: declared as transitive, indicating that dependent modules also require this dependency.
-/// - `org.apache.commons.io`: declared as a static dependency, meaning it is optional and only used during
-/// compile-time.
-/// - `org.slf4j`: declared as a static dependency for logging purposes, optional.
-/// - `jakarta.xml.bind`: declared as a static dependency for XML binding, optional.
-/// Packages and Access Control:
-/// - `pro.verron.officestamper.api`:
-///   - Exports the `api` package to all modules.
-///   - Opens the `api` package for reflection.
-/// - `pro.verron.officestamper.preset`:
-///   - Exports the `preset` package to all modules.
-///   - Opens the `preset` package for reflection.
-/// - `pro.verron.officestamper.experimental`:
-///   - Opens the `experimental` package for reflection to the `pro.verron.officestamper.test` module.
-///   - Exports the `experimental` package only to the `pro.verron.officestamper.test` module.
-/// - `pro.verron.officestamper.utils`:
-///   - Exports the `utils` package to all modules.
-///   - Opens the `utils` package for reflection.
+/// Opens:
+/// - Opens `pro.verron.officestamper.api` and `pro.verron.officestamper.preset` for reflective access.
+/// - Opens `pro.verron.officestamper.experimental` specifically to `pro.verron.officestamper.test`.
+/// - Opens `pro.verron.officestamper.utils` for reflective access.
 module pro.verron.officestamper {
     requires spring.core;
     requires spring.expression;

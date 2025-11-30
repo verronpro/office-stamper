@@ -9,33 +9,30 @@ import pro.verron.officestamper.core.DocxStamper;
 
 import java.io.InputStream;
 
-/// Main class of the docx-stamper library.
+/// [OfficeStampers] is a utility class designed to provide methods for manipulating and stamping Office documents. This
+/// class includes factory methods for creating document stampers, specifically [StreamStamper] instances for handling
+/// [WordprocessingMLPackage] documents.
 ///
-/// This class can be used to create "stampers" that will open .docx templates
-/// to create a .docx document filled with custom data at runtime.
-///
-/// @author Joseph Verron
-/// @version ${version}
-/// @since 1.6.4
+/// Various preprocessors may be applied during the creation of these stampers to modify or enhance the operation of the
+/// stamper.
 public class OfficeStampers {
 
-
     private OfficeStampers() {
-        throw new OfficeStamperException("OfficeStampers cannot be instantiated");
+        throw new OfficeStamperException("Utility classes should not be instantiated");
     }
 
-    /// Creates a new DocxStamper with the default configuration.
-    /// Also adds the [Preprocessors#removeLanguageProof()] and [Preprocessors#mergeSimilarRuns()]
-    /// preprocessors.
+    /// Creates a new instance of a [StreamStamper] for handling [WordprocessingMLPackage] documents with a default
+    /// configuration.
     ///
-    /// @return a new DocxStamper
+    /// @return a [StreamStamper] instance for stamping [WordprocessingMLPackage] documents
     public static StreamStamper<WordprocessingMLPackage> docxStamper() {
         return docxStamper(OfficeStamperConfigurations.standardWithPreprocessing());
     }
 
-    /// Creates a new instance of the [DocxStamper] class with the specified [OfficeStamperConfiguration].
+    /// Creates a [StreamStamper] instance that processes [WordprocessingMLPackage] (DOCX) documents by applying
+    /// stamping with the given configuration.
     ///
-    /// @param config the configuration for the docx stamper
+    /// The returned stamper is designed to handle the transformation of DOCX templates using provided context data.
     ///
     /// @return a new instance of the [DocxStamper] class
     public static StreamStamper<WordprocessingMLPackage> docxStamper(

@@ -20,7 +20,7 @@ import java.util.function.Function;
 import static org.docx4j.openpackaging.parts.relationships.Namespaces.*;
 import static pro.verron.officestamper.core.Invokers.streamInvokers;
 
-/// The DocxStamper class is an implementation of the [OfficeStamper]
+/// The [DocxStamper] class is an implementation of the [OfficeStamper]
 /// interface that is used to stamp DOCX templates with a context object and
 /// write the result to an output stream.
 ///
@@ -36,9 +36,9 @@ public class DocxStamper
     private final List<PostProcessor> postprocessors;
     private final Function<ProcessorContext, Engine> engineFactory;
 
-    /// Creates a new DocxStamper with the given configuration.
+    /// Creates a new [DocxStamper] with the given configuration.
     ///
-    /// @param configuration the configuration to use for this DocxStamper.
+    /// @param configuration the configuration to use for this [DocxStamper].
     public DocxStamper(OfficeStamperConfiguration configuration) {
         this(configuration.getEvaluationContextConfigurer(),
                 configuration.getExpressionFunctions(),

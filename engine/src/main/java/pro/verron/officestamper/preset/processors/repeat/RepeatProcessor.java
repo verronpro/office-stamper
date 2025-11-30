@@ -86,10 +86,11 @@ public class RepeatProcessor
                     var tagIterator = DocxIterator.ofTags(rowClone, source);
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
+                        var placeholder = tag.asPlaceholder();
                         if (tag.type()
                                .filter("placeholder"::equals)
                                .isPresent()) {
-                            var insert = replacer().resolve(source, tag, expressionContext);
+                            var insert = replacer().resolve(source, placeholder, expressionContext);
                             tag.replace(insert);
                             tagIterator.reset();
                         }

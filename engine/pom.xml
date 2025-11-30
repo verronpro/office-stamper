@@ -10,9 +10,9 @@
     <version>2.9.0</version>
 
     <description>
-        Office-stamper is a Java template engine for DOCX documents, forked from org.wickedsource.docx-stamper
+        Office-stamper is a Java template engine for DOCX documents
     </description>
-    <url>https://github.com/verronpro/docx-stamper</url>
+    <url>https://github.com/verronpro/office-stamper</url>
     <organization>
         <name>Verron.pro</name>
         <url>https://verron.pro</url>
@@ -25,9 +25,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <scm>
-        <url>https://github.com/verronpro/docx-stamper</url>
-        <developerConnection>scm:git:https://github.com/verronpro/docx-stamper.git</developerConnection>
-        <connection>scm:git:https://github.com/verronpro/docx-stamper.git</connection>
+        <url>https://github.com/verronpro/office-stamper</url>
+        <developerConnection>scm:git:https://github.com/verronpro/office-stamper.git</developerConnection>
+        <connection>scm:git:https://github.com/verronpro/office-stamper.git</connection>
     </scm>
 
     <licenses>

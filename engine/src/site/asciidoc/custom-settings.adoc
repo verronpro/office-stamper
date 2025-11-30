@@ -192,4 +192,4 @@ var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
 
 * Explore link:advanced-features.html[Advanced Features] for more complex scenarios
 * See link:troubleshooting.html[Troubleshooting] for help with common issues
-* Check out the link:https://github.com/verronpro/docx-stamper/tree/main/engine/src/test/java/pro/verron/officestamper/test[test directory] for examples of various configurations
+* Check out the link:https://github.com/verronpro/office-stamper/tree/main/engine/src/test/java/pro/verron/officestamper/test[test directory] for examples of various configurations

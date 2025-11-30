@@ -96,9 +96,7 @@ public class DocxStamper
             var processorResolvers = new Invokers(streamInvokers(processors));
             evaluationContext.addMethodResolver(processorResolvers);
             evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
-            evaluationContext.addMethodResolver(new Invokers(functions.stream()
-                                                                      .map(Invokers::ofCustomFunction)));
-
+            evaluationContext.addMethodResolver(new Invokers(functions));
             return engine;
         };
     }

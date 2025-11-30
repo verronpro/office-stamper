@@ -19,9 +19,9 @@ public class CommentHook
         var paragraph = comment.getParagraph(part);
         var placeholder = comment.asPlaceholder();
         var expression = placeholder.content();
-        var processorContext = new ProcessorContext(part, paragraph, comment, placeholder);
+        var processorContext = new ProcessorContext(part, paragraph, comment, expression);
         var engine = engineFactory.create(processorContext);
-        if (engine.process(contextRoot, expression)) {
+        if (engine.process(contextRoot)) {
             CommentUtil.deleteComment(comment);
             return true;
         }

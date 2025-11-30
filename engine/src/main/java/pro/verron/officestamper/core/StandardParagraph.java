@@ -81,7 +81,8 @@ public class StandardParagraph
     @Override
     public ProcessorContext processorContext(Placeholder placeholder) {
         var comment = comment(placeholder);
-        return new ProcessorContext(part, this, comment, placeholder);
+        var expression = placeholder.content();
+        return new ProcessorContext(part, this, comment, expression);
     }
 
     /// Replaces a set of paragraph elements with new ones within the current paragraph's siblings.

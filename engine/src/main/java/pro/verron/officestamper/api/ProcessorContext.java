@@ -1,9 +1,21 @@
 package pro.verron.officestamper.api;
 
-/// Represents a context for processing a placeholder within a specific paragraph and comment in a document.
-/// This immutable record encapsulates essential components required to manipulate placeholders.
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+
+/// Represents a context within a document processing operation.
 ///
-/// @param paragraph   The paragraph in which the placeholder exists.
-/// @param comment     The comment associated with the placeholder.
-/// @param placeholder The placeholder to be processed within the paragraph.
-public record ProcessorContext(DocxPart part, Paragraph paragraph, Comment comment, Placeholder placeholder) {}
+/// This class encapsulates key elements involved in the processing of a specific part of a [WordprocessingMLPackage]
+/// -based
+/// document, such as a part of the document, a specific paragraph, an associated comment, and an expression being
+/// evaluated or processed.
+///
+/// The [ProcessorContext] provides structured access to these elements, enabling seamless document traversal,
+/// manipulation, and analysis during processing workflows.
+///
+/// @param part The [DocxPart] representing a specific part of the document being processed.
+/// @param paragraph The [Paragraph] associated with the processing context.
+/// @param comment The [Comment] that is relevant to the current processing context.
+/// @param expression A [String] containing the expression or directive being evaluated.
+public record ProcessorContext(DocxPart part, Paragraph paragraph, Comment comment, String expression) {
+
+}

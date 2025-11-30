@@ -5,10 +5,9 @@ import pro.verron.officestamper.utils.Inserts;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
-/// This is an abstract class that provides a generic implementation for
-/// resolving objects to strings. It is used in conjunction with
-/// [ObjectResolver] interface to provide a flexible way to
-/// resolve different types of objects to strings.
+/// This is an abstract class that provides a generic implementation for resolving objects to strings. It is used in
+/// conjunction with [ObjectResolver] interface to provide a flexible way to resolve different types of objects to
+/// strings.
 ///
 /// @param <T> the type of the object to resolve
 ///
@@ -30,17 +29,14 @@ public abstract class StringResolver<T>
 
     /// Resolves an object to a string and creates a new run with the resolved string as content.
     ///
-    /// @param document   the WordprocessingMLPackage document
+    /// @param document the WordprocessingMLPackage document
     /// @param expression the expression string
-    /// @param object     the object to be resolved
+    /// @param object the object to be resolved
     ///
     /// @return the newly created run with the resolved string as content
     @Override
-    public final Insert resolve(
-            DocxPart document,
-            String expression,
-            Object object
-    ) {
+    public final Insert resolve(DocxPart document, String expression, @Nullable Object object) {
+        if (object == null) throw new OfficeStamperException("Cannot resolve null object");
         return Inserts.of(newRun(resolve(type.cast(object))));
     }
 

@@ -18,7 +18,7 @@ import java.util.function.Function;
 /// @param <V> the type of the third input to the [TriFunction]
 public class TriFunctionBuilder<T, U, V>
         implements CustomFunction.NeedsTriFunctionImpl<T, U, V> {
-    private final DocxStamperConfiguration source;
+    private final DocxStamperConfiguration configuration;
     private final String name;
     private final Class<T> class0;
     private final Class<U> class1;
@@ -35,13 +35,13 @@ public class TriFunctionBuilder<T, U, V>
     /// @param class1 the class of the second input type of the [TriFunction]
     /// @param class2 the class of the third input type of the [TriFunction]
     public TriFunctionBuilder(
-            DocxStamperConfiguration source,
+            DocxStamperConfiguration configuration,
             String name,
             Class<T> class0,
             Class<U> class1,
             Class<V> class2
     ) {
-        this.source = source;
+        this.configuration = configuration;
         this.name = name;
         this.class0 = class0;
         this.class1 = class1;
@@ -65,7 +65,7 @@ public class TriFunctionBuilder<T, U, V>
             return implementation.apply(arg0, arg1, arg2);
         };
         var customFunction = new CustomFunction(name, List.of(class0, class1, class2), function);
-        source.addCustomFunction(customFunction);
-        return source;
+        configuration.addCustomFunction(customFunction);
+        return configuration;
     }
 }

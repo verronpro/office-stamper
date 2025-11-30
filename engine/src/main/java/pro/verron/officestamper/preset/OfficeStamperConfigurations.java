@@ -39,12 +39,12 @@ public class OfficeStamperConfigurations {
     /// - Remove language information.
     /// - Merge similar text runs.
     ///
-    public static OfficeStamperConfiguration standardWithPreprocessing() {
     /// It also includes postprocessors to:
     /// - Remove orphaned footnotes.
     /// - Remove orphaned endnotes.
     ///
     /// @return a fully configured [OfficeStamperConfiguration] instance with the additional processors applied.
+    public static OfficeStamperConfiguration full() {
         var configuration = standard();
         configuration.addPreprocessor(Preprocessors.removeLanguageProof());
         configuration.addPreprocessor(Preprocessors.removeLanguageInfo());
@@ -64,10 +64,9 @@ public class OfficeStamperConfigurations {
     /// @return a standard [OfficeStamperConfiguration] instance with pre-configured resolvers and processors
     public static OfficeStamperConfiguration standard() {
         var fallback = Resolvers.fallback("\n");
-        return standardWithFallback(fallback);
+        return standard(fallback);
     }
 
-    public static OfficeStamperConfiguration standardWithFallback(ObjectResolver fallback) {
     /// Creates a standard [OfficeStamperConfiguration] instance with a set of predefined comment processors, resolvers,
     /// and preprocessors.
     ///
@@ -79,6 +78,7 @@ public class OfficeStamperConfigurations {
     ///
     /// @return a configured [OfficeStamperConfiguration] object implementing standard processing and formatting
     ///         behaviors
+    public static OfficeStamperConfiguration standard(ObjectResolver fallback) {
         var configuration = new DocxStamperConfiguration();
 
         configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance);
@@ -157,10 +157,21 @@ public class OfficeStamperConfigurations {
     ///
     /// @return a basic [OfficeStamperConfiguration] instance with no extra configurations
     public static OfficeStamperConfiguration raw() {
+        return new DocxStamperConfiguration();
+    }
+
+    /// Creates a minimal [OfficeStamperConfiguration] instance with essential settings to provide basic placeholder
+    /// processing and fallback resolvers.
+    ///
+    /// This configuration includes:
+    /// - A fallback resolver with a default value of a newline character ("`\n`").
+    /// - A placeholder preprocessor that prepares placeholders matching a specific pattern.
+    ///
+    /// @return a minimally configured [OfficeStamperConfiguration] instance
+    public static OfficeStamperConfiguration minimal() {
         var configuration = new DocxStamperConfiguration();
-        configuration.resetResolvers();
-        configuration.setEvaluationContextConfigurer(EvaluationContextConfigurers.defaultConfigurer());
-        configuration.resetCommentProcessors();
+        configuration.addResolver(Resolvers.fallback("\n"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
         return configuration;
     }
 }

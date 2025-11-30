@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.api.OfficeStamperException;
 
@@ -9,8 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 
-class BasicWordTest {
+@DisplayName("Basic Word Test") class BasicWordTest {
     @Test
+    @DisplayName("Should stamp a Word document")
     void testStamper() {
         var configuration = full();
         var stamper = new TestDocxStamper<>(configuration);
@@ -26,6 +28,7 @@ class BasicWordTest {
     }
 
     @Test
+    @DisplayName("Should fail on malformed comment")
     void testMalformeStamper() {
         var configuration = full();
         var stamper = new TestDocxStamper<>(configuration);

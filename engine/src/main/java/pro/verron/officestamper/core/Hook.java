@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.CommentRangeStart;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.api.Tag;
 
 import java.util.Objects;
@@ -45,5 +44,5 @@ public interface Hook {
         return Optional.of(new TagHook(part, new Tag(part, tag)));
     }
 
-    boolean run(Function<ProcessorContext, Engine> engineFactory, Object contextRoot);
+    boolean run(EngineFactory engineFactory, Object contextRoot);
 }

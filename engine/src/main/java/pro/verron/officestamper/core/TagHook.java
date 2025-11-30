@@ -4,8 +4,6 @@ import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.api.Tag;
 
-import java.util.function.Function;
-
 public class TagHook
         implements Hook {
     private final Tag tag;
@@ -17,13 +15,13 @@ public class TagHook
     }
 
     @Override
-    public boolean run(Function<ProcessorContext, Engine> engineFactory, Object contextRoot) {
+    public boolean run(EngineFactory engineFactory, Object contextRoot) {
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();
         var placeholder = tag.asPlaceholder();
         var expression = placeholder.content();
         var processorContext = new ProcessorContext(part, paragraph, comment, placeholder);
-        var engine = engineFactory.apply(processorContext);
+        var engine = engineFactory.create(processorContext);
         var tagType = tag.type()
                          .orElse(null);
         boolean processed = false;

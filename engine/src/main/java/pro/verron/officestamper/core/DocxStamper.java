@@ -34,9 +34,9 @@ public class DocxStamper
     private static final Logger log = LoggerFactory.getLogger(DocxStamper.class);
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
-    private final Function<ProcessorContext, Engine> engineFactory;
+    private final EngineFactory engineFactory;
 
-    /// Creates a new [DocxStamper] with the given configuration.
+    /// Creates new [DocxStamper] with the given configuration.
     ///
     /// @param configuration the configuration to use for this [DocxStamper].
     public DocxStamper(OfficeStamperConfiguration configuration) {
@@ -75,7 +75,7 @@ public class DocxStamper
         this.postprocessors = new ArrayList<>(postprocessors);
     }
 
-    private Function<ProcessorContext, Engine> computeEngine(
+    private EngineFactory computeEngine(
             EvaluationContextConfigurer evaluationContextConfigurer,
             Map<Class<?>, Object> expressionFunctions,
             List<CustomFunction> functions,

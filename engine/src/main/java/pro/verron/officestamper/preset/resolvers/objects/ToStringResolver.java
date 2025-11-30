@@ -11,9 +11,8 @@ import java.util.List;
 
 import static pro.verron.officestamper.utils.WmlFactory.*;
 
-/// This class is an implementation of the [ObjectResolver] interface
-/// that resolves objects by converting them to a string representation using the
-/// [Object#toString()] method and creating a new run with the resolved content.
+/// This class is an implementation of the [ObjectResolver] interface that resolves objects by converting them to a
+/// string representation using the [Object#toString()] method and creating a new run with the resolved content.
 ///
 /// @author Joseph Verron
 /// @version ${version}
@@ -32,8 +31,7 @@ public class ToStringResolver
         var string = String.valueOf(object);
 
         var split = string.split(linebreakPlaceholder);
-        if(split.length == 1)
-            return Inserts.of(newRun(string));
+        if (split.length == 1) return Inserts.of(newRun(string));
         var elements = new ArrayList<>();
         for (int i = 0; i < split.length - 1; i++) {
             var line = split[i];

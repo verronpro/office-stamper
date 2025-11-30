@@ -7,8 +7,9 @@ import pro.verron.officestamper.core.DocxStamperConfiguration;
 import java.util.List;
 import java.util.function.Function;
 
-/// A builder class for creating and registering custom functions in the context of a `DocxStamperConfiguration`. The
-/// custom functions are defined by a name, a single input parameter type, and their implementation.
+/// A builder class for creating and registering custom functions in the context of a [DocxStamperConfiguration].
+///
+/// The custom functions are defined by a name, a single input parameter type, and their implementation.
 ///
 /// @param <T> the type of the input to the function
 public class FunctionBuilder<T>
@@ -17,12 +18,12 @@ public class FunctionBuilder<T>
     private final String name;
     private final Class<T> class0;
 
-    /// Constructs a new `FunctionBuilder` to define and register a custom function in the provided
-    /// `DocxStamperConfiguration`.
+    /// Constructs a new [FunctionBuilder] to define and register a custom function in the provided
+    /// [DocxStamperConfiguration].
     ///
-    /// @param source the `DocxStamperConfiguration` instance in which the custom function will be registered.
+    /// @param source the [DocxStamperConfiguration] instance in which the custom function will be registered.
     /// @param name the name of the custom function to be defined
-    /// @param class0 the `Class` object representing the type of the single input parameter for the custom
+    /// @param class0 the [Class] object representing the type of the single input parameter for the custom
     ///         function.
     public FunctionBuilder(DocxStamperConfiguration source, String name, Class<T> class0) {
         this.source = source;

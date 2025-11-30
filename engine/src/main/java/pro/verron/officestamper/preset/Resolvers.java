@@ -17,8 +17,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-/// This class provides static methods to create different types of
-/// [ObjectResolver].
+/// This class provides static methods to create different types of [ObjectResolver].
 ///
 /// @author Joseph Verron
 /// @version ${version}
@@ -29,25 +28,26 @@ public class Resolvers {
         throw new OfficeStamperException("Resolvers cannot be instantiated");
     }
 
-    /// Returns an instance of [ObjectResolver] that can act as a fallback
-    /// resolver. Will call the [Object#toString()] method on every type
-    /// of objects.
+    /// Returns an instance of [ObjectResolver] that can act as a fallback resolver.
+    ///
+    /// Will call the [Object#toString()] method on every type of objects.
+    ///
+    /// @param linebreakPlaceholder The placeholder to use for linebreaks.
     ///
     /// @return An instance of [ObjectResolver]
-    /// @param linebreakPlaceholder The placeholder to use for linebreaks.
     public static ObjectResolver fallback(String linebreakPlaceholder) {
         return new ToStringResolver(linebreakPlaceholder);
     }
 
-    /// Returns an instance of [ObjectResolver] that replaces null values with an empty string.
+    /// Returns an instance of [ObjectResolver] that replaces `null` values with an empty string.
     ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver nullToEmpty() {
         return nullToDefault("");
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves null objects
-    /// by creating a run with a default text value.
+    /// Returns an instance of [ObjectResolver] that resolves `null` values by creating a run with a default text
+    /// value.
     ///
     /// @param value The default value for null objects.
     ///
@@ -56,16 +56,15 @@ public class Resolvers {
         return new Null2DefaultResolver(value);
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves null objects
-    /// by not replacing their expression.
+    /// Returns an instance of [ObjectResolver] that resolves `null` values by not replacing their expression.
     ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver nullToPlaceholder() {
+        // TODO make the nulltoPlaceholder configurable at the same time as the prepareplaceholder
         return new Null2PlaceholderResolver("${%s}");
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves
-    /// [LocalDateTime] values to a formatted string using the
+    /// Returns an instance of [ObjectResolver] that resolves [LocalDateTime] values to a formatted string using the
     /// [DateTimeFormatter#ISO_LOCAL_DATE_TIME] pattern.
     ///
     /// @return An instance of [ObjectResolver]
@@ -73,8 +72,7 @@ public class Resolvers {
         return new LocalDateTimeResolver();
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves
-    /// [LocalTime] values to a formatted string using the
+    /// Returns an instance of [ObjectResolver] that resolves [LocalTime] values to a formatted string using the
     /// [DateTimeFormatter#ISO_LOCAL_TIME] pattern.
     ///
     /// @return An instance of [ObjectResolver]
@@ -82,8 +80,7 @@ public class Resolvers {
         return new LocalTimeResolver();
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves
-    /// [LocalDate] values to a formatted string using the
+    /// Returns an instance of [ObjectResolver] that resolves [LocalDate] values to a formatted string using the
     /// [DateTimeFormatter#ISO_LOCAL_DATE] pattern.
     ///
     /// @return An instance of [ObjectResolver]
@@ -91,8 +88,7 @@ public class Resolvers {
         return new LocalDateResolver();
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves
-    /// [LocalTime] values to a formatted string using the given
+    /// Returns an instance of [ObjectResolver] that resolves [LocalTime] values to a formatted string using the given
     /// [DateTimeFormatter] pattern.
     ///
     /// @param formatter the [DateTimeFormatter] pattern to use
@@ -102,8 +98,7 @@ public class Resolvers {
         return new LocalTimeResolver(formatter);
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves
-    /// [LocalDate] values to a formatted string using the given
+    /// Returns an instance of [ObjectResolver] that resolves [LocalDate] values to a formatted string using the given
     /// [DateTimeFormatter] pattern.
     ///
     /// @param formatter the [DateTimeFormatter] pattern to use
@@ -113,9 +108,8 @@ public class Resolvers {
         return new LocalDateResolver(formatter);
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves
-    /// [LocalDateTime] values to a formatted string using the given
-    /// [DateTimeFormatter] pattern.
+    /// Returns an instance of [ObjectResolver] that resolves [LocalDateTime] values to a formatted string using the
+    /// given [DateTimeFormatter] pattern.
     ///
     /// @param formatter the [DateTimeFormatter] pattern to use
     ///
@@ -124,17 +118,15 @@ public class Resolvers {
         return new LocalDateTimeResolver(formatter);
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves
-    /// [Date] values to a formatted string using the
-    /// "dd.MM.yyyy" pattern.
+    /// Returns an instance of [ObjectResolver] that resolves [Date] values to a formatted string using the "dd.MM.yyyy"
+    /// pattern.
     ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver legacyDate() {
         return new DateResolver();
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves
-    /// [Date] values to a formatted string using the given
+    /// Returns an instance of [ObjectResolver] that resolves [Date] values to a formatted string using the given
     /// [DateTimeFormatter] pattern.
     ///
     /// @param formatter the [DateTimeFormatter] pattern to use
@@ -144,9 +136,8 @@ public class Resolvers {
         return new DateResolver(formatter);
     }
 
-    /// Returns an instance of [ObjectResolver] that resolves
-    /// [Image] to an actual image in the resulting .docx document.
-    /// The image will be put as an inline into the surrounding paragraph of text.
+    /// Returns an instance of [ObjectResolver] that resolves [Image] to an actual image in the resulting .docx
+    /// document. The image will be put as an inline into the surrounding paragraph of text.
     ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver image() {

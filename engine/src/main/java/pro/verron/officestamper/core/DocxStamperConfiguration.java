@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /// The [DocxStamperConfiguration] class represents the configuration for the [DocxStamper] class.
+///
 /// It provides methods to customize the behavior of the stamper.
 ///
 /// @author Joseph Verron
@@ -38,10 +39,11 @@ public class DocxStamperConfiguration
     private SpelParserConfiguration spelParserConfiguration;
     private ExceptionResolver exceptionResolver;
 
-    /// Constructs a new instance of the `DocxStamperConfiguration` class
-    /// and initializes its default configuration settings.
-    /// This constructor sets up internal structures and default behaviors
-    /// for managing document stamping configurations, including:
+    /// Constructs a new instance of the [DocxStamperConfiguration] class and initializes its default configuration
+    /// settings.
+    ///
+    /// This constructor sets up internal structures and default behaviors for managing document stamping
+    /// configurations, including:
     /// - Initializing collections for processors, resolvers, and functions.
     /// - Setting default values for expression handling and evaluation.
     /// - Creating and configuring a default `SpelParserConfiguration`.
@@ -61,10 +63,8 @@ public class DocxStamperConfiguration
     /// Exposes all methods of a given interface to the expression language.
     ///
     /// @param interfaceClass the interface holding methods to expose in the expression language.
-    /// @param implementation the implementation to call to evaluate invocations of those methods. Must implement the
-    ///
-    ///
-    ///                                             mentioned interface.
+    /// @param implementation the implementation to call to evaluate invocations of those methods, it must
+    ///         implement the mentioned interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override
@@ -76,10 +76,11 @@ public class DocxStamperConfiguration
         return this;
     }
 
-    /// Registers the specified ICommentProcessor as an implementation of the specified interface.
+    /// Registers the specified [CommentProcessor] as an implementation of the specified interface.
     ///
-    /// @param interfaceClass          the interface, implemented by the commentProcessor.
-    /// @param commentProcessorFactory the commentProcessor factory generating instances of the specified interface.
+    /// @param interfaceClass the interface, implemented by the commentProcessor.
+    /// @param commentProcessorFactory the commentProcessor factory generating instances of the specified
+    ///         interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override
@@ -99,16 +100,16 @@ public class DocxStamperConfiguration
         preprocessors.add(preprocessor);
     }
 
-    /// Retrieves the configured EvaluationContextConfigurer instance.
+    /// Retrieves the configured [EvaluationContextConfigurer] instance.
     ///
-    /// @return an instance of EvaluationContextConfigurer used for configuring evaluation contexts
+    /// @return an instance of [EvaluationContextConfigurer] used for configuring evaluation contexts
     @Override
     public EvaluationContextConfigurer getEvaluationContextConfigurer() {
         return evaluationContextConfigurer;
     }
 
-    /// Provides an [EvaluationContextConfigurer] which may change the configuration of a Spring
-    /// [EvaluationContext] used for evaluating expressions in comments and text.
+    /// Provides an [EvaluationContextConfigurer] which may change the configuration of a Spring [EvaluationContext]
+    /// used for evaluating expressions in comments and text.
     ///
     /// @param evaluationContextConfigurer the configurer to use.
     ///
@@ -127,7 +128,9 @@ public class DocxStamperConfiguration
     }
 
     /// Sets the [SpelParserConfiguration] used for expression parsing.
-    /// Note that this configuration is the same for all expressions in the document, including expressions in comments.
+    ///
+    /// Note that this configuration is the same for all expressions in the document, including expressions in
+    /// comments.
     ///
     /// @param spelParserConfiguration the configuration to use.
     ///
@@ -142,8 +145,8 @@ public class DocxStamperConfiguration
 
     /// Retrieves the mapping of expression function classes to their corresponding function instances.
     ///
-    /// @return a map where the keys are classes representing the function types and the values are the function
-    /// instances.
+    /// @return a map where the keys are classes representing the function types, and the values are the function
+    ///         instances.
     @Override
     public Map<Class<?>, Object> getExpressionFunctions() {
         return expressionFunctions;
@@ -151,8 +154,8 @@ public class DocxStamperConfiguration
 
     /// Retrieves the map of comment processors associated with specific classes.
     ///
-    /// @return a map where the key is the class associated with a specific type of placeholder
-    ///         and the value is a function that creates a CommentProcessor for that placeholder.
+    /// @return a map where the key is the class associated with a specific type of placeholder, and the value is a
+    ///         function that creates a [CommentProcessor] for that placeholder.
     @Override
     public Map<Class<?>, CommentProcessorFactory> getCommentProcessors() {
         return commentProcessors;
@@ -160,7 +163,7 @@ public class DocxStamperConfiguration
 
     /// Retrieves the list of preprocessors.
     ///
-    /// @return a list of PreProcessor objects.
+    /// @return a list of [PreProcessor] objects.
     @Override
     public List<PreProcessor> getPreprocessors() {
         return preprocessors;
@@ -168,19 +171,20 @@ public class DocxStamperConfiguration
 
     /// Retrieves the list of object resolvers.
     ///
-    /// @return a list of `ObjectResolver` instances.
+    /// @return a list of [ObjectResolver] instances.
     @Override
     public List<ObjectResolver> getResolvers() {
         return resolvers;
     }
 
-    /// Sets resolvers for resolving objects in the DocxStamperConfiguration.
+    /// Sets resolvers for resolving objects in the [DocxStamperConfiguration].
     ///
-    /// This method is the evolution of the method `addTypeResolver`,
-    /// and the order in which the resolvers are ordered is determinant - the first resolvers
-    /// in the list will be tried first. If a fallback resolver is desired, it should be placed last in the list.
+    /// This method is the evolution of the method [#addResolver(ObjectResolver)], and the order in which the resolvers
+    /// are ordered is determinant; the first resolvers in the list will be tried first.
     ///
-    /// @param resolvers The list of ObjectResolvers to be set.
+    ///  If a fallback resolver is desired, it should be placed last in the list.
+    ///
+    /// @param resolvers The list of [ObjectResolver] to be set.
     ///
     /// @return the configuration object for chaining.
     @Override
@@ -190,13 +194,14 @@ public class DocxStamperConfiguration
         return this;
     }
 
-    /// Adds a resolver to the list of resolvers in the `DocxStamperConfiguration` object.
-    /// Resolvers are used to resolve objects during the stamping process.
+    /// Adds a resolver to the list of resolvers in the [DocxStamperConfiguration] object.
     ///
-    /// @param resolver The resolver to be added. This resolver should implement the `ObjectResolver` interface.
+    ///  Resolvers are used to resolve objects during the stamping process.
     ///
-    /// @return The modified `DocxStamperConfiguration` object, with the resolver added to the beginning of the
-    /// resolver list.
+    /// @param resolver The resolver to be added.
+    ///
+    /// @return The modified [DocxStamperConfiguration] object, with the resolver added to the beginning of the resolver
+    ///         list.
     @Override
     public DocxStamperConfiguration addResolver(ObjectResolver resolver) {
         resolvers.addFirst(resolver);
@@ -205,17 +210,17 @@ public class DocxStamperConfiguration
 
     /// Retrieves the exception resolver.
     ///
-    /// @return the current instance of ExceptionResolver.
+    /// @return the current instance of [ExceptionResolver].
     @Override
     public ExceptionResolver getExceptionResolver() {
         return exceptionResolver;
     }
 
-    /// Configures the exception resolver for the DocxStamperConfiguration.
+    /// Configures the exception resolver for the [DocxStamperConfiguration].
     ///
-    /// @param exceptionResolver the ExceptionResolver to handle exceptions during processing
+    /// @param exceptionResolver the [ExceptionResolver] to handle exceptions during processing
     ///
-    /// @return the current instance of DocxStamperConfiguration
+    /// @return the current instance of [DocxStamperConfiguration]
     @Override
     public DocxStamperConfiguration setExceptionResolver(ExceptionResolver exceptionResolver) {
         this.exceptionResolver = exceptionResolver;
@@ -224,7 +229,7 @@ public class DocxStamperConfiguration
 
     /// Retrieves a list of custom functions.
     ///
-    /// @return a List containing CustomFunction objects.
+    /// @return a List containing [CustomFunction] objects.
     @Override
     public List<CustomFunction> customFunctions() {
         return functions;
@@ -232,22 +237,11 @@ public class DocxStamperConfiguration
 
     /// Adds a custom function to the system, allowing integration of user-defined functionality.
     ///
-    /// @param name           The name of the custom function being added.
-    ///
-    ///                       This is used as the
-    ///                                             identifier for the
-    ///                                                                   function and must be unique
-    ///
-    ///                       across all defined
-    ///                                             functions.
-    /// @param implementation A Supplier functional interface that provides the implementation of the custom function.
-    ///
-    ///                       When the function is
-    ///                                             called, the supplier's
-    ///                                                                   get method will be
-    ///                                                                                         executed to return the
-    ///
-    ///                       result of the function.
+    /// @param name The name of the custom function being added. This is used as the identifier for the function
+    ///         and must be unique across all defined functions.
+    /// @param implementation A [Supplier] functional interface that provides the implementation of the custom
+    ///         function. When the function is called, the supplier's get method will be executed to return the result
+    ///         of the function.
     @Override
     public void addCustomFunction(String name, Supplier<?> implementation) {
         this.addCustomFunction(new CustomFunction(name, List.of(), args -> implementation.get()));
@@ -255,18 +249,18 @@ public class DocxStamperConfiguration
 
     /// Adds a custom function to the list of functions.
     ///
-    /// @param function the CustomFunction object to be added
+    /// @param function the [CustomFunction] object to be added
     public void addCustomFunction(CustomFunction function) {
         this.functions.add(function);
     }
 
     /// Adds a custom function to the context with the specified name and type.
     ///
-    /// @param name   the name of the custom function
+    /// @param name the name of the custom function
     /// @param class0 the class type of the custom function
-    /// @param <T>    the type of the input parameter
+    /// @param <T> the type of the input parameter
     ///
-    /// @return an instance of NeedsFunctionImpl configured with the custom function
+    /// @return an instance of [NeedsFunctionImpl] configured with the custom function
     @Override
     public <T> NeedsFunctionImpl<T> addCustomFunction(String name, Class<T> class0) {
         return new FunctionBuilder<>(this, name, class0);
@@ -274,30 +268,30 @@ public class DocxStamperConfiguration
 
     /// Adds a custom function with the specified name and input types.
     ///
-    /// @param name   the name of the custom function to be added
-    /// @param class0 the class type of the first input parameter of the custom function
-    /// @param class1 the class type of the second input parameter of the custom function
-    /// @param <T>    the type of the first input parameter
-    /// @param <U>    the type of the second input parameter
+    /// @param name the name of the custom function to be added
+    /// @param class0 the class type of the first input parameter of the custom function.
+    /// @param class1 the class type of the second input parameter of the custom function.
+    /// @param <T> the type of the first input parameter
+    /// @param <U> the type of the second input parameter
     ///
-    /// @return an instance of NeedsBiFunctionImpl for further configuration or usage of the custom function
+    /// @return an instance of [NeedsBiFunctionImpl] for further configuration or usage of the custom function.
     @Override
     public <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1) {
         return new BiFunctionBuilder<>(this, name, class0, class1);
     }
 
-    /// Adds a custom function to the current context by defining its name and the classes
-    /// associated with its argument types.
+    /// Adds a custom function to the current context by defining its name, and the classes associated with its argument
+    /// types.
     ///
-    /// @param name   the name to assign to the custom function
+    /// @param name the name to assign to the custom function
     /// @param class0 the class of the first argument type
     /// @param class1 the class of the second argument type
     /// @param class2 the class of the third argument type
-    /// @param <T>    the type of the first argument
-    /// @param <U>    the type of the second argument
-    /// @param <V>    the type of the third argument
+    /// @param <T> the type of the first argument
+    /// @param <U> the type of the second argument
+    /// @param <V> the type of the third argument
     ///
-    /// @return an instance of NeedsTriFunctionImpl indicating the custom function implementation and usage context
+    /// @return an instance of [NeedsTriFunctionImpl] indicating the custom function implementation and usage context.
     @Override
     public <T, U, V> NeedsTriFunctionImpl<T, U, V> addCustomFunction(
             String name,
@@ -310,7 +304,7 @@ public class DocxStamperConfiguration
 
     /// Retrieves the list of postprocessors.
     ///
-    /// @return a List of PostProcessor objects.
+    /// @return a List of [PostProcessor] objects.
     @Override
     public List<PostProcessor> getPostprocessors() {
         return postprocessors;
@@ -318,7 +312,7 @@ public class DocxStamperConfiguration
 
     /// Adds a given postprocessor to the list of postprocessors.
     ///
-    /// @param postprocessor the PostProcessor instance to be added
+    /// @param postprocessor the [PostProcessor] instance to be added
     @Override
     public void addPostprocessor(PostProcessor postprocessor) {
         postprocessors.add(postprocessor);

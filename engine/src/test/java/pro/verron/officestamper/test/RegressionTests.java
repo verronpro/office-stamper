@@ -18,8 +18,8 @@ import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.abort;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 
 class RegressionTests {
@@ -80,17 +80,17 @@ class RegressionTests {
         assertEquals(expected, actual);
     }
 
-    private static OfficeStamperConfiguration givenConfiguration() {
-        return standardWithPreprocessing();
-    }
-
     private static TestDocxStamper<Object> givenStamper(OfficeStamperConfiguration configuration) {
         return new TestDocxStamper<>(configuration);
     }
 
+    private static Object givenContext() {
+        return new Object();
+    }
+
     @Test
     void test64() {
-        var configuration = givenConfiguration();
+        var configuration = full();
         var testFunction = new TestFunction.TestFunctionImpl();
         configuration.exposeInterfaceToExpressionLanguage(TestFunction.class, testFunction);
         var stamper = givenStamper(configuration);
@@ -103,10 +103,6 @@ class RegressionTests {
 
     private static InputStream givenTemplate(String str) {
         return TestUtils.makeResource(str);
-    }
-
-    private static Object givenContext() {
-        return new Object();
     }
 
     @Test
@@ -144,7 +140,7 @@ class RegressionTests {
     @MethodSource("source52")
     @ParameterizedTest
     void test52(Conditions conditions, String expected) {
-        var stamper = givenStamper(givenConfiguration());
+        var stamper = givenStamper(full());
         var template = givenTemplate(TEMPLATE_52);
         var actual = stamper.stampAndLoadAndExtract(template, conditions);
         assertEquals(expected, actual);

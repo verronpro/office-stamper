@@ -10,7 +10,6 @@ import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.EvaluationContextConfigurers;
 import pro.verron.officestamper.preset.ExceptionResolvers;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
 import java.io.InputStream;
@@ -20,7 +19,8 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.*;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
@@ -76,7 +76,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments replaceWordWithIntegrationTest(ContextFactory factory) {
         return of("Replace Word With integration test",
-                OfficeStamperConfigurations.standardWithPreprocessing(),
+                full(),
                 factory.name("Simpsons"),
                 getResource(Path.of("ProcessorReplaceWith.docx")),
                 """
@@ -249,8 +249,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 In this paragraph, the variable name should be resolved to the value Homer Simpson.
                 In this paragraph, the variable foo should not be resolved: <1|unresolvedValueWithComment|1><1|replaceWith(foo)>.
                 """;
-        var config = standardWithPreprocessing().setExceptionResolver(ExceptionResolvers.passing());
-        return arguments("Replace Word With Integration test", config, context, template, expected);
+        var configuration = full().setExceptionResolver(ExceptionResolvers.passing());
+        return arguments("Replace Word With Integration test", configuration, context, template, expected);
     }
 
     /// testDateInstantiationAndResolution.
@@ -297,7 +297,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments lineBreakReplacementTest(ContextFactory factory) {
-        var config = standardWithFallback(Resolvers.fallback("#"));
+        var config = standard(Resolvers.fallback("#"));
         var context = factory.sentence("whatever # split in # three lines");
         var template = makeResource("""
                 This paragraph should not be # split.

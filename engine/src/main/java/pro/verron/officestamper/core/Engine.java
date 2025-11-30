@@ -28,7 +28,7 @@ public class Engine
 
     public boolean process(Object contextRoot, Placeholder commentPlaceholder) {
         try {
-            expressionResolver.resolve(contextRoot, commentPlaceholder);
+            expressionResolver.resolve(contextRoot, commentPlaceholder.content());
             log.debug("Processed '{}' successfully.", commentPlaceholder);
             return true;
         } catch (SpelEvaluationException | SpelParseException e) {
@@ -38,17 +38,19 @@ public class Engine
         }
     }
 
-    /// Resolves and replaces placeholder expressions within a specified paragraph tag.
-    /// This method uses the provided context and document part to find and substitute
-    /// placeholder expressions in the given tag with the corresponding resolved values.
+    /// Resolves a placeholder expression and returns an appropriate Insert object based on the resolution result. This
+    /// method attempts to resolve the placeholder's content using the expression resolver against the provided context.
+    /// If successful, the resolved object is further processed by the object resolver registry. If any error occurs
+    /// during resolution, an error message is generated and processed through the exception resolver.
     ///
-    /// @param part        the part of the document containing the paragraph and associated content.
-    /// @param tag         the tag representing the placeholder to be resolved and replaced.
-    /// @param contextRoot the context object that provides data for resolving the placeholder expressions.
-    public Insert resolve(DocxPart part, Tag tag, Object contextRoot) {
-        Placeholder placeholder = tag.asPlaceholder();
+    /// @param part the document part containing the placeholder to be resolved
+    /// @param placeholder the placeholder containing the expression to be resolved
+    /// @param contextRoot the root object used as the evaluation context for the expression
+    ///
+    /// @return an Insert object containing either the successfully resolved content or an error message
+    public Insert resolve(DocxPart part, Placeholder placeholder, Object contextRoot) {
         try {
-            var resolution = expressionResolver.resolve(contextRoot, placeholder);
+            var resolution = expressionResolver.resolve(contextRoot, placeholder.content());
             return objectResolverRegistry.resolve(part, placeholder, resolution);
         } catch (SpelEvaluationException | SpelParseException | OfficeStamperException e) {
             var msgTemplate = "Expression %s could not be resolved against context of type %s";

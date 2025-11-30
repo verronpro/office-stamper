@@ -31,7 +31,7 @@ public class TagHook
             tag.remove();
         }
         else if ("placeholder".equals(tagType)) {
-            var insert = engine.resolve(part, tag, contextRoot);
+            var insert = engine.resolve(part, placeholder, contextRoot);
             processed = true;
             tag.replace(insert);
         }

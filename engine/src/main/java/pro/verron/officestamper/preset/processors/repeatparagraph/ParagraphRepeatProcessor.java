@@ -20,8 +20,7 @@ import static java.util.Collections.emptyIterator;
 import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakIfPresent;
 import static pro.verron.officestamper.core.SectionUtil.hasOddNumberOfSectionBreaks;
 
-/// Class used internally to repeat document elements.
-/// Used by the lib, should not be instantiated by clients.
+/// Class used internally to repeat document elements. Used by the lib, should not be instantiated by clients.
 ///
 /// @author Joseph Verron
 /// @author Youssouf Naciri
@@ -87,10 +86,11 @@ public class ParagraphRepeatProcessor
                     var tagIterator = DocxIterator.ofTags(p, new TextualDocxPart(comment.getDocument()));
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
+                        var placeholder = tag.asPlaceholder();
                         if (tag.type()
                                .filter("placeholder"::equals)
                                .isPresent()) {
-                            var insert = replacer().resolve(document, tag, expressionContext);
+                            var insert = replacer().resolve(document, placeholder, expressionContext);
                             tag.replace(insert);
                             tagIterator.reset();
                         }

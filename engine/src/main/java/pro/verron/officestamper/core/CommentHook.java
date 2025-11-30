@@ -20,9 +20,10 @@ public class CommentHook
     public boolean run(Function<ProcessorContext, Engine> engineFactory, Object contextRoot) {
         var paragraph = comment.getParagraph(part);
         var placeholder = comment.asPlaceholder();
+        var expression = placeholder.content();
         var processorContext = new ProcessorContext(part, paragraph, comment, placeholder);
         var engine = engineFactory.apply(processorContext);
-        if (engine.process(contextRoot, placeholder)) {
+        if (engine.process(contextRoot, expression)) {
             CommentUtil.deleteComment(comment);
             return true;
         }

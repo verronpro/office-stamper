@@ -21,17 +21,18 @@ public class TagHook
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();
         var placeholder = tag.asPlaceholder();
+        var expression = placeholder.content();
         var processorContext = new ProcessorContext(part, paragraph, comment, placeholder);
         var engine = engineFactory.apply(processorContext);
         var tagType = tag.type()
                          .orElse(null);
         boolean processed = false;
         if ("processor".equals(tagType)) {
-            if (engine.process(contextRoot, placeholder)) processed = true;
+            if (engine.process(contextRoot, expression)) processed = true;
             tag.remove();
         }
         else if ("placeholder".equals(tagType)) {
-            var insert = engine.resolve(part, placeholder, contextRoot);
+            var insert = engine.resolve(part, expression, contextRoot);
             processed = true;
             tag.replace(insert);
         }

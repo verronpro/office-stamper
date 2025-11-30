@@ -26,38 +26,39 @@ public class Engine
         this.objectResolverRegistry = objectResolverRegistry;
     }
 
-    public boolean process(Object contextRoot, Placeholder commentPlaceholder) {
+    public boolean process(Object contextRoot, String expression) {
         try {
-            expressionResolver.resolve(contextRoot, commentPlaceholder.content());
-            log.debug("Processed '{}' successfully.", commentPlaceholder);
+            expressionResolver.resolve(contextRoot, expression);
+            log.debug("Processed '{}' successfully.", expression);
             return true;
         } catch (SpelEvaluationException | SpelParseException e) {
-            var message = "Processing '%s' failed.".formatted(commentPlaceholder.expression());
-            exceptionResolver.resolve(commentPlaceholder, message, e);
+            var message = "Processing '%s' failed.".formatted(expression);
+            exceptionResolver.resolve(expression, message, e);
             return false;
         }
     }
 
-    /// Resolves a placeholder expression and returns an appropriate Insert object based on the resolution result. This
-    /// method attempts to resolve the placeholder's content using the expression resolver against the provided context.
-    /// If successful, the resolved object is further processed by the object resolver registry. If any error occurs
-    /// during resolution, an error message is generated and processed through the exception resolver.
+    /// Resolves a given expression against the provided context root, and a specific document part, returning an
+    /// [Insert] object representing the resolved content.
     ///
-    /// @param part the document part containing the placeholder to be resolved
-    /// @param placeholder the placeholder containing the expression to be resolved
-    /// @param contextRoot the root object used as the evaluation context for the expression
+    /// If an error occurs during resolution, attempts to generate a fallback resolution using an exception resolver.
     ///
-    /// @return an Insert object containing either the successfully resolved content or an error message
-    public Insert resolve(DocxPart part, Placeholder placeholder, Object contextRoot) {
+    /// @param part the document part where the expression should be resolved
+    /// @param expression the string expression to be evaluated
+    /// @param contextRoot the root context object used for evaluating the expression
+    ///
+    /// @return an [Insert] object representing the resolved content, if resolution fails, returns an [Insert] created
+    ///         with the exception resolver.
+    public Insert resolve(DocxPart part, String expression, Object contextRoot) {
         try {
-            var resolution = expressionResolver.resolve(contextRoot, placeholder.content());
-            return objectResolverRegistry.resolve(part, placeholder, resolution);
+            var resolution = expressionResolver.resolve(contextRoot, expression);
+            return objectResolverRegistry.resolve(part, expression, resolution);
         } catch (SpelEvaluationException | SpelParseException | OfficeStamperException e) {
             var msgTemplate = "Expression %s could not be resolved against context of type %s";
             var contextClass = contextRoot.getClass();
             var contextClassName = contextClass.getSimpleName();
-            var message = msgTemplate.formatted(placeholder.expression(), contextClassName);
-            var resolution = exceptionResolver.resolve(placeholder, message, e);
+            var message = msgTemplate.formatted(expression, contextClassName);
+            var resolution = exceptionResolver.resolve(expression, message, e);
             return Inserts.of(WmlFactory.newRun(resolution));
         }
     }

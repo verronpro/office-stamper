@@ -1,7 +1,10 @@
 package pro.verron.officestamper.core;
 
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.ObjectResolver;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,19 +27,20 @@ public final class ObjectResolverRegistry {
 
     /// Resolves the expression in the given document with the provided object.
     ///
-    /// @param document   the WordprocessingMLPackage document in which to resolve the placeholder
-    /// @param placeholder the expression value to be replaced
-    /// @param object     the object to be used for resolving the expression
+    /// @param document the WordprocessingMLPackage document in which to resolve the placeholder
+    /// @param object the object to be used for resolving the expression
+    ///
     /// @return the resolved value for the expression
+    ///
     /// @throws OfficeStamperException if no resolver is found for the object
     public Insert resolve(
             DocxPart document,
-            Placeholder placeholder,
+            String expression,
             @Nullable Object object
     ) {
         for (ObjectResolver resolver : resolvers)
             if (resolver.canResolve(object))
-                return resolver.resolve(document, placeholder.content(), object);
+                return resolver.resolve(document, expression, object);
         throw new OfficeStamperException("No resolver for %s".formatted(object));
     }
 }

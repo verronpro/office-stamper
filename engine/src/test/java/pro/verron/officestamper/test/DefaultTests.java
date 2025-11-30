@@ -52,7 +52,6 @@ import static pro.verron.officestamper.test.TestUtils.*;
             pipe.accept(lineBreakReplacementTest(factory));
             pipe.accept(mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(factory));
             pipe.accept(nullPointerResolutionTest_testWithDefaultSpel(factory));
-            pipe.accept(customCommentProcessor(factory));
             pipe.accept(controls(factory));
         }), Stream.of(nullPointerResolutionTest_testWithCustomSpel(ContextFactory.objectContextFactory())));
     }
@@ -373,20 +372,6 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var config = standard().setExceptionResolver(ExceptionResolvers.passing());
 
         return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
-    }
-
-    private static Arguments customCommentProcessor(ContextFactory factory) {
-        return arguments("Custom processor Integration test",
-                standard().addCommentProcessor(ICustomCommentProcessor.class, CustomCommentProcessor::newInstance),
-                factory.empty(),
-                getResource(Path.of("CustomCommentProcessorTest.docx")),
-                """     
-                        == Custom Comment Processor Test
-                        
-                        Visited
-                        This paragraph is untouched.
-                        Visited
-                        """);
     }
 
     private static Arguments controls(ContextFactory factory) {

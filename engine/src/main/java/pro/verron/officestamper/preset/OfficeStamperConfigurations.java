@@ -21,8 +21,8 @@ import static java.time.format.FormatStyle.valueOf;
 import static java.util.Locale.forLanguageTag;
 
 
-/// The OfficeStamperConfigurations class provides static methods
-/// to create different configurations for the OfficeStamper.
+/// The OfficeStamperConfigurations class provides static methods to create different configurations for the
+/// OfficeStamper.
 public class OfficeStamperConfigurations {
 
 
@@ -79,50 +79,49 @@ public class OfficeStamperConfigurations {
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
         configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "processor"));
         configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
-
-        configuration.addCustomFunction("ftime", TemporalAccessor.class)
-                     .withImplementation(ISO_TIME::format);
-        configuration.addCustomFunction("fdate", TemporalAccessor.class)
-                     .withImplementation(ISO_DATE::format);
-        configuration.addCustomFunction("fdatetime", TemporalAccessor.class)
-                     .withImplementation(ISO_DATE_TIME::format);
-        configuration.addCustomFunction("finstant", TemporalAccessor.class)
-                     .withImplementation(ISO_INSTANT::format);
-        configuration.addCustomFunction("fordinaldate", TemporalAccessor.class)
-                     .withImplementation(ISO_ORDINAL_DATE::format);
-        configuration.addCustomFunction("f1123datetime", TemporalAccessor.class)
-                     .withImplementation(RFC_1123_DATE_TIME::format);
-        configuration.addCustomFunction("flocaldate", TemporalAccessor.class)
-                     .withImplementation(ISO_LOCAL_DATE::format);
-        configuration.addCustomFunction("fbasicdate", TemporalAccessor.class)
-                     .withImplementation(BASIC_ISO_DATE::format);
-        configuration.addCustomFunction("fweekdate", TemporalAccessor.class)
-                     .withImplementation(ISO_WEEK_DATE::format);
         var fLocalDateTime = "flocaldatetime";
-        configuration.addCustomFunction(fLocalDateTime, TemporalAccessor.class)
-                     .withImplementation(ISO_LOCAL_DATE_TIME::format);
-        configuration.addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedDateTime(valueOf(style)).format(date));
-        configuration.addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class, String.class)
+        configuration.addCustomFunction("ftime", TemporalAccessor.class)
+                     .withImplementation(ISO_TIME::format)
+                     .addCustomFunction("fdate", TemporalAccessor.class)
+                     .withImplementation(ISO_DATE::format)
+                     .addCustomFunction("fdatetime", TemporalAccessor.class)
+                     .withImplementation(ISO_DATE_TIME::format)
+                     .addCustomFunction("finstant", TemporalAccessor.class)
+                     .withImplementation(ISO_INSTANT::format)
+                     .addCustomFunction("fordinaldate", TemporalAccessor.class)
+                     .withImplementation(ISO_ORDINAL_DATE::format)
+                     .addCustomFunction("f1123datetime", TemporalAccessor.class)
+                     .withImplementation(RFC_1123_DATE_TIME::format)
+                     .addCustomFunction("flocaldate", TemporalAccessor.class)
+                     .withImplementation(ISO_LOCAL_DATE::format)
+                     .addCustomFunction("fbasicdate", TemporalAccessor.class)
+                     .withImplementation(BASIC_ISO_DATE::format)
+                     .addCustomFunction("fweekdate", TemporalAccessor.class)
+                     .withImplementation(ISO_WEEK_DATE::format)
+                     .addCustomFunction(fLocalDateTime, TemporalAccessor.class)
+                     .withImplementation(ISO_LOCAL_DATE_TIME::format)
+                     .addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class)
+                     .withImplementation((date, style) -> ofLocalizedDateTime(valueOf(style)).format(date))
+                     .addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class, String.class)
                      .withImplementation((date, dateStyle, timeStyle) -> ofLocalizedDateTime(valueOf(dateStyle),
-                             valueOf(timeStyle)).format(date));
-        configuration.addCustomFunction("foffsetdatetime", TemporalAccessor.class)
-                     .withImplementation(ISO_OFFSET_DATE_TIME::format);
-        configuration.addCustomFunction("fzoneddatetime", TemporalAccessor.class)
-                     .withImplementation(ISO_ZONED_DATE_TIME::format);
-        configuration.addCustomFunction("foffsetdate", TemporalAccessor.class)
-                     .withImplementation(ISO_OFFSET_DATE::format);
-        configuration.addCustomFunction("flocaltime", TemporalAccessor.class)
-                     .withImplementation(ISO_LOCAL_TIME::format);
-        configuration.addCustomFunction("foffsettime", TemporalAccessor.class)
-                     .withImplementation(ISO_OFFSET_TIME::format);
-        configuration.addCustomFunction("flocaldate", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedDate(valueOf(style)).format(date));
-        configuration.addCustomFunction("flocaltime", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedTime(valueOf(style)).format(date));
-        configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class)
-                     .withImplementation((date, pattern) -> ofPattern(pattern).format(date));
-        configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class, String.class)
+                             valueOf(timeStyle)).format(date))
+                     .addCustomFunction("foffsetdatetime", TemporalAccessor.class)
+                     .withImplementation(ISO_OFFSET_DATE_TIME::format)
+                     .addCustomFunction("fzoneddatetime", TemporalAccessor.class)
+                     .withImplementation(ISO_ZONED_DATE_TIME::format)
+                     .addCustomFunction("foffsetdate", TemporalAccessor.class)
+                     .withImplementation(ISO_OFFSET_DATE::format)
+                     .addCustomFunction("flocaltime", TemporalAccessor.class)
+                     .withImplementation(ISO_LOCAL_TIME::format)
+                     .addCustomFunction("foffsettime", TemporalAccessor.class)
+                     .withImplementation(ISO_OFFSET_TIME::format)
+                     .addCustomFunction("flocaldate", TemporalAccessor.class, String.class)
+                     .withImplementation((date, style) -> ofLocalizedDate(valueOf(style)).format(date))
+                     .addCustomFunction("flocaltime", TemporalAccessor.class, String.class)
+                     .withImplementation((date, style) -> ofLocalizedTime(valueOf(style)).format(date))
+                     .addCustomFunction("fpattern", TemporalAccessor.class, String.class)
+                     .withImplementation((date, pattern) -> ofPattern(pattern).format(date))
+                     .addCustomFunction("fpattern", TemporalAccessor.class, String.class, String.class)
                      .withImplementation((date, pattern, locale) -> ofPattern(pattern, forLanguageTag(locale)).format(
                              date));
         return configuration;

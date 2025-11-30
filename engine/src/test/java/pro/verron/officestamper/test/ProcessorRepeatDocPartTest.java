@@ -26,8 +26,8 @@ import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
 
 class ProcessorRepeatDocPartTest {
-    private static final Logger log = LoggerFactory.getLogger(ProcessorRepeatDocPartTest.class);
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
+    private static final Logger log = LoggerFactory.getLogger(ProcessorRepeatDocPartTest.class);
 
     private static Stream<Arguments> tests() {
         return factories().mapMulti((factory, pipe) -> {
@@ -183,7 +183,7 @@ class ProcessorRepeatDocPartTest {
 
     private static Arguments repeatDocPartNestingTest(ContextFactory factory) {
         return of("Repeat Doc Part Integration Test, with nested comments",
-                OfficeStamperConfigurations.standardWithPreprocessing(),
+                OfficeStamperConfigurations.full(),
                 factory.schoolContext(),
                 getResource(Path.of("ProcessorRepeatDocPart_Nesting.docx")),
                 """

@@ -26,7 +26,7 @@ public class OfficeStampers {
     ///
     /// @return a [StreamStamper] instance for stamping [WordprocessingMLPackage] documents
     public static StreamStamper<WordprocessingMLPackage> docxStamper() {
-        return docxStamper(OfficeStamperConfigurations.standardWithPreprocessing());
+        return docxStamper(OfficeStamperConfigurations.full());
     }
 
     /// Creates a [StreamStamper] instance that processes [WordprocessingMLPackage] (DOCX) documents by applying
@@ -34,14 +34,12 @@ public class OfficeStampers {
     ///
     /// The returned stamper is designed to handle the transformation of DOCX templates using provided context data.
     ///
-    /// @return a new instance of the [DocxStamper] class
-    public static StreamStamper<WordprocessingMLPackage> docxStamper(
-            OfficeStamperConfiguration config
-    ) {
-        return new StreamStamper<>(
-                OfficeStampers::loadWord,
-                new DocxStamper(config)
-        );
+    /// @param configuration an instance of [OfficeStamperConfiguration] that defines the behavior and
+    ///         preprocessing steps of the stamper.
+    ///
+    /// @return a [StreamStamper] of type [WordprocessingMLPackage] configured to process DOCX documents.
+    public static StreamStamper<WordprocessingMLPackage> docxStamper(OfficeStamperConfiguration configuration) {
+        return new StreamStamper<>(OfficeStampers::loadWord, new DocxStamper(configuration));
     }
 
     private static WordprocessingMLPackage loadWord(InputStream is) {

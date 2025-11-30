@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.raw;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
@@ -24,14 +24,17 @@ import static pro.verron.officestamper.utils.WmlFactory.newRun;
 @DisplayName("") class CustomProcessorTests {
 
     private static Stream<Arguments> factories() {
-        return Stream.of(argumentSet("Object-based", objectContextFactory()),
-                argumentSet("Map-based", mapContextFactory()));
+        return Stream.of(//
+                argumentSet("Object-based", objectContextFactory()),//
+                argumentSet("Map-based", mapContextFactory())//
+        );
     }
 
     @MethodSource("factories")
+    @DisplayName("Should allow to inject custom processors")
     @ParameterizedTest(name = "Should allow to inject custom processors ({argumentSetName})")
     void should_allow_custom_processors_injection(ContextFactory factory) {
-        var config = standard().addCommentProcessor(ICustomProcessor.class, CustomProcessor::new);
+        var config = raw().addCommentProcessor(ICustomProcessor.class, CustomProcessor::new);
         var template = getResource(Path.of("CustomCommentProcessorTest.docx"));
         var expected = """     
                 == Custom Comment Processor Test

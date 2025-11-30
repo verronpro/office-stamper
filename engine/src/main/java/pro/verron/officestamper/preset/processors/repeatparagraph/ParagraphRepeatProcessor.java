@@ -87,10 +87,11 @@ public class ParagraphRepeatProcessor
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
                         var placeholder = tag.asPlaceholder();
+                        var expression = placeholder.content();
                         if (tag.type()
                                .filter("placeholder"::equals)
                                .isPresent()) {
-                            var insert = replacer().resolve(document, placeholder, expressionContext);
+                            var insert = replacer().resolve(document, expression, expressionContext);
                             tag.replace(insert);
                             tagIterator.reset();
                         }

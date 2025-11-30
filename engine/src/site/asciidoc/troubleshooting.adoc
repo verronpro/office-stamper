@@ -145,7 +145,7 @@ If you're having trouble identifying the issue, try creating a minimal reproduct
 
 If you're still having issues after trying the solutions above:
 
-1. Check the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] to see if someone else has reported the same problem.
+1. Check the link:https://github.com/verronpro/office-stamper/issues[GitHub Issues] to see if someone else has reported the same problem.
 2. Create a new issue with:
    - A minimal reproduction of the problem
    - Your template document (if possible)

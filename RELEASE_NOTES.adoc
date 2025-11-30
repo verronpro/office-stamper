@@ -224,7 +224,7 @@ Fixes a bug when commenting several groups of runs by different comments in a si
 === Features
 
 * Add a way to set an ExceptionResolver to Office-stamper, with `OfficeStamperConfiguration#setExceptionResolver(ExceptionResolver)`
-and allows users to handle errors programmatically as was expressed in the old https://github.com/verronpro/docx-stamper/issues/65[Issue #65]
+and allows users to handle errors programmatically as was expressed in the old https://github.com/verronpro/office-stamper/issues/65[Issue #65]
 ** Added an `ExceptionsResolvers` class providing default implementations
 ** It deprecates `setFailOnUnresolvedExpression(boolean)`, `unresolvedExpressionsDefaultValue(String)`, `replaceUnresolvedExpressions(boolean)` and `leaveEmptyOnExpressionError(boolean)`.
 
@@ -256,7 +256,7 @@ and allows users to handle errors programmatically as was expressed in the old h
 * Tests can now differentiate tables with their asciidoc-like representation
 * Tests can now differentiate when paragraph style has the `cnfStyle` property set
 * Quite a few tests have been remodeled to decrease their verbosity
-* Added a regression test for https://github.com/verronpro/docx-stamper/issues/64[Issue #64]
+* Added a regression test for https://github.com/verronpro/office-stamper/issues/64[Issue #64]
 
 == {proj}/v2.4.0[v2.4.0]
 
@@ -323,7 +323,7 @@ Please check if you had specific expectations in your custom implementations, th
 
 === Continuous Integration
 
-* Added a new Maven extension for caching the build by @caring-coder in https://github.com/verronpro/docx-stamper/pull/389.
+* Added a new Maven extension for caching the build by @caring-coder in https://github.com/verronpro/office-stamper/pull/389.
 
 === Tests
 

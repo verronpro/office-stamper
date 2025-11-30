@@ -29,7 +29,7 @@ If applicable, add screenshots to help explain your problem.
  - Java version: [e.g. 1.8, 9, 11, 18, etc]
  - docx editor: [e.g. MS Word, Google Dox, LibreOffice, etc]
  - docx4j version: 
- - docx-stamper version [e.g. 22]
+- office-stamper version [e.g. 22]
 
 **Additional context**
 Add any other context about the problem here.

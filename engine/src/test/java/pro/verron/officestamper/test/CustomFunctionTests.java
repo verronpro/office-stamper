@@ -96,9 +96,8 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     @MethodSource("factories")
     @ParameterizedTest
     void functions(ContextFactory factory) {
-        var config = standard();
-        config.addCustomFunction("toUppercase", String.class)
-              .withImplementation(String::toUpperCase);
+        var config = standard().addCustomFunction("toUppercase", String.class)
+                               .withImplementation(String::toUpperCase);
         var template = makeResource("${toUppercase(name)}");
         var context = factory.show();
         var stamper = new TestDocxStamper<>(config);
@@ -144,13 +143,12 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     @MethodSource
     @ParameterizedTest
     void trifunctions(ContextFactory factory, String tag, String expected) {
-        var config = standard();
-        config.addCustomFunction("format", LocalDate.class, String.class, String.class)
-              .withImplementation((date, pattern, languageTag) -> {
-                  var locale = Locale.forLanguageTag(languageTag);
-                  var formatter = DateTimeFormatter.ofPattern(pattern, locale);
-                  return formatter.format(date);
-              });
+        var config = standard().addCustomFunction("format", LocalDate.class, String.class, String.class)
+                               .withImplementation((date, pattern, languageTag) -> {
+                                   var locale = Locale.forLanguageTag(languageTag);
+                                   var formatter = DateTimeFormatter.ofPattern(pattern, locale);
+                                   return formatter.format(date);
+                               });
         var template = makeResource("${format(date,'yyyy MMMM','%s')}".formatted(tag));
         var context = factory.date(LocalDate.of(2024, Month.APRIL, 1));
         var stamper = new TestDocxStamper<>(config);

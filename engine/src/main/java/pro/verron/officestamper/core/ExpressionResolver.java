@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.Placeholder;
 
 /// Resolves expressions against a given context object. Expressions can be either SpEL expressions or simple property
 /// expressions.
@@ -25,16 +24,22 @@ public class ExpressionResolver {
         this.evaluationContext = standardEvaluationContext;
     }
 
-    /// Resolves the content of a placeholder by evaluating the expression against the evaluation context.
+    /// Resolves the specified expression against the given context object.
     ///
-    /// @param placeholder the placeholder to resolve
+    /// The method uses an expression parser to evaluate the provided expression string in the context of the
+    /// contextRoot object.
     ///
-    /// @return the resolved value of the placeholder
+    /// The result of the evaluation is returned.
+    ///
+    /// @param contextRoot the root object used as the evaluation context for the expression.
+    /// @param expression the expression to be evaluated as a [String]
+    ///
+    /// @return the result of the evaluated expression, possibly. It will return `null` when the expression does not
+    ///         have a return value, or when the result is the `null` value.
     @Nullable
-    public Object resolve(Object contextRoot, Placeholder placeholder) {
+    public Object resolve(Object contextRoot, String expression) {
         evaluationContext.setRootObject(contextRoot);
-        var expressionString = placeholder.content();
-        var expression = parser.parseExpression(expressionString);
-        return expression.getValue(evaluationContext);
+        var parsedExpression = parser.parseExpression(expression);
+        return parsedExpression.getValue(evaluationContext);
     }
 }

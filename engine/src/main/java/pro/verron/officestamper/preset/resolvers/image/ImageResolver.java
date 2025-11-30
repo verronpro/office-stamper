@@ -9,10 +9,9 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.utils.Inserts;
 
-/// This [ObjectResolver] allows context objects to return objects of
-/// type [Image]. An expression that resolves to an [Image]
-/// object will be replaced by an actual image in the resulting .docx document.
-/// The image will be put as an inline into the surrounding paragraph of text.
+/// This [ObjectResolver] allows context objects to return objects of type [Image]. An expression that resolves to an
+/// [Image] object will be replaced by an actual image in the resulting .docx document. The image will be put as an
+/// inline into the surrounding paragraph of text.
 ///
 /// @author Joseph Verron
 /// @version ${version}
@@ -21,7 +20,7 @@ public class ImageResolver
         implements ObjectResolver {
 
     @Override
-    public Insert resolve(DocxPart part, String expression, Object object) {
+    public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
         if (object instanceof Image image) return resolve(part, image);
         String message = "Expected %s to be an Image".formatted(object);
         throw new OfficeStamperException(message);
@@ -32,8 +31,7 @@ public class ImageResolver
         return object instanceof Image;
     }
 
-    /// Resolves an image and adds it to a [WordprocessingMLPackage]
-    /// document.
+    /// Resolves an image and adds it to a [WordprocessingMLPackage] document.
     ///
     /// @param image The image to be resolved and added
     ///

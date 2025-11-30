@@ -24,7 +24,7 @@ public class Null2PlaceholderResolver
     }
 
     @Override
-    public Insert resolve(DocxPart document, String expression, Object object) {
+    public Insert resolve(DocxPart document, String expression, @Nullable Object object) {
         return Inserts.of(newRun(placeholderTemplate.formatted(expression)));
     }
 

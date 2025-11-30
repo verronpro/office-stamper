@@ -1,20 +1,21 @@
 package pro.verron.officestamper.api;
 
 
-/// ExceptionResolver is a functional interface used to resolve the behavior when an exception occurs during
-/// the processing of a placeholder.
-/// Implementations of this interface define how to handle the exception,
-/// logging the error, rethrowing the exception, or providing a fallback value.
-@FunctionalInterface
-public interface ExceptionResolver {
-    /// Resolves the behavior in handling exceptions during the processing of a placeholder.
-    /// This method is used to determine the appropriate behavior when an exception occurs,
-    /// such as returning a fallback value, logging the error, or rethrowing the exception.
+/// ExceptionResolver is a functional interface used to resolve the behavior when an exception occurs during the
+/// processing of a placeholder.
+///
+/// Implementations of this interface define how to handle the exception, logging the error, rethrowing the exception,
+/// or providing a fallback value.
+@FunctionalInterface public interface ExceptionResolver {
+
+    /// Resolves the given expression by providing a result or handling an exception that occurred during placeholder
+    /// processing within a document. It allows implementations to log errors, rethrow exceptions, or return fallback
+    /// values.
     ///
-    /// @param placeholder the placeholder being processed when the exception occurred
-    /// @param message     the message providing context or additional information about the exception
-    /// @param cause       the exception that occured during the placeholder processing
+    /// @param expression the placeholder expression that was being evaluated when the exception occurred.
+    /// @param message a descriptive message providing context about the exception
+    /// @param cause the underlying exception that was encountered
     ///
-    /// @return a string representing the resolved outcome, such as an alternate response or error information.
-    String resolve(Placeholder placeholder, String message, Exception cause);
+    /// @return a resolved fallback value as a String, which could be used as a replacement for the placeholder.
+    String resolve(String expression, String message, Exception cause);
 }

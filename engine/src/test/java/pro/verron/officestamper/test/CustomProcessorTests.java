@@ -19,9 +19,7 @@ import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
-/// Test class for verifying the integration and functionality of Custom Comment Processors within the stamping process
-/// of DOCX documents.
-@DisplayName("") class CustomProcessorTests {
+@DisplayName("Custom processors features") class CustomProcessorTests {
 
     private static Stream<Arguments> factories() {
         return Stream.of(//

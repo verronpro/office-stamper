@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pro.verron.officestamper.test.Functions.UppercaseFunction;
 
 import java.math.BigDecimal;
 import java.nio.file.Path;
@@ -53,7 +52,8 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     @DisplayName("Should allow to inject full interfaces")
     @ParameterizedTest(name = "Should allow to inject full interfaces ({argumentSetName})")
     void interfaces(ContextFactory factory) {
-        var config = standard().exposeInterfaceToExpressionLanguage(UppercaseFunction.class, Functions.upperCase());
+        var config = standard().exposeInterfaceToExpressionLanguage(UppercaseFunction.class,
+                (UppercaseFunction) String::toUpperCase);
         var template = getResource(Path.of("CustomExpressionFunction.docx"));
         var context = factory.show();
         var stamper = new TestDocxStamper<>(config);
@@ -97,6 +97,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     }
 
     @MethodSource("factories")
+    @DisplayName("Should allow to inject lambda functions")
     @ParameterizedTest(name = "Should allow to inject lambda functions ({argumentSetName})")
     void functions(ContextFactory factory) {
         var config = standard().addCustomFunction("toUppercase", String.class)
@@ -112,7 +113,8 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     }
 
     @MethodSource("factories")
-    @ParameterizedTest(name = "Should allow to inject lambda functions ({argumentSetName})")
+    @DisplayName("Should allow to inject lambda suppliers")
+    @ParameterizedTest(name = "Should allow to inject lambda suppliers ({argumentSetName})")
     void suppliers(ContextFactory factory) {
         var config = standard();
         config.addCustomFunction("foo", () -> List.of("a", "b", "c"));
@@ -127,7 +129,8 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     }
 
     @MethodSource("factories")
-    @ParameterizedTest(name = "Should allow to inject lambda suppliers. ({argumentSetName})")
+    @DisplayName("Should allow to inject lambda bifunctions.")
+    @ParameterizedTest(name = "Should allow to inject lambda bifunctions. ({argumentSetName})")
     void bifunctions(ContextFactory factory) {
         var config = standard();
         config.addCustomFunction("Add", String.class, Integer.class)
@@ -141,7 +144,8 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     }
 
     @MethodSource("trifunctions")
-    @ParameterizedTest(name = "Should allow to inject lambda trifunctions. ({argumentSetName})")
+    @DisplayName("Should allow to inject lambda trifunctions")
+    @ParameterizedTest(name = "Should allow to inject lambda trifunctions ({argumentSetName})")
     void trifunctions(ContextFactory factory, String tag, String expected) {
         var config = minimal().addCustomFunction("format", LocalDate.class, String.class, String.class)
                               .withImplementation((date, pattern, languageTag) -> {
@@ -154,5 +158,15 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected + "\n", actual);
+    }
+
+    /// The UppercaseFunction interface defines a method for converting a string to uppercase.
+    public interface UppercaseFunction {
+        /// Converts the given string to uppercase.
+        ///
+        /// @param string the string to be converted to uppercase
+        ///
+        /// @return the uppercase representation of the given string
+        String toUppercase(String string);
     }
 }

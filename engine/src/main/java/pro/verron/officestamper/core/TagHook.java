@@ -18,8 +18,7 @@ public class TagHook
     public boolean run(EngineFactory engineFactory, Object contextRoot) {
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();
-        var placeholder = tag.asPlaceholder();
-        var expression = placeholder.content();
+        var expression = tag.expression();
         var processorContext = new ProcessorContext(part, paragraph, comment, expression);
         var engine = engineFactory.create(processorContext);
         var tagType = tag.type()

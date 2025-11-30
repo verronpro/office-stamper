@@ -12,11 +12,6 @@ import java.util.function.Consumer;
 /// The Paragraph interface represents a paragraph in a text document.
 /// It provides methods for replacing a placeholder within the paragraph and retrieving the paragraph as a string.
 public interface Paragraph {
-    /// Creates a processor context for the given placeholder within this paragraph.
-    ///
-    /// @param placeholder The placeholder to create a context for.
-    /// @return The processor context for the specified placeholder.
-    ProcessorContext processorContext(Placeholder placeholder);
 
     /// Replaces specified contiguous elements within the paragraph with new elements.
     ///

@@ -17,8 +17,7 @@ public class CommentHook
     @Override
     public boolean run(EngineFactory engineFactory, Object contextRoot) {
         var paragraph = comment.getParagraph(part);
-        var placeholder = comment.asPlaceholder();
-        var expression = placeholder.content();
+        var expression = comment.expression();
         var processorContext = new ProcessorContext(part, paragraph, comment, expression);
         var engine = engineFactory.create(processorContext);
         if (engine.process(contextRoot)) {

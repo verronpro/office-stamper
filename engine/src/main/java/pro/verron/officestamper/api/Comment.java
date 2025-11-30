@@ -16,10 +16,10 @@ public interface Comment {
         return StandardParagraph.from(part, parent);
     }
 
-    /// Converts the comment to a Placeholder representation.
+    /// Retrieves the CommentRangeStart object associated with this comment.
     ///
-    /// @return the Placeholder representation of the comment
-    Placeholder asPlaceholder();
+    /// @return the [CommentRangeStart] object associated with this comment
+    CommentRangeStart getCommentRangeStart();
 
     /// Retrieves the parent of the comment.
     ///
@@ -35,11 +35,6 @@ public interface Comment {
     ///
     /// @return the [CommentRangeEnd] object associated with this comment
     CommentRangeEnd getCommentRangeEnd();
-
-    /// Retrieves the CommentRangeStart object associated with this comment.
-    ///
-    /// @return the [CommentRangeStart] object associated with this comment
-    CommentRangeStart getCommentRangeStart();
 
     /// Retrieves the [R.CommentReference] object associated with this comment.
     ///
@@ -60,4 +55,9 @@ public interface Comment {
     ///
     /// @return the WordprocessingMLPackage document.
     WordprocessingMLPackage getDocument();
+
+    /// Retrieves the expression associated with the implementing entity.
+    ///
+    /// @return a string representing the expression
+    String expression();
 }

@@ -6,7 +6,6 @@ import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Placeholder;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -40,35 +39,31 @@ public class StandardComment
         this.docxPart = docxPart;
     }
 
-    /// Creates a new instance of a [StandardComment] and initializes its properties
-    /// including the comment, comment range start, comment range end, and comment reference.
+    /// Creates a new instance of [StandardComment] and initializes it with the given parameters, including a comment,
+    /// comment range start, comment range end, and a comment reference.
     ///
-    /// @param document    the [WordprocessingMLPackage] document where the comment will be created
-    /// @param parent      the parent element [P] to which the comment belongs
-    /// @param placeholder the placeholder containing the content for the comment
-    /// @param id          the unique identifier for the comment
+    /// @param document the [DocxPart] representing the document to which this comment belongs
+    /// @param parent the [ContentAccessor] representing the parent content of the comment range
+    /// @param expression the [String] content to be included in the comment
+    /// @param id the unique [BigInteger] identifier for the comment
     ///
-    /// @return a fully initialized [StandardComment] object
-    public static StandardComment create(
-            DocxPart document,
-            ContentAccessor parent,
-            Placeholder placeholder,
-            BigInteger id
-    ) {
+    /// @return a [StandardComment] instance initialized with the specified parameters
+    public static StandardComment create(DocxPart document, ContentAccessor parent, String expression, BigInteger id) {
         var commentWrapper = new StandardComment(document);
-        commentWrapper.setComment(newComment(id, placeholder.content()));
+        commentWrapper.setComment(newComment(id, expression));
         commentWrapper.setCommentRangeStart(newCommentRangeStart(id, parent));
         commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
         commentWrapper.setCommentReference(newCommentReference(id, parent));
         return commentWrapper;
     }
 
-    /// Generates a string representation of the [StandardComment] object, including its ID,
-    /// content, and the amount children comments.
+    /// Generates a string representation of the [StandardComment] object, including its ID, content, and the amount
+    /// children comments.
     ///
-    /// @return a formatted string describing the [StandardComment]'s properties,
-    ///         including its ID, content, and the size of its children.
-    @Override public String toString() {
+    /// @return a formatted string describing the [StandardComment]'s properties, including its ID, content, and the
+    ///         size of its children.
+    @Override
+    public String toString() {
         return "StandardComment{comment={id=%s, content=%s, children=%s}}}".formatted(comment.getId(),
                 comment.getContent()
                        .stream()
@@ -77,39 +72,25 @@ public class StandardComment
                 children.size());
     }
 
-    /// Converts the current comment into a [Placeholder] representation.
-    /// This method processes the content of the associated comment, extracts specific elements
-    /// that are instances of the [P] class, transforms them into strings, and combines them
-    /// to create a raw placeholder using [Placeholders#raw].
+    /// Adds a [Comment] to this comment children set.
     ///
-    /// @return a [Placeholder] instance containing the combined string representation of the comment content
-    @Override
-    public Placeholder asPlaceholder() {
-        String string = this.getComment()
-                            .getContent()
-                            .stream()
-                            .filter(P.class::isInstance)
-                            .map(P.class::cast)
-                            .map(p -> StandardParagraph.from(new TextualDocxPart(docxPart.document()), p))
-                            .map(StandardParagraph::asString)
-                            .collect(joining());
-        return Placeholders.raw(string);
+    /// @param comment the child comment to be added
+    public void addChild(Comment comment) {
+        children.add(comment);
     }
 
-    /// Returns the smallest common parent of the elements defined by the start
-    /// and end of the comment range.
+    /// Returns the smallest common parent of the elements defined by the start and end of the comment range.
     ///
-    /// @return the ContentAccessor representing the smallest common parent of
-    ///         the comment range start and end, or null if no common parent exists
+    /// @return the ContentAccessor representing the smallest common parent of the comment range start and end, or null
+    ///         if no common parent exists
     @Override
     public ContentAccessor getParent() {
         return DocumentUtil.findSmallestCommonParent(getCommentRangeStart(), getCommentRangeEnd());
     }
 
-    /// Retrieves a list of elements that exist within the comment's range,
-    /// bounded by the start and end of the comment range.
-    /// The method iterates through the siblings of the comment's parent content,
-    /// collecting elements starting from the range start to the range end.
+    /// Retrieves a list of elements that exist within the comment's range, bounded by the start and end of the comment
+    /// range. The method iterates through the siblings of the comment's parent content, collecting elements starting
+    /// from the range start to the range end.
     ///
     /// @return a list of elements between the comment range start and comment range end
     @Override
@@ -202,10 +183,18 @@ public class StandardComment
         return docxPart.document();
     }
 
-    /// Adds a [Comment] to this comment children set.
-    ///
-    /// @param comment the child comment to be added
-    public void addChild(Comment comment) {
-        children.add(comment);
+
+    @Override
+    public String expression() {
+        return this.getComment()
+                   .getContent()
+                   .stream()
+                   .filter(P.class::isInstance)
+                   .map(P.class::cast)
+                   .map(p -> StandardParagraph.from(new TextualDocxPart(docxPart.document()), p))
+                   .map(StandardParagraph::asString)
+                   .collect(joining());
     }
+
+
 }

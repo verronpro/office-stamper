@@ -134,13 +134,6 @@ public class PowerpointParagraph
     }
 
     @Override
-    public ProcessorContext processorContext(Placeholder placeholder) {
-        var comment = comment(placeholder);
-        var expression = placeholder.content();
-        return new ProcessorContext(part, this, comment, expression);
-    }
-
-    @Override
     public void replace(List<P> toRemove, List<P> toAdd) {
         int index = siblings().indexOf(paragraph);
         if (index < 0) throw new OfficeStamperException("Impossible");
@@ -236,9 +229,9 @@ public class PowerpointParagraph
         return WmlUtils.getFirstParentWithClass(paragraph, aClass, depth);
     }
 
-    private Comment comment(Placeholder placeholder) {
+    private Comment comment(String expression) {
         var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(part, paragraph::getEGTextRun, placeholder, id);
+        return StandardComment.create(part, paragraph::getEGTextRun, expression, id);
     }
 
     private void singleRun(

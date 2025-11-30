@@ -71,20 +71,6 @@ public class StandardParagraph
         return new StandardParagraph(source, paragraph, (ArrayListWml<Object>) parentParent.getContent());
     }
 
-    /// Creates a new instance of ProcessorContext for the current paragraph.
-    /// This method generates a comment for the given placeholder and retrieves the first run from the contents,
-    /// which are then used to construct the ProcessorContext.
-    ///
-    /// @param placeholder the placeholder being processed, used to generate the related comment.
-    ///
-    /// @return a new ProcessorContext instance containing the paragraph, first run, related comment, and placeholder.
-    @Override
-    public ProcessorContext processorContext(Placeholder placeholder) {
-        var comment = comment(placeholder);
-        var expression = placeholder.content();
-        return new ProcessorContext(part, this, comment, expression);
-    }
-
     /// Replaces a set of paragraph elements with new ones within the current paragraph's siblings.
     /// Ensures that the elements to be removed are replaced in the appropriate position.
     ///
@@ -213,9 +199,9 @@ public class StandardParagraph
         return CommentUtil.getCommentFor(() -> p, part.document());
     }
 
-    private Comment comment(Placeholder placeholder) {
+    private Comment comment(String expression) {
         var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(part, () -> p, placeholder, id);
+        return StandardComment.create(part, () -> p, expression, id);
     }
 
     /// Returns the string representation of the paragraph.

@@ -86,8 +86,7 @@ public class ParagraphRepeatProcessor
                     var tagIterator = DocxIterator.ofTags(p, new TextualDocxPart(comment.getDocument()));
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
-                        var placeholder = tag.asPlaceholder();
-                        var expression = placeholder.content();
+                        var expression = tag.expression();
                         if (tag.type()
                                .filter("placeholder"::equals)
                                .isPresent()) {

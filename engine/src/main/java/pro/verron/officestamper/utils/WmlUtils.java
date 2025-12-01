@@ -29,8 +29,8 @@ import java.util.function.Predicate;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.WmlFactory.*;
 
-/// Utility class with methods to help in the interaction with WordprocessingMLPackage documents
-/// and their elements, such as comments, parents, and child elements.
+/// Utility class with methods to help in the interaction with WordprocessingMLPackage documents and their elements,
+/// such as comments, parents, and child elements.
 public final class WmlUtils {
 
     private static final String PRESERVE = "preserve";
@@ -40,16 +40,16 @@ public final class WmlUtils {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
-    /// Attempts to find the first parent of a given child element that is an instance of the specified class within
-    /// the defined search depth.
+    /// Attempts to find the first parent of a given child element that is an instance of the specified class within the
+    /// defined search depth.
     ///
     /// @param child the child element from which the search for a parent begins.
     /// @param clazz the class type to match for the parent
     /// @param depth the maximum amount levels to traverse up the parent hierarchy
-    /// @param <T>   the type of the parent class to search for
+    /// @param <T> the type of the parent class to search for
     ///
     /// @return an Optional containing the first parent matching the specified class, or an empty Optional if no match
-    /// found.
+    ///         found.
     public static <T> Optional<T> getFirstParentWithClass(Child child, Class<T> clazz, int depth) {
         var parent = child.getParent();
         var currentDepth = 0;
@@ -76,7 +76,7 @@ public final class WmlUtils {
     /// Finds a comment with the given ID in the specified WordprocessingMLPackage document.
     ///
     /// @param document the WordprocessingMLPackage document to search for the comment
-    /// @param id       the ID of the comment to find
+    /// @param id the ID of the comment to find
     ///
     /// @return an Optional containing the Comment if found, or an empty Optional if not found.
     public static Optional<Comments.Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
@@ -114,11 +114,9 @@ public final class WmlUtils {
     }
 
 
-    /// Removes the specified child element from its parent container.
-    /// Depending on the type of the parent element, the removal process
-    /// is delegated to the appropriate helper method. If the child is
-    /// contained within a table cell and the cell is empty after removal,
-    /// an empty paragraph is added to the cell.
+    /// Removes the specified child element from its parent container. Depending on the type of the parent element, the
+    /// removal process is delegated to the appropriate helper method. If the child is contained within a table cell and
+    /// the cell is empty after removal, an empty paragraph is added to the cell.
     ///
     /// @param child the child element to be removed
     ///
@@ -218,19 +216,15 @@ public final class WmlUtils {
         }
     }
 
-    /// Extracts textual content from a given object, handling various object types,
-    /// such as runs, text elements, and other specific constructs.
-    /// The method accounts for different cases, such as run breaks, hyphens,
-    /// and other document-specific constructs, and converts them into
-    /// corresponding string representations.
+    /// Extracts textual content from a given object, handling various object types, such as runs, text elements, and
+    /// other specific constructs. The method accounts for different cases, such as run breaks, hyphens, and other
+    /// document-specific constructs, and converts them into corresponding string representations.
     ///
-    /// @param content the object from which text content is to be extracted.
-    ///                                              This could be of various types such as R, JAXBElement, Text or
-    ///                specific document
-    ///                               elements.
+    /// @param content the object from which text content is to be extracted. This could be of various types
+    ///         such as R, JAXBElement, Text or specific document elements.
     ///
-    /// @return a string representation of the extracted textual content.
-    /// If the object's type is not handled, an empty string is returned.
+    /// @return a string representation of the extracted textual content. If the object's type is not handled, an empty
+    ///         string is returned.
     public static String asString(Object content) {
         return switch (content) {
             case P paragraph -> asString(paragraph.getContent());
@@ -281,7 +275,7 @@ public final class WmlUtils {
 
     public static List<Object> insertSmartTag(String element, P paragraph, String expression, int start, int end) {
         var run = newRun(expression);
-        var smartTag = newSmartTag(element, run);
+        var smartTag = newSmartTag("officestamper", run, newCtAttr("type", element));
         findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
         return replace(paragraph, Inserts.of(smartTag), start, end);
     }
@@ -293,15 +287,12 @@ public final class WmlUtils {
                                .filter(run -> run.isTouchedByRange(start, end))
                                .toList();
 
-        StandardRun firstRun = affectedRuns.getFirst();
+        var firstRun = affectedRuns.getFirst();
         var firstRunPr = firstRun.getPr();
         return Optional.ofNullable(firstRunPr);
     }
 
-    public static List<Object> replace(
-            ContentAccessor contentAccessor, Insert insert, int startIndex,
-            int endIndex
-    ) {
+    public static List<Object> replace(ContentAccessor contentAccessor, Insert insert, int startIndex, int endIndex) {
         var runs = StandardRun.wrap(contentAccessor);
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(startIndex, endIndex))
@@ -413,7 +404,7 @@ public final class WmlUtils {
 
     /// Sets the text of the given run to the given value.
     ///
-    /// @param run  the run whose text to change.
+    /// @param run the run whose text to change.
     /// @param text the text to set.
     public static void setText(R run, String text) {
         run.getContent()
@@ -424,7 +415,8 @@ public final class WmlUtils {
     }
 
     public static List<Object> replaceExpressionWithRun(
-            ContentAccessor contentAccessor, String expression,
+            ContentAccessor contentAccessor,
+            String expression,
             Insert insert
     ) {
         var text = asString(contentAccessor);

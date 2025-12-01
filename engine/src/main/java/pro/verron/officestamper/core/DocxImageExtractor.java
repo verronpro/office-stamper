@@ -22,9 +22,9 @@ public class DocxImageExtractor {
 
     private final WordprocessingMLPackage wordprocessingMLPackage;
 
-    /// Creates a new image extractor for the given docx document.
+    /// Creates a new image extractor for the given DOCX document.
     ///
-    /// @param wordprocessingMLPackage the docx document to extract images from.
+    /// @param wordprocessingMLPackage the DOCX document to extract images from.
     public DocxImageExtractor(WordprocessingMLPackage wordprocessingMLPackage) {
         this.wordprocessingMLPackage = wordprocessingMLPackage;
     }

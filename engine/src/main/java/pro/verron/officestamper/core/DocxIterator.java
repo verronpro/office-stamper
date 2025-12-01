@@ -4,7 +4,6 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Tag;
 
 import java.util.*;
@@ -33,27 +32,6 @@ public class DocxIterator
         this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
         this.iteratorQueue.add(startingIterator);
         this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
-    }
-
-    /// Creates a [ResetableIterator] of [StandardParagraph] instances from the given [DocxPart].
-    /// Extracts [P] or [CTSdtContentRun] elements from the [DocxPart] and maps them to [StandardParagraph]
-    ///  objects.
-    ///
-    /// @param docxPart the [DocxPart] object from which paragraphs will be extracted
-    ///
-    /// @return a [ResetableIterator] containing the extracted and mapped [StandardParagraph] instances
-    public static ResetableIterator<StandardParagraph> ofParagraphs(DocxPart docxPart) {
-        var iterator = new DocxIterator(() -> docxPart.content()
-                                                      .iterator());
-        Predicate<Object> isParagraph = P.class::isInstance;
-        Predicate<Object> isSdtRun = CTSdtContentRun.class::isInstance;
-        var predicate = isParagraph.or(isSdtRun);
-        Function<Object, StandardParagraph> mapper = o -> switch (o) {
-            case P p -> StandardParagraph.from(docxPart, p);
-            case CTSdtContentRun ctSdtContentRun -> StandardParagraph.from(docxPart, ctSdtContentRun);
-            default -> throw new OfficeStamperException("Unexpected element type: " + o.getClass());
-        };
-        return new FilterMapperIterator<>(iterator, predicate, mapper);
     }
 
     /// Creates a [ResetableIterator] of [CommentRangeStart] instances from the given [WordprocessingMLPackage]

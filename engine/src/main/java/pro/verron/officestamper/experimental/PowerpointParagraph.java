@@ -6,12 +6,13 @@ import org.docx4j.dml.CTTextParagraph;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.StandardComment;
 import pro.verron.officestamper.utils.WmlUtils;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -33,7 +34,6 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 public class PowerpointParagraph
         implements Paragraph {
 
-    private static final Random RANDOM = new Random();
     private final DocxPart part;
     private final List<PowerpointRun> runs = new ArrayList<>();
     private final CTTextParagraph paragraph;
@@ -41,7 +41,7 @@ public class PowerpointParagraph
 
     /// Constructs a new ParagraphWrapper for the given paragraph.
     ///
-    /// @param source    the source of the paragraph.
+    /// @param part the source of the paragraph.
     /// @param paragraph the paragraph to wrap.
     public PowerpointParagraph(PptxPart part, CTTextParagraph paragraph) {
         this.part = part;
@@ -149,20 +149,18 @@ public class PowerpointParagraph
 
     /// Replaces a placeholder within the paragraph with the content from the given insert, preserving formatting.
     ///
-    /// @param placeholder the placeholder to be replaced; its expression is used to locate the section to replace
-    /// @param insert      the content to replace the placeholder with; must be a valid and compatible text run
+    /// @param insert the content to replace the placeholder with; must be a valid and compatible text run
     @Override
-    public void replace(Placeholder placeholder, Insert insert) {
+    public void replace(String expression, Insert insert) {
         var replacementRun = insert.assertInstanceOf(CTRegularTextRun.class);
 
         String text = asString();
-        String full = placeholder.expression();
-        int matchStartIndex = text.indexOf(full);
+        int matchStartIndex = text.indexOf(expression);
         if (matchStartIndex == -1) {
             // nothing to replace
             return;
         }
-        int matchEndIndex = matchStartIndex + full.length() - 1;
+        int matchEndIndex = matchStartIndex + expression.length() - 1;
         List<PowerpointRun> affectedRuns = getAffectedRuns(matchStartIndex, matchEndIndex);
 
         boolean singleRun = affectedRuns.size() == 1;
@@ -172,7 +170,7 @@ public class PowerpointParagraph
                                           .run()
                                           .getRPr());
         if (singleRun) singleRun(replacementRun,
-                full,
+                expression,
                 matchStartIndex,
                 matchEndIndex,
                 textRun,
@@ -227,11 +225,6 @@ public class PowerpointParagraph
 
     private <T> Optional<T> parent(Class<T> aClass, int depth) {
         return WmlUtils.getFirstParentWithClass(paragraph, aClass, depth);
-    }
-
-    private Comment comment(String expression) {
-        var id = new BigInteger(16, RANDOM);
-        return StandardComment.create(part, paragraph::getEGTextRun, expression, id);
     }
 
     private void singleRun(

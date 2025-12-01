@@ -11,7 +11,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.io.OutputStream;
 
-import static pro.verron.officestamper.core.Placeholders.findVariables;
+import static pro.verron.officestamper.experimental.Placeholders.findVariables;
 
 /// The ExcelStamper class is an implementation of the OfficeStamper interface for stamping Excel templates.
 /// It uses the DOCX4J library to manipulate the template and replace variable expressions with values from the context.
@@ -39,13 +39,14 @@ public class ExcelStamper
             var paragraph = new ExcelParagraph(cell);
             var string = paragraph.asString();
             for (var variable : findVariables(string)) {
+                var expression = variable.expression();
                 var evaluationContext = new StandardEvaluationContext(context);
                 var parserConfiguration = new SpelParserConfiguration();
                 var parser = new SpelExpressionParser(parserConfiguration);
-                var expression = parser.parseExpression(variable.content());
-                var value = expression.getValue(evaluationContext);
+                var parsedExpression = parser.parseExpression(variable.content());
+                var value = parsedExpression.getValue(evaluationContext);
                 var stringValue = String.valueOf(value);
-                paragraph.replace(variable, stringValue);
+                paragraph.replace(expression, stringValue);
             }
         }
         try {

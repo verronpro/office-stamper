@@ -9,7 +9,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.core.Placeholders;
 import pro.verron.officestamper.utils.Inserts;
 
 import java.io.OutputStream;
@@ -45,7 +44,8 @@ public class PowerpointStamper
                 var value = expression.getValue(evaluationContext);
 
                 replacement.setT((String) value);
-                paragraph1.replace(variable, Inserts.of(replacement));
+                var expression1 = variable.expression();
+                paragraph1.replace(expression1, Inserts.of(replacement));
             }
 
         }

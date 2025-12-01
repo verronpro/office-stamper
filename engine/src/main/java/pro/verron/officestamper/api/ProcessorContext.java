@@ -4,10 +4,9 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
 /// Represents a context within a document processing operation.
 ///
-/// This class encapsulates key elements involved in the processing of a specific part of a [WordprocessingMLPackage]
-/// -based
-/// document, such as a part of the document, a specific paragraph, an associated comment, and an expression being
-/// evaluated or processed.
+/// This class encapsulates key elements involved in the processing of a specific part of a
+/// [WordprocessingMLPackage]-based document, such as a part of the document, a specific paragraph, an associated
+/// comment, and an expression being evaluated or processed.
 ///
 /// The [ProcessorContext] provides structured access to these elements, enabling seamless document traversal,
 /// manipulation, and analysis during processing workflows.

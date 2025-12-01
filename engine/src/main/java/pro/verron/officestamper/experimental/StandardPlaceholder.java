@@ -1,6 +1,5 @@
 package pro.verron.officestamper.experimental;
 
-import pro.verron.officestamper.api.Placeholder;
 import pro.verron.officestamper.core.Matcher;
 
 /// The StandardPlaceholder class represents a placeholder with a specific

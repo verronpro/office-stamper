@@ -1,4 +1,4 @@
-package pro.verron.officestamper.api;
+package pro.verron.officestamper.experimental;
 
 /// The Placeholder interface represents a placeholder in a text document.
 /// It provides methods to retrieve the content of the placeholder and the full expression.

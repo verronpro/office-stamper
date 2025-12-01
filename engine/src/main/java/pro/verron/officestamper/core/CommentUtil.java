@@ -42,30 +42,6 @@ public class CommentUtil {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
-    /// Retrieves the CommentsPart from the given Parts object.
-    ///
-    /// @param parts the Parts object containing the various parts of the document.
-    ///
-    /// @return an Optional containing the CommentsPart if found, or an empty Optional if not found.
-    public static Optional<CommentsPart> getCommentsPart(Parts parts) {
-        return Optional.ofNullable((CommentsPart) parts.get(WORD_COMMENTS_PART_NAME));
-    }
-
-    /// Extracts the contents of a given [CommentsPart].
-    ///
-    /// @param commentsPart the [CommentsPart] from which content will be extracted
-    ///
-    /// @return the [Comments] instance containing the content of the provided comments part
-    ///
-    /// @throws OfficeStamperException if an error occurs while retrieving the content
-    public static Comments extractContent(CommentsPart commentsPart) {
-        try {
-            return commentsPart.getContents();
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException("Error while searching comment.", e);
-        }
-    }
-
     /// Retrieves the comment associated with a given paragraph content within a WordprocessingMLPackage document.
     ///
     /// @param document the WordprocessingMLPackage document containing the paragraph and its comments.
@@ -89,6 +65,30 @@ public class CommentUtil {
             findCommentById(comments, crs.getId()).ifPresent(result::add);
         }
         return result;
+    }
+
+    /// Retrieves the CommentsPart from the given Parts object.
+    ///
+    /// @param parts the Parts object containing the various parts of the document.
+    ///
+    /// @return an Optional containing the CommentsPart if found, or an empty Optional if not found.
+    public static Optional<CommentsPart> getCommentsPart(Parts parts) {
+        return Optional.ofNullable((CommentsPart) parts.get(WORD_COMMENTS_PART_NAME));
+    }
+
+    /// Extracts the contents of a given [CommentsPart].
+    ///
+    /// @param commentsPart the [CommentsPart] from which content will be extracted
+    ///
+    /// @return the [Comments] instance containing the content of the provided comments part
+    ///
+    /// @throws OfficeStamperException if an error occurs while retrieving the content
+    public static Comments extractContent(CommentsPart commentsPart) {
+        try {
+            return commentsPart.getContents();
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException("Error while searching comment.", e);
+        }
     }
 
     private static Optional<Comments.Comment> findCommentById(List<Comments.Comment> comments, BigInteger id) {
@@ -218,6 +218,4 @@ public class CommentUtil {
         }
         return newComments(list);
     }
-
-
 }

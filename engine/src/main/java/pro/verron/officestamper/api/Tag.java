@@ -5,6 +5,7 @@ import pro.verron.officestamper.core.StandardComment;
 import pro.verron.officestamper.core.StandardParagraph;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static pro.verron.officestamper.utils.WmlUtils.asString;
@@ -51,10 +52,7 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     ///
     /// @return a Comment object representing the current tag
     public Comment asComment() {
-        return StandardComment.create(docxPart,
-                (ContentAccessor) tag.getParent(),
-                expression(),
-                BigInteger.ZERO);
+        return StandardComment.create(docxPart, (ContentAccessor) tag.getParent(), expression(), BigInteger.ZERO);
     }
 
     public String expression() {
@@ -70,7 +68,7 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     public void replace(Insert insert) {
         insert.setRPr(((R) tag.getContent()
                               .getFirst()).getRPr());
-        // TODO merge exisitng and created style to allow generation of styled runs
+        // TODO merge existing and created style to allow generation of styled runs
         var parent = (ContentAccessor) tag.getParent();
         var siblings = parent.getContent();
         var index = siblings.indexOf(tag);
@@ -86,5 +84,43 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
                                 .equals("type"))
                   .map(CTAttr::getVal)
                   .findFirst();
+    }
+
+    public int getContextReference() {
+        var smartTagPr = tag.getSmartTagPr();
+        if (smartTagPr == null) return 0;
+        var smartTagPrAttr = smartTagPr.getAttr();
+        if (smartTagPrAttr == null) return 0;
+        for (CTAttr attribute : smartTagPrAttr) {
+            if ("context".equals(attribute.getName())) try {
+                return Integer.parseInt(attribute.getVal());
+            } catch (NumberFormatException _) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    public void setContextReference(int contextIndex) {
+        var name = "context";
+        var value = String.valueOf(contextIndex);
+
+        var smartTagPr = tag.getSmartTagPr();
+        if (smartTagPr == null) {
+            smartTagPr = new CTSmartTagPr();
+            tag.setSmartTagPr(smartTagPr);
+        }
+        var smartTagPrAttr = smartTagPr.getAttr();
+        if (smartTagPrAttr == null) {
+            smartTagPrAttr = new ArrayList<>();
+            tag.setSmartTagPr(smartTagPr);
+        }
+        for (CTAttr attribute : smartTagPrAttr) {
+            if (name.equals(attribute.getName())) attribute.setVal(value);
+        }
+        var ctAttr = new CTAttr();
+        ctAttr.setName(name);
+        ctAttr.setVal(value);
+        smartTagPrAttr.add(ctAttr);
     }
 }

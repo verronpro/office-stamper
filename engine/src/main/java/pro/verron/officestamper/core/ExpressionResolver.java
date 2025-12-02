@@ -1,7 +1,7 @@
 package pro.verron.officestamper.core;
 
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.lang.Nullable;
 
 /// Resolves expressions against a given context object. Expressions can be either SpEL expressions or simple property
@@ -14,31 +14,27 @@ import org.springframework.lang.Nullable;
 public class ExpressionResolver {
 
     private final ExpressionParser parser;
-    private final StandardEvaluationContext evaluationContext;
 
     /// Creates a new ExpressionResolver with the given SpEL parser configuration.
-    ///
-    /// @param standardEvaluationContext a [StandardEvaluationContext] object
-    public ExpressionResolver(StandardEvaluationContext standardEvaluationContext, ExpressionParser expressionParser) {
+    public ExpressionResolver(ExpressionParser expressionParser) {
         this.parser = expressionParser;
-        this.evaluationContext = standardEvaluationContext;
     }
 
-    /// Resolves the specified expression against the given context object.
+    /// Resolves the specified expression against the given evaluation context.
     ///
     /// The method uses an expression parser to evaluate the provided expression string in the context of the
-    /// contextRoot object.
+    /// evaluationContext object.
     ///
     /// The result of the evaluation is returned.
     ///
-    /// @param contextRoot the root object used as the evaluation context for the expression.
+    /// @param evaluationContext the evaluation context used for the expression.
     /// @param expression the expression to be evaluated as a [String]
     ///
     /// @return the result of the evaluated expression, possibly. It will return `null` when the expression does not
     ///         have a return value, or when the result is the `null` value.
     @Nullable
-    public Object resolve(Object contextRoot, String expression) {
-        evaluationContext.setRootObject(contextRoot);
+    public Object resolve(EvaluationContext evaluationContext, String expression) {
+
         var parsedExpression = parser.parseExpression(expression);
         return parsedExpression.getValue(evaluationContext);
     }

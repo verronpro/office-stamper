@@ -29,28 +29,26 @@ public class RepeatProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IRepeatProcessor {
 
-    private final ProcessorContext processorContext;
     private final BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier;
     private final Map<Tr, Iterable<Object>> tableRowsToRepeat = new HashMap<>();
     private final Map<Tr, Comment> tableRowsCommentsToRemove = new HashMap<>();
 
     private RepeatProcessor(
             ProcessorContext processorContext,
-            PlaceholderReplacer placeholderReplacer,
             BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier1
     ) {
-        super(processorContext, placeholderReplacer);
-        this.processorContext = processorContext;
+        super(processorContext);
         nullSupplier = nullSupplier1;
     }
 
-    /// Creates a new RepeatProcessor.
+
+    /// Creates a new [RepeatProcessor] instance.
     ///
-    /// @param pr The PlaceholderReplacer to use.
+    /// @param processorContext The [ProcessorContext] to use for processing.
     ///
-    /// @return A new RepeatProcessor.
-    public static CommentProcessor newInstance(ProcessorContext processorContext, PlaceholderReplacer pr) {
-        return new RepeatProcessor(processorContext, pr, (_, _) -> emptyList());
+    /// @return A new [RepeatProcessor] instance.
+    public static CommentProcessor newInstance(ProcessorContext processorContext) {
+        return new RepeatProcessor(processorContext, (_, _) -> emptyList());
     }
 
     /// {@inheritDoc}
@@ -60,7 +58,7 @@ public class RepeatProcessor
                             .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));
         tableRowsToRepeat.put(tr, objects);
         tableRowsCommentsToRemove.put(tr, comment());
-        repeatRows(processorContext.part());
+        repeatRows(context().part());
     }
 
     private void repeatRows(DocxPart source) {
@@ -86,13 +84,11 @@ public class RepeatProcessor
                     var tagIterator = DocxIterator.ofTags(rowClone, source);
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
-                        var expression = tag.expression();
                         if (tag.type()
                                .filter("placeholder"::equals)
                                .isPresent()) {
-                            var insert = replacer().resolve(source, expression, expressionContext);
-                            tag.replace(insert);
-                            tagIterator.reset();
+                            tag.setContextReference(context().branch()
+                                                             .add(expressionContext));
                         }
                     }
                     changes.add(rowClone);

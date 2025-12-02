@@ -16,10 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.docx4j.openpackaging.parts.relationships.Namespaces.*;
-import static pro.verron.officestamper.core.Engine.resolve;
-import static pro.verron.officestamper.core.Invokers.streamInvokers;
+import static pro.verron.officestamper.core.Invokers.streamInvokersFromClass;
+import static pro.verron.officestamper.core.Invokers.streamInvokersFromCustomFunction;
 
 /// The [DocxStamper] class is an implementation of the [OfficeStamper] interface used to stamp DOCX templates with a
 /// context object and write the result to an output stream.
@@ -35,6 +36,10 @@ public class DocxStamper
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final EngineFactory engineFactory;
+    private final EvaluationContextConfigurer evaluationContextConfigurer;
+    private final Map<Class<?>, Object> expressionFunctions;
+    private final List<CustomFunction> functions;
+    private final Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors;
 
     /// Creates new [DocxStamper] with the given configuration.
     ///
@@ -62,71 +67,26 @@ public class DocxStamper
             SpelParserConfiguration spelParserConfiguration,
             ExceptionResolver exceptionResolver
     ) {
+        this.evaluationContextConfigurer = evaluationContextConfigurer;
+        this.expressionFunctions = expressionFunctions;
+        this.functions = functions;
+        this.configurationCommentProcessors = configurationCommentProcessors;
         var expressionParser = new SpelExpressionParser(spelParserConfiguration);
-
-        engineFactory = computeEngine(evaluationContextConfigurer,
-                expressionFunctions,
-                functions,
-                resolvers,
-                configurationCommentProcessors,
-                exceptionResolver,
-                expressionParser);
+        engineFactory = computeEngine(resolvers, exceptionResolver, expressionParser);
         this.preprocessors = new ArrayList<>(preprocessors);
         this.postprocessors = new ArrayList<>(postprocessors);
     }
 
     private EngineFactory computeEngine(
-            EvaluationContextConfigurer evaluationContextConfigurer,
-            Map<Class<?>, Object> expressionFunctions,
-            List<CustomFunction> functions,
             List<ObjectResolver> resolvers,
-            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
             ExceptionResolver exceptionResolver,
             SpelExpressionParser expressionParser
     ) {
         return processorContext -> {
-            var evaluationContext = new StandardEvaluationContext();
-            evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
-
-            var expressionResolver = new ExpressionResolver(evaluationContext, expressionParser);
+            var expressionResolver = new ExpressionResolver(expressionParser);
             var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-            var engine = new Engine(expressionResolver, exceptionResolver, typeResolverRegistry, processorContext);
-            PlaceholderReplacer pr = (part, expression, contextRoot) -> resolve(part,
-                    contextRoot,
-                    expression,
-                    expressionResolver,
-                    typeResolverRegistry,
-                    exceptionResolver);
-            var processors = instantiate(configurationCommentProcessors, processorContext, pr);
-            var processorResolvers = new Invokers(streamInvokers(processors));
-            evaluationContext.addMethodResolver(processorResolvers);
-            evaluationContext.addMethodResolver(new Invokers(streamInvokers(expressionFunctions)));
-            evaluationContext.addMethodResolver(new Invokers(functions));
-            return engine;
+            return new Engine(expressionResolver, exceptionResolver, typeResolverRegistry, processorContext);
         };
-    }
-
-    /// Returns a set view of the mappings contained in this map. Each entry in the set is a mapping between a
-    /// [Class<?>] key and its associated `CommentProcessor` value.
-    ///
-    /// @return a map representing the associations between [Class<?>] keys and their corresponding [CommentProcessor]
-    ///         values in this map.
-
-    private static Map<Class<?>, CommentProcessor> instantiate(
-            Map<Class<?>, CommentProcessorFactory> processorFactoryMap,
-            ProcessorContext processorContext,
-            PlaceholderReplacer placeholderReplacer
-    ) {
-        Map<Class<?>, CommentProcessor> map = new HashMap<>();
-        for (Map.Entry<Class<?>, CommentProcessorFactory> entry : processorFactoryMap.entrySet()) {
-            var processorClass = entry.getKey();
-            var processorFactory = entry.getValue();
-            var processor = processorFactory.create(processorContext, placeholderReplacer);
-            map.put(processorClass, processor);
-        }
-        return map;
-
-
     }
 
     /// Reads in a .docx template and "stamps" it into the given OutputStream, using the specified context object to
@@ -191,10 +151,68 @@ public class DocxStamper
     }
 
     private void processTextualPart(DocxPart part, Object contextRoot) {
+        var contextTree = new ContextTree(contextRoot);
         var iterator = DocxIterator.ofHooks(part::content, part);
         while (iterator.hasNext()) {
             var hook = iterator.next();
-            hook.ifPresent(h -> {if (h.run(engineFactory, contextRoot)) iterator.reset();});
+            if (hook.isPresent()) {
+                var h = hook.get();
+                EvaluationContextFactory evaluationContextFactory = computeEvaluationContext();
+                if (h.run(engineFactory, contextTree, evaluationContextFactory)) iterator.reset();
+            }
         }
+    }
+
+    private EvaluationContextFactory computeEvaluationContext() {
+        return (processorContext, branch) -> {
+            var invokers = computeInvokers(functions, configurationCommentProcessors, processorContext);
+            var evaluationContext = createEvaluationContext(branch);
+            evaluationContext.addMethodResolver(invokers);
+            return evaluationContext;
+        };
+    }
+
+    private Invokers computeInvokers(
+            List<CustomFunction> functions,
+            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
+            ProcessorContext processorContext
+    ) {
+        var processors = instantiate(configurationCommentProcessors, processorContext);
+
+        var invokerStream = Stream.of(streamInvokersFromClass(processors),
+                                          streamInvokersFromClass(expressionFunctions),
+                                          streamInvokersFromCustomFunction(functions))
+                                  .flatMap(s -> s);
+        var invokers = new Invokers(invokerStream);
+        return invokers;
+    }
+
+    private StandardEvaluationContext createEvaluationContext(ContextBranch contextBranch) {
+        var evaluationContext = new StandardEvaluationContext();
+        evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
+        evaluationContext.setRootObject(contextBranch.root());
+        return evaluationContext;
+    }
+
+    /// Returns a set view of the mappings contained in this map. Each entry in the set is a mapping between a
+    /// [Class<?>] key and its associated `CommentProcessor` value.
+    ///
+    /// @return a map representing the associations between [Class<?>] keys and their corresponding [CommentProcessor]
+    ///         values in this map.
+
+    private static Map<Class<?>, CommentProcessor> instantiate(
+            Map<Class<?>, CommentProcessorFactory> processorFactoryMap,
+            ProcessorContext processorContext
+    ) {
+        Map<Class<?>, CommentProcessor> map = new HashMap<>();
+        for (Map.Entry<Class<?>, CommentProcessorFactory> entry : processorFactoryMap.entrySet()) {
+            var processorClass = entry.getKey();
+            var processorFactory = entry.getValue();
+            var processor = processorFactory.create(processorContext);
+            map.put(processorClass, processor);
+        }
+        return map;
+
+
     }
 }

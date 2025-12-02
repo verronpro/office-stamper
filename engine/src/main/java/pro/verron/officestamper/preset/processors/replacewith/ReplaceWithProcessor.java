@@ -2,7 +2,6 @@ package pro.verron.officestamper.preset.processors.replacewith;
 
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.PlaceholderReplacer;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.utils.Inserts;
@@ -19,17 +18,15 @@ public class ReplaceWithProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IReplaceWithProcessor {
 
-    private ReplaceWithProcessor(ProcessorContext processorContext, PlaceholderReplacer placeholderReplacer) {
-        super(processorContext, placeholderReplacer);
+    private ReplaceWithProcessor(ProcessorContext processorContext) {
+        super(processorContext);
     }
 
     /// Creates a new processor that replaces the current run with the result of the expression.
     ///
-    /// @param pr the placeholder replacer to use
-    ///
     /// @return the processor
-    public static CommentProcessor newInstance(ProcessorContext processorContext, PlaceholderReplacer pr) {
-        return new ReplaceWithProcessor(processorContext, pr);
+    public static CommentProcessor newInstance(ProcessorContext processorContext) {
+        return new ReplaceWithProcessor(processorContext);
     }
 
     @Override

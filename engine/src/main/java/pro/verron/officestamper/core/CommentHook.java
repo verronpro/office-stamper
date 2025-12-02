@@ -15,15 +15,21 @@ public class CommentHook
     }
 
     @Override
-    public boolean run(EngineFactory engineFactory, Object contextRoot) {
+    public boolean run(
+            EngineFactory engineFactory,
+            ContextTree contextTree,
+            EvaluationContextFactory evaluationContextMaker
+    ) {
         var paragraph = comment.getParagraph(part);
         var expression = comment.expression();
-        var processorContext = new ProcessorContext(part, paragraph, comment, expression);
+        var contextStack = contextTree.find(comment.getContextReference());
+        var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
         var engine = engineFactory.create(processorContext);
-        if (engine.process(contextRoot)) {
+        if (engine.process(evaluationContextMaker.create(processorContext, contextStack))) {
             CommentUtil.deleteComment(comment);
             return true;
         }
         return false;
     }
+
 }

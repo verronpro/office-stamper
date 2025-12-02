@@ -15,24 +15,31 @@ public class TagHook
     }
 
     @Override
-    public boolean run(EngineFactory engineFactory, Object contextRoot) {
+    public boolean run(
+            EngineFactory engineFactory,
+            ContextTree contextTree,
+            EvaluationContextFactory evaluationContextFactory
+    ) {
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();
         var expression = tag.expression();
-        var processorContext = new ProcessorContext(part, paragraph, comment, expression);
+        var contextStack = contextTree.find(tag.getContextReference());
+        var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
+        var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
         var tagType = tag.type()
                          .orElse(null);
         boolean processed = false;
         if ("processor".equals(tagType)) {
-            if (engine.process(contextRoot)) processed = true;
+            if (engine.process(evaluationContext)) processed = true;
             tag.remove();
         }
         else if ("placeholder".equals(tagType)) {
-            var insert = engine.resolve(contextRoot);
+            var insert = engine.resolve(evaluationContext);
             processed = true;
             tag.replace(insert);
         }
         return processed;
     }
+
 }

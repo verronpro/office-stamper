@@ -9,7 +9,6 @@ import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CustomFunction;
 
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,19 +32,6 @@ public class Invokers
         implements MethodResolver {
     private final Map<String, Map<Args, MethodExecutor>> map;
 
-    public Invokers(Collection<CustomFunction> functions) {
-        var invokerStream = functions.stream()
-                                     .map(Invokers::ofCustomFunction);
-        this(invokerStream);
-    }
-
-    private static Invoker ofCustomFunction(CustomFunction cf) {
-        var cfName = cf.name();
-        var cfArgs = new Args(cf.parameterTypes());
-        var cfExecutor = new CustomFunctionExecutor(cf.function());
-        return new Invoker(cfName, cfArgs, cfExecutor);
-    }
-
     /// Constructs an `Invokers` instance, grouping and mapping invokers by their names and argument types to their
     /// corresponding executors.
     ///
@@ -62,7 +48,7 @@ public class Invokers
     ///         their corresponding implementations, used to derive invoker instances.
     ///
     /// @return a stream of `Invoker` objects derived from the provided map entries.
-    public static Stream<Invoker> streamInvokers(Map<Class<?>, ?> interfaces2implementations) {
+    public static Stream<Invoker> streamInvokersFromClass(Map<Class<?>, ?> interfaces2implementations) {
         return interfaces2implementations.entrySet()
                                          .stream()
                                          .flatMap(Invokers::streamInvokers);
@@ -74,6 +60,18 @@ public class Invokers
 
     private static Stream<Invoker> streamInvokers(Class<?> key, Object obj) {
         return stream(key.getDeclaredMethods()).map(method -> new Invoker(obj, method));
+    }
+
+    static Stream<Invoker> streamInvokersFromCustomFunction(List<CustomFunction> functions) {
+        return functions.stream()
+                        .map(Invokers::ofCustomFunction);
+    }
+
+    public static Invoker ofCustomFunction(CustomFunction cf) {
+        var cfName = cf.name();
+        var cfArgs = new Args(cf.parameterTypes());
+        var cfExecutor = new CustomFunctionExecutor(cf.function());
+        return new Invoker(cfName, cfArgs, cfExecutor);
     }
 
     /// Resolves a method executor for a given method name and argument types within the specified context and target

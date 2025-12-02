@@ -3,7 +3,11 @@ package pro.verron.officestamper.preset.processors.repeatparagraph;
 import org.docx4j.XmlUtils;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import pro.verron.officestamper.api.*;
+import org.springframework.lang.Nullable;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.PlaceholderReplacer;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.DocxIterator;
 import pro.verron.officestamper.core.SectionUtil;
@@ -30,29 +34,22 @@ public class ParagraphRepeatProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IParagraphRepeatProcessor {
 
-    private final ProcessorContext processorContext;
     // TODO replace the mapping by a Paragraphs to List<Object> mapping to better reflect the change
     private final Map<Paragraph, Paragraphs> pToRepeat = new HashMap<>();
 
-    private ParagraphRepeatProcessor(ProcessorContext processorContext, PlaceholderReplacer placeholderReplacer) {
-        super(processorContext, placeholderReplacer);
-        this.processorContext = processorContext;
+    private ParagraphRepeatProcessor(ProcessorContext processorContext) {
+        super(processorContext);
     }
 
     /// Creates a new instance of [CommentProcessor] using the provided [PlaceholderReplacer].
     ///
-    /// @param placeholderReplacer the replacer to use for processing paragraph placeholders.
-    ///
     /// @return a new instance of [ParagraphRepeatProcessor].
-    public static CommentProcessor newInstance(
-            ProcessorContext processorContext,
-            PlaceholderReplacer placeholderReplacer
-    ) {
-        return new ParagraphRepeatProcessor(processorContext, placeholderReplacer);
+    public static CommentProcessor newInstance(ProcessorContext processorContext) {
+        return new ParagraphRepeatProcessor(processorContext);
     }
 
     @Override
-    public void repeatParagraph(Iterable<Object> objects) {
+    public void repeatParagraph(@Nullable Iterable<Object> objects) {
         var elements = comment().getElements();
         var previousSectionBreak = getPreviousSectionBreakIfPresent(elements.getFirst(), comment().getParent());
         var oddNumberOfBreaks = hasOddNumberOfSectionBreaks(elements);
@@ -67,12 +64,12 @@ public class ParagraphRepeatProcessor
             var current = entry.getKey();
             var replacement = entry.getValue();
             var toRemove = replacement.elements(P.class);
-            var toAdd = generateParagraphsToAdd(processorContext.part(), replacement);
+            var toAdd = generateParagraphsToAdd(replacement);
             current.replace(toRemove, toAdd);
         }
     }
 
-    private List<P> generateParagraphsToAdd(DocxPart document, Paragraphs paragraphs) {
+    private List<P> generateParagraphsToAdd(Paragraphs paragraphs) {
         var paragraphsToAdd = new LinkedList<P>();
         for (var it = paragraphs.data(); it.hasNext(); ) {
             Object expressionContext = it.next();
@@ -86,13 +83,11 @@ public class ParagraphRepeatProcessor
                     var tagIterator = DocxIterator.ofTags(p, new TextualDocxPart(comment.getDocument()));
                     while (tagIterator.hasNext()) {
                         var tag = tagIterator.next();
-                        var expression = tag.expression();
                         if (tag.type()
                                .filter("placeholder"::equals)
                                .isPresent()) {
-                            var insert = replacer().resolve(document, expression, expressionContext);
-                            tag.replace(insert);
-                            tagIterator.reset();
+                            tag.setContextReference(context().branch()
+                                                             .add(expressionContext));
                         }
                     }
                     paragraphsToAdd.add(p);

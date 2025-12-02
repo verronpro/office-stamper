@@ -196,5 +196,15 @@ public class StandardComment
                    .collect(joining());
     }
 
-
+    @Override
+    public int getContextReference() {
+        var c = getComment();
+        var cAuthor = c.getAuthor();
+        if (cAuthor == null) return 0;
+        try {
+            return Integer.parseInt(cAuthor);
+        } catch (NumberFormatException _) {
+            return 0;
+        }
+    }
 }

@@ -33,10 +33,8 @@ import static java.util.stream.Collectors.toMap;
 import static pro.verron.officestamper.core.DocumentUtil.walkObjectsAndImportImages;
 import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakIfPresent;
 
-/// This class processes the &lt;ds: repeat&gt; tag.
-/// It uses the [OfficeStamper] to stamp the sub document and then
-/// copies the resulting sub document to the correct position in the
-/// main document.
+/// This class processes the &lt;ds: repeat&gt; tag. It uses the [OfficeStamper] to stamp the sub document and then
+/// copies the resulting sub document to the correct position in the main document.
 ///
 /// @author Joseph Verron
 /// @author Youssouf Naciri
@@ -54,11 +52,10 @@ public class RepeatDocPartProcessor
 
     private RepeatDocPartProcessor(
             ProcessorContext processorContext,
-            PlaceholderReplacer placeholderReplacer,
             OfficeStamper<WordprocessingMLPackage> stamper,
             Supplier<? extends List<?>> nullSupplier
     ) {
-        super(processorContext, placeholderReplacer);
+        super(processorContext);
         this.processorContext = processorContext;
         this.stamper = stamper;
         this.nullSupplier = nullSupplier;
@@ -66,41 +63,14 @@ public class RepeatDocPartProcessor
 
     /// newInstance.
     ///
-    /// @param pr      the placeholderReplacer
     /// @param stamper the stamper
     ///
     /// @return a new instance of this processor
     public static CommentProcessor newInstance(
             ProcessorContext processorContext,
-            PlaceholderReplacer pr,
             OfficeStamper<WordprocessingMLPackage> stamper
     ) {
-        return new RepeatDocPartProcessor(processorContext, pr, stamper, Collections::emptyList);
-    }
-
-    private static void recursivelyReplaceImages(ContentAccessor r, Map<R, R> replacements) {
-        Queue<ContentAccessor> q = new ArrayDeque<>();
-        q.add(r);
-        while (!q.isEmpty()) {
-            ContentAccessor run = q.remove();
-            if (replacements.containsKey(run) && run instanceof Child child
-                && child.getParent() instanceof ContentAccessor parent) {
-                List<Object> parentContent = parent.getContent();
-                parentContent.add(parentContent.indexOf(run), replacements.get(run));
-                parentContent.remove(run);
-            }
-            else {
-                q.addAll(run.getContent()
-                            .stream()
-                            .filter(ContentAccessor.class::isInstance)
-                            .map(ContentAccessor.class::cast)
-                            .toList());
-            }
-        }
-    }
-
-    private static void setParentIfPossible(Object object, ContentAccessor parent) {
-        if (object instanceof Child child) child.setParent(parent);
+        return new RepeatDocPartProcessor(processorContext, stamper, Collections::emptyList);
     }
 
     /// {@inheritDoc}
@@ -112,34 +82,6 @@ public class RepeatDocPartProcessor
             this.contexts.put(comment(), contexts);
         }
         commitChanges();
-    }
-
-    private List<Object> stampSubDocuments(
-            WordprocessingMLPackage document,
-            Iterable<Object> expressionContexts,
-            ContentAccessor gcp,
-            WordprocessingMLPackage subTemplate,
-            UnaryOperator<List<Object>> sectionBreakInserter
-    ) {
-        var subDocuments = stampSubDocuments(expressionContexts, subTemplate);
-        var replacements = subDocuments.stream()
-                                       //TODO: move side effect somewhere else
-                                       .map(p -> walkObjectsAndImportImages(p, document))
-                                       .map(Map::entrySet)
-                                       .flatMap(Set::stream)
-                                       .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        var changes = new ArrayList<>();
-        for (WordprocessingMLPackage subDocument : subDocuments) {
-            var os = sectionBreakInserter.apply(DocumentUtil.allElements(subDocument));
-            os.stream()
-              .filter(ContentAccessor.class::isInstance)
-              .map(ContentAccessor.class::cast)
-              .forEach(o -> recursivelyReplaceImages(o, replacements));
-            os.forEach(c -> setParentIfPossible(c, gcp));
-            changes.addAll(os);
-        }
-        return changes;
     }
 
     void commitChanges() {
@@ -191,6 +133,34 @@ public class RepeatDocPartProcessor
         return inserts;
     }
 
+    private List<Object> stampSubDocuments(
+            WordprocessingMLPackage document,
+            Iterable<Object> expressionContexts,
+            ContentAccessor gcp,
+            WordprocessingMLPackage subTemplate,
+            UnaryOperator<List<Object>> sectionBreakInserter
+    ) {
+        var subDocuments = stampSubDocuments(expressionContexts, subTemplate);
+        var replacements = subDocuments.stream()
+                                       //TODO: move side effect somewhere else
+                                       .map(p -> walkObjectsAndImportImages(p, document))
+                                       .map(Map::entrySet)
+                                       .flatMap(Set::stream)
+                                       .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        var changes = new ArrayList<>();
+        for (WordprocessingMLPackage subDocument : subDocuments) {
+            var os = sectionBreakInserter.apply(DocumentUtil.allElements(subDocument));
+            os.stream()
+              .filter(ContentAccessor.class::isInstance)
+              .map(ContentAccessor.class::cast)
+              .forEach(o -> recursivelyReplaceImages(o, replacements));
+            os.forEach(c -> setParentIfPossible(c, gcp));
+            changes.addAll(os);
+        }
+        return changes;
+    }
+
     private List<WordprocessingMLPackage> stampSubDocuments(
             Iterable<Object> subContexts,
             WordprocessingMLPackage subTemplate
@@ -202,6 +172,31 @@ public class RepeatDocPartProcessor
             subDocuments.add(subDocument);
         }
         return subDocuments;
+    }
+
+    private static void recursivelyReplaceImages(ContentAccessor r, Map<R, R> replacements) {
+        Queue<ContentAccessor> q = new ArrayDeque<>();
+        q.add(r);
+        while (!q.isEmpty()) {
+            ContentAccessor run = q.remove();
+            if (replacements.containsKey(run) && run instanceof Child child
+                && child.getParent() instanceof ContentAccessor parent) {
+                List<Object> parentContent = parent.getContent();
+                parentContent.add(parentContent.indexOf(run), replacements.get(run));
+                parentContent.remove(run);
+            }
+            else {
+                q.addAll(run.getContent()
+                            .stream()
+                            .filter(ContentAccessor.class::isInstance)
+                            .map(ContentAccessor.class::cast)
+                            .toList());
+            }
+        }
+    }
+
+    private static void setParentIfPossible(Object object, ContentAccessor parent) {
+        if (object instanceof Child child) child.setParent(parent);
     }
 
     private WordprocessingMLPackage outputWord(Consumer<OutputStream> outputter) {
@@ -245,10 +240,9 @@ public class RepeatDocPartProcessor
         stamper.stamp(template, context, outputStream);
     }
 
-    /// A functional interface representing runnable task able to throw an exception.
-    /// It extends the [Runnable] interface and provides default implementation
-    /// of the [Runnable#run()] method handling the exception by rethrowing it
-    /// wrapped inside a [OfficeStamperException].
+    /// A functional interface representing runnable task able to throw an exception. It extends the [Runnable]
+    /// interface and provides default implementation of the [Runnable#run()] method handling the exception by
+    /// rethrowing it wrapped inside a [OfficeStamperException].
     ///
     /// @author Joseph Verron
     /// @version ${version}
@@ -256,8 +250,8 @@ public class RepeatDocPartProcessor
     interface ThrowingRunnable
             extends Runnable {
 
-        /// Executes the runnable task, handling any exception by throwing it wrapped
-        /// inside a [OfficeStamperException].
+        /// Executes the runnable task, handling any exception by throwing it wrapped inside a
+        /// [OfficeStamperException].
         default void run() {
             try {
                 throwingRun();
@@ -273,22 +267,16 @@ public class RepeatDocPartProcessor
                 throws Exception;
     }
 
-    /// This class is responsible for capturing and handling uncaught exceptions
-    /// that occur in a thread.
-    /// It implements the [Thread.UncaughtExceptionHandler] interface and can
-    /// be assigned to a thread using the
-    /// [Thread#setUncaughtExceptionHandler(Thread.UncaughtExceptionHandler)] method.
-    /// When an exception occurs in the thread,
-    /// the [ProcessorExceptionHandler#uncaughtException(Thread, Throwable)]
-    /// method will be called.
-    /// This class provides the following features:
+    /// This class is responsible for capturing and handling uncaught exceptions that occur in a thread. It implements
+    /// the [Thread.UncaughtExceptionHandler] interface and can be assigned to a thread using the
+    /// [Thread#setUncaughtExceptionHandler(Thread.UncaughtExceptionHandler)] method. When an exception occurs in the
+    /// thread, the [ProcessorExceptionHandler#uncaughtException(Thread, Throwable)] method will be called. This class
+    /// provides the following features:
     /// 1. Capturing and storing the uncaught exception.
     /// 2. Executing a list of routines when an exception occurs.
-    /// 3. Providing access to the captured exception, if any.
-    /// Example usage:
+    /// 3. Providing access to the captured exception, if any. Example usage:
     /// <code>
-    /// ProcessorExceptionHandler exceptionHandler = new
-    /// ProcessorExceptionHandler(){};
+    /// ProcessorExceptionHandler exceptionHandler = new ProcessorExceptionHandler(){};
     /// thread.setUncaughtExceptionHandler(exceptionHandler);
     /// </code>
     ///
@@ -301,8 +289,8 @@ public class RepeatDocPartProcessor
         private final AtomicReference<Throwable> exception;
         private final List<Runnable> onException;
 
-        /// Constructs a new instance for managing thread's uncaught exceptions.
-        /// Once set to a thread, it retains the exception information and performs specified routines.
+        /// Constructs a new instance for managing thread's uncaught exceptions. Once set to a thread, it retains the
+        /// exception information and performs specified routines.
         public ProcessorExceptionHandler() {
             this.exception = new AtomicReference<>();
             this.onException = new CopyOnWriteArrayList<>();
@@ -310,16 +298,15 @@ public class RepeatDocPartProcessor
 
         /// {@inheritDoc}
         ///
-        /// Captures and stores an uncaught exception from a thread run
-        /// and executes all defined routines on occurrence of the exception.
+        /// Captures and stores an uncaught exception from a thread run and executes all defined routines on occurrence
+        /// of the exception.
         @Override
         public void uncaughtException(Thread t, Throwable e) {
             exception.set(e);
             onException.forEach(Runnable::run);
         }
 
-        /// Adds a routine to the list of routines that should be run
-        /// when an exception occurs.
+        /// Adds a routine to the list of routines that should be run when an exception occurs.
         ///
         /// @param runnable The runnable routine to be added
         public void onException(ThrowingRunnable runnable) {
@@ -328,8 +315,8 @@ public class RepeatDocPartProcessor
 
         /// Returns the captured exception if present.
         ///
-        /// @return an [Optional] containing the captured exception,
-        /// or an [Optional#empty()] if no exception was captured
+        /// @return an [Optional] containing the captured exception, or an [Optional#empty()] if no exception was
+        ///         captured
         public Optional<Throwable> exception() {
             return Optional.ofNullable(exception.get());
         }

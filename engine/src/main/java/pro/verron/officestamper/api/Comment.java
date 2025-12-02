@@ -60,4 +60,6 @@ public interface Comment {
     ///
     /// @return a string representing the expression
     String expression();
+
+    int getContextReference();
 }

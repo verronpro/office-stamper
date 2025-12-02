@@ -7,7 +7,6 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.Paragraph;
-import pro.verron.officestamper.api.PlaceholderReplacer;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.utils.WmlUtils;
@@ -30,17 +29,18 @@ public class DisplayIfProcessor
     private final List<Paragraph> paragraphsToBeRemoved = new ArrayList<>();
     private final List<Child> elementsToBeRemoved = new ArrayList<>();
 
-    private DisplayIfProcessor(ProcessorContext processorContext, PlaceholderReplacer placeholderReplacer) {
-        super(processorContext, placeholderReplacer);
+    private DisplayIfProcessor(ProcessorContext processorContext) {
+        super(processorContext);
     }
+
 
     /// Creates a new DisplayIfProcessor instance.
     ///
-    /// @param pr the [PlaceholderReplacer] used for replacing expressions.
+    /// @param processorContext the [ProcessorContext] used for processing expressions.
     ///
     /// @return a new DisplayIfProcessor instance.
-    public static CommentProcessor newInstance(ProcessorContext processorContext, PlaceholderReplacer pr) {
-        return new DisplayIfProcessor(processorContext, pr);
+    public static CommentProcessor newInstance(ProcessorContext processorContext) {
+        return new DisplayIfProcessor(processorContext);
     }
 
     @Override

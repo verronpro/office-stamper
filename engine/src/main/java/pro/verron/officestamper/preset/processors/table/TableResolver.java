@@ -8,7 +8,6 @@ import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.PlaceholderReplacer;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
@@ -35,20 +34,17 @@ public class TableResolver
 
     private TableResolver(
             ProcessorContext processorContext,
-            PlaceholderReplacer placeholderReplacer,
             Function<Tbl, List<Object>> nullSupplier
     ) {
-        super(processorContext, placeholderReplacer);
+        super(processorContext);
         this.nullSupplier = nullSupplier;
     }
 
     /// Generate a new [TableResolver] instance where value is replaced by an empty list when <code>null</code>
     ///
-    /// @param pr a [PlaceholderReplacer] instance
-    ///
     /// @return a new [TableResolver] instance
-    public static CommentProcessor newInstance(ProcessorContext processorContext, PlaceholderReplacer pr) {
-        return new TableResolver(processorContext, pr, _ -> Collections.emptyList());
+    public static CommentProcessor newInstance(ProcessorContext processorContext) {
+        return new TableResolver(processorContext, _ -> Collections.emptyList());
     }
 
     /// {@inheritDoc}

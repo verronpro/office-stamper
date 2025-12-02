@@ -2,6 +2,7 @@ package pro.verron.officestamper.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.*;
@@ -28,22 +29,22 @@ public class Engine {
         this.processorContext = processorContext;
     }
 
-    /// Processes the provided context object against the expression defined in the processor context.
+    /// Processes the provided evaluation context against the expression defined in the processor context.
     ///
-    /// The method attempts to resolve an expression for the given context.
+    /// The method attempts to resolve an expression using the given evaluation context.
     ///
-    /// If successful, the process completes and logs an informational message.
+    /// If successful, the process completes and logs a debug message.
     ///
-    /// Otherwise, in the case of a failure, it handles the exception by invoking the exceptionResolver and logs an
-    /// error.
+    /// Otherwise, on failure ([SpelEvaluationException] or [SpelParseException]), it handles the exception by
+    /// invoking the exceptionResolver and logs an error.
     ///
-    /// @param contextRoot the root object containing the evaluation context for processing the expression.
+    /// @param evaluationContext the evaluation context for processing the expression.
     ///
     /// @return true if the processing was successful, otherwise false
-    public boolean process(Object contextRoot) {
+    public boolean process(EvaluationContext evaluationContext) {
         var expression = processorContext.expression();
         try {
-            expressionResolver.resolve(contextRoot, expression);
+            expressionResolver.resolve(evaluationContext, expression);
             log.debug("Processed '{}' successfully.", expression);
             return true;
         } catch (SpelEvaluationException | SpelParseException e) {
@@ -59,29 +60,32 @@ public class Engine {
     /// @param contextRoot the root object containing the evaluation context for processing the expression.
     ///
     /// @return an [Insert] object representing the resolved result of the expression within the context.
-    public Insert resolve(Object contextRoot) {
+    public Insert resolve(EvaluationContext evaluationContext) {
         var part = processorContext.part();
         var expression = processorContext.expression();
-        return resolve(part, contextRoot, expression, expressionResolver, objectResolverRegistry, exceptionResolver);
+        return resolve(part,
+                evaluationContext,
+                expression,
+                expressionResolver,
+                objectResolverRegistry,
+                exceptionResolver);
     }
 
     // TODO move this to a better place,or remove placeholder replacer concept
     static Insert resolve(
             DocxPart part,
-            Object contextRoot,
+            EvaluationContext evaluationContext,
             String expression,
             ExpressionResolver expressionResolver,
             ObjectResolverRegistry objectResolverRegistry,
             ExceptionResolver exceptionResolver
     ) {
         try {
-            var resolution = expressionResolver.resolve(contextRoot, expression);
+            var resolution = expressionResolver.resolve(evaluationContext, expression);
             return objectResolverRegistry.resolve(part, expression, resolution);
         } catch (SpelEvaluationException | SpelParseException | OfficeStamperException e) {
-            var msgTemplate = "Expression %s could not be resolved against context of type %s";
-            var contextClass = contextRoot.getClass();
-            var contextClassName = contextClass.getSimpleName();
-            var message = msgTemplate.formatted(expression, contextClassName);
+            var msgTemplate = "Expression %s could not be resolved against context '%s'";
+            var message = msgTemplate.formatted(expression, evaluationContext);
             var resolution = exceptionResolver.resolve(expression, message, e);
             return Inserts.of(WmlFactory.newRun(resolution));
         }

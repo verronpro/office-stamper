@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.PlaceholderReplacer;
 import pro.verron.officestamper.api.ProcessorContext;
 
 import java.nio.file.Path;
@@ -63,8 +62,8 @@ import static pro.verron.officestamper.utils.WmlFactory.newRun;
             extends CommentProcessor
             implements ICustomProcessor {
 
-        CustomProcessor(ProcessorContext processorContext, PlaceholderReplacer placeholderReplacer) {
-            super(processorContext, placeholderReplacer);
+        CustomProcessor(ProcessorContext processorContext) {
+            super(processorContext);
         }
 
         @Override

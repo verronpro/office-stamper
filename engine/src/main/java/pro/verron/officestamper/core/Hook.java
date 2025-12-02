@@ -44,5 +44,9 @@ public interface Hook {
         return Optional.of(new TagHook(part, new Tag(part, tag)));
     }
 
-    boolean run(EngineFactory engineFactory, Object contextRoot);
+    boolean run(
+            EngineFactory engineFactory,
+            ContextTree contextTree,
+            EvaluationContextFactory evaluationContextFactory
+    );
 }

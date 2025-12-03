@@ -26,7 +26,7 @@ import static pro.verron.officestamper.utils.WmlFactory.*;
 public class StandardComment
         implements Comment {
     private final Set<Comment> children = new HashSet<>();
-    private final DocxPart docxPart;
+    private final DocxPart part;
     private Comments.Comment comment;
     private CommentRangeStart commentRangeStart;
     private CommentRangeEnd commentRangeEnd;
@@ -36,7 +36,7 @@ public class StandardComment
     ///
     /// @param docxPart the [WordprocessingMLPackage] document instance
     public StandardComment(DocxPart docxPart) {
-        this.docxPart = docxPart;
+        this.part = part;
     }
 
     /// Creates a new instance of [StandardComment] and initializes it with the given parameters, including a comment,
@@ -72,17 +72,20 @@ public class StandardComment
                 children.size());
     }
 
-    /// Adds a [Comment] to this comment children set.
-    ///
-    /// @param comment the child comment to be added
-    public void addChild(Comment comment) {
-        children.add(comment);
+    /// {@inheritDoc}
+    @Override
+    public Paragraph getParagraph() {
+        var parent = commentRangeStart.getParent();
+        return StandardParagraph.from(part, parent);
     }
 
-    /// Returns the smallest common parent of the elements defined by the start and end of the comment range.
-    ///
-    /// @return the ContentAccessor representing the smallest common parent of the comment range start and end, or null
-    ///         if no common parent exists
+    /// {@inheritDoc}
+    @Override
+    public CommentRangeStart getCommentRangeStart() {
+        return commentRangeStart;
+    }
+
+    /// {@inheritDoc}
     @Override
     public ContentAccessor getParent() {
         return DocumentUtil.findSmallestCommonParent(getCommentRangeStart(), getCommentRangeEnd());

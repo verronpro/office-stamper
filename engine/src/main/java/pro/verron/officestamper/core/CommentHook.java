@@ -20,7 +20,7 @@ public class CommentHook
             ContextTree contextTree,
             EvaluationContextFactory evaluationContextMaker
     ) {
-        var paragraph = comment.getParagraph(part);
+        var paragraph = comment.getParagraph();
         var expression = comment.expression();
         var contextStack = contextTree.find(comment.getContextReference());
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);

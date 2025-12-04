@@ -5,7 +5,6 @@ import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.PlaceholderReplacer;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.DocxIterator;

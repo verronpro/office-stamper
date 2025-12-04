@@ -28,8 +28,7 @@ public interface OfficeStamperConfiguration {
     /// based on the comment content.
     ///
     /// @param interfaceClass the interface class associated with the comment processor
-    /// @param commentProcessorFactory a function that creates a [CommentProcessor] object based on the
-    ///         [PlaceholderReplacer] implementation
+    /// @param commentProcessorFactory a factory that creates a [CommentProcessor] object
     ///
     /// @return the updated [OfficeStamperConfiguration] object
     OfficeStamperConfiguration addCommentProcessor(

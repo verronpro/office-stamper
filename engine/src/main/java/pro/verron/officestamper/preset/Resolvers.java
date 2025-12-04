@@ -60,8 +60,16 @@ public class Resolvers {
     ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver nullToPlaceholder() {
-        // TODO make the nulltoPlaceholder configurable at the same time as the prepareplaceholder
-        return new Null2PlaceholderResolver("${%s}");
+        return nullToPlaceholder("${%s}");
+    }
+
+    /// Returns an instance of [ObjectResolver] that resolves `null` values by not replacing their expression.
+    ///
+    /// @param placeholderTemplate The placeholder to use for null objects.
+    ///
+    /// @return An instance of [ObjectResolver]
+    public static ObjectResolver nullToPlaceholder(String placeholderTemplate) {
+        return new Null2PlaceholderResolver(placeholderTemplate);
     }
 
     /// Returns an instance of [ObjectResolver] that resolves [LocalDateTime] values to a formatted string using the

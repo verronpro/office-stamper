@@ -4,7 +4,6 @@ import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.utils.Inserts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,14 +30,14 @@ public class ToStringResolver
         var string = String.valueOf(object);
 
         var split = string.split(linebreakPlaceholder);
-        if (split.length == 1) return Inserts.of(newRun(string));
+        if (split.length == 1) return new Insert(newRun(string));
         var elements = new ArrayList<>();
         for (int i = 0; i < split.length - 1; i++) {
             var line = split[i];
             elements.add(newRun(List.of(newText(line), newBr())));
         }
         elements.add(newRun(split[split.length - 1]));
-        return Inserts.of(elements);
+        return new Insert(elements);
     }
 
     @Override

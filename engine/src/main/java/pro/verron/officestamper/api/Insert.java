@@ -1,33 +1,39 @@
 package pro.verron.officestamper.api;
 
+import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.utils.WmlUtils;
 
-import java.util.SequencedCollection;
+import java.util.List;
 
-/// The Insert interface represents a contract for managing the insertion of objects
-/// with specific constraints, such as ensuring serializability and type consistency.
-/// It provides methods to access and manipulate collections of elements, validate the
-/// type of elements, and set specific properties for the elements when applicable.
-public interface Insert {
-    default void assertSerializable() {
-        for (Object element : getElements()) {
-            if (!WmlUtils.serializable(element))
-                throw new AssertionError("The inserted objects must be valid DOCX4J Object");
-        }
+import static java.util.Collections.singletonList;
+
+/// The Insert record represents a container for managing collections of document elements that can be inserted into a
+/// DOCX document.
+///
+/// This record is used to wrap various types of document elements such as text runs, smart tag runs, and other WML
+/// objects that can be inserted into a document.
+public record Insert(List<Object> elements) {
+
+    public Insert(Object element) {
+        this(singletonList(element));
     }
 
-    /// Retrieves a sequenced collection of elements managed by the implementing class.
-    ///
-    /// @return a SequencedCollection containing the elements
-    SequencedCollection<Object> getElements();
+    public Insert {
+        elements = List.copyOf(elements);
+    }
 
-    default void setRPr(@Nullable RPr rPr) {/* DO NOTHING*/}
+    public void setRPr(@Nullable RPr rPr) {
+        elements.stream()
+                .filter(R.class::isInstance)
+                .map(R.class::cast)
+                .forEach(r -> r.setRPr(rPr));
+    }
 
-    default <T> T assertInstanceOf(Class<T> clazz) {
-        Object first = getElements().getFirst();
-        if (clazz.isInstance(first)) return clazz.cast(first);
-        throw new AssertionError("Insert '%s' is not a unique element of expected type '%s'".formatted(first, clazz));
+    public <T> T assertSingleton(Class<T> clazz) {
+        if (elements.size() != 1) throw new AssertionError("Insert must contain exactly one element");
+        var element = elements.getFirst();
+        if (clazz.isInstance(element)) return clazz.cast(element);
+        throw new AssertionError("Insert '%s' is not a unique element of expected type '%s'".formatted(element, clazz));
     }
 }

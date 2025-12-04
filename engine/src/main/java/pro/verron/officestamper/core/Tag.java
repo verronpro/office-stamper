@@ -75,7 +75,7 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
         var siblings = parent.getContent();
         var index = siblings.indexOf(tag);
         siblings.remove(index);
-        siblings.addAll(index, insert.getElements());
+        siblings.addAll(index, insert.elements());
     }
 
     public Optional<String> type() {

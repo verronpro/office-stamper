@@ -102,7 +102,6 @@ public class StandardParagraph
 
     @Override
     public void replace(String expression, Insert insert) {
-        insert.assertSerializable(); // TODO Move the check at instance creation
         var newContents = WmlUtils.replaceExpressionWithRun(() -> p, expression, insert);
         var content = contents.getContent();
         content.clear();

@@ -7,9 +7,9 @@ import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.utils.Inserts;
 
 import java.io.OutputStream;
 import java.util.List;
@@ -45,7 +45,7 @@ public class PowerpointStamper
 
                 replacement.setT((String) value);
                 var expression1 = variable.expression();
-                paragraph1.replace(expression1, Inserts.of(replacement));
+                paragraph1.replace(expression1, new Insert(replacement));
             }
 
         }

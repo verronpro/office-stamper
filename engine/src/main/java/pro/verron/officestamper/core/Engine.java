@@ -6,8 +6,8 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.utils.Inserts;
-import pro.verron.officestamper.utils.WmlFactory;
+
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
 public class Engine {
     private static final Logger log = LoggerFactory.getLogger(Engine.class);
@@ -87,7 +87,7 @@ public class Engine {
             var msgTemplate = "Expression %s could not be resolved against context '%s'";
             var message = msgTemplate.formatted(expression, evaluationContext);
             var resolution = exceptionResolver.resolve(expression, message, e);
-            return Inserts.of(WmlFactory.newRun(resolution));
+            return new Insert(newRun(resolution));
         }
     }
 }

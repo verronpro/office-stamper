@@ -152,7 +152,7 @@ public class PowerpointParagraph
     /// @param insert the content to replace the placeholder with; must be a valid and compatible text run
     @Override
     public void replace(String expression, Insert insert) {
-        var replacementRun = insert.assertInstanceOf(CTRegularTextRun.class);
+        var replacementRun = insert.assertSingleton(CTRegularTextRun.class);
 
         String text = asString();
         int matchStartIndex = text.indexOf(expression);

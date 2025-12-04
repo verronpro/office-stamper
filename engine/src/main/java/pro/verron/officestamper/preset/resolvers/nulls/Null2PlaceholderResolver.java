@@ -4,7 +4,6 @@ import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.utils.Inserts;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
@@ -25,7 +24,7 @@ public class Null2PlaceholderResolver
 
     @Override
     public Insert resolve(DocxPart document, String expression, @Nullable Object object) {
-        return Inserts.of(newRun(placeholderTemplate.formatted(expression)));
+        return new Insert(newRun(placeholderTemplate.formatted(expression)));
     }
 
     @Override

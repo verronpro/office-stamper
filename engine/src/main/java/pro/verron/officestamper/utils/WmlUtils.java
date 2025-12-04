@@ -277,7 +277,7 @@ public final class WmlUtils {
         var run = newRun(expression);
         var smartTag = newSmartTag("officestamper", run, newCtAttr("type", element));
         findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
-        return replace(paragraph, Inserts.of(smartTag), start, end);
+        return replace(paragraph, new Insert(smartTag), start, end);
     }
 
     public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
@@ -312,15 +312,15 @@ public final class WmlUtils {
 
             if (expressionSpansCompleteRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.addAll(firstIndex, insert.getElements());
+                firstSiblings.addAll(firstIndex, insert.elements());
             }
             else if (expressionAtStartOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.addAll(firstIndex, insert.getElements());
+                firstSiblings.addAll(firstIndex, insert.elements());
             }
             else if (expressionAtEndOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.addAll(firstIndex + 1, insert.getElements());
+                firstSiblings.addAll(firstIndex + 1, insert.elements());
             }
             else if (expressionWithinRun) {
                 var originalRun = firstRun.run();
@@ -328,14 +328,14 @@ public final class WmlUtils {
                 var newStartRun = create(firstRun.left(startIndex), originalRPr);
                 var newEndRun = create(firstRun.right(endIndex), originalRPr);
                 firstSiblings.remove(firstIndex);
-                firstSiblings.addAll(firstIndex, wrap(newStartRun, insert.getElements(), newEndRun));
+                firstSiblings.addAll(firstIndex, wrap(newStartRun, insert.elements(), newEndRun));
             }
         }
         else {
             StandardRun lastRun = affectedRuns.getLast();
             removeExpression(firstSiblings, firstRun, startIndex, endIndex, lastRun, affectedRuns);
             // add replacement run between first and last run
-            firstSiblings.addAll(firstIndex + 1, insert.getElements());
+            firstSiblings.addAll(firstIndex + 1, insert.elements());
         }
         return new ArrayList<>(contentAccessor.getContent());
     }

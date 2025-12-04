@@ -9,19 +9,15 @@ import java.math.BigInteger;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 
-/**
- * Renders {@link AsciiDocModel} into a {@link WordprocessingMLPackage} using docx4j.
- */
+/// Renders [AsciiDocModel] into a [WordprocessingMLPackage] using docx4j.
 public final class AsciiDocToDocx {
     private AsciiDocToDocx() {}
 
-    /**
-     * Creates a new WordprocessingMLPackage and fills it with content from the model.
-     *
-     * @param model parsed AsciiDoc model
-     *
-     * @return package containing the rendered document
-     */
+    /// Creates a new WordprocessingMLPackage and fills it with content from the model.
+    ///
+    /// @param model parsed AsciiDoc model
+    ///
+    /// @return package containing the rendered document
     public static WordprocessingMLPackage compileToPackage(AsciiDocModel model) {
         try {
             var pkg = WordprocessingMLPackage.createPackage();

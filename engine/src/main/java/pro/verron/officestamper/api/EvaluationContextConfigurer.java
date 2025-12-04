@@ -12,7 +12,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 /// [EvaluationContext].
 public interface EvaluationContextConfigurer {
 
-    /// Configure the context before it's used by office-stamper.
+    /// Configure the context before it is used by office-stamper.
     ///
     /// @param context the SpEL eval context, not null
     void configureEvaluationContext(StandardEvaluationContext context);

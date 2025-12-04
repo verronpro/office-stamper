@@ -68,14 +68,21 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     /// @param insert the Insert object containing elements to replace the current tag. It also provides the
     ///         ability to set Run Properties [RPr] for styling purposes.
     public void replace(Insert insert) {
-        insert.setRPr(((R) tag.getContent()
-                              .getFirst()).getRPr());
-        // TODO merge existing and created style to allow generation of styled runs
+        var optionalRun = getFirst(tag, R.class);
+        optionalRun.ifPresent(firstRun -> insert.setRPr(firstRun.getRPr()));
         var parent = (ContentAccessor) tag.getParent();
         var siblings = parent.getContent();
         var index = siblings.indexOf(tag);
         siblings.remove(index);
         siblings.addAll(index, insert.elements());
+    }
+
+    private static <T> Optional<T> getFirst(CTSmartTagRun tagRun, Class<T> clazz) {
+        return tagRun.getContent()
+                     .stream()
+                     .filter(clazz::isInstance)
+                     .map(clazz::cast)
+                     .findFirst();
     }
 
     public Optional<String> type() {

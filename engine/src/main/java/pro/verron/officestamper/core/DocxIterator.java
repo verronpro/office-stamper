@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Tag;
 
 import java.util.*;
 import java.util.function.Function;

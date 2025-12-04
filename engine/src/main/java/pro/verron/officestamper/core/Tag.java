@@ -1,8 +1,10 @@
-package pro.verron.officestamper.api;
+package pro.verron.officestamper.core;
 
 import org.docx4j.wml.*;
-import pro.verron.officestamper.core.StandardComment;
-import pro.verron.officestamper.core.StandardParagraph;
+import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.Paragraph;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

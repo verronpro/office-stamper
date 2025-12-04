@@ -2,7 +2,6 @@ package pro.verron.officestamper.core;
 
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ProcessorContext;
-import pro.verron.officestamper.api.Tag;
 
 public class TagHook
         implements Hook {

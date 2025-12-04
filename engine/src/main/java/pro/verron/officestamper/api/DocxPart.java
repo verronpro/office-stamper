@@ -1,26 +1,17 @@
 package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.parts.Part;
-import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /// Represents a part of a WordprocessingML-based document. This interface extends the
 /// DocxDocument interface and provides additional methods to retrieve specific parts,
 /// manipulate document content, and stream elements such as paragraphs and runs.
 public interface DocxPart
         extends DocxDocument {
-    default Optional<Comment> getComment(CommentRangeStart crs) {
-        return comment(crs.getId());
-    }
-
-    default boolean hasComment(CommentRangeStart crs) {
-        return comment(crs.getId()).isPresent();
-    }
 
     /// Retrieves the part of the WordprocessingML-based document.
     ///

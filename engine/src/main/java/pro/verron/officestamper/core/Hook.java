@@ -36,7 +36,7 @@ public interface Hook {
     }
 
     private static Optional<Hook> of(DocxPart part, CommentRangeStart commentRangeStart) {
-        return part.getComment(commentRangeStart)
+        return part.comment(commentRangeStart.getId())
                    .map(c -> new CommentHook(part, c));
     }
 

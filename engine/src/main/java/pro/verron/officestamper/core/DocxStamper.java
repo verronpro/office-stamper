@@ -6,21 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static org.docx4j.openpackaging.parts.relationships.Namespaces.*;
-import static pro.verron.officestamper.core.Invokers.streamInvokersFromClass;
-import static pro.verron.officestamper.core.Invokers.streamInvokersFromCustomFunction;
 
 /// The [DocxStamper] class is an implementation of the [OfficeStamper] interface used to stamp DOCX templates with a
 /// context object and write the result to an output stream.
@@ -147,7 +142,6 @@ public class DocxStamper
             case DOCUMENT, HEADER, FOOTER -> processTextualPart(part, contextRoot);
             default -> log.info("Unknown part type: {}", type);
         }
-
     }
 
     private void processTextualPart(DocxPart part, Object contextRoot) {
@@ -164,55 +158,10 @@ public class DocxStamper
     }
 
     private EvaluationContextFactory computeEvaluationContext() {
-        return (processorContext, branch) -> {
-            var invokers = computeInvokers(functions, configurationCommentProcessors, processorContext);
-            var evaluationContext = createEvaluationContext(branch);
-            evaluationContext.addMethodResolver(invokers);
-            return evaluationContext;
-        };
+        return new OfficeStamperEvaluationContextFactory(functions,
+                configurationCommentProcessors,
+                expressionFunctions,
+                evaluationContextConfigurer);
     }
 
-    private Invokers computeInvokers(
-            List<CustomFunction> functions,
-            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
-            ProcessorContext processorContext
-    ) {
-        var processors = instantiate(configurationCommentProcessors, processorContext);
-
-        var invokerStream = Stream.of(streamInvokersFromClass(processors),
-                                          streamInvokersFromClass(expressionFunctions),
-                                          streamInvokersFromCustomFunction(functions))
-                                  .flatMap(s -> s);
-        var invokers = new Invokers(invokerStream);
-        return invokers;
-    }
-
-    private StandardEvaluationContext createEvaluationContext(ContextBranch contextBranch) {
-        var evaluationContext = new StandardEvaluationContext();
-        evaluationContextConfigurer.configureEvaluationContext(evaluationContext);
-        evaluationContext.setRootObject(contextBranch.root());
-        return evaluationContext;
-    }
-
-    /// Returns a set view of the mappings contained in this map. Each entry in the set is a mapping between a
-    /// [Class<?>] key and its associated `CommentProcessor` value.
-    ///
-    /// @return a map representing the associations between [Class<?>] keys and their corresponding [CommentProcessor]
-    ///         values in this map.
-
-    private static Map<Class<?>, CommentProcessor> instantiate(
-            Map<Class<?>, CommentProcessorFactory> processorFactoryMap,
-            ProcessorContext processorContext
-    ) {
-        Map<Class<?>, CommentProcessor> map = new HashMap<>();
-        for (Map.Entry<Class<?>, CommentProcessorFactory> entry : processorFactoryMap.entrySet()) {
-            var processorClass = entry.getKey();
-            var processorFactory = entry.getValue();
-            var processor = processorFactory.create(processorContext);
-            map.put(processorClass, processor);
-        }
-        return map;
-
-
-    }
 }

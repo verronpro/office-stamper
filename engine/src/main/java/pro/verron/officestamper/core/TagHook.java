@@ -41,4 +41,9 @@ public class TagHook
         return processed;
     }
 
+    @Override
+    public void setContextReference(int contextIndex) {
+        tag.setContextReference(contextIndex);
+    }
+
 }

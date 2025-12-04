@@ -32,4 +32,9 @@ public class CommentHook
         return false;
     }
 
+    @Override
+    public void setContextReference(int contextIndex) {
+        comment.setContextReference(contextIndex);
+    }
+
 }

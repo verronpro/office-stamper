@@ -48,4 +48,6 @@ public interface Hook {
             ContextTree contextTree,
             EvaluationContextFactory evaluationContextFactory
     );
+
+    void setContextReference(int contextIndex);
 }

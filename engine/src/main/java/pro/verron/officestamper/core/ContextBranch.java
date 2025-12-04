@@ -28,4 +28,14 @@ public class ContextBranch {
     public Object root() {
         return branch.getLast();
     }
+
+    public List<Object> list() {
+        return List.copyOf(branch)
+                   .reversed();
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(branch.getLast());
+    }
 }

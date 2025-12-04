@@ -4,7 +4,6 @@ import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.utils.Inserts;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
@@ -20,7 +19,7 @@ public record Null2DefaultResolver(String defaultValue)
 
     @Override
     public Insert resolve(DocxPart document, String expression, @Nullable Object object) {
-        return Inserts.of(newRun(defaultValue));
+        return new Insert(newRun(defaultValue));
     }
 
     @Override

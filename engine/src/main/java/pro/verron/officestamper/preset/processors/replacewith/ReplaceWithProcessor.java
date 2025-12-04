@@ -2,13 +2,14 @@ package pro.verron.officestamper.preset.processors.replacewith;
 
 import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
-import pro.verron.officestamper.utils.Inserts;
-import pro.verron.officestamper.utils.WmlFactory;
 
-/// Processor that replaces the current run with the provided expression.
-/// This is useful for replacing an expression in a comment with the result of the expression.
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
+
+/// Processor that replaces the current run with the provided expression. This is useful for replacing an expression in
+/// a comment with the result of the expression.
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
@@ -33,6 +34,6 @@ public class ReplaceWithProcessor
     public void replaceWith(@Nullable String expression) {
         var from = comment().getCommentRangeStart();
         var to = comment().getCommentRangeEnd();
-        paragraph().replace(from, to, Inserts.of(WmlFactory.newRun(expression)));
+        paragraph().replace(from, to, new Insert(newRun(expression)));
     }
 }

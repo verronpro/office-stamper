@@ -57,4 +57,6 @@ public interface Comment {
     String expression();
 
     int getContextReference();
+
+    void setContextReference(int contextIndex);
 }

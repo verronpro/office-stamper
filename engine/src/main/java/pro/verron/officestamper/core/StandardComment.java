@@ -95,7 +95,8 @@ public class StandardComment
     /// @param commentRangeStart the [CommentRangeStart] object representing the beginning of the comment range
     public void setCommentRangeStart(CommentRangeStart commentRangeStart) {
         this.commentRangeStart = commentRangeStart;
-    }    /// {@inheritDoc}
+    }
+
     @Override
     public ContentAccessor getParent() {
         return DocumentUtil.findSmallestCommonParent(commentRangeStart, getCommentRangeEnd());
@@ -115,7 +116,7 @@ public class StandardComment
         }
         return elements;
     }
-    /// {@inheritDoc}
+
     @Override
     public CommentRangeEnd getCommentRangeEnd() {
         return commentRangeEnd;
@@ -195,14 +196,17 @@ public class StandardComment
         }
     }
 
-/// Adds a [Comment] to this comment children set.
+    @Override
+    public void setContextReference(int contextIndex) {
+        comment.setAuthor(String.valueOf(contextIndex));
+    }
+
+    /// Adds a [Comment] to this comment children set.
     ///
     /// @param comment the child comment to be added
     public void addChild(Comment comment) {
         children.add(comment);
     }
-
-
 
 
 }

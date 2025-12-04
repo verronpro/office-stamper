@@ -8,36 +8,35 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.*;
 import javafx.scene.text.Text;
 
+import java.util.List;
+
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 
-/**
- * Renders {@link AsciiDocModel} into a JavaFX {@link Scene}.
- */
+/// Renders [AsciiDocModel] into a JavaFX [Scene].
 public final class AsciiDocToFx {
     private AsciiDocToFx() {}
 
-    /**
-     * Compiles the model into a simple scrollable Scene using a VBox of TextFlow nodes. Headings are rendered with
-     * larger font sizes; bold/italic are applied per inline fragment.
-     *
-     * @param model parsed AsciiDoc model
-     *
-     * @return JavaFX scene containing the rendered content
-     */
+    /// Compiles the model into a simple scrollable Scene using a VBox of TextFlow nodes.
+    ///
+    /// Headings are rendered with larger font sizes; bold/italic are applied per inline fragment.
+    ///
+    /// @param model parsed AsciiDoc model
+    ///
+    /// @return JavaFX scene containing the rendered content
     public static Scene compileToScene(AsciiDocModel model) {
         var rootBox = new VBox(8.0);
         rootBox.setPadding(new Insets(16));
 
         for (Block block : model.getBlocks()) {
             TextFlow flow = new TextFlow();
-            if (block instanceof Heading h) {
-                for (Inline inline : h.inlines()) {
+            if (block instanceof Heading(int level, List<Inline> inlines)) {
+                for (Inline inline : inlines) {
                     flow.getChildren()
-                        .add(toText(inline, fontForHeading(h.level())));
+                        .add(toText(inline, fontForHeading(level)));
                 }
             }
-            else if (block instanceof Paragraph p) {
-                for (Inline inline : p.inlines()) {
+            else if (block instanceof Paragraph(List<Inline> inlines)) {
+                for (Inline inline : inlines) {
                     flow.getChildren()
                         .add(toText(inline, Font.getDefault()));
                 }
@@ -53,12 +52,8 @@ public final class AsciiDocToFx {
     }
 
     private static Text toText(Inline inline, Font baseFont) {
-        if (inline instanceof Bold b) {
-            return styledText(b.text(), baseFont, FontWeight.BOLD, null);
-        }
-        if (inline instanceof Italic i) {
-            return styledText(i.text(), baseFont, null, FontPosture.ITALIC);
-        }
+        if (inline instanceof Bold(String text)) return styledText(text, baseFont, FontWeight.BOLD, null);
+        if (inline instanceof Italic(String text)) return styledText(text, baseFont, null, FontPosture.ITALIC);
         return styledText(inline.text(), baseFont, null, null);
     }
 

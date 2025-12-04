@@ -7,12 +7,12 @@ import java.util.regex.Pattern;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 
-/**
- * Minimal AsciiDoc parser producing an {@link AsciiDocModel}.
- * <p>
- * Supported subset: - Headings: lines starting with 1..6 '=' followed by a space - Paragraphs: blocks of non-empty
- * lines separated by blank lines - Inline emphasis: <code>*bold*</code> and <code>_italic_</code>
- */
+/// Minimal AsciiDoc parser producing an [AsciiDocModel].
+///
+/// Supported subset:
+///  - Headings: lines starting with 1..6 '=' followed by a space
+///  - Paragraphs: blocks of non-empty lines separated by blank lines
+///  - Inline emphasis: <code>*bold*</code> and <code>_italic_</code>
 public final class AsciiDocParser {
 
     private static final Pattern HEADING = Pattern.compile("^(={1,6})\\s+(.*)$");
@@ -21,13 +21,11 @@ public final class AsciiDocParser {
         // utility
     }
 
-    /**
-     * Parses the given AsciiDoc string into a model.
-     *
-     * @param asciidoc source text
-     *
-     * @return parsed model
-     */
+    /// Parses the given AsciiDoc string into a model.
+    ///
+    /// @param asciidoc source text
+    ///
+    /// @return parsed model
     public static AsciiDocModel parse(String asciidoc) {
         var blocks = new ArrayList<Block>();
         if (asciidoc == null || asciidoc.isBlank()) {
@@ -156,7 +154,7 @@ public final class AsciiDocParser {
     }
 
     private static void flushPlain(List<Inline> out, StringBuilder plain) {
-        if (plain.length() > 0) {
+        if (!plain.isEmpty()) {
             out.add(new Text(plain.toString()));
             plain.setLength(0);
         }

@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.ExceptionResolver;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.ProcessorContext;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
@@ -54,32 +57,15 @@ public class Engine {
         }
     }
 
-    /// Resolves an [Insert] object by processing the provided context root using the current processor context.
+    /// Resolves an [Insert] object by processing the provided evaluation context using the current processor context.
     /// Combines the processor context's part and expression with various resolvers to achieve the resolution.
     ///
-    /// @param contextRoot the root object containing the evaluation context for processing the expression.
+    /// @param evaluationContext the evaluation context for processing the expression.
     ///
     /// @return an [Insert] object representing the resolved result of the expression within the context.
     public Insert resolve(EvaluationContext evaluationContext) {
         var part = processorContext.part();
         var expression = processorContext.expression();
-        return resolve(part,
-                evaluationContext,
-                expression,
-                expressionResolver,
-                objectResolverRegistry,
-                exceptionResolver);
-    }
-
-    // TODO move this to a better place,or remove placeholder replacer concept
-    static Insert resolve(
-            DocxPart part,
-            EvaluationContext evaluationContext,
-            String expression,
-            ExpressionResolver expressionResolver,
-            ObjectResolverRegistry objectResolverRegistry,
-            ExceptionResolver exceptionResolver
-    ) {
         try {
             var resolution = expressionResolver.resolve(evaluationContext, expression);
             return objectResolverRegistry.resolve(part, expression, resolution);

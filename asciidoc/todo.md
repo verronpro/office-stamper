@@ -1,6 +1,6 @@
 # AsciiDoc Parser — TODO Roadmap (for future AI assistant)
 
-Updated: 2025-11-30 20:32 (local)
+Updated: 2025-12-05 01:04 (local)
 
 Purpose: Track features to implement in the minimal AsciiDoc parser so it can cover a practical subset and map cleanly
 to Docx/FX exporters.
@@ -11,8 +11,9 @@ Current support (as of today):
     - Headings: `=`, `==`, … up to `======` at line start
     - Paragraphs: non-empty lines merged; separated by blank lines
 - Inline-level:
-    - Emphasis: `*bold*`, `_italic_`
-    - Escape for markers: `\*`, `\_`
+    - Emphasis: `*bold*`, `_italic_` with correct non-crossing nesting (`*bold _and italic_*`)
+    - Escapes for markers: `\*`, `\_`, and backslash `\\`
+    - Unbalanced markers are treated as literal text (error tolerant)
 
 Non-goals for now:
 
@@ -37,10 +38,10 @@ Conventions for this document:
 
 1.2 Strong/Emphasis nesting and precedence
 
-- [ ] Spec: Allow nested `*` and `_` when non-overlapping. Reject crossing markers.
+- [x] Spec: Allow nested `*` and `_` when non-overlapping. Reject crossing markers.
 - Examples: `*bold _and italic_*` → Bold(Text("bold "), Italic("and italic"))
-- Parsing: Stack-based inline parser instead of single-pass regex; or 2-pass heuristic.
-- Mapping: Same as current Bold/Italic model, but permit nested lists of inlines.
+- Parsing: Implemented via stack-based inline parser with explicit frames for BOLD/ITALIC and ROOT.
+- Mapping: DOCX/FX renderers recurse with composed styles (bold/italic) over nested inlines.
 
 1.3 Strikethrough
 
@@ -200,7 +201,7 @@ Conventions for this document:
 
 7.1 Inline parser refactor
 
-- [ ] Replace regex-only approach with tokenization + stack to handle nesting and precedence robustly.
+- [x] Replace regex-only approach with tokenization + stack to handle nesting and precedence robustly.
 
 7.2 Whitespace and line-join rules
 
@@ -208,7 +209,7 @@ Conventions for this document:
 
 7.3 Error tolerance
 
-- [ ] Unbalanced delimiters become literal text; ensure no crash on malformed input.
+- [x] Unbalanced delimiters become literal text; ensure no crash on malformed input.
 
 7.4 Model extensions
 

@@ -31,14 +31,12 @@ public final class AsciiDocToFx {
             TextFlow flow = new TextFlow();
             if (block instanceof Heading(int level, List<Inline> inlines)) {
                 for (Inline inline : inlines) {
-                    flow.getChildren()
-                        .add(toText(inline, fontForHeading(level)));
+                    emitInline(flow, inline, fontForHeading(level), FontWeight.NORMAL, FontPosture.REGULAR);
                 }
             }
             else if (block instanceof Paragraph(List<Inline> inlines)) {
                 for (Inline inline : inlines) {
-                    flow.getChildren()
-                        .add(toText(inline, Font.getDefault()));
+                    emitInline(flow, inline, Font.getDefault(), FontWeight.NORMAL, FontPosture.REGULAR);
                 }
             }
             rootBox.getChildren()
@@ -51,10 +49,25 @@ public final class AsciiDocToFx {
         return new Scene(scroll, 800, 600);
     }
 
-    private static Text toText(Inline inline, Font baseFont) {
-        if (inline instanceof Bold(String text)) return styledText(text, baseFont, FontWeight.BOLD, null);
-        if (inline instanceof Italic(String text)) return styledText(text, baseFont, null, FontPosture.ITALIC);
-        return styledText(inline.text(), baseFont, null, null);
+    private static void emitInline(TextFlow flow, Inline inline, Font base, FontWeight weight, FontPosture posture) {
+        if (inline instanceof AsciiDocModel.Text(String text)) {
+            flow.getChildren()
+                .add(styledText(text, base, weight, posture));
+            return;
+        }
+        if (inline instanceof Bold(List<Inline> children)) {
+            FontWeight nextW = FontWeight.BOLD; // bold overrides
+            for (Inline child : children) {
+                emitInline(flow, child, base, nextW, posture);
+            }
+            return;
+        }
+        if (inline instanceof Italic(List<Inline> children)) {
+            FontPosture nextP = FontPosture.ITALIC;
+            for (Inline child : children) {
+                emitInline(flow, child, base, weight, nextP);
+            }
+        }
     }
 
     private static Font fontForHeading(int level) {

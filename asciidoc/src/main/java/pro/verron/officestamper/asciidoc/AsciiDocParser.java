@@ -73,90 +73,98 @@ public final class AsciiDocParser {
     }
 
     private static List<Inline> parseInlines(String text) {
-        var out = new ArrayList<Inline>();
+        // Stack-based inline parser with simple tokens for '*', '_', text, and escapes.
+        // Non-overlapping nesting is allowed; crossing markers are treated as plain text.
+        var root = new Frame(FrameType.ROOT);
+        var stack = new ArrayList<Frame>();
+        stack.add(root);
 
         if (text == null || text.isEmpty()) {
-            return out;
+            return root.children;
         }
-
-        // Tokenization + single-delimiter stack (foundation for nesting in future work).
-        // Current model supports only flat Bold/Italic(String), so we prohibit nesting for now.
-        StringBuilder plain = new StringBuilder();
-        char openDelim = 0; // '*' or '_' when an inline run is open, otherwise 0
-        StringBuilder runBuffer = null; // collects characters inside the current inline run
 
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
 
-            // Handle escapes for *, _, and \
+            // Escapes for '*', '_', and '\\'
             if (c == '\\') {
                 if (i + 1 < text.length()) {
                     char next = text.charAt(i + 1);
                     if (next == '*' || next == '_' || next == '\\') {
-                        appendChar(openDelim, plain, runBuffer, next);
-                        i++; // consume next
+                        stack.getLast().text.append(next);
+                        i++;
                         continue;
                     }
                 }
-                // Lone backslash, treat literally
-                appendChar(openDelim, plain, runBuffer, c);
+                // Lone backslash
+                stack.getLast().text.append(c);
                 continue;
             }
 
             if (c == '*' || c == '_') {
-                if (openDelim == 0) {
-                    // Opening a new run. Flush plain text first.
-                    flushPlain(out, plain);
-                    openDelim = c;
-                    runBuffer = new StringBuilder();
+                FrameType type = (c == '*') ? FrameType.BOLD : FrameType.ITALIC;
+                Frame top = stack.getLast();
+                if (top.type == type) {
+                    // Close current frame
+                    top.flushTextToChildren();
+                    Inline node = (type == FrameType.BOLD) ? new Bold(top.children) : new Italic(top.children);
+                    stack.removeLast();
+                    Frame parent = stack.getLast();
+                    parent.children.add(node);
                 }
-                else if (c == openDelim) {
-                    // Closing the current run
-                    String content = runBuffer.toString();
-                    if (openDelim == '*') {
-                        out.add(new Bold(content));
-                    }
-                    else {
-                        out.add(new Italic(content));
-                    }
-                    openDelim = 0;
-                    runBuffer = null;
+                else if (top.type == FrameType.BOLD || top.type == FrameType.ITALIC || top.type == FrameType.ROOT) {
+                    // Open new frame
+                    Frame f = new Frame(type);
+                    stack.add(f);
                 }
                 else {
-                    // Different marker inside a run: treat as literal for now
-                    runBuffer.append(c);
+                    // Should not happen
+                    stack.getLast().text.append(c);
                 }
                 continue;
             }
 
-            // Regular character
-            appendChar(openDelim, plain, runBuffer, c);
+            // Regular char
+            stack.getLast().text.append(c);
         }
 
-        // If an inline run is still open, treat it as literal text (error tolerance)
-        if (openDelim != 0) {
-            // Emit the opening marker and its content as plain text
-            plain.append(openDelim)
-                 .append(runBuffer);
+        // Unwind: any unclosed frames become literal markers + content as plain text in parent
+        while (stack.size() > 1) {
+            Frame unfinished = stack.removeLast();
+            char marker = unfinished.type == FrameType.BOLD ? '*' : '_';
+            unfinished.flushTextToChildren();
+            // Build literal: marker + children as text + (no closing marker since it is missing)
+            StringBuilder literal = new StringBuilder();
+            literal.append(marker);
+            for (Inline in : unfinished.children) {
+                literal.append(in.text());
+            }
+            stack.getLast().text.append(literal);
         }
 
-        flushPlain(out, plain);
-        return out;
+        // Flush remainder text on root
+        root.flushTextToChildren();
+        return root.children;
     }
 
-    private static void appendChar(char openDelim, StringBuilder plain, StringBuilder runBuffer, char c) {
-        if (openDelim == 0) {
-            plain.append(c);
-        }
-        else {
-            runBuffer.append(c);
-        }
+    private enum FrameType {
+        ROOT,
+        BOLD,
+        ITALIC
     }
 
-    private static void flushPlain(List<Inline> out, StringBuilder plain) {
-        if (!plain.isEmpty()) {
-            out.add(new Text(plain.toString()));
-            plain.setLength(0);
+    private static final class Frame {
+        final FrameType type;
+        final List<Inline> children = new ArrayList<>();
+        final StringBuilder text = new StringBuilder();
+
+        Frame(FrameType type) {this.type = type;}
+
+        void flushTextToChildren() {
+            if (!text.isEmpty()) {
+                children.add(new Text(text.toString()));
+                text.setLength(0);
+            }
         }
     }
 }

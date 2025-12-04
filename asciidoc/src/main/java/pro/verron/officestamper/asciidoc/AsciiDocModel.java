@@ -1,7 +1,6 @@
 package pro.verron.officestamper.asciidoc;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +36,7 @@ public final class AsciiDocModel {
      * @return immutable list of blocks
      */
     public List<Block> getBlocks() {
-        return Collections.unmodifiableList(blocks);
+        return blocks;
     }
 
     /** Marker interface for document blocks. */
@@ -74,11 +73,33 @@ public final class AsciiDocModel {
                 implements Inline {
     }
 
-    public record Bold(String text)
+    /** Bold inline that can contain nested inlines. */
+    public record Bold(List<Inline> children)
                 implements Inline {
+        public Bold(List<Inline> children) {
+            this.children = List.copyOf(children);
+        }
+
+        @Override
+        public String text() {
+            StringBuilder sb = new StringBuilder();
+            for (Inline in : children) sb.append(in.text());
+            return sb.toString();
+        }
     }
 
-    public record Italic(String text)
+    /** Italic inline that can contain nested inlines. */
+    public record Italic(List<Inline> children)
                 implements Inline {
+        public Italic(List<Inline> children) {
+            this.children = List.copyOf(children);
+        }
+
+        @Override
+        public String text() {
+            StringBuilder sb = new StringBuilder();
+            for (Inline in : children) sb.append(in.text());
+            return sb.toString();
+        }
     }
 }

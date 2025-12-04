@@ -6,6 +6,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 
@@ -72,35 +73,41 @@ public final class AsciiDocToDocx {
         return p;
     }
 
-    private static void addInlines(ObjectFactory factory, P p, java.util.List<Inline> inlines, RPr base) {
+    private static void addInlines(ObjectFactory factory, P p, List<Inline> inlines, RPr base) {
         for (Inline inline : inlines) {
+            emitInline(factory, p, inline, base);
+        }
+    }
+
+    private static void emitInline(ObjectFactory factory, P p, Inline inline, RPr base) {
+        if (inline instanceof AsciiDocModel.Text(String text)) {
             R r = factory.createR();
             RPr rpr = base != null ? deepCopy(factory, base) : factory.createRPr();
-            if (inline instanceof Bold) {
-                BooleanDefaultTrue b = new BooleanDefaultTrue();
-                rpr.setB(b);
-                org.docx4j.wml.Text t = factory.createText();
-                t.setValue(inline.text());
-                r.getContent()
-                 .add(t);
-            }
-            else if (inline instanceof Italic) {
-                BooleanDefaultTrue i = new BooleanDefaultTrue();
-                rpr.setI(i);
-                org.docx4j.wml.Text t = factory.createText();
-                t.setValue(inline.text());
-                r.getContent()
-                 .add(t);
-            }
-            else if (inline instanceof pro.verron.officestamper.asciidoc.AsciiDocModel.Text) {
-                org.docx4j.wml.Text t = factory.createText();
-                t.setValue(inline.text());
-                r.getContent()
-                 .add(t);
-            }
+            org.docx4j.wml.Text tx = factory.createText();
+            tx.setValue(text);
+            r.getContent()
+             .add(tx);
             r.setRPr(rpr);
             p.getContent()
              .add(r);
+            return;
+        }
+
+        if (inline instanceof Bold(List<Inline> children)) {
+            RPr next = base != null ? deepCopy(factory, base) : factory.createRPr();
+            next.setB(new BooleanDefaultTrue());
+            for (Inline child : children) {
+                emitInline(factory, p, child, next);
+            }
+            return;
+        }
+
+        if (inline instanceof Italic(List<Inline> children)) {
+            RPr next = base != null ? deepCopy(factory, base) : factory.createRPr();
+            next.setI(new BooleanDefaultTrue());
+            for (Inline child : children) {
+                emitInline(factory, p, child, next);
+            }
         }
     }
 

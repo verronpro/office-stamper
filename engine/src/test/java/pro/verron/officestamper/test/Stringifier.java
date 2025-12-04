@@ -69,7 +69,7 @@ public class Stringifier {
 
         var powerpoint = new StringBuilder();
         for (CTTextParagraph paragraph : collected) {
-            powerpoint.append(new PowerpointParagraph(new PptxPart(), paragraph).asString());
+            powerpoint.append(new PowerpointParagraph(new PptxPart(presentation), paragraph).asString());
         }
         return powerpoint.toString();
     }

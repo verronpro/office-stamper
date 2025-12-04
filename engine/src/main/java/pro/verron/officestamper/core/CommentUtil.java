@@ -3,6 +3,7 @@ package pro.verron.officestamper.core;
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
+import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.Parts;
@@ -47,11 +48,8 @@ public class CommentUtil {
     /// @param document the WordprocessingMLPackage document containing the paragraph and its comments.
     ///
     /// @return an Optional containing the found comment, or Optional.empty() if no comment is associated with the given
-    /// paragraph content.
-    public static Collection<Comments.Comment> getCommentFor(
-            ContentAccessor contentAccessor,
-            WordprocessingMLPackage document
-    ) {
+    ///         paragraph content.
+    public static Collection<Comments.Comment> getCommentFor(ContentAccessor contentAccessor, OpcPackage document) {
         var comments = getCommentsPart(document.getParts()).map(CommentUtil::extractContent)
                                                            .map(Comments::getComment)
                                                            .stream()
@@ -124,8 +122,8 @@ public class CommentUtil {
         }
     }
 
-    /// Creates a sub Word document
-    /// by extracting a specified comment and its associated content from the original document.
+    /// Creates a sub Word document by extracting a specified comment and its associated content from the original
+    /// document.
     ///
     /// @param comment The comment to be extracted from the original document.
     ///
@@ -170,7 +168,7 @@ public class CommentUtil {
     /// Deletes all elements associated with the specified comment from the provided list of items.
     ///
     /// @param comment the comment whose associated elements should be removed
-    /// @param items   the list of items from which elements associated with the comment will be deleted
+    /// @param items the list of items from which elements associated with the comment will be deleted
     public static void deleteCommentFromElements(Comment comment, List<Object> items) {
         record DeletableItems(List<Object> container, List<Object> items) {
             static List<DeletableItems> findAll(List<Object> items, BigInteger commentId) {
@@ -218,4 +216,6 @@ public class CommentUtil {
         }
         return newComments(list);
     }
+
+
 }

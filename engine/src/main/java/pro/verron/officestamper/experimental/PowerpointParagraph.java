@@ -6,7 +6,6 @@ import org.docx4j.dml.CTTextParagraph;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
@@ -34,7 +33,7 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 public class PowerpointParagraph
         implements Paragraph {
 
-    private final DocxPart part;
+    private final PptxPart part;
     private final List<PowerpointRun> runs = new ArrayList<>();
     private final CTTextParagraph paragraph;
     private int currentPosition = 0;

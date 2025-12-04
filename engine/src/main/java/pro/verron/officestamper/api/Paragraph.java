@@ -50,11 +50,11 @@ public interface Paragraph {
     ///
     /// @param aClass The class type to match for the parent element.
     /// @param <T> The type of the parent element to be returned.
-    /// @return An `Optional` containing the matched parent element if found, otherwise an empty `Optional`.
+    /// @return An [Optional] containing the matched parent element if found, otherwise an empty [Optional].
     <T> Optional<T> parent(Class<T> aClass);
 
     /// Retrieves a collection of comments associated with the paragraph.
     ///
-    /// @return a collection of `Comments.Comment` objects related to the paragraph
+    /// @return a collection of [Comments.Comment] objects related to the paragraph
     Collection<Comments.Comment> getComment();
 }

@@ -1,6 +1,5 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.lang.Nullable;
 
 /// The ObjectResolver interface provides a contract for resolving objects to create a run with the resolved content. It
@@ -12,8 +11,6 @@ import org.springframework.lang.Nullable;
 public interface ObjectResolver {
 
     /// Resolves the expression in the given document with the provided object.
-    ///
-    /// Replace the previous [#resolve(WordprocessingMLPackage, String, Object)]
     ///
     /// @param docxPart the [DocxPart] document in which to resolve the expression
     /// @param expression the expression value to be replaced

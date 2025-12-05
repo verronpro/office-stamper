@@ -5,9 +5,17 @@ import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-record UnionEvaluationContext(EvaluationContext evaluationContext)
+public class UnionEvaluationContext
         implements EvaluationContext {
+    private final EvaluationContext evaluationContext;
+    private final Invokers invokers;
+
+    UnionEvaluationContext(EvaluationContext evaluationContext, Invokers invokers) {
+        this.evaluationContext = evaluationContext;
+        this.invokers = invokers;
+    }
 
     @Override
     public TypedValue getRootObject() {
@@ -40,6 +48,7 @@ record UnionEvaluationContext(EvaluationContext evaluationContext)
         var resolvers = evaluationContext.getMethodResolvers();
         var unionResolvers = new ArrayList<>(resolvers);
         unionResolvers.addFirst(new UnionMethodResolver(resolvers));
+        unionResolvers.add(invokers);
         return unionResolvers;
     }
 
@@ -79,5 +88,30 @@ record UnionEvaluationContext(EvaluationContext evaluationContext)
     public Object lookupVariable(String name) {
         return evaluationContext.lookupVariable(name);
     }
+
+    public EvaluationContext evaluationContext() {return evaluationContext;}
+
+    public Invokers invokers() {return invokers;}
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(evaluationContext, invokers);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (UnionEvaluationContext) obj;
+        return Objects.equals(this.evaluationContext, that.evaluationContext) && Objects.equals(this.invokers,
+                that.invokers);
+    }
+
+    @Override
+    public String toString() {
+        return "UnionEvaluationContext[" + "evaluationContext=" + evaluationContext + ", " + "invokers=" + invokers
+               + ']';
+    }
+
 
 }

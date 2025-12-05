@@ -17,7 +17,7 @@ public class TagHook
     public boolean run(
             EngineFactory engineFactory,
             ContextTree contextTree,
-            EvaluationContextFactory evaluationContextFactory
+            OfficeStamperEvaluationContextFactory evaluationContextFactory
     ) {
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();

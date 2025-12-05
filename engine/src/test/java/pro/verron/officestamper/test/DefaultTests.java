@@ -7,8 +7,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
-import pro.verron.officestamper.preset.EvaluationContextConfigurers;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Resolvers;
 
@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
+import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
@@ -120,10 +121,11 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 This paragraph stays untouched.
                 The variable foo has the value bar.
                 """;
-        var config =
-                standard().setEvaluationContextConfigurer(evalContext -> evalContext.addPropertyAccessor(new SimpleGetter(
-                "foo",
-                "bar")));
+        var config = standard().setEvaluationContextFactory(evalContext -> {
+            var evaluationContext = new StandardEvaluationContext(evalContext);
+            evaluationContext.addPropertyAccessor(new SimpleGetter("foo", "bar"));
+            return evaluationContext;
+        });
 
         return arguments("customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored",
                 config,
@@ -407,7 +409,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         // Beware, this configuration only autogrows pojos and java beans,
         // so it will not work if your type has no default constructor and no setters.
         var config = standard().setSpelParserConfiguration(new SpelParserConfiguration(true, true))
-                               .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
+                               .setEvaluationContextFactory(noopFactory())
                                .addResolver(Resolvers.nullToDefault("Nullish value!!"));
 
         return arguments("nullPointerResolutionTest_testWithCustomSpel", config, context, template, expected);

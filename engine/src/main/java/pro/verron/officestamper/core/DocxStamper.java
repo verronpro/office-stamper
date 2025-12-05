@@ -31,7 +31,7 @@ public class DocxStamper
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final EngineFactory engineFactory;
-    private final EvaluationContextConfigurer evaluationContextConfigurer;
+    private final EvaluationContextFactory evaluationContextFactory;
     private final Map<Class<?>, Object> expressionFunctions;
     private final List<CustomFunction> functions;
     private final Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors;
@@ -40,7 +40,7 @@ public class DocxStamper
     ///
     /// @param configuration the configuration to use for this [DocxStamper].
     public DocxStamper(OfficeStamperConfiguration configuration) {
-        this(configuration.getEvaluationContextConfigurer(),
+        this(configuration.getEvaluationContextFactory(),
                 configuration.getExpressionFunctions(),
                 configuration.customFunctions(),
                 configuration.getResolvers(),
@@ -52,7 +52,7 @@ public class DocxStamper
     }
 
     private DocxStamper(
-            EvaluationContextConfigurer evaluationContextConfigurer,
+            EvaluationContextFactory evaluationContextFactory,
             Map<Class<?>, Object> expressionFunctions,
             List<CustomFunction> functions,
             List<ObjectResolver> resolvers,
@@ -62,7 +62,7 @@ public class DocxStamper
             SpelParserConfiguration spelParserConfiguration,
             ExceptionResolver exceptionResolver
     ) {
-        this.evaluationContextConfigurer = evaluationContextConfigurer;
+        this.evaluationContextFactory = evaluationContextFactory;
         this.expressionFunctions = expressionFunctions;
         this.functions = functions;
         this.configurationCommentProcessors = configurationCommentProcessors;
@@ -151,17 +151,17 @@ public class DocxStamper
             var hook = iterator.next();
             if (hook.isPresent()) {
                 var h = hook.get();
-                EvaluationContextFactory evaluationContextFactory = computeEvaluationContext();
-                if (h.run(engineFactory, contextTree, evaluationContextFactory)) iterator.reset();
+                var officeStamperEvaluationContextFactory = computeEvaluationContext();
+                if (h.run(engineFactory, contextTree, officeStamperEvaluationContextFactory)) iterator.reset();
             }
         }
     }
 
-    private EvaluationContextFactory computeEvaluationContext() {
+    private OfficeStamperEvaluationContextFactory computeEvaluationContext() {
         return new OfficeStamperEvaluationContextFactory(functions,
                 configurationCommentProcessors,
                 expressionFunctions,
-                evaluationContextConfigurer);
+                evaluationContextFactory);
     }
 
 }

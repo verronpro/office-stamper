@@ -10,7 +10,7 @@ import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
 import pro.verron.officestamper.core.functions.BiFunctionBuilder;
 import pro.verron.officestamper.core.functions.FunctionBuilder;
 import pro.verron.officestamper.core.functions.TriFunctionBuilder;
-import pro.verron.officestamper.preset.EvaluationContextConfigurers;
+import pro.verron.officestamper.preset.EvaluationContextFactories;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class DocxStamperConfiguration
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final List<CustomFunction> functions;
-    private EvaluationContextConfigurer evaluationContextConfigurer;
+    private EvaluationContextFactory evaluationContextFactory;
     private SpelParserConfiguration spelParserConfiguration;
     private ExceptionResolver exceptionResolver;
 
@@ -55,7 +55,7 @@ public class DocxStamperConfiguration
         preprocessors = new ArrayList<>();
         postprocessors = new ArrayList<>();
         functions = new ArrayList<>();
-        evaluationContextConfigurer = EvaluationContextConfigurers.defaultConfigurer();
+        evaluationContextFactory = EvaluationContextFactories.defaultFactory();
         spelParserConfiguration = new SpelParserConfiguration();
         exceptionResolver = ExceptionResolvers.throwing();
     }
@@ -100,25 +100,23 @@ public class DocxStamperConfiguration
         preprocessors.add(preprocessor);
     }
 
-    /// Retrieves the configured [EvaluationContextConfigurer] instance.
+    /// Retrieves the configured [EvaluationContextFactory] instance.
     ///
-    /// @return an instance of [EvaluationContextConfigurer] used for configuring evaluation contexts
+    /// @return an instance of [EvaluationContextFactory] used for creating evaluation contexts
     @Override
-    public EvaluationContextConfigurer getEvaluationContextConfigurer() {
-        return evaluationContextConfigurer;
+    public EvaluationContextFactory getEvaluationContextFactory() {
+        return evaluationContextFactory;
     }
 
-    /// Provides an [EvaluationContextConfigurer] which may change the configuration of a Spring [EvaluationContext]
+    /// Sets the [EvaluationContextFactory] which creates Spring [EvaluationContext] instances
     /// used for evaluating expressions in comments and text.
     ///
-    /// @param evaluationContextConfigurer the configurer to use.
+    /// @param evaluationContextFactory the factory to use.
     ///
     /// @return the configuration object for chaining.
     @Override
-    public DocxStamperConfiguration setEvaluationContextConfigurer(
-            EvaluationContextConfigurer evaluationContextConfigurer
-    ) {
-        this.evaluationContextConfigurer = evaluationContextConfigurer;
+    public DocxStamperConfiguration setEvaluationContextFactory(EvaluationContextFactory evaluationContextFactory) {
+        this.evaluationContextFactory = evaluationContextFactory;
         return this;
     }
 

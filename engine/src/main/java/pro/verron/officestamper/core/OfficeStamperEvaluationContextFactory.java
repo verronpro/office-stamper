@@ -1,7 +1,6 @@
 package pro.verron.officestamper.core;
 
 import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.*;
 
 import java.util.HashMap;
@@ -12,31 +11,31 @@ import java.util.stream.Stream;
 import static pro.verron.officestamper.core.Invokers.streamInvokersFromClass;
 import static pro.verron.officestamper.core.Invokers.streamInvokersFromCustomFunction;
 
-record OfficeStamperEvaluationContextFactory(
-        List<CustomFunction> functions,
-        Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
-        Map<Class<?>, Object> expressionFunctions,
-        EvaluationContextConfigurer evaluationContextConfigurer
-)
-        implements EvaluationContextFactory {
+public final class OfficeStamperEvaluationContextFactory {
+    private final List<CustomFunction> functions;
+    private final Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors;
+    private final Map<Class<?>, Object> expressionFunctions;
+    private final EvaluationContextFactory evaluationContextFactory;
 
-    @Override
+    OfficeStamperEvaluationContextFactory(
+            List<CustomFunction> functions,
+            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
+            Map<Class<?>, Object> expressionFunctions,
+            EvaluationContextFactory evaluationContextFactory
+    ) {
+        this.functions = functions;
+        this.configurationCommentProcessors = configurationCommentProcessors;
+        this.expressionFunctions = expressionFunctions;
+        this.evaluationContextFactory = evaluationContextFactory;
+    }
+
     public EvaluationContext create(ProcessorContext processorContext, ContextBranch branch) {
-        var ec = createEvaluationContext(branch, evaluationContextConfigurer);
+        var ec = evaluationContextFactory.create(branch);
         var invokers = computeInvokers(functions,
                 configurationCommentProcessors,
                 processorContext,
                 expressionFunctions);
         return new UnionEvaluationContext(ec, invokers);
-    }
-
-    private static StandardEvaluationContext createEvaluationContext(
-            ContextBranch contextBranch,
-            EvaluationContextConfigurer contextConfigurer
-    ) {
-        var evaluationContext = new StandardEvaluationContext(contextBranch);
-        contextConfigurer.configureEvaluationContext(evaluationContext);
-        return evaluationContext;
     }
 
     private static Invokers computeInvokers(

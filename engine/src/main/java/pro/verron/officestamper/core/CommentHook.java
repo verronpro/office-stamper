@@ -18,14 +18,14 @@ public class CommentHook
     public boolean run(
             EngineFactory engineFactory,
             ContextTree contextTree,
-            EvaluationContextFactory evaluationContextMaker
+            OfficeStamperEvaluationContextFactory officeStamperEvaluationContextFactory
     ) {
         var paragraph = comment.getParagraph();
         var expression = comment.expression();
         var contextStack = contextTree.find(comment.getContextReference());
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
         var engine = engineFactory.create(processorContext);
-        if (engine.process(evaluationContextMaker.create(processorContext, contextStack))) {
+        if (engine.process(officeStamperEvaluationContextFactory.create(processorContext, contextStack))) {
             CommentUtil.deleteComment(comment);
             return true;
         }

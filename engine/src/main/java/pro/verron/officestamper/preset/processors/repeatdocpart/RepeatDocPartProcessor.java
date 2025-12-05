@@ -79,7 +79,7 @@ public class RepeatDocPartProcessor
         var part = context.part();
         var document = part.document();
         var firstElement = elements.getFirst();
-        var subTemplate = CommentUtil.createSubWordDocument(comment);
+        var subTemplate = CommentUtil.createSubWordDocument(comment, document);
         var oddNumberOfBreaks = SectionUtil.hasOddNumberOfSectionBreaks(elements);
         var optionalPreviousSectionBreak = getPreviousSectionBreakIfPresent(firstElement, parent);
         Function<SectPr, UnaryOperator<List<Object>>> function =

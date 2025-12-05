@@ -128,7 +128,10 @@ public class CommentUtil {
     /// @param comment The comment to be extracted from the original document.
     ///
     /// @return The sub Word document containing the content of the specified comment.
-    public static WordprocessingMLPackage createSubWordDocument(Comment comment) {
+    public static WordprocessingMLPackage createSubWordDocument(
+            Comment comment,
+            WordprocessingMLPackage sourceDocument
+    ) {
         var elements = comment.getElements();
 
         var target = createWordPackageWithCommentsPart();
@@ -144,7 +147,7 @@ public class CommentUtil {
 
         // copy the images from parent document using the original repeat elements
         var fakeBody = newBody(elements);
-        DocumentUtil.walkObjectsAndImportImages(fakeBody, comment.getDocument(), target);
+        DocumentUtil.walkObjectsAndImportImages(fakeBody, sourceDocument, target);
 
         var comments = extractComments(comment.getChildren());
         target.getMainDocumentPart()

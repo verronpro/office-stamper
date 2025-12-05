@@ -18,7 +18,7 @@ public record Null2DefaultResolver(String defaultValue)
         implements ObjectResolver {
 
     @Override
-    public Insert resolve(DocxPart document, String expression, @Nullable Object object) {
+    public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
         return new Insert(newRun(defaultValue));
     }
 

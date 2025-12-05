@@ -22,17 +22,20 @@ record OfficeStamperEvaluationContextFactory(
 
     @Override
     public EvaluationContext create(ProcessorContext processorContext, ContextBranch branch) {
-        var ec = prepare(processorContext, branch);
-        return new UnionEvaluationContext(ec);
-    }
-
-    private EvaluationContext prepare(ProcessorContext processorContext, ContextBranch branch) {
+        var ec = createEvaluationContext(branch, evaluationContextConfigurer);
         var invokers = computeInvokers(functions,
                 configurationCommentProcessors,
                 processorContext,
                 expressionFunctions);
-        var evaluationContext = createEvaluationContext(branch, evaluationContextConfigurer);
-        evaluationContext.addMethodResolver(invokers);
+        return new UnionEvaluationContext(ec, invokers);
+    }
+
+    private static StandardEvaluationContext createEvaluationContext(
+            ContextBranch contextBranch,
+            EvaluationContextConfigurer contextConfigurer
+    ) {
+        var evaluationContext = new StandardEvaluationContext(contextBranch);
+        contextConfigurer.configureEvaluationContext(evaluationContext);
         return evaluationContext;
     }
 
@@ -48,15 +51,6 @@ record OfficeStamperEvaluationContextFactory(
                                           streamInvokersFromCustomFunction(functions))
                                   .flatMap(s -> s);
         return new Invokers(invokerStream);
-    }
-
-    private static StandardEvaluationContext createEvaluationContext(
-            ContextBranch contextBranch,
-            EvaluationContextConfigurer contextConfigurer
-    ) {
-        var evaluationContext = new StandardEvaluationContext(contextBranch);
-        contextConfigurer.configureEvaluationContext(evaluationContext);
-        return evaluationContext;
     }
 
     /// Returns a set view of the mappings contained in this map. Each entry in the set is a mapping between a

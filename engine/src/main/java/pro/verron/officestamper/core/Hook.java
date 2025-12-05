@@ -46,7 +46,7 @@ public interface Hook {
     boolean run(
             EngineFactory engineFactory,
             ContextTree contextTree,
-            EvaluationContextFactory evaluationContextFactory
+            OfficeStamperEvaluationContextFactory evaluationContextFactory
     );
 
     void setContextReference(int contextIndex);

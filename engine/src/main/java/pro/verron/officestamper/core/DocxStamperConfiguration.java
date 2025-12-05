@@ -2,7 +2,8 @@ package pro.verron.officestamper.core;
 
 
 import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
@@ -36,7 +37,7 @@ public class DocxStamperConfiguration
     private final List<PostProcessor> postprocessors;
     private final List<CustomFunction> functions;
     private EvaluationContextFactory evaluationContextFactory;
-    private SpelParserConfiguration spelParserConfiguration;
+    private ExpressionParser expressionParser;
     private ExceptionResolver exceptionResolver;
 
     /// Constructs a new instance of the [DocxStamperConfiguration] class and initializes its default configuration
@@ -56,7 +57,7 @@ public class DocxStamperConfiguration
         postprocessors = new ArrayList<>();
         functions = new ArrayList<>();
         evaluationContextFactory = EvaluationContextFactories.defaultFactory();
-        spelParserConfiguration = new SpelParserConfiguration();
+        expressionParser = new SpelExpressionParser();
         exceptionResolver = ExceptionResolvers.throwing();
     }
 
@@ -108,8 +109,8 @@ public class DocxStamperConfiguration
         return evaluationContextFactory;
     }
 
-    /// Sets the [EvaluationContextFactory] which creates Spring [EvaluationContext] instances
-    /// used for evaluating expressions in comments and text.
+    /// Sets the [EvaluationContextFactory] which creates Spring [EvaluationContext] instances used for evaluating
+    /// expressions in comments and text.
     ///
     /// @param evaluationContextFactory the factory to use.
     ///
@@ -117,27 +118,6 @@ public class DocxStamperConfiguration
     @Override
     public DocxStamperConfiguration setEvaluationContextFactory(EvaluationContextFactory evaluationContextFactory) {
         this.evaluationContextFactory = evaluationContextFactory;
-        return this;
-    }
-
-    @Override
-    public SpelParserConfiguration getSpelParserConfiguration() {
-        return spelParserConfiguration;
-    }
-
-    /// Sets the [SpelParserConfiguration] used for expression parsing.
-    ///
-    /// Note that this configuration is the same for all expressions in the document, including expressions in
-    /// comments.
-    ///
-    /// @param spelParserConfiguration the configuration to use.
-    ///
-    /// @return the configuration object for chaining.
-    @Override
-    public DocxStamperConfiguration setSpelParserConfiguration(
-            SpelParserConfiguration spelParserConfiguration
-    ) {
-        this.spelParserConfiguration = spelParserConfiguration;
         return this;
     }
 
@@ -314,6 +294,26 @@ public class DocxStamperConfiguration
     @Override
     public void addPostprocessor(PostProcessor postprocessor) {
         postprocessors.add(postprocessor);
+    }
+
+    @Override
+    public ExpressionParser getExpressionParser() {
+        return expressionParser;
+    }
+
+    /// Sets the expression parser used for expression evaluation.
+    ///
+    /// Note that the provided parser will be used for all expressions in the document, including expressions in
+    /// comments. If you use SpEL, construct a `SpelExpressionParser` (optionally with a `SpelParserConfiguration`) and
+    /// pass it here.
+    ///
+    /// @param expressionParser the parser to use.
+    ///
+    /// @return the configuration object for chaining.
+    @Override
+    public DocxStamperConfiguration setExpressionParser(ExpressionParser expressionParser) {
+        this.expressionParser = expressionParser;
+        return this;
     }
 
     /// Resets all processors in the configuration.

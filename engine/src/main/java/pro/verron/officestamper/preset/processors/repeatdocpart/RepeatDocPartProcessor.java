@@ -8,7 +8,10 @@ import org.docx4j.wml.R;
 import org.docx4j.wml.SectPr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.DocumentUtil;
 import pro.verron.officestamper.core.SectionUtil;
@@ -25,10 +28,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static pro.verron.officestamper.core.DocumentUtil.walkObjectsAndImportImages;
 import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakIfPresent;
@@ -45,20 +47,11 @@ public class RepeatDocPartProcessor
         implements CommentProcessorFactory.IRepeatDocPartProcessor {
     private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
 
-    private final ProcessorContext processorContext;
     private final OfficeStamper<WordprocessingMLPackage> stamper;
-    private final Map<Comment, Iterable<Object>> contexts = new HashMap<>();
-    private final Supplier<? extends List<?>> nullSupplier;
 
-    private RepeatDocPartProcessor(
-            ProcessorContext processorContext,
-            OfficeStamper<WordprocessingMLPackage> stamper,
-            Supplier<? extends List<?>> nullSupplier
-    ) {
+    private RepeatDocPartProcessor(ProcessorContext processorContext, OfficeStamper<WordprocessingMLPackage> stamper) {
         super(processorContext);
-        this.processorContext = processorContext;
         this.stamper = stamper;
-        this.nullSupplier = nullSupplier;
     }
 
     /// newInstance.
@@ -70,46 +63,36 @@ public class RepeatDocPartProcessor
             ProcessorContext processorContext,
             OfficeStamper<WordprocessingMLPackage> stamper
     ) {
-        return new RepeatDocPartProcessor(processorContext, stamper, Collections::emptyList);
+        return new RepeatDocPartProcessor(processorContext, stamper);
     }
 
     /// {@inheritDoc}
     @Override
-    public void repeatDocPart(@Nullable Iterable<Object> contexts) {
-        if (contexts == null) contexts = Collections.emptyList();
-        List<Object> elements = comment().getElements();
-        if (!elements.isEmpty()) {
-            this.contexts.put(comment(), contexts);
-        }
-        commitChanges();
-    }
-
-    void commitChanges() {
-        for (Map.Entry<Comment, Iterable<Object>> entry : this.contexts.entrySet()) {
-            var comment = entry.getKey();
-            var expressionContexts = entry.getValue();
-            var gcp = requireNonNull(comment.getParent());
-            var repeatElements = comment.getElements();
-            var subTemplate = CommentUtil.createSubWordDocument(comment);
-            var oddNumberOfBreaks = SectionUtil.hasOddNumberOfSectionBreaks(repeatElements);
-            var sectionBreakInserter = getPreviousSectionBreakIfPresent(repeatElements.getFirst(),
-                    gcp).map(psb -> (UnaryOperator<List<Object>>) objs -> insertSectionBreak(objs,
-                                psb,
-                                oddNumberOfBreaks))
-                        .orElse(UnaryOperator.identity());
-            var changes = expressionContexts == null
-                    ? nullSupplier.get()
-                    : stampSubDocuments(processorContext.part()
-                                                        .document(),
-                            expressionContexts,
-                            gcp,
-                            subTemplate,
-                            sectionBreakInserter);
-            var gcpContent = gcp.getContent();
-            var index = gcpContent.indexOf(repeatElements.getFirst());
-            gcpContent.addAll(index, changes);
-            gcpContent.removeAll(repeatElements);
-        }
+    public void repeatDocPart(@Nullable Iterable<Object> expressionContexts) {
+        if (expressionContexts == null) return;
+        var comment = comment();
+        var elements = comment.getElements();
+        if (elements.isEmpty()) return;
+        var parent = comment.getParent();
+        var siblings = parent.getContent();
+        var context = context();
+        var part = context.part();
+        var document = part.document();
+        var firstElement = elements.getFirst();
+        var subTemplate = CommentUtil.createSubWordDocument(comment);
+        var oddNumberOfBreaks = SectionUtil.hasOddNumberOfSectionBreaks(elements);
+        var optionalPreviousSectionBreak = getPreviousSectionBreakIfPresent(firstElement, parent);
+        Function<SectPr, UnaryOperator<List<Object>>> function =
+                sectionBreak -> (UnaryOperator<List<Object>>) objs -> insertSectionBreak(
+                        objs,
+                        sectionBreak,
+                        oddNumberOfBreaks);
+        var sectionBreakInserter = optionalPreviousSectionBreak.map(function)
+                                                               .orElse(t -> t);
+        var changes = stampSubDocuments(document, expressionContexts, parent, subTemplate, sectionBreakInserter);
+        var index = siblings.indexOf(firstElement);
+        siblings.addAll(index, changes);
+        siblings.removeAll(elements);
     }
 
     private static List<Object> insertSectionBreak(

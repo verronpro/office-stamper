@@ -4,8 +4,7 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.expression.spel.SpelParserConfiguration;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.ExpressionParser;
 import pro.verron.officestamper.api.*;
 
 import java.io.InputStream;
@@ -47,8 +46,8 @@ public class DocxStamper
                 configuration.getCommentProcessors(),
                 configuration.getPreprocessors(),
                 configuration.getPostprocessors(),
-                configuration.getSpelParserConfiguration(),
-                configuration.getExceptionResolver());
+                configuration.getExceptionResolver(),
+                configuration.getExpressionParser());
     }
 
     private DocxStamper(
@@ -59,14 +58,13 @@ public class DocxStamper
             Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
             List<PreProcessor> preprocessors,
             List<PostProcessor> postprocessors,
-            SpelParserConfiguration spelParserConfiguration,
-            ExceptionResolver exceptionResolver
+            ExceptionResolver exceptionResolver,
+            ExpressionParser expressionParser
     ) {
         this.evaluationContextFactory = evaluationContextFactory;
         this.expressionFunctions = expressionFunctions;
         this.functions = functions;
         this.configurationCommentProcessors = configurationCommentProcessors;
-        var expressionParser = new SpelExpressionParser(spelParserConfiguration);
         engineFactory = computeEngine(resolvers, exceptionResolver, expressionParser);
         this.preprocessors = new ArrayList<>(preprocessors);
         this.postprocessors = new ArrayList<>(postprocessors);
@@ -75,12 +73,11 @@ public class DocxStamper
     private EngineFactory computeEngine(
             List<ObjectResolver> resolvers,
             ExceptionResolver exceptionResolver,
-            SpelExpressionParser expressionParser
+            ExpressionParser expressionParser
     ) {
         return processorContext -> {
-            var expressionResolver = new ExpressionResolver(expressionParser);
             var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-            return new Engine(expressionResolver, exceptionResolver, typeResolverRegistry, processorContext);
+            return new Engine(expressionParser, exceptionResolver, typeResolverRegistry, processorContext);
         };
     }
 

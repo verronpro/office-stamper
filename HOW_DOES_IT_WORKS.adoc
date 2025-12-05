@@ -8,7 +8,6 @@ Key classes:
 - `pro.verron.officestamper.core.DocxIterator`
 - `pro.verron.officestamper.core.Engine`
 - `pro.verron.officestamper.core.Hook`, `CommentHook`, `TagHook`
-- `pro.verron.officestamper.core.ExpressionResolver`
 - `pro.verron.officestamper.core.TextualDocxPart`
 
 '''
@@ -51,11 +50,10 @@ Code (simplified):
 // DocxStamper.computeEngine(...)
 private EngineFactory computeEngine(List<ObjectResolver> resolvers,
                                    ExceptionResolver exceptionResolver,
-                                   SpelExpressionParser expressionParser) {
+                                   ExpressionParser expressionParser) {
     return processorContext -> {
-        var expressionResolver = new ExpressionResolver(expressionParser);
         var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-        return new Engine(expressionResolver, exceptionResolver, typeResolverRegistry, processorContext);
+        return new Engine(expressionParser, exceptionResolver, typeResolverRegistry, processorContext);
     };
 }
 ----
@@ -140,7 +138,8 @@ This duality lets you embed both imperative processors and inline placeholders a
 * `resolve(DocxPart, Tag, contextRoot)` evaluates a placeholder (e.g., `${customer.name}`) and then consults `ObjectResolverRegistry` to turn arbitrary Java objects into document `Insert`s (runs, paragraphs, table rows, etc.).
 * Exceptions during evaluation or resolution are handled via the configured `ExceptionResolver`.
 
-`ExpressionResolver` uses Spring Expression Language (SpEL).
+Engine evaluates expressions via an `ExpressionParser`.
+By default, Office‑stamper wires a SpEL parser (`SpelExpressionParser`), but you can supply any implementation of `ExpressionParser` to reduce hard dependency on SpEL.
 A fresh `EvaluationContext` is created per hook by `OfficeStamperEvaluationContextFactory`:
 
 [source,java]
@@ -232,7 +231,8 @@ Customization steps:
 * The engine wraps your factory with `OfficeStamperEvaluationContextFactory` to inject:
 ** Comment processors, expression functions, and custom functions as method resolvers
 ** Safe defaults for property/method access depending on the chosen factory
-* `SpelParserConfiguration` is still passed into `SpelExpressionParser` to tweak language features.
+* Provide an `ExpressionParser` instance to control the expression language used by the engine.
+** If you choose SpEL, construct a `SpelExpressionParser` with a `SpelParserConfiguration` to tweak features (e.g., auto‑grow lists, null references) and pass that parser via configuration.
 '''
 
 === 6. Iteration strategy in detail
@@ -324,7 +324,15 @@ Expose custom functions:
 
 Customize evaluation:
 - Provide an `EvaluationContextFactory` (or use presets) to control property accessors, method resolvers, type locator, etc.
-- Provide a `SpelParserConfiguration` to enable/disallow features like auto‑grow lists, null references, etc.
+- Provide an `ExpressionParser` implementation to drive expression evaluation.
+For SpEL, you can do:
+
+[source,java]
+----
+var spelConfig = new SpelParserConfiguration(true, true);
+var parser = new SpelExpressionParser(spelConfig);
+standard().setExpressionParser(parser);
+----
 
 Handle errors consistently:
 - Provide an `ExceptionResolver` that logs with context and returns a safe fallback.
@@ -364,7 +372,7 @@ Handle errors consistently:
 === 14. Where to look in the code
 
 * Orchestration and lifecycle: `DocxStamper`
-* Evaluation and resolution: `Engine`, `ExpressionResolver`
+* Evaluation and resolution: `Engine`
 * Iteration mechanics: `DocxIterator`
 * Hook detection and dispatch: `Hook`, `CommentHook`, `TagHook`
 * Part abstraction and comments map: `TextualDocxPart`

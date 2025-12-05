@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.ExceptionResolvers;
@@ -408,7 +409,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
         // Beware, this configuration only autogrows pojos and java beans,
         // so it will not work if your type has no default constructor and no setters.
-        var config = standard().setSpelParserConfiguration(new SpelParserConfiguration(true, true))
+        var config = standard().setExpressionParser(new SpelExpressionParser(new SpelParserConfiguration(true, true)))
                                .setEvaluationContextFactory(noopFactory())
                                .addResolver(Resolvers.nullToDefault("Nullish value!!"));
 

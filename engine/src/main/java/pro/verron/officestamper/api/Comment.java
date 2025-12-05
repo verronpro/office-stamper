@@ -1,6 +1,5 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 
 import java.util.List;
@@ -45,11 +44,6 @@ public interface Comment {
     ///
     /// @return the comment associated with this object
     Comments.Comment getComment();
-
-    /// Retrieves the WordprocessingMLPackage document.
-    ///
-    /// @return the WordprocessingMLPackage document.
-    WordprocessingMLPackage getDocument();
 
     /// Retrieves the expression associated with the implementing entity.
     ///

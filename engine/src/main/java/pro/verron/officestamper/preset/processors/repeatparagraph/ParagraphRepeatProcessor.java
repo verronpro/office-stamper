@@ -60,8 +60,10 @@ public class ParagraphRepeatProcessor
                         if (clone instanceof ContentAccessor contentAccessor)
                             CommentUtil.deleteCommentFromElements(comment(), contentAccessor.getContent());
                         if (clone instanceof P p) {
-                            var part = new TextualDocxPart(comment().getDocument());
-                            var branch = context().branch();
+                            var context = context();
+                            var contextPart = context.part();
+                            var part = new TextualDocxPart(contextPart.document());
+                            var branch = context.branch();
                             var contextLeaf = branch.add(expressionContext);
                             DocxIterator.ofHooks(p, part)
                                         .forEachRemaining(hook -> hook.ifPresent(h -> h.setContextReference(contextLeaf)));

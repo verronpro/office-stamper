@@ -28,13 +28,13 @@ public abstract class StringResolver<T>
 
     /// Resolves an object to a string and creates a new run with the resolved string as content.
     ///
-    /// @param document the WordprocessingMLPackage document
+    /// @param part the WordprocessingMLPackage document
     /// @param expression the expression string
     /// @param object the object to be resolved
     ///
     /// @return the newly created run with the resolved string as content
     @Override
-    public final Insert resolve(DocxPart document, String expression, @Nullable Object object) {
+    public final Insert resolve(DocxPart part, String expression, @Nullable Object object) {
         if (object == null) throw new OfficeStamperException("Cannot resolve null object");
         return new Insert(newRun(resolve(type.cast(object))));
     }

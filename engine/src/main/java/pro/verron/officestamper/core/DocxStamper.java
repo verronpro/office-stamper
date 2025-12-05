@@ -2,6 +2,8 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.Part;
+import org.docx4j.wml.ContentAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.ExpressionParser;
@@ -14,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.docx4j.openpackaging.parts.relationships.Namespaces.*;
+import static org.docx4j.openpackaging.parts.relationships.Namespaces.FOOTER;
+import static org.docx4j.openpackaging.parts.relationships.Namespaces.HEADER;
 
 /// The [DocxStamper] class is an implementation of the [OfficeStamper] interface used to stamp DOCX templates with a
 /// context object and write the result to an output stream.
@@ -113,7 +116,7 @@ public class DocxStamper
     public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
         try {
             preprocess(document);
-            process(new TextualDocxPart(document), contextRoot);
+            process(document, contextRoot);
             postprocess(document);
             document.save(out);
         } catch (Docx4JException e) {
@@ -125,23 +128,30 @@ public class DocxStamper
         preprocessors.forEach(processor -> processor.process(document));
     }
 
-    private void process(DocxDocument document, Object contextRoot) {
-        document.process(part -> processPart(part, contextRoot));
+    private void process(WordprocessingMLPackage document, Object contextRoot) {
+        var mainDocumentPart = document.getMainDocumentPart();
+        var mainPart = new TextualDocxPart(document, mainDocumentPart, mainDocumentPart);
+        process(mainPart, contextRoot);
+
+        var relationshipsPart = mainDocumentPart.getRelationshipsPart();
+        for (var relationship : relationshipsPart.getRelationshipsByType(HEADER)) {
+            Part part1 = relationshipsPart.getPart(relationship);
+            TextualDocxPart textualDocxPart = new TextualDocxPart(document, part1, (ContentAccessor) part1);
+            process(textualDocxPart, contextRoot);
+        }
+
+        for (var relationship : relationshipsPart.getRelationshipsByType(FOOTER)) {
+            Part part = relationshipsPart.getPart(relationship);
+            TextualDocxPart textualDocxPart = new TextualDocxPart(document, part, (ContentAccessor) part);
+            process(textualDocxPart, contextRoot);
+        }
     }
 
     private void postprocess(WordprocessingMLPackage document) {
         postprocessors.forEach(processor -> processor.process(document));
     }
 
-    private void processPart(DocxPart part, Object contextRoot) {
-        var type = part.type();
-        switch (type) {
-            case DOCUMENT, HEADER, FOOTER -> processTextualPart(part, contextRoot);
-            default -> log.info("Unknown part type: {}", type);
-        }
-    }
-
-    private void processTextualPart(DocxPart part, Object contextRoot) {
+    private void process(DocxPart part, Object contextRoot) {
         var contextTree = new ContextTree(contextRoot);
         var iterator = DocxIterator.ofHooks(part::content, part);
         while (iterator.hasNext()) {

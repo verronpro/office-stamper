@@ -69,8 +69,8 @@ private void processTextualPart(DocxPart part, Object contextRoot) {
         var hook = iterator.next();
         if (hook.isPresent()) {
             var h = hook.get();
-            var evaluationCtxFactory = computeEvaluationContext(); // OfficeStamperEvaluationContextFactory
-            if (h.run(engineFactory, contextTree, evaluationCtxFactory)) iterator.reset();
+            OfficeStamperEvaluationContextFactory contextFactory = computeEvaluationContext();
+            if (h.run(engineFactory, contextTree, contextFactory)) iterator.reset();
         }
     }
 }

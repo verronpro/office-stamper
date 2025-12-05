@@ -1,7 +1,7 @@
 package pro.verron.officestamper.api;
 
 import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.ExpressionParser;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
@@ -43,31 +43,19 @@ public interface OfficeStamperConfiguration {
     /// @param preprocessor the pre-processor to add
     void addPreprocessor(PreProcessor preprocessor);
 
-    /// Retrieves the [EvaluationContextFactory] for creating Spring Expression Language (SpEL)
-    /// [EvaluationContext] instances used by the office stamper.
+    /// Retrieves the [EvaluationContextFactory] for creating Spring Expression Language (SpEL) [EvaluationContext]
+    /// instances used by the office stamper.
     ///
     /// @return the [EvaluationContextFactory] for creating SpEL EvaluationContext instances.
     EvaluationContextFactory getEvaluationContextFactory();
 
     /// Sets the [EvaluationContextFactory] for creating Spring Expression Language (SpEL) EvaluationContext instances.
     ///
-    /// @param evaluationContextFactory the [EvaluationContextFactory] for creating SpEL
-    ///         [EvaluationContext] instances.
+    /// @param evaluationContextFactory the [EvaluationContextFactory] for creating SpEL [EvaluationContext]
+    ///         instances.
     ///
     /// @return the updated [OfficeStamperConfiguration] object.
     OfficeStamperConfiguration setEvaluationContextFactory(EvaluationContextFactory evaluationContextFactory);
-
-    /// Retrieves the [SpelParserConfiguration] used by the [OfficeStamperConfiguration].
-    ///
-    /// @return the [SpelParserConfiguration] object used by the [OfficeStamperConfiguration].
-    SpelParserConfiguration getSpelParserConfiguration();
-
-    /// Sets the [SpelParserConfiguration] used by the [OfficeStamperConfiguration].
-    ///
-    /// @param spelParserConfiguration the [SpelParserConfiguration] to be set
-    ///
-    /// @return the updated [OfficeStamperConfiguration] object
-    OfficeStamperConfiguration setSpelParserConfiguration(SpelParserConfiguration spelParserConfiguration);
 
     /// Retrieves the map of expression functions associated with their corresponding classes.
     ///
@@ -176,4 +164,8 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param postProcessor the PostProcessor instance to be added
     void addPostprocessor(PostProcessor postProcessor);
+
+    ExpressionParser getExpressionParser();
+
+    OfficeStamperConfiguration setExpressionParser(ExpressionParser expressionParser);
 }

@@ -3,6 +3,7 @@ package pro.verron.officestamper.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelParseException;
 import pro.verron.officestamper.api.ExceptionResolver;
@@ -13,18 +14,18 @@ import pro.verron.officestamper.api.ProcessorContext;
 public class Engine {
     private static final Logger log = LoggerFactory.getLogger(Engine.class);
 
-    private final ExpressionResolver expressionResolver;
+    private final ExpressionParser expressionParser;
     private final ExceptionResolver exceptionResolver;
     private final ObjectResolverRegistry objectResolverRegistry;
     private final ProcessorContext processorContext;
 
     public Engine(
-            ExpressionResolver expressionResolver,
+            ExpressionParser expressionParser,
             ExceptionResolver exceptionResolver,
             ObjectResolverRegistry objectResolverRegistry,
             ProcessorContext processorContext
     ) {
-        this.expressionResolver = expressionResolver;
+        this.expressionParser = expressionParser;
         this.exceptionResolver = exceptionResolver;
         this.objectResolverRegistry = objectResolverRegistry;
         this.processorContext = processorContext;
@@ -36,8 +37,8 @@ public class Engine {
     ///
     /// If successful, the process completes and logs a debug message.
     ///
-    /// Otherwise, on failure ([SpelEvaluationException] or [SpelParseException]), it handles the exception by
-    /// invoking the exceptionResolver and logs an error.
+    /// Otherwise, on failure ([SpelEvaluationException] or [SpelParseException]), it handles the exception by invoking
+    /// the exceptionResolver and logs an error.
     ///
     /// @param evaluationContext the evaluation context for processing the expression.
     ///
@@ -45,7 +46,8 @@ public class Engine {
     public boolean process(EvaluationContext evaluationContext) {
         var expression = processorContext.expression();
         try {
-            expressionResolver.resolve(evaluationContext, expression);
+            var parsedExpression = expressionParser.parseExpression(expression);
+            parsedExpression.getValue(evaluationContext);
             log.debug("Processed '{}' successfully.", expression);
             return true;
         } catch (SpelEvaluationException | SpelParseException e) {
@@ -65,7 +67,9 @@ public class Engine {
         var part = processorContext.part();
         var expression = processorContext.expression();
         try {
-            var resolution = expressionResolver.resolve(evaluationContext, expression);
+
+            var parsedExpression = expressionParser.parseExpression(expression);
+            var resolution = parsedExpression.getValue(evaluationContext);
             return objectResolverRegistry.resolve(part, expression, resolution);
         } catch (SpelEvaluationException | SpelParseException | OfficeStamperException e) {
             var msgTemplate = "Expression %s could not be resolved against context '%s'";

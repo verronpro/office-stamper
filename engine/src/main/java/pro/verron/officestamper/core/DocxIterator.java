@@ -5,8 +5,6 @@ import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.docx4j.XmlUtils.unwrap;
@@ -51,16 +49,6 @@ public class DocxIterator
     public static ResetableIterator<R> ofRun(ContentAccessor contentAccessor) {
         var iterator = new DocxIterator(contentAccessor);
         return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
-    }
-
-    public static ResetableIterator<Tag> ofTags(ContentAccessor contentAccessor, DocxPart part) {
-        var iterator = new DocxIterator(contentAccessor);
-        var element = "officestamper";
-        Predicate<Object> predicate = o -> o instanceof CTSmartTagRun tag  //
-                                           && Hook.isTagElement(tag, element);
-        Function<Object, CTSmartTagRun> caster = CTSmartTagRun.class::cast;
-        Function<Object, Tag> mapper = caster.andThen((CTSmartTagRun tag) -> Tag.of(part, tag));
-        return new FilterMapperIterator<>(iterator, predicate, mapper);
     }
 
     public static ResetableIterator<Optional<Hook>> ofHooks(ContentAccessor contentAccessor, DocxPart part) {

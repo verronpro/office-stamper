@@ -17,7 +17,9 @@ import pro.verron.officestamper.core.ContextBranch;
 /// @param comment The [Comment] that is relevant to the current processing context.
 /// @param expression A [String] containing the expression or directive being evaluated.
 public record ProcessorContext(
-        DocxPart part, Paragraph paragraph, Comment comment, String expression, ContextBranch branch
-) {
-
-}
+        DocxPart part,
+        Paragraph paragraph,
+        Comment comment,
+        String expression,
+        ContextBranch branch
+) {}

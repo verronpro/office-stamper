@@ -26,7 +26,7 @@ public class ToStringResolver
     }
 
     @Override
-    public Insert resolve(DocxPart document, String expression, @Nullable Object object) {
+    public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
         var string = String.valueOf(object);
 
         var split = string.split(linebreakPlaceholder);

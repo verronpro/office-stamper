@@ -43,20 +43,19 @@ public interface OfficeStamperConfiguration {
     /// @param preprocessor the pre-processor to add
     void addPreprocessor(PreProcessor preprocessor);
 
-    /// Retrieves the [EvaluationContextConfigurer] for configuring the Spring Expression Language (SpEL)
-    /// [EvaluationContext] used by the docxstamper.
+    /// Retrieves the [EvaluationContextFactory] for creating Spring Expression Language (SpEL)
+    /// [EvaluationContext] instances used by the office stamper.
     ///
-    /// @return the [EvaluationContextConfigurer] for configuring the SpEL EvaluationContext.
-    EvaluationContextConfigurer getEvaluationContextConfigurer();
+    /// @return the [EvaluationContextFactory] for creating SpEL EvaluationContext instances.
+    EvaluationContextFactory getEvaluationContextFactory();
 
-    /// Sets the [EvaluationContextConfigurer] for configuring the Spring Expression Language (SpEL) EvaluationContext.
+    /// Sets the [EvaluationContextFactory] for creating Spring Expression Language (SpEL) EvaluationContext instances.
     ///
-    /// @param evaluationContextConfigurer the [EvaluationContextConfigurer] for configuring the SpEL
-    ///         [EvaluationContext]. Must implement the [EvaluationContextConfigurer#evaluateEvaluationContext()]
-    ///         method.
+    /// @param evaluationContextFactory the [EvaluationContextFactory] for creating SpEL
+    ///         [EvaluationContext] instances.
     ///
     /// @return the updated [OfficeStamperConfiguration] object.
-    OfficeStamperConfiguration setEvaluationContextConfigurer(EvaluationContextConfigurer evaluationContextConfigurer);
+    OfficeStamperConfiguration setEvaluationContextFactory(EvaluationContextFactory evaluationContextFactory);
 
     /// Retrieves the [SpelParserConfiguration] used by the [OfficeStamperConfiguration].
     ///

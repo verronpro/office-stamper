@@ -17,30 +17,27 @@ import java.util.function.Consumer;
 
 import static java.util.Arrays.stream;
 
-/// Represents a textual part of a DOCX document, encapsulating the content and structure of
-/// the part while enabling various operations such as accessing paragraphs, runs, and related parts.
-/// This class functions as a concrete implementation of the [DocxPart] interface.
-/// It manages the association with the XML structure of a DOCX document.
+/// Represents a textual part of a DOCX document, encapsulating the content and structure of the part while enabling
+/// various operations such as accessing paragraphs, runs, and related parts. This class functions as a concrete
+/// implementation of the [DocxPart] interface. It manages the association with the XML structure of a DOCX document.
 public final class TextualDocxPart
         implements DocxPart {
     private final WordprocessingMLPackage document;
     private final Part part;
     private final ContentAccessor contentAccessor;
 
-    /// Constructs a [TextualDocxPart] using the provided `document`.
-    /// This constructor initializes the instance with the main document part and content accessor
-    /// derived from the provided `WordprocessingMLPackage`.
+    /// Constructs a [TextualDocxPart] using the provided `document`. This constructor initializes the instance with the
+    /// main document part and content accessor derived from the provided `WordprocessingMLPackage`.
     ///
     /// @param document the [WordprocessingMLPackage] representing the document to be processed.
     public TextualDocxPart(WordprocessingMLPackage document) {
         this(document, document.getMainDocumentPart(), document.getMainDocumentPart());
     }
 
-    /// Constructs a [TextualDocxPart] using the specified `document`, `part`,
-    /// and `contentAccessor`.
+    /// Constructs a [TextualDocxPart] using the specified `document`, `part`, and `contentAccessor`.
     ///
-    /// @param document        the [WordprocessingMLPackage] representing the document to be processed.
-    /// @param part            the specific part of the document being processed.
+    /// @param document the [WordprocessingMLPackage] representing the document to be processed.
+    /// @param part the specific part of the document being processed.
     /// @param contentAccessor the content accessor associated with the document part.
     public TextualDocxPart(WordprocessingMLPackage document, Part part, ContentAccessor contentAccessor) {
         this.document = document;
@@ -48,19 +45,17 @@ public final class TextualDocxPart
         this.contentAccessor = contentAccessor;
     }
 
-    /// Returns the [WordprocessingMLPackage] instance representing the document
-    /// associated with this part.
+    /// Returns the [WordprocessingMLPackage] instance representing the document associated with this part.
     ///
     /// @return the [WordprocessingMLPackage] instance representing the document.
     public WordprocessingMLPackage document() {return document;}
 
-    /// Streams the parts of the document that match the specified relationship type, converting them
-    /// into instances of [TextualDocxPart].
+    /// Streams the parts of the document that match the specified relationship type, converting them into instances of
+    /// [TextualDocxPart].
     ///
     /// @param types the type of relationship to filter and stream parts for.
     ///
-    /// @return a stream of [DocxPart] instances representing the filtered and processed parts
-    ///         of the document.
+    /// @return a stream of [DocxPart] instances representing the filtered and processed parts of the document.
     @Override
     public List<DocxPart> parts(String... types) {
         var mainDocument = document.getMainDocumentPart();
@@ -87,74 +82,10 @@ public final class TextualDocxPart
                         .forEach(processor);
     }
 
+
     @Override
     public Optional<Comment> comment(BigInteger id) {
         return Optional.ofNullable(comments().get(id));
-    }
-
-    /// Retrieves the part associated with the specified relationship from the relationships part.
-    ///
-    /// @param r the relationship for which the associated part is to be retrieved.
-    ///
-    /// @return the part corresponding to the given relationship.
-    public Part getPart(Relationship r) {
-        return getRelationshipsPart().getPart(r);
-    }
-
-    private RelationshipsPart getRelationshipsPart() {
-        return part().getRelationshipsPart();
-    }
-
-    /// Retrieves the part associated with this instance of the document part.
-    ///
-    /// @return the [Part] object representing the specific part associated with this instance.
-    @Override
-    public Part part() {return part;}
-
-    /// Creates a new instance of [DocxPart] using the provided [ContentAccessor].
-    ///
-    /// @param accessor the content accessor associated with the document part to derive a new instance.
-    ///
-    /// @return a new instance of [DocxPart], specifically a [TextualDocxPart],
-    ///         initialized with the given content accessor.
-    @Override
-    public DocxPart from(ContentAccessor accessor) {
-        return new TextualDocxPart(document, part, accessor);
-    }
-
-    /// Retrieves the list of content objects associated with this document part.
-    ///
-    /// @return a list of objects representing the content of the document part.
-    @Override
-    public List<Object> content() {return contentAccessor.getContent();}
-
-    @Override
-    public String type() {
-        return part.getRelationshipType();
-    }
-
-    @Override
-    public Map<BigInteger, Comment> comments() {
-        var rootComments = new HashMap<BigInteger, Comment>();
-        var allComments = new HashMap<BigInteger, StandardComment>();
-        var stack = Collections.asLifoQueue(new ArrayDeque<StandardComment>());
-
-        var list = WmlUtils.extractCommentElements(document);
-        for (Child commentElement : list) {
-            if (commentElement instanceof CommentRangeStart crs)
-                onRangeStart(this, crs, allComments, stack, rootComments);
-            else if (commentElement instanceof CommentRangeEnd cre) onRangeEnd(cre, allComments, stack);
-            else if (commentElement instanceof R.CommentReference cr) onReference(this, cr, allComments);
-        }
-        CommentUtil.getCommentsPart(document.getParts())
-                   .map(CommentUtil::extractContent)
-                   .map(Comments::getComment)
-                   .stream()
-                   .flatMap(Collection::stream)
-                   .filter(comment -> allComments.containsKey(comment.getId()))
-                   .forEach(comment -> allComments.get(comment.getId())
-                                                  .setComment(comment));
-        return new HashMap<>(rootComments);
     }
 
     static void onRangeStart(
@@ -207,8 +138,72 @@ public final class TextualDocxPart
         comment.setCommentReference(cr);
     }
 
-    /// Computes the hash code for this object based on the `document`, `part`,
-    /// and `contentAccessor` fields.
+    /// Retrieves the part associated with the specified relationship from the relationships part.
+    ///
+    /// @param r the relationship for which the associated part is to be retrieved.
+    ///
+    /// @return the part corresponding to the given relationship.
+    public Part getPart(Relationship r) {
+        return getRelationshipsPart().getPart(r);
+    }
+
+    private RelationshipsPart getRelationshipsPart() {
+        return part().getRelationshipsPart();
+    }
+
+    /// Retrieves the part associated with this instance of the document part.
+    ///
+    /// @return the [Part] object representing the specific part associated with this instance.
+    @Override
+    public Part part() {return part;}
+
+    /// Creates a new instance of [DocxPart] using the provided [ContentAccessor].
+    ///
+    /// @param accessor the content accessor associated with the document part to derive a new instance.
+    ///
+    /// @return a new instance of [DocxPart], specifically a [TextualDocxPart], initialized with the given content
+    ///         accessor.
+    @Override
+    public DocxPart from(ContentAccessor accessor) {
+        return new TextualDocxPart(document, part, accessor);
+    }
+
+    /// Retrieves the list of content objects associated with this document part.
+    ///
+    /// @return a list of objects representing the content of the document part.
+    @Override
+    public List<Object> content() {return contentAccessor.getContent();}
+
+    @Override
+    public String type() {
+        return part.getRelationshipType();
+    }
+
+    @Override
+    public Map<BigInteger, Comment> comments() {
+        var rootComments = new HashMap<BigInteger, Comment>();
+        var allComments = new HashMap<BigInteger, StandardComment>();
+        var stack = Collections.asLifoQueue(new ArrayDeque<StandardComment>());
+
+        var list = WmlUtils.extractCommentElements(document);
+        for (Child commentElement : list) {
+            if (commentElement instanceof CommentRangeStart crs)
+                onRangeStart(this, crs, allComments, stack, rootComments);
+            else if (commentElement instanceof CommentRangeEnd cre) onRangeEnd(cre, allComments, stack);
+            else if (commentElement instanceof R.CommentReference cr) onReference(this, cr, allComments);
+        }
+        CommentUtil.getCommentsPart(document.getParts())
+                   .map(CommentUtil::extractContent)
+                   .map(Comments::getComment)
+                   .stream()
+                   .flatMap(Collection::stream)
+                   .filter(comment -> allComments.containsKey(comment.getId()))
+                   .forEach(comment -> allComments.get(comment.getId())
+                                                  .setComment(comment));
+        return new HashMap<>(rootComments);
+    }
+
+    /// Computes the hash code for this object based on the `document`, `part`, and `contentAccessor` fields.
     ///
     /// @return an integer value representing the hash code of this object.
     @Override
@@ -216,8 +211,8 @@ public final class TextualDocxPart
         return Objects.hash(document, part, contentAccessor);
     }
 
-    /// Compares this object with the specified object for equality. The comparison is based on
-    /// the `document`, `part`, and `contentAccessor` fields of both objects.
+    /// Compares this object with the specified object for equality. The comparison is based on the `document`, `part`,
+    /// and `contentAccessor` fields of both objects.
     ///
     /// @param obj the object to be compared for equality with this instance.
     ///
@@ -232,12 +227,11 @@ public final class TextualDocxPart
                 that.contentAccessor);
     }
 
-    /// Converts this instance of the [TextualDocxPart] class to its string representation.
-    /// The string representation includes the name of the document, and the name of the part
-    /// associated with this instance.
+    /// Converts this instance of the [TextualDocxPart] class to its string representation. The string representation
+    /// includes the name of the document, and the name of the part associated with this instance.
     ///
-    /// @return a string representation of this instance, including the document name
-    ///         and part name formatted as "DocxPart{doc=%s, part=%s}".
+    /// @return a string representation of this instance, including the document name and part name formatted as
+    ///         "DocxPart{doc=%s, part=%s}".
     @Override
     public String toString() {
         return "DocxPart{doc=%s, part=%s}".formatted(document.name(), part.getPartName());

@@ -10,8 +10,6 @@ import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ProcessorContext;
 
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
-
 public class Engine {
     private static final Logger log = LoggerFactory.getLogger(Engine.class);
 
@@ -72,8 +70,7 @@ public class Engine {
         } catch (SpelEvaluationException | SpelParseException | OfficeStamperException e) {
             var msgTemplate = "Expression %s could not be resolved against context '%s'";
             var message = msgTemplate.formatted(expression, evaluationContext);
-            var resolution = exceptionResolver.resolve(expression, message, e);
-            return new Insert(newRun(resolution));
+            return exceptionResolver.resolve(expression, message, e);
         }
     }
 }

@@ -17,5 +17,5 @@ package pro.verron.officestamper.api;
     /// @param cause the underlying exception that was encountered
     ///
     /// @return a resolved fallback value as a String, which could be used as a replacement for the placeholder.
-    String resolve(String expression, String message, Exception cause);
+    Insert resolve(String expression, String message, Exception cause);
 }

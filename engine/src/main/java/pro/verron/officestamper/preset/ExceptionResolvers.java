@@ -3,7 +3,10 @@ package pro.verron.officestamper.preset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.ExceptionResolver;
+import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
+
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
 
 /// The ExceptionResolvers class provides a set of static factory methods to create different types of ExceptionResolver
@@ -62,10 +65,10 @@ public class ExceptionResolvers {
         private static final Logger logger = LoggerFactory.getLogger(DefaultingResolver.class);
 
         @Override
-        public String resolve(String expression, String message, Exception cause) {
+        public Insert resolve(String expression, String message, Exception cause) {
             if (tracing) logger.warn(message, cause);
             else logger.warn(message);
-            return value;
+            return new Insert(newRun(value));
         }
     }
 
@@ -73,10 +76,10 @@ public class ExceptionResolvers {
             implements ExceptionResolver {
 
         @Override
-        public String resolve(String expression, String message, Exception cause) {
+        public Insert resolve(String expression, String message, Exception cause) {
             if (tracing) logger.warn(message, cause);
             else logger.warn(message);
-            return template.formatted(expression);
+            return new Insert(newRun(template.formatted(expression)));
         }
     }
 
@@ -84,7 +87,7 @@ public class ExceptionResolvers {
             implements ExceptionResolver {
 
         @Override
-        public String resolve(String expression, String message, Exception cause) {
+        public Insert resolve(String expression, String message, Exception cause) {
             if (tracing) throw new OfficeStamperException(message, cause);
             else throw new OfficeStamperException(message);
         }

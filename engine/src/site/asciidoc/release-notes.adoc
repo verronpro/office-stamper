@@ -64,7 +64,7 @@ This page provides information about the latest releases of Office-stamper, incl
 
 == Previous Releases
 
-For information about previous releases, see the link:https://github.com/verronpro/docx-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
+For information about previous releases, see the link:https://github.com/verronpro/office-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
 
 == Upgrading
 
@@ -95,7 +95,7 @@ For information about previous releases, see the link:https://github.com/verronp
 
 == Reporting Issues
 
-If you encounter any issues with a release, report them on the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] page.
+If you encounter any issues with a release, report them on the link:https://github.com/verronpro/office-stamper/issues[GitHub Issues] page.
 
 == Next Steps
 

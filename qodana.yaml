@@ -1,0 +1,7 @@
+version: "1.0"
+profile:
+  name: qodana.starter
+include:
+  - name: NullableProblems
+  - name: UNUSED_IMPORT
+  - name: MarkedForRemoval

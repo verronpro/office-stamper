@@ -172,5 +172,5 @@ For large documents or batch processing, consider the following:
 == Next Steps
 
 * See link:troubleshooting.html[Troubleshooting] for help with common issues
-* Explore the link:https://github.com/verronpro/docx-stamper/tree/main/engine/src/test/java/pro/verron/officestamper/test[test directory] for examples of advanced usage
+* Explore the link:https://github.com/verronpro/office-stamper/tree/main/engine/src/test/java/pro/verron/officestamper/test[test directory] for examples of advanced usage
 * Check the link:release-notes.html[Release Notes] for information about the latest features

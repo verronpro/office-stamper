@@ -1,10 +1,9 @@
 package pro.verron.officestamper.experimental;
 
 import org.xlsx4j.sml.CTRst;
-import pro.verron.officestamper.api.Placeholder;
 
-/// The ExcelParagraph class represents a paragraph in an Excel document.
-/// It provides methods to replace expressions and retrieve the aggregated text over all runs.
+/// The ExcelParagraph class represents a paragraph in an Excel document. It provides methods to replace expressions and
+/// retrieve the aggregated text over all runs.
 public class ExcelParagraph {
     private final CTRst paragraph;
 
@@ -15,18 +14,15 @@ public class ExcelParagraph {
         this.paragraph = paragraph;
     }
 
-    /// Replaces the given expression with the replacement object within
-    /// the paragraph.
-    /// The replacement object must be a valid DOCX4J Object.
+    /// Replaces the given expression with the replacement object within the paragraph. The replacement object must be a
+    /// valid DOCX4J Object.
     ///
-    /// @param placeholder the expression to be replaced.
     /// @param replacement the object to replace the expression.
-    public void replace(Placeholder placeholder, String replacement) {
+    public void replace(String expression, String replacement) {
         var ctXstringWhitespace = paragraph.getT();
         var string = ctXstringWhitespace.getValue();
-        var start = string.indexOf(placeholder.expression());
-        var end = start + placeholder.expression()
-                                     .length();
+        var start = string.indexOf(expression);
+        var end = start + expression.length();
         var next = string.substring(0, start) + replacement + string.substring(end);
         ctXstringWhitespace.setValue(next);
     }

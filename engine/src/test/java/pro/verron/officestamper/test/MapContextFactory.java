@@ -245,4 +245,9 @@ public final class MapContextFactory
     public Object imagedName(String name, Image image) {
         return Map.of("name", name, "butterfly", image);
     }
+
+    @Override
+    public Object sentence(String sentence) {
+        return Map.of("sentence", sentence);
+    }
 }

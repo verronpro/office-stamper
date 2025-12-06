@@ -13,7 +13,7 @@ public record Matcher(String prefix, String suffix) {
     /// @param expression the expression to be matched.
     ///
     /// @return `true` if the expression starts with the prefix
-    /// and ends with the suffix,`false` otherwise.
+    /// and ends with the suffix, `false` otherwise.
     public boolean match(String expression) {
         return expression.startsWith(prefix) && expression.endsWith(suffix);
     }

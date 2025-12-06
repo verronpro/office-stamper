@@ -14,8 +14,6 @@ public class PowerPointStamper
     public void stamp(Object context, InputStream templateStream, OutputStream outputStream) {
         logger.info("Start of the stamping procedure");
 
-        logger.info("Setup a map-reading able docx-stamper instance");
-
         var stamper = pptxStamper();
 
         logger.info("Start stamping process");

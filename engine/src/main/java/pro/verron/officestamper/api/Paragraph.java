@@ -1,8 +1,8 @@
 package pro.verron.officestamper.api;
 
 import org.docx4j.wml.Comments;
+import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import org.docx4j.wml.R;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,11 +12,6 @@ import java.util.function.Consumer;
 /// The Paragraph interface represents a paragraph in a text document.
 /// It provides methods for replacing a placeholder within the paragraph and retrieving the paragraph as a string.
 public interface Paragraph {
-    /// Creates a processor context for the given placeholder within this paragraph.
-    ///
-    /// @param placeholder The placeholder to create a context for.
-    /// @return The processor context for the specified placeholder.
-    ProcessorContext processorContext(Placeholder placeholder);
 
     /// Replaces specified contiguous elements within the paragraph with new elements.
     ///
@@ -28,52 +23,18 @@ public interface Paragraph {
     /// This method is intended to be used when a paragraph needs to be deleted.
     void remove();
 
-    /// Retrieves the paragraph associated with this object.
-    /// TODO replace with API not exposing the docx4j API directly
+    /// Replaces a specified placeholder within the paragraph with the provided insert.
     ///
-    /// @return the paragraph object
-    ///
-    /// @deprecated As of version 2.6, due to its direct exposure of the docx4j API. It is scheduled for removal in
-    /// the future.
-    @Deprecated(since = "2.6", forRemoval = true)
-    P getP(); // TODO replace with API not exposing the docx4j API directly
+    /// @param insert the insert containing elements that will replace the placeholder
+    void replace(String expression, Insert insert);
 
-    /// Replaces all occurrences of a placeholder with a specified replacement value within a paragraph.
+    /// Replaces a section of elements within the document, defined by the start and end objects,
+    /// with the elements provided by the given insert.
     ///
-    /// @param placeholder The placeholder to be replaced.
-    /// @param replacement The replacement value for the placeholder.
-    ///
-    /// @deprecated was used by the core to deal with multiline paragraphs, users should fallback to
-    /// [#replace(Placeholder, Object)] only
-    @Deprecated(since = "2.4", forRemoval = true) default void replaceAll(Placeholder placeholder, R replacement) {
-        while (contains(placeholder.expression())) {
-            replace(placeholder, replacement);
-        }
-    }
-
-    /// Returns true if the given expression is found within the paragraph, otherwise returns false.
-    ///
-    /// @param expression The string to search for within the paragraph.
-    ///
-    /// @return true if the given expression is found within the paragraph, otherwise false.
-    ///
-    /// @deprecated was used by the core to deal with multiline paragraphs
-    @Deprecated(since = "2.4", forRemoval = true) default boolean contains(String expression) {
-        return asString().contains(expression);
-    }
-
-    /// Replaces a placeholder in the given paragraph with the specified replacement.
-    ///
-    /// @param placeholder The placeholder to be replaced.
-    /// @param replacement The replacement for the placeholder.
-    void replace(Placeholder placeholder, Object replacement);
-
-    /// Replaces a slice of objects in the given paragraph with the specified replacement.
-    ///
-    /// @param from The first object to be replaced.
-    /// @param to The last object for the placeholder.
-    /// @param replacement The replacement for the placeholder.
-    void replace(Object from, Object to, R replacement);
+    /// @param start  the starting object marking the beginning of the section to replace.
+    /// @param end    the ending object marking the end of the section to replace.
+    /// @param insert the insert containing the elements that will replace the specified section.
+    void replace(Object start, Object end, Insert insert);
 
     ///Returns the paragraph as a string.
     ///
@@ -83,17 +44,17 @@ public interface Paragraph {
     /// Applies the specified consumer function to the paragraph content.
     ///
     /// @param pConsumer The consumer function to apply to the paragraph content.
-    void apply(Consumer<P> pConsumer);
+    void apply(Consumer<ContentAccessor> pConsumer);
 
     /// Retrieves the parent of the current paragraph that matches the specified class type.
     ///
     /// @param aClass The class type to match for the parent element.
     /// @param <T> The type of the parent element to be returned.
-    /// @return An `Optional` containing the matched parent element if found, otherwise an empty `Optional`.
+    /// @return An [Optional] containing the matched parent element if found, otherwise an empty [Optional].
     <T> Optional<T> parent(Class<T> aClass);
 
     /// Retrieves a collection of comments associated with the paragraph.
     ///
-    /// @return a collection of `Comments.Comment` objects related to the paragraph
+    /// @return a collection of [Comments.Comment] objects related to the paragraph
     Collection<Comments.Comment> getComment();
 }

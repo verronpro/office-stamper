@@ -25,8 +25,8 @@ There are many ways to contribute to Office-stamper:
 
 [source,bash]
 ----
-git clone https://github.com/yourusername/docx-stamper.git
-cd docx-stamper
+git clone https://github.com/yourusername/office-stamper.git
+cd office-stamper
 mvn clean install
 ----
 
@@ -130,7 +130,8 @@ If you have an idea for an enhancement:
 
 == Code of Conduct
 
-Please note that this project is released with a link:https://github.com/verronpro/docx-stamper/blob/main/CODE_OF_CONDUCT.md[Contributor Code of Conduct]. By participating in this project you agree to abide by its terms.
+Please note that this project is released with a link:https://github.com/verronpro/office-stamper/blob/main/CODE_OF_CONDUCT.md[Contributor Code of Conduct].
+By participating in this project you agree to abide by its terms.
 
 == License
 
@@ -149,4 +150,4 @@ Thank you for contributing to Office-stamper!
 == Next Steps
 
 * Return to the link:index.html[Documentation Home]
-* Check out the link:https://github.com/verronpro/docx-stamper/issues[GitHub Issues] to find something to work on.
+* Check out the link:https://github.com/verronpro/office-stamper/issues[GitHub Issues] to find something to work on.

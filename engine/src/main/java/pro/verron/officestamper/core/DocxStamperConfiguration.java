@@ -2,8 +2,8 @@ package pro.verron.officestamper.core;
 
 
 import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.spel.SpelParserConfiguration;
-import org.springframework.lang.NonNull;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
@@ -11,17 +11,17 @@ import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
 import pro.verron.officestamper.core.functions.BiFunctionBuilder;
 import pro.verron.officestamper.core.functions.FunctionBuilder;
 import pro.verron.officestamper.core.functions.TriFunctionBuilder;
-import pro.verron.officestamper.preset.EvaluationContextConfigurers;
+import pro.verron.officestamper.preset.EvaluationContextFactories;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /// The [DocxStamperConfiguration] class represents the configuration for the [DocxStamper] class.
+///
 /// It provides methods to customize the behavior of the stamper.
 ///
 /// @author Joseph Verron
@@ -30,25 +30,21 @@ import java.util.function.Supplier;
 /// @since 1.0.3
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
-    private final Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> commentProcessors;
+    private final Map<Class<?>, CommentProcessorFactory> commentProcessors;
     private final List<ObjectResolver> resolvers;
     private final Map<Class<?>, Object> expressionFunctions;
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final List<CustomFunction> functions;
-    private String lineBreakPlaceholder;
-    private EvaluationContextConfigurer evaluationContextConfigurer;
-    private boolean failOnUnresolvedExpression;
-    private boolean leaveEmptyOnExpressionError;
-    private boolean replaceUnresolvedExpressions;
-    private String unresolvedExpressionsDefaultValue;
-    private SpelParserConfiguration spelParserConfiguration;
+    private EvaluationContextFactory evaluationContextFactory;
+    private ExpressionParser expressionParser;
     private ExceptionResolver exceptionResolver;
 
-    /// Constructs a new instance of the `DocxStamperConfiguration` class
-    /// and initializes its default configuration settings.
-    /// This constructor sets up internal structures and default behaviors
-    /// for managing document stamping configurations, including:
+    /// Constructs a new instance of the [DocxStamperConfiguration] class and initializes its default configuration
+    /// settings.
+    ///
+    /// This constructor sets up internal structures and default behaviors for managing document stamping
+    /// configurations, including:
     /// - Initializing collections for processors, resolvers, and functions.
     /// - Setting default values for expression handling and evaluation.
     /// - Creating and configuring a default `SpelParserConfiguration`.
@@ -60,145 +56,16 @@ public class DocxStamperConfiguration
         preprocessors = new ArrayList<>();
         postprocessors = new ArrayList<>();
         functions = new ArrayList<>();
-        evaluationContextConfigurer = EvaluationContextConfigurers.defaultConfigurer();
-        lineBreakPlaceholder = "\n";
-        failOnUnresolvedExpression = true;
-        leaveEmptyOnExpressionError = false;
-        replaceUnresolvedExpressions = false;
-        unresolvedExpressionsDefaultValue = null;
-        spelParserConfiguration = new SpelParserConfiguration();
-        exceptionResolver = computeExceptionResolver();
-    }
-
-    private ExceptionResolver computeExceptionResolver() {
-        if (failOnUnresolvedExpression) return ExceptionResolvers.throwing();
-        if (replaceWithDefaultOnError()) return ExceptionResolvers.defaulting(replacementDefault());
-        return ExceptionResolvers.passing();
-    }
-
-    private boolean replaceWithDefaultOnError() {
-        return isLeaveEmptyOnExpressionError() || isReplaceUnresolvedExpressions();
-    }
-
-    private String replacementDefault() {
-        return isLeaveEmptyOnExpressionError() ? "" : getUnresolvedExpressionsDefaultValue();
-    }
-
-    /// Resets all processors in the configuration.
-    public void resetCommentProcessors() {
-        this.commentProcessors.clear();
-    }
-
-    /// Resets all resolvers in the configuration.
-    public void resetResolvers() {
-        this.resolvers.clear();
-    }
-
-    /// Determines whether the system should fail when an unresolved expression is encountered.
-    ///
-    /// @deprecated use [#getExceptionResolver()] instead
-    ///
-    /// @return true if the system is configured to fail on unresolved expressions, false otherwise
-    @Deprecated(since = "2.5", forRemoval = true)
-    @Override
-    public boolean isFailOnUnresolvedExpression() {
-        return failOnUnresolvedExpression;
-    }
-
-    /// If true, stamper throws an [OfficeStamperException] if an expression within the document can’t be resolved.
-    /// Set to `TRUE` by default.
-    ///
-    /// @param failOnUnresolvedExpression a boolean
-    ///
-    /// @deprecated use [#setExceptionResolver(ExceptionResolver)] instead
-    ///
-    /// @return the same [DocxStamperConfiguration] object
-    @Deprecated(since = "2.5", forRemoval = true)
-    @Override
-    public DocxStamperConfiguration setFailOnUnresolvedExpression(boolean failOnUnresolvedExpression) {
-        this.failOnUnresolvedExpression = failOnUnresolvedExpression;
-        this.exceptionResolver = computeExceptionResolver();
-        return this;
-    }
-
-    /// Determines whether to leave the value empty when there is an error in expression evaluation.
-    ///
-    /// @return true if the value should be left empty on expression evaluation errors; false otherwise.
-    @Override
-    public boolean isLeaveEmptyOnExpressionError() {
-        return leaveEmptyOnExpressionError;
-    }
-
-    /// Determines whether unresolved expressions should be replaced.
-    ///
-    /// @return true if unresolved expressions are set to be replaced, false otherwise.
-    @Override
-    public boolean isReplaceUnresolvedExpressions() {
-        return replaceUnresolvedExpressions;
-    }
-
-    /// Retrieves the default value used for unresolved expressions.
-    ///
-    /// @return the default value assigned to unresolved expressions as a String
-    @Override
-    public String getUnresolvedExpressionsDefaultValue() {
-        return unresolvedExpressionsDefaultValue;
-    }
-
-    /// Default value to use for expressions that doesn't resolve.
-    ///
-    /// @param unresolvedExpressionsDefaultValue value to use instead for expression that doesn't resolve
-    ///
-    /// @deprecated use [#getExceptionResolver()] instead
-    ///
-    /// @return a [DocxStamperConfiguration] object
-    ///
-    /// @see DocxStamperConfiguration#replaceUnresolvedExpressions
-    @Deprecated(since = "2.5", forRemoval = true)
-    @Override
-    public DocxStamperConfiguration unresolvedExpressionsDefaultValue(String unresolvedExpressionsDefaultValue) {
-        this.unresolvedExpressionsDefaultValue = unresolvedExpressionsDefaultValue;
-        this.exceptionResolver = computeExceptionResolver();
-        return this;
-    }
-
-    /// Indicates if a default value should replace expressions that don't resolve.
-    ///
-    /// @param replaceUnresolvedExpressions true to replace expression with resolved value `null` false to leave the
-    /// expression as is.
-    ///
-    /// @deprecated use [#setExceptionResolver(ExceptionResolver)] instead
-    ///
-    /// @return a [DocxStamperConfiguration] object
-    @Deprecated(since = "2.5", forRemoval = true)
-    @Override
-    public DocxStamperConfiguration replaceUnresolvedExpressions(boolean replaceUnresolvedExpressions) {
-        this.replaceUnresolvedExpressions = replaceUnresolvedExpressions;
-        this.exceptionResolver = computeExceptionResolver();
-        return this;
-    }
-
-    /// Indicate if expressions failing during evaluation needs removal.
-    ///
-    /// @param leaveEmpty true to replace expressions with empty string when an error occurs during evaluation.
-    ///
-    /// @deprecated use [#setExceptionResolver(ExceptionResolver)] instead
-    ///
-    /// @return a [DocxStamperConfiguration] object
-    @Deprecated(since = "2.5", forRemoval = true)
-    @Override
-    public DocxStamperConfiguration leaveEmptyOnExpressionError(boolean leaveEmpty) {
-        this.leaveEmptyOnExpressionError = leaveEmpty;
-        this.exceptionResolver = computeExceptionResolver();
-        return this;
+        evaluationContextFactory = EvaluationContextFactories.defaultFactory();
+        expressionParser = new SpelExpressionParser();
+        exceptionResolver = ExceptionResolvers.throwing();
     }
 
     /// Exposes all methods of a given interface to the expression language.
     ///
     /// @param interfaceClass the interface holding methods to expose in the expression language.
-    /// @param implementation the implementation to call to evaluate invocations of those methods. Must implement the
-    ///
-    ///                                             mentioned interface.
+    /// @param implementation the implementation to call to evaluate invocations of those methods, it must
+    ///         implement the mentioned interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override
@@ -210,16 +77,17 @@ public class DocxStamperConfiguration
         return this;
     }
 
-    /// Registers the specified ICommentProcessor as an implementation of the specified interface.
+    /// Registers the specified [CommentProcessor] as an implementation of the specified interface.
     ///
-    /// @param interfaceClass          the interface, implemented by the commentProcessor.
-    /// @param commentProcessorFactory the commentProcessor factory generating instances of the specified interface.
+    /// @param interfaceClass the interface, implemented by the commentProcessor.
+    /// @param commentProcessorFactory the commentProcessor factory generating instances of the specified
+    ///         interface.
     ///
     /// @return a [DocxStamperConfiguration] object
     @Override
     public DocxStamperConfiguration addCommentProcessor(
             Class<?> interfaceClass,
-            Function<ParagraphPlaceholderReplacer, CommentProcessor> commentProcessorFactory
+            CommentProcessorFactory commentProcessorFactory
     ) {
         this.commentProcessors.put(interfaceClass, commentProcessorFactory);
         return this;
@@ -233,72 +101,30 @@ public class DocxStamperConfiguration
         preprocessors.add(preprocessor);
     }
 
-
-    /// Retrieves the placeholder string used for line breaks.
+    /// Retrieves the configured [EvaluationContextFactory] instance.
     ///
-    /// @return the line break placeholder as a string
+    /// @return an instance of [EvaluationContextFactory] used for creating evaluation contexts
     @Override
-    public String getLineBreakPlaceholder() {
-        return lineBreakPlaceholder;
+    public EvaluationContextFactory getEvaluationContextFactory() {
+        return evaluationContextFactory;
     }
 
-    /// String to replace with a line break when stamping a document.
-    /// By default, `\\n` is the placeholder.
+    /// Sets the [EvaluationContextFactory] which creates Spring [EvaluationContext] instances used for evaluating
+    /// expressions in comments and text.
     ///
-    /// @param lineBreakPlaceholder string to replace with line breaks during stamping.
+    /// @param evaluationContextFactory the factory to use.
     ///
     /// @return the configuration object for chaining.
     @Override
-    public DocxStamperConfiguration setLineBreakPlaceholder(@NonNull String lineBreakPlaceholder) {
-        this.lineBreakPlaceholder = lineBreakPlaceholder;
-        return this;
-    }
-
-    /// Retrieves the configured EvaluationContextConfigurer instance.
-    ///
-    /// @return an instance of EvaluationContextConfigurer used for configuring evaluation contexts
-    @Override
-    public EvaluationContextConfigurer getEvaluationContextConfigurer() {
-        return evaluationContextConfigurer;
-    }
-
-    /// Provides an [EvaluationContextConfigurer] which may change the configuration of a Spring
-    /// [EvaluationContext] used for evaluating expressions in comments and text.
-    ///
-    /// @param evaluationContextConfigurer the configurer to use.
-    ///
-    /// @return the configuration object for chaining.
-    @Override
-    public DocxStamperConfiguration setEvaluationContextConfigurer(
-            EvaluationContextConfigurer evaluationContextConfigurer
-    ) {
-        this.evaluationContextConfigurer = evaluationContextConfigurer;
-        return this;
-    }
-
-    @Override
-    public SpelParserConfiguration getSpelParserConfiguration() {
-        return spelParserConfiguration;
-    }
-
-    /// Sets the [SpelParserConfiguration] used for expression parsing.
-    /// Note that this configuration is the same for all expressions in the document, including expressions in comments.
-    ///
-    /// @param spelParserConfiguration the configuration to use.
-    ///
-    /// @return the configuration object for chaining.
-    @Override
-    public DocxStamperConfiguration setSpelParserConfiguration(
-            SpelParserConfiguration spelParserConfiguration
-    ) {
-        this.spelParserConfiguration = spelParserConfiguration;
+    public DocxStamperConfiguration setEvaluationContextFactory(EvaluationContextFactory evaluationContextFactory) {
+        this.evaluationContextFactory = evaluationContextFactory;
         return this;
     }
 
     /// Retrieves the mapping of expression function classes to their corresponding function instances.
     ///
-    /// @return a map where the keys are classes representing the function types and the values are the function
-    /// instances.
+    /// @return a map where the keys are classes representing the function types, and the values are the function
+    ///         instances.
     @Override
     public Map<Class<?>, Object> getExpressionFunctions() {
         return expressionFunctions;
@@ -306,16 +132,16 @@ public class DocxStamperConfiguration
 
     /// Retrieves the map of comment processors associated with specific classes.
     ///
-    /// @return a map where the key is the class associated with a specific type of placeholder
-    ///         and the value is a function that creates a CommentProcessor for that placeholder.
+    /// @return a map where the key is the class associated with a specific type of placeholder, and the value is a
+    ///         function that creates a [CommentProcessor] for that placeholder.
     @Override
-    public Map<Class<?>, Function<ParagraphPlaceholderReplacer, CommentProcessor>> getCommentProcessors() {
+    public Map<Class<?>, CommentProcessorFactory> getCommentProcessors() {
         return commentProcessors;
     }
 
     /// Retrieves the list of preprocessors.
     ///
-    /// @return a list of PreProcessor objects.
+    /// @return a list of [PreProcessor] objects.
     @Override
     public List<PreProcessor> getPreprocessors() {
         return preprocessors;
@@ -323,19 +149,20 @@ public class DocxStamperConfiguration
 
     /// Retrieves the list of object resolvers.
     ///
-    /// @return a list of `ObjectResolver` instances.
+    /// @return a list of [ObjectResolver] instances.
     @Override
     public List<ObjectResolver> getResolvers() {
         return resolvers;
     }
 
-    /// Sets resolvers for resolving objects in the DocxStamperConfiguration.
+    /// Sets resolvers for resolving objects in the [DocxStamperConfiguration].
     ///
-    /// This method is the evolution of the method `addTypeResolver`,
-    /// and the order in which the resolvers are ordered is determinant - the first resolvers
-    /// in the list will be tried first. If a fallback resolver is desired, it should be placed last in the list.
+    /// This method is the evolution of the method [#addResolver(ObjectResolver)], and the order in which the resolvers
+    /// are ordered is determinant; the first resolvers in the list will be tried first.
     ///
-    /// @param resolvers The list of ObjectResolvers to be set.
+    ///  If a fallback resolver is desired, it should be placed last in the list.
+    ///
+    /// @param resolvers The list of [ObjectResolver] to be set.
     ///
     /// @return the configuration object for chaining.
     @Override
@@ -345,13 +172,14 @@ public class DocxStamperConfiguration
         return this;
     }
 
-    /// Adds a resolver to the list of resolvers in the `DocxStamperConfiguration` object.
-    /// Resolvers are used to resolve objects during the stamping process.
+    /// Adds a resolver to the list of resolvers in the [DocxStamperConfiguration] object.
     ///
-    /// @param resolver The resolver to be added. This resolver should implement the `ObjectResolver` interface.
+    ///  Resolvers are used to resolve objects during the stamping process.
     ///
-    /// @return The modified `DocxStamperConfiguration` object, with the resolver added to the beginning of the
-    /// resolver list.
+    /// @param resolver The resolver to be added.
+    ///
+    /// @return The modified [DocxStamperConfiguration] object, with the resolver added to the beginning of the resolver
+    ///         list.
     @Override
     public DocxStamperConfiguration addResolver(ObjectResolver resolver) {
         resolvers.addFirst(resolver);
@@ -360,17 +188,17 @@ public class DocxStamperConfiguration
 
     /// Retrieves the exception resolver.
     ///
-    /// @return the current instance of ExceptionResolver.
+    /// @return the current instance of [ExceptionResolver].
     @Override
     public ExceptionResolver getExceptionResolver() {
         return exceptionResolver;
     }
 
-    /// Configures the exception resolver for the DocxStamperConfiguration.
+    /// Configures the exception resolver for the [DocxStamperConfiguration].
     ///
-    /// @param exceptionResolver the ExceptionResolver to handle exceptions during processing
+    /// @param exceptionResolver the [ExceptionResolver] to handle exceptions during processing
     ///
-    /// @return the current instance of DocxStamperConfiguration
+    /// @return the current instance of [DocxStamperConfiguration]
     @Override
     public DocxStamperConfiguration setExceptionResolver(ExceptionResolver exceptionResolver) {
         this.exceptionResolver = exceptionResolver;
@@ -379,7 +207,7 @@ public class DocxStamperConfiguration
 
     /// Retrieves a list of custom functions.
     ///
-    /// @return a List containing CustomFunction objects.
+    /// @return a List containing [CustomFunction] objects.
     @Override
     public List<CustomFunction> customFunctions() {
         return functions;
@@ -387,12 +215,11 @@ public class DocxStamperConfiguration
 
     /// Adds a custom function to the system, allowing integration of user-defined functionality.
     ///
-    /// @param name           The name of the custom function being added.
-    ///                       This is used as the identifier for the function and must be unique
-    ///                       across all defined functions.
-    /// @param implementation A Supplier functional interface that provides the implementation of the custom function.
-    ///                       When the function is called, the supplier's get method will be executed to return the
-    ///                       result of the function.
+    /// @param name The name of the custom function being added. This is used as the identifier for the function
+    ///         and must be unique across all defined functions.
+    /// @param implementation A [Supplier] functional interface that provides the implementation of the custom
+    ///         function. When the function is called, the supplier's get method will be executed to return the result
+    ///         of the function.
     @Override
     public void addCustomFunction(String name, Supplier<?> implementation) {
         this.addCustomFunction(new CustomFunction(name, List.of(), args -> implementation.get()));
@@ -400,17 +227,18 @@ public class DocxStamperConfiguration
 
     /// Adds a custom function to the list of functions.
     ///
-    /// @param function the CustomFunction object to be added
+    /// @param function the [CustomFunction] object to be added
     public void addCustomFunction(CustomFunction function) {
         this.functions.add(function);
     }
 
     /// Adds a custom function to the context with the specified name and type.
     ///
-    /// @param name   the name of the custom function
+    /// @param name the name of the custom function
     /// @param class0 the class type of the custom function
     /// @param <T> the type of the input parameter
-    /// @return an instance of NeedsFunctionImpl configured with the custom function
+    ///
+    /// @return an instance of [NeedsFunctionImpl] configured with the custom function
     @Override
     public <T> NeedsFunctionImpl<T> addCustomFunction(String name, Class<T> class0) {
         return new FunctionBuilder<>(this, name, class0);
@@ -419,28 +247,29 @@ public class DocxStamperConfiguration
     /// Adds a custom function with the specified name and input types.
     ///
     /// @param name the name of the custom function to be added
-    /// @param class0 the class type of the first input parameter of the custom function
-    /// @param class1 the class type of the second input parameter of the custom function
+    /// @param class0 the class type of the first input parameter of the custom function.
+    /// @param class1 the class type of the second input parameter of the custom function.
     /// @param <T> the type of the first input parameter
     /// @param <U> the type of the second input parameter
-    /// @return an instance of NeedsBiFunctionImpl for further configuration or usage of the custom function
+    ///
+    /// @return an instance of [NeedsBiFunctionImpl] for further configuration or usage of the custom function.
     @Override
     public <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1) {
         return new BiFunctionBuilder<>(this, name, class0, class1);
     }
 
-    /// Adds a custom function to the current context by defining its name and the classes
-    /// associated with its argument types.
+    /// Adds a custom function to the current context by defining its name, and the classes associated with its argument
+    /// types.
     ///
-    /// @param name   the name to assign to the custom function
+    /// @param name the name to assign to the custom function
     /// @param class0 the class of the first argument type
     /// @param class1 the class of the second argument type
     /// @param class2 the class of the third argument type
-    /// @param <T>    the type of the first argument
-    /// @param <U>    the type of the second argument
-    /// @param <V>    the type of the third argument
+    /// @param <T> the type of the first argument
+    /// @param <U> the type of the second argument
+    /// @param <V> the type of the third argument
     ///
-    /// @return an instance of NeedsTriFunctionImpl indicating the custom function implementation and usage context
+    /// @return an instance of [NeedsTriFunctionImpl] indicating the custom function implementation and usage context.
     @Override
     public <T, U, V> NeedsTriFunctionImpl<T, U, V> addCustomFunction(
             String name,
@@ -453,7 +282,7 @@ public class DocxStamperConfiguration
 
     /// Retrieves the list of postprocessors.
     ///
-    /// @return a List of PostProcessor objects.
+    /// @return a List of [PostProcessor] objects.
     @Override
     public List<PostProcessor> getPostprocessors() {
         return postprocessors;
@@ -461,9 +290,39 @@ public class DocxStamperConfiguration
 
     /// Adds a given postprocessor to the list of postprocessors.
     ///
-    /// @param postprocessor the PostProcessor instance to be added
+    /// @param postprocessor the [PostProcessor] instance to be added
     @Override
     public void addPostprocessor(PostProcessor postprocessor) {
         postprocessors.add(postprocessor);
+    }
+
+    @Override
+    public ExpressionParser getExpressionParser() {
+        return expressionParser;
+    }
+
+    /// Sets the expression parser used for expression evaluation.
+    ///
+    /// Note that the provided parser will be used for all expressions in the document, including expressions in
+    /// comments. If you use SpEL, construct a `SpelExpressionParser` (optionally with a `SpelParserConfiguration`) and
+    /// pass it here.
+    ///
+    /// @param expressionParser the parser to use.
+    ///
+    /// @return the configuration object for chaining.
+    @Override
+    public DocxStamperConfiguration setExpressionParser(ExpressionParser expressionParser) {
+        this.expressionParser = expressionParser;
+        return this;
+    }
+
+    /// Resets all processors in the configuration.
+    public void resetCommentProcessors() {
+        this.commentProcessors.clear();
+    }
+
+    /// Resets all resolvers in the configuration.
+    public void resetResolvers() {
+        this.resolvers.clear();
     }
 }

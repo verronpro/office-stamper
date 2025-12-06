@@ -22,7 +22,7 @@ public class TagHook
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();
         var expression = tag.expression();
-        var contextStack = contextTree.find(tag.getContextReference());
+        var contextStack = contextTree.find(tag.getContextKey());
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
@@ -42,8 +42,8 @@ public class TagHook
     }
 
     @Override
-    public void setContextReference(int contextIndex) {
-        tag.setContextReference(contextIndex);
+    public void setContextKey(String contextKey) {
+        tag.setContextKey(contextKey);
     }
 
 }

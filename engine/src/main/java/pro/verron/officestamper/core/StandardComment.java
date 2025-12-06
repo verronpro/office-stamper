@@ -1,7 +1,6 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.TextUtils;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import org.slf4j.Logger;
@@ -163,12 +162,6 @@ public class StandardComment
 
     /// {@inheritDoc}
     @Override
-    public WordprocessingMLPackage getDocument() {
-        return part.document();
-    }
-
-    /// {@inheritDoc}
-    @Override
     public String expression() {
         return this.getComment()
                    .getContent()
@@ -185,20 +178,20 @@ public class StandardComment
     /// We expects the author field of the comment to be an integer representing the context ID. If it is not found,
     /// then we return the root context with index 0.
     @Override
-    public int getContextReference() {
+    public String getContextKey() {
         var author = comment.getAuthor();
-        if (author == null) return 0;
+        if (author == null) return String.valueOf(0);
         try {
-            return Integer.parseInt(author);
+            return String.valueOf(Integer.parseInt(author));
         } catch (NumberFormatException _) {
             log.debug("Expected an context id in the author field: found '{}'", author);
-            return 0;
+            return String.valueOf(0);
         }
     }
 
     @Override
-    public void setContextReference(int contextIndex) {
-        comment.setAuthor(String.valueOf(contextIndex));
+    public void setContextKey(String contextKey) {
+        comment.setAuthor(contextKey);
     }
 
     /// Adds a [Comment] to this comment children set.

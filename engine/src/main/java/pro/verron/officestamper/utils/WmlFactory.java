@@ -17,9 +17,9 @@ import java.util.Random;
 
 import static java.util.stream.Collectors.toCollection;
 
-/// Utility class for creating and configuring various WordML (WML) elements.
-/// Provides static methods to generate paragraphs, runs, comments, text, and other WML structures.
-/// This is intended for handling Office Open XML documents programmatically.
+/// Utility class for creating and configuring various WordML (WML) elements. Provides static methods to generate
+/// paragraphs, runs, comments, text, and other WML structures. This is intended for handling Office Open XML documents
+/// programmatically.
 public class WmlFactory {
     private static final Random RANDOM = new Random();
 
@@ -38,8 +38,8 @@ public class WmlFactory {
 
     /// Creates a new paragraph containing the provided list of values.
     ///
-    /// @param values A list of objects to be added to the new paragraph.
-    ///               These objects populate the content of the paragraph.
+    /// @param values A list of objects to be added to the new paragraph. These objects populate the content of
+    ///         the paragraph.
     ///
     /// @return A new paragraph containing the provided values.
     public static P newParagraph(List<?> values) {
@@ -60,8 +60,8 @@ public class WmlFactory {
 
     /// Creates a new run containing the provided values deemed worth keeping.
     ///
-    /// @param values A list of objects to be added to the new run.
-    ///               Objects are filtered based on a predefined criteria to determine if they are worth keeping.
+    /// @param values A list of objects to be added to the new run. Objects are filtered based on a predefined
+    ///         criteria to determine if they are worth keeping.
     ///
     /// @return A new run containing the filtered values.
     public static R newRun(List<Object> values) {
@@ -83,7 +83,7 @@ public class WmlFactory {
 
     /// Creates a new comment with the provided value.
     ///
-    /// @param id    The id to affect to the comment.
+    /// @param id The id to affect to the comment.
     /// @param value The string value to be included in the comment.
     ///
     /// @return A new Comments.Comment object containing the provided value.
@@ -187,10 +187,10 @@ public class WmlFactory {
 
     /// Creates a new run containing an image with the specified attributes.
     ///
-    /// @param maxWidth      the maximum width of the image, it can be null
+    /// @param maxWidth the maximum width of the image, it can be null
     /// @param abstractImage the binary part abstract image to be included in the run
-    /// @param filenameHint  the filename hint for the image
-    /// @param altText       the alternative text for the image
+    /// @param filenameHint the filename hint for the image
+    /// @param altText the alternative text for the image
     ///
     /// @return a new run element containing the image
     public static R newRun(
@@ -205,10 +205,10 @@ public class WmlFactory {
 
     /// Creates a new Inline object for the given image part, filename hint, and alt text.
     ///
-    /// @param imagePart    The binary part abstract image to be used.
+    /// @param imagePart The binary part abstract image to be used.
     /// @param filenameHint A hint for the filename of the image.
-    /// @param altText      Alternative text for the image.
-    /// @param maxWidth     The image width to not exceeds, in point.
+    /// @param altText Alternative text for the image.
+    /// @param maxWidth The image width to not exceeds, in point.
     ///
     /// @return A new Inline object containing the specified image information.
     ///
@@ -247,11 +247,11 @@ public class WmlFactory {
 
     /// Creates a new CommentRangeStart object with the specified ID and parent.
     ///
-    /// @param id     The unique identifier for the CommentRangeStart object.
+    /// @param id The unique identifier for the CommentRangeStart object.
     /// @param parent The parent element (P) to which this CommentRangeStart belongs.
     ///
     /// @return A new CommentRangeStart object with the specified ID and parent.
-    public static CommentRangeStart newCommentRangeStart(BigInteger id, P parent) {
+    public static CommentRangeStart newCommentRangeStart(BigInteger id, ContentAccessor parent) {
         var commentRangeStart = new CommentRangeStart();
         commentRangeStart.setId(id);
         commentRangeStart.setParent(parent);
@@ -260,11 +260,11 @@ public class WmlFactory {
 
     /// Creates a new CommentRangeEnd object with the specified ID and parent.
     ///
-    /// @param id     The unique identifier for the CommentRangeEnd object.
+    /// @param id The unique identifier for the CommentRangeEnd object.
     /// @param parent The parent element (P) to which this CommentRangeEnd belongs.
     ///
     /// @return A new CommentRangeEnd object with the specified ID and parent.
-    public static CommentRangeEnd newCommentRangeEnd(BigInteger id, P parent) {
+    public static CommentRangeEnd newCommentRangeEnd(BigInteger id, ContentAccessor parent) {
         var commentRangeEnd = new CommentRangeEnd();
         commentRangeEnd.setId(id);
         commentRangeEnd.setParent(parent);
@@ -273,11 +273,11 @@ public class WmlFactory {
 
     /// Creates a new CommentReference object with the specified ID and parent.
     ///
-    /// @param id     The unique identifier for the CommentReference.
+    /// @param id The unique identifier for the CommentReference.
     /// @param parent The parent element (P) to which this CommentReference belongs.
     ///
     /// @return A new CommentReference object with the specified ID and parent.
-    public static R.CommentReference newCommentReference(BigInteger id, P parent) {
+    public static R.CommentReference newCommentReference(BigInteger id, ContentAccessor parent) {
         var commentReference = new R.CommentReference();
         commentReference.setId(id);
         commentReference.setParent(parent);
@@ -305,8 +305,7 @@ public class WmlFactory {
         return new Tr();
     }
 
-    /// Creates a new WordprocessingMLPackage object initialized with a main document part,
-    /// and an empty comments part.
+    /// Creates a new WordprocessingMLPackage object initialized with a main document part, and an empty comments part.
     ///
     /// @return A new instance of WordprocessingMLPackage.
     public static WordprocessingMLPackage newWord() {
@@ -323,10 +322,9 @@ public class WmlFactory {
         }
     }
 
-    /// Creates a new CommentsPart object.
-    /// This method attempts to create a new instance of CommentsPart.
-    /// If an InvalidFormatException occurs during the creation process, it wraps the exception in an
-    /// OfficeStamperException and throws it.
+    /// Creates a new CommentsPart object. This method attempts to create a new instance of CommentsPart. If an
+    /// InvalidFormatException occurs during the creation process, it wraps the exception in an OfficeStamperException
+    /// and throws it.
     ///
     /// @return A new instance of CommentsPart.
     public static CommentsPart newCommentsPart() {
@@ -351,11 +349,22 @@ public class WmlFactory {
         return br;
     }
 
-    public static CTSmartTagRun newSmartTag(String element, R run) {
+    public static CTSmartTagRun newSmartTag(String element, R run, CTAttr attribute) {
         var smartTag = new CTSmartTagRun();
-        var smartTagContent = smartTag.getContent();
         smartTag.setElement(element);
+        var smartTagPr = new CTSmartTagPr();
+        var smartTagPrAttr = smartTagPr.getAttr();
+        smartTagPrAttr.add(attribute);
+        var smartTagContent = smartTag.getContent();
+        smartTag.setSmartTagPr(smartTagPr);
         smartTagContent.add(run);
         return smartTag;
+    }
+
+    static CTAttr newCtAttr(String name, String value) {
+        var ctAttr = new CTAttr();
+        ctAttr.setName(name);
+        ctAttr.setVal(value);
+        return ctAttr;
     }
 }

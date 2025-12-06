@@ -18,6 +18,7 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
+import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.StandardRun;
 
@@ -28,8 +29,8 @@ import java.util.function.Predicate;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.WmlFactory.*;
 
-/// Utility class with methods to help in the interaction with WordprocessingMLPackage documents
-/// and their elements, such as comments, parents, and child elements.
+/// Utility class with methods to help in the interaction with WordprocessingMLPackage documents and their elements,
+/// such as comments, parents, and child elements.
 public final class WmlUtils {
 
     private static final String PRESERVE = "preserve";
@@ -39,16 +40,16 @@ public final class WmlUtils {
         throw new OfficeStamperException("Utility class shouldn't be instantiated");
     }
 
-    /// Attempts to find the first parent of a given child element that is an instance of the specified class within
-    /// the defined search depth.
+    /// Attempts to find the first parent of a given child element that is an instance of the specified class within the
+    /// defined search depth.
     ///
     /// @param child the child element from which the search for a parent begins.
     /// @param clazz the class type to match for the parent
     /// @param depth the maximum amount levels to traverse up the parent hierarchy
-    /// @param <T>   the type of the parent class to search for
+    /// @param <T> the type of the parent class to search for
     ///
     /// @return an Optional containing the first parent matching the specified class, or an empty Optional if no match
-    /// found.
+    ///         found.
     public static <T> Optional<T> getFirstParentWithClass(Child child, Class<T> clazz, int depth) {
         var parent = child.getParent();
         var currentDepth = 0;
@@ -75,7 +76,7 @@ public final class WmlUtils {
     /// Finds a comment with the given ID in the specified WordprocessingMLPackage document.
     ///
     /// @param document the WordprocessingMLPackage document to search for the comment
-    /// @param id       the ID of the comment to find
+    /// @param id the ID of the comment to find
     ///
     /// @return an Optional containing the Comment if found, or an empty Optional if not found.
     public static Optional<Comments.Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
@@ -113,11 +114,9 @@ public final class WmlUtils {
     }
 
 
-    /// Removes the specified child element from its parent container.
-    /// Depending on the type of the parent element, the removal process
-    /// is delegated to the appropriate helper method. If the child is
-    /// contained within a table cell and the cell is empty after removal,
-    /// an empty paragraph is added to the cell.
+    /// Removes the specified child element from its parent container. Depending on the type of the parent element, the
+    /// removal process is delegated to the appropriate helper method. If the child is contained within a table cell and
+    /// the cell is empty after removal, an empty paragraph is added to the cell.
     ///
     /// @param child the child element to be removed
     ///
@@ -217,17 +216,15 @@ public final class WmlUtils {
         }
     }
 
-    /// Extracts textual content from a given object, handling various object types,
-    /// such as runs, text elements, and other specific constructs.
-    /// The method accounts for different cases, such as run breaks, hyphens,
-    /// and other document-specific constructs, and converts them into
-    /// corresponding string representations.
+    /// Extracts textual content from a given object, handling various object types, such as runs, text elements, and
+    /// other specific constructs. The method accounts for different cases, such as run breaks, hyphens, and other
+    /// document-specific constructs, and converts them into corresponding string representations.
     ///
-    /// @param content the object from which text content is to be extracted.
-    ///                This could be of various types such as R, JAXBElement, Text or specific document elements.
+    /// @param content the object from which text content is to be extracted. This could be of various types
+    ///         such as R, JAXBElement, Text or specific document elements.
     ///
-    /// @return a string representation of the extracted textual content.
-    /// If the object's type is not handled, an empty string is returned.
+    /// @return a string representation of the extracted textual content. If the object's type is not handled, an empty
+    ///         string is returned.
     public static String asString(Object content) {
         return switch (content) {
             case P paragraph -> asString(paragraph.getContent());
@@ -260,6 +257,7 @@ public final class WmlUtils {
             case Pict pict -> asString(pict.getAnyAndAny());
             case VmlShapeElements vmlShapeElements -> asString(vmlShapeElements.getEGShapeElements());
             case CTTextbox textbox -> asString(textbox.getTxbxContent());
+            case CommentRangeStart _, CommentRangeEnd _ -> "";
             default -> {
                 log.debug("Unhandled object type: {}", content.getClass());
                 yield "";
@@ -275,11 +273,11 @@ public final class WmlUtils {
         return Objects.equals(space, PRESERVE) ? value : value.trim();
     }
 
-    public static List<Object> insertSmartTag(P paragraph, String expression, int start, int end) {
+    public static List<Object> insertSmartTag(String element, P paragraph, String expression, int start, int end) {
         var run = newRun(expression);
-        var smartTag = newSmartTag(expression, run);
+        var smartTag = newSmartTag("officestamper", run, newCtAttr("type", element));
         findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
-        return replace(paragraph, smartTag, start, end);
+        return replace(paragraph, new Insert(smartTag), start, end);
     }
 
     public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
@@ -289,13 +287,13 @@ public final class WmlUtils {
                                .filter(run -> run.isTouchedByRange(start, end))
                                .toList();
 
-        StandardRun firstRun = affectedRuns.getFirst();
+        var firstRun = affectedRuns.getFirst();
         var firstRunPr = firstRun.getPr();
         return Optional.ofNullable(firstRunPr);
     }
 
-    public static List<Object> replace(ContentAccessor contentAccessor, Object replacement, int startIndex, int endIndex) {
-        var runs = StandardRun.wrap(contentAccessor::getContent);
+    public static List<Object> replace(ContentAccessor contentAccessor, Insert insert, int startIndex, int endIndex) {
+        var runs = StandardRun.wrap(contentAccessor);
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(startIndex, endIndex))
                                .toList();
@@ -313,15 +311,16 @@ public final class WmlUtils {
             boolean expressionWithinRun = startIndex > firstRun.startIndex() && endIndex <= firstRun.endIndex();
 
             if (expressionSpansCompleteRun) {
-                firstSiblings.set(firstIndex, replacement);
+                firstRun.replace(startIndex, endIndex, "");
+                firstSiblings.addAll(firstIndex, insert.elements());
             }
             else if (expressionAtStartOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.add(firstIndex, replacement);
+                firstSiblings.addAll(firstIndex, insert.elements());
             }
             else if (expressionAtEndOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.add(firstIndex + 1, replacement);
+                firstSiblings.addAll(firstIndex + 1, insert.elements());
             }
             else if (expressionWithinRun) {
                 var originalRun = firstRun.run();
@@ -329,19 +328,19 @@ public final class WmlUtils {
                 var newStartRun = create(firstRun.left(startIndex), originalRPr);
                 var newEndRun = create(firstRun.right(endIndex), originalRPr);
                 firstSiblings.remove(firstIndex);
-                firstSiblings.addAll(firstIndex, List.of(newStartRun, replacement, newEndRun));
+                firstSiblings.addAll(firstIndex, wrap(newStartRun, insert.elements(), newEndRun));
             }
         }
         else {
             StandardRun lastRun = affectedRuns.getLast();
             removeExpression(firstSiblings, firstRun, startIndex, endIndex, lastRun, affectedRuns);
             // add replacement run between first and last run
-            firstSiblings.add(firstIndex + 1, replacement);
+            firstSiblings.addAll(firstIndex + 1, insert.elements());
         }
         return new ArrayList<>(contentAccessor.getContent());
     }
 
-    /// Creates a new run with the specified text and the specified run style.
+    /// Creates a new run with the specified text, and the specified run style.
     ///
     /// @param text the initial text of the run.
     ///
@@ -350,6 +349,14 @@ public final class WmlUtils {
         R newStartRun = newRun(text);
         newStartRun.setRPr(rPr);
         return newStartRun;
+    }
+
+    private static Collection<?> wrap(R prefix, Collection<?> elements, R suffix) {
+        var merge = new ArrayList<>();
+        merge.add(prefix);
+        merge.addAll(elements);
+        merge.add(suffix);
+        return merge;
     }
 
     private static void removeExpression(
@@ -397,7 +404,7 @@ public final class WmlUtils {
 
     /// Sets the text of the given run to the given value.
     ///
-    /// @param run  the run whose text to change.
+    /// @param run the run whose text to change.
     /// @param text the text to set.
     public static void setText(R run, String text) {
         run.getContent()
@@ -407,7 +414,11 @@ public final class WmlUtils {
            .add(textObj);
     }
 
-    public static List<Object> replaceExpressionWithRun(ContentAccessor contentAccessor, String expression, R run) {
+    public static List<Object> replaceExpressionWithRun(
+            ContentAccessor contentAccessor,
+            String expression,
+            Insert insert
+    ) {
         var text = asString(contentAccessor);
         int matchStartIndex = text.indexOf(expression);
         if (matchStartIndex == -1) {
@@ -415,7 +426,7 @@ public final class WmlUtils {
             return new ArrayList<>(contentAccessor.getContent());
         }
         int matchEndIndex = matchStartIndex + expression.length();
-        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(run::setRPr);
-        return replace(contentAccessor, run, matchStartIndex, matchEndIndex);
+        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(insert::setRPr);
+        return replace(contentAccessor, insert, matchStartIndex, matchEndIndex);
     }
 }

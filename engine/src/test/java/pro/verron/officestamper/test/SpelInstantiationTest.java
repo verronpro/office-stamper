@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.preset.EvaluationContextConfigurers.noopConfigurer;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
+import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 
@@ -25,8 +25,8 @@ class SpelInstantiationTest {
     @MethodSource("factories")
     @ParameterizedTest
     void testDateInstantiationAndResolution(ContextFactory factory) {
-        var stamperConfiguration = standardWithPreprocessing().setEvaluationContextConfigurer(noopConfigurer());
-        var stamper = new TestDocxStamper<>(stamperConfiguration);
+        var configuration = full().setEvaluationContextFactory(noopFactory());
+        var stamper = new TestDocxStamper<>(configuration);
         var templateStream = TestUtils.getResource(Path.of("date.docx"));
         var context = factory.empty();
         var actual = stamper.stampAndLoadAndExtract(templateStream, context);

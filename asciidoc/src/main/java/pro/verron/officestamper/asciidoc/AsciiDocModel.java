@@ -1,0 +1,105 @@
+package pro.verron.officestamper.asciidoc;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Represents a minimal in-memory model of an AsciiDoc document.
+ * <p>
+ * This model intentionally supports a compact subset sufficient for rendering to WordprocessingML and JavaFX Scene: -
+ * Headings (levels 1..6) using leading '=' markers - Paragraphs separated by blank lines - Inline emphasis for bold and
+ * italic using AsciiDoc-like markers: *bold*, _italic_
+ */
+public final class AsciiDocModel {
+    private final List<Block> blocks;
+
+    private AsciiDocModel(List<Block> blocks) {
+        this.blocks = List.copyOf(blocks);
+    }
+
+    /**
+     * Creates a new {@link AsciiDocModel} from the provided blocks.
+     *
+     * @param blocks ordered content blocks
+     *
+     * @return immutable AsciiDocModel
+     */
+    public static AsciiDocModel of(List<Block> blocks) {
+        Objects.requireNonNull(blocks, "blocks");
+        return new AsciiDocModel(new ArrayList<>(blocks));
+    }
+
+    /**
+     * Returns the ordered list of blocks comprising the document.
+     *
+     * @return immutable list of blocks
+     */
+    public List<Block> getBlocks() {
+        return blocks;
+    }
+
+    /** Marker interface for document blocks. */
+    public sealed interface Block
+            permits Heading, Paragraph {}
+
+    /** Inline fragment inside a paragraph/heading. */
+    public sealed interface Inline
+            permits Text, Bold, Italic {
+        String text();
+    }
+
+    /** Heading block (levels 1..6). */
+        public record Heading(int level, List<Inline> inlines)
+                implements Block {
+            public Heading(int level, List<Inline> inlines) {
+                if (level < 1 || level > 6) {
+                    throw new IllegalArgumentException("Heading level must be between 1 and 6");
+                }
+                this.level = level;
+                this.inlines = List.copyOf(inlines);
+            }
+        }
+
+    /** Paragraph block. */
+        public record Paragraph(List<Inline> inlines)
+                implements Block {
+            public Paragraph(List<Inline> inlines) {
+                this.inlines = List.copyOf(inlines);
+            }
+        }
+
+    public record Text(String text)
+                implements Inline {
+    }
+
+    /** Bold inline that can contain nested inlines. */
+    public record Bold(List<Inline> children)
+                implements Inline {
+        public Bold(List<Inline> children) {
+            this.children = List.copyOf(children);
+        }
+
+        @Override
+        public String text() {
+            StringBuilder sb = new StringBuilder();
+            for (Inline in : children) sb.append(in.text());
+            return sb.toString();
+        }
+    }
+
+    /** Italic inline that can contain nested inlines. */
+    public record Italic(List<Inline> children)
+                implements Inline {
+        public Italic(List<Inline> children) {
+            this.children = List.copyOf(children);
+        }
+
+        @Override
+        public String text() {
+            StringBuilder sb = new StringBuilder();
+            for (Inline in : children) sb.append(in.text());
+            return sb.toString();
+        }
+    }
+}

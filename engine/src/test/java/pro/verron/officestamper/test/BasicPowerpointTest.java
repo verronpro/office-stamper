@@ -3,6 +3,7 @@ package pro.verron.officestamper.test;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -14,8 +15,9 @@ import static pro.verron.officestamper.preset.ExperimentalStampers.pptxStamper;
 import static pro.verron.officestamper.test.IOStreams.getInputStream;
 import static pro.verron.officestamper.test.IOStreams.getOutputStream;
 
-class BasicPowerpointTest {
+@DisplayName("Basic Powerpoint Test") class BasicPowerpointTest {
     @Test
+    @DisplayName("Should stamp a PowerPoint document")
     void testStamper()
             throws IOException, Docx4JException {
         var stamper = pptxStamper();
@@ -28,9 +30,8 @@ class BasicPowerpointTest {
         InputStream inputStream = getInputStream(outputStream);
         PresentationMLPackage presentationMLPackage = PresentationMLPackage.load(inputStream);
         Assertions.assertEquals("""
-                        Hello
-                        Bart
-                        """,
-                Stringifier.stringifyPowerpoint(presentationMLPackage));
+                Hello
+                Bart
+                """, Stringifier.stringifyPowerpoint(presentationMLPackage));
     }
 }

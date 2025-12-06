@@ -1,5 +1,6 @@
 package pro.verron.officestamper.preset;
 
+import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.DocxStamper;
@@ -20,21 +21,30 @@ import static java.time.format.FormatStyle.valueOf;
 import static java.util.Locale.forLanguageTag;
 
 
-/// The OfficeStamperConfigurations class provides static methods
-/// to create different configurations for the OfficeStamper.
+/// Utility class providing factory methods for various pre-configured instances of [OfficeStamperConfiguration].
+///
+/// These configurations range from minimal to fully-featured, catering to different use cases for processing Office
+/// documents.
 public class OfficeStamperConfigurations {
 
-
     private OfficeStamperConfigurations() {
-        throw new OfficeStamperException("OfficeStamperConfigurations cannot be instantiated");
+        throw new OfficeStamperException("Utility class should not be instantiated");
     }
 
-    /// Creates a new OfficeStamperConfiguration with the standard configuration and additional preprocessors.
+    /// Creates a full [OfficeStamperConfiguration] with standard configurations, supplemented with additional pre and
+    /// post-processors for enhanced document handling.
     ///
-    /// @return the OfficeStamperConfiguration
+    /// This configuration includes preprocessors to:
+    /// - Remove language proof markings.
+    /// - Remove language information.
+    /// - Merge similar text runs.
     ///
-    /// @see OfficeStamperConfiguration
-    public static OfficeStamperConfiguration standardWithPreprocessing() {
+    /// It also includes postprocessors to:
+    /// - Remove orphaned footnotes.
+    /// - Remove orphaned endnotes.
+    ///
+    /// @return a fully configured [OfficeStamperConfiguration] instance with the additional processors applied.
+    public static OfficeStamperConfiguration full() {
         var configuration = standard();
         configuration.addPreprocessor(Preprocessors.removeLanguageProof());
         configuration.addPreprocessor(Preprocessors.removeLanguageInfo());
@@ -44,21 +54,44 @@ public class OfficeStamperConfigurations {
         return configuration;
     }
 
-    /// Creates a new standard OfficeStamperConfiguration.
+    /// Creates a standard [OfficeStamperConfiguration] instance with predefined settings.
     ///
-    /// @return the standard OfficeStamperConfiguration
+    /// The configuration is extended with custom comment processing, resolvers, and additional preprocessors.
+    ///
+    /// It sets up a fallback resolver with the default value of a newline character ("`\n`") to handle placeholder
+    /// resolution.
+    ///
+    /// @return a standard [OfficeStamperConfiguration] instance with pre-configured resolvers and processors
     public static OfficeStamperConfiguration standard() {
+        var fallback = Resolvers.fallback("\n");
+        return standard(fallback);
+    }
+
+    /// Creates a standard [OfficeStamperConfiguration] instance with a set of predefined comment processors, resolvers,
+    /// and preprocessors.
+    ///
+    /// The configuration is extended with custom functions for date and time formatting, and permits the provision of a
+    /// custom fallback resolver.
+    ///
+    /// @param fallback an [ObjectResolver] to serve as the additional fallback resolver for this
+    ///         configuration.
+    ///
+    /// @return a configured [OfficeStamperConfiguration] object implementing standard processing and formatting
+    ///         behaviors
+    public static OfficeStamperConfiguration standard(ObjectResolver fallback) {
         var configuration = new DocxStamperConfiguration();
 
         configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance);
         configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance);
         configuration.addCommentProcessor(IRepeatDocPartProcessor.class,
-                pr -> RepeatDocPartProcessor.newInstance(pr,
-                        (template, context, output) -> new DocxStamper(configuration)
-                                .stamp(template, context, output)));
+                processorContext -> RepeatDocPartProcessor.newInstance(processorContext,
+                        (template, context, output) -> new DocxStamper(configuration).stamp(template,
+                                context,
+                                output)));
         configuration.addCommentProcessor(ITableResolver.class, TableResolver::newInstance);
         configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance);
-        configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::newInstance);
+        configuration.addCommentProcessor(IReplaceWithProcessor.class,
+                processorContext -> ReplaceWithProcessor.newInstance(processorContext));
 
         configuration.setResolvers(List.of(Resolvers.image(),
                 Resolvers.legacyDate(),
@@ -66,66 +99,79 @@ public class OfficeStamperConfigurations {
                 Resolvers.isoTime(),
                 Resolvers.isoDateTime(),
                 Resolvers.nullToEmpty(),
-                Resolvers.fallback()));
+                fallback));
 
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
-
-        configuration.addCustomFunction("ftime", TemporalAccessor.class)
-                     .withImplementation(ISO_TIME::format);
-        configuration.addCustomFunction("fdate", TemporalAccessor.class)
-                     .withImplementation(ISO_DATE::format);
-        configuration.addCustomFunction("fdatetime", TemporalAccessor.class)
-                     .withImplementation(ISO_DATE_TIME::format);
-        configuration.addCustomFunction("finstant", TemporalAccessor.class)
-                     .withImplementation(ISO_INSTANT::format);
-        configuration.addCustomFunction("fordinaldate", TemporalAccessor.class)
-                     .withImplementation(ISO_ORDINAL_DATE::format);
-        configuration.addCustomFunction("f1123datetime", TemporalAccessor.class)
-                     .withImplementation(RFC_1123_DATE_TIME::format);
-        configuration.addCustomFunction("flocaldate", TemporalAccessor.class)
-                     .withImplementation(ISO_LOCAL_DATE::format);
-        configuration.addCustomFunction("fbasicdate", TemporalAccessor.class)
-                     .withImplementation(BASIC_ISO_DATE::format);
-        configuration.addCustomFunction("fweekdate", TemporalAccessor.class)
-                     .withImplementation(ISO_WEEK_DATE::format);
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "processor"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
         var fLocalDateTime = "flocaldatetime";
-        configuration.addCustomFunction(fLocalDateTime, TemporalAccessor.class)
-                     .withImplementation(ISO_LOCAL_DATE_TIME::format);
-        configuration.addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedDateTime(valueOf(style)).format(date));
-        configuration.addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class, String.class)
+        configuration.addCustomFunction("ftime", TemporalAccessor.class)
+                     .withImplementation(ISO_TIME::format)
+                     .addCustomFunction("fdate", TemporalAccessor.class)
+                     .withImplementation(ISO_DATE::format)
+                     .addCustomFunction("fdatetime", TemporalAccessor.class)
+                     .withImplementation(ISO_DATE_TIME::format)
+                     .addCustomFunction("finstant", TemporalAccessor.class)
+                     .withImplementation(ISO_INSTANT::format)
+                     .addCustomFunction("fordinaldate", TemporalAccessor.class)
+                     .withImplementation(ISO_ORDINAL_DATE::format)
+                     .addCustomFunction("f1123datetime", TemporalAccessor.class)
+                     .withImplementation(RFC_1123_DATE_TIME::format)
+                     .addCustomFunction("flocaldate", TemporalAccessor.class)
+                     .withImplementation(ISO_LOCAL_DATE::format)
+                     .addCustomFunction("fbasicdate", TemporalAccessor.class)
+                     .withImplementation(BASIC_ISO_DATE::format)
+                     .addCustomFunction("fweekdate", TemporalAccessor.class)
+                     .withImplementation(ISO_WEEK_DATE::format)
+                     .addCustomFunction(fLocalDateTime, TemporalAccessor.class)
+                     .withImplementation(ISO_LOCAL_DATE_TIME::format)
+                     .addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class)
+                     .withImplementation((date, style) -> ofLocalizedDateTime(valueOf(style)).format(date))
+                     .addCustomFunction(fLocalDateTime, TemporalAccessor.class, String.class, String.class)
                      .withImplementation((date, dateStyle, timeStyle) -> ofLocalizedDateTime(valueOf(dateStyle),
-                             valueOf(timeStyle)).format(date));
-        configuration.addCustomFunction("foffsetdatetime", TemporalAccessor.class)
-                     .withImplementation(ISO_OFFSET_DATE_TIME::format);
-        configuration.addCustomFunction("fzoneddatetime", TemporalAccessor.class)
-                     .withImplementation(ISO_ZONED_DATE_TIME::format);
-        configuration.addCustomFunction("foffsetdate", TemporalAccessor.class)
-                     .withImplementation(ISO_OFFSET_DATE::format);
-        configuration.addCustomFunction("flocaltime", TemporalAccessor.class)
-                     .withImplementation(ISO_LOCAL_TIME::format);
-        configuration.addCustomFunction("foffsettime", TemporalAccessor.class)
-                     .withImplementation(ISO_OFFSET_TIME::format);
-        configuration.addCustomFunction("flocaldate", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedDate(valueOf(style)).format(date));
-        configuration.addCustomFunction("flocaltime", TemporalAccessor.class, String.class)
-                     .withImplementation((date, style) -> ofLocalizedTime(valueOf(style)).format(date));
-        configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class)
-                     .withImplementation((date, pattern) -> ofPattern(pattern).format(date));
-        configuration.addCustomFunction("fpattern", TemporalAccessor.class, String.class, String.class)
-                     .withImplementation((date, pattern, locale) -> ofPattern(pattern, forLanguageTag(locale))
-                             .format(date));
+                             valueOf(timeStyle)).format(date))
+                     .addCustomFunction("foffsetdatetime", TemporalAccessor.class)
+                     .withImplementation(ISO_OFFSET_DATE_TIME::format)
+                     .addCustomFunction("fzoneddatetime", TemporalAccessor.class)
+                     .withImplementation(ISO_ZONED_DATE_TIME::format)
+                     .addCustomFunction("foffsetdate", TemporalAccessor.class)
+                     .withImplementation(ISO_OFFSET_DATE::format)
+                     .addCustomFunction("flocaltime", TemporalAccessor.class)
+                     .withImplementation(ISO_LOCAL_TIME::format)
+                     .addCustomFunction("foffsettime", TemporalAccessor.class)
+                     .withImplementation(ISO_OFFSET_TIME::format)
+                     .addCustomFunction("flocaldate", TemporalAccessor.class, String.class)
+                     .withImplementation((date, style) -> ofLocalizedDate(valueOf(style)).format(date))
+                     .addCustomFunction("flocaltime", TemporalAccessor.class, String.class)
+                     .withImplementation((date, style) -> ofLocalizedTime(valueOf(style)).format(date))
+                     .addCustomFunction("fpattern", TemporalAccessor.class, String.class)
+                     .withImplementation((date, pattern) -> ofPattern(pattern).format(date))
+                     .addCustomFunction("fpattern", TemporalAccessor.class, String.class, String.class)
+                     .withImplementation((date, pattern, locale) -> ofPattern(pattern, forLanguageTag(locale)).format(
+                             date));
         return configuration;
     }
 
-    /// Creates a new standard OfficeStamperConfiguration.
+    /// Creates a [OfficeStamperConfiguration] instance without any configuration or resolvers, processors,
+    /// preprocessors or postprocessors applied.
     ///
-    /// @return the standard OfficeStamperConfiguration
+    /// @return a basic [OfficeStamperConfiguration] instance with no extra configurations
     public static OfficeStamperConfiguration raw() {
+        return new DocxStamperConfiguration();
+    }
+
+    /// Creates a minimal [OfficeStamperConfiguration] instance with essential settings to provide basic placeholder
+    /// processing and fallback resolvers.
+    ///
+    /// This configuration includes:
+    /// - A fallback resolver with a default value of a newline character ("`\n`").
+    /// - A placeholder preprocessor that prepares placeholders matching a specific pattern.
+    ///
+    /// @return a minimally configured [OfficeStamperConfiguration] instance
+    public static OfficeStamperConfiguration minimal() {
         var configuration = new DocxStamperConfiguration();
-        configuration.resetResolvers();
-        configuration.setEvaluationContextConfigurer(EvaluationContextConfigurers.defaultConfigurer());
-        configuration.resetCommentProcessors();
+        configuration.addResolver(Resolvers.fallback("\n"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
         return configuration;
     }
 }

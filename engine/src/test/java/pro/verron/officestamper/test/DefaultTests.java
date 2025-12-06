@@ -7,10 +7,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
-import pro.verron.officestamper.preset.EvaluationContextConfigurers;
 import pro.verron.officestamper.preset.ExceptionResolvers;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 
 import java.io.InputStream;
@@ -20,17 +20,13 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
+import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standardWithPreprocessing;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
 
-/// DefaultTests class.
-///
-/// @author Joseph Verron
-/// @version ${version}
-/// @since 1.6.6
 @DisplayName("Core Features") class DefaultTests {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
@@ -53,7 +49,6 @@ import static pro.verron.officestamper.test.TestUtils.*;
             pipe.accept(lineBreakReplacementTest(factory));
             pipe.accept(mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(factory));
             pipe.accept(nullPointerResolutionTest_testWithDefaultSpel(factory));
-            pipe.accept(customCommentProcessor(factory));
             pipe.accept(controls(factory));
         }), Stream.of(nullPointerResolutionTest_testWithCustomSpel(ContextFactory.objectContextFactory())));
     }
@@ -78,19 +73,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments replaceWordWithIntegrationTest(ContextFactory factory) {
         return of("Replace Word With integration test",
-                OfficeStamperConfigurations.standardWithPreprocessing(),
+                full(),
                 factory.name("Simpsons"),
                 getResource(Path.of("ProcessorReplaceWith.docx")),
                 """
-                        == ReplaceWordWith Integration
-                        
-                        This variable name should be resolved to the value Simpsons.
-                        |===
-                        |This variable name should be resolved to the value Simpsons.
-                        
-                        
-                        |===
-                        
                         == ReplaceWith Integration
                         
                         This variable name should be resolved to the value Simpsons.
@@ -136,10 +122,11 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 This paragraph stays untouched.
                 The variable foo has the value bar.
                 """;
-        var config =
-                standard().setEvaluationContextConfigurer(evalContext -> evalContext.addPropertyAccessor(new SimpleGetter(
-                        "foo",
-                        "bar")));
+        var config = standard().setEvaluationContextFactory(evalContext -> {
+            var evaluationContext = new StandardEvaluationContext(evalContext);
+            evaluationContext.addPropertyAccessor(new SimpleGetter("foo", "bar"));
+            return evaluationContext;
+        });
 
         return arguments("customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored",
                 config,
@@ -258,10 +245,10 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 This paragraph is untouched.
                 In this paragraph, the variable name should be resolved to the value Homer Simpson.
-                In this paragraph, the variable foo should not be resolved: <1|unresolvedValueWithComment|1><1|replaceWordWith(foo)>.
+                In this paragraph, the variable foo should not be resolved: <1|unresolvedValueWithComment|1><1|replaceWith(foo)>.
                 """;
-        var config = standardWithPreprocessing().setExceptionResolver(ExceptionResolvers.passing());
-        return arguments("Replace Word With Integration test", config, context, template, expected);
+        var configuration = full().setExceptionResolver(ExceptionResolvers.passing());
+        return arguments("Replace Word With Integration test", configuration, context, template, expected);
     }
 
     /// testDateInstantiationAndResolution.
@@ -308,16 +295,17 @@ import static pro.verron.officestamper.test.TestUtils.*;
     }
 
     private static Arguments lineBreakReplacementTest(ContextFactory factory) {
-        var config = standard().setLineBreakPlaceholder("#");
-        var context = factory.name(null);
-        var template = getResource(Path.of("LineBreakReplacementTest.docx"));
+        var config = standard(Resolvers.fallback("#"));
+        var context = factory.sentence("whatever # split in # three lines");
+        var template = makeResource("""
+                This paragraph should not be # split.
+                This paragraph should have a split input: ${sentence}.
+                """);
         var expected = """
-                Line Break Replacement
-                This paragraph is untouched.
-                This paragraph should be <br/>
+                This paragraph should not be # split.
+                This paragraph should have a split input: whatever <br/>
                  split in <br/>
                  three lines.
-                This paragraph is untouched.
                 """;
         return arguments("lineBreakReplacementTest", config, context, template, expected);
     }
@@ -351,8 +339,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 """;
 
         var defaultValue = "N/C";
-        var config = standard().setLineBreakPlaceholder("\n")
-                               .addResolver(Resolvers.nullToDefault(defaultValue))
+        var config = standard().addResolver(Resolvers.nullToDefault(defaultValue))
                                .setExceptionResolver(ExceptionResolvers.defaulting(defaultValue));
 
         return arguments("Should be able to stamp from a Map<String, Object> context",
@@ -383,20 +370,6 @@ import static pro.verron.officestamper.test.TestUtils.*;
         var config = standard().setExceptionResolver(ExceptionResolvers.passing());
 
         return arguments("nullPointerResolutionTest_testWithDefaultSpel", config, context, template, expected);
-    }
-
-    private static Arguments customCommentProcessor(ContextFactory factory) {
-        return arguments("Custom processor Integration test",
-                standard().addCommentProcessor(ICustomCommentProcessor.class, ProcessorCustomTest::new),
-                factory.empty(),
-                getResource(Path.of("CustomCommentProcessorTest.docx")),
-                """     
-                        == Custom Comment Processor Test
-                        
-                        Visited
-                        This paragraph is untouched.
-                        Visited
-                        """);
     }
 
     private static Arguments controls(ContextFactory factory) {
@@ -436,8 +409,8 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
         // Beware, this configuration only autogrows pojos and java beans,
         // so it will not work if your type has no default constructor and no setters.
-        var config = standard().setSpelParserConfiguration(new SpelParserConfiguration(true, true))
-                               .setEvaluationContextConfigurer(EvaluationContextConfigurers.noopConfigurer())
+        var config = standard().setExpressionParser(new SpelExpressionParser(new SpelParserConfiguration(true, true)))
+                               .setEvaluationContextFactory(noopFactory())
                                .addResolver(Resolvers.nullToDefault("Nullish value!!"));
 
         return arguments("nullPointerResolutionTest_testWithCustomSpel", config, context, template, expected);

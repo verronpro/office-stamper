@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pro.verron.officestamper.test.Functions.UppercaseFunction;
 
 import java.math.BigDecimal;
 import java.nio.file.Path;
@@ -17,39 +16,44 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.minimal;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
-@DisplayName("Custom functions") class CustomFunctionTests {
+@DisplayName("Custom function features") class CustomFunctionTests {
 
-    static Stream<Arguments> factories() {
-        return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
+    private static Stream<Arguments> factories() {
+        return Stream.of(//
+                argumentSet("Object-based", objectContextFactory()),//
+                argumentSet("Map-based", mapContextFactory())//
+        );
     }
 
     static Stream<Arguments> trifunctions() {
-        return Stream.of(arguments(objectContextFactory(), "ZH", "2024 四月"),
-                arguments(objectContextFactory(), "FR", "2024 avril"),
-                arguments(objectContextFactory(), "EN", "2024 April"),
-                arguments(objectContextFactory(), "JA", "2024 4月"),
-                arguments(objectContextFactory(), "HE", "2024 אפריל"),
-                arguments(objectContextFactory(), "IT", "2024 aprile"),
-                arguments(mapContextFactory(), "ZH", "2024 四月"),
-                arguments(mapContextFactory(), "FR", "2024 avril"),
-                arguments(mapContextFactory(), "EN", "2024 April"),
-                arguments(mapContextFactory(), "JA", "2024 4月"),
-                arguments(mapContextFactory(), "HE", "2024 אפריל"),
-                arguments(mapContextFactory(), "IT", "2024 aprile"));
+        return Stream.of(//
+                argumentSet("Object-based, Chinese", objectContextFactory(), "ZH", "2024 四月"),
+                argumentSet("Object-based, French", objectContextFactory(), "FR", "2024 avril"),
+                argumentSet("Object-based, English", objectContextFactory(), "EN", "2024 April"),
+                argumentSet("Object-based, Japanese", objectContextFactory(), "JA", "2024 4月"),
+                argumentSet("Object-based, Hebrew", objectContextFactory(), "HE", "2024 אפריל"),
+                argumentSet("Object-based, Italian", objectContextFactory(), "IT", "2024 aprile"),
+                argumentSet("Map-based, Chinese", mapContextFactory(), "ZH", "2024 四月"),
+                argumentSet("Map-based, French", mapContextFactory(), "FR", "2024 avril"),
+                argumentSet("Map-based, English", mapContextFactory(), "EN", "2024 April"),
+                argumentSet("Map-based, Japanese", mapContextFactory(), "JA", "2024 4月"),
+                argumentSet("Map-based, Hebrew", mapContextFactory(), "HE", "2024 אפריל"),
+                argumentSet("Map-based, Italian", mapContextFactory(), "IT", "2024 aprile"));
     }
 
-    @DisplayName("Should allow to inject full interfaces")
     @MethodSource("factories")
-    @ParameterizedTest
+    @DisplayName("Should allow to inject full interfaces")
+    @ParameterizedTest(name = "Should allow to inject full interfaces ({argumentSetName})")
     void interfaces(ContextFactory factory) {
-        var config = standard().exposeInterfaceToExpressionLanguage(UppercaseFunction.class, Functions.upperCase());
+        var config = standard().exposeInterfaceToExpressionLanguage(UppercaseFunction.class,
+                (UppercaseFunction) String::toUpperCase);
         var template = getResource(Path.of("CustomExpressionFunction.docx"));
         var context = factory.show();
         var stamper = new TestDocxStamper<>(config);
@@ -92,13 +96,12 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         assertEquals(expected, actual);
     }
 
-    @DisplayName("Should allow to inject lambda functions")
     @MethodSource("factories")
-    @ParameterizedTest
+    @DisplayName("Should allow to inject lambda functions")
+    @ParameterizedTest(name = "Should allow to inject lambda functions ({argumentSetName})")
     void functions(ContextFactory factory) {
-        var config = standard();
-        config.addCustomFunction("toUppercase", String.class)
-              .withImplementation(String::toUpperCase);
+        var config = standard().addCustomFunction("toUppercase", String.class)
+                               .withImplementation(String::toUpperCase);
         var template = makeResource("${toUppercase(name)}");
         var context = factory.show();
         var stamper = new TestDocxStamper<>(config);
@@ -109,9 +112,9 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         assertEquals(expected, actual);
     }
 
-    @DisplayName("Should allow to inject lambda suppliers.")
     @MethodSource("factories")
-    @ParameterizedTest
+    @DisplayName("Should allow to inject lambda suppliers")
+    @ParameterizedTest(name = "Should allow to inject lambda suppliers ({argumentSetName})")
     void suppliers(ContextFactory factory) {
         var config = standard();
         config.addCustomFunction("foo", () -> List.of("a", "b", "c"));
@@ -125,9 +128,9 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         assertEquals(expected, actual);
     }
 
-    @DisplayName("Should allow to inject lambda suppliers.")
     @MethodSource("factories")
-    @ParameterizedTest
+    @DisplayName("Should allow to inject lambda bifunctions.")
+    @ParameterizedTest(name = "Should allow to inject lambda bifunctions. ({argumentSetName})")
     void bifunctions(ContextFactory factory) {
         var config = standard();
         config.addCustomFunction("Add", String.class, Integer.class)
@@ -140,21 +143,30 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         assertEquals(expected, actual);
     }
 
-    @DisplayName("Should allow to inject lambda trifunctions.")
-    @MethodSource
-    @ParameterizedTest
+    @MethodSource("trifunctions")
+    @DisplayName("Should allow to inject lambda trifunctions")
+    @ParameterizedTest(name = "Should allow to inject lambda trifunctions ({argumentSetName})")
     void trifunctions(ContextFactory factory, String tag, String expected) {
-        var config = standard();
-        config.addCustomFunction("format", LocalDate.class, String.class, String.class)
-              .withImplementation((date, pattern, languageTag) -> {
-                  var locale = Locale.forLanguageTag(languageTag);
-                  var formatter = DateTimeFormatter.ofPattern(pattern, locale);
-                  return formatter.format(date);
-              });
+        var config = minimal().addCustomFunction("format", LocalDate.class, String.class, String.class)
+                              .withImplementation((date, pattern, languageTag) -> {
+                                  var locale = Locale.forLanguageTag(languageTag);
+                                  var formatter = DateTimeFormatter.ofPattern(pattern, locale);
+                                  return formatter.format(date);
+                              });
         var template = makeResource("${format(date,'yyyy MMMM','%s')}".formatted(tag));
         var context = factory.date(LocalDate.of(2024, Month.APRIL, 1));
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected + "\n", actual);
+    }
+
+    /// The UppercaseFunction interface defines a method for converting a string to uppercase.
+    public interface UppercaseFunction {
+        /// Converts the given string to uppercase.
+        ///
+        /// @param string the string to be converted to uppercase
+        ///
+        /// @return the uppercase representation of the given string
+        String toUppercase(String string);
     }
 }

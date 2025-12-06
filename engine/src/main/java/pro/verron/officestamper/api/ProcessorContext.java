@@ -1,19 +1,25 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.R;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import pro.verron.officestamper.core.ContextBranch;
 
-/// Represents the context in which a processor operates in a text document.
-/// Contains information about the paragraph, run, comment, and placeholder being processed.
+/// Represents a context within a document processing operation.
 ///
-/// @param paragraph   The paragraph associated with this context.
-/// @param run         The run object representing a run of text.
-/// @param comment     The comment associated with this context.
-/// @param placeholder The placeholder being processed in this context.
+/// This class encapsulates key elements involved in the processing of a specific part of a
+/// [WordprocessingMLPackage]-based document, such as a part of the document, a specific paragraph, an associated
+/// comment, and an expression being evaluated or processed.
+///
+/// The [ProcessorContext] provides structured access to these elements, enabling seamless document traversal,
+/// manipulation, and analysis during processing workflows.
+///
+/// @param part The [DocxPart] representing a specific part of the document being processed.
+/// @param paragraph The [Paragraph] associated with the processing context.
+/// @param comment The [Comment] that is relevant to the current processing context.
+/// @param expression A [String] containing the expression or directive being evaluated.
 public record ProcessorContext(
+        DocxPart part,
         Paragraph paragraph,
-        /// @deprecated This method was only used by the "replaceWith" processor, which now can manage multiple runs at
-        /// once, making this single-run tracking method obsolete
-        @Deprecated(since = "2.10", forRemoval = true) R run, //
-        Comment comment, //
-        Placeholder placeholder
+        Comment comment,
+        String expression,
+        ContextBranch branch
 ) {}

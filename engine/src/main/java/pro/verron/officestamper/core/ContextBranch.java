@@ -1,0 +1,39 @@
+package pro.verron.officestamper.core;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ContextBranch {
+    private final ContextTree tree;
+    private final List<Object> branch;
+
+    public ContextBranch(ContextTree tree, Object root) {
+        this(tree, List.of(root));
+    }
+
+    public ContextBranch(ContextTree tree, List<Object> branch) {
+        this.tree = tree;
+        this.branch = branch;
+    }
+
+    public String add(Object object) {
+        var newBranch = new ArrayList<>(branch);
+        newBranch.add(object);
+        var contextBranch = new ContextBranch(tree, newBranch);
+        return tree.add(contextBranch);
+    }
+
+    public Object root() {
+        return branch.getLast();
+    }
+
+    public List<Object> list() {
+        return List.copyOf(branch)
+                   .reversed();
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(branch.getLast());
+    }
+}

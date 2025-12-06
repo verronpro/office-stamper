@@ -8,7 +8,10 @@ import org.docx4j.wml.R;
 import org.docx4j.wml.SectPr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.springframework.lang.Nullable;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.DocumentUtil;
 import pro.verron.officestamper.core.SectionUtil;
@@ -25,90 +28,77 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static pro.verron.officestamper.core.DocumentUtil.walkObjectsAndImportImages;
 import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakIfPresent;
 
-/// This class is responsible for processing the &lt;ds: repeat&gt; tag.
-/// It uses the [OfficeStamper] to stamp the sub document and then
-/// copies the resulting sub document to the correct position in the
-/// main document.
+/// This class processes the &lt;ds: repeat&gt; tag. It uses the [OfficeStamper] to stamp the sub document and then
+/// copies the resulting sub document to the correct position in the main document.
 ///
 /// @author Joseph Verron
 /// @author Youssouf Naciri
 /// @version ${version}
 /// @since 1.3.0
 public class RepeatDocPartProcessor
-        extends AbstractCommentProcessor
+        extends CommentProcessor
         implements CommentProcessorFactory.IRepeatDocPartProcessor {
     private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
 
     private final OfficeStamper<WordprocessingMLPackage> stamper;
-    private final Map<Comment, Iterable<Object>> contexts = new HashMap<>();
-    private final Supplier<? extends List<?>> nullSupplier;
 
-    private RepeatDocPartProcessor(
-            ParagraphPlaceholderReplacer placeholderReplacer,
-            OfficeStamper<WordprocessingMLPackage> stamper,
-            Supplier<? extends List<?>> nullSupplier
-    ) {
-        super(placeholderReplacer);
+    private RepeatDocPartProcessor(ProcessorContext processorContext, OfficeStamper<WordprocessingMLPackage> stamper) {
+        super(processorContext);
         this.stamper = stamper;
-        this.nullSupplier = nullSupplier;
     }
 
     /// newInstance.
     ///
-    /// @param pr      the placeholderReplacer
     /// @param stamper the stamper
     ///
     /// @return a new instance of this processor
     public static CommentProcessor newInstance(
-            ParagraphPlaceholderReplacer pr, OfficeStamper<WordprocessingMLPackage> stamper
+            ProcessorContext processorContext,
+            OfficeStamper<WordprocessingMLPackage> stamper
     ) {
-        return new RepeatDocPartProcessor(pr, stamper, Collections::emptyList);
+        return new RepeatDocPartProcessor(processorContext, stamper);
     }
 
     /// {@inheritDoc}
-    @Override public void repeatDocPart(@Nullable Iterable<Object> contexts) {
-        if (contexts == null) contexts = Collections.emptyList();
-
-        Comment currentComment = getCurrentCommentWrapper();
-        List<Object> elements = currentComment.getElements();
-
-        if (!elements.isEmpty()) {
-            this.contexts.put(currentComment, contexts);
-        }
-    }
-
-    /// {@inheritDoc}
-    @Override public void commitChanges(DocxPart source) {
-        for (Map.Entry<Comment, Iterable<Object>> entry : this.contexts.entrySet()) {
-            var comment = entry.getKey();
-            var expressionContexts = entry.getValue();
-            var gcp = requireNonNull(comment.getParent());
-            var repeatElements = comment.getElements();
-            var subTemplate = CommentUtil.createSubWordDocument(comment);
-            var oddNumberOfBreaks = SectionUtil.hasOddNumberOfSectionBreaks(repeatElements);
-            var sectionBreakInserter = getPreviousSectionBreakIfPresent(repeatElements.getFirst(), gcp)
-                    .map(psb -> (UnaryOperator<List<Object>>) objs -> insertSectionBreak(objs, psb, oddNumberOfBreaks))
-                    .orElse(UnaryOperator.identity());
-            var changes = expressionContexts == null
-                    ? nullSupplier.get()
-                    : stampSubDocuments(source.document(), expressionContexts, gcp, subTemplate, sectionBreakInserter);
-            var gcpContent = gcp.getContent();
-            var index = gcpContent.indexOf(repeatElements.getFirst());
-            gcpContent.addAll(index, changes);
-            gcpContent.removeAll(repeatElements);
-        }
+    @Override
+    public void repeatDocPart(@Nullable Iterable<Object> expressionContexts) {
+        if (expressionContexts == null) return;
+        var comment = comment();
+        var elements = comment.getElements();
+        if (elements.isEmpty()) return;
+        var parent = comment.getParent();
+        var siblings = parent.getContent();
+        var context = context();
+        var part = context.part();
+        var document = part.document();
+        var firstElement = elements.getFirst();
+        var subTemplate = CommentUtil.createSubWordDocument(comment, document);
+        var oddNumberOfBreaks = SectionUtil.hasOddNumberOfSectionBreaks(elements);
+        var optionalPreviousSectionBreak = getPreviousSectionBreakIfPresent(firstElement, parent);
+        Function<SectPr, UnaryOperator<List<Object>>> function =
+                sectionBreak -> (UnaryOperator<List<Object>>) objs -> insertSectionBreak(
+                        objs,
+                        sectionBreak,
+                        oddNumberOfBreaks);
+        var sectionBreakInserter = optionalPreviousSectionBreak.map(function)
+                                                               .orElse(t -> t);
+        var changes = stampSubDocuments(document, expressionContexts, parent, subTemplate, sectionBreakInserter);
+        var index = siblings.indexOf(firstElement);
+        siblings.addAll(index, changes);
+        siblings.removeAll(elements);
     }
 
     private static List<Object> insertSectionBreak(
-            List<Object> elements, SectPr previousSectionBreak, boolean oddNumberOfBreaks
+            List<Object> elements,
+            SectPr previousSectionBreak,
+            boolean oddNumberOfBreaks
     ) {
         var inserts = new ArrayList<>(elements);
         if (oddNumberOfBreaks) {
@@ -155,7 +145,8 @@ public class RepeatDocPartProcessor
     }
 
     private List<WordprocessingMLPackage> stampSubDocuments(
-            Iterable<Object> subContexts, WordprocessingMLPackage subTemplate
+            Iterable<Object> subContexts,
+            WordprocessingMLPackage subTemplate
     ) {
         var subDocuments = new ArrayList<WordprocessingMLPackage>();
         for (Object subContext : subContexts) {
@@ -166,9 +157,7 @@ public class RepeatDocPartProcessor
         return subDocuments;
     }
 
-    private static void recursivelyReplaceImages(
-            ContentAccessor r, Map<R, R> replacements
-    ) {
+    private static void recursivelyReplaceImages(ContentAccessor r, Map<R, R> replacements) {
         Queue<ContentAccessor> q = new ArrayDeque<>();
         q.add(r);
         while (!q.isEmpty()) {
@@ -189,9 +178,7 @@ public class RepeatDocPartProcessor
         }
     }
 
-    private static void setParentIfPossible(
-            Object object, ContentAccessor parent
-    ) {
+    private static void setParentIfPossible(Object object, ContentAccessor parent) {
         if (object instanceof Child child) child.setParent(parent);
     }
 
@@ -224,9 +211,7 @@ public class RepeatDocPartProcessor
         }
     }
 
-    private void copy(
-            WordprocessingMLPackage aPackage, OutputStream outputStream
-    ) {
+    private void copy(WordprocessingMLPackage aPackage, OutputStream outputStream) {
         try {
             aPackage.save(outputStream);
         } catch (Docx4JException e) {
@@ -234,21 +219,13 @@ public class RepeatDocPartProcessor
         }
     }
 
-    private void stamp(
-            Object context, WordprocessingMLPackage template, OutputStream outputStream
-    ) {
+    private void stamp(Object context, WordprocessingMLPackage template, OutputStream outputStream) {
         stamper.stamp(template, context, outputStream);
     }
 
-    /// {@inheritDoc}
-    @Override public void reset() {
-        contexts.clear();
-    }
-
-    /// A functional interface representing runnable task able to throw an exception.
-    /// It extends the [Runnable] interface and provides default implementation
-    /// of the [Runnable#run()] method handling the exception by rethrowing it
-    /// wrapped inside a [OfficeStamperException].
+    /// A functional interface representing runnable task able to throw an exception. It extends the [Runnable]
+    /// interface and provides default implementation of the [Runnable#run()] method handling the exception by
+    /// rethrowing it wrapped inside a [OfficeStamperException].
     ///
     /// @author Joseph Verron
     /// @version ${version}
@@ -256,8 +233,8 @@ public class RepeatDocPartProcessor
     interface ThrowingRunnable
             extends Runnable {
 
-        /// Executes the runnable task, handling any exception by throwing it wrapped
-        /// inside a [OfficeStamperException].
+        /// Executes the runnable task, handling any exception by throwing it wrapped inside a
+        /// [OfficeStamperException].
         default void run() {
             try {
                 throwingRun();
@@ -273,22 +250,16 @@ public class RepeatDocPartProcessor
                 throws Exception;
     }
 
-    /// This class is responsible for capturing and handling uncaught exceptions
-    /// that occur in a thread.
-    /// It implements the [Thread.UncaughtExceptionHandler] interface and can
-    /// be assigned to a thread using the
-    /// [Thread#setUncaughtExceptionHandler(Thread.UncaughtExceptionHandler)] method.
-    /// When an exception occurs in the thread,
-    /// the [ProcessorExceptionHandler#uncaughtException(Thread, Throwable)]
-    /// method will be called.
-    /// This class provides the following features:
+    /// This class is responsible for capturing and handling uncaught exceptions that occur in a thread. It implements
+    /// the [Thread.UncaughtExceptionHandler] interface and can be assigned to a thread using the
+    /// [Thread#setUncaughtExceptionHandler(Thread.UncaughtExceptionHandler)] method. When an exception occurs in the
+    /// thread, the [ProcessorExceptionHandler#uncaughtException(Thread, Throwable)] method will be called. This class
+    /// provides the following features:
     /// 1. Capturing and storing the uncaught exception.
     /// 2. Executing a list of routines when an exception occurs.
-    /// 3. Providing access to the captured exception, if any.
-    /// Example usage:
+    /// 3. Providing access to the captured exception, if any. Example usage:
     /// <code>
-    /// ProcessorExceptionHandler exceptionHandler = new
-    /// ProcessorExceptionHandler(){};
+    /// ProcessorExceptionHandler exceptionHandler = new ProcessorExceptionHandler(){};
     /// thread.setUncaughtExceptionHandler(exceptionHandler);
     /// </code>
     ///
@@ -301,8 +272,8 @@ public class RepeatDocPartProcessor
         private final AtomicReference<Throwable> exception;
         private final List<Runnable> onException;
 
-        /// Constructs a new instance for managing thread's uncaught exceptions.
-        /// Once set to a thread, it retains the exception information and performs specified routines.
+        /// Constructs a new instance for managing thread's uncaught exceptions. Once set to a thread, it retains the
+        /// exception information and performs specified routines.
         public ProcessorExceptionHandler() {
             this.exception = new AtomicReference<>();
             this.onException = new CopyOnWriteArrayList<>();
@@ -310,15 +281,15 @@ public class RepeatDocPartProcessor
 
         /// {@inheritDoc}
         ///
-        /// Captures and stores an uncaught exception from a thread run
-        /// and executes all defined routines on occurrence of the exception.
-        @Override public void uncaughtException(Thread t, Throwable e) {
+        /// Captures and stores an uncaught exception from a thread run and executes all defined routines on occurrence
+        /// of the exception.
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
             exception.set(e);
             onException.forEach(Runnable::run);
         }
 
-        /// Adds a routine to the list of routines that should be run
-        /// when an exception occurs.
+        /// Adds a routine to the list of routines that should be run when an exception occurs.
         ///
         /// @param runnable The runnable routine to be added
         public void onException(ThrowingRunnable runnable) {
@@ -327,8 +298,8 @@ public class RepeatDocPartProcessor
 
         /// Returns the captured exception if present.
         ///
-        /// @return an [Optional] containing the captured exception,
-        /// or an [Optional#empty()] if no exception was captured
+        /// @return an [Optional] containing the captured exception, or an [Optional#empty()] if no exception was
+        ///         captured
         public Optional<Throwable> exception() {
             return Optional.ofNullable(exception.get());
         }

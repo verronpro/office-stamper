@@ -73,7 +73,7 @@
                     <plugin>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-maven</artifactId>
-                        <version>1.21.1</version>
+                        <version>1.22.0</version>
                         <configuration>
                             <jvmArgs>
                                 <jvmArg>--add-opens</jvmArg>
@@ -112,7 +112,7 @@
                     <plugin>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-maven</artifactId>
-                        <version>1.21.1</version>
+                        <version>1.22.0</version>
                     </plugin>
                 </plugins>
             </reporting>
@@ -156,12 +156,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
+                <version>3.5.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -188,7 +188,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -331,7 +331,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
-            <version>6.2.12</version>
+            <version>6.2.14</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -348,7 +348,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>6.2.12</version>
+            <version>6.2.14</version>
             <scope>test</scope>
         </dependency>
         <dependency>

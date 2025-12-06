@@ -31,7 +31,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
 
     @DisplayName("Should keep any number of spaces")
     @MethodSource
-    @ParameterizedTest
+    @ParameterizedTest(name = "Should keep any number of spaces ({argumentSetName})")
     void should_preserve_spaces(ContextFactory factory, String in, String out) {
         var config = OfficeStamperConfigurations.standard();
         var template = makeResource("Space ${name}");
@@ -39,13 +39,15 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
 
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
-        var expected = "Space %s\n".formatted(out);
+        var expected = """
+                Space %s
+                """.formatted(out);
         assertEquals(expected, actual);
     }
 
     @DisplayName("Should keep tabulations as tabulations")
     @MethodSource
-    @ParameterizedTest
+    @ParameterizedTest(name = "Should keep tabulations as tabulations ({argumentSetName})")
     void should_preserve_tabulations(ContextFactory factory) {
         var config = OfficeStamperConfigurations.standard();
         var template = makeResource("Tab|TAB|${name}");

@@ -4,10 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>pro.verron.office-stamper</groupId>
+        <artifactId>office-stamper</artifactId>
+        <version>3.0</version>
+    </parent>
+
     <name>Office-stamper engine</name>
-    <groupId>pro.verron.office-stamper</groupId>
     <artifactId>engine</artifactId>
-    <version>2.9.0</version>
+    <version>3.0</version>
 
     <description>
         Office-stamper is a Java template engine for DOCX documents
@@ -132,18 +137,6 @@
             <timezone>Beijing</timezone>
         </developer>
     </developers>
-
-    <contributors>
-        <contributor>
-            <name>Youssouf Naciri</name>
-            <email>y@naciri.fr</email>
-            <url>https://youssouf.naciri.fr</url>
-            <organization>YZ Network</organization>
-            <roles>
-                <role>Lead Developer</role>
-            </roles>
-        </contributor>
-    </contributors>
 
     <build>
         <resources>

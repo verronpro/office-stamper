@@ -7,12 +7,12 @@
     <parent>
         <groupId>pro.verron.office-stamper</groupId>
         <artifactId>office-stamper</artifactId>
-        <version>2.9.0</version>
+        <version>3.0</version>
     </parent>
 
     <name>Office-stamper AsciiDoc</name>
     <artifactId>asciidoc</artifactId>
-    <version>2.9.0</version>
+    <version>3.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -37,12 +37,10 @@
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- Optional; reserved for future advanced parsing support -->
         <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
-            <version>2.5.13</version>
-            <optional>true</optional>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 

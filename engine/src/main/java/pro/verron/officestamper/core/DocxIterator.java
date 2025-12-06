@@ -3,27 +3,28 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.docx4j.XmlUtils.unwrap;
 
-/// An iterator that allows the traversal of objects within a WordprocessingML-based document part.
-/// The iterator supports nested structures, enabling iteration over content that may have hierarchical data,
-/// like paragraphs, structured document tags (SDTs), and runs.
+/// An iterator that allows the traversal of objects within a WordprocessingML-based document part. The iterator
+/// supports nested structures, enabling iteration over content that may have hierarchical data, like paragraphs,
+/// structured document tags (SDTs), and runs.
 ///
-/// This class implements the [ResetableIterator] interface, allowing for the iteration to be reset
-/// to its initial state, ensuring reusability of the same iterator instance.
+/// This class implements the [ResetableIterator] interface, allowing for the iteration to be reset to its initial
+/// state, ensuring reusability of the same iterator instance.
 public class DocxIterator
         implements ResetableIterator<Object> {
 
     private final Supplier<Iterator<Object>> supplier;
     private Queue<Iterator<?>> iteratorQueue;
     private Object next;
+
+    private DocxIterator(ContentAccessor contentAccessor) {
+        this(contentAccessor.getContent()::iterator);
+    }
 
     private DocxIterator(Supplier<Iterator<Object>> supplier) {
         this.supplier = supplier;
@@ -33,43 +34,26 @@ public class DocxIterator
         this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
     }
 
-    /// Creates a [ResetableIterator] of [StandardParagraph] instances from the given [DocxPart].
-    /// Extracts [P] or [CTSdtContentRun] elements from the [DocxPart] and maps them to [StandardParagraph]
-    ///  objects.
-    ///
-    /// @param docxPart the [DocxPart] object from which paragraphs will be extracted
-    ///
-    /// @return a [ResetableIterator] containing the extracted and mapped [StandardParagraph] instances
-    public static ResetableIterator<StandardParagraph> ofParagraphs(DocxPart docxPart) {
-        var iterator = new DocxIterator(() -> docxPart.content()
-                                                      .iterator());
-        Predicate<Object> isParagraph = P.class::isInstance;
-        Predicate<Object> isSdtRun = CTSdtContentRun.class::isInstance;
-        var predicate = isParagraph.or(isSdtRun);
-        Function<Object, StandardParagraph> mapper = o -> switch (o) {
-            case P p -> StandardParagraph.from(docxPart, p);
-            case CTSdtContentRun ctSdtContentRun -> StandardParagraph.from(docxPart, ctSdtContentRun);
-            default -> throw new OfficeStamperException("Unexpected element type: " + o.getClass());
-        };
-        return new FilterMapperIterator<>(iterator, predicate, mapper);
-    }
-
     /// Creates a [ResetableIterator] of [CommentRangeStart] instances from the given [WordprocessingMLPackage]
-    /// document.
-    /// This method leverages a [DocxIterator] to iterate through the contents of the specified document part
+    /// document. This method leverages a [DocxIterator] to iterate through the contents of the specified document part
     /// and filters for [CommentRangeStart] elements.
     ///
     /// @param contentAccessor a [ContentAccessor] used to access the content within the specified part
     ///
     /// @return a [ResetableIterator] containing the [CommentRangeStart] elements found in the provided content
     public static ResetableIterator<CommentRangeStart> ofCRS(ContentAccessor contentAccessor) {
-        var iterator = new DocxIterator(contentAccessor.getContent()::iterator);
+        var iterator = new DocxIterator(contentAccessor);
         return new FilterMapperIterator<>(iterator, CommentRangeStart.class::isInstance, CommentRangeStart.class::cast);
     }
 
-    public static Iterator<R> ofRun(ContentAccessor contentAccessor) {
-        var iterator = new DocxIterator(contentAccessor.getContent()::iterator);
+    public static ResetableIterator<R> ofRun(ContentAccessor contentAccessor) {
+        var iterator = new DocxIterator(contentAccessor);
         return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
+    }
+
+    public static ResetableIterator<Optional<Hook>> ofHooks(ContentAccessor contentAccessor, DocxPart part) {
+        var iterator = new DocxIterator(contentAccessor);
+        return new FilterMapperIterator<>(iterator, Hook.filter(part));
     }
 
     @Override
@@ -102,8 +86,7 @@ public class DocxIterator
                 var content = pict.getAnyAndAny();
                 iteratorQueue.add(content.iterator());
             }
-            default -> {
-            }
+            default -> { /* DO NOTHING */ }
         }
         while (!iteratorQueue.isEmpty() && next == null) {
             var nextIterator = iteratorQueue.poll();

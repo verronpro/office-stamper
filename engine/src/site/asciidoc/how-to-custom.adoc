@@ -7,9 +7,9 @@ This guide shows you, step by step, how to build your own comment processors and
 
 Where to look in code:
 
-- Comment processing API: `pro.verron.officestamper.api.CommentProcessor`, `pro.verron.officestamper.api.AbstractCommentProcessor`
-- Processor wiring/lifecycle: `pro.verron.officestamper.core.CommentProcessorRegistry`, `pro.verron.officestamper.core.CommentProcessors`, `pro.verron.officestamper.core.DocxStamperConfiguration`
-- Resolver API: `pro.verron.officestamper.api.ObjectResolver`, `pro.verron.officestamper.api.StringResolver<T>`, `pro.verron.officestamper.core.ExpressionResolver`
+- Comment processing API: `pro.verron.officestamper.api.CommentProcessor`, `pro.verron.officestamper.api.CommentProcessorFactory`, `pro.verron.officestamper.api.ProcessorContext`
+- Processor wiring: `pro.verron.officestamper.api.OfficeStamperConfiguration`, `pro.verron.officestamper.core.DocxStamperConfiguration`, `pro.verron.officestamper.core.DocxStamper`
+- Resolver API: `pro.verron.officestamper.api.ObjectResolver`, `pro.verron.officestamper.api.StringResolver<T>`
 - Defaults and examples: `engine/src/site/asciidoc/comment-processors.adoc`, `engine/src/site/asciidoc/template-expressions.adoc`, `engine/src/site/asciidoc/custom-settings.adoc`
 
 '''
@@ -20,15 +20,14 @@ A custom comment processor lets you define your own comment expressions like `wa
 
 ==== A1. Define the processor interface (the comment language)
 
-Create a small interface that extends `CommentProcessor` and declares the methods that users will call from a Word comment.
+Create a small interface that declares the methods users will call from a Word comment.
+This interface defines your mini‑DSL; it must NOT extend `CommentProcessor`.
 
 [source,java]
 ----
 package com.acme.docs;
 
-import pro.verron.officestamper.api.CommentProcessor;
-
-public interface IWatermarkProcessor extends CommentProcessor {
+public interface IWatermarkProcessor {
     void watermark(String text);
 }
 ----
@@ -42,7 +41,9 @@ Tips:
 
 ==== A2. Implement the processor.
 
-Subclass `AbstractCommentProcessor` for convenience. You'll receive a `ParagraphPlaceholderReplacer` via constructor and a `ProcessorContext` before each call.
+Extend the abstract base `pro.verron.officestamper.api.CommentProcessor`.
+Your constructor receives a `ProcessorContext`.
+Use `paragraph()` and `comment()` helper methods to access the current location.
 
 [source,java]
 ----
@@ -51,46 +52,37 @@ package com.acme.docs;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.*;
 
-public class WatermarkProcessor extends AbstractCommentProcessor implements IWatermarkProcessor {
-    public WatermarkProcessor(ParagraphPlaceholderReplacer replacer) {
-        super(replacer);
-    }
+public class WatermarkProcessor extends CommentProcessor implements IWatermarkProcessor {
+    public WatermarkProcessor(ProcessorContext context) { super(context); }
 
     @Override
     public void watermark(String text) {
-        // Access the current paragraph/comment region being processed
-        Paragraph paragraph = getParagraph();
-        // Your logic could: insert a semi‑transparent text shape, add a gray italic run, etc.
-        // Minimal example: prepend a gray, uppercase label to the paragraph
-        var p = paragraph.p();
-        var run = new R();
-        var rPr = new RPr();
-        var color = new Color();
-        color.setVal("808080");
-        rPr.setColor(color);
-        var caps = new BooleanDefaultTrue();
-        rPr.setCaps(caps);
-        run.setRPr(rPr);
-        var t = new Text();
-        t.setValue("[" + text + "] ");
-        run.getContent().add(t);
-        p.getContent().add(0, run); // add at the beginning
-    }
-
-    @Override
-    public void reset() {
-        // Clear any internal state if you keep any (none here)
+        // Minimal example: prepend a gray, uppercase label to the current paragraph
+        paragraph().apply(content -> {
+            var run = new R();
+            var rPr = new RPr();
+            var color = new Color();
+            color.setVal("808080");
+            rPr.setColor(color);
+            var caps = new BooleanDefaultTrue();
+            rPr.setCaps(caps);
+            run.setRPr(rPr);
+            var t = new Text();
+            t.setValue("[" + text + "] ");
+            run.getContent().add(t);
+            content.getContent().add(0, run); // add at the beginning
+        });
     }
 }
 ----
 
 Notes:
-- `getParagraph()` returns a `pro.verron.officestamper.api.Paragraph` wrapper; get the underlying `org.docx4j.wml.P` via `paragraph.p()` if needed.
-- Avoid depending on deprecated methods from `CommentProcessor` unless you target legacy behavior.
+- Use `paragraph().apply(...)` to mutate the underlying docx4j content of the current paragraph.
+- Access the current comment via `comment()` and the full context via `context()`.
 
 ==== A3. Register the processor.
 
-Use `DocxStamperConfiguration.addCommentProcessor(interface, factory)` to wire your processor. This method is the supported way (see `DocxStamperConfiguration`).
+Use `DocxStamperConfiguration.addCommentProcessor(interface, factory)` to wire your processor.
 
 [source,java]
 ----
@@ -100,7 +92,7 @@ DocxStamperConfiguration configuration = new DocxStamperConfiguration()
     .addCommentProcessor(IWatermarkProcessor.class, WatermarkProcessor::new);
 ----
 
-Internally, Office‑stamper will create one instance per document part, inject the processing context for each encountered comment, call your methods, then call `commitChanges(...)` on all processors via `CommentProcessors` and finally `reset()` them. With `AbstractCommentProcessor`, `commitChanges(DocxPart)` has default no‑op; override it only when you need to flush batched changes.
+Internally, Office‑stamper will create one instance per document part, inject a fresh `ProcessorContext` for each encountered comment, then invoke your methods.
 
 ==== A4. Use it in a template.
 
@@ -112,9 +104,9 @@ Stamping code:
 
 [source,java]
 ----
-var stamper = new pro.verron.officestamper.core.DocxStamper<>(configuration);
+var stamper = new pro.verron.officestamper.core.DocxStamper(configuration);
 try (var in = Files.newInputStream(templatePath); var out = Files.newOutputStream(outputPath)) {
-    stamper.stamp(contextObject, in, out);
+    stamper.stamp(in, contextObject, out);
 }
 ----
 
@@ -126,8 +118,8 @@ Define DSL:
 
 [source,java]
 ----
-public interface IHighlightProcessor extends CommentProcessor {
-    void highlightIf(boolean condition, String colorHex); // e.g. "FFFF00" for yellow
+public interface IHighlightProcessor {
+    void highlightIf(boolean condition, String colorName); // e.g. "yellow"
 }
 ----
 
@@ -135,24 +127,23 @@ Implementation:
 
 [source,java]
 ----
-public class HighlightProcessor extends AbstractCommentProcessor implements IHighlightProcessor {
-    public HighlightProcessor(ParagraphPlaceholderReplacer replacer) { super(replacer); }
+public class HighlightProcessor extends CommentProcessor implements IHighlightProcessor {
+    public HighlightProcessor(ProcessorContext ctx) { super(ctx); }
 
     @Override
-    public void highlightIf(boolean condition, String colorHex) {
+    public void highlightIf(boolean condition, String colorName) {
         if (!condition) return;
-        var p = getParagraph().p();
-        var r = new R();
-        var rPr = new RPr();
-        var highlight = new Highlight();
-        highlight.setVal(colorHex);
-        rPr.setHighlight(highlight);
-        r.setRPr(rPr);
-        // Add an empty run with highlight to affect the visual background of the line start
-        p.getContent().add(0, r);
+        paragraph().apply(content -> {
+            var r = new R();
+            var rPr = new RPr();
+            var highlight = new Highlight();
+            // For simplicity use named colors accepted by Word (e.g., yellow, green, cyan)
+            highlight.setVal(colorName);
+            rPr.setHighlight(highlight);
+            r.setRPr(rPr);
+            content.getContent().add(0, r);
+        });
     }
-
-    @Override public void reset() { }
 }
 ----
 
@@ -167,34 +158,29 @@ DSL:
 
 [source,java]
 ----
-public interface IRedactProcessor extends CommentProcessor {
+public interface IRedactProcessor {
     void redact(String replacement);
 }
 ----
 
 Implementation sketch:
-- Use `getParagraph()` and the current comment range (available via `getCurrentCommentWrapper()` in `AbstractCommentProcessor`) to locate runs between `CommentRangeStart` and `CommentRangeEnd` and replace their text nodes with the `replacement` string or black boxes (e.g., `"█"`).
+- Use `paragraph().apply(...)` to walk runs, detect those within the comment range (via `comment()` and docx4j markers like `CommentRangeStart`/`CommentRangeEnd`), and replace their text nodes with the `replacement` string or black boxes (e.g., `"█"`).
 
 [source,java]
 ----
-public class RedactProcessor extends AbstractCommentProcessor implements IRedactProcessor {
-    public RedactProcessor(ParagraphPlaceholderReplacer replacer) { super(replacer); }
+public class RedactProcessor extends CommentProcessor implements IRedactProcessor {
+    public RedactProcessor(ProcessorContext ctx) { super(ctx); }
 
     @Override
     public void redact(String replacement) {
-        var comment = getCurrentCommentWrapper();
-        var p = getParagraph().p();
-        // Walk runs, detect those inside the comment range, and mutate their Text nodes
-        p.getContent().stream()
+        paragraph().apply(p -> p.getContent().stream()
             .filter(R.class::isInstance)
             .map(R.class::cast)
             .forEach(r -> r.getContent().stream()
                 .filter(Text.class::isInstance)
                 .map(Text.class::cast)
-                .forEach(t -> t.setValue(replacement)));
+                .forEach(t -> t.setValue(replacement))));
     }
-
-    @Override public void reset() { }
 }
 ----
 
@@ -203,10 +189,11 @@ Template usage: select the word(s), add a comment `redact("[REDACTED]")`.
 ==== A7. Best practices for comment processors.
 
 * Keep methods idempotent for the same context.
-* Don’t keep mutable state across calls unless you truly need batching; if you do, clear it in `reset()`.
+* Prefer stateless implementations.
+If you cache data, ensure it is scoped to the current invocation.
 * Validate inputs with `Objects.requireNonNull(...)` and clear error messages.
-* Prefer composition to inheritance beyond `AbstractCommentProcessor`.
-* Avoid deprecated methods from `CommentProcessor` unless required for legacy scenarios.
+* Prefer composition to inheritance beyond the base `CommentProcessor`.
+* Avoid deprecated APIs; rely on `ProcessorContext`, `paragraph()`, and `comment()`.
 '''
 
 === Part B — Build Custom Placeholder Resolvers
@@ -322,15 +309,15 @@ var configuration = new pro.verron.officestamper.core.DocxStamperConfiguration()
     // Exception behavior for expressions
     .setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
 
-var stamper = new pro.verron.officestamper.core.DocxStamper<>(configuration);
+var stamper = new pro.verron.officestamper.core.DocxStamper(configuration);
 try (var in = Files.newInputStream(templateDocx); var out = Files.newOutputStream(stampedDocx)) {
-    stamper.stamp(context, in, out);
+    stamper.stamp(in, context, out);
 }
 ----
 
 Template snippets:
 - Comment on a paragraph: `watermark("CONFIDENTIAL")`
-- Comment on a paragraph: `highlightIf(order.total > 1000, "FFFF00")`
+- Comment on a paragraph: `highlightIf(order.total > 1000, "yellow")`
 - Placeholders: `Customer: ${customer.name}`, `Total: ${invoice.total}`, `Phone: ${customer.phone}`
 
 '''
@@ -367,5 +354,5 @@ Template snippets:
 
 * Register comment processors: `DocxStamperConfiguration.addCommentProcessor(MyInterface.class, MyProcessor::new)`
 * Register resolvers: `DocxStamperConfiguration.addResolver(new MyResolver())`
-* Access context in processors: `setProcessorContext(ProcessorContext)` is called for you; use `getParagraph()` and `getCurrentCommentWrapper()`.
-* Commit and reset: override `commitChanges(DocxPart)` only if you batch; always provide a `reset()` even if empty.
+* Access context in processors: use `paragraph()`, `comment()`, and `context()` from the base `CommentProcessor`.
+* Stamping: `new DocxStamper(configuration).stamp(in, context, out)`

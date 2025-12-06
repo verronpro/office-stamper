@@ -1,0 +1,213 @@
+=== Office‑stamper: How it works (power users’ guide)
+
+This guide is for power users extending Office‑stamper via custom comment processors, resolvers, or functions.
+It summarizes the processing model and the extension points you will touch, with correct class and method names for v3.
+
+Key packages and types:
+- `pro.verron.officestamper.api`: SPI you implement (`CommentProcessor`, `CommentProcessorFactory`, `ObjectResolver`, `CustomFunction`, `OfficeStamperConfiguration`, `EvaluationContextFactory`, `ProcessorContext`).
+- `pro.verron.officestamper.core`: engine/runtime (`DocxStamper`, `Engine`, `OfficeStamperEvaluationContextFactory`, `ContextTree`, `ContextBranch`).
+- `pro.verron.officestamper.preset`: presets (`OfficeStamperConfigurations`, `EvaluationContextFactories`).
+
+=== 1. Processing model (short)
+
+Stamping runs in document order.
+The engine iterates a textual part (document body, headers, footers), discovers “hooks” (DOCX comments and smart‑tag runs created by the placeholder preprocessor), and executes them one by one.
+Each hook builds a fresh `ProcessorContext`, an `Engine`, and a fresh Spring `EvaluationContext`.
+If a hook changes structure (e.g., removes a comment, replaces a tag), the iterator restarts to keep traversal coherent.
+
+Scopes are tracked with `ContextTree`/`ContextBranch`.
+Both comments and tags can specify a context key; the engine resolves the branch and evaluates within it.
+Nested processors (repeaters) push/pop values on the branch they receive.
+
+Expression evaluation uses a pluggable `org.springframework.expression.ExpressionParser` (SpEL by default).
+Object results are turned into DOCX content by registered `ObjectResolver`s. Errors flow to an `ExceptionResolver`.
+
+=== 1.1. Default preprocessor: placeholders → smart tags
+
+Before the main pass, standard configurations run a preprocessor that scans paragraphs for placeholder markers and rewrites them into DOCX smart‑tag runs.
+This detaches expressions from their original text runs and makes them easy to iterate during the main processing pass.
+
+- Class: `pro.verron.officestamper.preset.preprocessors.placeholders.PrepareInlinePlaceholders`
+- Registered by: `pro.verron.officestamper.preset.Preprocessors.preparePlaceholders(String regex, String type)`
+- Standard wiring (`OfficeStamperConfigurations.standard()`):
+
+[source,java]
+----
+// In OfficeStamperConfigurations.standard():
+configuration.addPreprocessor(Preprocessors.removeMalformedComments());
+configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "processor"));
+configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
+----
+
+How it works (simplified):
+- Each paragraph is stringified; a regex finds markers.
+- Group 1 is the full marker (e.g., `${...}`), group 2 is the inner expression.
+- The preprocessor replaces the matched text range with a `CTSmartTagRun` whose `type` attribute is set to the provided value (`"placeholder"` or `"processor"`) and whose content is the raw expression text.
+Implementation detail: it uses `WmlUtils.insertSmartTag(type, paragraph, expression, start, end)`.
+
+Why this matters:
+- The main iterator sees these smart tags as hooks (besides comments).
+In code, they are handled via `core.Tag`/`TagHook` and later replaced with resolved content.
+- Detaching expressions from runs avoids style/whitespace issues and provides a stable anchor for structural changes.
+
+Customize/disable:
+[source,java]
+----
+// Start from the raw configuration and add only what you need
+var cfg = OfficeStamperConfigurations.raw();
+cfg.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{(.+?)})", "placeholder"));
+
+// Or tweak the standard config by adding/removing preprocessors
+var std = OfficeStamperConfigurations.standard();
+// ...std.getPreprocessors() lists them; you can start from raw if you need full control.
+----
+
+Runtime view in processors:
+- Smart tags are exposed as `core.Tag`.
+Use `tag.type()` to read the `type` attribute and `tag.expression()` to get the inner text.
+- Tags can carry a context key via the `context` attribute; `Tag#setContextKey(String)` and `Tag#getContextKey()` access it.
+The engine maps this to a `ContextBranch` when executing the hook.
+
+=== 2. Configuration essentials
+
+Create a configuration via presets and then customize:
+
+[source,java]
+----
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.EvaluationContextFactories.defaultFactory;
+
+var cfg = standard()
+    .setEvaluationContextFactory(defaultFactory());
+----
+
+You may also set a custom expression parser:
+
+[source,java]
+----
+import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+
+var spel = new SpelExpressionParser(new SpelParserConfiguration(true, true));
+cfg.setExpressionParser(spel);
+----
+
+Expose functions to the expression language and add custom functions:
+
+[source,java]
+----
+cfg.exposeInterfaceToExpressionLanguage(MyFunctions.class, new MyFunctions());
+cfg.addCustomFunction("slug", String.class).withFunction(MyFunctions::slug);
+----
+
+Register resolvers and processors:
+
+[source,java]
+----
+cfg.addResolver(new MyDomainResolver());
+cfg.addCommentProcessor(MyProcessor.class, MyProcessor::new);
+----
+
+=== 3. Comment processors
+
+Purpose: provide methods you can call in comments or in smart tags with `type="processor"`.
+
+Implement `CommentProcessor` and a matching `CommentProcessorFactory`:
+
+[source,java]
+----
+import pro.verron.officestamper.api.*;
+
+final class HideIfProcessor extends CommentProcessor {
+    private HideIfProcessor(ProcessorContext ctx) { super(ctx); }
+
+    public static CommentProcessor newInstance(ProcessorContext ctx) { return new HideIfProcessor(ctx); }
+
+    // example entry point used from a comment: ${hideParagraphIf(condition)}
+    public boolean hideParagraphIf(boolean condition) {
+        if (condition) context().paragraph().removeFromParent();
+        return true; // indicates the hook performed a structural change
+    }
+}
+----
+
+Factory registration (through the configuration SPI) exposes the methods of your processor to the evaluation context, so `${hideParagraphIf(...)} ` invokes it. Your processor receives a per‑hook `ProcessorContext` containing the current `DocxPart`, `Paragraph`, optional `Comment`, the raw expression, and the current `ContextBranch`.
+
+Good practices:
+- Keep processors focused on manipulating the DOCX tree they are given.
+- If you create nested scopes (repeaters), push/pop iteration values on the provided `ContextBranch`.
+- Return `true` only when you changed the structure so the iterator can restart if needed.
+
+=== 4. Object resolvers
+
+Purpose: turn evaluated objects into document content (`Insert`).
+Register them on the configuration; the engine chooses an `ObjectResolver` based on the runtime type.
+
+[source,java]
+----
+import pro.verron.officestamper.api.*;
+
+final class MoneyResolver implements ObjectResolver {
+    @Override public boolean supports(Object value) { return value instanceof Money; }
+    @Override public Insert resolve(Object value) { return Inserts.text(((Money) value).formatted()); }
+}
+----
+
+Guidelines:
+- Generate minimal, precise nodes.
+Avoid bulky wrappers unless required.
+- For collections, either return one composite `Insert` or let higher‑level processors handle iteration explicitly.
+
+=== 5. Functions in expressions
+
+Two options are available and can be combined:
+- Expression functions via `exposeInterfaceToExpressionLanguage(Class<?>, Object)` bind a provider to a name.
+- `CustomFunction` allows registering ad‑hoc functions with typed parameters.
+
+Both end up as method resolvers in the evaluation context and are available from comments and smart tags.
+
+=== 6. Evaluation context and scopes
+
+Provide an `EvaluationContextFactory` (creation, not mutation).
+Use presets from `pro.verron.officestamper.preset.EvaluationContextFactories` or build your own.
+The engine wraps it with `pro.verron.officestamper.core.OfficeStamperEvaluationContextFactory` to inject:
+- Registered comment processors - Exposed expression functions and custom functions - Union resolvers for property/index/method lookup along the `ContextBranch`
+
+Union lookup means a name is resolved against the deepest object first, then bubbles up to ancestors.
+Deeper values shadow outer ones.
+
+Context keys: both comments and tags have a `String` context key.
+The engine calls `ContextTree.find(key)` to pick the branch; if absent, it uses the current branch (or root).
+Use keys to jump to a named scope established by your processors.
+
+=== 7. Minimal end‑to‑end example
+
+[source,java]
+----
+var cfg = standard()
+    .addCommentProcessor(HideIfProcessor.class, HideIfProcessor::new)
+    .addResolver(new MoneyResolver());
+
+new DocxStamper(cfg).stamp(templateInputStream, model, outputStream);
+----
+
+Template snippets:
+
+[source,text]
+----
+${hideParagraphIf(order.total == 0)}
+${order.total}
+----
+
+=== 8. API names to double‑check (v3)
+
+- `EvaluationContextConfigurer` → `EvaluationContextFactory` (interface moved to `pro.verron.officestamper.api`).
+- `DocxDocument` removed; use `DocxPart` abstractions exposed by the engine.
+- Expression language configured via `ExpressionParser` on the configuration; SpEL remains default.
+- Comment processors receive `ProcessorContext`; the old `ParagraphPlaceholder` injection is gone.
+
+Where to explore in code:
+- Orchestration: `core.DocxStamper`
+- Evaluation: `core.Engine`
+- Scopes: `core.ContextTree` / `core.ContextBranch`
+- Configuration SPI: `api.OfficeStamperConfiguration`

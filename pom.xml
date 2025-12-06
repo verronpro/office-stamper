@@ -7,13 +7,14 @@
     <name>Office-stamper</name>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>office-stamper</artifactId>
-    <version>2.9.0</version>
+    <version>3.0</version>
 
     <packaging>pom</packaging>
 
     <modules>
         <module>engine</module>
         <module>cli</module>
+        <module>asciidoc</module>
     </modules>
 
 </project>

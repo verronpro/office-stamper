@@ -4,10 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>pro.verron.office-stamper</groupId>
+        <artifactId>office-stamper</artifactId>
+        <version>3.0</version>
+    </parent>
+
     <name>Office-stamper CLI</name>
-    <groupId>pro.verron.office-stamper</groupId>
-    <artifactId>office-stamper-cli</artifactId>
-    <version>2.9.0</version>
+    <artifactId>cli</artifactId>
+    <version>3.0</version>
 
     <packaging>jar</packaging>
 
@@ -104,7 +109,7 @@
         <dependency>
             <groupId>pro.verron.office-stamper</groupId>
             <artifactId>engine</artifactId>
-            <version>2.9.0</version>
+            <version>3.0</version>
         </dependency>
 
         <dependency>

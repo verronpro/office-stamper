@@ -19,10 +19,13 @@ import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
-@DisplayName("Custom functions") class DateFormatTests {
+@DisplayName("Date Formatting features") class DateFormatTests {
 
     static Stream<Arguments> factories() {
-        return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
+        return Stream.of(//
+                argumentSet("Object-based", objectContextFactory()),//
+                argumentSet("Map-based", mapContextFactory())//
+        );
     }
 
     @BeforeAll
@@ -35,9 +38,10 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         Locale.setDefault(Locale.ROOT);
     }
 
-    @DisplayName("Should works with variables, multiline text, in comment content, inside comment, and in repetitions.")
+
+    @DisplayName("Should allow to format dates")
     @MethodSource("factories")
-    @ParameterizedTest
+    @ParameterizedTest(name = "Should allow to format dates ({argumentSetName})")
     void features(ContextFactory factory) {
         var config = standard();
         var template = makeResource("""

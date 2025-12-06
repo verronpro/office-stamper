@@ -1,6 +1,6 @@
 = Introduction to Office-stamper
 
-Office-stamper (formerly Docx-Stamper) is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
+Office-stamper is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
 You design a template using your preferred Word processor; and Office-stamper generate documents based on that template.
 
 == What is Office-stamper?
@@ -24,10 +24,10 @@ Office-stamper is a library that enables you to:
 
 == Project Status
 
-image:https://github.com/verronpro/docx-stamper/actions/workflows/integrate-os.yml/badge.svg[Build Status,link=https://github.com/verronpro/docx-stamper/actions/workflows/integrate-os.yml]
-image:https://github.com/verronpro/docx-stamper/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link=https://github.com/verronpro/docx-stamper/actions/workflows/integrate-docx4j.yml]
-image:https://github.com/verronpro/docx-stamper/actions/workflows/analyze.yml/badge.svg[Build Status,link=https://github.com/verronpro/docx-stamper/actions/workflows/analyze.yml]
-image:https://github.com/verronpro/docx-stamper/actions/workflows/pages.yml/badge.svg[Build Status,link=https://github.com/verronpro/docx-stamper/actions/workflows/pages.yml]
+image:https://github.com/verronpro/office-stamper/actions/workflows/integrate-os.yml/badge.svg[Build Status,link=https://github.com/verronpro/office-stamper/actions/workflows/integrate-os.yml]
+image:https://github.com/verronpro/office-stamper/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link=https://github.com/verronpro/office-stamper/actions/workflows/integrate-docx4j.yml]
+image:https://github.com/verronpro/office-stamper/actions/workflows/analyze.yml/badge.svg[Build Status,link=https://github.com/verronpro/office-stamper/actions/workflows/analyze.yml]
+image:https://github.com/verronpro/office-stamper/actions/workflows/pages.yml/badge.svg[Build Status,link=https://github.com/verronpro/office-stamper/actions/workflows/pages.yml]
 
 == History
 

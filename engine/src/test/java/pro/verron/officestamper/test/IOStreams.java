@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 /// @version ${version}
 /// @since 1.6.5
 public class IOStreams {
-    /// Constant <code>KEEP_OUTPUT_FILE=Boolean.parseBoolean(System.getenv()
-    /// .getOrDefault(&quot;keepOutputFile&quot;, &quot;false&quot;))</code>
+    /// Constant <code>KEEP_OUTPUT_FILE=Boolean.parseBoolean(System.getenv() .getOrDefault(&quot;keepOutputFile&quot;,
+    /// &quot;false&quot;))</code>
     private static final boolean KEEP_OUTPUT_FILE;
     private static final Map<OutputStream, Supplier<InputStream>> streams = new HashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(IOStreams.class);
@@ -38,7 +38,7 @@ public class IOStreams {
             throws IOException {
         if (KEEP_OUTPUT_FILE) {
             Path temporaryFile = Files.createTempFile(TestDocxStamper.class.getSimpleName(), ".docx");
-            logger.info("Saving DocxStamper output to temporary file {}", temporaryFile);
+            logger.info("Saving output to temporary file {}", temporaryFile);
             OutputStream out = Files.newOutputStream(temporaryFile);
             ThrowingSupplier<InputStream> in = () -> Files.newInputStream(temporaryFile);
             streams.put(out, in);

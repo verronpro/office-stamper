@@ -22,7 +22,7 @@ public class CommentHook
     ) {
         var paragraph = comment.getParagraph();
         var expression = comment.expression();
-        var contextStack = contextTree.find(comment.getContextReference());
+        var contextStack = contextTree.find(comment.getContextKey());
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
         var engine = engineFactory.create(processorContext);
         if (engine.process(officeStamperEvaluationContextFactory.create(processorContext, contextStack))) {
@@ -33,8 +33,8 @@ public class CommentHook
     }
 
     @Override
-    public void setContextReference(int contextIndex) {
-        comment.setContextReference(contextIndex);
+    public void setContextKey(String contextKey) {
+        comment.setContextKey(contextKey);
     }
 
 }

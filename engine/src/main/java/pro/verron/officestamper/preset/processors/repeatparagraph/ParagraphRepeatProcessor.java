@@ -64,9 +64,9 @@ public class ParagraphRepeatProcessor
                             var contextPart = context.part();
                             var part = new TextualDocxPart(contextPart.document());
                             var branch = context.branch();
-                            var contextLeaf = branch.add(expressionContext);
+                            var contextKey = branch.add(expressionContext);
                             DocxIterator.ofHooks(p, part)
-                                        .forEachRemaining(hook -> hook.ifPresent(h -> h.setContextReference(contextLeaf)));
+                                        .forEachRemaining(hook -> hook.ifPresent(h -> h.setContextKey(contextKey)));
                             paragraphsToAdd.add(p);
                         }
                     });

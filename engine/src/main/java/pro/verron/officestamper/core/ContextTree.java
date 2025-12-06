@@ -1,26 +1,29 @@
 package pro.verron.officestamper.core;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ContextTree {
 
-    private final List<ContextBranch> branches;
+    private static final String ROOT_KEY = String.valueOf(0);
+    private final Map<String, ContextBranch> branches;
 
     public ContextTree(Object root) {
-        branches = new ArrayList<>();
-        branches.add(new ContextBranch(this, root));
+        branches = new HashMap<>();
+        branches.put(ROOT_KEY, new ContextBranch(this, root));
     }
 
-    public ContextBranch find(int index) {
-        return branches.get(index);
+    public ContextBranch find(String key) {
+        return branches.get(key);
     }
 
-    public int size() {
-        return branches.size();
+    public String add(ContextBranch contextBranch) {
+        var key = computeNewKey();
+        branches.put(key, contextBranch);
+        return key;
     }
 
-    public void add(ContextBranch contextBranch) {
-        branches.add(contextBranch);
+    private String computeNewKey() {
+        return String.valueOf(branches.size());
     }
 }

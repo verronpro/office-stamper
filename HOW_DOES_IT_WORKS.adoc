@@ -118,7 +118,7 @@ Hooks are actionable items found during traversal.
 ** `TagHook` wrapping a `Tag` facade over `CTSmartTagRun`
 
 `CommentHook.run(EngineFactory, ContextTree, OfficeStamperEvaluationContextFactory)`:
-- Resolves the applicable context branch via `ContextTree` using the comment’s context reference.
+- Resolves the applicable context branch via `ContextTree` using the comment’s context key.
 - Creates a `ProcessorContext` from the hosting `DocxPart`, the comment, its paragraph, the placeholder, and the context branch.
 - Requests an `Engine` from `engineFactory` and a per‑hook `EvaluationContext` from `OfficeStamperEvaluationContextFactory`.
 - Invokes `Engine.process(...)` and, on success, deletes the comment artifacts from the document.
@@ -129,6 +129,20 @@ Hooks are actionable items found during traversal.
 - `type="placeholder"`: resolve to content (`Engine.resolve(...)`) and replace the tag with the generated `Insert`.
 
 This duality lets you embed both imperative processors and inline placeholders as smart tags, without relying only on DOCX comments.
+
+Note on context keys (v3):
+
+- Both `Comment` and `Tag` expose a `String` context key (`getContextKey()` / `setContextKey(String)`).
+- The key is used to locate the evaluation branch via `ContextTree#find(String)`:
+
+[source,java]
+----
+var key = hook instanceof CommentHook ch ? ch.comment().getContextKey() : ch.tag().getContextKey();
+var branch = contextTree.find(key);
+var evalCtx = officeStamperEvaluationContextFactory.create(processorContext, branch);
+----
+
+- Keys make nested scope selection explicit and readable; older drafts that mentioned integer “context references” are superseded by string keys.
 
 ==== 2.5 Engine: Expression evaluation and content generation
 

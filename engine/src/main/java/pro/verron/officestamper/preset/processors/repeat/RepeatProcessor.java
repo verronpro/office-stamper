@@ -73,9 +73,9 @@ public class RepeatProcessor
         for (Object expressionContext : objects) {
             var rowClone = XmlUtils.deepCopy(row);
             CommentUtil.deleteCommentFromElements(comment(), rowClone.getContent());
-            var contextIndex = branch.add(expressionContext);
+            var contextKey = branch.add(expressionContext);
             DocxIterator.ofHooks(rowClone, part)
-                        .forEachRemaining(hook -> hook.ifPresent(h -> h.setContextReference(contextIndex)));
+                        .forEachRemaining(hook -> hook.ifPresent(h -> h.setContextKey(contextKey)));
             changes.add(rowClone);
         }
         content.addAll(index, changes);

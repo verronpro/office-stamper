@@ -50,7 +50,7 @@ public interface Comment {
     /// @return a string representing the expression
     String expression();
 
-    int getContextReference();
+    String getContextKey();
 
-    void setContextReference(int contextIndex);
+    void setContextKey(String key);
 }

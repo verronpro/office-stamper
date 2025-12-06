@@ -95,24 +95,23 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
                   .findFirst();
     }
 
-    public int getContextReference() {
+    public String getContextKey() {
         var smartTagPr = tag.getSmartTagPr();
-        if (smartTagPr == null) return 0;
+        if (smartTagPr == null) return String.valueOf(0);
         var smartTagPrAttr = smartTagPr.getAttr();
-        if (smartTagPrAttr == null) return 0;
+        if (smartTagPrAttr == null) return String.valueOf(0);
         for (CTAttr attribute : smartTagPrAttr) {
             if ("context".equals(attribute.getName())) try {
-                return Integer.parseInt(attribute.getVal());
+                return String.valueOf(Integer.parseInt(attribute.getVal()));
             } catch (NumberFormatException _) {
-                return 0;
+                return String.valueOf(0);
             }
         }
-        return 0;
+        return String.valueOf(0);
     }
 
-    public void setContextReference(int contextIndex) {
+    public void setContextKey(String contextKey) {
         var name = "context";
-        var value = String.valueOf(contextIndex);
 
         var smartTagPr = tag.getSmartTagPr();
         if (smartTagPr == null) {
@@ -125,11 +124,11 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
             tag.setSmartTagPr(smartTagPr);
         }
         for (CTAttr attribute : smartTagPrAttr) {
-            if (name.equals(attribute.getName())) attribute.setVal(value);
+            if (name.equals(attribute.getName())) attribute.setVal(contextKey);
         }
         var ctAttr = new CTAttr();
         ctAttr.setName(name);
-        ctAttr.setVal(value);
+        ctAttr.setVal(contextKey);
         smartTagPrAttr.add(ctAttr);
     }
 }

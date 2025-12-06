@@ -16,13 +16,11 @@ public class ContextBranch {
         this.branch = branch;
     }
 
-    public int add(Object object) {
+    public String add(Object object) {
         var newBranch = new ArrayList<>(branch);
         newBranch.add(object);
         var contextBranch = new ContextBranch(tree, newBranch);
-        var nextIndex = tree.size();
-        tree.add(contextBranch);
-        return nextIndex;
+        return tree.add(contextBranch);
     }
 
     public Object root() {

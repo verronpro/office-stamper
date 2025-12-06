@@ -49,5 +49,5 @@ public interface Hook {
             OfficeStamperEvaluationContextFactory evaluationContextFactory
     );
 
-    void setContextReference(int contextIndex);
+    void setContextKey(String contextKey);
 }

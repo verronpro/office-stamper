@@ -33,6 +33,10 @@ public final class AsciiDocToDocx {
                     pkg.getMainDocumentPart()
                        .addObject(createParagraph(factory, p));
                 }
+                else if (block instanceof Table t) {
+                    pkg.getMainDocumentPart()
+                       .addObject(createTable(factory, t));
+                }
             }
             return pkg;
         } catch (Docx4JException e) {
@@ -79,12 +83,35 @@ public final class AsciiDocToDocx {
         }
     }
 
+    private static Tbl createTable(ObjectFactory factory, Table table) {
+        Tbl tbl = factory.createTbl();
+        // Minimal table without explicit grid; Word will auto-fit columns
+        for (Row row : table.rows()) {
+            Tr tr = factory.createTr();
+            for (Cell cell : row.cells()) {
+                Tc tc = factory.createTc();
+                // Add a single paragraph per cell for now
+                P p = factory.createP();
+                addInlines(factory, p, cell.inlines(), null);
+                tc.getContent()
+                  .add(p);
+                tr.getContent()
+                  .add(tc);
+            }
+            tbl.getContent()
+               .add(tr);
+        }
+        return tbl;
+    }
+
     private static void emitInline(ObjectFactory factory, P p, Inline inline, RPr base) {
         if (inline instanceof AsciiDocModel.Text(String text)) {
             R r = factory.createR();
             RPr rpr = base != null ? deepCopy(factory, base) : factory.createRPr();
             org.docx4j.wml.Text tx = factory.createText();
             tx.setValue(text);
+            // Preserve spaces/tabs if present within text segments
+            tx.setSpace("preserve");
             r.getContent()
              .add(tx);
             r.setRPr(rpr);
@@ -108,6 +135,16 @@ public final class AsciiDocToDocx {
             for (Inline child : children) {
                 emitInline(factory, p, child, next);
             }
+            return;
+        }
+
+        if (inline instanceof AsciiDocModel.Tab) {
+            R r = factory.createR();
+            R.Tab tab = factory.createRTab();
+            r.getContent()
+             .add(tab);
+            p.getContent()
+             .add(r);
         }
     }
 

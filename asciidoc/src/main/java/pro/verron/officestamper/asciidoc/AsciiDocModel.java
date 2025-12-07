@@ -41,11 +41,11 @@ public final class AsciiDocModel {
 
     /** Marker interface for document blocks. */
     public sealed interface Block
-            permits Heading, Paragraph {}
+            permits Heading, Paragraph, Table {}
 
     /** Inline fragment inside a paragraph/heading. */
     public sealed interface Inline
-            permits Text, Bold, Italic {
+            permits Text, Bold, Italic, Tab {
         String text();
     }
 
@@ -100,6 +100,35 @@ public final class AsciiDocModel {
             StringBuilder sb = new StringBuilder();
             for (Inline in : children) sb.append(in.text());
             return sb.toString();
+        }
+    }
+
+    /** Inline tab marker to be rendered as a DOCX tab stop. */
+    public record Tab()
+            implements Inline {
+        @Override
+        public String text() {
+            return "\t";
+        }
+    }
+
+    /** Simple table block: list of rows; each row is a list of cells; each cell contains inline content. */
+    public record Table(List<Row> rows)
+            implements Block {
+        public Table(List<Row> rows) {
+            this.rows = List.copyOf(rows);
+        }
+    }
+
+    public record Row(List<Cell> cells) {
+        public Row(List<Cell> cells) {
+            this.cells = List.copyOf(cells);
+        }
+    }
+
+    public record Cell(List<Inline> inlines) {
+        public Cell(List<Inline> inlines) {
+            this.inlines = List.copyOf(inlines);
         }
     }
 }

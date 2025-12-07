@@ -306,6 +306,18 @@
 
     <dependencies>
         <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>asciidoc</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>9.9</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.docx4j</groupId>
             <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
             <version>${docx4j.version}</version>

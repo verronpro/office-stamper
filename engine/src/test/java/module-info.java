@@ -1,5 +1,7 @@
 module pro.verron.officestamper.test {
     requires pro.verron.officestamper;
+    requires org.objectweb.asm;
+    requires org.jruby;
 
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
@@ -13,6 +15,7 @@ module pro.verron.officestamper.test {
 
     requires org.slf4j;
     requires jakarta.xml.bind;
+    requires pro.verron.officestamper.asciidoc;
 
     opens pro.verron.officestamper.test;
     exports pro.verron.officestamper.test;

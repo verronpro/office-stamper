@@ -2,6 +2,7 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 
 import java.util.*;
@@ -20,7 +21,7 @@ public class DocxIterator
 
     private final Supplier<Iterator<Object>> supplier;
     private Queue<Iterator<?>> iteratorQueue;
-    private Object next;
+    private @Nullable Object next;
 
     private DocxIterator(ContentAccessor contentAccessor) {
         this(contentAccessor.getContent()::iterator);

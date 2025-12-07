@@ -269,7 +269,7 @@ public class RepeatDocPartProcessor
     /// @since 1.6.6
     static class ProcessorExceptionHandler
             implements Thread.UncaughtExceptionHandler {
-        private final AtomicReference<Throwable> exception;
+        private final AtomicReference<@Nullable Throwable> exception;
         private final List<Runnable> onException;
 
         /// Constructs a new instance for managing thread's uncaught exceptions. Once set to a thread, it retains the

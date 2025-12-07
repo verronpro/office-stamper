@@ -52,7 +52,7 @@ public class MapAccessor
     @SuppressWarnings("unchecked")
     public void write(EvaluationContext context, @Nullable Object target, String name, @Nullable Object newValue) {
         Assert.state(target instanceof Map, "Target must be of type Map");
-        Map<Object, Object> map = (Map<Object, Object>) target;
+        Map<Object, @Nullable Object> map = (Map<Object, Object>) target;
         map.put(name, newValue);
     }
 

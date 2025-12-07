@@ -1,5 +1,7 @@
 package pro.verron.officestamper.core;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -18,7 +20,7 @@ public class FilterMapperIterator<S, T>
     private final Predicate<S> filter;
     private final Function<S, T> mapper;
     private final ResetableIterator<S> source;
-    T next;
+    @Nullable T next;
 
     public FilterMapperIterator(ResetableIterator<S> source, Class<T> clazz) {
         this(source, Filter.simple(clazz::isInstance, clazz::cast));

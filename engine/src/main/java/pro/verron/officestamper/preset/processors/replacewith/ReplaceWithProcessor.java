@@ -3,6 +3,7 @@ package pro.verron.officestamper.preset.processors.replacewith;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
@@ -32,8 +33,11 @@ public class ReplaceWithProcessor
 
     @Override
     public void replaceWith(@Nullable String expression) {
+        if (expression == null) throw new OfficeStamperException("Cannot replace with null expression");
         var from = comment().getCommentRangeStart();
+        if (from == null) throw new OfficeStamperException("Cannot replace with no comment range start");
         var to = comment().getCommentRangeEnd();
+        if (to == null) throw new OfficeStamperException("Cannot replace with no comment range end");
         paragraph().replace(from, to, new Insert(newRun(expression)));
     }
 }

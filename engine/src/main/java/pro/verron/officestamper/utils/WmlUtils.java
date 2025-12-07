@@ -289,6 +289,7 @@ public final class WmlUtils {
 
         var firstRun = affectedRuns.getFirst();
         var firstRunPr = firstRun.getPr();
+        //noinspection OptionalOfNullableMisuse firstRun.getPr() can indeed return `null`
         return Optional.ofNullable(firstRunPr);
     }
 

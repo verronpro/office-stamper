@@ -1,5 +1,7 @@
 package pro.verron.officestamper.experimental;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class ExcelCollector<T>
     ///
     /// @param object the object being visited
     @Override
-    protected void before(Object object) {
+    protected void before(@Nullable Object object) {
         if (type.isInstance(object))
             list.add(type.cast(object));
     }

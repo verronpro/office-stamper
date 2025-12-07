@@ -1,6 +1,11 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.*;
+import org.docx4j.wml.CommentRangeEnd;
+import org.docx4j.wml.CommentRangeStart;
+import org.docx4j.wml.Comments;
+import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.R.CommentReference;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -13,7 +18,7 @@ public interface Comment {
     /// Retrieves the CommentRangeStart object associated with this comment.
     ///
     /// @return the [CommentRangeStart] object associated with this comment
-    CommentRangeStart getCommentRangeStart();
+    @Nullable CommentRangeStart getCommentRangeStart();
 
     /// Retrieves the parent of the comment.
     ///
@@ -28,12 +33,12 @@ public interface Comment {
     /// Retrieves the [CommentRangeEnd] object associated with this comment.
     ///
     /// @return the [CommentRangeEnd] object associated with this comment
-    CommentRangeEnd getCommentRangeEnd();
+    @Nullable CommentRangeEnd getCommentRangeEnd();
 
-    /// Retrieves the [R.CommentReference] object associated with this comment.
+    /// Retrieves the [CommentReference] object associated with this comment.
     ///
-    /// @return the [R.CommentReference] object associated with this comment
-    R.CommentReference getCommentReference();
+    /// @return the [CommentReference] object associated with this comment
+    @Nullable CommentReference getCommentReference();
 
     /// Retrieves the children of the comment.
     ///
@@ -43,7 +48,7 @@ public interface Comment {
     /// Retrieves the comment associated with this object.
     ///
     /// @return the comment associated with this object
-    Comments.Comment getComment();
+    Comments.@Nullable Comment getComment();
 
     /// Retrieves the expression associated with the implementing entity.
     ///

@@ -1,5 +1,6 @@
 package pro.verron.officestamper.core;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.expression.AccessException;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.IndexAccessor;
@@ -52,7 +53,7 @@ record UnionIndexAccessor(List<IndexAccessor> accessors)
     }
 
     @Override
-    public void write(EvaluationContext context, Object target, Object index, Object newValue)
+    public void write(EvaluationContext context, @Nullable Object target, Object index, @Nullable Object newValue)
             throws AccessException {
         if (!(target instanceof ContextBranch branch))
             throw new AccessException("Target is not a ContextBranch");

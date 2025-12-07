@@ -24,7 +24,7 @@ abstract class PowerpointVisitor {
 
     private static final Logger logger = LoggerFactory.getLogger(PowerpointVisitor.class);
 
-    private static void unexpectedVisit(Object object) {
+    private static void unexpectedVisit(@Nullable Object object) {
         assert object != null : "Cannot visit a null object";
         var env = System.getenv();
         var throwOnUnexpectedVisit = Boolean.parseBoolean(env.getOrDefault("throw-on-unexpected-visit", "false"));

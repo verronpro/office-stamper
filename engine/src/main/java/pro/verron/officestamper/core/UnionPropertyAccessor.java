@@ -27,7 +27,7 @@ record UnionPropertyAccessor(List<PropertyAccessor> accessors)
     }
 
     @Override
-    public TypedValue read(EvaluationContext context, Object target, String name)
+    public TypedValue read(EvaluationContext context, @Nullable Object target, String name)
             throws AccessException {
         if (!(target instanceof ContextBranch branch))
             throw new AccessException("Target is not a ContextBranch");
@@ -43,7 +43,7 @@ record UnionPropertyAccessor(List<PropertyAccessor> accessors)
     }
 
     @Override
-    public boolean canWrite(EvaluationContext context, Object target, String name)
+    public boolean canWrite(EvaluationContext context, @Nullable Object target, String name)
             throws AccessException {
         if (!(target instanceof ContextBranch branch)) return false;
         for (Object subTarget : branch.list())
@@ -53,7 +53,7 @@ record UnionPropertyAccessor(List<PropertyAccessor> accessors)
     }
 
     @Override
-    public void write(EvaluationContext context, Object target, String name, Object newValue)
+    public void write(EvaluationContext context, @Nullable Object target, String name, @Nullable Object newValue)
             throws AccessException {
         if (!(target instanceof ContextBranch branch))
             throw new AccessException("Target is not a ContextBranch");

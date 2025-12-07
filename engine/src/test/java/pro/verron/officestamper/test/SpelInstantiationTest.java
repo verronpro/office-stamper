@@ -32,9 +32,13 @@ class SpelInstantiationTest {
         var actual = stamper.stampAndLoadAndExtract(templateStream, context);
         var expected = """
                 01.01.1970
+                
                 2000-01-01
+                
                 12:00:00
+                
                 2000-01-01T12:00:00
+                
                 """;
         assertEquals(expected, actual);
     }

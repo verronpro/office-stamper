@@ -571,7 +571,7 @@ public class Stringifier {
     private String stringify(P p) {
         var runs = stringify(p.getContent());
         var ppr = stringify(p.getPPr());
-        return ppr.apply(runs) + "\n";
+        return ppr.apply(runs) + "\n\n";
     }
 
     private Function<String, String> stringify(PPr pPr) {

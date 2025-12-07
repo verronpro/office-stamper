@@ -57,34 +57,56 @@ class ProcessorRepeatParagraphTest {
         var expected = """
                 == Characters 1 line
                 
+                
                 Homer Simpson: Dan Castellaneta
+                
                 Marge Simpson: Julie Kavner
+                
                 Bart Simpson: Nancy Cartwright
+                
                 Kent Brockman: Harry Shearer
+                
                 Disco Stu: Hank Azaria
+                
                 Krusty the Clown: Dan Castellaneta
+                
                 There are 6 characters.
+                
                 == Characters multi-line
+                
                 
                 === Homer Simpson
                 
+                
                 Actor: Dan Castellaneta
+                
                 === Marge Simpson
                 
+                
                 Actor: Julie Kavner
+                
                 === Bart Simpson
                 
+                
                 Actor: Nancy Cartwright
+                
                 === Kent Brockman
                 
+                
                 Actor: Harry Shearer
+                
                 === Disco Stu
                 
+                
                 Actor: Hank Azaria
+                
                 === Krusty the Clown
                 
+                
                 Actor: Dan Castellaneta
+                
                 There are 6 characters.
+                
                 """;
 
         return arguments("Repeat Paragraph Integration test", standard(), context, template, expected);
@@ -101,24 +123,35 @@ class ProcessorRepeatParagraphTest {
                         First page is landscape.
                         
                         
+                        
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
                         <<<
+                        
                         Second page is portrait, layout change should survive to repeatParagraph processor (Homer).
+                        
+                        
                         
                         Without a section break changing the layout in between, but a page break instead.
                         [page-break]
                         <<<
+                        
                         
                         Second page is portrait, layout change should survive to repeatParagraph processor (Marge).
                         
+                        
+                        
                         Without a section break changing the layout in between, but a page break instead.
                         [page-break]
                         <<<
+                        
                         
                         
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
+                        
                         Fourth page is set to landscape again.
+                        
                         """);
     }
 
@@ -131,26 +164,39 @@ class ProcessorRepeatParagraphTest {
                 First page is landscape.
                 
                 
+                
+                
                 [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
                 <<<
+                
                 Second page is portrait, layout change should survive to repeatParagraph processor (Homer).
                 
                 
+                
+                
                 [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                 <<<
+                
                 With a page break changing the layout in between.
                 [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
                 <<<
+                
                 Second page is portrait, layout change should survive to repeatParagraph processor (Marge).
                 
                 
+                
+                
                 [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                 <<<
+                
                 With a page break changing the layout in between.
+                
                 
                 [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
                 <<<
+                
                 Fourth page is set to portrait again.
+                
                 """;
 
         var config = standard();
@@ -185,10 +231,15 @@ class ProcessorRepeatParagraphTest {
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
                 Homer
+                
                 Marge
+                
                 Bart
+                
                 Lisa
+                
                 Maggie
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -202,10 +253,15 @@ class ProcessorRepeatParagraphTest {
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
                 Marge
+                
                 Homer
+                
                 Maggie
+                
                 Bart
+                
                 Lisa
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -219,10 +275,15 @@ class ProcessorRepeatParagraphTest {
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
                 Homer
+                
                 Marge
+                
                 Bart
+                
                 Lisa
+                
                 Maggie
+                
                 """;
         assertEquals(expected, actual);
     }

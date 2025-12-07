@@ -23,6 +23,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
         var actual = stamper.stampAndLoadAndExtract(templateStream, context);
         var expected = """
                 Hello, Bart!
+                
                 """;
         assertEquals(expected, actual);
     }

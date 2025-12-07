@@ -42,7 +42,9 @@ class StampTableTest {
         var string = stamper.stampAndLoadAndExtract(testDocx, context);
         assertEquals("""
                 Stamping Table
+                
                 List of Simpsons characters
+                
                 |===
                 |Character
                 |Actor
@@ -68,7 +70,9 @@ class StampTableTest {
                 
                 |===
                 
+                
                 There are 6 characters in the above table.
+                
                 """, string);
     }
 }

@@ -57,7 +57,9 @@ class ProcessorRepeatTableRowTest {
                 getResource(Path.of("ProcessorRepeatTableRow.docx")),
                 """
                         Repeating Table Rows
+                        
                         List of Simpsons characters
+                        
                         |===
                         |Character name
                         |Voice Actor<cnfStyle=100000000000>
@@ -83,7 +85,9 @@ class ProcessorRepeatTableRowTest {
                         
                         |===
                         
+                        
                         There are 6 characters in the above table.
+                        
                         """);
     }
 
@@ -105,7 +109,9 @@ class ProcessorRepeatTableRowTest {
                 getResource(Path.of("ProcessorRepeatTableRow.docx")),
                 """
                         Repeating Table Rows
+                        
                         List of Simpsons characters
+                        
                         |===
                         |Character name
                         |Voice Actor<cnfStyle=100000000000>
@@ -140,7 +146,9 @@ class ProcessorRepeatTableRowTest {
                         
                         |===
                         
+                        
                         There are 6 characters in the above table.
+                        
                         """);
     }
 
@@ -163,6 +171,7 @@ class ProcessorRepeatTableRowTest {
                         
                         
                         |===
+                        
                         
                         """);
     }

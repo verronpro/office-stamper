@@ -36,8 +36,11 @@ class TextBoxesTest {
         String expected = """
                 == Expression Replacement in TextBoxes
                 
+                
                 Bart SimpsonThis should resolve to a name:\s
+                
                 ${foo}This should not resolve:\s
+                
                 """;
         assertEquals(expected, actual);
     }

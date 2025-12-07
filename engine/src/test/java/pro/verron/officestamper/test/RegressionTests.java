@@ -28,12 +28,59 @@ class RegressionTests {
 
     public static Stream<Arguments> source52() {
         return Stream.of(arguments(Conditions.values(), ""),
-                arguments(Conditions.values(true), "Start\nHello, World!\nEnd\n"),
-                arguments(Conditions.values(false), "Start\nEnd\n"),
-                arguments(Conditions.values(true, true), "Start\nHello, World!\nEnd\nStart\nHello, World!\nEnd\n"),
-                arguments(Conditions.values(true, false), "Start\nHello, World!\nEnd\nStart\nEnd\n"),
-                arguments(Conditions.values(false, true), "Start\nEnd\nStart\nHello, World!\nEnd\n"),
-                arguments(Conditions.values(false, false), "Start\nEnd\nStart\nEnd\n"));
+                arguments(Conditions.values(true), """
+                        Start
+                        
+                        Hello, World!
+                        
+                        End
+                        
+                        """),
+                arguments(Conditions.values(false), """
+                        Start
+                        
+                        End
+                        
+                        """),
+                arguments(Conditions.values(true, true), """
+                        Start
+                        
+                        Hello, World!
+                        
+                        End
+                        
+                        Start
+                        
+                        Hello, World!
+                        
+                        End
+                        
+                        """),
+                arguments(Conditions.values(true, false), """
+                        Start
+                        
+                        Hello, World!
+                        
+                        End
+                        
+                        Start
+                        
+                        End
+                        
+                        """),
+                arguments(Conditions.values(false, true), """
+                        Start
+                        
+                        End
+                        
+                        Start
+                        
+                        Hello, World!
+                        
+                        End
+                        
+                        """),
+                arguments(Conditions.values(false, false), "Start\n\nEnd\n\nStart\n\nEnd\n\n"));
     }
 
     /// Test that table of content specific instruction text (instrText) is not modified by error
@@ -47,33 +94,54 @@ class RegressionTests {
         var expected = """
                 == Table Of Content
                 
+                
                 [toc 1] [instrText= TOC \\o "1-3" \\h \\z \\u ][link data=❬Table Of Content❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699773 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 [toc 1] [link data=❬First Title❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699774 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 [toc 2] [link data=❬Subtitle 1.1❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699775 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 [toc 1] [link data=❬Second Title❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699776 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 [toc 2] [link data=❬Subtitle 2.1❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699777 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 [toc 2] [link data=❬Subtitle 2.2❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699778 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 [toc 2] [link data=❬Subtitle 2.3❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699779 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 [toc 1] [link data=❬Third Title❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699780 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 [toc 2] [link data=❬Subtitle 3.1❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699781 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 [toc 2] [link data=❬Subtitle 3.2❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699782 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                
                 == First Title
+                
                 
                 === Subtitle 1.1
                 
+                
                 == Second Title
+                
                 
                 === Subtitle 2.1
                 
+                
                 === Subtitle 2.2
+                
                 
                 === Subtitle 2.3
                 
+                
                 == Third Title
+                
                 
                 === Subtitle 3.1
                 
+                
                 === Subtitle 3.2
+                
+                
                 
                 
                 """;
@@ -97,12 +165,15 @@ class RegressionTests {
         var template = givenTemplate("${test()}");
         var context = givenContext();
         var actual = stamper.stampAndLoadAndExtract(template, context);
-        assertEquals("\n", actual);
+        assertEquals("""
+                
+                
+                """, actual);
         assertEquals(1, testFunction.counter());
     }
 
     private static InputStream givenTemplate(String str) {
-        return TestUtils.makeResource(str);
+        return TestUtils.makeAsciiDocResource(str);
     }
 
     @Test

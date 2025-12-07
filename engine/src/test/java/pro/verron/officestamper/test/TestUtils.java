@@ -211,7 +211,7 @@ public class TestUtils {
     ///  - comment:ID\[ref] to insert a Word comment reference
     ///  - comment:ID\["content"] or comment:ID\[content, "content"] to define the comment's content
     public static InputStream makeAsciiDocResource(String asciidoc) {
-        WordprocessingMLPackage aPackage = AsciiDocCompiler.toDocx(asciidoc);
+        WordprocessingMLPackage aPackage = makeAsciiDocDocx(asciidoc);
         OutputStream outputStream;
         try {
             outputStream = IOStreams.getOutputStream();
@@ -224,6 +224,10 @@ public class TestUtils {
             throw new OfficeStamperException(e);
         }
         return IOStreams.getInputStream(outputStream);
+    }
+
+    public static WordprocessingMLPackage makeAsciiDocDocx(String asciidoc) {
+        return AsciiDocCompiler.toDocx(asciidoc);
     }
 
     static Image getImage(Path path) {

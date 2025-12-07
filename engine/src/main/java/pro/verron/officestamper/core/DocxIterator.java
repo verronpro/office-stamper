@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.function.Supplier;
 
 import static org.docx4j.XmlUtils.unwrap;
+import static pro.verron.officestamper.core.Hook.isTagElement;
 
 /// An iterator that allows the traversal of objects within a WordprocessingML-based document part. The iterator
 /// supports nested structures, enabling iteration over content that may have hierarchical data, like paragraphs,
@@ -43,18 +44,35 @@ public class DocxIterator
     ///
     /// @return a [ResetableIterator] containing the [CommentRangeStart] elements found in the provided content
     public static ResetableIterator<CommentRangeStart> ofCRS(ContentAccessor contentAccessor) {
-        var iterator = new DocxIterator(contentAccessor);
-        return new FilterMapperIterator<>(iterator, CommentRangeStart.class::isInstance, CommentRangeStart.class::cast);
+        return new DocxIterator(contentAccessor).filter(CommentRangeStart.class::isInstance)
+                                                .map(CommentRangeStart.class::cast);
     }
 
     public static ResetableIterator<R> ofRun(ContentAccessor contentAccessor) {
-        var iterator = new DocxIterator(contentAccessor);
-        return new FilterMapperIterator<>(iterator, R.class::isInstance, R.class::cast);
+        return new DocxIterator(contentAccessor).filter(R.class::isInstance)
+                                                .map(R.class::cast);
+
     }
 
-    public static ResetableIterator<Optional<Hook>> ofHooks(ContentAccessor contentAccessor, DocxPart part) {
-        var iterator = new DocxIterator(contentAccessor);
-        return new FilterMapperIterator<>(iterator, Hook.filter(part));
+    public static ResetableIterator<Hook> ofHooks(ContentAccessor contentAccessor, DocxPart part) {
+        return new DocxIterator(contentAccessor).filter(DocxIterator::isPotentialHook)
+                                                .map(o -> asHook(part, o));
+    }
+
+    private static boolean isPotentialHook(Object o) {
+        return switch (o) {
+            case CommentRangeStart _ -> true;
+            case CTSmartTagRun tag when isTagElement(tag, "officestamper") -> true;
+            default -> false;
+        };
+    }
+
+    private static Hook asHook(DocxPart part, Object o) {
+        return switch (o) {
+            case CommentRangeStart commentRangeStart -> Hook.newCommentHook(part, commentRangeStart);
+            case CTSmartTagRun tag -> Hook.newTagHook(part, tag);
+            default -> throw new IllegalArgumentException("Unexpected value: " + o);
+        };
     }
 
     @Override

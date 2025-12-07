@@ -9,7 +9,7 @@ public class CommentHook
     private final DocxPart part;
     private final Comment comment;
 
-    public CommentHook(DocxPart part, Comment comment) {
+    CommentHook(DocxPart part, Comment comment) {
         this.part = part;
         this.comment = comment;
     }

@@ -3,7 +3,6 @@ package pro.verron.officestamper.test;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
-import org.jspecify.annotations.NonNull;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.asciidoc.AsciiDocCompiler;
 import pro.verron.officestamper.preset.Image;
@@ -78,7 +77,7 @@ public class TestUtils {
     }
 
 
-    public static @NonNull WordprocessingMLPackage makeDocx(String content) {
+    private static WordprocessingMLPackage makeDocx(String content) {
         var aPackage = newWord();
         var mainDocumentPart = aPackage.getMainDocumentPart();
         var parent = new AtomicReference<ContentAccessor>(mainDocumentPart);
@@ -203,13 +202,6 @@ public class TestUtils {
         return aPackage;
     }
 
-    /// Creates an in-memory DOCX from an AsciiDoc source string using the AsciiDoc module and returns it as an
-    /// InputStream suitable for tests. The provided string must be valid AsciiDoc. Headings ("= Title"), sections,
-    /// paragraphs, hard line breaks using trailing '+' syntax, and literal placeholders like "${name}" are preserved.
-    /// Tabs can be represented with the tab character ("\t"). Custom comment macro support in AsciiDoc input:
-    ///  - comment:ID\[start] and comment:ID\[end] to delimit a Word comment range
-    ///  - comment:ID\[ref] to insert a Word comment reference
-    ///  - comment:ID\["content"] or comment:ID\[content, "content"] to define the comment's content
     public static InputStream makeAsciiDocResource(String asciidoc) {
         WordprocessingMLPackage aPackage = makeAsciiDocDocx(asciidoc);
         OutputStream outputStream;

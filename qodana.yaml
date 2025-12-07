@@ -5,3 +5,4 @@ include:
   - name: NullableProblems
   - name: UNUSED_IMPORT
   - name: MarkedForRemoval
+  - name: Deprecation

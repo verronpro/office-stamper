@@ -9,13 +9,13 @@ import org.springframework.expression.TypedValue;
 import pro.verron.officestamper.api.CustomFunction;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.groupingBy;
@@ -158,7 +158,7 @@ public class Invokers
     /// arguments in a given evaluation context.
     ///
     /// This class implements the `MethodExecutor` interface from the Spring Expression framework.
-    private record CustomFunctionExecutor(Function<List<Object>, Object> function)
+    private record CustomFunctionExecutor(Function<List<@Nullable Object>, Object> function)
             implements MethodExecutor {
 
         /// Executes the method with the provided evaluation context, target object, and arguments.
@@ -171,8 +171,10 @@ public class Invokers
         ///
         /// @return the result of the method execution encapsulated in a TypedValue.
         @Override
-        public TypedValue execute(EvaluationContext context, Object target, Object... arguments) {
-            return new TypedValue(function.apply(asList(arguments)));
+        public TypedValue execute(EvaluationContext context, Object target, @Nullable Object... arguments) {
+            var argumentList = Arrays.asList(arguments);
+            var result = function.apply(argumentList);
+            return new TypedValue(result);
         }
     }
 }

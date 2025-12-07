@@ -38,20 +38,29 @@ class HeaderAndFooterTest {
                 [header, name="/word/header2.xml"]
                 ----
                 [header] This header paragraph is untouched.
+                
                 [header] In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                
                 [header] In this paragraph, the variable foo should not be resolved: ${foo}.
+                
                 [header] Here, the picture should be resolved /word/media/header2_image_rId1.png:rId1:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720.
+                
                 
                 ----
                 
                 Expression Replacement in header and footer
                 
+                
                 [footer, name="/word/footer2.xml"]
                 ----
                 [footer] This footer paragraph is untouched.
+                
                 [footer] In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                
                 [footer] In this paragraph, the variable foo should not be resolved: ${foo}.
+                
                 [footer] Here, the picture should be resolved /word/media/header2_image_rId1.png:rId1:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720.
+                
                 
                 ----
                 """, actual);

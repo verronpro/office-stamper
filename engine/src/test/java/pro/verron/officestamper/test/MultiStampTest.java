@@ -36,6 +36,7 @@ class MultiStampTest {
         assertEquals("""
                 == Multi-Stamp-Test
                 
+                
                 |===
                 |The next row will repeat multiple times with a different name:
                 
@@ -51,6 +52,7 @@ class MultiStampTest {
                 
                 
                 |===
+                
                 
                 """, document1);
 
@@ -59,6 +61,7 @@ class MultiStampTest {
         assertEquals("""
                 == Multi-Stamp-Test
                 
+                
                 |===
                 |The next row will repeat multiple times with a different name:
                 
@@ -74,6 +77,7 @@ class MultiStampTest {
                 
                 
                 |===
+                
                 
                 """, document2);
     }

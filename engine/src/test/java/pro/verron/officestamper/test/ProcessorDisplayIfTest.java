@@ -29,14 +29,22 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display
                 
+                
                 === Paragraphs
                 
+                
                 This paragraph 1 stays untouched.
+                
                 This paragraph 2 stays if “name” is “Bart”.
+                
                 This paragraph 4 stays if “name” is “Bart”.
+                
                 This paragraph 6 stays if “name” is not null.
+                
                 This paragraph 7 stays if “name” is not null.
+                
                 ==== Paragraphs in table
+                
                 
                 |===
                 |Works in tables
@@ -50,6 +58,7 @@ class ProcessorDisplayIfTest {
                 
                 |===
                 ==== Paragraphs in nested table
+                
                 
                 |===
                 |Works in nested tables
@@ -68,9 +77,12 @@ class ProcessorDisplayIfTest {
                 [page-break]
                 <<<
                 <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
+                
                 === Table Rows
                 
+                
                 ==== Rows in table
+                
                 
                 |===
                 |Works in tables
@@ -94,6 +106,7 @@ class ProcessorDisplayIfTest {
                 |===
                 ==== Rows in nested table
                 
+                
                 |===
                 |Works in nested tables
                 
@@ -111,9 +124,12 @@ class ProcessorDisplayIfTest {
                 [page-break]
                 <<<
                 
+                
                 === Tables
                 
+                
                 ==== Mono-cell fully commented.
+                
                 
                 |===
                 |A mono-cell table.
@@ -122,12 +138,14 @@ class ProcessorDisplayIfTest {
                 |===
                 ==== Mono-cell partially commented.
                 
+                
                 |===
                 |Another mono-cell table.
                 
                 
                 |===
                 ==== Multi-cell fully commented.
+                
                 
                 |===
                 |Cell 1.1
@@ -140,6 +158,7 @@ class ProcessorDisplayIfTest {
                 |===
                 ==== Multi-cell partially commented.
                 
+                
                 |===
                 |Cell 1.1
                 |Cell 1.2
@@ -150,6 +169,7 @@ class ProcessorDisplayIfTest {
                 
                 |===
                 ==== If present Case.
+                
                 
                 |===
                 |Cell 1.1
@@ -162,7 +182,9 @@ class ProcessorDisplayIfTest {
                 |===
                 ==== If absent Case.
                 
+                
                 ==== Works in nested tables
+                
                 
                 |===
                 |Cell 1.1
@@ -181,24 +203,38 @@ class ProcessorDisplayIfTest {
                 [page-break]
                 <<<
                 
+                
                 === Words
                 
+                
                 These words should appear conditionally:  Bart .
+                
                 These words should appear conditionally:   Bart Simpson .
+                
                 
                 [page-break]
                 <<<
                 <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
+                
                 === Doc Parts
                 
+                
                 These 1❬sts❘{vertAlign=superscript}❭ multiple paragraph block stays untouched.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 These 2❬nd❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is “Bart”.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 These 4❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is “Bart”.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 These 6❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “null”.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 """;
 
         var config = standard();
@@ -216,14 +252,20 @@ class ProcessorDisplayIfTest {
         var expected = """
                 = Springfield Chronicles: The Simpsons Edition
                 
+                
                 == Introduction
                 
+                
                 [Quote] "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
+                
                 == Homer Simpson's Favorite Pastimes
+                
                 
                 == Marge Simpson: The Heart of the Family
                 
+                
                 Marge Simpson, with her iconic blue hair, is the moral center of the family. She manages the household with the chaos around her, Marge always finds a way to keep the family together.
+                
                 |===
                 |Character
                 |Role<cnfStyle=100000000000>
@@ -249,16 +291,22 @@ class ProcessorDisplayIfTest {
                 |===
                 == Conclusion
                 
+                
                 [Quote] "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
+                
                 [footnotes]
                 ---
                 [6] Marge's hairdo was designed to hide various items, a nod to cartoon logic.
                 
+                
                 [7] Bart's rebellious attitude is encapsulated in this catchphrase.
+                
                 
                 [8] Lisa's musical talent often shines through her saxophone solos.
                 
+                
                 [9] Despite her silence, Maggie has saved her family on multiple occasions.
+                
                 
                 ---
                 """;
@@ -278,14 +326,20 @@ class ProcessorDisplayIfTest {
         var expected = """
                 = Springfield Chronicles: The Simpsons Edition
                 
+                
                 == Introduction
                 
+                
                 [Quote] "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
+                
                 == Homer Simpson's Favorite Pastimes
+                
                 
                 == Marge Simpson: The Heart of the Family
                 
+                
                 Marge Simpson, with her iconic blue hair, is the moral center of the family. She manages the household with the chaos around her, Marge always finds a way to keep the family together.
+                
                 |===
                 |Character
                 |Role<cnfStyle=100000000000>
@@ -311,16 +365,22 @@ class ProcessorDisplayIfTest {
                 |===
                 == Conclusion
                 
+                
                 [Quote] "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
+                
                 [endnotes]
                 ---
                 [6] Marge's hairdo was designed to hide various items, a nod to cartoon logic.
                 
+                
                 [7] Bart's rebellious attitude is encapsulated in this catchphrase.
+                
                 
                 [8] Lisa's musical talent often shines through her saxophone solos.
                 
+                
                 [9] Despite her silence, Maggie has saved her family on multiple occasions.
+                
                 
                 ---
                 """;
@@ -340,14 +400,22 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display
                 
+                
                 === Paragraphs
                 
+                
                 This paragraph 1 stays untouched.
+                
                 This paragraph 3 stays if “name” is not “Bart”.
+                
                 This paragraph 5 stays if “name” is not “Bart”.
+                
                 This paragraph 6 stays if “name” is not null.
+                
                 This paragraph 7 stays if “name” is not null.
+                
                 ==== Paragraphs in table
+                
                 
                 |===
                 |Works in tables
@@ -361,6 +429,7 @@ class ProcessorDisplayIfTest {
                 
                 |===
                 ==== Paragraphs in nested table
+                
                 
                 |===
                 |Works in nested tables
@@ -379,9 +448,12 @@ class ProcessorDisplayIfTest {
                 [page-break]
                 <<<
                 <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
+                
                 === Table Rows
                 
+                
                 ==== Rows in table
+                
                 
                 |===
                 |Works in tables
@@ -405,6 +477,7 @@ class ProcessorDisplayIfTest {
                 |===
                 ==== Rows in nested table
                 
+                
                 |===
                 |Works in nested tables
                 
@@ -420,17 +493,24 @@ class ProcessorDisplayIfTest {
                 [page-break]
                 <<<
                 
+                
                 === Tables
+                
                 
                 ==== Mono-cell fully commented.
                 
+                
                 ==== Mono-cell partially commented.
+                
                 
                 ==== Multi-cell fully commented.
                 
+                
                 ==== Multi-cell partially commented.
                 
+                
                 ==== If present Case.
+                
                 
                 |===
                 |Cell 1.1
@@ -443,7 +523,9 @@ class ProcessorDisplayIfTest {
                 |===
                 ==== If absent Case.
                 
+                
                 ==== Works in nested tables
+                
                 
                 |===
                 |Cell 1.1
@@ -456,24 +538,38 @@ class ProcessorDisplayIfTest {
                 [page-break]
                 <<<
                 
+                
                 === Words
                 
+                
                 These words should appear conditionally: Homer  .
+                
                 These words should appear conditionally: Homer Simpson   .
+                
                 
                 [page-break]
                 <<<
                 <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
+                
                 === Doc Parts
                 
+                
                 These 1❬sts❘{vertAlign=superscript}❭ multiple paragraph block stays untouched.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 These 3❬rd❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “Bart”.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 These 5❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “Bart”.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 These 6❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “null”.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 """;
 
         var config = standard();
@@ -491,14 +587,22 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display
                 
+                
                 === Paragraphs
                 
+                
                 This paragraph 1 stays untouched.
+                
                 This paragraph 3 stays if “name” is not “Bart”.
+                
                 This paragraph 5 stays if “name” is not “Bart”.
+                
                 This paragraph 8 stays if “name” is null.
+                
                 This paragraph 9 stays if “name” is null.
+                
                 ==== Paragraphs in table
+                
                 
                 |===
                 |Works in tables
@@ -512,6 +616,7 @@ class ProcessorDisplayIfTest {
                 
                 |===
                 ==== Paragraphs in nested table
+                
                 
                 |===
                 |Works in nested tables
@@ -530,9 +635,12 @@ class ProcessorDisplayIfTest {
                 [page-break]
                 <<<
                 <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
+                
                 === Table Rows
                 
+                
                 ==== Rows in table
+                
                 
                 |===
                 |Works in tables
@@ -556,6 +664,7 @@ class ProcessorDisplayIfTest {
                 |===
                 ==== Rows in nested table
                 
+                
                 |===
                 |Works in nested tables
                 
@@ -571,19 +680,27 @@ class ProcessorDisplayIfTest {
                 [page-break]
                 <<<
                 
+                
                 === Tables
+                
                 
                 ==== Mono-cell fully commented.
                 
+                
                 ==== Mono-cell partially commented.
+                
                 
                 ==== Multi-cell fully commented.
                 
+                
                 ==== Multi-cell partially commented.
+                
                 
                 ==== If present Case.
                 
+                
                 ==== If absent Case.
+                
                 
                 |===
                 |Cell 1.1
@@ -596,6 +713,7 @@ class ProcessorDisplayIfTest {
                 |===
                 ==== Works in nested tables
                 
+                
                 |===
                 |Cell 1.1
                 
@@ -607,24 +725,38 @@ class ProcessorDisplayIfTest {
                 [page-break]
                 <<<
                 
+                
                 === Words
                 
+                
                    None.
+                
                    No Simpsons.
+                
                 
                 [page-break]
                 <<<
                 <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
+                
                 === Doc Parts
                 
+                
                 These 1❬sts❘{vertAlign=superscript}❭ multiple paragraph block stays untouched.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 These 3❬rd❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “Bart”.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 These 5❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “Bart”.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 These 7❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is “null”.
+                
                 To show how comments spanning multiple paragraphs works.
+                
                 """;
 
         var config = standard();
@@ -642,8 +774,11 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display of Paragraphs
                 
+                
                 Paragraph 1 stays untouched.
+                
                 Paragraph 3 stays untouched.
+                
                 |===
                 |=== Conditional Display of paragraphs also works in tables
                 
@@ -660,6 +795,7 @@ class ProcessorDisplayIfTest {
                 
                 
                 |===
+                
                 
                 """;
 
@@ -678,9 +814,13 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display of Paragraphs
                 
+                
                 Paragraph 1 stays untouched.
+                
                 Paragraph 2 is only included if the “name” is “Bart”.
+                
                 Paragraph 3 stays untouched.
+                
                 |===
                 |=== Conditional Display of paragraphs also works in tables
                 
@@ -691,6 +831,7 @@ class ProcessorDisplayIfTest {
                 |=== Also works in nested tables
                 
                 |Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
+                
                 Paragraph 7  in cell 2,1 in cell 3,1 is only included if the “name” is “Bart”.
                 
                 
@@ -698,6 +839,7 @@ class ProcessorDisplayIfTest {
                 
                 
                 |===
+                
                 
                 """;
 
@@ -716,7 +858,9 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display of Table Rows
                 
+                
                 This paragraph stays untouched.
+                
                 |===
                 |This row stays untouched.
                 
@@ -732,6 +876,7 @@ class ProcessorDisplayIfTest {
                 
                 
                 |===
+                
                 
                 """;
 
@@ -750,7 +895,10 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display of Tables
                 
+                
                 This paragraph stays untouched.
+                
+                
                 
                 |===
                 |This table stays untouched.
@@ -762,6 +910,7 @@ class ProcessorDisplayIfTest {
                 
                 |===
                 
+                
                 |===
                 |Also works on nested tables
                 
@@ -770,7 +919,9 @@ class ProcessorDisplayIfTest {
                 
                 |===
                 
+                
                 This paragraph stays untouched.
+                
                 """;
 
         var config = standard();
@@ -788,7 +939,10 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display of Tables
                 
+                
                 This paragraph stays untouched.
+                
+                
                 
                 |===
                 |This table stays untouched.
@@ -800,6 +954,7 @@ class ProcessorDisplayIfTest {
                 
                 |===
                 
+                
                 |===
                 |Also works on nested tables
                 
@@ -808,7 +963,9 @@ class ProcessorDisplayIfTest {
                 
                 |===
                 
+                
                 This paragraph stays untouched.
+                
                 """;
         var config = standard();
         var stamper = new TestDocxStamper<>(config);

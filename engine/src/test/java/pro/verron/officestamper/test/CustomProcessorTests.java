@@ -36,9 +36,13 @@ import static pro.verron.officestamper.utils.WmlFactory.newRun;
         var expected = """     
                 == Custom Comment Processor Test
                 
+                
                 Visited
+                
                 This paragraph is untouched.
+                
                 Visited
+                
                 """;
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, factory.empty());

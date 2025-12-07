@@ -53,13 +53,22 @@ class ProcessorRepeatDocPartTest {
         var template = getResource(Path.of("ProcessorRepeatDocPart_Image.docx"));
         var expected = """
                 
+                
                 /word/media/document_image_rId11.png:rId11:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                
                 /word/media/document_image_rId12.jpeg:rId12:image/jpeg:407.5kB:sha1=Ujo3UzL8WmeZN/1K6weBydaI73I=:cy=$d:6120130
                 
                 
                 
+                
+                
+                
+                
                 Always rendered:
+                
                 /word/media/document_image_rId13.png:rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                
+                
                 
                 """;
 
@@ -80,13 +89,21 @@ class ProcessorRepeatDocPartTest {
                 getResource(Path.of("ProcessorRepeatDocPart_ImageSubTemplate.docx")),
                 """
                         This is not repeated
+                        
                         This should be repeated : first doc part
+                        
                         /word/media/document_image_rId12.png:rId12:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
+                        
                         This should be repeated too
+                        
                         This should be repeated : second doc part
+                        
                         /word/media/document_image_rId13.png:rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
+                        
                         This should be repeated too
+                        
                         This is not repeated
+                        
                         """);
     }
 
@@ -109,9 +126,12 @@ class ProcessorRepeatDocPartTest {
                 """
                         = Repeating Doc Part
                         
+                        
                         == List of Simpsons characters
                         
+                        
                         Paragraph for test: Homer Simpson - Dan Castellaneta
+                        
                         |===
                         |Homer Simpson
                         |Dan Castellaneta
@@ -122,7 +142,9 @@ class ProcessorRepeatDocPartTest {
                         [page-break]
                         <<<
                         
+                        
                         Paragraph for test: Marge Simpson - Julie Kavner
+                        
                         |===
                         |Marge Simpson
                         |Julie Kavner
@@ -133,7 +155,9 @@ class ProcessorRepeatDocPartTest {
                         [page-break]
                         <<<
                         
+                        
                         Paragraph for test: Bart Simpson - Nancy Cartwright
+                        
                         |===
                         |Bart Simpson
                         |Nancy Cartwright
@@ -144,7 +168,9 @@ class ProcessorRepeatDocPartTest {
                         [page-break]
                         <<<
                         
+                        
                         Paragraph for test: Kent Brockman - Harry Shearer
+                        
                         |===
                         |Kent Brockman
                         |Harry Shearer
@@ -155,7 +181,9 @@ class ProcessorRepeatDocPartTest {
                         [page-break]
                         <<<
                         
+                        
                         Paragraph for test: Disco Stu - Hank Azaria
+                        
                         |===
                         |Disco Stu
                         |Hank Azaria
@@ -166,7 +194,9 @@ class ProcessorRepeatDocPartTest {
                         [page-break]
                         <<<
                         
+                        
                         Paragraph for test: Krusty the Clown - Dan Castellaneta
+                        
                         |===
                         |Krusty the Clown
                         |Dan Castellaneta
@@ -177,7 +207,9 @@ class ProcessorRepeatDocPartTest {
                         [page-break]
                         <<<
                         
+                        
                         There are 6 characters.
+                        
                         """);
     }
 
@@ -189,16 +221,24 @@ class ProcessorRepeatDocPartTest {
                 """
                         = Repeating Doc Part
                         
+                        
                         [Subtitle] Nested doc parts
+                        
                         == List the students of all grades.
                         
+                        
                         South Park Primary School
+                        
                         === Grade No.0
                         
+                        
                         Grade No.0 have 3 classes
+                        
                         ==== Class No.0
                         
+                        
                         Class No.0 have 5 students
+                        
                         |===
                         |0
                         |Bruce·No0
@@ -224,7 +264,9 @@ class ProcessorRepeatDocPartTest {
                         |===
                         ==== Class No.1
                         
+                        
                         Class No.1 have 5 students
+                        
                         |===
                         |0
                         |Bruce·No0
@@ -250,7 +292,9 @@ class ProcessorRepeatDocPartTest {
                         |===
                         ==== Class No.2
                         
+                        
                         Class No.2 have 5 students
+                        
                         |===
                         |0
                         |Bruce·No0
@@ -276,10 +320,14 @@ class ProcessorRepeatDocPartTest {
                         |===
                         === Grade No.1
                         
+                        
                         Grade No.1 have 3 classes
+                        
                         ==== Class No.0
                         
+                        
                         Class No.0 have 5 students
+                        
                         |===
                         |0
                         |Bruce·No0
@@ -305,7 +353,9 @@ class ProcessorRepeatDocPartTest {
                         |===
                         ==== Class No.1
                         
+                        
                         Class No.1 have 5 students
+                        
                         |===
                         |0
                         |Bruce·No0
@@ -331,7 +381,9 @@ class ProcessorRepeatDocPartTest {
                         |===
                         ==== Class No.2
                         
+                        
                         Class No.2 have 5 students
+                        
                         |===
                         |0
                         |Bruce·No0
@@ -357,10 +409,14 @@ class ProcessorRepeatDocPartTest {
                         |===
                         === Grade No.2
                         
+                        
                         Grade No.2 have 3 classes
+                        
                         ==== Class No.0
                         
+                        
                         Class No.0 have 5 students
+                        
                         |===
                         |0
                         |Bruce·No0
@@ -386,7 +442,9 @@ class ProcessorRepeatDocPartTest {
                         |===
                         ==== Class No.1
                         
+                        
                         Class No.1 have 5 students
+                        
                         |===
                         |0
                         |Bruce·No0
@@ -412,7 +470,9 @@ class ProcessorRepeatDocPartTest {
                         |===
                         ==== Class No.2
                         
+                        
                         Class No.2 have 5 students
+                        
                         |===
                         |0
                         |Bruce·No0
@@ -437,6 +497,7 @@ class ProcessorRepeatDocPartTest {
                         
                         |===
                         ❬There are ❘{rStyle=lev}❭❬3❘{rStyle=lev}❭❬ grades.❘{rStyle=lev}❭<rPr={rStyle=lev}>
+                        
                         """);
     }
 
@@ -448,6 +509,8 @@ class ProcessorRepeatDocPartTest {
         var expected = """
                 This will stay untouched.
                 
+                
+                
                 |===
                 |firstTable value1
                 
@@ -456,17 +519,30 @@ class ProcessorRepeatDocPartTest {
                 
                 |===
                 
+                
                 This will also stay untouched.
                 
+                
+                
                 Repeating paragraph :
+                
+                
                 
                 repeatDocPart value1
+                
                 Repeating paragraph :
+                
+                
                 
                 repeatDocPart value2
+                
                 Repeating paragraph :
                 
+                
+                
                 repeatDocPart value3
+                
+                
                 
                 |===
                 |secondTable value1
@@ -480,7 +556,9 @@ class ProcessorRepeatDocPartTest {
                 
                 |===
                 
+                
                 This will stay untouched too.
+                
                 """;
 
         var config = standard();
@@ -504,53 +582,72 @@ class ProcessorRepeatDocPartTest {
                         First page is portrait.
                         
                         
+                        
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
+                        
                         Second page is landscape, layout change should survive to repeatDocPart (Homer).
                         
                         
+                        
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
                         <<<
+                        
                         With a break setting the layout to portrait in between.
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
+                        
                         Second page is landscape, layout change should survive to repeatDocPart (Marge).
                         
                         
+                        
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
                         <<<
+                        
                         With a break setting the layout to portrait in between.
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
                         
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
+                        
                         Fourth page is set to landscape again.
+                        
                         """);
     }
 
     private static Arguments shouldKeepPageBreakOrientationWithSectionBreaksInsideCommentAndTableLastElement(
             ContextFactory factory
     ) {
-        return arguments(
-                "In multiple layouts, keeps section orientations inside RepeatDocPart comments with a table as last "
-                + "element",
+        return arguments("""
+                        In multiple layouts, keeps section orientations inside RepeatDocPart comments with a table as last \
+                        element""",
                 standard(),
-
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
                 getResource(Path.of("ProcessorRepeatDocPart_InLayoutAndTable.docx")),
                 """
                         First page is portrait.
                         
                         
+                        
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
+                        
                         Second page is landscape, layout change should survive to repeatDocPart (Homer).
                         
                         
+                        
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
                         <<<
+                        
                         With a break setting the layout to portrait in between.
+                        
                         |===
                         |
                         
@@ -559,12 +656,17 @@ class ProcessorRepeatDocPartTest {
                         
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
+                        
                         Second page is landscape, layout change should survive to repeatDocPart (Marge).
                         
                         
+                        
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
                         <<<
+                        
                         With a break setting the layout to portrait in between.
+                        
                         |===
                         |
                         
@@ -574,9 +676,12 @@ class ProcessorRepeatDocPartTest {
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
                         
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
+                        
                         Fourth page is set to landscape again.
+                        
                         """);
     }
 
@@ -591,24 +696,35 @@ class ProcessorRepeatDocPartTest {
                         First page is landscape.
                         
                         
+                        
+                        
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
                         <<<
+                        
                         Second page is portrait, layout change should survive to repeatDocPart (Homer).
                         
+                        
                         [page-break]
                         <<<
                         
+                        
                         Without a break changing the layout in between (page break should be repeated).
+                        
                         Second page is portrait, layout change should survive to repeatDocPart (Marge).
                         
+                        
                         [page-break]
                         <<<
                         
+                        
                         Without a break changing the layout in between (page break should be repeated).
+                        
                         
                         [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
                         <<<
+                        
                         Fourth page is set to landscape again.
+                        
                         """);
     }
 
@@ -636,10 +752,15 @@ class ProcessorRepeatDocPartTest {
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
                 Homer
+                
                 Marge
+                
                 Bart
+                
                 Lisa
+                
                 Maggie
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -653,10 +774,15 @@ class ProcessorRepeatDocPartTest {
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
                 Marge
+                
                 Homer
+                
                 Maggie
+                
                 Bart
+                
                 Lisa
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -670,10 +796,15 @@ class ProcessorRepeatDocPartTest {
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
                 Homer
+                
                 Marge
+                
                 Bart
+                
                 Lisa
+                
                 Maggie
+                
                 """;
         assertEquals(expected, actual);
     }

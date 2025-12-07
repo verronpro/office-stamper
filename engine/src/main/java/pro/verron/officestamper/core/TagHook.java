@@ -8,7 +8,7 @@ public class TagHook
     private final Tag tag;
     private final DocxPart part;
 
-    public TagHook(DocxPart part, Tag tag) {
+    TagHook(DocxPart part, Tag tag) {
         this.tag = tag;
         this.part = part;
     }

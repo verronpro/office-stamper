@@ -19,7 +19,7 @@ import java.io.InputStream;
 public final class Image {
 
     private final byte[] imageBytes;
-    private final Integer maxWidth;
+    private final @Nullable Integer maxWidth;
     private final String filenameHint;
     private final String altText;
 

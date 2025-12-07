@@ -1,6 +1,8 @@
 package pro.verron.officestamper.experimental;
 
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class PowerpointCollector<T>
     }
 
     @Override
-    protected void before(Object object) {
+    protected void before(@Nullable Object object) {
         if (aClass.isInstance(object))
             list.add(aClass.cast(object));
     }

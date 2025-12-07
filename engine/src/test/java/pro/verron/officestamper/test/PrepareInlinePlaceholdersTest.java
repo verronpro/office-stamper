@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.preset.preprocessors.placeholders.PrepareInlinePlaceholders;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.test.TestUtils.makeDocx;
+import static pro.verron.officestamper.test.TestUtils.makeAsciiDocDocx;
 
 class PrepareInlinePlaceholdersTest {
 
     @Test
     void process() {
         var preparePlaceholders = new PrepareInlinePlaceholders("(#\\{([^{]+?)})", "processor");
-        var document = makeDocx("Hello, #{name}!");
+        var document = makeAsciiDocDocx("Hello, #{name}!");
         var stringifier = new Stringifier(() -> document);
         var before = stringifier.stringify(document);
         assertEquals("""

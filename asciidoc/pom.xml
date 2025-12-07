@@ -20,7 +20,7 @@
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <docx4j.version>11.5.6</docx4j.version>
+        <docx4j.version>11.5.8</docx4j.version>
         <javafx.version>26-ea+19</javafx.version>
     </properties>
 

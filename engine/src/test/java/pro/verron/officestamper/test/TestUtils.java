@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import jakarta.xml.bind.JAXBElement;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
@@ -15,25 +16,15 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
-import static java.util.regex.Pattern.compile;
-import static pro.verron.officestamper.utils.WmlFactory.*;
+import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
 
 /// A utility class for testing.
 /// Provides methods for retrieving InputStreams from specified resource paths.
 /// Typically used for accessing test resources.
 public class TestUtils {
-
-    private static final Pattern TABLE_PATTERN = compile("^\\|===$");
-    private static final Pattern CELL_PATTERN = compile("^\\|.*");
-    private static final Pattern EMPTY_PATTERN = compile("^$");
-    private static final Pattern CRS_PATTERN = compile("^(.*?)<([0-9]+)\\|>.*");
-    private static final Pattern TAB_PATTERN = compile("^(.*?)\\|TAB\\|.*");
-    private static final Pattern CR_PATTERN = compile("^(.*?)<([0-9]+)\\|(.+?)>.*");
-    private static final Pattern CRE_PATTERN = compile("^(.*?)<\\|([0-9]+)>.*");
 
     /// Retrieves an InputStream for the specified resource path.
     ///
@@ -60,150 +51,14 @@ public class TestUtils {
         }
     }
 
-    public static InputStream makeResource(String content) {
-        var aPackage = makeDocx(content);
-        OutputStream outputStream;
-        try {
-            outputStream = IOStreams.getOutputStream();
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
-        try {
-            aPackage.save(outputStream);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
-        return IOStreams.getInputStream(outputStream);
-    }
-
-
-    private static WordprocessingMLPackage makeDocx(String content) {
-        var aPackage = newWord();
-        var mainDocumentPart = aPackage.getMainDocumentPart();
-        var parent = new AtomicReference<ContentAccessor>(mainDocumentPart);
-        content.lines()
-               .forEach(line -> {
-                   var p1 = new P();
-                   while (!line.isEmpty()) {
-                       var tableMatcher = TABLE_PATTERN.matcher(line);
-                       var cellMatcher = CELL_PATTERN.matcher(line);
-                       var emptyMatcher = EMPTY_PATTERN.matcher(line);
-                       var tabMatcher = TAB_PATTERN.matcher(line);
-                       var crsMatcher = CRS_PATTERN.matcher(line);
-                       var creMatcher = CRE_PATTERN.matcher(line);
-                       var crMatcher = CR_PATTERN.matcher(line);
-                       if (tableMatcher.matches()) {
-                           var accessor = parent.get();
-                           if (accessor instanceof Tc tc) parent.set((ContentAccessor) tc.getParent());
-                           if (accessor instanceof Tr tr) parent.set((ContentAccessor) tr.getParent());
-                           if (accessor instanceof Tbl tbl) parent.set((ContentAccessor) tbl.getParent());
-                           else {
-                               var newTbl = newTbl();
-                               var newRow = newRow();
-                               newTbl.getContent()
-                                     .add(newRow);
-                               parent.get()
-                                     .getContent()
-                                     .add(newTbl);
-                               parent.set(newRow);
-                           }
-                           return;
-                       }
-                       else if (cellMatcher.matches()) {
-                           var newCell = newCell();
-                           var accessor = parent.get();
-                           if (accessor instanceof Tc tc) parent.set((ContentAccessor) tc.getParent());
-                           parent.get()
-                                 .getContent()
-                                 .add(newCell);
-                           parent.set(newCell);
-                           line = line.substring(1);
-                       }
-                       else if (emptyMatcher.matches()) {
-                           var accessor = parent.get();
-                           if (accessor instanceof Tc tc) parent.set((ContentAccessor) tc.getParent());
-                           if (accessor instanceof Tr tr) parent.set((ContentAccessor) tr.getParent());
-                           if (accessor instanceof Tbl tbl) {
-                               var row = newRow();
-                               tbl.getContent()
-                                  .add(row);
-                               parent.set(row);
-                               return;
-                           }
-                       }
-                       else if (tabMatcher.matches()) {
-                           var next = tabMatcher.group(1);
-                           var text = newText(next);
-                           p1.getContent()
-                             .add(newRun(List.of(text, new R.Tab())));
-                           line = line.substring(next.length() + "|TAB|".length());
-                       }
-                       else if (crsMatcher.matches()) {
-                           var next = crsMatcher.group(1);
-                           var strId = crsMatcher.group(2);
-                           var id = new BigInteger(strId);
-                           var text = newText(next);
-                           var commentRangeStart = new CommentRangeStart();
-                           commentRangeStart.setId(id);
-                           p1.getContent()
-                             .add(newRun(text));
-                           p1.getContent()
-                             .add(commentRangeStart);
-                           line = line.substring(next.length() + 1 + strId.length() + 2);
-                       }
-                       else if (creMatcher.matches()) {
-                           var next = creMatcher.group(1);
-                           var strId = creMatcher.group(2);
-                           var text = newText(next);
-                           text.setValue(next);
-                           var id = new BigInteger(strId);
-                           var commentRangeEnd = new CommentRangeEnd();
-                           commentRangeEnd.setId(id);
-                           p1.getContent()
-                             .add(newRun(text));
-
-                           p1.getContent()
-                             .add(commentRangeEnd);
-                           line = line.substring(next.length() + 2 + strId.length() + 1);
-                       }
-                       else if (crMatcher.matches()) {
-                           var next = crMatcher.group(1);
-                           var strId = crMatcher.group(2);
-                           var strComment = crMatcher.group(3);
-                           var text = newText(next);
-                           var id = new BigInteger(strId);
-                           var commentReference = new R.CommentReference();
-                           commentReference.setId(id);
-                           var comment = WmlFactory.newComment(id, strComment);
-                           try {
-                               mainDocumentPart.getCommentsPart()
-                                               .getContents()
-                                               .getComment()
-                                               .add(comment);
-                           } catch (Docx4JException e) {
-                               throw new OfficeStamperException(e);
-                           }
-                           var run = newRun(List.of(text, commentReference));
-                           p1.getContent()
-                             .add(run);
-                           line = line.substring(next.length() + 1 + strId.length() + 1 + strComment.length() + 1);
-                       }
-                       else {
-                           var run = newRun(line);
-                           p1.getContent()
-                             .add(run);
-                           line = "";
-                       }
-                   }
-                   parent.get()
-                         .getContent()
-                         .add(p1);
-               });
-        return aPackage;
-    }
 
     public static InputStream makeAsciiDocResource(String asciidoc) {
-        WordprocessingMLPackage aPackage = makeAsciiDocDocx(asciidoc);
+        // Extract comment macros and strip them from the AsciiDoc before compilation
+        var extraction = extractAndStripCommentMacros(asciidoc);
+        var model = AsciiDocCompiler.parse(extraction.cleanedAsciiDoc());
+        WordprocessingMLPackage aPackage = AsciiDocCompiler.toDocx(model);
+        // Apply comments specified by macros onto the generated DOCX
+        applyCommentMacros(aPackage, model, extraction.specs());
         OutputStream outputStream;
         try {
             outputStream = IOStreams.getOutputStream();
@@ -216,6 +71,271 @@ public class TestUtils {
             throw new OfficeStamperException(e);
         }
         return IOStreams.getInputStream(outputStream);
+    }
+
+    private static MacroExtraction extractAndStripCommentMacros(String asciidoc) {
+        // Regex: comment::ID[...]
+        var pattern = Pattern.compile("(?m)\\s*comment::([0-9]+)\\[([^]]*)]\\s*\n?");
+        var matcher = pattern.matcher(asciidoc);
+        var specs = new java.util.ArrayList<CommentSpec>();
+        var sb = new StringBuffer();
+        while (matcher.find()) {
+            var id = new BigInteger(matcher.group(1));
+            var attrs = matcher.group(2);
+            int startBlock = 0, startChar = 0, endBlock = 0, endChar = 0;
+            String value = "";
+            // parse attributes start="b,c", end="b,c", value="..."
+            var attrPattern = Pattern.compile("(start|end|value)\\s*=\\s*\"([^\"]*)\"");
+            var am = attrPattern.matcher(attrs);
+            while (am.find()) {
+                var key = am.group(1);
+                var val = am.group(2);
+                switch (key) {
+                    case "start" -> {
+                        var parts = val.split(",");
+                        startBlock = Integer.parseInt(parts[0].trim());
+                        startChar = Integer.parseInt(parts[1].trim());
+                    }
+                    case "end" -> {
+                        var parts = val.split(",");
+                        endBlock = Integer.parseInt(parts[0].trim());
+                        endChar = Integer.parseInt(parts[1].trim());
+                    }
+                    case "value" -> value = val;
+                }
+            }
+            specs.add(new CommentSpec(id, startBlock, startChar, endBlock, endChar, value));
+            matcher.appendReplacement(sb, ""); // remove macro line
+        }
+        matcher.appendTail(sb);
+        return new MacroExtraction(sb.toString(), specs);
+    }
+
+    private static void applyCommentMacros(
+            WordprocessingMLPackage pkg,
+            pro.verron.officestamper.asciidoc.AsciiDocModel model,
+            List<CommentSpec> specs
+    ) {
+        if (specs.isEmpty()) return;
+        ensureCommentsPart(pkg);
+        // Build flattened paragraph list in document order as per render
+        var paragraphs = new java.util.ArrayList<P>();
+        var mdp = pkg.getMainDocumentPart();
+        for (Object o : mdp.getContent()) {
+            var val = o instanceof JAXBElement<?> j ? j.getValue() : o;
+            if (val instanceof P p) {
+                paragraphs.add(p);
+            }
+            else if (val instanceof Tbl tbl) {
+                for (Object trO : tbl.getContent()) {
+                    var trV = trO instanceof JAXBElement<?> jj ? jj.getValue() : trO;
+                    if (trV instanceof Tr tr) {
+                        for (Object tcO : tr.getContent()) {
+                            var tcV = tcO instanceof JAXBElement<?> jjj ? jjj.getValue() : tcO;
+                            if (tcV instanceof Tc tc) {
+                                // first paragraph of cell
+                                for (Object cp : tc.getContent()) {
+                                    var cpV = cp instanceof JAXBElement<?> j4 ? j4.getValue() : cp;
+                                    if (cpV instanceof P p) {
+                                        paragraphs.add(p);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for (var spec : specs) {
+            // Add the comment to CommentsPart
+            var comment = WmlFactory.newComment(spec.id, spec.value);
+            try {
+                pkg.getMainDocumentPart()
+                   .getCommentsPart()
+                   .getContents()
+                   .getComment()
+                   .add(comment);
+            } catch (Docx4JException e) {
+                throw new OfficeStamperException(e);
+            }
+
+            // Insert markers. If both positions are in the same paragraph, insert end first,
+            // then start, so indices based on original text remain valid and reference stays inside range.
+            if (spec.startBlock == spec.endBlock) {
+                var para = paragraphs.get(spec.endBlock);
+                insertAtCharIndex(para, spec.endChar, false, spec.id);
+                insertAtCharIndex(para, spec.startChar, true, spec.id);
+            }
+            else {
+                var endP = paragraphs.get(spec.endBlock);
+                insertAtCharIndex(endP, spec.endChar, false, spec.id);
+                var startP = paragraphs.get(spec.startBlock);
+                insertAtCharIndex(startP, spec.startChar, true, spec.id);
+            }
+        }
+    }
+
+    private static void ensureCommentsPart(WordprocessingMLPackage pkg) {
+        var mdp = pkg.getMainDocumentPart();
+        try {
+            if (mdp.getCommentsPart() == null) {
+                var cp = new org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart();
+                mdp.addTargetPart(cp);
+                var comments = new org.docx4j.wml.Comments();
+                cp.setContents(comments);
+            }
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    // ===== New comment macro processing for AsciiDoc =====
+
+    private static void insertAtCharIndex(P p, int charIndex, boolean start, BigInteger id) {
+        // Split runs so that we can insert markers exactly at charIndex
+        int remaining = charIndex;
+        var newContent = new java.util.ArrayList<Object>();
+        for (Object o : p.getContent()) {
+            var val = o instanceof JAXBElement<?> j ? j.getValue() : o;
+            // If we reached the exact insertion boundary before this element, insert marker now
+            if (remaining == 0) {
+                if (start) {
+                    var crs = new CommentRangeStart();
+                    crs.setId(id);
+                    newContent.add(crs);
+                    var ref = new R.CommentReference();
+                    ref.setId(id);
+                    newContent.add(newRun(java.util.List.of(ref)));
+                }
+                else {
+                    var cre = new CommentRangeEnd();
+                    cre.setId(id);
+                    newContent.add(cre);
+                }
+                // add current and rest unchanged
+                newContent.add(o);
+                int idx2 = p.getContent()
+                            .indexOf(o);
+                for (int i = idx2 + 1;
+                     i < p.getContent()
+                          .size();
+                     i++)
+                    newContent.add(p.getContent()
+                                    .get(i));
+                p.getContent()
+                 .clear();
+                p.getContent()
+                 .addAll(newContent);
+                return;
+            }
+            if (!(val instanceof R r)) {
+                newContent.add(o);
+                continue;
+            }
+            int runLen = 0;
+            for (Object rc : r.getContent()) {
+                var rcv = rc instanceof JAXBElement<?> jj ? jj.getValue() : rc;
+                if (rcv instanceof Text t) {
+                    runLen += t.getValue() != null ? t.getValue()
+                                                      .length() : 0;
+                }
+            }
+            if (remaining <= 0) {
+                newContent.add(o);
+                continue;
+            }
+            if (remaining >= runLen) {
+                newContent.add(o);
+                remaining -= runLen;
+                continue;
+            }
+            // Need to split inside this run at position `remaining`
+            // Build left text and right text
+            int left = remaining;
+            int consumed = 0;
+            R leftRun = new R();
+            R rightRun = new R();
+            for (Object rc : r.getContent()) {
+                var rcv = rc instanceof JAXBElement<?> jj ? jj.getValue() : rc;
+                if (rcv instanceof Text t) {
+                    String v = t.getValue();
+                    int partLeft = Math.min(Math.max(left - consumed, 0), v.length());
+                    String lv = v.substring(0, Math.min(partLeft, v.length()));
+                    String rv = v.substring(Math.min(partLeft, v.length()));
+                    if (!lv.isEmpty()) {
+                        Text lt = new Text();
+                        lt.setValue(lv);
+                        lt.setSpace("preserve");
+                        leftRun.getContent()
+                               .add(lt);
+                    }
+                    if (!rv.isEmpty()) {
+                        Text rt = new Text();
+                        rt.setValue(rv);
+                        rt.setSpace("preserve");
+                        rightRun.getContent()
+                                .add(rt);
+                    }
+                    consumed += v.length();
+                }
+                else {
+                    // Copy other elements into both as needed; keep them on right to preserve formatting
+                    rightRun.getContent()
+                            .add(rc);
+                }
+            }
+            // Replace original run with leftRun, marker, rightRun
+            if (!leftRun.getContent()
+                        .isEmpty()) newContent.add(leftRun);
+            if (start) {
+                var crs = new CommentRangeStart();
+                crs.setId(id);
+                newContent.add(crs);
+            }
+            else {
+                var cre = new CommentRangeEnd();
+                cre.setId(id);
+                newContent.add(cre);
+                var ref = new R.CommentReference();
+                ref.setId(id);
+                newContent.add(newRun(java.util.List.of(ref)));
+            }
+            if (!rightRun.getContent()
+                         .isEmpty()) newContent.add(rightRun);
+            // Add the rest of the original paragraph content after the split run
+            int idx = p.getContent()
+                       .indexOf(o);
+            for (int i = idx + 1;
+                 i < p.getContent()
+                      .size();
+                 i++)
+                newContent.add(p.getContent()
+                                .get(i));
+            p.getContent()
+             .clear();
+            p.getContent()
+             .addAll(newContent);
+            return;
+        }
+        // If we didn't insert yet and we exhausted runs, append marker at end
+        if (start) {
+            var crs = new CommentRangeStart();
+            crs.setId(id);
+            p.getContent()
+             .add(crs);
+        }
+        else {
+            var cre = new CommentRangeEnd();
+            cre.setId(id);
+            p.getContent()
+             .add(cre);
+            var ref = new R.CommentReference();
+            ref.setId(id);
+            p.getContent()
+             .add(newRun(java.util.List.of(ref)));
+        }
     }
 
     public static WordprocessingMLPackage makeAsciiDocDocx(String asciidoc) {
@@ -237,4 +357,8 @@ public class TestUtils {
             throw new RuntimeException(e);
         }
     }
+
+    private record CommentSpec(BigInteger id, int startBlock, int startChar, int endBlock, int endChar, String value) {}
+
+    private record MacroExtraction(String cleanedAsciiDoc, List<CommentSpec> specs) {}
 }

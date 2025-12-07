@@ -1,6 +1,7 @@
 name: Static Analysis
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
   pull_request:
@@ -9,7 +10,7 @@ on:
     - cron: '23 7 * * 1'
 
 jobs:
-  analyze:
+  qodana:
     runs-on: ubuntu-latest
     timeout-minutes: 360
 
@@ -26,13 +27,14 @@ jobs:
         language: [ 'java-kotlin' ]
 
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
       - uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
+
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
+          fetch-depth: 0  # a full history is required for pull request analysis
 
       - uses: actions/setup-java@v5
         with:
@@ -42,12 +44,23 @@ jobs:
 
       - run: mvn -B -ntp test
 
-      - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2023.3
-        env:
-          args: --baseline,qodana.sarif.json
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+
 
       - uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{matrix.language}}"
+
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@v2025.2
+        with:
+          boostrap: copy engine/target/site/jacoco/jacoco.xml /.qodana/code-coverage
+          args: |
+            --baseline,qodana.sarif.json,
+            --linter,qodana-jvm,
+            --within-docker,false
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+
+      - uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json

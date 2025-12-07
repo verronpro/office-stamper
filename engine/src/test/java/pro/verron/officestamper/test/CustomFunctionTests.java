@@ -21,7 +21,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
-import static pro.verron.officestamper.test.TestUtils.makeResource;
+import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
 
 @DisplayName("Custom function features") class CustomFunctionTests {
 
@@ -34,18 +34,22 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
 
     static Stream<Arguments> trifunctions() {
         return Stream.of(//
-                argumentSet("Object-based, Chinese", objectContextFactory(), "ZH", "2024 四月"),
-                argumentSet("Object-based, French", objectContextFactory(), "FR", "2024 avril"),
-                argumentSet("Object-based, English", objectContextFactory(), "EN", "2024 April"),
-                argumentSet("Object-based, Japanese", objectContextFactory(), "JA", "2024 4月"),
-                argumentSet("Object-based, Hebrew", objectContextFactory(), "HE", "2024 אפריל"),
-                argumentSet("Object-based, Italian", objectContextFactory(), "IT", "2024 aprile"),
-                argumentSet("Map-based, Chinese", mapContextFactory(), "ZH", "2024 四月"),
-                argumentSet("Map-based, French", mapContextFactory(), "FR", "2024 avril"),
-                argumentSet("Map-based, English", mapContextFactory(), "EN", "2024 April"),
-                argumentSet("Map-based, Japanese", mapContextFactory(), "JA", "2024 4月"),
-                argumentSet("Map-based, Hebrew", mapContextFactory(), "HE", "2024 אפריל"),
-                argumentSet("Map-based, Italian", mapContextFactory(), "IT", "2024 aprile"));
+                argumentSet("Object-based, Chinese", objectContextFactory(), "ZH", "2024 四月\n"),
+                argumentSet("Object-based, French", objectContextFactory(), "FR", "2024 avril\n"),
+                argumentSet("Object-based, English", objectContextFactory(), "EN", "2024 April\n"),
+                argumentSet("Object-based, Japanese", objectContextFactory(), "JA", "2024 4月\n"),
+                argumentSet("Object-based, Hebrew", objectContextFactory(), "HE", """
+                        2024 אפריל
+                        """),
+                argumentSet("Object-based, Italian", objectContextFactory(), "IT", "2024 aprile\n"),
+                argumentSet("Map-based, Chinese", mapContextFactory(), "ZH", "2024 四月\n"),
+                argumentSet("Map-based, French", mapContextFactory(), "FR", "2024 avril\n"),
+                argumentSet("Map-based, English", mapContextFactory(), "EN", "2024 April\n"),
+                argumentSet("Map-based, Japanese", mapContextFactory(), "JA", "2024 4月\n"),
+                argumentSet("Map-based, Hebrew", mapContextFactory(), "HE", """
+                        2024 אפריל
+                        """),
+                argumentSet("Map-based, Italian", mapContextFactory(), "IT", "2024 aprile\n"));
     }
 
     @MethodSource("factories")
@@ -60,16 +64,25 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         var expected = """
                 == Custom Expression Function
                 
+                
                 In this paragraph, we uppercase a variable: THE SIMPSONS.
+                
                 In this paragraph, we uppercase some multiline text: IT ALSO WORKS WITH<br/>
                 MULTILINE<br/>
                 STRINGS OF TEXT.
+                
                 We toggle this paragraph display with a processor using the custom function.
+                
                 We check custom functions runs in placeholders after processing: HOMER SIMPSON.
+                
                 We check custom functions runs in placeholders after processing: MARGE SIMPSON.
+                
                 We check custom functions runs in placeholders after processing: BART SIMPSON.
+                
                 We check custom functions runs in placeholders after processing: LISA SIMPSON.
+                
                 We check custom functions runs in placeholders after processing: MAGGIE SIMPSON.
+                
                 |===
                 |We check custom functions runs in placeholders after processing:
                 
@@ -91,6 +104,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
                 
                 |===
                 
+                
                 """;
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);
@@ -102,11 +116,12 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     void functions(ContextFactory factory) {
         var config = standard().addCustomFunction("toUppercase", String.class)
                                .withImplementation(String::toUpperCase);
-        var template = makeResource("${toUppercase(name)}");
+        var template = makeAsciiDocResource("${toUppercase(name)}");
         var context = factory.show();
         var stamper = new TestDocxStamper<>(config);
         var expected = """
                 THE SIMPSONS
+                
                 """;
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);
@@ -118,11 +133,12 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     void suppliers(ContextFactory factory) {
         var config = standard();
         config.addCustomFunction("foo", () -> List.of("a", "b", "c"));
-        var template = makeResource("${foo()}");
+        var template = makeAsciiDocResource("${foo()}");
         var context = factory.empty();
         var stamper = new TestDocxStamper<>(config);
         var expected = """
                 [a, b, c]
+                
                 """;
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);
@@ -135,10 +151,10 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         var config = standard();
         config.addCustomFunction("Add", String.class, Integer.class)
               .withImplementation((s, i) -> new BigDecimal(s).add(new BigDecimal(i)));
-        var template = makeResource("${Add('3.22', 4)}");
+        var template = makeAsciiDocResource("${Add('3.22', 4)}");
         var context = factory.empty();
         var stamper = new TestDocxStamper<>(config);
-        var expected = "7.22\n";
+        var expected = "7.22\n\n";
         var actual = stamper.stampAndLoadAndExtract(template, context);
         assertEquals(expected, actual);
     }
@@ -153,7 +169,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
                                   var formatter = DateTimeFormatter.ofPattern(pattern, locale);
                                   return formatter.format(date);
                               });
-        var template = makeResource("${format(date,'yyyy MMMM','%s')}".formatted(tag));
+        var template = makeAsciiDocResource("${format(date,'yyyy MMMM','%s')}".formatted(tag));
         var context = factory.date(LocalDate.of(2024, Month.APRIL, 1));
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);

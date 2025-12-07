@@ -14,11 +14,15 @@ class PrepareInlinePlaceholdersTest {
         var document = makeDocx("Hello, #{name}!");
         var stringifier = new Stringifier(() -> document);
         var before = stringifier.stringify(document);
-        assertEquals("Hello, #{name}!\n", before);
+        assertEquals("""
+                Hello, #{name}!
+                
+                """, before);
         preparePlaceholders.process(document);
         var actual = stringifier.stringify(document);
         assertEquals("""
                 Hello, <tag element="officestamper" attr="type:processor">name<\\tag>!
+                
                 """, actual);
     }
 }

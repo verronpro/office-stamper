@@ -13,7 +13,6 @@ import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
-import static pro.verron.officestamper.test.TestUtils.makeResource;
 
 @DisplayName("Whitespaces manipulations") class WhitespaceTest {
 
@@ -42,6 +41,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
                 Space %s
+                
                 """.formatted(out);
         assertEquals(expected, actual);
     }
@@ -51,12 +51,12 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     @ParameterizedTest(name = "Should keep tabulations as tabulations ({argumentSetName})")
     void should_preserve_tabulations(ContextFactory factory) {
         var config = OfficeStamperConfigurations.standard();
-        var template = makeResource("Tab|TAB|${name}");
+        var template = makeAsciiDocResource("Tab|TAB|${name}");
         var context = factory.name("Homer\tSimpson");
 
         var stamper = new TestDocxStamper<>(config);
         var actual = stamper.stampAndLoadAndExtract(template, context);
-        var expected = "Tab\tHomer\tSimpson\n";
+        var expected = "Tab\tHomer\tSimpson\n\n";
         assertEquals(expected, actual);
     }
 }

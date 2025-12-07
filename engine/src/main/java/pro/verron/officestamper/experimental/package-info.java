@@ -6,7 +6,7 @@
 /// support for additional office formats like Excel and PowerPoint.
 ///
 /// Ensures non-null values by default.
-@NonNullApi
+@NullMarked
 package pro.verron.officestamper.experimental;
 
-import org.springframework.lang.NonNullApi;
+import org.jspecify.annotations.NullMarked;

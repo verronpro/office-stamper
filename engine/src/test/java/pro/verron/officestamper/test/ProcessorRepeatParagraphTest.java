@@ -22,7 +22,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
-import static pro.verron.officestamper.test.TestUtils.makeResource;
+import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
 
 class ProcessorRepeatParagraphTest {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -226,7 +226,10 @@ class ProcessorRepeatParagraphTest {
     void shouldAcceptList() {
         var config = standard();
         var stamper = new TestDocxStamper<>(config);
-        var template = makeResource("<1|>${name}<|1><1|repeatParagraph(names)>");
+        var template = makeAsciiDocResource("""
+                comment::1[start="0,0", end="0,7", value="repeatParagraph(names)"]
+                ${name}
+                """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
@@ -248,7 +251,10 @@ class ProcessorRepeatParagraphTest {
     void shouldAcceptSet() {
         var config = standard();
         var stamper = new TestDocxStamper<>(config);
-        var template = makeResource("<1|>${name}<|1><1|repeatParagraph(names)>");
+        var template = makeAsciiDocResource("""
+                comment::1[start="0,0", end="0,7", value="repeatParagraph(names)"]
+                ${name}
+                """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
@@ -270,7 +276,10 @@ class ProcessorRepeatParagraphTest {
     void shouldAcceptQueue() {
         var config = standard();
         var stamper = new TestDocxStamper<>(config);
-        var template = makeResource("<1|>${name}<|1><1|repeatParagraph(names)>");
+        var template = makeAsciiDocResource("""
+                comment::1[start="0,0", end="0,7", value="repeatParagraph(names)"]
+                ${name}
+                """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """

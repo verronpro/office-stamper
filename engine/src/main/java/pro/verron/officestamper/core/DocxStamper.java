@@ -4,8 +4,6 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.expression.ExpressionParser;
 import pro.verron.officestamper.api.*;
 
@@ -29,7 +27,6 @@ import static org.docx4j.openpackaging.parts.relationships.Namespaces.HEADER;
 public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
 
-    private static final Logger log = LoggerFactory.getLogger(DocxStamper.class);
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final EngineFactory engineFactory;
@@ -156,11 +153,8 @@ public class DocxStamper
         var iterator = DocxIterator.ofHooks(part::content, part);
         while (iterator.hasNext()) {
             var hook = iterator.next();
-            if (hook.isPresent()) {
-                var h = hook.get();
-                var officeStamperEvaluationContextFactory = computeEvaluationContext();
-                if (h.run(engineFactory, contextTree, officeStamperEvaluationContextFactory)) iterator.reset();
-            }
+            var officeStamperEvaluationContextFactory = computeEvaluationContext();
+            if (hook.run(engineFactory, contextTree, officeStamperEvaluationContextFactory)) iterator.reset();
         }
     }
 
@@ -170,5 +164,4 @@ public class DocxStamper
                 expressionFunctions,
                 evaluationContextFactory);
     }
-
 }

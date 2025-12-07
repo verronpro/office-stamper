@@ -75,7 +75,7 @@ public class RepeatProcessor
             CommentUtil.deleteCommentFromElements(comment(), rowClone.getContent());
             var contextKey = branch.add(expressionContext);
             DocxIterator.ofHooks(rowClone, part)
-                        .forEachRemaining(hook -> hook.ifPresent(h -> h.setContextKey(contextKey)));
+                        .forEachRemaining(hook -> hook.setContextKey(contextKey));
             changes.add(rowClone);
         }
         content.addAll(index, changes);

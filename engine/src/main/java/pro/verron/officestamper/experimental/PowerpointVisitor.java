@@ -8,10 +8,10 @@ import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.parts.*;
 import org.docx4j.openpackaging.parts.PresentationML.*;
 import org.docx4j.openpackaging.parts.WordprocessingML.ImageJpegPart;
+import org.jspecify.annotations.Nullable;
 import org.pptx4j.pml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package pro.verron.officestamper.api;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import static pro.verron.officestamper.utils.WmlFactory.newRun;
 
@@ -22,7 +22,6 @@ public abstract class StringResolver<T>
     ///
     /// @param type the type of object to be resolved
     protected StringResolver(Class<T> type) {
-        assert type != null;
         this.type = type;
     }
 

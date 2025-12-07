@@ -3,8 +3,8 @@ package pro.verron.officestamper.preset.processors.displayif;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
+import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.ProcessorContext;
@@ -83,7 +83,7 @@ public class DisplayIfProcessor
     }
 
     @Override
-    public void displayTableIf(Boolean condition) {
+    public void displayTableIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
         var tbl = paragraph().parent(Tbl.class)
                              .orElseThrow(throwing("Paragraph is not within a table!"));

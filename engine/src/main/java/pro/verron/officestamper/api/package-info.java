@@ -2,7 +2,7 @@
 /// Exposes types to manage document parts.
 ///
 /// Ensures non-null values by default.
-@NonNullApi
+@NullMarked
 package pro.verron.officestamper.api;
 
-import org.springframework.lang.NonNullApi;
+import org.jspecify.annotations.NullMarked;

@@ -1,7 +1,7 @@
 /// Utilities used by OfficeStamper.
-/// 
+///
 /// Ensures non-null values by default.
-@NonNullApi
+@NullMarked
 package pro.verron.officestamper.utils;
 
-import org.springframework.lang.NonNullApi;
+import org.jspecify.annotations.NullMarked;

@@ -1,6 +1,6 @@
 package pro.verron.officestamper.core;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;

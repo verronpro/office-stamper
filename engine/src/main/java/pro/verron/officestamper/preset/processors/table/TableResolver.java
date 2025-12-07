@@ -6,7 +6,7 @@ import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;

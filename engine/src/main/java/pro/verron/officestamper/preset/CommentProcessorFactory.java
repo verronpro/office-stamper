@@ -1,6 +1,6 @@
 package pro.verron.officestamper.preset;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 /// Factory class to create the correct comment processor for a given comment.

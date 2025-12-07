@@ -1,4 +1,4 @@
-@NonNullApi
+@NullMarked
 package pro.verron.officestamper.preset.resolvers.image;
 
-import org.springframework.lang.NonNullApi;
+import org.jspecify.annotations.NullMarked;

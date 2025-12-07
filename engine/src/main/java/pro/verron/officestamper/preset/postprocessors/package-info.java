@@ -1,4 +1,4 @@
-@NonNullApi
+@NullMarked
 package pro.verron.officestamper.preset.postprocessors;
 
-import org.springframework.lang.NonNullApi;
+import org.jspecify.annotations.NullMarked;

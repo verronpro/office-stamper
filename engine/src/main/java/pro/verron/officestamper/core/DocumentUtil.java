@@ -10,10 +10,10 @@ import org.docx4j.openpackaging.parts.JaxbXmlPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.*;
+import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.util.function.ThrowingFunction;
 import pro.verron.officestamper.api.OfficeStamperException;
 

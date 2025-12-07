@@ -747,7 +747,10 @@ class ProcessorRepeatDocPartTest {
     void shouldAcceptList() {
         var config = standard();
         var stamper = new TestDocxStamper<>(config);
-        var template = makeResource("<1|>${name}<|1><1|repeatDocPart(names)>");
+        var template = makeAsciiDocResource("""
+                comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
+                ${name}
+                """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
@@ -769,7 +772,10 @@ class ProcessorRepeatDocPartTest {
     void shouldAcceptSet() {
         var config = standard();
         var stamper = new TestDocxStamper<>(config);
-        var template = makeResource("<1|>${name}<|1><1|repeatDocPart(names)>");
+        var template = makeAsciiDocResource("""
+                comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
+                ${name}
+                """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
@@ -791,7 +797,10 @@ class ProcessorRepeatDocPartTest {
     void shouldAcceptQueue() {
         var config = standard();
         var stamper = new TestDocxStamper<>(config);
-        var template = makeResource("<1|>${name}<|1><1|repeatDocPart(names)>");
+        var template = makeAsciiDocResource("""
+                comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
+                ${name}
+                """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """

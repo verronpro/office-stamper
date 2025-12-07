@@ -13,11 +13,7 @@ import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
 import pro.verron.officestamper.utils.WmlFactory;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
@@ -29,48 +25,21 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 public class TableResolver
         extends CommentProcessor
         implements CommentProcessorFactory.ITableResolver {
-    private final Map<Tbl, StampTable> cols = new HashMap<>();
-    private final Function<Tbl, List<Object>> nullSupplier;
 
-    private TableResolver(
-            ProcessorContext processorContext,
-            Function<Tbl, List<Object>> nullSupplier
-    ) {
+    public TableResolver(ProcessorContext processorContext) {
         super(processorContext);
-        this.nullSupplier = nullSupplier;
     }
 
-    /// Generate a new [TableResolver] instance where value is replaced by an empty list when <code>null</code>
-    ///
-    /// @return a new [TableResolver] instance
-    public static CommentProcessor newInstance(ProcessorContext processorContext) {
-        return new TableResolver(processorContext, _ -> Collections.emptyList());
-    }
-
-    /// {@inheritDoc}
     @Override
     public void resolveTable(@Nullable StampTable givenTable) {
         var tbl = paragraph().parent(Tbl.class)
                              .orElseThrow(throwing("Paragraph is not within a table!"));
-        cols.put(tbl, givenTable);
-        commitChanges();
-    }
-
-    public void commitChanges() {
-        for (Map.Entry<Tbl, StampTable> entry : cols.entrySet()) {
-            Tbl wordTable = entry.getKey();
-
-            StampTable stampedTable = entry.getValue();
-
-            if (stampedTable != null) {
-                replaceTableInplace(wordTable, stampedTable);
-            }
-            else {
-                List<Object> tableParentContent = ((ContentAccessor) wordTable.getParent()).getContent();
-                int tablePosition = tableParentContent.indexOf(wordTable);
-                List<Object> toInsert = nullSupplier.apply(wordTable);
-                tableParentContent.set(tablePosition, toInsert);
-            }
+        if (givenTable != null) {
+            replaceTableInplace(tbl, givenTable);
+        }
+        else {
+            List<Object> tableParentContent = ((ContentAccessor) tbl.getParent()).getContent();
+            tableParentContent.remove(tbl);
         }
     }
 

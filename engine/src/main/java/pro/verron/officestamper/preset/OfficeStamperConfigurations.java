@@ -88,7 +88,8 @@ public class OfficeStamperConfigurations {
                         (template, context, output) -> new DocxStamper(configuration).stamp(template,
                                 context,
                                 output)));
-        configuration.addCommentProcessor(ITableResolver.class, TableResolver::newInstance);
+        configuration.addCommentProcessor(ITableResolver.class,
+                processorContext1 -> new TableResolver(processorContext1));
         configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance);
         configuration.addCommentProcessor(IReplaceWithProcessor.class,
                 processorContext -> ReplaceWithProcessor.newInstance(processorContext));

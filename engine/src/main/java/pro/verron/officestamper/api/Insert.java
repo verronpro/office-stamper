@@ -2,7 +2,7 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 

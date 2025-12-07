@@ -6,7 +6,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.math.BigInteger;

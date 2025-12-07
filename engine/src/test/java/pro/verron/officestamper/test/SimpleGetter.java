@@ -1,9 +1,9 @@
 package pro.verron.officestamper.test;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypedValue;
-import org.springframework.lang.NonNull;
 
 /// @author Joseph Verron
 /// @version ${version}

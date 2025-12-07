@@ -2,7 +2,7 @@ package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.R;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.utils.WmlFactory;

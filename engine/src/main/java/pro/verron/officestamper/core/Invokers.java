@@ -1,11 +1,11 @@
 package pro.verron.officestamper.core;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.MethodResolver;
 import org.springframework.expression.TypedValue;
-import org.springframework.lang.Nullable;
 import pro.verron.officestamper.api.CustomFunction;
 
 import java.util.ArrayDeque;

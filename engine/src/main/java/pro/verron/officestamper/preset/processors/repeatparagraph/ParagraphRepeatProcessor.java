@@ -3,7 +3,7 @@ package pro.verron.officestamper.preset.processors.repeatparagraph;
 import org.docx4j.XmlUtils;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.core.CommentUtil;

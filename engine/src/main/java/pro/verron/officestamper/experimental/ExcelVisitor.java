@@ -11,9 +11,9 @@ import org.docx4j.openpackaging.parts.SpreadsheetML.Styles;
 import org.docx4j.openpackaging.parts.SpreadsheetML.WorkbookPart;
 import org.docx4j.openpackaging.parts.SpreadsheetML.WorksheetPart;
 import org.docx4j.openpackaging.parts.ThemePart;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import org.xlsx4j.sml.*;
 import pro.verron.officestamper.api.OfficeStamperException;
 

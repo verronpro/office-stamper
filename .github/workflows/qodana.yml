@@ -44,7 +44,7 @@ jobs:
 
       - run: mvn -B -ntp test
 
-      - run: cp /engine/target/site/jacoco/jacoco.xml /.qodana/code-coverage
+      - run: cp ${{ runner.temp }}/engine/target/site/jacoco/jacoco.xml ${{ runner.temp }}/.qodana/code-coverage
 
       - uses: github/codeql-action/analyze@v4
         with:
@@ -53,7 +53,6 @@ jobs:
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.2
         with:
-          boostrap: copy engine/target/site/jacoco/jacoco.xml /.qodana/code-coverage
           args: |
             --baseline,qodana.sarif.json,
             --linter,qodana-jvm-community,

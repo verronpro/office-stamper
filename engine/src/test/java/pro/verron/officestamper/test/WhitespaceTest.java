@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
+import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
 import static pro.verron.officestamper.test.TestUtils.makeResource;
 
 @DisplayName("Whitespaces manipulations") class WhitespaceTest {
@@ -34,7 +35,7 @@ import static pro.verron.officestamper.test.TestUtils.makeResource;
     @ParameterizedTest(name = "Should keep any number of spaces ({argumentSetName})")
     void should_preserve_spaces(ContextFactory factory, String in, String out) {
         var config = OfficeStamperConfigurations.standard();
-        var template = makeResource("Space ${name}");
+        var template = makeAsciiDocResource("Space ${name}");
         var context = factory.name(in);
 
         var stamper = new TestDocxStamper<>(config);

@@ -7,8 +7,8 @@ import pro.verron.officestamper.core.DocumentUtil;
 
 import java.util.regex.Pattern;
 
-import static pro.verron.officestamper.utils.WmlUtils.asString;
-import static pro.verron.officestamper.utils.WmlUtils.insertSmartTag;
+import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
+import static pro.verron.officestamper.utils.wml.WmlUtils.insertSmartTag;
 
 public class PrepareInlinePlaceholders
         implements PreProcessor {

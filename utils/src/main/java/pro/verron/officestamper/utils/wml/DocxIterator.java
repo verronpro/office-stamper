@@ -1,15 +1,14 @@
-package pro.verron.officestamper.core;
+package pro.verron.officestamper.utils.wml;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.utils.iterator.ResetableIterator;
 
 import java.util.*;
 import java.util.function.Supplier;
 
 import static org.docx4j.XmlUtils.unwrap;
-import static pro.verron.officestamper.core.Hook.isTagElement;
 
 /// An iterator that allows the traversal of objects within a WordprocessingML-based document part. The iterator
 /// supports nested structures, enabling iteration over content that may have hierarchical data, like paragraphs,
@@ -24,7 +23,7 @@ public class DocxIterator
     private Queue<Iterator<?>> iteratorQueue;
     private @Nullable Object next;
 
-    private DocxIterator(ContentAccessor contentAccessor) {
+    public DocxIterator(ContentAccessor contentAccessor) {
         this(contentAccessor.getContent()::iterator);
     }
 
@@ -52,27 +51,6 @@ public class DocxIterator
         return new DocxIterator(contentAccessor).filter(R.class::isInstance)
                                                 .map(R.class::cast);
 
-    }
-
-    public static ResetableIterator<Hook> ofHooks(ContentAccessor contentAccessor, DocxPart part) {
-        return new DocxIterator(contentAccessor).filter(DocxIterator::isPotentialHook)
-                                                .map(o -> asHook(part, o));
-    }
-
-    private static boolean isPotentialHook(Object o) {
-        return switch (o) {
-            case CommentRangeStart _ -> true;
-            case CTSmartTagRun tag when isTagElement(tag, "officestamper") -> true;
-            default -> false;
-        };
-    }
-
-    private static Hook asHook(DocxPart part, Object o) {
-        return switch (o) {
-            case CommentRangeStart commentRangeStart -> Hook.newCommentHook(part, commentRangeStart);
-            case CTSmartTagRun tag -> Hook.newTagHook(part, tag);
-            default -> throw new IllegalArgumentException("Unexpected value: " + o);
-        };
     }
 
     @Override
@@ -109,7 +87,6 @@ public class DocxIterator
         }
         while (!iteratorQueue.isEmpty() && next == null) {
             var nextIterator = iteratorQueue.poll();
-            if (nextIterator == null) break;
             if (nextIterator.hasNext()) {
                 next = unwrap(nextIterator.next());
                 iteratorQueue.add(nextIterator);

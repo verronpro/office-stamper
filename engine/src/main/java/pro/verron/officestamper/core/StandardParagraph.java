@@ -6,7 +6,8 @@ import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
-import pro.verron.officestamper.utils.WmlUtils;
+import pro.verron.officestamper.utils.wml.StandardRun;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
-import static pro.verron.officestamper.utils.WmlUtils.getFirstParentWithClass;
+import static pro.verron.officestamper.utils.wml.WmlUtils.getFirstParentWithClass;
 
 /// Represents a wrapper for managing and manipulating DOCX paragraph elements. This class provides methods to
 /// manipulate the underlying paragraph content, process placeholders, and interact with runs within the paragraph.
@@ -102,7 +103,7 @@ public class StandardParagraph
 
     @Override
     public void replace(String expression, Insert insert) {
-        var newContents = WmlUtils.replaceExpressionWithRun(() -> p, expression, insert);
+        var newContents = WmlUtils.replaceExpressionWithRun(() -> p, expression, insert.elements(), insert::setRPr);
         var content = contents.getContent();
         content.clear();
         content.addAll(newContents);
@@ -126,7 +127,7 @@ public class StandardParagraph
             throw new OfficeStamperException(msg.formatted(end, this));
         }
         var expression = extractExpression(start, end);
-        var newContents = WmlUtils.replaceExpressionWithRun(() -> p, expression, insert);
+        var newContents = WmlUtils.replaceExpressionWithRun(() -> p, expression, insert.elements(), insert::setRPr);
         content.clear();
         content.addAll(newContents);
     }

@@ -8,7 +8,7 @@ import org.docx4j.wml.SectPr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.utils.WmlFactory;
+import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.util.List;
 import java.util.Optional;

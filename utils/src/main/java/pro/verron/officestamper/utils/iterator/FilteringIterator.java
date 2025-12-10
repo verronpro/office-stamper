@@ -1,4 +1,4 @@
-package pro.verron.officestamper.core;
+package pro.verron.officestamper.utils.iterator;
 
 import org.jspecify.annotations.Nullable;
 

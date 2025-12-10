@@ -8,7 +8,7 @@ import pro.verron.officestamper.api.ObjectResolver;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pro.verron.officestamper.utils.WmlFactory.*;
+import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
 /// This class is an implementation of the [ObjectResolver] interface that resolves objects by converting them to a
 /// string representation using the [Object#toString()] method and creating a new run with the resolved content.

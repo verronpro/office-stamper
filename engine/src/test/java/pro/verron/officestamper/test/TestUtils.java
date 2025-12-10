@@ -7,7 +7,8 @@ import org.docx4j.wml.*;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.asciidoc.AsciiDocCompiler;
 import pro.verron.officestamper.preset.Image;
-import pro.verron.officestamper.utils.WmlFactory;
+import pro.verron.officestamper.utils.wml.DocxIterator;
+import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +19,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
+import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 
 /// A utility class for testing.

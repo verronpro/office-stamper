@@ -7,7 +7,7 @@ import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.DocxIterator;
+import pro.verron.officestamper.core.Hook;
 import pro.verron.officestamper.core.SectionUtil;
 import pro.verron.officestamper.core.TextualDocxPart;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
@@ -65,8 +65,8 @@ public class ParagraphRepeatProcessor
                             var part = new TextualDocxPart(contextPart.document());
                             var branch = context.branch();
                             var contextKey = branch.add(expressionContext);
-                            DocxIterator.ofHooks(p, part)
-                                        .forEachRemaining(hook -> hook.setContextKey(contextKey));
+                            Hook.ofHooks(p, part)
+                                .forEachRemaining(hook -> hook.setContextKey(contextKey));
                             paragraphsToAdd.add(p);
                         }
                     });

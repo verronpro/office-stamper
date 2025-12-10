@@ -5,7 +5,7 @@ import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
 
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
+import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 /// The Null2DefaultResolver class is an implementation of the
 /// [ObjectResolver] interface

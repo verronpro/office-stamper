@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.utils.WmlFactory.*;
+import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
 /// Standard implementation of the [Comment] interface. Represents a comment in a DOCX document with its associated
 /// range markers and content.

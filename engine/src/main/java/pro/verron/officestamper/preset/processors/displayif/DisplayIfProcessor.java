@@ -9,7 +9,7 @@ import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
-import pro.verron.officestamper.utils.WmlUtils;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.ArrayList;
 import java.util.List;

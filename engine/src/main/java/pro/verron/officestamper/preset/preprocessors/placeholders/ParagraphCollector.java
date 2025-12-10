@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static pro.verron.officestamper.utils.WmlUtils.asString;
+import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
 
 public class ParagraphCollector
         extends TraversalUtilVisitor<P> {

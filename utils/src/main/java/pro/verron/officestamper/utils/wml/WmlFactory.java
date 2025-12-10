@@ -1,4 +1,4 @@
-package pro.verron.officestamper.utils;
+package pro.verron.officestamper.utils.wml;
 
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
@@ -7,7 +7,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.UtilsException;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class WmlFactory {
     private static final Random RANDOM = new Random();
 
     private WmlFactory() {
-        throw new OfficeStamperException("Utility class");
+        throw new UtilsException("Utility class");
     }
 
     /// Creates a new paragraph containing a single drawing element.
@@ -229,7 +229,7 @@ public class WmlFactory {
                     ? imagePart.createImageInline(filenameHint, altText, id1, id2, false)
                     : imagePart.createImageInline(filenameHint, altText, id1, id2, false, maxWidth);
         } catch (Exception e) {
-            throw new OfficeStamperException(e);
+            throw new UtilsException(e);
         }
     }
 
@@ -318,7 +318,7 @@ public class WmlFactory {
             mainDocumentPart.addTargetPart(cp);
             return aPackage;
         } catch (InvalidFormatException e) {
-            throw new OfficeStamperException(e);
+            throw new UtilsException(e);
         }
     }
 
@@ -331,7 +331,7 @@ public class WmlFactory {
         try {
             return new CommentsPart();
         } catch (InvalidFormatException e) {
-            throw new OfficeStamperException(e);
+            throw new UtilsException(e);
         }
     }
 

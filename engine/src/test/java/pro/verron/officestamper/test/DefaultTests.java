@@ -315,9 +315,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 This paragraph is untouched.
                 
-                In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350.
+                In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8 kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350.
                 
-                This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350 in the middle.
+                This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8 kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350 in the middle.
                 
                 """;
         return arguments("Image Type resolver integration test", standard(), context, template, expected);
@@ -332,9 +332,9 @@ import static pro.verron.officestamper.test.TestUtils.*;
                 
                 This paragraph is untouched.
                 
-                In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000.
+                In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8 kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000.
                 
-                This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000 in the middle.
+                This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8 kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000 in the middle.
                 
                 """;
         return arguments("Image Type resolver integration test (with max width)",

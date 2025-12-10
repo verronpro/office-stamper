@@ -20,7 +20,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return package with rendered content
     public static WordprocessingMLPackage toDocx(String asciidoc) {
-        return toDocx(parse(asciidoc));
+        return toDocx(toAsciiModel(asciidoc));
     }
 
     /// Compiles the parsed model to a WordprocessingMLPackage.
@@ -37,7 +37,7 @@ public final class AsciiDocCompiler {
     /// @param asciidoc source text
     ///
     /// @return parsed model
-    public static AsciiDocModel parse(String asciidoc) {
+    public static AsciiDocModel toAsciiModel(String asciidoc) {
         return AsciiDocParser.parse(asciidoc);
     }
 
@@ -47,7 +47,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return scene with rendered content
     public static Scene toScene(String asciidoc) {
-        return toScene(parse(asciidoc));
+        return toScene(toAsciiModel(asciidoc));
     }
 
     /// Compiles the parsed model to a JavaFX Scene.

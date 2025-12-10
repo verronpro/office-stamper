@@ -39,8 +39,7 @@ final class DocxToAsciiDoc {
     private static String stringifyParagraph(P p, StyleDefinitionsPart styles, AsciiDocDialect dialect) {
         if (dialect == AsciiDocDialect.COMPAT) {
             String runs = stringifyRuns(p);
-            String decorated = applyParagraphStyle(runs, p.getPPr(), styles);
-            return decorated;
+            return applyParagraphStyle(runs, p.getPPr(), styles);
         }
         // ADOC (initial simple): just raw text for now
         return extractText(p);
@@ -157,9 +156,11 @@ final class DocxToAsciiDoc {
             }
             else if (rv instanceof Br br) {
                 STBrType type = br.getType();
-                if (type == STBrType.PAGE) sb.append("\n[page-break]\n<<<\n");
-                else if (type == STBrType.COLUMN) sb.append("\n[col-break]\n<<<\n");
-                else sb.append("<br/>\n");
+                switch (type) {
+                    case STBrType.PAGE -> sb.append("\n[page-break]\n<<<\n");
+                    case STBrType.COLUMN -> sb.append("\n[col-break]\n<<<\n");
+                    default -> sb.append("<br/>\n");
+                }
             }
         }
         return sb.toString();
@@ -199,7 +200,7 @@ final class DocxToAsciiDoc {
             int lvl = Integer.parseInt(m.group(1));
             String prefix; // Stringifier maps heading 1 -> "== "
             // In Stringifier, "heading 1" => "== ", i.e., level + 1
-            prefix = "=".repeat(Math.min(7, Math.max(1, lvl + 1)));
+            prefix = "=".repeat(Math.clamp(lvl, 1, 6));
             return prefix + " " + text + "\n";
         }
         return null;

@@ -56,7 +56,7 @@ public class TestUtils {
     public static InputStream makeAsciiDocResource(String asciidoc) {
         // Extract comment macros and strip them from the AsciiDoc before compilation
         var extraction = extractAndStripCommentMacros(asciidoc);
-        var model = AsciiDocCompiler.parse(extraction.cleanedAsciiDoc());
+        var model = AsciiDocCompiler.toAsciiModel(extraction.cleanedAsciiDoc());
         WordprocessingMLPackage aPackage = AsciiDocCompiler.toDocx(model);
         // Apply comments specified by macros onto the generated DOCX
         applyCommentMacros(aPackage, model, extraction.specs());

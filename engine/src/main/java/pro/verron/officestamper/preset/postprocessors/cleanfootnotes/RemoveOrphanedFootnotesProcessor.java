@@ -6,7 +6,7 @@ import org.docx4j.wml.CTFootnotes;
 import org.docx4j.wml.CTFtnEdn;
 import pro.verron.officestamper.api.PostProcessor;
 import pro.verron.officestamper.preset.postprocessors.NoteRefsVisitor;
-import pro.verron.officestamper.utils.WmlUtils;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.Collection;
 import java.util.Optional;

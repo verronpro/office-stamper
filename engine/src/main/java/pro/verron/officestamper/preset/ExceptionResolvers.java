@@ -6,7 +6,7 @@ import pro.verron.officestamper.api.ExceptionResolver;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
+import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 
 /// The ExceptionResolvers class provides a set of static factory methods to create different types of ExceptionResolver

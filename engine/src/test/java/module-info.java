@@ -16,6 +16,7 @@ module pro.verron.officestamper.test {
     requires org.slf4j;
     requires jakarta.xml.bind;
     requires pro.verron.officestamper.asciidoc;
+    requires pro.verron.officestamper.utils;
 
     opens pro.verron.officestamper.test;
     exports pro.verron.officestamper.test;

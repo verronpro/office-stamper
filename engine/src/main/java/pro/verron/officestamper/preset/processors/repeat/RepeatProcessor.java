@@ -9,7 +9,7 @@ import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.DocxIterator;
+import pro.verron.officestamper.core.Hook;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 import java.util.ArrayList;
@@ -74,8 +74,8 @@ public class RepeatProcessor
             var rowClone = XmlUtils.deepCopy(row);
             CommentUtil.deleteCommentFromElements(comment(), rowClone.getContent());
             var contextKey = branch.add(expressionContext);
-            DocxIterator.ofHooks(rowClone, part)
-                        .forEachRemaining(hook -> hook.setContextKey(contextKey));
+            Hook.ofHooks(rowClone, part)
+                .forEachRemaining(hook -> hook.setContextKey(contextKey));
             changes.add(rowClone);
         }
         content.addAll(index, changes);

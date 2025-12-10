@@ -5,7 +5,7 @@ import org.docx4j.wml.R;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.utils.WmlFactory;
+import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.io.IOException;
 import java.io.InputStream;

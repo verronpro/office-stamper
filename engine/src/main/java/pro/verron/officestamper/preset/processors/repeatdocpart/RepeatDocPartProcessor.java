@@ -16,7 +16,7 @@ import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.DocumentUtil;
 import pro.verron.officestamper.core.SectionUtil;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
-import pro.verron.officestamper.utils.WmlFactory;
+import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;

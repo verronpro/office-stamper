@@ -10,11 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PreProcessor;
-import pro.verron.officestamper.utils.WmlUtils;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.*;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 
 public class RemoveMalformedComments
@@ -63,7 +64,7 @@ public class RemoveMalformedComments
         Set<BigInteger> writtenCommentsId = Optional.ofNullable(mainDocumentPart.getCommentsPart())
                                                     .map(RemoveMalformedComments::tryGetCommentsPart)
                                                     .map(Comments::getComment)
-                                                    .orElse(Collections.emptyList())
+                                                    .orElse(emptyList())
                                                     .stream()
                                                     .filter(c -> !isEmpty(c))
                                                     .map(CTMarkup::getId)

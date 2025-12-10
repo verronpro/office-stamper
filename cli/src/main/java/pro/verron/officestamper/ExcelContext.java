@@ -5,7 +5,7 @@ import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.parts.SpreadsheetML.WorkbookPart;
 import org.docx4j.openpackaging.parts.SpreadsheetML.WorksheetPart;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
 import org.xlsx4j.sml.Row;
 import org.xlsx4j.sml.Sheet;
@@ -109,7 +109,7 @@ public class ExcelContext
     }
 
     @Override
-    public @NotNull Set<Entry<String, List<Map<String, String>>>> entrySet() {
+    public @NonNull Set<Entry<String, List<Map<String, String>>>> entrySet() {
         return source.entrySet();
     }
 

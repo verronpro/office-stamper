@@ -7,7 +7,7 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.utils.WmlUtils;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.*;

@@ -3,7 +3,7 @@ package pro.verron.officestamper.core.functions;
 import pro.verron.officestamper.api.CustomFunction;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
-import pro.verron.officestamper.utils.TriFunction;
+import pro.verron.officestamper.utils.function.TriFunction;
 
 import java.util.List;
 import java.util.function.Function;

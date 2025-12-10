@@ -1,4 +1,4 @@
-package pro.verron.officestamper.utils;
+package pro.verron.officestamper.utils.wml;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
@@ -18,16 +18,15 @@ import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.verron.officestamper.api.Insert;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.core.StandardRun;
+import pro.verron.officestamper.utils.UtilsException;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.utils.WmlFactory.*;
+import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
 /// Utility class with methods to help in the interaction with WordprocessingMLPackage documents and their elements,
 /// such as comments, parents, and child elements.
@@ -37,7 +36,7 @@ public final class WmlUtils {
     private static final Logger log = LoggerFactory.getLogger(WmlUtils.class);
 
     private WmlUtils() {
-        throw new OfficeStamperException("Utility class shouldn't be instantiated");
+        throw new UtilsException("Utility class shouldn't be instantiated");
     }
 
     /// Attempts to find the first parent of a given child element that is an instance of the specified class within the
@@ -94,7 +93,7 @@ public final class WmlUtils {
         try {
             return new PartName(partName);
         } catch (InvalidFormatException e) {
-            throw new OfficeStamperException(e);
+            throw new UtilsException(e);
         }
     }
 
@@ -102,7 +101,7 @@ public final class WmlUtils {
         try {
             return wordComments.getContents();
         } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
+            throw new UtilsException(e);
         }
     }
 
@@ -120,14 +119,14 @@ public final class WmlUtils {
     ///
     /// @param child the child element to be removed
     ///
-    /// @throws OfficeStamperException if the parent of the child element is of an unexpected type
+    /// @throws UtilsException if the parent of the child element is of an unexpected type
     public static void remove(Child child) {
         switch (child.getParent()) {
             case ContentAccessor parent -> remove(parent, child);
             case CTFootnotes parent -> remove(parent, child);
             case CTEndnotes parent -> remove(parent, child);
             case SdtRun parent -> remove(parent, child);
-            default -> throw new OfficeStamperException("Unexpected value: " + child.getParent());
+            default -> throw new UtilsException("Unexpected value: " + child.getParent());
         }
         if (child.getParent() instanceof Tc cell) ensureValidity(cell);
     }
@@ -277,7 +276,7 @@ public final class WmlUtils {
         var run = newRun(expression);
         var smartTag = newSmartTag("officestamper", run, newCtAttr("type", element));
         findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
-        return replace(paragraph, new Insert(smartTag), start, end);
+        return replace(paragraph, List.of(smartTag), start, end);
     }
 
     public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
@@ -293,7 +292,10 @@ public final class WmlUtils {
         return Optional.ofNullable(firstRunPr);
     }
 
-    public static List<Object> replace(ContentAccessor contentAccessor, Insert insert, int startIndex, int endIndex) {
+    public static List<Object> replace(
+            ContentAccessor contentAccessor, List<Object> insert, int startIndex,
+            int endIndex
+    ) {
         var runs = StandardRun.wrap(contentAccessor);
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(startIndex, endIndex))
@@ -313,15 +315,15 @@ public final class WmlUtils {
 
             if (expressionSpansCompleteRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.addAll(firstIndex, insert.elements());
+                firstSiblings.addAll(firstIndex, insert);
             }
             else if (expressionAtStartOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.addAll(firstIndex, insert.elements());
+                firstSiblings.addAll(firstIndex, insert);
             }
             else if (expressionAtEndOfRun) {
                 firstRun.replace(startIndex, endIndex, "");
-                firstSiblings.addAll(firstIndex + 1, insert.elements());
+                firstSiblings.addAll(firstIndex + 1, insert);
             }
             else if (expressionWithinRun) {
                 var originalRun = firstRun.run();
@@ -329,14 +331,14 @@ public final class WmlUtils {
                 var newStartRun = create(firstRun.left(startIndex), originalRPr);
                 var newEndRun = create(firstRun.right(endIndex), originalRPr);
                 firstSiblings.remove(firstIndex);
-                firstSiblings.addAll(firstIndex, wrap(newStartRun, insert.elements(), newEndRun));
+                firstSiblings.addAll(firstIndex, wrap(newStartRun, insert, newEndRun));
             }
         }
         else {
             StandardRun lastRun = affectedRuns.getLast();
             removeExpression(firstSiblings, firstRun, startIndex, endIndex, lastRun, affectedRuns);
             // add replacement run between first and last run
-            firstSiblings.addAll(firstIndex + 1, insert.elements());
+            firstSiblings.addAll(firstIndex + 1, insert);
         }
         return new ArrayList<>(contentAccessor.getContent());
     }
@@ -418,7 +420,8 @@ public final class WmlUtils {
     public static List<Object> replaceExpressionWithRun(
             ContentAccessor contentAccessor,
             String expression,
-            Insert insert
+            List<Object> insert,
+            Consumer<RPr> onRPr
     ) {
         var text = asString(contentAccessor);
         int matchStartIndex = text.indexOf(expression);
@@ -427,7 +430,7 @@ public final class WmlUtils {
             return new ArrayList<>(contentAccessor.getContent());
         }
         int matchEndIndex = matchStartIndex + expression.length();
-        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(insert::setRPr);
+        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(onRPr);
         return replace(contentAccessor, insert, matchStartIndex, matchEndIndex);
     }
 }

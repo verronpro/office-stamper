@@ -30,9 +30,9 @@ module pro.verron.officestamper {
     requires static org.apache.commons.io;
     requires static org.slf4j;
     requires static jakarta.xml.bind;
-    requires org.jetbrains.annotations;
     requires org.docx4j.openxml_objects;
     requires org.jspecify;
+    requires pro.verron.officestamper.utils;
 
     opens pro.verron.officestamper.api;
     exports pro.verron.officestamper.api;
@@ -43,6 +43,4 @@ module pro.verron.officestamper {
     opens pro.verron.officestamper.experimental to pro.verron.officestamper.test;
     exports pro.verron.officestamper.experimental to pro.verron.officestamper.test;
     exports pro.verron.officestamper.preset.preprocessors.placeholders to pro.verron.officestamper.test;
-    exports pro.verron.officestamper.utils;
-    opens pro.verron.officestamper.utils;
 }

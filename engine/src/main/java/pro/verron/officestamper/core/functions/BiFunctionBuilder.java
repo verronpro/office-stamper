@@ -1,6 +1,5 @@
 package pro.verron.officestamper.core.functions;
 
-import org.jetbrains.annotations.Contract;
 import pro.verron.officestamper.api.CustomFunction;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
@@ -29,7 +28,7 @@ public class BiFunctionBuilder<T, U>
     /// @param name the name given to the bifunctional custom function to identify it.
     /// @param class0 the `Class` type that represents the type of the first input parameter.
     /// @param class1 the `Class` type that represents the type of the second input parameter.
-    @Contract(pure = true)
+
     public BiFunctionBuilder(DocxStamperConfiguration source, String name, Class<T> class0, Class<U> class1) {
         this.source = source;
         this.name = name;

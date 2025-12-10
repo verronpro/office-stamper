@@ -12,14 +12,13 @@ class PrepareInlinePlaceholdersTest {
     void process() {
         var preparePlaceholders = new PrepareInlinePlaceholders("(#\\{([^{]+?)})", "processor");
         var document = makeAsciiDocDocx("Hello, #{name}!");
-        var stringifier = new Stringifier(() -> document);
-        var before = stringifier.stringify(document);
+        var before = Stringifier.stringifyWord(document);
         assertEquals("""
                 Hello, #{name}!
                 
                 """, before);
         preparePlaceholders.process(document);
-        var actual = stringifier.stringify(document);
+        var actual = Stringifier.stringifyWord(document);
         assertEquals("""
                 Hello, <tag element="officestamper" attr="type:processor">name<\\tag>!
                 

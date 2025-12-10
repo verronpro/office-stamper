@@ -12,8 +12,6 @@
 
     <name>Office-stamper CLI</name>
     <artifactId>cli</artifactId>
-    <version>3.0</version>
-
     <packaging>jar</packaging>
 
     <properties>

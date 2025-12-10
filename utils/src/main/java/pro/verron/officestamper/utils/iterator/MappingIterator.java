@@ -13,7 +13,7 @@ import java.util.function.Function;
 ///
 /// @param <S> the type of the source elements in the parent iterator
 /// @param <T> the type of the transformed elements returned by this iterator
-public class MappingIterator<S, T>
+class MappingIterator<S, T>
         implements ResetableIterator<T> {
     private final Function<S, T> mapper;
     private final ResetableIterator<S> source;
@@ -21,7 +21,7 @@ public class MappingIterator<S, T>
 
     /// Constructs a MappingIterator with a parent iterator and a mapping function.
     ///
-    /// @param source the underlying ResetableIterator containing the source elements
+    /// @param source the underlying [ResetableIterator] containing the source elements
     /// @param mapper a function to transform the elements into a different type
     public MappingIterator(ResetableIterator<S> source, Function<S, T> mapper) {
         this.source = source;

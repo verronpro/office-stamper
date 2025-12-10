@@ -54,9 +54,9 @@ class ProcessorRepeatDocPartTest {
         var expected = """
                 
                 
-                /word/media/document_image_rId11.png:rId11:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                /word/media/document_image_rId11.png:rId11:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
                 
-                /word/media/document_image_rId12.jpeg:rId12:image/jpeg:407.5kB:sha1=Ujo3UzL8WmeZN/1K6weBydaI73I=:cy=$d:6120130
+                /word/media/document_image_rId12.jpeg:rId12:image/jpeg:407.5 kB:sha1=Ujo3UzL8WmeZN/1K6weBydaI73I=:cy=$d:6120130
                 
                 
                 
@@ -66,7 +66,7 @@ class ProcessorRepeatDocPartTest {
                 
                 Always rendered:
                 
-                /word/media/document_image_rId13.png:rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                /word/media/document_image_rId13.png:rId13:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
                 
                 
                 
@@ -92,13 +92,13 @@ class ProcessorRepeatDocPartTest {
                         
                         This should be repeated : first doc part
                         
-                        /word/media/document_image_rId12.png:rId12:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
+                        /word/media/document_image_rId12.png:rId12:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
                         
                         This should be repeated too
                         
                         This should be repeated : second doc part
                         
-                        /word/media/document_image_rId13.png:rId13:image/png:193.6kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
+                        /word/media/document_image_rId13.png:rId13:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720
                         
                         This should be repeated too
                         

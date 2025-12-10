@@ -1,40 +1,36 @@
 package pro.verron.officestamper;
 
 
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-import pro.verron.officestamper.api.OfficeStamperException;
-
-import java.io.InputStreamReader;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import pro.verron.officestamper.api.OfficeStamperException;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static java.nio.file.Files.newOutputStream;
 
@@ -61,11 +57,19 @@ public class Main
             defaultValue = "word",
             description = "Stamper type (word, powerpoint)") private String stamperType;
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         var main = new Main();
         var cli = new CommandLine(main);
         int exitCode = cli.execute(args);
         System.exit(exitCode);
+    }
+
+    private static InputStream streamFile(Path path) {
+        try {
+            return Files.newInputStream(path);
+        } catch (IOException e) {
+            throw new OfficeStamperException(e);
+        }
     }
 
     @Override
@@ -120,14 +124,6 @@ public class Main
         if (path.endsWith(".json")) return processJson(path);
         if (path.endsWith(".xlsx")) return processExcel(path);
         throw new OfficeStamperException("Unsupported file type: " + path);
-    }
-
-    private static InputStream streamFile(Path path) {
-        try {
-            return Files.newInputStream(path);
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
     }
 
     /// Return a list of objects with the csv properties

@@ -57,7 +57,7 @@ public final class TestDocxStamper<T> {
     /// @since 1.6.6
     public String stampAndLoadAndExtract(InputStream template, T context) {
         var wordprocessingMLPackage = streamElements(template, context);
-        return new Stringifier(() -> wordprocessingMLPackage).stringify(wordprocessingMLPackage);
+        return Stringifier.stringifyWord(wordprocessingMLPackage);
     }
 
     private WordprocessingMLPackage streamElements(

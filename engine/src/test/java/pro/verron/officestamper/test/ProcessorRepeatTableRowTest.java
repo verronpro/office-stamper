@@ -259,6 +259,7 @@ class ProcessorRepeatTableRowTest {
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
                 |===
                 |${name}
+                
                 |===
                 """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");

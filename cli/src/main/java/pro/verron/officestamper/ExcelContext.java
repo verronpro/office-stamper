@@ -114,12 +114,12 @@ public class ExcelContext
     }
 
     @Override
-    public int hashCode() {
-        return super.hashCode();
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    public int hashCode() {
+        return super.hashCode();
     }
 }

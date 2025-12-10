@@ -2,7 +2,7 @@ package pro.verron.officestamper.api;
 
 import org.jspecify.annotations.Nullable;
 
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
+import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 /// This is an abstract class that provides a generic implementation for resolving objects to strings. It is used in
 /// conjunction with [ObjectResolver] interface to provide a flexible way to resolve different types of objects to

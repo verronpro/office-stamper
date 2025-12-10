@@ -1,6 +1,6 @@
 package pro.verron.officestamper.api;
 
-import pro.verron.officestamper.utils.TriFunction;
+import pro.verron.officestamper.utils.function.TriFunction;
 
 import java.util.List;
 import java.util.function.BiFunction;

@@ -1,4 +1,4 @@
-package pro.verron.officestamper.utils;
+package pro.verron.officestamper.utils.function;
 
 /// Represents a functional interface that takes three input arguments of types T, U, and V
 /// and produces a result of type W. This is a tri-arity specialization of a function, allowing

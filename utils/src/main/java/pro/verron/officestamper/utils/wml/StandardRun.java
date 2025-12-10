@@ -1,9 +1,8 @@
-package pro.verron.officestamper.core;
+package pro.verron.officestamper.utils.wml;
 
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
-import pro.verron.officestamper.utils.WmlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +39,20 @@ public record StandardRun(int startIndex, R run) {
         return runList;
     }
 
+    /// Calculates the length of the text content of this run.
+    ///
+    /// @return the length of the text in the current run.
+    public int length() {
+        return getText().length();
+    }
+
+    /// Returns the text string of a run.
+    ///
+    /// @return [String] representation of the run.
+    public String getText() {
+        return WmlUtils.asString(run);
+    }
+
     /// Finds the index of the first occurrence of the specified substring in the text of the current run.
     ///
     /// @param full the substring to search for within the run's text.
@@ -48,13 +61,6 @@ public record StandardRun(int startIndex, R run) {
     /// or &ndash;1 if the substring is not found.
     public int indexOf(String full) {
         return getText().indexOf(full);
-    }
-
-    /// Returns the text string of a run.
-    ///
-    /// @return [String] representation of the run.
-    public String getText() {
-        return WmlUtils.asString(run);
     }
 
     /// Retrieves the properties associated with this run.
@@ -93,13 +99,6 @@ public record StandardRun(int startIndex, R run) {
     /// @return the end index of the run.
     public int endIndex() {
         return startIndex + length();
-    }
-
-    /// Calculates the length of the text content of this run.
-    ///
-    /// @return the length of the text in the current run.
-    public int length() {
-        return getText().length();
     }
 
     /// Replaces the substring starting at the given index with the given replacement string.

@@ -150,7 +150,7 @@ public class DocxStamper
 
     private void process(DocxPart part, Object contextRoot) {
         var contextTree = new ContextTree(contextRoot);
-        var iterator = DocxIterator.ofHooks(part::content, part);
+        var iterator = Hook.ofHooks(part::content, part);
         while (iterator.hasNext()) {
             var hook = iterator.next();
             var officeStamperEvaluationContextFactory = computeEvaluationContext();

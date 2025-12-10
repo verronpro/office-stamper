@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Stream.Builder;
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
+import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 /// Utility class to retrieve elements from a document.
 ///

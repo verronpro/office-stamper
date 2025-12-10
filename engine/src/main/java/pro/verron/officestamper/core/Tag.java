@@ -10,7 +10,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static pro.verron.officestamper.utils.WmlUtils.asString;
+import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
 
 /// Represents a Tag entity consisting of a DocxPart and a CTSmartTagRun. A Tag provides functionality to manipulate and
 /// retrieve information related to smart tags embedded within a WordprocessingML-based document. This class offers

@@ -16,7 +16,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.raw;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getResource;
-import static pro.verron.officestamper.utils.WmlFactory.newRun;
+import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 @DisplayName("Custom processors features") class CustomProcessorTests {
 

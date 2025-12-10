@@ -12,7 +12,6 @@
 
     <name>Office-stamper engine</name>
     <artifactId>engine</artifactId>
-    <version>3.0</version>
 
     <description>
         Office-stamper is a Java template engine for DOCX documents
@@ -363,9 +362,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>26.0.2-1</version>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>utils</artifactId>
+            <version>3.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

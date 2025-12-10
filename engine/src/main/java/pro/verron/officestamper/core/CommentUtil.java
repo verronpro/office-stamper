@@ -12,15 +12,17 @@ import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.wml.DocxIterator;
 
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static org.docx4j.XmlUtils.unwrap;
-import static pro.verron.officestamper.utils.WmlFactory.newBody;
-import static pro.verron.officestamper.utils.WmlFactory.newComments;
+import static pro.verron.officestamper.utils.wml.WmlFactory.newBody;
+import static pro.verron.officestamper.utils.wml.WmlFactory.newComments;
 
 /// Utility class for working with comments in a DOCX document.
 ///
@@ -185,7 +187,7 @@ public class CommentUtil {
                         case CommentReference rcr when predicate.test(rcr.getId()) -> from(items, item);
                         case ContentAccessor ca -> findAll(ca, commentId);
                         case SdtRun sdtRun -> findAll(sdtRun, commentId);
-                        default -> Collections.emptyList();
+                        default -> emptyList();
                     });
                 });
                 return elementsToRemove;

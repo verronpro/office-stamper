@@ -16,15 +16,15 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 
-/// A utility class for testing.
-/// Provides methods for retrieving InputStreams from specified resource paths.
-/// Typically used for accessing test resources.
+/// A utility class for testing. Provides methods for retrieving InputStreams from specified resource paths. Typically
+/// used for accessing test resources.
 public class TestUtils {
 
     /// Retrieves an InputStream for the specified resource path.
@@ -79,7 +79,7 @@ public class TestUtils {
         var pattern = Pattern.compile("(?m)\\s*comment::([0-9]+)\\[([^]]*)]\\s*\n?");
         var matcher = pattern.matcher(asciidoc);
         var specs = new java.util.ArrayList<CommentSpec>();
-        var sb = new StringBuffer();
+        var sb = new StringBuilder();
         while (matcher.find()) {
             var id = new BigInteger(matcher.group(1));
             var attrs = matcher.group(2);
@@ -120,34 +120,12 @@ public class TestUtils {
         if (specs.isEmpty()) return;
         ensureCommentsPart(pkg);
         // Build flattened paragraph list in document order as per render
-        var paragraphs = new java.util.ArrayList<P>();
         var mdp = pkg.getMainDocumentPart();
-        for (Object o : mdp.getContent()) {
-            var val = o instanceof JAXBElement<?> j ? j.getValue() : o;
-            if (val instanceof P p) {
-                paragraphs.add(p);
-            }
-            else if (val instanceof Tbl tbl) {
-                for (Object trO : tbl.getContent()) {
-                    var trV = trO instanceof JAXBElement<?> jj ? jj.getValue() : trO;
-                    if (trV instanceof Tr tr) {
-                        for (Object tcO : tr.getContent()) {
-                            var tcV = tcO instanceof JAXBElement<?> jjj ? jjj.getValue() : tcO;
-                            if (tcV instanceof Tc tc) {
-                                // first paragraph of cell
-                                for (Object cp : tc.getContent()) {
-                                    var cpV = cp instanceof JAXBElement<?> j4 ? j4.getValue() : cp;
-                                    if (cpV instanceof P p) {
-                                        paragraphs.add(p);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        var paragraphs = new ArrayList<P>();
+
+        new DocxIterator(mdp).filter(P.class::isInstance)
+                             .map(P.class::cast)
+                             .forEachRemaining(paragraphs::add);
 
         for (var spec : specs) {
             // Add the comment to CommentsPart

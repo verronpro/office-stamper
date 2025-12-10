@@ -2,13 +2,10 @@ package pro.verron.officestamper.utils.wml;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
-import org.docx4j.XmlUtils;
 import org.docx4j.finders.CommentFinder;
 import org.docx4j.model.styles.StyleUtil;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.vml.CTShadow;
 import org.docx4j.vml.CTTextbox;
@@ -19,6 +16,7 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.utils.UtilsException;
+import pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -79,7 +77,7 @@ public final class WmlUtils {
     ///
     /// @return an Optional containing the Comment if found, or an empty Optional if not found.
     public static Optional<Comments.Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
-        var name = getPartName("/word/comments.xml");
+        var name = OpenpackagingFactory.newPartName("/word/comments.xml");
         var parts = document.getParts();
         var wordComments = (CommentsPart) parts.get(name);
         var comments = getComments(wordComments);
@@ -87,14 +85,6 @@ public final class WmlUtils {
                        .stream()
                        .filter(idEqual(id))
                        .findFirst();
-    }
-
-    private static PartName getPartName(String partName) {
-        try {
-            return new PartName(partName);
-        } catch (InvalidFormatException e) {
-            throw new UtilsException(e);
-        }
     }
 
     private static Comments getComments(CommentsPart wordComments) {
@@ -201,20 +191,6 @@ public final class WmlUtils {
         return element instanceof JAXBElement<?> jaxbElement ? jaxbElement.getValue() : element;
     }
 
-    /// Checks if the given object is serializable to XML.
-    ///
-    /// @param object the object to be checked for XML serialization
-    ///
-    /// @return true if the object can be serialized to XML, false otherwise
-    public static boolean serializable(Object object) {
-        try {
-            XmlUtils.marshaltoString(object);
-            return true;
-        } catch (Exception _) {
-            return false;
-        }
-    }
-
     /// Extracts textual content from a given object, handling various object types, such as runs, text elements, and
     /// other specific constructs. The method accounts for different cases, such as run breaks, hyphens, and other
     /// document-specific constructs, and converts them into corresponding string representations.
@@ -293,7 +269,9 @@ public final class WmlUtils {
     }
 
     public static List<Object> replace(
-            ContentAccessor contentAccessor, List<Object> insert, int startIndex,
+            ContentAccessor contentAccessor,
+            List<Object> insert,
+            int startIndex,
             int endIndex
     ) {
         var runs = StandardRun.wrap(contentAccessor);

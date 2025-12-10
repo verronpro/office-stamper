@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 /// its initial state, re-evaluating the elements based on the same logic.
 ///
 /// @param <T> the type of the source elements in the parent iterator
-public class FilteringIterator<T>
+class FilteringIterator<T>
         implements ResetableIterator<T> {
     private final Predicate<T> filter;
     private final ResetableIterator<T> source;
@@ -19,7 +19,7 @@ public class FilteringIterator<T>
 
     /// Constructs a MappingIterator with a parent iterator and a mapping function.
     ///
-    /// @param source the underlying ResetableIterator containing the source elements
+    /// @param source the underlying [ResetableIterator] containing the source elements
     /// @param mapper a function to transform the elements into a different type
     public FilteringIterator(ResetableIterator<T> source, Predicate<T> mapper) {
         this.source = source;

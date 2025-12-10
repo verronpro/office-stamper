@@ -24,61 +24,7 @@ public class WmlFactory {
     private static final Random RANDOM = new Random();
 
     private WmlFactory() {
-        throw new UtilsException("Utility class");
-    }
-
-    /// Creates a new paragraph containing a single drawing element.
-    ///
-    /// @param drawing The Drawing object to be included in the new paragraph.
-    ///
-    /// @return A new paragraph containing the provided drawing encapsulated in a run.
-    public static P newParagraph(Drawing drawing) {
-        return newParagraph(List.of(newRun(drawing)));
-    }
-
-    /// Creates a new paragraph containing the provided list of values.
-    ///
-    /// @param values A list of objects to be added to the new paragraph. These objects populate the content of
-    ///         the paragraph.
-    ///
-    /// @return A new paragraph containing the provided values.
-    public static P newParagraph(List<?> values) {
-        var paragraph = new P();
-        var paragraphContent = paragraph.getContent();
-        paragraphContent.addAll(values);
-        return paragraph;
-    }
-
-    /// Creates a new run containing a single drawing.
-    ///
-    /// @param value The Drawing object to be included in the new run.
-    ///
-    /// @return A new run encapsulating the provided drawing.
-    public static R newRun(Drawing value) {
-        return newRun(List.of(value));
-    }
-
-    /// Creates a new run containing the provided values deemed worth keeping.
-    ///
-    /// @param values A list of objects to be added to the new run. Objects are filtered based on a predefined
-    ///         criteria to determine if they are worth keeping.
-    ///
-    /// @return A new run containing the filtered values.
-    public static R newRun(List<Object> values) {
-        var run = new R();
-        var runContent = run.getContent();
-        runContent.addAll(values.stream()
-                                .filter(WmlFactory::worthKeeping)
-                                .collect(toCollection(ArrayList::new)));
-        return run;
-    }
-
-    private static boolean worthKeeping(Object o) {
-        if (o instanceof Text text) {
-            var value = text.getValue();
-            return !value.isEmpty();
-        }
-        return true;
+        throw new UtilsException("Utility class shouldn't be instantiated");
     }
 
     /// Creates a new comment with the provided value.
@@ -122,6 +68,19 @@ public class WmlFactory {
         return newRun(newText(value));
     }
 
+    /// Creates a new paragraph containing the provided list of values.
+    ///
+    /// @param values A list of objects to be added to the new paragraph. These objects populate the content of
+    ///         the paragraph.
+    ///
+    /// @return A new paragraph containing the provided values.
+    public static P newParagraph(List<?> values) {
+        var paragraph = new P();
+        var paragraphContent = paragraph.getContent();
+        paragraphContent.addAll(values);
+        return paragraph;
+    }
+
     /// Creates a new run containing a single text object.
     ///
     /// @param value The Text object to be included in the new run.
@@ -141,6 +100,31 @@ public class WmlFactory {
         text.setValue(value);
         text.setSpace("preserve");
         return text;
+    }
+
+    /// Creates a new run containing the provided values deemed worth keeping.
+    ///
+    /// @param values A list of objects to be added to the new run. Objects are filtered based on a predefined
+    ///         criteria to determine if they are worth keeping.
+    ///
+    /// @return A new run containing the filtered values.
+    public static R newRun(List<Object> values) {
+        var run = new R();
+        var runContent = run.getContent();
+        runContent.addAll(values.stream()
+                                .filter(WmlFactory::worthKeeping)
+                                .collect(toCollection(ArrayList::new)));
+        return run;
+    }
+
+    private static boolean worthKeeping(Object o) {
+        if (o instanceof Text text) return worthKeeping(text);
+        else return true;
+    }
+
+    private static boolean worthKeeping(Text text) {
+        var textValue = text.getValue();
+        return !textValue.isEmpty();
     }
 
     /// Creates a new Body object containing the provided elements.
@@ -212,7 +196,7 @@ public class WmlFactory {
     ///
     /// @return A new Inline object containing the specified image information.
     ///
-    /// @throws OfficeStamperException If there is an error creating the image inline.
+    /// @throws UtilsException If there is an error creating the image inline.
     public static Inline newInline(
             BinaryPartAbstractImage imagePart,
             String filenameHint,
@@ -231,6 +215,15 @@ public class WmlFactory {
         } catch (Exception e) {
             throw new UtilsException(e);
         }
+    }
+
+    /// Creates a new run containing a single drawing.
+    ///
+    /// @param value The Drawing object to be included in the new run.
+    ///
+    /// @return A new run encapsulating the provided drawing.
+    public static R newRun(Drawing value) {
+        return newRun(List.of(value));
     }
 
     /// Creates a new Drawing object containing the provided Inline object.

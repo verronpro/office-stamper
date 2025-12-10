@@ -4,6 +4,8 @@ module pro.verron.officestamper.asciidoc {
     requires org.asciidoctor.asciidoctorj.api;
     requires org.docx4j.core;
     requires org.docx4j.openxml_objects;
+    requires jakarta.xml.bind;
+    requires org.jruby;
 
     opens pro.verron.officestamper.asciidoc;
     exports pro.verron.officestamper.asciidoc;

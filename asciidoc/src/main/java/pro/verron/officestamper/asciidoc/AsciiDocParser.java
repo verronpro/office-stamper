@@ -2,12 +2,16 @@ package pro.verron.officestamper.asciidoc;
 
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Options;
-import org.asciidoctor.ast.Document;
-import org.asciidoctor.ast.Section;
-import org.asciidoctor.ast.StructuralNode;
+import org.asciidoctor.ast.*;
+import org.asciidoctor.ast.Block;
+import org.asciidoctor.ast.Cell;
+import org.asciidoctor.ast.Row;
+import org.asciidoctor.ast.Table;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 
@@ -27,8 +31,8 @@ public final class AsciiDocParser {
     ///
     /// Notes:
     ///  - If the document has a header/title (e.g. a leading "= Title"), it is emitted as a level-1 Heading.
-    ///  - Section levels are offset by +1 when a document title is present to preserve the perceived hierarchy
-    ///    of the previous homemade parser where "= Title" was treated as a heading, not a special header.
+    ///  - Section levels are offset by +1 when a document title is present to preserve the perceived hierarchy of the
+    /// previous homemade parser where "= Title" was treated as a heading, not a special header.
     ///
     /// @param asciidoc source text
     ///
@@ -45,152 +49,43 @@ public final class AsciiDocParser {
                                      .build();
             Document doc = engine.load(asciidoc, options);
 
-            boolean hasHeader = doc.getDoctitle() != null && !doc.getDoctitle()
-                                                                 .isBlank();
-            if (hasHeader) {
-                blocks.add(new AsciiDocModel.Heading(1, parseInlines(doc.getDoctitle())));
-            }
-
             for (StructuralNode child : doc.getBlocks()) {
-                traverse(child, blocks, hasHeader ? 1 : 0);
+                traverse(child, blocks);
             }
         }
 
         return AsciiDocModel.of(blocks);
     }
 
-    private static void traverse(StructuralNode node, List<AsciiDocModel.Block> out, int levelOffset) {
-        String context = node.getContext();
-        if (node instanceof Section section) {
-            int lvl = section.getLevel() + levelOffset;
-            if (lvl >= 1 && lvl <= 6) {
-                out.add(new AsciiDocModel.Heading(lvl, parseInlines(section.getTitle())));
-            }
-            for (StructuralNode b : section.getBlocks()) {
-                traverse(b, out, levelOffset);
-            }
-            return;
-        }
-
-        if ("table".equals(context)) {
-            List<AsciiDocModel.Row> rows = extractTableRowsViaReflection(node);
-            if (!rows.isEmpty()) {
-                out.add(new AsciiDocModel.Table(rows));
-                return;
-            }
-            // If extraction failed, continue traversal into children to salvage paragraphs
-        }
-
-        if ("paragraph".equals(context)) {
-            // Prefer the AST-provided paragraph text
-            Object content = node.getContent();
-            String text;
-            if (content == null) {
-                text = "";
-            }
-            else if (content instanceof String s) {
-                text = s.trim();
-            }
-            else if (content instanceof List<?> list) {
-                text = list.stream()
-                           .map(Object::toString)
-                           .reduce("", (a, b) -> a.isEmpty() ? b : a + " " + b)
-                           .trim();
-            }
-            else {
-                text = content.toString()
-                              .trim();
-            }
-            if (!text.isEmpty()) {
-                out.add(new AsciiDocModel.Paragraph(parseInlines(text)));
-            }
-        }
-        else {
-            // Recurse into other container nodes to keep paragraphs found within
-            List<StructuralNode> children = node.getBlocks();
-            if (children != null) {
-                for (StructuralNode c : children) traverse(c, out, levelOffset);
-            }
-        }
-    }
-
-    private static AsciiDocModel.Row convertRowFromCells(List<String> cellTexts) {
-        List<AsciiDocModel.Cell> cells = new ArrayList<>();
-        for (String raw : cellTexts) {
-            String txt = raw == null ? "" : raw;
-            cells.add(new AsciiDocModel.Cell(parseInlines(txt)));
-        }
-        return new AsciiDocModel.Row(cells);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static List<AsciiDocModel.Row> extractTableRowsViaReflection(StructuralNode tableNode) {
-        List<AsciiDocModel.Row> out = new ArrayList<>();
-        try {
-            Object content = tableNode.getContent();
-            if (content != null) {
-                Object rowsObj = invokeNoArg(content, "getRows");
-                if (rowsObj != null) {
-                    List<?> head = (List<?>) invokeNoArg(rowsObj, "getHead");
-                    if (head != null) {
-                        for (Object r : head) out.add(convertRowReflective(r));
-                    }
-                    List<?> body = (List<?>) invokeNoArg(rowsObj, "getBody");
-                    if (body != null) {
-                        for (Object r : body) out.add(convertRowReflective(r));
-                    }
+    private static void traverse(StructuralNode node, List<AsciiDocModel.Block> out) {
+        switch (node) {
+            case Section section -> {
+                int lvl = section.getLevel();
+                if (lvl >= 1 && lvl <= 6) {
+                    out.add(new Heading(lvl, parseInlines(section.getTitle())));
+                }
+                for (StructuralNode b : section.getBlocks()) {
+                    traverse(b, out);
                 }
             }
-        } catch (Throwable ignore) {
-            // fallback below
-        }
-
-        if (!out.isEmpty()) return out;
-
-        // Fallback: best-effort traversal of children nodes for rows/cells
-        List<StructuralNode> children = tableNode.getBlocks();
-        if (children != null) {
-            for (StructuralNode rowNode : children) {
-                String ctx = rowNode.getContext();
-                if (ctx != null && ctx.contains("row")) {
-                    List<String> cells = new ArrayList<>();
-                    List<StructuralNode> cellNodes = rowNode.getBlocks();
-                    if (cellNodes != null) {
-                        for (StructuralNode cellNode : cellNodes) {
-                            Object cContent = cellNode.getContent();
-                            cells.add(cContent == null ? "" : cContent.toString());
-                        }
-                    }
-                    if (!cells.isEmpty()) out.add(convertRowFromCells(cells));
+            case Table table -> {
+                List<AsciiDocModel.Row> rows = extractTableRowsViaReflection(table);
+                if (!rows.isEmpty()) {
+                    out.add(new AsciiDocModel.Table(rows));
+                }
+                // If extraction failed, continue traversal into children to salvage paragraphs
+            }
+            case PhraseNode phraseNode -> out.add(new Paragraph(parseInlines(phraseNode.getText())));
+            case Block block when "simple".equals(block.getContentModel()) ->
+                    out.add(new Paragraph(parseInlines(String.join("\n", block.getLines()))));
+            default -> {
+                // Recurse into other container nodes to keep paragraphs found within
+                List<StructuralNode> children = node.getBlocks();
+                if (children != null) {
+                    for (StructuralNode c : children) traverse(c, out);
                 }
             }
         }
-        return out;
-    }
-
-    private static AsciiDocModel.Row convertRowReflective(Object rowObj) {
-        try {
-            List<?> cells = (List<?>) invokeNoArg(rowObj, "getCells");
-            List<String> texts = new ArrayList<>();
-            if (cells != null) {
-                for (Object c : cells) {
-                    String txt = (String) invokeNoArg(c, "getText");
-                    if (txt == null || txt.isEmpty()) txt = (String) invokeNoArg(c, "getSource");
-                    texts.add(txt == null ? "" : txt);
-                }
-            }
-            return convertRowFromCells(texts);
-        } catch (Throwable e) {
-            return convertRowFromCells(List.of());
-        }
-    }
-
-    private static Object invokeNoArg(Object target, String method)
-            throws Exception {
-        var m = target.getClass()
-                      .getMethod(method);
-        m.setAccessible(true);
-        return m.invoke(target);
     }
 
     private static List<Inline> parseInlines(String text) {
@@ -277,6 +172,37 @@ public final class AsciiDocParser {
         // Flush remainder text on root
         root.flushTextToChildren();
         return root.children;
+    }
+
+    private static List<AsciiDocModel.Row> extractTableRowsViaReflection(Table table) {
+        var header = table.getHeader()
+                          .stream()
+                          .map(AsciiDocParser::convertRowReflective)
+                          .toList();
+        var body = table.getBody()
+                        .stream()
+                        .map(AsciiDocParser::convertRowReflective)
+                        .toList();
+        var footer = table.getFooter()
+                          .stream()
+                          .map(AsciiDocParser::convertRowReflective)
+                          .toList();
+        return Stream.of(header, body, footer)
+                     .flatMap(Collection::stream)
+                     .toList();
+    }
+
+    private static AsciiDocModel.Row convertRowReflective(Row row) {
+
+        return new AsciiDocModel.Row(row.getCells()
+                                        .stream()
+                                        .map(AsciiDocParser::convertCell)
+                                        .toList());
+
+    }
+
+    private static AsciiDocModel.Cell convertCell(Cell cell) {
+        return new AsciiDocModel.Cell(parseInlines(cell.getText()));
     }
 
     private enum FrameType {

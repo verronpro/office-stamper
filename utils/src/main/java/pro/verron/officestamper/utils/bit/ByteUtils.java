@@ -39,17 +39,21 @@ public class ByteUtils {
     /// Converts the size of a byte array into a human-readable string representation using standard size prefixes
     /// (e.g., KB, MB, GB).
     ///
-    /// @param imageBytes the input byte array whose size needs to be converted
+    /// @param length the size of the byte array to be converted
     ///
     /// @return a human-readable string representing the size of the byte array in appropriate units (e.g., "1.2KB",
     ///         "3.4MB")
-    public static String readableSize(byte[] imageBytes) {
-        double size = imageBytes.length;
+    public static String readableSize(int length) {
+        if (length < 0)
+            throw new IllegalArgumentException("Length must be positive");
+        if (length < 1000)
+            return length + " B";
+        double size = length;
         var prefixes = new StringCharacterIterator(" kMGTPE");
         while (size >= 1_000) {
             size /= 1_000;
             prefixes.next();
         }
-        return String.format(Locale.ROOT, "%.1f%cB", size, prefixes.current());
+        return String.format(Locale.ROOT, "%.1f %cB", size, prefixes.current());
     }
 }

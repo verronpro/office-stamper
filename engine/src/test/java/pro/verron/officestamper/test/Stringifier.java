@@ -177,7 +177,7 @@ public class Stringifier {
         return "%s:%s:%s:%s:sha1=%s:cy=$d".formatted(image.getPartName(),
                 blip.getEmbed(),
                 image.getContentType(),
-                readableSize(imageBytes),
+                readableSize(imageBytes.length),
                 sha1b64(imageBytes));
     }
 

@@ -59,7 +59,7 @@ public class CommentUtil {
                                                            .toList();
 
         var result = new ArrayList<Comments.Comment>();
-        var commentIterator = DocxIterator.ofCRS(contentAccessor);
+        var commentIterator = new DocxIterator(contentAccessor).selectClass(CommentRangeStart.class);
         while (commentIterator.hasNext()) {
             var crs = commentIterator.next();
             findCommentById(comments, crs.getId()).ifPresent(result::add);

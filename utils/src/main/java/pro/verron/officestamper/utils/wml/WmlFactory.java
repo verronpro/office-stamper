@@ -29,10 +29,10 @@ public class WmlFactory {
 
     /// Creates a new comment with the provided value.
     ///
-    /// @param id The id to affect to the comment.
+    /// @param id    The ID to assign to the comment.
     /// @param value The string value to be included in the comment.
     ///
-    /// @return A new Comments.Comment object containing the provided value.
+    /// @return A new [Comments.Comment] object containing the provided value.
     public static Comments.Comment newComment(BigInteger id, String value) {
         var comment = new Comments.Comment();
         comment.setId(id);
@@ -45,16 +45,16 @@ public class WmlFactory {
     ///
     /// @param value The string value to be added to the new paragraph.
     ///
-    /// @return A new paragraph containing the provided string value.
+    /// @return A new [P] containing the provided string value.
     public static P newParagraph(String value) {
         return newParagraph(newRun(value));
     }
 
     /// Creates a new paragraph containing the provided run.
     ///
-    /// @param run The R object (run) to be included in the new paragraph.
+    /// @param run The [R] object (run) to be included in the new paragraph.
     ///
-    /// @return A new paragraph containing the provided run.
+    /// @return A new [P] containing the provided run.
     public static P newParagraph(R run) {
         return newParagraph(List.of(run));
     }
@@ -63,7 +63,7 @@ public class WmlFactory {
     ///
     /// @param value The string value to be included in the new run.
     ///
-    /// @return A new run containing the provided string value.
+    /// @return A new [R] containing the provided string value.
     public static R newRun(String value) {
         return newRun(newText(value));
     }
@@ -71,9 +71,9 @@ public class WmlFactory {
     /// Creates a new paragraph containing the provided list of values.
     ///
     /// @param values A list of objects to be added to the new paragraph. These objects populate the content of
-    ///         the paragraph.
+    ///               the paragraph.
     ///
-    /// @return A new paragraph containing the provided values.
+    /// @return A new [P] containing the provided values.
     public static P newParagraph(List<?> values) {
         var paragraph = new P();
         var paragraphContent = paragraph.getContent();
@@ -83,18 +83,18 @@ public class WmlFactory {
 
     /// Creates a new run containing a single text object.
     ///
-    /// @param value The Text object to be included in the new run.
+    /// @param value The [Text] object to be included in the new run.
     ///
-    /// @return A new run encapsulating the provided text object.
+    /// @return A new [R] encapsulating the provided text object.
     public static R newRun(Text value) {
         return newRun(List.of(value));
     }
 
-    /// Creates a new Text object with the specified value, preserving spaces.
+    /// Creates a new [Text] object with the specified value, preserving spaces.
     ///
-    /// @param value The string value to be set in the new Text object.
+    /// @param value The string value to be set in the new [Text] object.
     ///
-    /// @return A new Text object containing the provided value with space preserved.
+    /// @return A new [Text] object containing the provided value with space preserved.
     public static Text newText(String value) {
         var text = new Text();
         text.setValue(value);
@@ -105,9 +105,9 @@ public class WmlFactory {
     /// Creates a new run containing the provided values deemed worth keeping.
     ///
     /// @param values A list of objects to be added to the new run. Objects are filtered based on a predefined
-    ///         criteria to determine if they are worth keeping.
+    ///               criteria to determine if they are worth keeping.
     ///
-    /// @return A new run containing the filtered values.
+    /// @return A new [R] containing the filtered values.
     public static R newRun(List<Object> values) {
         var run = new R();
         var runContent = run.getContent();
@@ -127,11 +127,11 @@ public class WmlFactory {
         return !textValue.isEmpty();
     }
 
-    /// Creates a new Body object containing the provided elements.
+    /// Creates a new [Body] object containing the provided elements.
     ///
-    /// @param elements A list of objects to be added to the new Body.
+    /// @param elements A list of objects to be added to the new [Body].
     ///
-    /// @return A new Body containing the provided elements.
+    /// @return A new [Body] containing the provided elements.
     public static Body newBody(List<Object> elements) {
         Body body = new Body();
         var bodyContent = body.getContent();
@@ -143,25 +143,25 @@ public class WmlFactory {
     ///
     /// @param texts The array of string values to be included in the new paragraph.
     ///
-    /// @return A new paragraph containing the provided text values.
+    /// @return A new [P] containing the provided text values.
     public static P newParagraph(String... texts) {
         return newParagraph(Arrays.stream(texts)
                                   .map(WmlFactory::newRun)
                                   .toList());
     }
 
-    /// Creates a new PPr (paragraph properties) object.
+    /// Creates a new [PPr] (paragraph properties) object.
     ///
-    /// @return A new PPr object.
+    /// @return A new [PPr] object.
     public static PPr newPPr() {
         return new PPr();
     }
 
-    /// Creates a new Comments object and populates it with a list of Comment objects.
+    /// Creates a new [Comments] object and populates it with a list of [Comment] objects.
     ///
-    /// @param list A list of Comments.Comment objects to be added to the new Comments object.
+    /// @param list A list of [Comments.Comment] objects to be added to the new [Comments] object.
     ///
-    /// @return A new Comments object containing the provided Comment objects.
+    /// @return A new [Comments] object containing the provided [Comment] objects.
     public static Comments newComments(List<Comments.Comment> list) {
         Comments comments = new Comments();
         List<Comments.Comment> commentList = comments.getComment();
@@ -171,12 +171,12 @@ public class WmlFactory {
 
     /// Creates a new run containing an image with the specified attributes.
     ///
-    /// @param maxWidth the maximum width of the image, it can be null
-    /// @param abstractImage the binary part abstract image to be included in the run
-    /// @param filenameHint the filename hint for the image
-    /// @param altText the alternative text for the image
+    /// @param maxWidth      The maximum width of the image, it can be null.
+    /// @param abstractImage The binary part abstract image to be included in the run.
+    /// @param filenameHint  The filename hint for the image.
+    /// @param altText       The alternative text for the image.
     ///
-    /// @return a new run element containing the image
+    /// @return A new [R] element containing the image.
     public static R newRun(
             @Nullable Integer maxWidth,
             BinaryPartAbstractImage abstractImage,
@@ -187,14 +187,14 @@ public class WmlFactory {
         return newRun(newDrawing(inline));
     }
 
-    /// Creates a new Inline object for the given image part, filename hint, and alt text.
+    /// Creates a new [Inline] object for the given image part, filename hint, and alt text.
     ///
-    /// @param imagePart The binary part abstract image to be used.
+    /// @param imagePart    The binary part abstract image to be used.
     /// @param filenameHint A hint for the filename of the image.
-    /// @param altText Alternative text for the image.
-    /// @param maxWidth The image width to not exceeds, in point.
+    /// @param altText      Alternative text for the image.
+    /// @param maxWidth     The image width not to exceed, in points.
     ///
-    /// @return A new Inline object containing the specified image information.
+    /// @return A new [Inline] object containing the specified image information.
     ///
     /// @throws UtilsException If there is an error creating the image inline.
     public static Inline newInline(
@@ -219,18 +219,18 @@ public class WmlFactory {
 
     /// Creates a new run containing a single drawing.
     ///
-    /// @param value The Drawing object to be included in the new run.
+    /// @param value The [Drawing] object to be included in the new run.
     ///
-    /// @return A new run encapsulating the provided drawing.
+    /// @return A new [R] encapsulating the provided drawing.
     public static R newRun(Drawing value) {
         return newRun(List.of(value));
     }
 
-    /// Creates a new Drawing object containing the provided Inline object.
+    /// Creates a new [Drawing] object containing the provided [Inline] object.
     ///
-    /// @param inline The Inline object to be contained within the new Drawing.
+    /// @param inline The [Inline] object to be contained within the new [Drawing].
     ///
-    /// @return A new Drawing object encapsulating the provided inline object.
+    /// @return A new [Drawing] object encapsulating the provided inline object.
     public static Drawing newDrawing(Inline inline) {
         var drawing = new Drawing();
         var anchorOrInline = drawing.getAnchorOrInline();
@@ -238,12 +238,12 @@ public class WmlFactory {
         return drawing;
     }
 
-    /// Creates a new CommentRangeStart object with the specified ID and parent.
+    /// Creates a new [CommentRangeStart] object with the specified ID and parent.
     ///
-    /// @param id The unique identifier for the CommentRangeStart object.
-    /// @param parent The parent element (P) to which this CommentRangeStart belongs.
+    /// @param id     The unique identifier for the [CommentRangeStart] object.
+    /// @param parent The parent element ([P]) to which this [CommentRangeStart] belongs.
     ///
-    /// @return A new CommentRangeStart object with the specified ID and parent.
+    /// @return A new [CommentRangeStart] object with the specified ID and parent.
     public static CommentRangeStart newCommentRangeStart(BigInteger id, ContentAccessor parent) {
         var commentRangeStart = new CommentRangeStart();
         commentRangeStart.setId(id);
@@ -251,12 +251,12 @@ public class WmlFactory {
         return commentRangeStart;
     }
 
-    /// Creates a new CommentRangeEnd object with the specified ID and parent.
+    /// Creates a new [CommentRangeEnd] object with the specified ID and parent.
     ///
-    /// @param id The unique identifier for the CommentRangeEnd object.
-    /// @param parent The parent element (P) to which this CommentRangeEnd belongs.
+    /// @param id     The unique identifier for the [CommentRangeEnd] object.
+    /// @param parent The parent element ([P]) to which this [CommentRangeEnd] belongs.
     ///
-    /// @return A new CommentRangeEnd object with the specified ID and parent.
+    /// @return A new [CommentRangeEnd] object with the specified ID and parent.
     public static CommentRangeEnd newCommentRangeEnd(BigInteger id, ContentAccessor parent) {
         var commentRangeEnd = new CommentRangeEnd();
         commentRangeEnd.setId(id);
@@ -264,12 +264,12 @@ public class WmlFactory {
         return commentRangeEnd;
     }
 
-    /// Creates a new CommentReference object with the specified ID and parent.
+    /// Creates a new [R.CommentReference] object with the specified ID and parent.
     ///
-    /// @param id The unique identifier for the CommentReference.
-    /// @param parent The parent element (P) to which this CommentReference belongs.
+    /// @param id     The unique identifier for the [R.CommentReference].
+    /// @param parent The parent element ([P]) to which this [R.CommentReference] belongs.
     ///
-    /// @return A new CommentReference object with the specified ID and parent.
+    /// @return A new [R.CommentReference] object with the specified ID and parent.
     public static R.CommentReference newCommentReference(BigInteger id, ContentAccessor parent) {
         var commentReference = new R.CommentReference();
         commentReference.setId(id);
@@ -279,28 +279,29 @@ public class WmlFactory {
 
     /// Creates a new table object.
     ///
-    /// @return A new instance of Tbl.
+    /// @return A new instance of [Tbl].
     public static Tbl newTbl() {
         return new Tbl();
     }
 
     /// Creates a new cell object.
     ///
-    /// @return A new instance of Tc.
+    /// @return A new instance of [Tc].
     public static Tc newCell() {
         return new Tc();
     }
 
     /// Creates a new row object.
     ///
-    /// @return A new instance of Tr.
+    /// @return A new instance of [Tr].
     public static Tr newRow() {
         return new Tr();
     }
 
-    /// Creates a new WordprocessingMLPackage object initialized with a main document part, and an empty comments part.
+    /// Creates a new [WordprocessingMLPackage] object initialized with a main document part, and an empty comments
+    /// part.
     ///
-    /// @return A new instance of WordprocessingMLPackage.
+    /// @return A new instance of [WordprocessingMLPackage].
     public static WordprocessingMLPackage newWord() {
         try {
             var aPackage = WordprocessingMLPackage.createPackage();
@@ -315,11 +316,12 @@ public class WmlFactory {
         }
     }
 
-    /// Creates a new CommentsPart object. This method attempts to create a new instance of CommentsPart. If an
-    /// InvalidFormatException occurs during the creation process, it wraps the exception in an OfficeStamperException
+    /// Creates a new [CommentsPart] object. This method attempts to create a new instance of [CommentsPart]. If an
+    /// [InvalidFormatException] occurs during the creation process, it wraps the exception in an
+    ///  [OfficeStamperException]
     /// and throws it.
     ///
-    /// @return A new instance of CommentsPart.
+    /// @return A new instance of [CommentsPart].
     public static CommentsPart newCommentsPart() {
         try {
             return new CommentsPart();
@@ -332,9 +334,9 @@ public class WmlFactory {
         return new Comments();
     }
 
-    /// Creates a new Br (break) object with text wrapping enabled.
+    /// Creates a new [Br] (break) object with text wrapping enabled.
     ///
-    /// @return A new Br object with text wrapping type and no clear attribute set.
+    /// @return A new [Br] object with text wrapping type and no clear attribute set.
     public static Br newBr() {
         var br = new Br();
         br.setType(STBrType.TEXT_WRAPPING);
@@ -342,6 +344,13 @@ public class WmlFactory {
         return br;
     }
 
+    /// Creates a new smart tag run with the specified element, run and attribute.
+    ///
+    /// @param element The element name for the smart tag.
+    /// @param run The [R] to include in the smart tag content.
+    /// @param attribute The [CTAttr] to add to the smart tag properties.
+    ///
+    /// @return A new [CTSmartTagRun] object configured with the specified parameters.
     public static CTSmartTagRun newSmartTag(String element, R run, CTAttr attribute) {
         var smartTag = new CTSmartTagRun();
         smartTag.setElement(element);
@@ -354,13 +363,24 @@ public class WmlFactory {
         return smartTag;
     }
 
-    static CTAttr newCtAttr(String name, String value) {
+    /// Creates a new [CTAttr] object with the specified name and value.
+    ///
+    /// @param name  The name of the attribute.
+    /// @param value The value of the attribute.
+    ///
+    /// @return A new [CTAttr] object with the specified name and value.
+    public static CTAttr newCtAttr(String name, String value) {
         var ctAttr = new CTAttr();
         ctAttr.setName(name);
         ctAttr.setVal(value);
         return ctAttr;
     }
 
+    /// Creates a new [Pict] object containing the provided inner object.
+    ///
+    /// @param innerObj The object to be included in the new pict element.
+    ///
+    /// @return A new [Pict] object containing the provided inner object.
     public static Object newPict(Object innerObj) {
         var pict = new Pict();
         pict.getAnyAndAny()
@@ -368,7 +388,12 @@ public class WmlFactory {
         return pict;
     }
 
-    static SdtBlock newSdtBlock(Object innerObj) {
+    /// Creates a new [SdtBlock] object containing the provided inner object.
+    ///
+    /// @param innerObj The object to be included in the new structured document tag block.
+    ///
+    /// @return A new [SdtBlock] object containing the provided inner object.
+    public static SdtBlock newSdtBlock(Object innerObj) {
         var block = new SdtContentBlock();
         var blockContent = block.getContent();
         blockContent.add(innerObj);
@@ -377,7 +402,12 @@ public class WmlFactory {
         return sdtBlock;
     }
 
-    static SdtRun newSdtRun(Object innerObj) {
+    /// Creates a new [SdtRun] object containing the provided inner object.
+    ///
+    /// @param innerObj The object to be included in the new structured document tag run.
+    ///
+    /// @return A new [SdtRun] object containing the provided inner object.
+    public static SdtRun newSdtRun(Object innerObj) {
         var sdtContentRun = new CTSdtContentRun();
         var sdtContentRunContent = sdtContentRun.getContent();
         sdtContentRunContent.add(innerObj);
@@ -385,5 +415,4 @@ public class WmlFactory {
         sdtRun.setSdtContent(sdtContentRun);
         return sdtRun;
     }
-
 }

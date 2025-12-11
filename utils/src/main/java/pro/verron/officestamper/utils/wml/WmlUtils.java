@@ -11,6 +11,7 @@ import org.docx4j.vml.CTShadow;
 import org.docx4j.vml.CTTextbox;
 import org.docx4j.vml.VmlShapeElements;
 import org.docx4j.wml.*;
+import org.docx4j.wml.Comments.Comment;
 import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ import java.util.function.Predicate;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
-/// Utility class with methods to help in the interaction with WordprocessingMLPackage documents and their elements,
+/// Utility class with methods to help in the interaction with [WordprocessingMLPackage] documents and their elements,
 /// such as comments, parents, and child elements.
 public final class WmlUtils {
 
@@ -40,13 +41,13 @@ public final class WmlUtils {
     /// Attempts to find the first parent of a given child element that is an instance of the specified class within the
     /// defined search depth.
     ///
-    /// @param child the child element from which the search for a parent begins.
-    /// @param clazz the class type to match for the parent
+    /// @param child the [Child] element from which the search for a parent begins.
+    /// @param clazz the [Class] type to match for the parent
     /// @param depth the maximum amount levels to traverse up the parent hierarchy
     /// @param <T> the type of the parent class to search for
     ///
-    /// @return an Optional containing the first parent matching the specified class, or an empty Optional if no match
-    ///         found.
+    /// @return an [Optional] containing the first parent matching the specified class, or an empty [Optional] if no
+    ///         match found.
     public static <T> Optional<T> getFirstParentWithClass(Child child, Class<T> clazz, int depth) {
         var parent = child.getParent();
         var currentDepth = 0;
@@ -59,24 +60,24 @@ public final class WmlUtils {
         return Optional.empty();
     }
 
-    /// Extracts a list of comment elements from the specified WordprocessingMLPackage document.
+    /// Extracts a list of comment elements from the specified [WordprocessingMLPackage] document.
     ///
-    /// @param document the WordprocessingMLPackage document from which to extract comment elements
+    /// @param document the [WordprocessingMLPackage] document from which to extract comment elements
     ///
-    /// @return a list of Child objects representing the extracted comment elements
+    /// @return a list of [Child] objects representing the extracted comment elements
     public static List<Child> extractCommentElements(WordprocessingMLPackage document) {
         var commentFinder = new CommentFinder();
         TraversalUtil.visit(document, true, commentFinder);
         return commentFinder.getCommentElements();
     }
 
-    /// Finds a comment with the given ID in the specified WordprocessingMLPackage document.
+    /// Finds a comment with the given ID in the specified [WordprocessingMLPackage] document.
     ///
-    /// @param document the WordprocessingMLPackage document to search for the comment
+    /// @param document the [WordprocessingMLPackage] document to search for the comment
     /// @param id the ID of the comment to find
     ///
-    /// @return an Optional containing the Comment if found, or an empty Optional if not found.
-    public static Optional<Comments.Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
+    /// @return an [Optional] containing the [Comment] if found, or an empty [Optional] if not found.
+    public static Optional<Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
         var name = OpenpackagingFactory.newPartName("/word/comments.xml");
         var parts = document.getParts();
         var wordComments = (CommentsPart) parts.get(name);
@@ -95,7 +96,7 @@ public final class WmlUtils {
         }
     }
 
-    private static Predicate<Comments.Comment> idEqual(BigInteger id) {
+    private static Predicate<Comment> idEqual(BigInteger id) {
         return comment -> {
             var commentId = comment.getId();
             return commentId.equals(id);
@@ -107,7 +108,7 @@ public final class WmlUtils {
     /// removal process is delegated to the appropriate helper method. If the child is contained within a table cell and
     /// the cell is empty after removal, an empty paragraph is added to the cell.
     ///
-    /// @param child the child element to be removed
+    /// @param child the [Child] element to be removed
     ///
     /// @throws UtilsException if the parent of the child element is of an unexpected type
     public static void remove(Child child) {
@@ -152,7 +153,7 @@ public final class WmlUtils {
 
     /// Utility method to ensure the validity of a table cell by adding an empty paragraph if necessary.
     ///
-    /// @param cell the table cell to be checked and updated.
+    /// @param cell the [Tc] to be checked and updated.
     public static void ensureValidity(Tc cell) {
         if (!containsAnElementOfAnyClasses(cell.getContent(), P.class, Tbl.class)) {
             addEmptyParagraph(cell);
@@ -196,7 +197,7 @@ public final class WmlUtils {
     /// document-specific constructs, and converts them into corresponding string representations.
     ///
     /// @param content the object from which text content is to be extracted. This could be of various types
-    ///         such as R, JAXBElement, Text or specific document elements.
+    ///         such as [R], [JAXBElement], [Text] or specific document elements.
     ///
     /// @return a string representation of the extracted textual content. If the object's type is not handled, an empty
     ///         string is returned.
@@ -248,6 +249,15 @@ public final class WmlUtils {
         return Objects.equals(space, PRESERVE) ? value : value.trim();
     }
 
+    /// Inserts a smart tag with the specified element type into the given paragraph at the position of the expression.
+    ///
+    /// @param element the element type for the smart tag
+    /// @param paragraph the [P] paragraph to insert the smart tag into
+    /// @param expression the expression to replace with the smart tag
+    /// @param start the start index of the expression
+    /// @param end the end index of the expression
+    ///
+    /// @return a list of [Object] representing the updated content
     public static List<Object> insertSmartTag(String element, P paragraph, String expression, int start, int end) {
         var run = newRun(expression);
         var smartTag = newSmartTag("officestamper", run, newCtAttr("type", element));
@@ -255,6 +265,13 @@ public final class WmlUtils {
         return replace(paragraph, List.of(smartTag), start, end);
     }
 
+    /// Finds the first affected run properties within the specified range.
+    ///
+    /// @param contentAccessor the [ContentAccessor] to search in
+    /// @param start the start index of the range
+    /// @param end the end index of the range
+    ///
+    /// @return an [Optional] containing the [RPr] if found, or an empty [Optional] if not found
     public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
         var runs = StandardRun.wrap(contentAccessor);
 
@@ -268,6 +285,14 @@ public final class WmlUtils {
         return Optional.ofNullable(firstRunPr);
     }
 
+    /// Replaces content within the specified range with the provided insert objects.
+    ///
+    /// @param contentAccessor the [ContentAccessor] in which to replace content
+    /// @param insert the list of objects to insert
+    /// @param startIndex the start index of the range to replace
+    /// @param endIndex the end index of the range to replace
+    ///
+    /// @return a list of [Object] representing the updated content
     public static List<Object> replace(
             ContentAccessor contentAccessor,
             List<Object> insert,
@@ -323,9 +348,10 @@ public final class WmlUtils {
 
     /// Creates a new run with the specified text, and the specified run style.
     ///
-    /// @param text the initial text of the run.
+    /// @param text the initial text of the [R].
+    /// @param rPr the [RPr] to apply to the run
     ///
-    /// @return the newly created run.
+    /// @return the newly created [R].
     public static R create(String text, RPr rPr) {
         R newStartRun = newRun(text);
         newStartRun.setRPr(rPr);
@@ -362,18 +388,20 @@ public final class WmlUtils {
 
     /// Creates a new run with the specified text and inherits the style of the parent paragraph.
     ///
-    /// @param text the initial text of the run.
+    /// @param text the initial text of the [R].
+    /// @param paragraphPr the [PPr] to apply to the run
     ///
-    /// @return the newly created run.
+    /// @return the newly created [R].
     public static R create(String text, PPr paragraphPr) {
         R run = newRun(text);
         applyParagraphStyle(run, paragraphPr);
         return run;
     }
 
-    /// Applies the style of the given paragraph to the given content object (if the content object is a Run).
+    /// Applies the style of the given paragraph to the given content object (if the content object is a [R]).
     ///
-    /// @param run the Run to which the style should be applied.
+    /// @param run the [R] to which the style should be applied.
+    /// @param paragraphPr the [PPr] containing the style to apply
     public static void applyParagraphStyle(R run, @Nullable PPr paragraphPr) {
         if (paragraphPr == null) return;
         var runPr = paragraphPr.getRPr();
@@ -385,7 +413,7 @@ public final class WmlUtils {
 
     /// Sets the text of the given run to the given value.
     ///
-    /// @param run the run whose text to change.
+    /// @param run the [R] whose text to change.
     /// @param text the text to set.
     public static void setText(R run, String text) {
         run.getContent()
@@ -395,6 +423,14 @@ public final class WmlUtils {
            .add(textObj);
     }
 
+    /// Replaces all occurrences of the specified expression with the provided run objects.
+    ///
+    /// @param contentAccessor the [ContentAccessor] in which to replace the expression
+    /// @param expression the expression to replace
+    /// @param insert the list of objects to insert
+    /// @param onRPr a consumer to handle [RPr] properties
+    ///
+    /// @return a list of [Object] representing the updated content
     public static List<Object> replaceExpressionWithRun(
             ContentAccessor contentAccessor,
             String expression,

@@ -1,7 +1,9 @@
 package pro.verron.officestamper.utils.wml;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.*;
+import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.Pict;
+import org.docx4j.wml.SdtBlock;
+import org.docx4j.wml.SdtRun;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 
@@ -35,22 +37,14 @@ public class DocxIterator
         this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
     }
 
-    /// Creates a [ResetableIterator] of [CommentRangeStart] instances from the given [WordprocessingMLPackage]
-    /// document. This method leverages a [DocxIterator] to iterate through the contents of the specified document part
-    /// and filters for [CommentRangeStart] elements.
+    /// Selects and casts elements of the specified class type from the iterator.
     ///
-    /// @param contentAccessor a [ContentAccessor] used to access the content within the specified part
+    /// @param aClass the class type to filter and cast elements to
+    /// @param <T> the type of elements to select
     ///
-    /// @return a [ResetableIterator] containing the [CommentRangeStart] elements found in the provided content
-    public static ResetableIterator<CommentRangeStart> ofCRS(ContentAccessor contentAccessor) {
-        return new DocxIterator(contentAccessor).filter(CommentRangeStart.class::isInstance)
-                                                .map(CommentRangeStart.class::cast);
-    }
-
-    public static ResetableIterator<R> ofRun(ContentAccessor contentAccessor) {
-        return new DocxIterator(contentAccessor).filter(R.class::isInstance)
-                                                .map(R.class::cast);
-
+    /// @return a new [ResetableIterator] containing only elements of the specified class type
+    public <T> ResetableIterator<T> selectClass(Class<T> aClass) {
+        return filter(aClass::isInstance).map(aClass::cast);
     }
 
     @Override
@@ -70,13 +64,13 @@ public class DocxIterator
                 iteratorQueue.add(content.iterator());
             }
             case SdtRun sdtRun -> {
-                var content = sdtRun.getSdtContent()
-                                    .getContent();
+                var sdtContent = sdtRun.getSdtContent();
+                var content = sdtContent.getContent();
                 iteratorQueue.add(content.iterator());
             }
             case SdtBlock sdtBlock -> {
-                var content = sdtBlock.getSdtContent()
-                                      .getContent();
+                var sdtContent = sdtBlock.getSdtContent();
+                var content = sdtContent.getContent();
                 iteratorQueue.add(content.iterator());
             }
             case Pict pict -> {

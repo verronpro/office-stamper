@@ -360,4 +360,30 @@ public class WmlFactory {
         ctAttr.setVal(value);
         return ctAttr;
     }
+
+    public static Object newPict(Object innerObj) {
+        var pict = new Pict();
+        pict.getAnyAndAny()
+            .add(innerObj);
+        return pict;
+    }
+
+    static SdtBlock newSdtBlock(Object innerObj) {
+        var block = new SdtContentBlock();
+        var blockContent = block.getContent();
+        blockContent.add(innerObj);
+        var sdtBlock = new SdtBlock();
+        sdtBlock.setSdtContent(block);
+        return sdtBlock;
+    }
+
+    static SdtRun newSdtRun(Object innerObj) {
+        var sdtContentRun = new CTSdtContentRun();
+        var sdtContentRunContent = sdtContentRun.getContent();
+        sdtContentRunContent.add(innerObj);
+        var sdtRun = new SdtRun();
+        sdtRun.setSdtContent(sdtContentRun);
+        return sdtRun;
+    }
+
 }

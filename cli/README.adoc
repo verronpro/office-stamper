@@ -1,0 +1,38 @@
+= Office-stamper CLI Module
+
+The `cli` module provides a command line interface to the Office‑stamper engine.
+It stamps DOCX (Word) and PPTX (PowerPoint) templates from a variety of input formats.
+
+== Features
+
+* Stamp templates from JSON, CSV, Java properties, XML/HTML and XLSX (Excel) inputs
+* Choose the target format: Word or PowerPoint
+* Diagnostic context and template bundled for quick environment reports
+
+== Usage
+
+[source,bash]
+----
+officestamper \
+  --input data.json \
+  --template template.docx \
+  --output output.docx \
+  --stamper word
+----
+
+Options:
+
+* `-i, --input` (required): input data file or `diagnostic`
+* `-t, --template` (required): template file or `diagnostic`
+* `-o, --output` (default: `output.docx`): output path
+* `-s, --stamper` (default: `word`): `word` or `powerpoint`
+
+== Module name
+
+`pro.verron.officestamper.cli`
+
+== See also
+
+* link:../engine/src/site/asciidoc/index.adoc[Engine Documentation]
+* link:../utils/README.adoc[Utils]
+* link:../asciidoc/README.adoc[AsciiDoc]

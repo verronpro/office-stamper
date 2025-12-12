@@ -39,7 +39,7 @@ class Example {
         var outputPath = Paths.get("your/desired/output/path.docx");
         try(
             var template = Files.newInputStream(templatePath);
-            var output = Files.newOutputStream(outputPath);
+            var output = Files.newOutputStream(outputPath)
         ) {
             stamper.stamp(template, context, output);
         }
@@ -84,6 +84,15 @@ Comprehensive documentation is available at link:{docs}[verronpro.github.io/offi
 * link:{docs}/troubleshooting.html[Troubleshooting]
 * link:{docs}/release-notes.html[Release Notes]
 * link:{docs}/contributing.html[Contributing]
+
+== Modules
+
+This repository is structured in several Maven/Java modules:
+
+* link:engine/src/site/asciidoc/index.adoc[Engine] – core templating engine and public API
+* link:utils/README.adoc[Utils] – low-level utilities shared by modules
+* link:asciidoc/README.adoc[AsciiDoc] – AsciiDoc to DOCX integration helpers
+* link:cli/README.adoc[CLI] – command line interface to stamp templates
 
 == Latest Release
 

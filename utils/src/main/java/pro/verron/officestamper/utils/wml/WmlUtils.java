@@ -167,12 +167,8 @@ public final class WmlUtils {
     }
 
     private static boolean containsAnElementOfAnyClasses(Collection<Object> collection, Class<?>... classes) {
-        for (Object element : collection) {
-            if (isAnElementOfAnyClasses(element, classes)) {
-                return true;
-            }
-        }
-        return false;
+        return collection.stream()
+                         .anyMatch(element -> isAnElementOfAnyClasses(element, classes));
     }
 
     private static void addEmptyParagraph(Tc cell) {
@@ -441,10 +437,7 @@ public final class WmlUtils {
     ) {
         var text = asString(contentAccessor);
         int matchStartIndex = text.indexOf(expression);
-        if (matchStartIndex == -1) {
-            // nothing to replace
-            return new ArrayList<>(contentAccessor.getContent());
-        }
+        if (matchStartIndex == -1) /*nothing to replace*/ return contentAccessor.getContent();
         int matchEndIndex = matchStartIndex + expression.length();
         findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(onRPr);
         return replace(contentAccessor, insert, matchStartIndex, matchEndIndex);

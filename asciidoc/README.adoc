@@ -1,0 +1,33 @@
+= Office-stamper AsciiDoc Module
+
+The `asciidoc` module provides adapters to convert AsciiDoc content into DOCX-compatible structures using AsciidoctorJ and docx4j.
+It is intended to help incorporate rich text generated from AsciiDoc into Office-stamper workflows.
+
+== Key Points
+
+* Converts AsciiDoc to WordprocessingML (DOCX) objects
+* Integrates with AsciidoctorJ and docx4j
+* Designed to be used alongside the core `engine` module
+
+== Maven Coordinates
+
+[source,xml]
+----
+<dependency>
+  <groupId>pro.verron.office-stamper</groupId>
+  <artifactId>asciidoc</artifactId>
+  <version>${office-stamper.version}</version>
+  <scope>compile</scope>
+  <!-- Requires AsciidoctorJ and docx4j at runtime -->
+</dependency>
+----
+
+== Module name
+
+`pro.verron.officestamper.asciidoc`
+
+== See also
+
+* link:../engine/README.adoc[Engine]
+* link:../utils/README.adoc[Utils]
+* link:../cli/README.adoc[CLI]

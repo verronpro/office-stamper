@@ -6,7 +6,7 @@ import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
-import pro.verron.officestamper.utils.wml.StandardRun;
+import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.Collection;
@@ -137,12 +137,10 @@ public class StandardParagraph
         var fromIndex = content.indexOf(from);
         var toIndex = content.indexOf(to);
         var subContent = content.subList(fromIndex, toIndex + 1);
-
-        var runs = StandardRun.wrap(() -> p);
-        runs.removeIf(run -> !subContent.contains(run.run()));
-        return runs.stream()
-                   .map(StandardRun::getText)
-                   .collect(joining());
+        ContentAccessor contentAccessor = () -> subContent;
+        return new DocxIterator(contentAccessor).selectClass(R.class)
+                                                .map(WmlUtils::asString)
+                                                .collect(joining());
     }
 
     /// Returns the aggregated text over all runs.

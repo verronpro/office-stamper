@@ -218,6 +218,7 @@ public final class WmlUtils {
             case Br br when br.getType() == STBrType.PAGE -> "\n";
             case Br br when br.getType() == STBrType.COLUMN -> "\n";
             case Br br when br.getType() == STBrType.TEXT_WRAPPING -> "\n";
+
             case R.NoBreakHyphen _ -> "‑";
             case R.SoftHyphen _ -> "\u00AD";
             case R.LastRenderedPageBreak _, R.AnnotationRef _, R.CommentReference _, Drawing _ -> "";
@@ -273,7 +274,8 @@ public final class WmlUtils {
     ///
     /// @return an [Optional] containing the [RPr] if found, or an empty [Optional] if not found
     public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
-        var runs = StandardRun.wrap(contentAccessor);
+        var iterator = new DocxIterator(contentAccessor).selectClass(R.class);
+        var runs = StandardRun.wrap(iterator);
 
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(start, end))
@@ -281,7 +283,6 @@ public final class WmlUtils {
 
         var firstRun = affectedRuns.getFirst();
         var firstRunPr = firstRun.getPr();
-        //noinspection OptionalOfNullableMisuse firstRun.getPr() can indeed return `null`
         return Optional.ofNullable(firstRunPr);
     }
 
@@ -299,7 +300,8 @@ public final class WmlUtils {
             int startIndex,
             int endIndex
     ) {
-        var runs = StandardRun.wrap(contentAccessor);
+        var iterator = new DocxIterator(contentAccessor).selectClass(R.class);
+        var runs = StandardRun.wrap(iterator);
         var affectedRuns = runs.stream()
                                .filter(run -> run.isTouchedByRange(startIndex, endIndex))
                                .toList();
@@ -446,5 +448,137 @@ public final class WmlUtils {
         int matchEndIndex = matchStartIndex + expression.length();
         findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(onRPr);
         return replace(contentAccessor, insert, matchStartIndex, matchEndIndex);
+    }
+
+    /// @param startIndex the start index of the run relative to the containing paragraph.
+    /// @param run the [R] run itself.
+    private record StandardRun(int startIndex, R run) {
+
+        /// Initializes a list of [StandardRun] objects based on the given iterator of [R] objects.
+        ///
+        /// @param iterator the iterator of [R] objects to be processed into [StandardRun] instances
+        ///
+        /// @return a list of [StandardRun] objects created from the given iterator
+        public static List<StandardRun> wrap(Iterator<R> iterator) {
+            var index = 0;
+            var runList = new ArrayList<StandardRun>();
+            while (iterator.hasNext()) {
+                var run = iterator.next();
+                var currentRun = new StandardRun(index, run);
+                runList.add(currentRun);
+                index += currentRun.length();
+            }
+            return runList;
+        }
+
+        /// Calculates the length of the text content of this run.
+        ///
+        /// @return the length of the text in the current run.
+        public int length() {
+            return getText().length();
+        }
+
+        /// Returns the text string of a run.
+        ///
+        /// @return [String] representation of the run.
+        public String getText() {
+            return asString(run);
+        }
+
+        /// Retrieves the properties associated with this run.
+        ///
+        /// @return the [RPr] object representing the properties of the run.
+        public RPr getPr() {
+            return run.getRPr();
+        }
+
+        /// Determines whether the current run is affected by the specified range of global start and end indices. A run
+        /// is considered "touched" if any part of it overlaps with the given range.
+        ///
+        /// @param globalStartIndex the global start index of the range.
+        /// @param globalEndIndex the global end index of the range.
+        ///
+        /// @return `true` if the current run is touched by the specified range; `false` otherwise.
+        public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
+            return startsInRange(globalStartIndex, globalEndIndex) || endsInRange(globalStartIndex, globalEndIndex)
+                   || englobesRange(globalStartIndex, globalEndIndex);
+        }
+
+        private boolean startsInRange(int globalStartIndex, int globalEndIndex) {
+            return globalStartIndex < startIndex && startIndex <= globalEndIndex;
+        }
+
+        private boolean endsInRange(int globalStartIndex, int globalEndIndex) {
+            return globalStartIndex < endIndex() && endIndex() <= globalEndIndex;
+        }
+
+        private boolean englobesRange(int globalStartIndex, int globalEndIndex) {
+            return startIndex <= globalStartIndex && globalEndIndex <= endIndex();
+        }
+
+        /// Calculates the end index of the current run based on its start index and length.
+        ///
+        /// @return the end index of the run.
+        public int endIndex() {
+            return startIndex + length();
+        }
+
+        /// Replaces the substring starting at the given index with the given replacement string.
+        ///
+        /// @param globalStartIndex the global index at which to start the replacement.
+        /// @param globalEndIndex the global index at which to end the replacement.
+        /// @param replacement the string to replace the substring at the specified global index.
+        public void replace(int globalStartIndex, int globalEndIndex, String replacement) {
+            var text = left(globalStartIndex) + replacement + right(globalEndIndex);
+            setText(run, text);
+        }
+
+        /// Extracts a substring of the run's text, starting from the beginning and extending up to the localized index
+        /// of the specified global end index.
+        ///
+        /// @param globalEndIndex the global end index used to determine the cutoff point for the extracted
+        ///         substring.
+        ///
+        /// @return a substring of the run's text, starting at the beginning and ending at the specified localized
+        ///         index.
+        public String left(int globalEndIndex) {
+            return getText().substring(0, localize(globalEndIndex));
+        }
+
+        /// Extracts a substring of the run's text, starting from the localized index of the specified global start
+        /// index to the end of the run's text.
+        ///
+        /// @param globalStartIndex the global index specifying the starting point for the substring in the
+        ///         run's text.
+        ///
+        /// @return a substring of the run's text starting from the localized index corresponding to the provided global
+        ///         start index.
+        public String right(int globalStartIndex) {
+            return getText().substring(localize(globalStartIndex));
+        }
+
+        /// Converts a global index to a local index within the context of this run. (meaning the index relative to
+        /// multiple aggregated runs)
+        ///
+        /// @param globalIndex the global index to convert.
+        ///
+        /// @return the local index corresponding to the given global index.
+        private int localize(int globalIndex) {
+            if (globalIndex < startIndex) return 0;
+            else if (globalIndex > endIndex()) return length();
+            else return globalIndex - startIndex;
+        }
+
+        /// Gets the start index of this run.
+        ///
+        /// @return the start index of the run relative to the containing paragraph.
+        @Override
+        public int startIndex() {return startIndex;}
+
+        /// Gets the underlying run object.
+        ///
+        /// @return the [R] run object.
+        @Override
+        public R run() {return run;}
     }
 }

@@ -1,8 +1,12 @@
 package pro.verron.officestamper.utils.iterator;
 
 import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.StreamSupport;
 
 /// An interface that extends the [Iterator] interface, providing an additional capability to reset the iterator back to
 /// its initial state.
@@ -47,5 +51,22 @@ public interface ResetableIterator<T>
     /// @return a new [ResetableIterator] instance that provides the transformed elements
     default <U> ResetableIterator<U> map(Function<T, U> function) {
         return new MappingIterator<>(this, function);
+    }
+
+
+    /// Collects the elements of this iterator into a container using the provided collector.
+    ///
+    /// This method creates a stream from the iterator's elements and collects them using the specified collector. It
+    /// allows for flexible reduction operations such as collecting into lists, sets, maps, or performing other
+    /// aggregation operations.
+    ///
+    /// @param collector the [Collector] used to accumulate elements into a result container
+    /// @param <R> the type of the result container
+    ///
+    /// @return the result of the collection operation
+    default <R> R collect(Collector<? super T, ?, R> collector) {
+        var spliterator = Spliterators.spliteratorUnknownSize(this, Spliterator.ORDERED);
+        return StreamSupport.stream(spliterator, false)
+                            .collect(collector);
     }
 }

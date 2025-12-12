@@ -1,0 +1,32 @@
+= Office-stamper Utils Module
+
+The `utils` module contains low-level utilities shared by the Office‑stamper engine and tools.
+It provides helpers for WordprocessingML (docx4j) manipulation, iterator utilities, and small functional/bit helpers.
+
+== Key Packages
+
+* `pro.verron.officestamper.utils.wml` – factories and helpers for WML/docx4j
+* `pro.verron.officestamper.utils.iterator` – iterator utilities
+* `pro.verron.officestamper.utils.function` – functional helpers
+* `pro.verron.officestamper.utils.bit` – bit/byte helpers
+
+== Maven Coordinates
+
+[source,xml]
+----
+<dependency>
+  <groupId>pro.verron.office-stamper</groupId>
+  <artifactId>utils</artifactId>
+  <version>${office-stamper.version}</version>
+</dependency>
+----
+
+== Module name
+
+`pro.verron.officestamper.utils`
+
+== See also
+
+* link:../engine/src/site/asciidoc/index.adoc[Engine Documentation]
+* link:../cli/README.adoc[CLI]
+* link:../asciidoc/README.adoc[AsciiDoc]

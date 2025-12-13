@@ -31,7 +31,7 @@
                 <plugin>
                     <groupId>org.panteleyev</groupId>
                     <artifactId>jpackage-maven-plugin</artifactId>
-                    <version>1.7</version>
+                    <version>1.7.1</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>

@@ -29,9 +29,9 @@
             <plugins>
 
                 <plugin>
-                    <groupId>com.github.akman</groupId>
+                    <groupId>org.panteleyev</groupId>
                     <artifactId>jpackage-maven-plugin</artifactId>
-                    <version>0.1.5</version>
+                    <version>1.7</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>

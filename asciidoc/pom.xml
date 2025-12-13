@@ -12,7 +12,6 @@
 
     <name>Office-stamper AsciiDoc</name>
     <artifactId>asciidoc</artifactId>
-    <version>3.0</version>
     <packaging>jar</packaging>
 
     <properties>

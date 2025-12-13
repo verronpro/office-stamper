@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.abort;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
@@ -178,7 +177,6 @@ class RegressionTests {
 
     @Test
     void test114() {
-        abort("Will be worked on after 2.7.0");
         var config = standard();
         var stamper = new TestDocxStamper<>(config);
         var template = getResource(Path.of("#114.docx"));
@@ -186,6 +184,7 @@ class RegressionTests {
         var actual = stamper.stampAndLoadAndExtract(template, context);
         var expected = """
                 = Issue #114
+                
                 
                 |===
                 |Name
@@ -199,6 +198,8 @@ class RegressionTests {
                 |Lisa
                 
                 |Maggie
+                
+                |So…
                 
                 
                 |===

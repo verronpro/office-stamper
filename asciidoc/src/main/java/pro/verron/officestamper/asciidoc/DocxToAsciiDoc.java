@@ -2,9 +2,12 @@ package pro.verron.officestamper.asciidoc;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TextUtils;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.StyleDefinitionsPart;
 import org.docx4j.wml.*;
+
+import java.io.StringWriter;
 
 /// Minimal DOCX → AsciiDoc text extractor used by tests. This intentionally mirrors a subset of the legacy Stringifier
 /// formatting for:
@@ -122,11 +125,13 @@ final class DocxToAsciiDoc {
 
     private static String extractText(P p) {
         try {
-            java.io.StringWriter writer = new java.io.StringWriter();
+            var writer = new StringWriter();
             TextUtils.extractText(p, writer);
             return writer.toString();
-        } catch (org.docx4j.openpackaging.exceptions.Docx4JException e) {
+        } catch (Docx4JException e) {
             throw new IllegalStateException("Failed to extract text from paragraph", e);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to extract text from paragraph, before docx4j version 1.5.1", e);
         }
     }
 

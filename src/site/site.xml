@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         name="office-stamper"
+         xmlns="http://maven.apache.org/DECORATION/1.8.0"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 https://maven.apache.org/xsd/decoration-1.8.0.xsd">
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>2.1.0</version>
+    </skin>
+
+    <body>
+        <menu name="Office-stamper">
+            <item name="Overview" href="index.html"/>
+            <item name="Introduction" href="introduction.html"/>
+            <item name="Getting Started" href="getting-started.html"/>
+        </menu>
+
+        <menu name="User Guide">
+            <!-- Documentation is currently authored in the engine module -->
+            <item name="Template Expressions" href="engine/template-expressions.html"/>
+            <item name="Comment Processors" href="engine/comment-processors.html"/>
+            <item name="SpEL Functions" href="engine/spel-functions.html"/>
+            <item name="Custom Settings" href="engine/custom-settings.html"/>
+            <item name="Advanced Features" href="engine/advanced-features.html"/>
+            <item name="Troubleshooting" href="engine/troubleshooting.html"/>
+        </menu>
+
+        <!-- Modules and Reports menus will aggregate content from all modules -->
+        <menu ref="modules"/>
+        <menu name="Project Info">
+            <item name="Release Notes" href="release-notes.html"/>
+            <item name="Contributing" href="contributing.html"/>
+        </menu>
+        <menu name="Reports" ref="reports"/>
+    </body>
+
+    <poweredBy>
+        <logo name="verron.pro" title="verron.pro" alt="verron.pro logo"
+              img="engine/images/logo.png" width="80%"
+              target="https://verron.pro"/>
+    </poweredBy>
+
+    <edit>https://github.com/verronpro/office-stamper.git</edit>
+    <publishDate/>
+    <version/>
+</project>

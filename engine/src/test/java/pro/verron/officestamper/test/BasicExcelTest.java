@@ -8,7 +8,7 @@ import java.nio.file.Path;
 
 import static org.docx4j.openpackaging.packages.SpreadsheetMLPackage.load;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.preset.ExperimentalStampers.xlsxStamper;
+import static pro.verron.officestamper.preset.ExperimentalStampers.xlsxPackageStamper;
 import static pro.verron.officestamper.test.Stringifier.stringifyExcel;
 
 @DisplayName("Basic Excel Test") class BasicExcelTest {
@@ -18,7 +18,7 @@ import static pro.verron.officestamper.test.Stringifier.stringifyExcel;
     void testStamper()
             throws Docx4JException {
 
-        var stamper = xlsxStamper();
+        var stamper = xlsxPackageStamper();
         var templateStream = TestUtils.getResource(Path.of("excel-base.xlsx"));
 
         var templatePackage = load(templateStream);

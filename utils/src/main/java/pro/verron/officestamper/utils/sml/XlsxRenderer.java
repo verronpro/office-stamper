@@ -6,6 +6,8 @@ import org.xlsx4j.sml.Cell;
 
 import static java.util.stream.Collectors.joining;
 
+/// Utility class for rendering SpreadsheetML (Excel) files to string representations. This class provides methods to
+/// convert Excel spreadsheets into human-readable formats.
 public class XlsxRenderer {
 
     private XlsxRenderer() {

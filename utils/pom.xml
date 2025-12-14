@@ -9,6 +9,7 @@
         <version>3.0</version>
     </parent>
 
+    <name>Office-stamper Utils</name>
     <artifactId>utils</artifactId>
 
     <properties>

@@ -27,6 +27,12 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

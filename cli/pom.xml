@@ -13,7 +13,9 @@
     <name>Office-stamper CLI</name>
     <artifactId>cli</artifactId>
     <packaging>jar</packaging>
-
+    <description>
+        Command Line Interface for Office-Stamper, a Java library for stamping DOCX templates with data
+    </description>
     <build>
         <plugins>
             <plugin>

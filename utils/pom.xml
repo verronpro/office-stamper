@@ -11,7 +11,10 @@
 
     <name>Office-stamper Utils</name>
     <artifactId>utils</artifactId>
-
+    <description>
+        Utility module for office-stamper providing common functionality and helper classes
+        used across the office document processing components.
+    </description>
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>

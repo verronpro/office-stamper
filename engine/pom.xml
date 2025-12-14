@@ -14,7 +14,8 @@
     <artifactId>engine</artifactId>
 
     <description>
-        Office-stamper is a Java template engine for DOCX documents
+        Office-stamper is a powerful Java template engine designed for processing DOCX documents. It provides advanced
+        stamping capabilities for generating dynamic Word documents from templates.
     </description>
 
     <build>

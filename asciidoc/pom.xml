@@ -14,6 +14,8 @@
     <artifactId>asciidoc</artifactId>
     <packaging>jar</packaging>
 
+    <description>This module contains the asciidoc related utilities for the office-stamper project.</description>
+
     <dependencies>
         <dependency>
             <groupId>org.docx4j</groupId>

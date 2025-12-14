@@ -1,16 +1,17 @@
-package pro.verron.officestamper.test;
+package pro.verron.officestamper.utils.wml;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TextUtils;
-import org.docx4j.dml.*;
+import org.docx4j.dml.CTBlip;
+import org.docx4j.dml.CTBlipFillProperties;
+import org.docx4j.dml.Graphic;
+import org.docx4j.dml.GraphicData;
 import org.docx4j.dml.picture.Pic;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.mce.AlternateContent;
 import org.docx4j.model.structure.HeaderFooterPolicy;
 import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.packages.PresentationMLPackage;
-import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.*;
 import org.docx4j.vml.CTShadow;
@@ -19,20 +20,12 @@ import org.docx4j.vml.CTTextbox;
 import org.docx4j.vml.VmlShapeElements;
 import org.docx4j.wml.*;
 import org.jspecify.annotations.NonNull;
-import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
-import org.xlsx4j.sml.Cell;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.experimental.ExcelCollector;
-import pro.verron.officestamper.experimental.PowerpointCollector;
-import pro.verron.officestamper.experimental.PowerpointParagraph;
-import pro.verron.officestamper.experimental.PptxPart;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.UtilsException;
 
 import java.math.BigInteger;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.Optional.*;
@@ -43,51 +36,20 @@ import static pro.verron.officestamper.utils.bit.ByteUtils.sha1b64;
 /// @author Joseph Verron
 /// @version ${version}
 /// @since 1.6.5
-public class Stringifier {
+public class DocxRenderer {
 
-    private final Supplier<WordprocessingMLPackage> documentSupplier;
-    private final Supplier<StyleDefinitionsPart> styleDefinitionsPartSupplier;
+    private final StyleDefinitionsPart styleDefinitionsPart;
+    private final WordprocessingMLPackage wmlPackage;
 
     /// @since 1.6.6
-    public Stringifier(Supplier<WordprocessingMLPackage> documentSupplier) {
-        this.documentSupplier = documentSupplier;
-        this.styleDefinitionsPartSupplier = () -> documentSupplier.get()
-                                                                  .getMainDocumentPart()
-                                                                  .getStyleDefinitionsPart(true);
+    private DocxRenderer(WordprocessingMLPackage wmlPackage) {
+        this.wmlPackage = wmlPackage;
+        var mainDocumentPart = wmlPackage.getMainDocumentPart();
+        this.styleDefinitionsPart = mainDocumentPart.getStyleDefinitionsPart(true);
     }
 
-    /// Converts the content of a PowerPoint presentation into a string by extracting text paragraphs from the
-    /// presentation and formatting them as strings.
-    ///
-    /// @param presentation the PowerPoint presentation represented as a [PresentationMLPackage].
-    ///
-    /// @return a string representation of the text content within the PowerPoint presentation.
-    public static String stringifyPowerpoint(PresentationMLPackage presentation) {
-        var collector = new PowerpointCollector<>(CTTextParagraph.class);
-        collector.visit(presentation);
-        var collected = collector.collect();
-
-        var powerpoint = new StringBuilder();
-        for (CTTextParagraph paragraph : collected) {
-            powerpoint.append(new PowerpointParagraph(new PptxPart(presentation), paragraph).asString());
-        }
-        return powerpoint.toString();
-    }
-
-    /// Converts the content of a SpreadsheetMLPackage into a string by extracting and formatting cell data from the
-    /// Excel file.
-    ///
-    /// @param presentation the Excel file represented as a [SpreadsheetMLPackage]
-    ///
-    /// @return a string representation of the cell content within the Excel spreadsheet
-    public static String stringifyExcel(SpreadsheetMLPackage presentation) {
-        var collector = new ExcelCollector<>(Cell.class);
-        collector.visit(presentation);
-        var formatter = new DataFormatter();
-        return collector.collect()
-                        .stream()
-                        .map(cell -> cell.getR() + ": " + formatter.formatCellValue(cell))
-                        .collect(joining("\n"));
+    public static String docxToString(WordprocessingMLPackage wordprocessingMLPackage) {
+        return new DocxRenderer(wordprocessingMLPackage).stringify(wordprocessingMLPackage);
     }
 
     private static String stringify(Map<String, String> map) {
@@ -104,10 +66,6 @@ public class Stringifier {
                       .map(stringify)
                       .flatMap(Optional::stream)
                       .collect(joining(",", "[", "]")));
-    }
-
-    public static String stringifyWord(WordprocessingMLPackage wordprocessingMLPackage) {
-        return new Stringifier(() -> wordprocessingMLPackage).stringify(wordprocessingMLPackage);
     }
 
     /// Converts a [PPrBase.Spacing] object into an optional string representation. The method extracts and includes
@@ -134,13 +92,8 @@ public class Stringifier {
         return TextUtils.getText(text);
     }
 
-    private WordprocessingMLPackage document() {
-        return documentSupplier.get();
-    }
-
     private String styleID(String name) {
-        return styleDefinitionsPartSupplier.get()
-                                           .getNameForStyleID(name);
+        return styleDefinitionsPart.getNameForStyleID(name);
     }
 
     private String stringify(Br br) {
@@ -149,7 +102,7 @@ public class Stringifier {
         else if (type == STBrType.COLUMN) return "\n[col-break]\n<<<\n";
         else if (type == STBrType.TEXT_WRAPPING) return "<br/>\n";
         else if (type == null) return "<br/>\n";
-        else throw new OfficeStamperException("Unexpected type: " + type);
+        else throw new UtilsException("Unexpected type: " + type);
     }
 
     /// Converts the given [CTBlip] object into a formatted string representation. This method extracts image data
@@ -162,7 +115,7 @@ public class Stringifier {
     /// @return a formatted string containing metadata about the image extracted from the [CTBlip], including its size
     ///         and hash
     private String stringify(CTBlip blip) {
-        var image = document().getParts()
+        var image = wmlPackage.getParts()
                               .getParts()
                               .entrySet()
                               .stream()
@@ -221,7 +174,7 @@ public class Stringifier {
         if (o instanceof R r) return stringify(r);
         if (o instanceof Drawing drawing) return stringify(drawing);
         if (o instanceof Inline inline) return stringify(inline);
-        if (o instanceof Graphic graphic) return getStringify(graphic);
+        if (o instanceof Graphic graphic) return stringify(graphic);
         if (o instanceof GraphicData graphicData) return stringify(graphicData);
         if (o instanceof Pic pic) return stringify(pic);
         if (o instanceof CTBlipFillProperties bfp) return stringify(bfp);
@@ -285,7 +238,7 @@ public class Stringifier {
             return Optional.of(list.stream()
                                    .collect(joining("\n", "[endnotes]\n---\n", "\n---\n")));
         } catch (Docx4JException e) {
-            throw new OfficeStamperException("Error processing footnotes", e);
+            throw new UtilsException("Error processing footnotes", e);
         }
     }
 
@@ -303,7 +256,7 @@ public class Stringifier {
                                    .collect(joining("\n", "[footnotes]\n---\n", "\n---\n")));
 
         } catch (Docx4JException e) {
-            throw new OfficeStamperException("Error processing footnotes", e);
+            throw new UtilsException("Error processing footnotes", e);
         }
     }
 
@@ -484,8 +437,7 @@ public class Stringifier {
     }
 
     private String stringifyComment(BigInteger id) {
-        var document = document();
-        return WmlUtils.findComment(document, id)
+        return WmlUtils.findComment(wmlPackage, id)
                        .map(Comments.Comment::getContent)
                        .map(this::stringify)
                        .orElseThrow()
@@ -496,7 +448,7 @@ public class Stringifier {
         return stringify(graphicData.getPic());
     }
 
-    private String getStringify(Graphic graphic) {
+    private String stringify(Graphic graphic) {
         return stringify(graphic.getGraphicData());
     }
 

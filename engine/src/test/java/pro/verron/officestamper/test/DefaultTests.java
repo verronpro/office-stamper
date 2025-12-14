@@ -24,6 +24,7 @@ import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 @DisplayName("Core Features") class DefaultTests {
 
@@ -124,28 +125,24 @@ import static pro.verron.officestamper.test.TestUtils.*;
     ) {
 
         var name = "Custom EvaluationContext Configurer Test - Custom EvaluationContext Configurer Is Honored";
-        return argumentSet(name,
-                standard().setEvaluationContextFactory(evalContext -> {
-                    var evaluationContext = new StandardEvaluationContext(evalContext);
-                    evaluationContext.addPropertyAccessor(new SimpleGetter("foo", "bar"));
-                    return evaluationContext;
-                }),
-                factory.empty(),
-                makeWordResource("""
-                        Custom EvaluationContextConfigurer Test
-                        
-                        This paragraph stays untouched.
-                        
-                        The variable foo has the value ${foo}.
-                        """),
-                """
-                        Custom EvaluationContextConfigurer Test
-                        
-                        This paragraph stays untouched.
-                        
-                        The variable foo has the value bar.
-                        
-                        """);
+        return argumentSet(name, standard().setEvaluationContextFactory(evalContext -> {
+            var evaluationContext = new StandardEvaluationContext(evalContext);
+            evaluationContext.addPropertyAccessor(new SimpleGetter("foo", "bar"));
+            return evaluationContext;
+        }), factory.empty(), makeWordResource("""
+                Custom EvaluationContextConfigurer Test
+                
+                This paragraph stays untouched.
+                
+                The variable foo has the value ${foo}.
+                """), """
+                Custom EvaluationContextConfigurer Test
+                
+                This paragraph stays untouched.
+                
+                The variable foo has the value bar.
+                
+                """);
     }
 
     private static ArgumentSet expressionReplacementInGlobalParagraphsTest(ContextFactory factory) {
@@ -501,7 +498,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
     ) {
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 }

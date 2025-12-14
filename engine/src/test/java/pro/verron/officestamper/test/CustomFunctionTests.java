@@ -23,6 +23,7 @@ import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
 import static pro.verron.officestamper.test.TestUtils.makeWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 @DisplayName("Custom function features") class CustomFunctionTests {
 
@@ -104,7 +105,7 @@ import static pro.verron.officestamper.test.TestUtils.makeWordResource;
                 
                 """;
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -122,7 +123,7 @@ import static pro.verron.officestamper.test.TestUtils.makeWordResource;
                 
                 """;
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -140,7 +141,7 @@ import static pro.verron.officestamper.test.TestUtils.makeWordResource;
                 
                 """;
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -156,7 +157,7 @@ import static pro.verron.officestamper.test.TestUtils.makeWordResource;
         var stamper = docxPackageStamper(config);
         var expected = "7.22\n\n";
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -174,7 +175,7 @@ import static pro.verron.officestamper.test.TestUtils.makeWordResource;
         var context = factory.date(LocalDate.of(2024, Month.APRIL, 1));
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected + "\n", actual);
     }
 

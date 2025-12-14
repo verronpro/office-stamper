@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 
 import static pro.verron.officestamper.preset.ExperimentalStampers.pptxPackageStamper;
+import static pro.verron.officestamper.utils.pml.PptxRenderer.pptxToString;
 
 @DisplayName("Basic Powerpoint Test") class BasicPowerpointTest {
     @Test
@@ -17,7 +18,7 @@ import static pro.verron.officestamper.preset.ExperimentalStampers.pptxPackageSt
         record Person(String name) {}
         var context = new Person("Bart");
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyPowerpoint(stamped);
+        var actual = pptxToString(stamped);
         Assertions.assertEquals("""
                 Hello
                 Bart

@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import static org.docx4j.openpackaging.packages.SpreadsheetMLPackage.load;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.ExperimentalStampers.xlsxPackageStamper;
-import static pro.verron.officestamper.test.Stringifier.stringifyExcel;
+import static pro.verron.officestamper.utils.sml.XlsxRenderer.xlsxToString;
 
 @DisplayName("Basic Excel Test") class BasicExcelTest {
 
@@ -25,7 +25,7 @@ import static pro.verron.officestamper.test.Stringifier.stringifyExcel;
         var templateExpectedString = """
                 A1: Hello
                 B1: ${name}""";
-        var templateActualString = stringifyExcel(templatePackage);
+        var templateActualString = xlsxToString(templatePackage);
         assertEquals(templateExpectedString, templateActualString);
 
         record Person(String name) {}
@@ -36,7 +36,7 @@ import static pro.verron.officestamper.test.Stringifier.stringifyExcel;
         var stampedExpectedString = """
                 A1: Hello
                 B1: Bart""";
-        var stampedActualString = stringifyExcel(stamped);
+        var stampedActualString = xlsxToString(stamped);
         assertEquals(stampedExpectedString, stampedActualString);
     }
 }

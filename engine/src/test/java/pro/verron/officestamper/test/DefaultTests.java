@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,7 +14,6 @@ import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Resolvers;
 
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -23,9 +23,11 @@ import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.*;
+import static pro.verron.officestamper.test.TestUtils.getImage;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
 
 @DisplayName("Core Features") class DefaultTests {
 
@@ -61,7 +63,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return arguments("Ternary operators should function",
                 standard(),
                 factory.name("Homer"),
-                getResource(Path.of("TernaryOperatorTest.docx")),
+                getWordResource(Path.of("TernaryOperatorTest.docx")),
                 """
                         Expression Replacement with ternary operator
                         
@@ -80,7 +82,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return of("Replace Word With integration test",
                 full(),
                 factory.name("Simpsons"),
-                getResource(Path.of("ProcessorReplaceWith.docx")),
+                getWordResource(Path.of("ProcessorReplaceWith.docx")),
                 """
                         == ReplaceWith Integration
                         
@@ -103,7 +105,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return of("Do not replace 'null' values",
                 standard().addResolver(Resolvers.nullToPlaceholder()),
                 factory.name(null),
-                getResource(Path.of("ReplaceNullExpressionTest.docx")),
+                getWordResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
                         I am ${name}.
                         
@@ -115,7 +117,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return of("Do replace 'null' values",
                 standard().addResolver(Resolvers.nullToEmpty()),
                 factory.name(null),
-                getResource(Path.of("ReplaceNullExpressionTest.docx")),
+                getWordResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
                         I am .
                         
@@ -127,7 +129,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
             ContextFactory factory
     ) {
         var context = factory.empty();
-        var template = makeAsciiDocResource("""
+        var template = TestUtils.makeWordResource("""
                 Custom EvaluationContextConfigurer Test
                 
                 This paragraph stays untouched.
@@ -157,7 +159,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments expressionReplacementInGlobalParagraphsTest(ContextFactory factory) {
         var context = factory.name("Homer Simpson");
-        var template = makeAsciiDocResource("""
+        var template = TestUtils.makeWordResource("""
                 Expression Replacement in global paragraphs
                 This paragraph is untouched.
                 In this paragraph, the variable name should be resolved to the value ${name}.
@@ -175,7 +177,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments expressionReplacementInTablesTest(ContextFactory factory) {
         var context = factory.name("Bart Simpson");
-        var template = getResource(Path.of("ExpressionReplacementInTablesTest.docx"));
+        var template = getWordResource(Path.of("ExpressionReplacementInTablesTest.docx"));
 
         var expected = """
                 == Expression Replacement in Tables
@@ -211,7 +213,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments expressionReplacementWithFormattingTest(ContextFactory factory) {
         var context = factory.name("Homer Simpson");
-        var template = getResource(Path.of("ExpressionReplacementWithFormattingTest.docx"));
+        var template = getWordResource(Path.of("ExpressionReplacementWithFormattingTest.docx"));
         var expected = """
                 == Expression Replacement with text format
                 
@@ -258,7 +260,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments expressionWithSurroundingSpacesTest(ContextFactory factory) {
         var spacyContext = factory.spacy();
-        var template = getResource(Path.of("ExpressionWithSurroundingSpacesTest.docx"));
+        var template = getWordResource(Path.of("ExpressionWithSurroundingSpacesTest.docx"));
         var expected = """
                 == Expression Replacement when expression has leading and/or trailing spaces
                 
@@ -289,7 +291,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments expressionReplacementWithCommentTest(ContextFactory factory) {
         var context = factory.name("Homer Simpson");
-        var template = getResource(Path.of("ExpressionReplacementWithCommentsTest.docx"));
+        var template = getWordResource(Path.of("ExpressionReplacementWithCommentsTest.docx"));
         var expected = """
                 == Expression Replacement with comments
                 
@@ -308,7 +310,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
     /// testDateInstantiationAndResolution.
     private static Arguments imageReplacementInGlobalParagraphsTest(ContextFactory factory) {
         var context = factory.image(getImage(Path.of("monalisa.jpg")));
-        var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
+        var template = getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
                 == Image Replacement in global paragraphs
                 
@@ -325,7 +327,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments imageReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
         var context = factory.image(getImage(Path.of("monalisa.jpg"), 1000));
-        var template = getResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
+        var template = getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx"));
         var expected = """
                 == Image Replacement in global paragraphs
                 
@@ -346,7 +348,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments leaveEmptyOnExpressionErrorTest(ContextFactory factory) {
         var context = factory.name("Homer Simpson");
-        var template = getResource(Path.of("LeaveEmptyOnExpressionErrorTest.docx"));
+        var template = getWordResource(Path.of("LeaveEmptyOnExpressionErrorTest.docx"));
         var expected = """
                 Leave me empty .
                 
@@ -362,7 +364,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
     private static Arguments lineBreakReplacementTest(ContextFactory factory) {
         var config = standard(Resolvers.fallback("#"));
         var context = factory.sentence("whatever # split in # three lines");
-        var template = makeAsciiDocResource("""
+        var template = TestUtils.makeWordResource("""
                 This paragraph should not be # split.
                 This paragraph should have a split input: ${sentence}.
                 """);
@@ -380,7 +382,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
             ContextFactory factory
     ) {
         var context = factory.mapAndReflectiveContext();
-        var template = getResource(Path.of("MapAccessorAndReflectivePropertyAccessorTest.docx"));
+        var template = getWordResource(Path.of("MapAccessorAndReflectivePropertyAccessorTest.docx"));
         var expected = """
                 Flat string : Flat string has been resolved
                 
@@ -428,7 +430,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments nullPointerResolutionTest_testWithDefaultSpel(ContextFactory factory) {
         var context = factory.nullishContext();
-        var template = getResource(Path.of("NullPointerResolution.docx"));
+        var template = getWordResource(Path.of("NullPointerResolution.docx"));
         var expected = """
                 Deal with null references
                 
@@ -465,7 +467,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
         return of("Form controls should be replaced as well",
                 standard(),
                 factory.name("Homer"),
-                getResource(Path.of("form-controls.docx")),
+                getWordResource(Path.of("form-controls.docx")),
                 """
                         == Expression Replacement in Form Controls
                         
@@ -484,7 +486,7 @@ import static pro.verron.officestamper.test.TestUtils.*;
 
     private static Arguments nullPointerResolutionTest_testWithCustomSpel(ContextFactory factory) {
         var context = factory.nullishContext();
-        var template = getResource(Path.of("NullPointerResolution.docx"));
+        var template = getWordResource(Path.of("NullPointerResolution.docx"));
         var expected = """
                 Deal with null references
                 
@@ -527,12 +529,13 @@ import static pro.verron.officestamper.test.TestUtils.*;
             String name,
             OfficeStamperConfiguration config,
             Object context,
-            InputStream template,
+            WordprocessingMLPackage template,
             String expected
     ) {
         log.info(name);
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 }

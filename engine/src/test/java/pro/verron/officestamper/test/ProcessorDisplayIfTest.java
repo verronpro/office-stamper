@@ -10,9 +10,10 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
 
 class ProcessorDisplayIfTest {
 
@@ -25,7 +26,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfBart(ContextFactory factory) {
         var context = factory.name("Bart");
-        var template = getResource(Path.of("ProcessorDisplayIf.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf.docx"));
         var expected = """
                 == Conditional Display
                 
@@ -238,8 +239,9 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -248,7 +250,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfFootnotes(ContextFactory factory) {
         var context = factory.name("Bart");
-        var template = getResource(Path.of("ProcessorDisplayIf_Footnotes.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf_Footnotes.docx"));
         var expected = """
                 = Springfield Chronicles: The Simpsons Edition
                 
@@ -312,8 +314,9 @@ class ProcessorDisplayIfTest {
                 """;
 
         var configuration = full();
-        var stamper = new TestDocxStamper<>(configuration);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(configuration);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -322,7 +325,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfEndnotes(ContextFactory factory) {
         var context = factory.name("Bart");
-        var template = getResource(Path.of("ProcessorDisplayIf_Endnotes.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf_Endnotes.docx"));
         var expected = """
                 = Springfield Chronicles: The Simpsons Edition
                 
@@ -386,8 +389,9 @@ class ProcessorDisplayIfTest {
                 """;
 
         var configuration = full();
-        var stamper = new TestDocxStamper<>(configuration);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(configuration);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -396,7 +400,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfHomer(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ProcessorDisplayIf.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf.docx"));
         var expected = """
                 == Conditional Display
                 
@@ -573,8 +577,9 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -583,7 +588,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfAbsentValue(ContextFactory factory) {
         var context = factory.name(null);
-        var template = getResource(Path.of("ProcessorDisplayIf.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf.docx"));
         var expected = """
                 == Conditional Display
                 
@@ -760,8 +765,9 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -770,7 +776,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfParagraphsTest_inlineProcessorExpressionsAreResolved(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ProcessorDisplayIf_Inlined.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf_Inlined.docx"));
         var expected = """
                 == Conditional Display of Paragraphs
                 
@@ -800,8 +806,9 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 
@@ -810,7 +817,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfParagraphsTest_unresolvedInlineProcessorExpressionsAreRemoved(ContextFactory factory) {
         var context = factory.name("Bart");
-        var template = getResource(Path.of("ProcessorDisplayIf_Inlined.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf_Inlined.docx"));
         var expected = """
                 == Conditional Display of Paragraphs
                 
@@ -844,8 +851,9 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -854,7 +862,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfTableRowsTest(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ProcessorDisplayIf_TableRows.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf_TableRows.docx"));
         var expected = """
                 == Conditional Display of Table Rows
                 
@@ -881,8 +889,9 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 
@@ -891,7 +900,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfTableBug32Test(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ProcessorDisplayIf_#32.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf_#32.docx"));
         var expected = """
                 == Conditional Display of Tables
                 
@@ -925,8 +934,9 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -935,7 +945,7 @@ class ProcessorDisplayIfTest {
     @MethodSource("factories")
     void conditionalDisplayOfTableTest(ContextFactory factory) {
         var context = factory.name("Homer");
-        var template = getResource(Path.of("ProcessorDisplayIf_Tables.docx"));
+        var template = getWordResource(Path.of("ProcessorDisplayIf_Tables.docx"));
         var expected = """
                 == Conditional Display of Tables
                 
@@ -968,8 +978,9 @@ class ProcessorDisplayIfTest {
                 
                 """;
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 }

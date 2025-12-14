@@ -20,17 +20,21 @@ public class ReplaceWithProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IReplaceWithProcessor {
 
-    private ReplaceWithProcessor(ProcessorContext processorContext) {
+
+    /// Constructs a new [ReplaceWithProcessor] instance.
+    ///
+    /// @param processorContext the context in which this processor operates, providing access to document
+    ///         manipulation and expression evaluation utilities.
+    public ReplaceWithProcessor(ProcessorContext processorContext) {
         super(processorContext);
     }
 
-    /// Creates a new processor that replaces the current run with the result of the expression.
-    ///
-    /// @return the processor
-    public static CommentProcessor newInstance(ProcessorContext processorContext) {
-        return new ReplaceWithProcessor(processorContext);
-    }
 
+    /// Replaces the content between the start and end of the comment with the given expression.
+    ///
+    /// @param expression The expression to replace the content with. Must not be null.
+    ///
+    /// @throws OfficeStamperException if the expression is null, or if the comment range start or end is null.
     @Override
     public void replaceWith(@Nullable String expression) {
         if (expression == null) throw new OfficeStamperException("Cannot replace with null expression");

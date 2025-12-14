@@ -10,9 +10,10 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
 
 /// @author Joseph Verron
 /// @author Tom Hombergs
@@ -28,11 +29,12 @@ class MultiStampTest {
     void repeatDocPart(ContextFactory factory) {
         var config = OfficeStamperConfigurations.standard();
         var context = factory.names("Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var stamper = new TestDocxStamper<>(config);
+        var stamper = docxPackageStamper(config);
 
         var filename = "MultiStampTest.docx";
-        var template1 = getResource(filename);
-        var document1 = stamper.stampAndLoadAndExtract(template1, context);
+        var template = getWordResource(filename);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals("""
                 == Multi-Stamp-Test
                 
@@ -54,10 +56,11 @@ class MultiStampTest {
                 |===
                 
                 
-                """, document1);
+                """, actual);
 
-        var template2 = getResource(filename);
-        var document2 = stamper.stampAndLoadAndExtract(template2, context);
+        var template2 = getWordResource(filename);
+        var wordprocessingMLPackage = stamper.stamp(template2, context);
+        var document2 = Stringifier.stringifyWord(wordprocessingMLPackage);
         assertEquals("""
                 == Multi-Stamp-Test
                 

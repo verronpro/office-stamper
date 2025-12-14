@@ -2,6 +2,7 @@ package pro.verron.officestamper.test;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -12,7 +13,6 @@ import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.loadWord;
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 
@@ -27,51 +28,15 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 /// used for accessing test resources.
 public class TestUtils {
 
-    /// Retrieves an InputStream for the specified resource path.
-    ///
-    /// @param path the path of the resource
-    ///
-    /// @return an InputStream for the specified resource
-    public static InputStream getResource(String path) {
-        return getResource(Path.of(path));
-    }
 
-
-    /// Retrieves an InputStream for the specified resource path.
-    ///
-    /// @param path the path of the resource
-    ///
-    /// @return an InputStream for the specified resource
-    public static InputStream getResource(Path path) {
-        try {
-            var testRoot = Path.of("..", "test", "sources");
-            var resolve = testRoot.resolve(path);
-            return Files.newInputStream(resolve);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public static InputStream makeAsciiDocResource(String asciidoc) {
+    public static WordprocessingMLPackage makeWordResource(String asciidoc) {
         // Extract comment macros and strip them from the AsciiDoc before compilation
         var extraction = extractAndStripCommentMacros(asciidoc);
         var model = AsciiDocCompiler.toAsciiModel(extraction.cleanedAsciiDoc());
         WordprocessingMLPackage aPackage = AsciiDocCompiler.toDocx(model);
         // Apply comments specified by macros onto the generated DOCX
-        applyCommentMacros(aPackage, model, extraction.specs());
-        OutputStream outputStream;
-        try {
-            outputStream = IOStreams.getOutputStream();
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
-        try {
-            aPackage.save(outputStream);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
-        return IOStreams.getInputStream(outputStream);
+        applyCommentMacros(aPackage, extraction.specs());
+        return aPackage;
     }
 
     private static MacroExtraction extractAndStripCommentMacros(String asciidoc) {
@@ -112,11 +77,7 @@ public class TestUtils {
         return new MacroExtraction(sb.toString(), specs);
     }
 
-    private static void applyCommentMacros(
-            WordprocessingMLPackage pkg,
-            pro.verron.officestamper.asciidoc.AsciiDocModel model,
-            List<CommentSpec> specs
-    ) {
+    private static void applyCommentMacros(WordprocessingMLPackage pkg, List<CommentSpec> specs) {
         if (specs.isEmpty()) return;
         ensureCommentsPart(pkg);
         // Build flattened paragraph list in document order as per render
@@ -170,12 +131,10 @@ public class TestUtils {
         }
     }
 
-    // ===== New comment macro processing for AsciiDoc =====
-
     private static void insertAtCharIndex(P p, int charIndex, boolean start, BigInteger id) {
         // Split runs so that we can insert markers exactly at charIndex
         int remaining = charIndex;
-        var newContent = new java.util.ArrayList<Object>();
+        var newContent = new ArrayList<>();
         for (Object o : p.getContent()) {
             var val = o instanceof JAXBElement<?> j ? j.getValue() : o;
             // If we reached the exact insertion boundary before this element, insert marker now
@@ -317,9 +276,7 @@ public class TestUtils {
         }
     }
 
-    public static WordprocessingMLPackage makeAsciiDocDocx(String asciidoc) {
-        return AsciiDocCompiler.toDocx(asciidoc);
-    }
+    // ===== New comment macro processing for AsciiDoc =====
 
     static Image getImage(Path path) {
         try {
@@ -329,11 +286,44 @@ public class TestUtils {
         }
     }
 
+    /// Retrieves an InputStream for the specified resource path.
+    ///
+    /// @param path the path of the resource
+    ///
+    /// @return an InputStream for the specified resource
+    public static InputStream getResource(Path path) {
+        try {
+            var testRoot = Path.of("..", "test", "sources");
+            var resolve = testRoot.resolve(path);
+            return Files.newInputStream(resolve);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static WordprocessingMLPackage getWordResource(String path) {
+        return getWordResource(Path.of(path));
+    }
+
+    static WordprocessingMLPackage getWordResource(Path path) {
+        var templateStream = getResource(path);
+        return loadWord(templateStream);
+    }
+
     static Image getImage(Path path, int size) {
         try {
             return new Image(getResource(path), size);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static PresentationMLPackage getPowerPointResource(Path path) {
+        var templateStream = getResource(path);
+        try {
+            return PresentationMLPackage.load(templateStream);
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException(e);
         }
     }
 

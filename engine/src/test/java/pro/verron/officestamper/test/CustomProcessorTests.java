@@ -13,9 +13,10 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.raw;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 @DisplayName("Custom processors features") class CustomProcessorTests {
@@ -32,8 +33,8 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
     @ParameterizedTest(name = "Should allow to inject custom processors ({argumentSetName})")
     void should_allow_custom_processors_injection(ContextFactory factory) {
         var config = raw().addCommentProcessor(ICustomProcessor.class, CustomProcessor::new);
-        var template = getResource(Path.of("CustomCommentProcessorTest.docx"));
-        var expected = """     
+        var template = getWordResource(Path.of("CustomCommentProcessorTest.docx"));
+        var expected = """
                 == Custom Comment Processor Test
                 
                 
@@ -44,8 +45,9 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
                 Visited
                 
                 """;
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, factory.empty());
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, factory.empty());
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 

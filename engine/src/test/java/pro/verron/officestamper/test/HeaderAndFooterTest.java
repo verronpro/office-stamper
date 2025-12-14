@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.preset.ExceptionResolvers;
+import pro.verron.officestamper.preset.OfficeStampers;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -15,7 +16,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getImage;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
 
 
 /// @author Joseph Verron
@@ -30,10 +31,11 @@ class HeaderAndFooterTest {
     @ParameterizedTest
     void placeholders(ContextFactory factory) {
         var context = factory.imagedName("Homer Simpson", getImage(Path.of("butterfly.png")));
-        var template = getResource("ExpressionReplacementInHeaderAndFooterTest.docx");
+        var template = getWordResource("ExpressionReplacementInHeaderAndFooterTest.docx");
         var config = standard().setExceptionResolver(ExceptionResolvers.passing());
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = OfficeStampers.docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals("""
                 [header, name="/word/header2.xml"]
                 ----

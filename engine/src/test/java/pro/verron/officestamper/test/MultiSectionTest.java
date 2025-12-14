@@ -9,9 +9,10 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
 
 /// @author Joseph Verron
 class MultiSectionTest {
@@ -24,10 +25,11 @@ class MultiSectionTest {
     @ParameterizedTest
     void expressionsInMultipleSections(ContextFactory factory) {
         var context = factory.sectionName("Homer", "Marge");
-        var template = getResource("MultiSectionTest.docx");
+        var template = getWordResource("MultiSectionTest.docx");
         var configuration = OfficeStamperConfigurations.standard();
-        var stamper = new TestDocxStamper<>(configuration);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(configuration);
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         String expected = """
                 Homer
                 

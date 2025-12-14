@@ -96,7 +96,28 @@ This repository is structured in several Maven/Java modules:
 
 == Latest Release
 
-The latest release is v2.9.0. See the link:{docs}/release-notes.html[Release Notes] for details.
+The latest release is v3.0.0. See the link:{docs}/release-notes.html[Release Notes] for details.
+
+=== What's new in 3.0 (high level)
+
+* Processing model overhaul: the engine now iterates hooks (placeholders, inline processors, comments) strictly in document order.
+See `3.0_UPDATE.md` for the full rationale and migration guidance.
+* New hook concept: each placeholder/comment is treated as a hook — the iterator walks hooks one by one.
+* Hierarchical scopes: `ContextTree`/`ContextBranch` resolve placeholders along the current branch; unresolved values bubble up to parent scopes.
+* Preprocessor‑driven placeholders: include the placeholder preprocessor in your `OfficeStamperConfiguration` (already present in standard presets) to enable resolution.
+* Comment processor lifecycle simplified: processors are created per comment and executed once.
+
+Breaking API highlights:
+* `AbstractCommentProcessor` → `CommentProcessor`; introduce `CommentProcessorFactory`.
+* `EvaluationContextConfigurer` → `EvaluationContextFactory` (fresh context per hook).
+* `DocxDocument` removed in favor of `DocxPart`.
+* New `Insert` API for multi‑run insertions; `PlaceholderReplacer` removed in favor of context‑stack management.
+* `OfficeStamper` handles `OpcPackage`; use `StreamStamper` for stream‑to‑stream.
+* Expression parser is pluggable (`ExpressionParser`), SpEL by default.
+
+Minor updates:
+* Spring dependencies bumped to 7.0.2 * New docs: `engine/src/site/asciidoc/how-to-custom.adoc` and `HOW_DOES_IT_WORKS.adoc`
+* Test matrix extended for Docx4J 11.5.7 and 11.5.8 * New modules: `asciidoc`, `utils`
 
 == Sample Code
 

@@ -3,6 +3,47 @@
 :os: https://github.com/verronpro/office-stamper
 :proj: https://github.com/verronpro/office-stamper/releases/tag
 
+== {proj}/v3.0.0[v3.0.0]
+
+=== Major changes
+
+* Processing model overhaul: the engine now iterates hooks in strict document order.
+The API around iteration has been adapted accordingly.
+Consult the root file `3.0_UPDATE.md` for details and migration notes.
+* Introduced the hook concept: a hook represents a concrete target point in the DOCX to process (e.g., placeholder smart‑tags, inline processors, and comments) and is the unit the iterator walks through.
+* New hierarchical scopes with `ContextTree` and `ContextBranch`.
+If a placeholder cannot resolve in the current scope, resolution walks up the branch (parent, then ancestors).
+Comment processors that create sub‑scopes (e.g., repeaters) can control whether a hook evaluates in a nested branch or reuses the current one.
+* Placeholders are now resolved from smart‑tags produced by preprocessors.
+Ensure the appropriate placeholder preprocessor is included in your `OfficeStamperConfiguration` (standard presets already do this).
+* Simplified lifecycle for comment processors: a processor instance is created for each encountered comment and executed once.
+
+=== Breaking API Changes
+
+* `AbstractCommentProcessor` was renamed and simplified into `CommentProcessor`.
+* Removed mutating setters on the `Comment` interface.
+* All previously `@Deprecated` API methods have been removed.
+* Introduced `@FunctionalInterface CommentProcessorFactory` to create a `CommentProcessor` from a `ProcessorContext`.
+* Removed `DocxDocument` from the public API; `DocxPart` covers previous use cases.
+* Replaced `EvaluationContextConfigurer` with `EvaluationContextFactory`.
+Provide a factory that creates a fresh `EvaluationContext` per hook.
+* Introduced `Insert` in the API, allowing resolvers to return content that spans multiple runs instead of a single run.
+* `OfficeStamper` now focuses on `OpcPackage` handling.
+Stream‑based stamping is handled by the dedicated `StreamStamper` interface.
+* Expression parsing is configurable: you can supply your own `org.springframework.expression.ExpressionParser` (SpEL by default).
+* Removed `PlaceholderReplacer` in favor of the context‑stack driven placeholder management.
+
+For a complete migration guide and code examples, see `3.0_UPDATE.md` and the contributor‑focused `HOW_DOES_IT_WORKS.adoc`.
+
+=== Minor changes
+
+* Dependencies: upgraded Spring Expression/Context to 7.0.2 (from 6.2.12).
+* Documentation: added an in‑depth how‑to for building custom resolvers and comment processors at `engine/src/site/asciidoc/how-to-custom.adoc`.
+* Documentation: added a deeper architectural overview for contributors in `HOW_DOES_IT_WORKS.adoc`.
+* Tests: extended Docx4J test matrix to include 11.5.7 and 11.5.8.
+* Modules: added an `asciidoc` module to experiment with AsciiDoc ↔ DOCX conversion (useful for tests).
+* Modules: added a `utils` module exposing common utilities; some utilities may spin off into dedicated projects later.
+
 == {proj}/v2.9.0[v2.9.0]
 
 === Features
@@ -12,7 +53,8 @@
 === Bugfixes
 
 * MAY BREAK: Changed behavior of the processor `replaceWordWith(context)` to be able to handle several test run as notified by {gh}/jonath92[@jonath92] in {os}/issues/585[#585]
-** It may break the formatting of the following paragraphs if there was an empty run with formatting instruction inside the comment selection, but I have not been able to reproduce this theoretical issue with both Word, and WPS writer. Do not hesitate to inform me if you encounter the issue.
+** It may break the formatting of the following paragraphs if there was an empty run with formatting instruction inside the comment selection, but I have not been able to reproduce this theoretical issue with both Word, and WPS writer.
+Do not hesitate to inform me if you encounter the issue.
 
 === Dependencies
 
@@ -71,7 +113,6 @@
 * Fixed management of comment made in Google Doc, as mentioned by {gh}/Jushar[@Jushar] in #534
 * Fixed management of instrText in TOC, as mentioned by {gh}/tiagobutzke[@tiagobutzke] in {os}/issues/539[#539]
 
-
 === Dependencies
 
 * Bump `org.docx4j:docx4j-core` from `11.5.1` to `11.5.3`
@@ -113,7 +154,6 @@
 === Refactorings
 
 * Word 2 String now manage FldChar, instrText, and Hyperlink.
-
 
 == {proj}/releases/tag/v2.7.0[v2.7.0]
 
@@ -177,7 +217,8 @@ Fixes a bug when commenting several groups of runs by different comments in a si
 
 === Features
 
-* It is now possible to add custom function to the Spel context in a simpler way. Try using `OfficeStamperConfiguration.addCustomFunction` methods.
+* It is now possible to add custom function to the Spel context in a simpler way.
+Try using `OfficeStamperConfiguration.addCustomFunction` methods.
 * Added the `pro.verron.officestamper.utils` package to provide useful and common elements for core, preset, test and users.
 * *Deprecated* the `Paragraph` wrapper now can provide a bit more advanced capability on inner `P`, don’t recommend calling `getP()` anymore.
 

@@ -33,6 +33,13 @@ import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.bit.ByteUtils.readableSize;
 import static pro.verron.officestamper.utils.bit.ByteUtils.sha1b64;
 
+/// A utility class for rendering DOCX documents into string representations. This class provides comprehensive
+/// functionality to convert various DOCX elements including paragraphs, tables, images, headers, footers, and other
+/// document components into human-readable string format for debugging, testing, or display purposes.
+///
+/// The renderer handles complex document structures and maintains relationships between different document elements
+/// while providing meaningful string representations of the content.
+///
 /// @author Joseph Verron
 /// @version ${version}
 /// @since 1.6.5
@@ -41,7 +48,6 @@ public class DocxRenderer {
     private final StyleDefinitionsPart styleDefinitionsPart;
     private final WordprocessingMLPackage wmlPackage;
 
-    /// @since 1.6.6
     private DocxRenderer(WordprocessingMLPackage wmlPackage) {
         this.wmlPackage = wmlPackage;
         var mainDocumentPart = wmlPackage.getMainDocumentPart();

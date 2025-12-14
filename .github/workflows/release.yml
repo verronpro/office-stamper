@@ -22,7 +22,7 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
 
-      - run: mvn -B -ntp deploy -P gpg,!mut -f engine/pom.xml
+      - run: mvn -B -ntp deploy -P gpg,!mut
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_NAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASS }}

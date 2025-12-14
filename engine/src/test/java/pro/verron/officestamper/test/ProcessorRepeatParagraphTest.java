@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -8,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +19,11 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
-import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.test.TestUtils.makeWordResource;
 
 class ProcessorRepeatParagraphTest {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -53,7 +54,7 @@ class ProcessorRepeatParagraphTest {
                 "Hank Azaria",
                 "Krusty the Clown",
                 "Dan Castellaneta");
-        var template = getResource(Path.of("ProcessorRepeatParagraph.docx"));
+        var template = getWordResource(Path.of("ProcessorRepeatParagraph.docx"));
         var expected = """
                 == Characters 1 line
                 
@@ -118,7 +119,7 @@ class ProcessorRepeatParagraphTest {
         return arguments("In multiple layouts, keeps section orientations outside RepeatParagraph comments",
                 standard(),
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
-                getResource(Path.of("ProcessorRepeatParagraph_OutLayout.docx")),
+                getWordResource(Path.of("ProcessorRepeatParagraph_OutLayout.docx")),
                 """
                         First page is landscape.
                         
@@ -159,7 +160,7 @@ class ProcessorRepeatParagraphTest {
             ContextFactory factory
     ) {
         var context = factory.coupleContext();
-        var template = getResource(Path.of("ProcessorRepeatParagraph_InLayout.docx"));
+        var template = getWordResource(Path.of("ProcessorRepeatParagraph_InLayout.docx"));
         var expected = """
                 First page is landscape.
                 
@@ -213,25 +214,27 @@ class ProcessorRepeatParagraphTest {
             String name,
             OfficeStamperConfiguration config,
             Object context,
-            InputStream template,
+            WordprocessingMLPackage template,
             String expected
     ) {
         log.info(name);
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
     @Test
     void shouldAcceptList() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = makeAsciiDocResource("""
+        var stamper = docxPackageStamper(config);
+        var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatParagraph(names)"]
                 ${name}
                 """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         var expected = """
                 Homer
                 
@@ -250,13 +253,14 @@ class ProcessorRepeatParagraphTest {
     @Test
     void shouldAcceptSet() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = makeAsciiDocResource("""
+        var stamper = docxPackageStamper(config);
+        var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatParagraph(names)"]
                 ${name}
                 """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         var expected = """
                 Marge
                 
@@ -275,13 +279,14 @@ class ProcessorRepeatParagraphTest {
     @Test
     void shouldAcceptQueue() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = makeAsciiDocResource("""
+        var stamper = docxPackageStamper(config);
+        var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatParagraph(names)"]
                 ${name}
                 """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         var expected = """
                 Homer
                 

@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.OfficeStampers;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
 
 
 /// Verifies stampTable feature works correctly
@@ -27,10 +28,10 @@ class StampTableTest {
     @MethodSource("factories")
     @ParameterizedTest
     void stampTableTest(ContextFactory factory) {
-        var testDocx = getResource("StampTableTest.docx");
+        var template = getWordResource("StampTableTest.docx");
 
         var configuration = OfficeStamperConfigurations.standard();
-        var stamper = new TestDocxStamper<>(configuration);
+        var stamper = OfficeStampers.docxPackageStamper(configuration);
 
         var context = factory.characterTable(List.of("Character", "Actor"),
                 List.of(List.of("Homer Simpson", "Dan Castellaneta"),
@@ -39,7 +40,8 @@ class StampTableTest {
                         List.of("Kent Brockman", "Harry Shearer"),
                         List.of("Disco Stu", "Hank Azaria"),
                         List.of("Krusty the Clown", "Dan Castellaneta")));
-        var string = stamper.stampAndLoadAndExtract(testDocx, context);
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var string = Stringifier.stringifyWord(wordprocessingMLPackage);
         assertEquals("""
                 Stamping Table
                 

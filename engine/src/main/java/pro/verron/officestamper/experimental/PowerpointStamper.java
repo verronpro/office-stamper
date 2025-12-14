@@ -2,7 +2,6 @@ package pro.verron.officestamper.experimental;
 
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextParagraph;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -11,7 +10,6 @@ import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
 
-import java.io.OutputStream;
 import java.util.List;
 
 /// The PowerpointStamper class implements the OfficeStamper interface to provide capability for stamping PowerPoint
@@ -26,7 +24,7 @@ public class PowerpointStamper
     }
 
     @Override
-    public void stamp(PresentationMLPackage template, Object context, OutputStream outputStream)
+    public PresentationMLPackage stamp(PresentationMLPackage template, Object context)
             throws OfficeStamperException {
         Class<CTTextParagraph> ctTextParagraphClass = CTTextParagraph.class;
         List<CTTextParagraph> ctTextParagraphs = PowerpointCollector.collect(template, ctTextParagraphClass);
@@ -40,17 +38,11 @@ public class PowerpointStamper
                 var parser = new SpelExpressionParser(parserConfiguration);
                 var expression = parser.parseExpression(variable.content());
                 var value = expression.getValue(evaluationContext);
-
                 replacement.setT((String) value);
                 var expression1 = variable.expression();
                 paragraph1.replace(expression1, new Insert(replacement));
             }
-
         }
-        try {
-            template.save(outputStream);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
+        return template;
     }
 }

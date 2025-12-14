@@ -85,14 +85,10 @@ public class OfficeStamperConfigurations {
         configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance);
         configuration.addCommentProcessor(IRepeatDocPartProcessor.class,
                 processorContext -> RepeatDocPartProcessor.newInstance(processorContext,
-                        (template, context, output) -> new DocxStamper(configuration).stamp(template,
-                                context,
-                                output)));
-        configuration.addCommentProcessor(ITableResolver.class,
-                processorContext1 -> new TableResolver(processorContext1));
+                        (template, context) -> new DocxStamper(configuration).stamp(template, context)));
+        configuration.addCommentProcessor(ITableResolver.class, TableResolver::new);
         configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance);
-        configuration.addCommentProcessor(IReplaceWithProcessor.class,
-                processorContext -> ReplaceWithProcessor.newInstance(processorContext));
+        configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::new);
 
         configuration.setResolvers(List.of(Resolvers.image(),
                 Resolvers.legacyDate(),

@@ -3,6 +3,7 @@ package pro.verron.officestamper.test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.preset.OfficeStampers;
 
 import java.nio.file.Path;
 
@@ -15,28 +16,28 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
     @DisplayName("Should stamp a Word document")
     void testStamper() {
         var configuration = full();
-        var stamper = new TestDocxStamper<>(configuration);
-        var templateStream = TestUtils.getResource(Path.of("word-base.docx"));
-
+        var stamper = OfficeStampers.docxPackageStamper(configuration);
+        var path = Path.of("word-base.docx");
+        var template = TestUtils.getWordResource(path);
         record Person(String name) {}
         var context = new Person("Bart");
-        var actual = stamper.stampAndLoadAndExtract(templateStream, context);
+        var actual = stamper.stamp(template, context);
         var expected = """
                 Hello, Bart!
                 
                 """;
-        assertEquals(expected, actual);
+        assertEquals(expected, Stringifier.stringifyWord(actual));
     }
 
     @Test
     @DisplayName("Should fail on malformed comment")
     void testMalformeStamper() {
         var configuration = full();
-        var stamper = new TestDocxStamper<>(configuration);
-        var templateStream = TestUtils.getResource(Path.of("malformed-comment.docx"));
+        var stamper = OfficeStampers.docxPackageStamper(configuration);
+        var template = TestUtils.getWordResource(Path.of("malformed-comment.docx"));
 
         record Person(String name) {}
         var context = new Person("Bart");
-        assertThrows(OfficeStamperException.class, () -> stamper.stampAndLoadAndExtract(templateStream, context));
+        assertThrows(OfficeStamperException.class, () -> stamper.stamp(template, context));
     }
 }

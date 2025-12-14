@@ -4,92 +4,85 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.test.TestUtils.makeWordResource;
 
 class RegressionTests {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
     private static final Path TEMPLATE_52 = Path.of("#52.docx");
 
     public static Stream<Arguments> source52() {
-        return Stream.of(arguments(Conditions.values(), ""),
-                arguments(Conditions.values(true), """
-                        Start
-                        
-                        Hello, World!
-                        
-                        End
-                        
-                        """),
-                arguments(Conditions.values(false), """
-                        Start
-                        
-                        End
-                        
-                        """),
-                arguments(Conditions.values(true, true), """
-                        Start
-                        
-                        Hello, World!
-                        
-                        End
-                        
-                        Start
-                        
-                        Hello, World!
-                        
-                        End
-                        
-                        """),
-                arguments(Conditions.values(true, false), """
-                        Start
-                        
-                        Hello, World!
-                        
-                        End
-                        
-                        Start
-                        
-                        End
-                        
-                        """),
-                arguments(Conditions.values(false, true), """
-                        Start
-                        
-                        End
-                        
-                        Start
-                        
-                        Hello, World!
-                        
-                        End
-                        
-                        """),
-                arguments(Conditions.values(false, false), "Start\n\nEnd\n\nStart\n\nEnd\n\n"));
+        return Stream.of(arguments(Conditions.values(), ""), arguments(Conditions.values(true), """
+                Start
+                
+                Hello, World!
+                
+                End
+                
+                """), arguments(Conditions.values(false), """
+                Start
+                
+                End
+                
+                """), arguments(Conditions.values(true, true), """
+                Start
+                
+                Hello, World!
+                
+                End
+                
+                Start
+                
+                Hello, World!
+                
+                End
+                
+                """), arguments(Conditions.values(true, false), """
+                Start
+                
+                Hello, World!
+                
+                End
+                
+                Start
+                
+                End
+                
+                """), arguments(Conditions.values(false, true), """
+                Start
+                
+                End
+                
+                Start
+                
+                Hello, World!
+                
+                End
+                
+                """), arguments(Conditions.values(false, false), "Start\n\nEnd\n\nStart\n\nEnd\n\n"));
     }
 
     /// Test that table of content specific instruction text (instrText) is not modified by error
     @Test
     void testTableOfContent() {
         var configuration = OfficeStamperConfigurations.standard();
-        var stamper = givenStamper(configuration);
-        var template = getResource(Path.of("TOC.docx"));
-        var context = givenContext();
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(configuration);
+        var template = getWordResource(Path.of("TOC.docx"));
+        var context = new Object();
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         var expected = """
                 == Table Of Content
                 
@@ -147,23 +140,16 @@ class RegressionTests {
         assertEquals(expected, actual);
     }
 
-    private static TestDocxStamper<Object> givenStamper(OfficeStamperConfiguration configuration) {
-        return new TestDocxStamper<>(configuration);
-    }
-
-    private static Object givenContext() {
-        return new Object();
-    }
-
     @Test
     void test64() {
         var configuration = full();
         var testFunction = new TestFunction.TestFunctionImpl();
         configuration.exposeInterfaceToExpressionLanguage(TestFunction.class, testFunction);
-        var stamper = givenStamper(configuration);
-        var template = givenTemplate("${test()}");
-        var context = givenContext();
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(configuration);
+        var template = makeWordResource("${test()}");
+        var context = new Object();
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         assertEquals("""
                 
                 
@@ -171,17 +157,14 @@ class RegressionTests {
         assertEquals(1, testFunction.counter());
     }
 
-    private static InputStream givenTemplate(String str) {
-        return TestUtils.makeAsciiDocResource(str);
-    }
-
     @Test
     void test114() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = getResource(Path.of("#114.docx"));
+        var stamper = docxPackageStamper(config);
+        var template = getWordResource(Path.of("#114.docx"));
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         var expected = """
                 = Issue #114
                 
@@ -212,14 +195,11 @@ class RegressionTests {
     @MethodSource("source52")
     @ParameterizedTest
     void test52(Conditions conditions, String expected) {
-        var stamper = givenStamper(full());
-        var template = givenTemplate(TEMPLATE_52);
-        var actual = stamper.stampAndLoadAndExtract(template, conditions);
+        var stamper = docxPackageStamper(OfficeStamperConfigurations.full());
+        var template = TestUtils.getWordResource(TEMPLATE_52);
+        var wordprocessingMLPackage = stamper.stamp(template, conditions);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         assertEquals(expected, actual);
-    }
-
-    private static InputStream givenTemplate(Path path) {
-        return TestUtils.getResource(path);
     }
 
     public interface TestFunction {
@@ -247,14 +227,6 @@ class RegressionTests {
             var elements = new ArrayList<Condition>(bits.length);
             for (var bit : bits) elements.add(new Condition(bit));
             return new Conditions(elements);
-        }
-
-        @Override
-        public String toString() {
-            return conditions.stream()
-                             .map(Condition::condition)
-                             .map(Objects::toString)
-                             .collect(joining(",", "(", ")"));
         }
     }
 }

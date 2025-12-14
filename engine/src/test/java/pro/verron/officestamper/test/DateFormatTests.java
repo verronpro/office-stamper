@@ -15,9 +15,9 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
 
 @DisplayName("Date Formatting features") class DateFormatTests {
 
@@ -44,7 +44,7 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
     @ParameterizedTest(name = "Should allow to format dates ({argumentSetName})")
     void features(ContextFactory factory) {
         var config = standard();
-        var template = makeAsciiDocResource("""
+        var template = TestUtils.makeWordResource("""
                 ISO Date: 2000-01-12+02:00
                 
                 ISO Datetime: 2000-01-12T23:34:45.000000567+02:00[UTC+02:00]
@@ -141,7 +141,7 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
                 
                 """);
         var context = factory.date(ZonedDateTime.of(2000, 1, 12, 23, 34, 45, 567, ZoneId.of("UTC+2")));
-        var stamper = new TestDocxStamper<>(config);
+        var stamper = docxPackageStamper(config);
         var expected = """
                 ISO Date: 2000-01-12+02:00
                 
@@ -238,7 +238,8 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
                 ISO Localized Datetime (SHORT, SHORT): 00. 1. 12. 오후 11:34
                 
                 """;
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 }

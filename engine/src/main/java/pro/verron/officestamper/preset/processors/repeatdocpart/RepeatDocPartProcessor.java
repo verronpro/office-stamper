@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
@@ -34,9 +35,11 @@ import java.util.function.UnaryOperator;
 import static java.util.stream.Collectors.toMap;
 import static pro.verron.officestamper.core.DocumentUtil.walkObjectsAndImportImages;
 import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakIfPresent;
+import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.exportWord;
 
-/// This class processes the &lt;ds: repeat&gt; tag. It uses the [OfficeStamper] to stamp the sub document and then
-/// copies the resulting sub document to the correct position in the main document.
+
+/// Processes the `<repeatDocPart>` comment. Uses the [OfficeStamper] to stamp sub-documents and copies the resulting
+/// content to the correct position in the main document.
 ///
 /// @author Joseph Verron
 /// @author Youssouf Naciri
@@ -54,9 +57,9 @@ public class RepeatDocPartProcessor
         this.stamper = stamper;
     }
 
-    /// newInstance.
+    /// Creates a new instance of this processor.
     ///
-    /// @param stamper the stamper
+    /// @param stamper the stamper to use for processing
     ///
     /// @return a new instance of this processor
     public static CommentProcessor newInstance(
@@ -66,7 +69,6 @@ public class RepeatDocPartProcessor
         return new RepeatDocPartProcessor(processorContext, stamper);
     }
 
-    /// {@inheritDoc}
     @Override
     public void repeatDocPart(@Nullable Iterable<Object> expressionContexts) {
         if (expressionContexts == null) return;
@@ -150,8 +152,8 @@ public class RepeatDocPartProcessor
     ) {
         var subDocuments = new ArrayList<WordprocessingMLPackage>();
         for (Object subContext : subContexts) {
-            var templateCopy = outputWord(os -> copy(subTemplate, os));
-            var subDocument = outputWord(os -> stamp(subContext, templateCopy, os));
+            var templateCopy = outputWord(os -> exportWord(subTemplate, os));
+            var subDocument = outputWord(os -> exportWord(stamper.stamp(templateCopy, subContext), os));
             subDocuments.add(subDocument);
         }
         return subDocuments;
@@ -211,21 +213,9 @@ public class RepeatDocPartProcessor
         }
     }
 
-    private void copy(WordprocessingMLPackage aPackage, OutputStream outputStream) {
-        try {
-            aPackage.save(outputStream);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
-    private void stamp(Object context, WordprocessingMLPackage template, OutputStream outputStream) {
-        stamper.stamp(template, context, outputStream);
-    }
-
-    /// A functional interface representing runnable task able to throw an exception. It extends the [Runnable]
-    /// interface and provides default implementation of the [Runnable#run()] method handling the exception by
-    /// rethrowing it wrapped inside a [OfficeStamperException].
+    /// A functional interface representing a runnable task able to throw an exception. Extends the [Runnable] interface
+    /// and provides default implementation of the [Runnable#run()] method handling exceptions by rethrowing them
+    /// wrapped inside an [OfficeStamperException].
     ///
     /// @author Joseph Verron
     /// @version ${version}
@@ -250,25 +240,28 @@ public class RepeatDocPartProcessor
                 throws Exception;
     }
 
-    /// This class is responsible for capturing and handling uncaught exceptions that occur in a thread. It implements
-    /// the [Thread.UncaughtExceptionHandler] interface and can be assigned to a thread using the
-    /// [Thread#setUncaughtExceptionHandler(Thread.UncaughtExceptionHandler)] method. When an exception occurs in the
-    /// thread, the [ProcessorExceptionHandler#uncaughtException(Thread, Throwable)] method will be called. This class
-    /// provides the following features:
-    /// 1. Capturing and storing the uncaught exception.
-    /// 2. Executing a list of routines when an exception occurs.
-    /// 3. Providing access to the captured exception, if any. Example usage:
-    /// <code>
-    /// ProcessorExceptionHandler exceptionHandler = new ProcessorExceptionHandler(){};
-    /// thread.setUncaughtExceptionHandler(exceptionHandler);
-    /// </code>
+    /// Responsible for capturing and handling uncaught exceptions that occur in a thread. Implements the
+    /// [UncaughtExceptionHandler] interface and can be assigned to a thread using the
+    /// [Thread#setUncaughtExceptionHandler(UncaughtExceptionHandler)] method.
+    ///
+    /// When an exception occurs in the thread, the [ProcessorExceptionHandler#uncaughtException(Thread, Throwable)]
+    /// method will be called.
+    ///
+    /// This class provides the following features:
+    /// - Capturing and storing the uncaught exception
+    /// - Executing a list of routines when an exception occurs
+    /// - Providing access to the captured exception, if any
+    ///
+    /// Example usage:
+    /// `ProcessorExceptionHandler exceptionHandler = new ProcessorExceptionHandler();thread
+    /// .setUncaughtExceptionHandler(exceptionHandler);`
     ///
     /// @author Joseph Verron
     /// @version ${version}
-    /// @see Thread.UncaughtExceptionHandler
+    /// @see UncaughtExceptionHandler
     /// @since 1.6.6
     static class ProcessorExceptionHandler
-            implements Thread.UncaughtExceptionHandler {
+            implements UncaughtExceptionHandler {
         private final AtomicReference<@Nullable Throwable> exception;
         private final List<Runnable> onException;
 

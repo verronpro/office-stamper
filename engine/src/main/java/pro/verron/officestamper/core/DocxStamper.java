@@ -1,14 +1,11 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
 import org.springframework.expression.ExpressionParser;
 import pro.verron.officestamper.api.*;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -98,27 +95,17 @@ public class DocxStamper
     ///
     /// If you need a wider vocabulary of methods available in the comments, you can create your own [CommentProcessor]
     /// and register it via [OfficeStamperConfiguration#addCommentProcessor(Class, Function)].
-    public void stamp(InputStream template, Object contextRoot, OutputStream out) {
-        try {
-            WordprocessingMLPackage document = WordprocessingMLPackage.load(template);
-            stamp(document, contextRoot, out);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
-    /// Same as [#stamp(InputStream, Object, OutputStream)] except that you may pass in a DOCX4J document as a template
-    /// instead of an InputStream.
+    ///
+    /// @param document the .docx template to stamp
+    /// @param contextRoot the context object to use for stamping
+    ///
+    /// @return the stamped document
     @Override
-    public void stamp(WordprocessingMLPackage document, Object contextRoot, OutputStream out) {
-        try {
-            preprocess(document);
-            process(document, contextRoot);
-            postprocess(document);
-            document.save(out);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
+    public WordprocessingMLPackage stamp(WordprocessingMLPackage document, Object contextRoot) {
+        preprocess(document);
+        process(document, contextRoot);
+        postprocess(document);
+        return document;
     }
 
     private void preprocess(WordprocessingMLPackage document) {

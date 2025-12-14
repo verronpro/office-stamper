@@ -4,16 +4,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
 
 /// @author Joseph Verron
 class NullPointerResolutionTest {
@@ -24,14 +24,12 @@ class NullPointerResolutionTest {
 
     @MethodSource("factories")
     @ParameterizedTest
-    void nullPointerResolutionTest_testThrowingCase(ContextFactory factory)
-            throws IOException {
+    void nullPointerResolutionTest_testThrowingCase(ContextFactory factory) {
         var context = factory.nullishContext();
-        try (var template = getResource("NullPointerResolution.docx")) {
-            var configuration = OfficeStamperConfigurations.standard();
-            var stamper = new TestDocxStamper<>(configuration);
-            assertThrows(OfficeStamperException.class, () -> stamper.stampAndLoadAndExtract(template, context));
-        }
+        var template = getWordResource("NullPointerResolution.docx");
+        var configuration = standard();
+        var stamper = docxPackageStamper(configuration);
+        assertThrows(OfficeStamperException.class, () -> stamper.stamp(template, context));
     }
 
 }

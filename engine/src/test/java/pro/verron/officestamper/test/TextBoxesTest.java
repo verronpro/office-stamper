@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import pro.verron.officestamper.preset.OfficeStampers;
 
 import java.util.stream.Stream;
 
@@ -13,7 +14,6 @@ import static pro.verron.officestamper.preset.ExceptionResolvers.passing;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
 
 
 /// @author Joseph Verron
@@ -29,10 +29,11 @@ class TextBoxesTest {
     @ParameterizedTest
     void placeholders(ContextFactory factory) {
         var context = factory.name("Bart Simpson");
-        var template = getResource("ExpressionReplacementInTextBoxesTest.docx");
+        var template = TestUtils.getWordResource("ExpressionReplacementInTextBoxesTest.docx");
         var config = standard().setExceptionResolver(passing());
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = OfficeStampers.docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         String expected = """
                 == Expression Replacement in TextBoxes
                 
@@ -44,4 +45,5 @@ class TextBoxesTest {
                 """;
         assertEquals(expected, actual);
     }
+
 }

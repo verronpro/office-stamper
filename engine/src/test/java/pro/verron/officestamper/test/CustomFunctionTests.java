@@ -18,10 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.minimal;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
-import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.test.TestUtils.makeWordResource;
 
 @DisplayName("Custom function features") class CustomFunctionTests {
 
@@ -38,17 +39,13 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
                 argumentSet("Object-based, French", objectContextFactory(), "FR", "2024 avril\n"),
                 argumentSet("Object-based, English", objectContextFactory(), "EN", "2024 April\n"),
                 argumentSet("Object-based, Japanese", objectContextFactory(), "JA", "2024 4月\n"),
-                argumentSet("Object-based, Hebrew", objectContextFactory(), "HE", """
-                        2024 אפריל
-                        """),
+                argumentSet("Object-based, Hebrew", objectContextFactory(), "HE", "2024 אפריל\n"),
                 argumentSet("Object-based, Italian", objectContextFactory(), "IT", "2024 aprile\n"),
                 argumentSet("Map-based, Chinese", mapContextFactory(), "ZH", "2024 四月\n"),
                 argumentSet("Map-based, French", mapContextFactory(), "FR", "2024 avril\n"),
                 argumentSet("Map-based, English", mapContextFactory(), "EN", "2024 April\n"),
                 argumentSet("Map-based, Japanese", mapContextFactory(), "JA", "2024 4月\n"),
-                argumentSet("Map-based, Hebrew", mapContextFactory(), "HE", """
-                        2024 אפריל
-                        """),
+                argumentSet("Map-based, Hebrew", mapContextFactory(), "HE", "2024 אפריל\n"),
                 argumentSet("Map-based, Italian", mapContextFactory(), "IT", "2024 aprile\n"));
     }
 
@@ -58,9 +55,9 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
     void interfaces(ContextFactory factory) {
         var config = standard().exposeInterfaceToExpressionLanguage(UppercaseFunction.class,
                 (UppercaseFunction) String::toUpperCase);
-        var template = getResource(Path.of("CustomExpressionFunction.docx"));
+        var template = getWordResource(Path.of("CustomExpressionFunction.docx"));
         var context = factory.show();
-        var stamper = new TestDocxStamper<>(config);
+        var stamper = docxPackageStamper(config);
         var expected = """
                 == Custom Expression Function
                 
@@ -106,7 +103,8 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
                 
                 
                 """;
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -116,14 +114,15 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
     void functions(ContextFactory factory) {
         var config = standard().addCustomFunction("toUppercase", String.class)
                                .withImplementation(String::toUpperCase);
-        var template = makeAsciiDocResource("${toUppercase(name)}");
+        var template = makeWordResource("${toUppercase(name)}");
         var context = factory.show();
-        var stamper = new TestDocxStamper<>(config);
+        var stamper = docxPackageStamper(config);
         var expected = """
                 THE SIMPSONS
                 
                 """;
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -133,14 +132,15 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
     void suppliers(ContextFactory factory) {
         var config = standard();
         config.addCustomFunction("foo", () -> List.of("a", "b", "c"));
-        var template = makeAsciiDocResource("${foo()}");
+        var template = makeWordResource("${foo()}");
         var context = factory.empty();
-        var stamper = new TestDocxStamper<>(config);
+        var stamper = docxPackageStamper(config);
         var expected = """
                 [a, b, c]
                 
                 """;
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -151,11 +151,12 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
         var config = standard();
         config.addCustomFunction("Add", String.class, Integer.class)
               .withImplementation((s, i) -> new BigDecimal(s).add(new BigDecimal(i)));
-        var template = makeAsciiDocResource("${Add('3.22', 4)}");
+        var template = makeWordResource("${Add('3.22', 4)}");
         var context = factory.empty();
-        var stamper = new TestDocxStamper<>(config);
+        var stamper = docxPackageStamper(config);
         var expected = "7.22\n\n";
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
@@ -169,10 +170,11 @@ import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
                                   var formatter = DateTimeFormatter.ofPattern(pattern, locale);
                                   return formatter.format(date);
                               });
-        var template = makeAsciiDocResource("${format(date,'yyyy MMMM','%s')}".formatted(tag));
+        var template = makeWordResource("${format(date,'yyyy MMMM','%s')}".formatted(tag));
         var context = factory.date(LocalDate.of(2024, Month.APRIL, 1));
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected + "\n", actual);
     }
 

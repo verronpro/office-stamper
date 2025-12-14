@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.OfficeStampers;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
 
 /// @author Jenei Attila
 /// @author Joseph Verrron
@@ -28,9 +29,10 @@ class ProcessorRepeatDocPart_BadPlaceholderTest {
 
     @MethodSource("factories")
     @ParameterizedTest
-    @Timeout(10) // in the case of pipe lock because of unknown exceptions
+    @Timeout(10)
+        // in the case of pipe lock because of unknown exceptions
     void testBadExpressionShouldNotBlockCallerThread(ContextFactory factory) {
-        var template = getResource("ProcessorRepeatDocPart_BadPlaceholder.docx");
+        var template = getWordResource("ProcessorRepeatDocPart_BadPlaceholder.docx");
         var context = factory.roles("Homer Simpson",
                 "Dan Castellaneta",
                 "Marge Simpson",
@@ -38,10 +40,9 @@ class ProcessorRepeatDocPart_BadPlaceholderTest {
                 "Bart Simpson",
                 "Nancy Cartwright");
         var configuration = OfficeStamperConfigurations.standard();
-        var stamper = new TestDocxStamper<>(configuration);
+        var stamper = OfficeStampers.docxPackageStamper(configuration);
 
-        var exception = assertThrows(OfficeStamperException.class,
-                () -> stamper.stampAndLoadAndExtract(template, context));
+        var exception = assertThrows(OfficeStamperException.class, () -> stamper.stamp(template, context));
 
         String expectedErrorInfo = "someUnknownField";
         var exceptionMessage = exception.getMessage();

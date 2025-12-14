@@ -1,30 +1,30 @@
 package pro.verron.officestamper.preset;
 
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.StreamStamper;
 import pro.verron.officestamper.core.DocxStamper;
+import pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils;
 
-import java.io.InputStream;
-
-/// [OfficeStampers] is a utility class designed to provide methods for manipulating and stamping Office documents. This
-/// class includes factory methods for creating document stampers, specifically [StreamStamper] instances for handling
-/// [WordprocessingMLPackage] documents.
+/// [OfficeStampers] is a utility class that provides factory methods for creating document stampers for Office
+/// documents. This class offers convenient methods to create stampers for DOCX documents with various configurations.
 ///
-/// Various preprocessors may be applied during the creation of these stampers to modify or enhance the operation of the
-/// stamper.
+/// The stampers created by this utility can apply various preprocessing steps to enhance the document processing
+/// capabilities.
 public class OfficeStampers {
 
     private OfficeStampers() {
         throw new OfficeStamperException("Utility classes should not be instantiated");
     }
 
-    /// Creates a new instance of a [StreamStamper] for handling [WordprocessingMLPackage] documents with a default
+    /// Creates a new instance of a [StreamStamper] for handling [WordprocessingMLPackage] documents with a default full
     /// configuration.
     ///
     /// @return a [StreamStamper] instance for stamping [WordprocessingMLPackage] documents
+    ///
+    /// @see OfficeStamperConfigurations#full()
     public static StreamStamper<WordprocessingMLPackage> docxStamper() {
         return docxStamper(OfficeStamperConfigurations.full());
     }
@@ -35,19 +35,23 @@ public class OfficeStampers {
     /// The returned stamper is designed to handle the transformation of DOCX templates using provided context data.
     ///
     /// @param configuration an instance of [OfficeStamperConfiguration] that defines the behavior and
-    ///         preprocessing steps of the stamper.
+    ///         preprocessing steps of the stamper
     ///
-    /// @return a [StreamStamper] of type [WordprocessingMLPackage] configured to process DOCX documents.
+    /// @return a [StreamStamper] of [WordprocessingMLPackage] configured to process DOCX documents
     public static StreamStamper<WordprocessingMLPackage> docxStamper(OfficeStamperConfiguration configuration) {
-        return new StreamStamper<>(OfficeStampers::loadWord, new DocxStamper(configuration));
+        var stamper = docxPackageStamper(configuration);
+        return new StreamStamper<>(OpenpackagingUtils::loadWord, stamper, OpenpackagingUtils::exportWord);
     }
 
-    private static WordprocessingMLPackage loadWord(InputStream is) {
-        try {
-            return WordprocessingMLPackage.load(is);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
-        }
+    /// Creates an [OfficeStamper] instance for processing [WordprocessingMLPackage] documents with the specified
+    /// configuration.
+    ///
+    /// @param configuration an instance of [OfficeStamperConfiguration] that defines the behavior of the
+    ///         stamper
+    ///
+    /// @return an [OfficeStamper] of type [WordprocessingMLPackage] configured to process DOCX documents
+    public static OfficeStamper<WordprocessingMLPackage> docxPackageStamper(OfficeStamperConfiguration configuration) {
+        return new DocxStamper(configuration);
     }
 
 }

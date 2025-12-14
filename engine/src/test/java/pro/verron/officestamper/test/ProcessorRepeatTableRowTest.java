@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -8,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Queue;
@@ -18,10 +18,11 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getResource;
-import static pro.verron.officestamper.test.TestUtils.makeAsciiDocResource;
+import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.test.TestUtils.makeWordResource;
 
 class ProcessorRepeatTableRowTest {
     private static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -54,7 +55,7 @@ class ProcessorRepeatTableRowTest {
                         "Hank Azaria",
                         "Krusty the Clown",
                         "Dan Castellaneta"),
-                getResource(Path.of("ProcessorRepeatTableRow.docx")),
+                getWordResource(Path.of("ProcessorRepeatTableRow.docx")),
                 """
                         Repeating Table Rows
                         
@@ -106,7 +107,7 @@ class ProcessorRepeatTableRowTest {
                         "Hank\n\nAzaria",
                         "Krusty the Clown",
                         "Dan\nCastellaneta"),
-                getResource(Path.of("ProcessorRepeatTableRow.docx")),
+                getWordResource(Path.of("ProcessorRepeatTableRow.docx")),
                 """
                         Repeating Table Rows
                         
@@ -156,7 +157,7 @@ class ProcessorRepeatTableRowTest {
         return of("Repeat Table row Integration test (keeps formatting)",
                 standard(),
                 factory.show(),
-                getResource(Path.of("ProcessorRepeatTableRow_KeepsFormatTest.docx")),
+                getWordResource(Path.of("ProcessorRepeatTableRow_KeepsFormatTest.docx")),
                 """
                         |===
                         |1❬st❘{vertAlign=superscript}❭ Homer Simpson-❬Dan Castellaneta❘{b=true}❭
@@ -182,27 +183,29 @@ class ProcessorRepeatTableRowTest {
             String name,
             OfficeStamperConfiguration config,
             Object context,
-            InputStream template,
+            WordprocessingMLPackage template,
             String expected
     ) {
         log.info(name);
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 
     @Test
     void shouldAcceptList() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = makeAsciiDocResource("""
+        var stamper = docxPackageStamper(config);
+        var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
                 |===
                 |${name}
                 |===
                 """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var wordprocessingMLPackage = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
         var expected = """
                 |===
                 |Homer
@@ -224,15 +227,16 @@ class ProcessorRepeatTableRowTest {
     @Test
     void shouldAcceptSet() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = makeAsciiDocResource("""
+        var stamper = docxPackageStamper(config);
+        var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
                 |===
                 |${name}
                 |===
                 """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         var expected = """
                 |===
                 |Marge
@@ -254,8 +258,8 @@ class ProcessorRepeatTableRowTest {
     @Test
     void shouldAcceptQueue() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = makeAsciiDocResource("""
+        var stamper = docxPackageStamper(config);
+        var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
                 |===
                 |${name}
@@ -263,7 +267,8 @@ class ProcessorRepeatTableRowTest {
                 |===
                 """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         var expected = """
                 |===
                 |Homer

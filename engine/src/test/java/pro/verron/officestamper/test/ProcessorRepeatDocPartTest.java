@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
@@ -50,7 +51,7 @@ class ProcessorRepeatDocPartTest {
         var butterfly = getImage(Path.of("butterfly.png"));
         var cartography = getImage(Path.of("map.jpg"));
         var context = factory.units(butterfly, cartography);
-        var template = getResource(Path.of("ProcessorRepeatDocPart_Image.docx"));
+        var template = getWordResource(Path.of("ProcessorRepeatDocPart_Image.docx"));
         var expected = """
                 
                 
@@ -86,7 +87,7 @@ class ProcessorRepeatDocPartTest {
         return of("repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate",
                 standard(),
                 factory.subDocPartContext(),
-                getResource(Path.of("ProcessorRepeatDocPart_ImageSubTemplate.docx")),
+                getWordResource(Path.of("ProcessorRepeatDocPart_ImageSubTemplate.docx")),
                 """
                         This is not repeated
                         
@@ -122,7 +123,7 @@ class ProcessorRepeatDocPartTest {
                         "Hank Azaria",
                         "Krusty the Clown",
                         "Dan Castellaneta"),
-                getResource(Path.of("ProcessorRepeatDocPart.docx")),
+                getWordResource(Path.of("ProcessorRepeatDocPart.docx")),
                 """
                         = Repeating Doc Part
                         
@@ -217,7 +218,7 @@ class ProcessorRepeatDocPartTest {
         return of("Repeat Doc Part Integration Test, with nested comments",
                 OfficeStamperConfigurations.full(),
                 factory.schoolContext(),
-                getResource(Path.of("ProcessorRepeatDocPart_Nesting.docx")),
+                getWordResource(Path.of("ProcessorRepeatDocPart_Nesting.docx")),
                 """
                         = Repeating Doc Part
                         
@@ -505,7 +506,7 @@ class ProcessorRepeatDocPartTest {
             ContextFactory factory
     ) {
         var context = factory.tableContext();
-        var template = getResource(Path.of("ProcessorRepeatDocPart_Isolation.docx"));
+        var template = getWordResource(Path.of("ProcessorRepeatDocPart_Isolation.docx"));
         var expected = """
                 This will stay untouched.
                 
@@ -577,7 +578,7 @@ class ProcessorRepeatDocPartTest {
         return arguments("In multiple layouts, keeps section orientations outside RepeatDocPart comments",
                 standard(),
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
-                getResource(Path.of("ProcessorRepeatDocPart_InLayout.docx")),
+                getWordResource(Path.of("ProcessorRepeatDocPart_InLayout.docx")),
                 """
                         First page is portrait.
                         
@@ -628,7 +629,7 @@ class ProcessorRepeatDocPartTest {
                         element""",
                 standard(),
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
-                getResource(Path.of("ProcessorRepeatDocPart_InLayoutAndTable.docx")),
+                getWordResource(Path.of("ProcessorRepeatDocPart_InLayoutAndTable.docx")),
                 """
                         First page is portrait.
                         
@@ -691,7 +692,7 @@ class ProcessorRepeatDocPartTest {
         return arguments("In multiple layouts, keeps section orientation outside RepeatDocPart comment",
                 standard(),
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
-                getResource(Path.of("ProcessorRepeatDocPart_OutLayout.docx")),
+                getWordResource(Path.of("ProcessorRepeatDocPart_OutLayout.docx")),
                 """
                         First page is landscape.
                         
@@ -734,25 +735,27 @@ class ProcessorRepeatDocPartTest {
             String name,
             OfficeStamperConfiguration config,
             Object context,
-            InputStream template,
+            WordprocessingMLPackage template,
             String expected
     ) {
         log.info(name);
-        var stamper = new TestDocxStamper<>(config);
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         assertEquals(expected, actual);
     }
 
     @Test
     void shouldAcceptList() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = makeAsciiDocResource("""
+        var stamper = docxPackageStamper(config);
+        var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
                 ${name}
                 """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         var expected = """
                 Homer
                 
@@ -771,13 +774,14 @@ class ProcessorRepeatDocPartTest {
     @Test
     void shouldAcceptSet() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = makeAsciiDocResource("""
+        var stamper = docxPackageStamper(config);
+        var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
                 ${name}
                 """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         var expected = """
                 Marge
                 
@@ -796,13 +800,14 @@ class ProcessorRepeatDocPartTest {
     @Test
     void shouldAcceptQueue() {
         var config = standard();
-        var stamper = new TestDocxStamper<>(config);
-        var template = makeAsciiDocResource("""
+        var stamper = docxPackageStamper(config);
+        var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
                 ${name}
                 """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var actual = stamper.stampAndLoadAndExtract(template, context);
+        var stamped = stamper.stamp(template, context);
+        var actual = Stringifier.stringifyWord(stamped);
         var expected = """
                 Homer
                 

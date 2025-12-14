@@ -16,6 +16,7 @@ import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class SpelInstantiationTest {
 
@@ -32,7 +33,7 @@ class SpelInstantiationTest {
         var template = getWordResource(Path.of("date.docx"));
         var context = factory.empty();
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         var expected = """
                 01.01.1970
                 

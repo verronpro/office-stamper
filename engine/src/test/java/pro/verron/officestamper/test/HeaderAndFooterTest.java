@@ -17,6 +17,7 @@ import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getImage;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 
 /// @author Joseph Verron
@@ -35,7 +36,7 @@ class HeaderAndFooterTest {
         var config = standard().setExceptionResolver(ExceptionResolvers.passing());
         var stamper = OfficeStampers.docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals("""
                 [header, name="/word/header2.xml"]
                 ----

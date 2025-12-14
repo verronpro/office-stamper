@@ -14,6 +14,7 @@ import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 /// @author Joseph Verron
 /// @author Tom Hombergs
@@ -34,7 +35,7 @@ class MultiStampTest {
         var filename = "MultiStampTest.docx";
         var template = getWordResource(filename);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals("""
                 == Multi-Stamp-Test
                 
@@ -60,7 +61,7 @@ class MultiStampTest {
 
         var template2 = getWordResource(filename);
         var wordprocessingMLPackage = stamper.stamp(template2, context);
-        var document2 = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var document2 = docxToString(wordprocessingMLPackage);
         assertEquals("""
                 == Multi-Stamp-Test
                 

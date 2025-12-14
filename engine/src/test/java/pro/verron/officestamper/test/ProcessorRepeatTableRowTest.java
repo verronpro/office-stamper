@@ -23,6 +23,7 @@ import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
 import static pro.verron.officestamper.test.TestUtils.makeWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class ProcessorRepeatTableRowTest {
     private static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -189,7 +190,7 @@ class ProcessorRepeatTableRowTest {
         log.info(name);
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 
@@ -205,7 +206,7 @@ class ProcessorRepeatTableRowTest {
                 """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         var expected = """
                 |===
                 |Homer
@@ -236,7 +237,7 @@ class ProcessorRepeatTableRowTest {
                 """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         var expected = """
                 |===
                 |Marge
@@ -268,7 +269,7 @@ class ProcessorRepeatTableRowTest {
                 """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         var expected = """
                 |===
                 |Homer

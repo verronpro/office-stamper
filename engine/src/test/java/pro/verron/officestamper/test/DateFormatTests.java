@@ -18,6 +18,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 @DisplayName("Date Formatting features") class DateFormatTests {
 
@@ -239,7 +240,7 @@ import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
                 
                 """;
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 }

@@ -20,8 +20,10 @@ module pro.verron.officestamper.utils {
     requires org.jspecify;
 
     exports pro.verron.officestamper.utils.iterator;
-    exports pro.verron.officestamper.utils.wml;
     exports pro.verron.officestamper.utils.function;
     exports pro.verron.officestamper.utils.bit;
     exports pro.verron.officestamper.utils.openpackaging;
+    exports pro.verron.officestamper.utils.wml;
+    exports pro.verron.officestamper.utils.pml;
+    exports pro.verron.officestamper.utils.sml;
 }

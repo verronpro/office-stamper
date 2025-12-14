@@ -25,6 +25,7 @@ import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.*;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class ProcessorRepeatDocPartTest {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -741,7 +742,7 @@ class ProcessorRepeatDocPartTest {
         log.info(name);
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -755,7 +756,7 @@ class ProcessorRepeatDocPartTest {
                 """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         var expected = """
                 Homer
                 
@@ -781,7 +782,7 @@ class ProcessorRepeatDocPartTest {
                 """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         var expected = """
                 Marge
                 
@@ -807,7 +808,7 @@ class ProcessorRepeatDocPartTest {
                 """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         var expected = """
                 Homer
                 

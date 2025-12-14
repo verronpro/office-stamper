@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class GoogleDocsSupportTest {
     @DisplayName("Google Docs support integration test (conditional + repeated paragraphs)")
@@ -41,7 +42,7 @@ class GoogleDocsSupportTest {
             @SuppressWarnings("unused")
             public final List<String> items = Arrays.asList("item 1", "item 2");
         });
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 }

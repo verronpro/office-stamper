@@ -6,6 +6,13 @@ import org.docx4j.openpackaging.packages.PresentationMLPackage;
 
 import static java.util.stream.Collectors.joining;
 
+/// Utility class for rendering PowerPoint presentations to string representations.
+///
+/// This class provides methods to extract text content from PowerPoint files and convert them into formatted strings.
+/// It is designed as a utility class with only static methods and cannot be instantiated.
+///
+/// @author Joseph Verron
+/// @since 3.0
 public class PptxRenderer {
 
     private PptxRenderer() {

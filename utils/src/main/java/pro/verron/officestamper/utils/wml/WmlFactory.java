@@ -6,6 +6,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
+import org.docx4j.wml.Comments.Comment;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.utils.UtilsException;
 
@@ -29,12 +30,12 @@ public class WmlFactory {
 
     /// Creates a new comment with the provided value.
     ///
-    /// @param id    The ID to assign to the comment.
+    /// @param id The ID to assign to the comment.
     /// @param value The string value to be included in the comment.
     ///
-    /// @return A new [Comments.Comment] object containing the provided value.
-    public static Comments.Comment newComment(BigInteger id, String value) {
-        var comment = new Comments.Comment();
+    /// @return A new [Comment] object containing the provided value.
+    public static Comment newComment(BigInteger id, String value) {
+        var comment = new Comment();
         comment.setId(id);
         var commentContent = comment.getContent();
         commentContent.add(newParagraph(value));
@@ -71,7 +72,7 @@ public class WmlFactory {
     /// Creates a new paragraph containing the provided list of values.
     ///
     /// @param values A list of objects to be added to the new paragraph. These objects populate the content of
-    ///               the paragraph.
+    ///         the paragraph.
     ///
     /// @return A new [P] containing the provided values.
     public static P newParagraph(List<?> values) {
@@ -105,7 +106,7 @@ public class WmlFactory {
     /// Creates a new run containing the provided values deemed worth keeping.
     ///
     /// @param values A list of objects to be added to the new run. Objects are filtered based on a predefined
-    ///               criteria to determine if they are worth keeping.
+    ///         criteria to determine if they are worth keeping.
     ///
     /// @return A new [R] containing the filtered values.
     public static R newRun(List<Object> values) {
@@ -159,22 +160,22 @@ public class WmlFactory {
 
     /// Creates a new [Comments] object and populates it with a list of [Comment] objects.
     ///
-    /// @param list A list of [Comments.Comment] objects to be added to the new [Comments] object.
+    /// @param list A list of [Comment] objects to be added to the new [Comments] object.
     ///
     /// @return A new [Comments] object containing the provided [Comment] objects.
-    public static Comments newComments(List<Comments.Comment> list) {
+    public static Comments newComments(List<Comment> list) {
         Comments comments = new Comments();
-        List<Comments.Comment> commentList = comments.getComment();
+        List<Comment> commentList = comments.getComment();
         commentList.addAll(list);
         return comments;
     }
 
     /// Creates a new run containing an image with the specified attributes.
     ///
-    /// @param maxWidth      The maximum width of the image, it can be null.
+    /// @param maxWidth The maximum width of the image, it can be null.
     /// @param abstractImage The binary part abstract image to be included in the run.
-    /// @param filenameHint  The filename hint for the image.
-    /// @param altText       The alternative text for the image.
+    /// @param filenameHint The filename hint for the image.
+    /// @param altText The alternative text for the image.
     ///
     /// @return A new [R] element containing the image.
     public static R newRun(
@@ -189,10 +190,10 @@ public class WmlFactory {
 
     /// Creates a new [Inline] object for the given image part, filename hint, and alt text.
     ///
-    /// @param imagePart    The binary part abstract image to be used.
+    /// @param imagePart The binary part abstract image to be used.
     /// @param filenameHint A hint for the filename of the image.
-    /// @param altText      Alternative text for the image.
-    /// @param maxWidth     The image width not to exceed, in points.
+    /// @param altText Alternative text for the image.
+    /// @param maxWidth The image width not to exceed, in points.
     ///
     /// @return A new [Inline] object containing the specified image information.
     ///
@@ -240,7 +241,7 @@ public class WmlFactory {
 
     /// Creates a new [CommentRangeStart] object with the specified ID and parent.
     ///
-    /// @param id     The unique identifier for the [CommentRangeStart] object.
+    /// @param id The unique identifier for the [CommentRangeStart] object.
     /// @param parent The parent element ([P]) to which this [CommentRangeStart] belongs.
     ///
     /// @return A new [CommentRangeStart] object with the specified ID and parent.
@@ -253,7 +254,7 @@ public class WmlFactory {
 
     /// Creates a new [CommentRangeEnd] object with the specified ID and parent.
     ///
-    /// @param id     The unique identifier for the [CommentRangeEnd] object.
+    /// @param id The unique identifier for the [CommentRangeEnd] object.
     /// @param parent The parent element ([P]) to which this [CommentRangeEnd] belongs.
     ///
     /// @return A new [CommentRangeEnd] object with the specified ID and parent.
@@ -266,7 +267,7 @@ public class WmlFactory {
 
     /// Creates a new [R.CommentReference] object with the specified ID and parent.
     ///
-    /// @param id     The unique identifier for the [R.CommentReference].
+    /// @param id The unique identifier for the [R.CommentReference].
     /// @param parent The parent element ([P]) to which this [R.CommentReference] belongs.
     ///
     /// @return A new [R.CommentReference] object with the specified ID and parent.
@@ -318,8 +319,7 @@ public class WmlFactory {
 
     /// Creates a new [CommentsPart] object. This method attempts to create a new instance of [CommentsPart]. If an
     /// [InvalidFormatException] occurs during the creation process, it wraps the exception in an
-    ///  [OfficeStamperException]
-    /// and throws it.
+    /// [UtilsException] and throws it.
     ///
     /// @return A new instance of [CommentsPart].
     public static CommentsPart newCommentsPart() {
@@ -365,7 +365,7 @@ public class WmlFactory {
 
     /// Creates a new [CTAttr] object with the specified name and value.
     ///
-    /// @param name  The name of the attribute.
+    /// @param name The name of the attribute.
     /// @param value The value of the attribute.
     ///
     /// @return A new [CTAttr] object with the specified name and value.

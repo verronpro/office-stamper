@@ -19,6 +19,15 @@ import java.util.function.Supplier;
 
 import static org.docx4j.XmlUtils.unwrap;
 
+/// An iterator implementation for traversing PowerPoint presentation content. This class provides a way to iterate
+/// through all content elements in a PowerPoint file, including slides, shapes, text blocks, and other document
+/// structure elements.
+///
+/// The iterator handles the complex hierarchical structure of PowerPoint presentations and provides a flat iteration
+/// interface over all content objects.
+///
+/// @author verron
+/// @since 3.0
 public class PptxIterator
         implements ResetableIterator<Object> {
 
@@ -27,6 +36,11 @@ public class PptxIterator
     private Queue<Iterator<?>> iteratorQueue;
     private @Nullable Object next;
 
+    /// Constructs a new PptxIterator for the given presentation package.
+    ///
+    /// @param presentation the PowerPoint presentation package to iterate through
+    ///
+    /// @throws UtilsException if there is an error accessing the presentation structure
     public PptxIterator(PresentationMLPackage presentation) {
         try {
             var mainPresentationPart = presentation.getMainPresentationPart();

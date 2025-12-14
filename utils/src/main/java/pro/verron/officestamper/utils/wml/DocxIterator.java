@@ -25,6 +25,9 @@ public class DocxIterator
     private Queue<Iterator<?>> iteratorQueue;
     private @Nullable Object next;
 
+    /// Creates a new [DocxIterator] instance that iterates over the content of the given [ContentAccessor].
+    ///
+    /// @param contentAccessor the content accessor whose content will be iterated over
     public DocxIterator(ContentAccessor contentAccessor) {
         this(contentAccessor.getContent()::iterator);
     }
@@ -40,8 +43,7 @@ public class DocxIterator
     /// Selects and casts elements of the specified class type from the iterator.
     ///
     /// @param aClass the class type to filter and cast elements to
-    /// @param <T> the type of elements to select
-    ///
+    /// @param <T>    the type of elements to select
     /// @return a new [ResetableIterator] containing only elements of the specified class type
     public <T> ResetableIterator<T> selectClass(Class<T> aClass) {
         return filter(aClass::isInstance).map(aClass::cast);

@@ -6,13 +6,13 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
-import static pro.verron.officestamper.preset.ExperimentalStampers.pptxStamper;
+import static pro.verron.officestamper.preset.ExperimentalStampers.pptxPackageStamper;
 
 @DisplayName("Basic Powerpoint Test") class BasicPowerpointTest {
     @Test
     @DisplayName("Should stamp a PowerPoint document")
     void testStamper() {
-        var stamper = pptxStamper();
+        var stamper = pptxPackageStamper();
         var template = TestUtils.getPowerPointResource(Path.of("powerpoint-base.pptx"));
         record Person(String name) {}
         var context = new Person("Bart");

@@ -14,6 +14,8 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.preset.ExperimentalStampers;
+import pro.verron.officestamper.preset.OfficeStampers;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -91,12 +93,12 @@ public class Main
         final var outputStream = createOutputStream(Path.of(outputPath));
 
         final var stamper = switch (stamperType) {
-            case "word" -> new WordStamper();
-            case "powerpoint" -> new PowerPointStamper();
+            case "word" -> OfficeStampers.docxStamper();
+            case "powerpoint" -> ExperimentalStampers.pptxStamper();
             default -> throw new OfficeStamperException("Invalid stamper type: " + stamperType);
         };
 
-        stamper.stamp(context, templateStream, outputStream);
+        stamper.stamp(templateStream, context, outputStream);
     }
 
     private Object extractContext(String input) {
@@ -127,8 +129,6 @@ public class Main
     }
 
     /// Return a list of objects with the csv properties
-    /// @param path
-    /// @return
     private Object processCsv(Path path) {
         try (var reader = new CSVReader(new InputStreamReader(Files.newInputStream(path)))) {
             String[] headers = reader.readNext();
@@ -153,8 +153,7 @@ public class Main
             properties.load(inputStream);
             return new LinkedHashMap<>(properties.entrySet()
                                                  .stream()
-                                                 .collect(Collectors.toMap(
-                                                         e -> String.valueOf(e.getKey()),
+                                                 .collect(Collectors.toMap(e -> String.valueOf(e.getKey()),
                                                          e -> String.valueOf(e.getValue()),
                                                          (a, b) -> b,
                                                          LinkedHashMap::new)));
@@ -167,6 +166,8 @@ public class Main
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            factory.setExpandEntityReferences(false);
+
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(Files.newInputStream(path));
             return processNode(document.getDocumentElement());

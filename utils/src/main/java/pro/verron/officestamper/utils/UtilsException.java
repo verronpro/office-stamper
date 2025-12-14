@@ -18,4 +18,12 @@ public class UtilsException
     public UtilsException(Throwable t) {
         super(t);
     }
+
+    /// Constructs a new UtilsException with the specified detail message and cause.
+    ///
+    /// @param message the detail message
+    /// @param t the cause of the exception
+    public UtilsException(String message, Throwable t) {
+        super(message, t);
+    }
 }

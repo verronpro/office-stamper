@@ -14,6 +14,7 @@ import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class ProcessorDisplayIfTest {
 
@@ -241,7 +242,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -316,7 +317,7 @@ class ProcessorDisplayIfTest {
         var configuration = full();
         var stamper = docxPackageStamper(configuration);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -391,7 +392,7 @@ class ProcessorDisplayIfTest {
         var configuration = full();
         var stamper = docxPackageStamper(configuration);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -579,7 +580,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -767,7 +768,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -808,7 +809,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 
@@ -853,7 +854,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -891,7 +892,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 
@@ -936,7 +937,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 
@@ -980,7 +981,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         assertEquals(expected, actual);
     }
 }

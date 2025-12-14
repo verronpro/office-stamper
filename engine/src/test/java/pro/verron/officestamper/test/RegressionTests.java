@@ -18,6 +18,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
 import static pro.verron.officestamper.test.TestUtils.makeWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class RegressionTests {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -82,7 +83,7 @@ class RegressionTests {
         var template = getWordResource(Path.of("TOC.docx"));
         var context = new Object();
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         var expected = """
                 == Table Of Content
                 
@@ -149,7 +150,7 @@ class RegressionTests {
         var template = makeWordResource("${test()}");
         var context = new Object();
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         assertEquals("""
                 
                 
@@ -164,7 +165,7 @@ class RegressionTests {
         var template = getWordResource(Path.of("#114.docx"));
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(stamped);
+        var actual = docxToString(stamped);
         var expected = """
                 = Issue #114
                 
@@ -198,7 +199,7 @@ class RegressionTests {
         var stamper = docxPackageStamper(OfficeStamperConfigurations.full());
         var template = TestUtils.getWordResource(TEMPLATE_52);
         var wordprocessingMLPackage = stamper.stamp(template, conditions);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 

@@ -14,6 +14,7 @@ import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.makeWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 @DisplayName("Whitespaces manipulations") class WhitespaceTest {
 
@@ -40,7 +41,7 @@ import static pro.verron.officestamper.test.TestUtils.makeWordResource;
 
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         var expected = """
                 Space %s
                 
@@ -58,7 +59,7 @@ import static pro.verron.officestamper.test.TestUtils.makeWordResource;
 
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var actual = docxToString(wordprocessingMLPackage);
         var expected = "Tab\tHomer\tSimpson\n\n";
         assertEquals(expected, actual);
     }

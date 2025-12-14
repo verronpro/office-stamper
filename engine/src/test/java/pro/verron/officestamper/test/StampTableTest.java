@@ -15,6 +15,7 @@ import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 
 /// Verifies stampTable feature works correctly
@@ -41,7 +42,7 @@ class StampTableTest {
                         List.of("Disco Stu", "Hank Azaria"),
                         List.of("Krusty the Clown", "Dan Castellaneta")));
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var string = Stringifier.stringifyWord(wordprocessingMLPackage);
+        var string = docxToString(wordprocessingMLPackage);
         assertEquals("""
                 Stamping Table
                 

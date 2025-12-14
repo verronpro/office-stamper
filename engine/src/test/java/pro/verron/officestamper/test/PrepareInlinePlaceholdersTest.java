@@ -5,6 +5,7 @@ import pro.verron.officestamper.preset.preprocessors.placeholders.PrepareInlineP
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.test.TestUtils.makeWordResource;
+import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class PrepareInlinePlaceholdersTest {
 
@@ -12,13 +13,13 @@ class PrepareInlinePlaceholdersTest {
     void process() {
         var preparePlaceholders = new PrepareInlinePlaceholders("(#\\{([^{]+?)})", "processor");
         var document = makeWordResource("Hello, #{name}!");
-        var before = Stringifier.stringifyWord(document);
+        var before = docxToString(document);
         assertEquals("""
                 Hello, #{name}!
                 
                 """, before);
         preparePlaceholders.process(document);
-        var actual = Stringifier.stringifyWord(document);
+        var actual = docxToString(document);
         assertEquals("""
                 Hello, <tag element="officestamper" attr="type:processor">name<\\tag>!
                 

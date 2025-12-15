@@ -124,8 +124,8 @@ Minor updates:
 == Sample Code
 
 The source code contains a set of tests showing how to use the features.
-If you want to run them yourself, clone the repository and run `mvn test` with the system property `-DkeepOutputFile=true`
-so that the resulting .docx documents will not be cleaned up and let you view them.
+If you want to run them yourself, clone the repository and run `mvn test`.
+To view the resulting .docx documents, you can export the stamped documents with the method `stamped.save(OutputStream)`
 
 If you want to have a look at the .docx templates used in the tests, have a look at the link:{repo}/test/sources[sources subfolder] in the test folder.
 

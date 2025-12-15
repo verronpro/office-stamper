@@ -54,19 +54,19 @@ class Example {
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>engine</artifactId>
-    <version>2.9.0</version>
+    <version>3.0</version>
 </dependency>
 
 <!-- You also need to provide a dependency to Docx4J -->
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-core</artifactId>
-    <version>11.5.6</version>
+    <version>11.5.8</version>
 </dependency>
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-    <version>11.5.6</version>
+    <version>11.5.8</version>
 </dependency>
 ----
 
@@ -108,6 +108,7 @@ See `3.0_UPDATE.md` for the full rationale and migration guidance.
 * Comment processor lifecycle simplified: processors are created per comment and executed once.
 
 Breaking API highlights:
+
 * `AbstractCommentProcessor` → `CommentProcessor`; introduce `CommentProcessorFactory`.
 * `EvaluationContextConfigurer` → `EvaluationContextFactory` (fresh context per hook).
 * `DocxDocument` removed in favor of `DocxPart`.
@@ -116,6 +117,7 @@ Breaking API highlights:
 * Expression parser is pluggable (`ExpressionParser`), SpEL by default.
 
 Minor updates:
+
 * Spring dependencies bumped to 7.0.2 * New docs: `engine/src/site/asciidoc/how-to-custom.adoc` and `HOW_DOES_IT_WORKS.adoc`
 * Test matrix extended for Docx4J 11.5.7 and 11.5.8 * New modules: `asciidoc`, `utils`
 

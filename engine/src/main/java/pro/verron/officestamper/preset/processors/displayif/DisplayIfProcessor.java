@@ -24,6 +24,10 @@ public class DisplayIfProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IDisplayIfProcessor {
 
+
+    /// Creates a new [DisplayIfProcessor].
+    ///
+    /// @param processorContext the context in which this processor runs
     public DisplayIfProcessor(ProcessorContext processorContext) {
         super(processorContext);
     }

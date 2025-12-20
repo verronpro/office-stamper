@@ -8,6 +8,9 @@ import pro.verron.officestamper.core.DocumentUtil;
 import static pro.verron.officestamper.utils.wml.WmlFactory.newCtAttr;
 import static pro.verron.officestamper.utils.wml.WmlFactory.newSmartTag;
 
+/// The [PrepareCommentProcessors] class is responsible for preparing comment processors in a Word document. It
+/// implements the [PreProcessor] interface and provides functionality to process comment range starts and wrap them
+/// with smart tags for further processing by the OfficeStamper engine.
 public class PrepareCommentProcessors
         implements PreProcessor {
     @Override

@@ -21,6 +21,12 @@ public class ToStringResolver
 
     private final String linebreakPlaceholder;
 
+
+    /// Creates a new instance of the [ToStringResolver] class with the specified line break placeholder.
+    ///
+    /// @param linebreakPlaceholder the placeholder string used to identify line breaks within the string
+    ///         representation of an object. This placeholder will be replaced with actual line break elements in the
+    ///         resulting document.
     public ToStringResolver(String linebreakPlaceholder) {
         this.linebreakPlaceholder = linebreakPlaceholder;
     }

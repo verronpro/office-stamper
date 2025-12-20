@@ -19,6 +19,10 @@ public abstract class CommentProcessor {
         this.context = context;
     }
 
+
+    /// Returns the processing context for this [CommentProcessor] instance.
+    ///
+    /// @return the [ProcessorContext] associated with this [CommentProcessor].
     protected ProcessorContext context() {
         return context;
     }

@@ -1,13 +1,11 @@
 package pro.verron.officestamper.core;
 
-import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
 import org.docx4j.model.structure.HeaderFooterPolicy;
 import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.JaxbXmlPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.*;
 import org.jspecify.annotations.Nullable;
@@ -17,13 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.function.ThrowingFunction;
 import pro.verron.officestamper.api.OfficeStamperException;
 
-import java.util.*;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Stream.Builder;
-import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
 /// Utility class to retrieve elements from a document.
 ///
@@ -37,80 +34,6 @@ public class DocumentUtil {
 
     private DocumentUtil() {
         throw new OfficeStamperException("Utility classes shouldn't be instantiated");
-    }
-
-    /// Retrieves all elements from the main document part of the specified WordprocessingMLPackage.
-    ///
-    /// @param subDocument the WordprocessingMLPackage from which to retrieve the elements
-    ///
-    /// @return a list of objects representing the content of the main document part.
-    public static List<Object> allElements(WordprocessingMLPackage subDocument) {
-        return subDocument.getMainDocumentPart()
-                          .getContent();
-    }
-
-    /// Recursively walk through a source to find embedded images and import them in the target document.
-    ///
-    /// @param source source document containing image files.
-    /// @param target target document to add image files to.
-    ///
-    /// @return a [Map] object
-    public static Map<R, R> walkObjectsAndImportImages(WordprocessingMLPackage source, WordprocessingMLPackage target) {
-        return walkObjectsAndImportImages(source.getMainDocumentPart(), source, target);
-    }
-
-    /// Recursively walk through source accessor to find embedded images and import the target document.
-    ///
-    /// @param container source container to walk.
-    /// @param source    source document containing image files.
-    /// @param target    target document to add image files to.
-    ///
-    /// @return a [Map] object
-    public static Map<R, R> walkObjectsAndImportImages(
-            ContentAccessor container,
-            WordprocessingMLPackage source,
-            WordprocessingMLPackage target
-    ) {
-        Map<R, R> replacements = new HashMap<>();
-        for (Object obj : container.getContent()) {
-            Queue<Object> queue = new ArrayDeque<>();
-            queue.add(obj);
-
-            while (!queue.isEmpty()) {
-                Object currentObj = queue.remove();
-
-                if (currentObj instanceof R currentR && containsImage(currentR)) {
-                    var docxImageExtractor = new DocxImageExtractor(source);
-                    var imageData = docxImageExtractor.getRunDrawingData(currentR);
-                    var maxWidth = docxImageExtractor.getRunDrawingMaxWidth(currentR);
-                    var filename = docxImageExtractor.getRunDrawingFilename(currentR);
-                    var altText = docxImageExtractor.getRunDrawingAltText(currentR);
-                    var imagePart = tryCreateImagePart(target, imageData);
-                    var runWithImage = newRun(maxWidth, imagePart, filename, altText);
-                    replacements.put(currentR, runWithImage);
-                }
-                else if (currentObj instanceof ContentAccessor contentAccessor)
-                    queue.addAll(contentAccessor.getContent());
-            }
-        }
-        return replacements;
-    }
-
-    private static boolean containsImage(R run) {
-        return run.getContent()
-                  .stream()
-                  .filter(JAXBElement.class::isInstance)
-                  .map(JAXBElement.class::cast)
-                  .map(JAXBElement::getValue)
-                  .anyMatch(Drawing.class::isInstance);
-    }
-
-    private static BinaryPartAbstractImage tryCreateImagePart(WordprocessingMLPackage destDocument, byte[] imageData) {
-        try {
-            return BinaryPartAbstractImage.createImagePart(destDocument, imageData);
-        } catch (Exception e) {
-            throw new OfficeStamperException(e);
-        }
     }
 
     /// Finds the smallest common parent between two objects.
@@ -131,7 +54,7 @@ public class DocumentUtil {
     /// Recursively searches for an element in a content tree.
     ///
     /// @param searchTarget the element to search for
-    /// @param searchTree   the content tree to search in
+    /// @param searchTree the content tree to search in
     ///
     /// @return true if the element is found, false otherwise
     public static boolean depthElementSearch(Object searchTarget, Object searchTree) {
@@ -142,7 +65,8 @@ public class DocumentUtil {
             case ContentAccessor accessor -> accessor.getContent();
             case SdtRun sdtRun -> sdtRun.getSdtContent()
                                         .getContent();
-            case ProofErr _, Text _, R.CommentReference _, CommentRangeEnd _, CommentRangeStart _ -> emptyList();
+            case ProofErr _, Text _, R.CommentReference _, CommentRangeEnd _, CommentRangeStart _, Br _,
+                 R.LastRenderedPageBreak _, CTBookmark _ -> emptyList();
             default -> {
                 log.warn("Element {} not recognized", element);
                 yield emptyList();
@@ -162,11 +86,10 @@ public class DocumentUtil {
         };
     }
 
-    /// Visits the document's main content, header, footer, footnotes, and endnotes using
-    /// the specified visitor.
+    /// Visits the document's main content, header, footer, footnotes, and endnotes using the specified visitor.
     ///
     /// @param document the WordprocessingMLPackage representing the document to be visited
-    /// @param visitor  the TraversalUtilVisitor to be applied to each relevant part of the document
+    /// @param visitor the TraversalUtilVisitor to be applied to each relevant part of the document
     public static void visitDocument(WordprocessingMLPackage document, TraversalUtilVisitor<?> visitor) {
         var mainDocumentPart = document.getMainDocumentPart();
         TraversalUtil.visit(mainDocumentPart, visitor);

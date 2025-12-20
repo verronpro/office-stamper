@@ -4,17 +4,12 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
 
-import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /// Represents a part of a WordprocessingML-based document. This interface extends the DocxDocument interface and
 /// provides additional methods to retrieve specific parts, manipulate document content, and stream elements such as
 /// paragraphs and runs.
 public interface DocxPart {
-
-    Optional<Comment> comment(BigInteger id);
 
     /// Retrieves the part of the WordprocessingML-based document.
     ///
@@ -35,8 +30,6 @@ public interface DocxPart {
     List<Object> content();
 
     String type();
-
-    Map<BigInteger, Comment> comments();
 
     WordprocessingMLPackage document();
 }

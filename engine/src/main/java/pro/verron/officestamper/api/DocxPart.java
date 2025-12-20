@@ -2,7 +2,6 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
-import org.docx4j.wml.ContentAccessor;
 
 import java.util.List;
 
@@ -16,20 +15,14 @@ public interface DocxPart {
     /// @return the part of the document
     Part part();
 
-    /// Creates and returns a DocxPart instance from the provided ContentAccessor.
-    ///
-    /// @param accessor the ContentAccessor from which the DocxPart is created
-    ///
-    /// @return a DocxPart instance created from the given ContentAccessor
-    DocxPart from(ContentAccessor accessor);
-
     /// Retrieves the content of the WordprocessingML-based document as a list of objects. The content may include
     /// various document elements such as paragraphs, tables, runs, etc.
     ///
     /// @return a list of objects representing the document's content
     List<Object> content();
 
-    String type();
-
+    /// Retrieves the [WordprocessingMLPackage] representing the entire document.
+    ///
+    /// @return the [WordprocessingMLPackage] of the document
     WordprocessingMLPackage document();
 }

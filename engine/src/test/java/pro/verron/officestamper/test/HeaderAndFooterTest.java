@@ -62,7 +62,7 @@ class HeaderAndFooterTest {
                 
                 [footer] In this paragraph, the variable foo should not be resolved: ${foo}.
                 
-                [footer] Here, the picture should be resolved /word/media/header2_image_rId1.png:rId1:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720.
+                [footer] Here, the picture should be resolved /word/media/footer2_image_rId1.png:rId1:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720.
                 
                 
                 ----

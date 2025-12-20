@@ -24,6 +24,10 @@ public class RepeatRowProcessor
         implements CommentProcessorFactory.IRepeatProcessor {
 
 
+    /// Constructs a new RepeatRowProcessor with the given processor context.
+    ///
+    /// @param processorContext the context in which this processor operates, containing information about the
+    ///         document and processing environment
     public RepeatRowProcessor(ProcessorContext processorContext) {
         super(processorContext);
     }

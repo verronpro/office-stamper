@@ -84,7 +84,6 @@ public class RepeatDocPartProcessor
             Hook.ofHooks(() -> copiedElements, part)
                 .forEachRemaining(hook -> hook.setContextKey(subContextKey));
         }
-        log.debug("Repeated document part");
     }
 
     private SectPr getDocumentSection() {

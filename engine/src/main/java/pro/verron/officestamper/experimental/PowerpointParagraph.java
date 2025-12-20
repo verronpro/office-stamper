@@ -9,6 +9,7 @@ import org.docx4j.wml.P;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.Table;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
@@ -214,6 +215,16 @@ public class PowerpointParagraph
     @Override
     public Collection<Comments.Comment> getComment() {
         return CommentUtil.getCommentFor(paragraph::getEGTextRun, part.document());
+    }
+
+    @Override
+    public Optional<Table.Row> parentTableRow() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Table> parentTable() {
+        return Optional.empty();
     }
 
     private List<Object> siblings() {

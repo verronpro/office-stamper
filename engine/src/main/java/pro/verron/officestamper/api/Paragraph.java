@@ -57,4 +57,8 @@ public interface Paragraph {
     ///
     /// @return a collection of [Comments.Comment] objects related to the paragraph
     Collection<Comments.Comment> getComment();
+
+    Optional<Table.Row> parentTableRow();
+
+    Optional<Table> parentTable();
 }

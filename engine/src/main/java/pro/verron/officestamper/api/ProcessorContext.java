@@ -3,6 +3,8 @@ package pro.verron.officestamper.api;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import pro.verron.officestamper.core.ContextBranch;
 
+import java.util.Optional;
+
 /// Represents a context within a document processing operation.
 ///
 /// This class encapsulates key elements involved in the processing of a specific part of a
@@ -17,9 +19,13 @@ import pro.verron.officestamper.core.ContextBranch;
 /// @param comment The [Comment] that is relevant to the current processing context.
 /// @param expression A [String] containing the expression or directive being evaluated.
 public record ProcessorContext(
-        DocxPart part,
-        Paragraph paragraph,
-        Comment comment,
-        String expression,
-        ContextBranch branch
-) {}
+        DocxPart part, Paragraph paragraph, Comment comment, String expression, ContextBranch branch
+) {
+    public Optional<Table.Row> tableRow() {
+        return paragraph.parentTableRow();
+    }
+
+    public Optional<Table> table() {
+        return paragraph.parentTable();
+    }
+}

@@ -2,10 +2,7 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Insert;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
@@ -183,6 +180,16 @@ public class StandardParagraph
     @Override
     public Collection<Comments.Comment> getComment() {
         return CommentUtil.getCommentFor(() -> p, part.document());
+    }
+
+    @Override
+    public Optional<Table.Row> parentTableRow() {
+        return parent(Tr.class).map(StandardRow::new);
+    }
+
+    @Override
+    public Optional<Table> parentTable() {
+        return parent(Tbl.class).map(StandardTable::new);
     }
 
     /// Returns the string representation of the paragraph. This method delegates to the `asString` method to aggregate

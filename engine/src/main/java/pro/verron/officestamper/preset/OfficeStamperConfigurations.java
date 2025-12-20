@@ -3,7 +3,6 @@ package pro.verron.officestamper.preset;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.core.DocxStamper;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 import pro.verron.officestamper.preset.CommentProcessorFactory.*;
 import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
@@ -81,11 +80,9 @@ public class OfficeStamperConfigurations {
     public static OfficeStamperConfiguration standard(ObjectResolver fallback) {
         var configuration = new DocxStamperConfiguration();
 
-        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::newInstance);
-        configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::newInstance);
-        configuration.addCommentProcessor(IRepeatDocPartProcessor.class,
-                processorContext -> RepeatDocPartProcessor.newInstance(processorContext,
-                        (template, context) -> new DocxStamper(configuration).stamp(template, context)));
+        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::new);
+        configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::new);
+        configuration.addCommentProcessor(IRepeatDocPartProcessor.class, RepeatDocPartProcessor::new);
         configuration.addCommentProcessor(ITableResolver.class, TableResolver::new);
         configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance);
         configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::new);
@@ -101,6 +98,8 @@ public class OfficeStamperConfigurations {
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
         configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "processor"));
         configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
+        configuration.addPreprocessor(Preprocessors.prepareCommentProcessor());
+        configuration.addPostprocessor(Postprocessors.removeTags("officestamper"));
         var fLocalDateTime = "flocaldatetime";
         configuration.addCustomFunction("ftime", TemporalAccessor.class)
                      .withImplementation(ISO_TIME::format)
@@ -169,6 +168,9 @@ public class OfficeStamperConfigurations {
         var configuration = new DocxStamperConfiguration();
         configuration.addResolver(Resolvers.fallback("\n"));
         configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\#\\{([^{]+?)})", "processor"));
+        configuration.addPreprocessor(Preprocessors.prepareCommentProcessor());
+        configuration.addPostprocessor(Postprocessors.removeTags("officestamper"));
         return configuration;
     }
 }

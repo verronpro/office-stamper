@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static pro.verron.officestamper.utils.wml.WmlFactory.newCtAttr;
 import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
 
 /// Represents a Tag entity consisting of a DocxPart and a CTSmartTagRun. A Tag provides functionality to manipulate and
@@ -111,8 +112,6 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     }
 
     public void setContextKey(String contextKey) {
-        var name = "context";
-
         var smartTagPr = tag.getSmartTagPr();
         if (smartTagPr == null) {
             smartTagPr = new CTSmartTagPr();
@@ -124,11 +123,16 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
             tag.setSmartTagPr(smartTagPr);
         }
         for (CTAttr attribute : smartTagPrAttr) {
-            if (name.equals(attribute.getName())) attribute.setVal(contextKey);
+            if ("context".equals(attribute.getName())) {
+                attribute.setVal(contextKey);
+                return;
+            }
         }
-        var ctAttr = new CTAttr();
-        ctAttr.setName(name);
-        ctAttr.setVal(contextKey);
+        var ctAttr = newContextAttr(contextKey);
         smartTagPrAttr.add(ctAttr);
+    }
+
+    private static CTAttr newContextAttr(String value) {
+        return newCtAttr("context", value);
     }
 }

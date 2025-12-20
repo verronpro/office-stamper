@@ -42,6 +42,10 @@ public class RepeatDocPartProcessor
 
     private static final Logger log = LoggerFactory.getLogger(RepeatDocPartProcessor.class);
 
+
+    /// Creates a new [RepeatDocPartProcessor] instance.
+    ///
+    /// @param processorContext the processor context
     public RepeatDocPartProcessor(ProcessorContext processorContext) {
         super(processorContext);
     }

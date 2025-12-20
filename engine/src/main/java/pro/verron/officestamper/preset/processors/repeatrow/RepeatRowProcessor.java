@@ -1,4 +1,4 @@
-package pro.verron.officestamper.preset.processors.repeat;
+package pro.verron.officestamper.preset.processors.repeatrow;
 
 import org.docx4j.XmlUtils;
 import org.docx4j.wml.Tbl;
@@ -19,12 +19,12 @@ import java.util.ArrayList;
 /// @author Tom Hombergs
 /// @version ${version}
 /// @since 1.0.0
-public class RepeatProcessor
+public class RepeatRowProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IRepeatProcessor {
 
 
-    public RepeatProcessor(ProcessorContext processorContext) {
+    public RepeatRowProcessor(ProcessorContext processorContext) {
         super(processorContext);
     }
 

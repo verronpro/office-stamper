@@ -24,11 +24,14 @@ import static pro.verron.officestamper.core.SectionUtil.hasOddNumberOfSectionBre
 /// @author Youssouf Naciri
 /// @version ${version}
 /// @since 1.2.2
-public class ParagraphRepeatProcessor
+public class RepeatParagraphProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IParagraphRepeatProcessor {
 
-    public ParagraphRepeatProcessor(ProcessorContext processorContext) {
+    /// Constructs a new [RepeatParagraphProcessor] with the given processor context.
+    ///
+    /// @param processorContext the context in which this processor operates
+    public RepeatParagraphProcessor(ProcessorContext processorContext) {
         super(processorContext);
     }
 

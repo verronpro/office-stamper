@@ -1,41 +1,32 @@
 package pro.verron.officestamper.preset.processors.repeatdocpart;
 
+import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import org.docx4j.wml.R;
+import org.docx4j.wml.PPr;
 import org.docx4j.wml.SectPr;
 import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.DocumentUtil;
+import pro.verron.officestamper.core.Hook;
 import pro.verron.officestamper.core.SectionUtil;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toMap;
-import static pro.verron.officestamper.core.DocumentUtil.walkObjectsAndImportImages;
-import static pro.verron.officestamper.core.SectionUtil.getPreviousSectionBreakIfPresent;
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.exportWord;
+import static java.util.stream.Collectors.toCollection;
+import static pro.verron.officestamper.core.SectionUtil.addSectionBreak;
 
 
 /// Processes the `<repeatDocPart>` comment. Uses the [OfficeStamper] to stamp sub-documents and copies the resulting
@@ -48,25 +39,11 @@ import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.ex
 public class RepeatDocPartProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IRepeatDocPartProcessor {
-    private static final ThreadFactory threadFactory = Executors.defaultThreadFactory();
 
-    private final OfficeStamper<WordprocessingMLPackage> stamper;
+    private static final Logger log = LoggerFactory.getLogger(RepeatDocPartProcessor.class);
 
-    private RepeatDocPartProcessor(ProcessorContext processorContext, OfficeStamper<WordprocessingMLPackage> stamper) {
+    public RepeatDocPartProcessor(ProcessorContext processorContext) {
         super(processorContext);
-        this.stamper = stamper;
-    }
-
-    /// Creates a new instance of this processor.
-    ///
-    /// @param stamper the stamper to use for processing
-    ///
-    /// @return a new instance of this processor
-    public static CommentProcessor newInstance(
-            ProcessorContext processorContext,
-            OfficeStamper<WordprocessingMLPackage> stamper
-    ) {
-        return new RepeatDocPartProcessor(processorContext, stamper);
     }
 
     @Override
@@ -74,227 +51,79 @@ public class RepeatDocPartProcessor
         if (expressionContexts == null) return;
         var comment = comment();
         var elements = comment.getElements();
-        if (elements.isEmpty()) return;
+        var branch = context().branch();
+        var part = context().part();
         var parent = comment.getParent();
         var siblings = parent.getContent();
-        var context = context();
-        var part = context.part();
-        var document = part.document();
         var firstElement = elements.getFirst();
-        var subTemplate = CommentUtil.createSubWordDocument(comment, document);
-        var oddNumberOfBreaks = SectionUtil.hasOddNumberOfSectionBreaks(elements);
-        var optionalPreviousSectionBreak = getPreviousSectionBreakIfPresent(firstElement, parent);
-        Function<SectPr, UnaryOperator<List<Object>>> function =
-                sectionBreak -> (UnaryOperator<List<Object>>) objs -> insertSectionBreak(
-                        objs,
-                        sectionBreak,
-                        oddNumberOfBreaks);
-        var sectionBreakInserter = optionalPreviousSectionBreak.map(function)
-                                                               .orElse(t -> t);
-        var changes = stampSubDocuments(document, expressionContexts, parent, subTemplate, sectionBreakInserter);
+        var previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(firstElement, parent)
+                                              .orElse(getDocumentSection());
         var index = siblings.indexOf(firstElement);
-        siblings.addAll(index, changes);
         siblings.removeAll(elements);
-    }
-
-    private static List<Object> insertSectionBreak(
-            List<Object> elements,
-            SectPr previousSectionBreak,
-            boolean oddNumberOfBreaks
-    ) {
-        var inserts = new ArrayList<>(elements);
-        if (oddNumberOfBreaks) {
-            if (inserts.getLast() instanceof P p) {
-                SectionUtil.applySectionBreakToParagraph(previousSectionBreak, p);
+        var iterator = expressionContexts.iterator();
+        while (iterator.hasNext()) {
+            var expressionContext = iterator.next();
+            var copiedElements = elements.stream()
+                                         .map(XmlUtils::deepCopy)
+                                         .collect(toCollection(ArrayList::new));
+            CommentUtil.deleteCommentFromElements(comment, copiedElements);
+            if (iterator.hasNext() && containsSectionBreaks(copiedElements)) {
+                var lastParagraph = lastParagraph(copiedElements).orElseGet(newEndParagraph(copiedElements));
+                if (!hasSectionBreak(lastParagraph)) {
+                    addSectionBreak(previousSectionBreak, lastParagraph);
+                }
             }
-            else {
-                // when the last repeated element is not a paragraph,
-                // it is necessary to add one carrying the section break.
-                P p = WmlFactory.newParagraph(List.of());
-                SectionUtil.applySectionBreakToParagraph(previousSectionBreak, p);
-                inserts.add(p);
-            }
+            siblings.addAll(index, copiedElements);
+            index += copiedElements.size();
+            copiedElements.forEach(element -> {if (element instanceof Child child) child.setParent(parent);});
+            var subContextKey = branch.add(expressionContext);
+            Hook.ofHooks(() -> copiedElements, part)
+                .forEachRemaining(hook -> hook.setContextKey(subContextKey));
         }
-        return inserts;
+        log.debug("Repeated document part");
     }
 
-    private List<Object> stampSubDocuments(
-            WordprocessingMLPackage document,
-            Iterable<Object> expressionContexts,
-            ContentAccessor gcp,
-            WordprocessingMLPackage subTemplate,
-            UnaryOperator<List<Object>> sectionBreakInserter
-    ) {
-        var subDocuments = stampSubDocuments(expressionContexts, subTemplate);
-        var replacements = subDocuments.stream()
-                                       //TODO: move side effect somewhere else
-                                       .map(p -> walkObjectsAndImportImages(p, document))
-                                       .map(Map::entrySet)
-                                       .flatMap(Set::stream)
-                                       .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        var changes = new ArrayList<>();
-        for (WordprocessingMLPackage subDocument : subDocuments) {
-            var os = sectionBreakInserter.apply(DocumentUtil.allElements(subDocument));
-            os.stream()
-              .filter(ContentAccessor.class::isInstance)
-              .map(ContentAccessor.class::cast)
-              .forEach(o -> recursivelyReplaceImages(o, replacements));
-            os.forEach(c -> setParentIfPossible(c, gcp));
-            changes.addAll(os);
-        }
-        return changes;
-    }
-
-    private List<WordprocessingMLPackage> stampSubDocuments(
-            Iterable<Object> subContexts,
-            WordprocessingMLPackage subTemplate
-    ) {
-        var subDocuments = new ArrayList<WordprocessingMLPackage>();
-        for (Object subContext : subContexts) {
-            var templateCopy = outputWord(os -> exportWord(subTemplate, os));
-            var subDocument = outputWord(os -> exportWord(stamper.stamp(templateCopy, subContext), os));
-            subDocuments.add(subDocument);
-        }
-        return subDocuments;
-    }
-
-    private static void recursivelyReplaceImages(ContentAccessor r, Map<R, R> replacements) {
-        Queue<ContentAccessor> q = new ArrayDeque<>();
-        q.add(r);
-        while (!q.isEmpty()) {
-            ContentAccessor run = q.remove();
-            if (replacements.containsKey(run) && run instanceof Child child
-                && child.getParent() instanceof ContentAccessor parent) {
-                List<Object> parentContent = parent.getContent();
-                parentContent.add(parentContent.indexOf(run), replacements.get(run));
-                parentContent.remove(run);
-            }
-            else {
-                q.addAll(run.getContent()
-                            .stream()
-                            .filter(ContentAccessor.class::isInstance)
-                            .map(ContentAccessor.class::cast)
-                            .toList());
-            }
+    private SectPr getDocumentSection() {
+        try {
+            return this.context()
+                       .part()
+                       .document()
+                       .getMainDocumentPart()
+                       .getContents()
+                       .getBody()
+                       .getSectPr();
+        } catch (Docx4JException e) {
+            throw new OfficeStamperException(e);
         }
     }
 
-    private static void setParentIfPossible(Object object, ContentAccessor parent) {
-        if (object instanceof Child child) child.setParent(parent);
+    private static boolean containsSectionBreaks(ArrayList<Object> elements) {
+        return elements.stream()
+                       .filter(P.class::isInstance)
+                       .map(P.class::cast)
+                       .map(P::getPPr)
+                       .filter(Objects::nonNull)
+                       .map(PPr::getSectPr)
+                       .anyMatch(Objects::nonNull);
     }
 
-    private WordprocessingMLPackage outputWord(Consumer<OutputStream> outputter) {
-        var exceptionHandler = new ProcessorExceptionHandler();
-        try (var os = new PipedOutputStream(); var is = new PipedInputStream(os)) {
-            // closing on exception to not block the pipe infinitely
-            // TODO: model both PipedxxxStream as 1 class for only 1 close()
-            exceptionHandler.onException(is::close); // I know it's redundant,
-            exceptionHandler.onException(os::close); // but symmetry
-
-            var thread = threadFactory.newThread(() -> outputter.accept(os));
-            thread.setUncaughtExceptionHandler(exceptionHandler);
-            thread.start();
-            var wordprocessingMLPackage = WordprocessingMLPackage.load(is);
-            thread.join();
-            return wordprocessingMLPackage;
-        } catch (Docx4JException | IOException e) {
-            OfficeStamperException exception = new OfficeStamperException(e);
-            exceptionHandler.exception()
-                            .ifPresent(exception::addSuppressed);
-            throw exception;
-        } catch (InterruptedException e) {
-            OfficeStamperException exception = new OfficeStamperException(e);
-            exceptionHandler.exception()
-                            .ifPresent(e::addSuppressed);
-            Thread.currentThread()
-                  .interrupt();
-            throw exception;
-        }
+    private static Optional<P> lastParagraph(List<Object> elements) {
+        if (elements.getLast() instanceof P paragraph) return Optional.of(paragraph);
+        else return Optional.empty();
     }
 
-    /// A functional interface representing a runnable task able to throw an exception. Extends the [Runnable] interface
-    /// and provides default implementation of the [Runnable#run()] method handling exceptions by rethrowing them
-    /// wrapped inside an [OfficeStamperException].
-    ///
-    /// @author Joseph Verron
-    /// @version ${version}
-    /// @since 1.6.6
-    interface ThrowingRunnable
-            extends Runnable {
-
-        /// Executes the runnable task, handling any exception by throwing it wrapped inside a
-        /// [OfficeStamperException].
-        default void run() {
-            try {
-                throwingRun();
-            } catch (Exception e) {
-                throw new OfficeStamperException(e);
-            }
-        }
-
-        /// Executes the runnable task
-        ///
-        /// @throws Exception if an exception occurs executing the task
-        void throwingRun()
-                throws Exception;
+    private static Supplier<P> newEndParagraph(ArrayList<Object> copiedElements) {
+        return () -> {
+            var p = WmlFactory.newParagraph();
+            copiedElements.addLast(p);
+            return p;
+        };
     }
 
-    /// Responsible for capturing and handling uncaught exceptions that occur in a thread. Implements the
-    /// [UncaughtExceptionHandler] interface and can be assigned to a thread using the
-    /// [Thread#setUncaughtExceptionHandler(UncaughtExceptionHandler)] method.
-    ///
-    /// When an exception occurs in the thread, the [ProcessorExceptionHandler#uncaughtException(Thread, Throwable)]
-    /// method will be called.
-    ///
-    /// This class provides the following features:
-    /// - Capturing and storing the uncaught exception
-    /// - Executing a list of routines when an exception occurs
-    /// - Providing access to the captured exception, if any
-    ///
-    /// Example usage:
-    /// `ProcessorExceptionHandler exceptionHandler = new ProcessorExceptionHandler();thread
-    /// .setUncaughtExceptionHandler(exceptionHandler);`
-    ///
-    /// @author Joseph Verron
-    /// @version ${version}
-    /// @see UncaughtExceptionHandler
-    /// @since 1.6.6
-    static class ProcessorExceptionHandler
-            implements UncaughtExceptionHandler {
-        private final AtomicReference<@Nullable Throwable> exception;
-        private final List<Runnable> onException;
-
-        /// Constructs a new instance for managing thread's uncaught exceptions. Once set to a thread, it retains the
-        /// exception information and performs specified routines.
-        public ProcessorExceptionHandler() {
-            this.exception = new AtomicReference<>();
-            this.onException = new CopyOnWriteArrayList<>();
-        }
-
-        /// {@inheritDoc}
-        ///
-        /// Captures and stores an uncaught exception from a thread run and executes all defined routines on occurrence
-        /// of the exception.
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            exception.set(e);
-            onException.forEach(Runnable::run);
-        }
-
-        /// Adds a routine to the list of routines that should be run when an exception occurs.
-        ///
-        /// @param runnable The runnable routine to be added
-        public void onException(ThrowingRunnable runnable) {
-            onException.add(runnable);
-        }
-
-        /// Returns the captured exception if present.
-        ///
-        /// @return an [Optional] containing the captured exception, or an [Optional#empty()] if no exception was
-        ///         captured
-        public Optional<Throwable> exception() {
-            return Optional.ofNullable(exception.get());
-        }
+    private static boolean hasSectionBreak(P lastParagraph) {
+        PPr pPr = lastParagraph.getPPr();
+        if (pPr == null) return false;
+        SectPr sectPr = pPr.getSectPr();
+        return sectPr != null;
     }
 }

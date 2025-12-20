@@ -27,10 +27,10 @@ public class DocxStamper
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final EngineFactory engineFactory;
-    private final EvaluationContextFactory evaluationContextFactory;
-    private final Map<Class<?>, Object> expressionFunctions;
-    private final List<CustomFunction> functions;
-    private final Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors;
+    private final EvaluationContextFactory contextFactory;
+    private final Map<Class<?>, Object> interfaceFunctions;
+    private final List<CustomFunction> customFunctions;
+    private final Map<Class<?>, CommentProcessorFactory> commentProcessors;
 
     /// Creates new [DocxStamper] with the given configuration.
     ///
@@ -48,20 +48,20 @@ public class DocxStamper
     }
 
     private DocxStamper(
-            EvaluationContextFactory evaluationContextFactory,
-            Map<Class<?>, Object> expressionFunctions,
-            List<CustomFunction> functions,
+            EvaluationContextFactory contextFactory,
+            Map<Class<?>, Object> interfaceFunctions,
+            List<CustomFunction> customFunctions,
             List<ObjectResolver> resolvers,
-            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
+            Map<Class<?>, CommentProcessorFactory> commentProcessors,
             List<PreProcessor> preprocessors,
             List<PostProcessor> postprocessors,
             ExceptionResolver exceptionResolver,
             ExpressionParser expressionParser
     ) {
-        this.evaluationContextFactory = evaluationContextFactory;
-        this.expressionFunctions = expressionFunctions;
-        this.functions = functions;
-        this.configurationCommentProcessors = configurationCommentProcessors;
+        this.contextFactory = contextFactory;
+        this.interfaceFunctions = interfaceFunctions;
+        this.customFunctions = customFunctions;
+        this.commentProcessors = commentProcessors;
         engineFactory = computeEngine(resolvers, exceptionResolver, expressionParser);
         this.preprocessors = new ArrayList<>(preprocessors);
         this.postprocessors = new ArrayList<>(postprocessors);
@@ -140,15 +140,14 @@ public class DocxStamper
         var iterator = Hook.ofHooks(part::content, part);
         while (iterator.hasNext()) {
             var hook = iterator.next();
-            var officeStamperEvaluationContextFactory = computeEvaluationContext();
-            if (hook.run(engineFactory, contextTree, officeStamperEvaluationContextFactory)) iterator.reset();
+            var officeStamperContextFactory = new OfficeStamperEvaluationContextFactory(customFunctions,
+                    commentProcessors,
+                    interfaceFunctions,
+                    contextFactory);
+            if (hook.run(engineFactory, contextTree, officeStamperContextFactory)) {
+                iterator.reset();
+            }
         }
     }
 
-    private OfficeStamperEvaluationContextFactory computeEvaluationContext() {
-        return new OfficeStamperEvaluationContextFactory(functions,
-                configurationCommentProcessors,
-                expressionFunctions,
-                evaluationContextFactory);
-    }
 }

@@ -1,7 +1,6 @@
 package pro.verron.officestamper.preset.processors.repeat;
 
 import org.docx4j.XmlUtils;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.jspecify.annotations.Nullable;
@@ -13,10 +12,6 @@ import pro.verron.officestamper.core.Hook;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiFunction;
-
-import static java.util.Collections.emptyList;
 
 /// Repeats a table row for each element in a list.
 ///
@@ -28,24 +23,9 @@ public class RepeatProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IRepeatProcessor {
 
-    private final BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier;
 
-    private RepeatProcessor(
-            ProcessorContext processorContext,
-            BiFunction<WordprocessingMLPackage, Tr, List<Tr>> nullSupplier
-    ) {
+    public RepeatProcessor(ProcessorContext processorContext) {
         super(processorContext);
-        this.nullSupplier = nullSupplier;
-    }
-
-
-    /// Creates a new [RepeatProcessor] instance.
-    ///
-    /// @param processorContext The [ProcessorContext] to use for processing.
-    ///
-    /// @return A new [RepeatProcessor] instance.
-    public static CommentProcessor newInstance(ProcessorContext processorContext) {
-        return new RepeatProcessor(processorContext, (_, _) -> emptyList());
     }
 
     @Override
@@ -62,12 +42,7 @@ public class RepeatProcessor
         int index = content.indexOf(row);
         content.remove(row);
 
-
-        if (objects == null) {
-            var changes = nullSupplier.apply(part.document(), row);
-            content.addAll(index, changes);
-            return;
-        }
+        if (objects == null) return;
 
         var changes = new ArrayList<Tr>();
         for (Object expressionContext : objects) {
@@ -79,6 +54,5 @@ public class RepeatProcessor
             changes.add(rowClone);
         }
         content.addAll(index, changes);
-
     }
 }

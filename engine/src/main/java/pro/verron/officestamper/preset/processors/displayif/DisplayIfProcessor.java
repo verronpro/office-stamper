@@ -1,7 +1,5 @@
 package pro.verron.officestamper.preset.processors.displayif;
 
-import org.docx4j.wml.Tbl;
-import org.docx4j.wml.Tr;
 import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.CommentProcessor;
@@ -40,7 +38,9 @@ public class DisplayIfProcessor
     @Override
     public void displayParagraphIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        paragraph().remove();
+        this.context()
+            .paragraph()
+            .remove();
     }
 
     @Override
@@ -48,13 +48,13 @@ public class DisplayIfProcessor
         displayParagraphIf(condition != null);
     }
 
-
     @Override
     public void displayTableRowIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var tr = paragraph().parent(Tr.class)
-                            .orElseThrow(throwing("Paragraph is not within a row!"));
-        WmlUtils.remove(tr);
+        this.context()
+            .tableRow()
+            .orElseThrow(throwing("Paragraph is not within a row!"))
+            .remove();
     }
 
     @Override
@@ -70,9 +70,10 @@ public class DisplayIfProcessor
     @Override
     public void displayTableIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var tbl = paragraph().parent(Tbl.class)
-                             .orElseThrow(throwing("Paragraph is not within a table!"));
-        WmlUtils.remove(tbl);
+        this.context()
+            .table()
+            .orElseThrow(throwing("Paragraph is not within a table!"))
+            .remove();
     }
 
     @Override

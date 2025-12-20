@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
+import static pro.verron.officestamper.core.Hook.isTagElement;
 import static pro.verron.officestamper.utils.wml.WmlUtils.getFirstParentWithClass;
 
 /// Represents a wrapper for managing and manipulating DOCX paragraph elements. This class provides methods to
@@ -42,6 +43,8 @@ public class StandardParagraph
         return switch (parent) {
             case P p -> from(part, p);
             case CTSdtContentRun contentRun -> from(part, contentRun);
+            case CTSmartTagRun smartTagRun when isTagElement(smartTagRun, "officestamper") ->
+                    from(part, smartTagRun.getParent());
             default -> throw new OfficeStamperException("Unsupported parent type: " + parent.getClass());
         };
     }

@@ -1,19 +1,17 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.CommentRangeEnd;
-import org.docx4j.wml.CommentRangeStart;
-import org.docx4j.wml.Comments;
-import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
 
 /// The Comment interface provides methods for managing comments in a document.
 public interface Comment {
 
     Paragraph getParagraph();
+
+    @Nullable CTSmartTagRun getStartTagRun();
 
     /// Retrieves the CommentRangeStart object associated with this comment.
     ///
@@ -40,11 +38,6 @@ public interface Comment {
     /// @return the [CommentReference] object associated with this comment
     @Nullable CommentReference getCommentReference();
 
-    /// Retrieves the children of the comment.
-    ///
-    /// @return a set of Comment objects representing the children of the comment
-    Set<Comment> getChildren();
-
     /// Retrieves the comment associated with this object.
     ///
     /// @return the comment associated with this object
@@ -54,8 +47,4 @@ public interface Comment {
     ///
     /// @return a string representing the expression
     String expression();
-
-    String getContextKey();
-
-    void setContextKey(String key);
 }

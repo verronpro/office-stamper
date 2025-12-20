@@ -3,17 +3,14 @@ package pro.verron.officestamper.core;
 import org.docx4j.TextUtils;
 import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
@@ -28,13 +25,12 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 /// @since 1.0.2
 public class StandardComment
         implements Comment {
-    private static final Logger log = LoggerFactory.getLogger(StandardComment.class);
-    private final Set<Comment> children = new HashSet<>();
     private final DocxPart part;
     private Comments.Comment comment;
     private CommentRangeStart commentRangeStart;
     private CommentRangeEnd commentRangeEnd;
     private CommentReference commentReference;
+    private CTSmartTagRun startTagRun;
 
     /// Constructs a new [StandardComment] object.
     ///
@@ -54,8 +50,10 @@ public class StandardComment
     /// @return a [StandardComment] instance initialized with the specified parameters
     public static StandardComment create(DocxPart document, ContentAccessor parent, String expression, BigInteger id) {
         var commentWrapper = new StandardComment(document);
+        var start = newCommentRangeStart(id, parent);
         commentWrapper.setComment(newComment(id, expression));
-        commentWrapper.setCommentRangeStart(newCommentRangeStart(id, parent));
+        commentWrapper.setStartTagRun(newSmartTag("officestamper", newCtAttr("type", "cProcessor"), start));
+        commentWrapper.setCommentRangeStart(start);
         commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
         commentWrapper.setCommentReference(newCommentReference(id, parent));
         return commentWrapper;
@@ -68,12 +66,11 @@ public class StandardComment
     ///         size of its children.
     @Override
     public String toString() {
-        return "StandardComment{comment={id=%s, content=%s, children=%s}}}".formatted(comment.getId(),
+        return "StandardComment{comment={id=%s, content=%s}}}".formatted(comment.getId(),
                 comment.getContent()
                        .stream()
                        .map(TextUtils::getText)
-                       .collect(Collectors.joining(",")),
-                children.size());
+                       .collect(Collectors.joining(",")));
     }
 
     /// {@inheritDoc}
@@ -81,6 +78,11 @@ public class StandardComment
     public Paragraph getParagraph() {
         var parent = commentRangeStart.getParent();
         return StandardParagraph.from(part, parent);
+    }
+
+    @Override
+    public @Nullable CTSmartTagRun getStartTagRun() {
+        return startTagRun;
     }
 
     /// {@inheritDoc}
@@ -111,7 +113,7 @@ public class StandardComment
         for (Object element : siblings) {
             startFound = startFound || DocumentUtil.depthElementSearch(commentRangeStart, element);
             if (startFound && !endFound) elements.add(element);
-            endFound = endFound || DocumentUtil.depthElementSearch(getCommentRangeEnd(), element);
+            endFound = endFound || DocumentUtil.depthElementSearch(commentRangeEnd, element);
         }
         return elements;
     }
@@ -143,12 +145,6 @@ public class StandardComment
 
     /// {@inheritDoc}
     @Override
-    public Set<Comment> getChildren() {
-        return children;
-    }
-
-    /// {@inheritDoc}
-    @Override
     public Comments.Comment getComment() {
         return comment;
     }
@@ -173,33 +169,7 @@ public class StandardComment
                    .collect(joining());
     }
 
-    /// {@inheritDoc}
-    ///
-    /// We expects the author field of the comment to be an integer representing the context ID. If it is not found,
-    /// then we return the root context with index 0.
-    @Override
-    public String getContextKey() {
-        var author = comment.getAuthor();
-        if (author == null) return String.valueOf(0);
-        try {
-            return String.valueOf(Integer.parseInt(author));
-        } catch (NumberFormatException _) {
-            log.debug("Expected an context id in the author field: found '{}'", author);
-            return String.valueOf(0);
-        }
+    public void setStartTagRun(CTSmartTagRun startTagRun) {
+        this.startTagRun = startTagRun;
     }
-
-    @Override
-    public void setContextKey(String contextKey) {
-        comment.setAuthor(contextKey);
-    }
-
-    /// Adds a [Comment] to this comment children set.
-    ///
-    /// @param comment the child comment to be added
-    public void addChild(Comment comment) {
-        children.add(comment);
-    }
-
-
 }

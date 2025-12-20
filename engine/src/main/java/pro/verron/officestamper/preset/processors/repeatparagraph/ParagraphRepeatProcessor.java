@@ -28,15 +28,8 @@ public class ParagraphRepeatProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IParagraphRepeatProcessor {
 
-    private ParagraphRepeatProcessor(ProcessorContext processorContext) {
+    public ParagraphRepeatProcessor(ProcessorContext processorContext) {
         super(processorContext);
-    }
-
-    /// Creates a new instance of [CommentProcessor] using the provided [PlaceholderReplacer].
-    ///
-    /// @return a new instance of [ParagraphRepeatProcessor].
-    public static CommentProcessor newInstance(ProcessorContext processorContext) {
-        return new ParagraphRepeatProcessor(processorContext);
     }
 
     @Override

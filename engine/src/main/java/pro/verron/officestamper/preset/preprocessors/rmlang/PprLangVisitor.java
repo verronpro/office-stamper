@@ -9,19 +9,20 @@ import java.util.List;
 
 public class PprLangVisitor
         extends TraversalUtilVisitor<P> {
-    private final List<ParaRPr> rPrs = new ArrayList<>();
+    private final List<ParaRPr> paraRPrs = new ArrayList<>();
 
     @Override
     public void apply(P element, Object parent1, List<Object> siblings) {
-        if (element.getPPr() != null && element.getPPr()
-                                               .getRPr() != null && element.getPPr()
-                                                                           .getRPr()
-                                                                           .getLang() != null)
-            rPrs.add(element.getPPr()
-                            .getRPr());
+        var elementPPr = element.getPPr();
+        if (elementPPr == null) return;
+        var elementRPr = elementPPr.getRPr();
+        if (elementRPr == null) return;
+        var elementLang = elementRPr.getLang();
+        if (elementLang == null) return;
+        paraRPrs.add(elementRPr);
     }
 
-    public List<ParaRPr> getrPrs() {
-        return rPrs;
+    public List<ParaRPr> getParaPrs() {
+        return paraRPrs;
     }
 }

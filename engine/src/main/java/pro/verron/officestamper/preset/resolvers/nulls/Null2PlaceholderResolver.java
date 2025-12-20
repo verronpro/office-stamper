@@ -7,8 +7,8 @@ import pro.verron.officestamper.api.ObjectResolver;
 
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
-/// The [Null2PlaceholderResolver] class is an implementation of the ObjectResolver interface.
-/// It provides a way to resolve null objects by not replacing their expression.
+/// The [Null2PlaceholderResolver] class is an implementation of the ObjectResolver interface. It provides a way to
+/// resolve null objects by not replacing their expression.
 ///
 /// @author Joseph Verron
 /// @version ${version}
@@ -18,6 +18,10 @@ public class Null2PlaceholderResolver
 
     private final String placeholderTemplate;
 
+    /// Constructs a new [Null2PlaceholderResolver] with the specified placeholder template.
+    ///
+    /// @param template the template string to be used for formatting placeholders, where the expression will be
+    ///         inserted using [String#format()]
     public Null2PlaceholderResolver(String template) {
         this.placeholderTemplate = template;
     }

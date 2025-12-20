@@ -6,9 +6,9 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 import pro.verron.officestamper.preset.CommentProcessorFactory.*;
 import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
-import pro.verron.officestamper.preset.processors.repeat.RepeatProcessor;
 import pro.verron.officestamper.preset.processors.repeatdocpart.RepeatDocPartProcessor;
-import pro.verron.officestamper.preset.processors.repeatparagraph.ParagraphRepeatProcessor;
+import pro.verron.officestamper.preset.processors.repeatparagraph.RepeatParagraphProcessor;
+import pro.verron.officestamper.preset.processors.repeatrow.RepeatRowProcessor;
 import pro.verron.officestamper.preset.processors.replacewith.ReplaceWithProcessor;
 import pro.verron.officestamper.preset.processors.table.TableResolver;
 
@@ -30,7 +30,7 @@ public class OfficeStamperConfigurations {
         throw new OfficeStamperException("Utility class should not be instantiated");
     }
 
-    /// Creates a full [OfficeStamperConfiguration] with standard configurations, supplemented with additional pre and
+    /// Creates a full [OfficeStamperConfiguration] with standard configurations, supplemented with additional pre- and
     /// post-processors for enhanced document handling.
     ///
     /// This configuration includes preprocessors to:
@@ -80,8 +80,8 @@ public class OfficeStamperConfigurations {
     public static OfficeStamperConfiguration standard(ObjectResolver fallback) {
         var configuration = new DocxStamperConfiguration();
 
-        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::new);
-        configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::new);
+        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatRowProcessor::new);
+        configuration.addCommentProcessor(IParagraphRepeatProcessor.class, RepeatParagraphProcessor::new);
         configuration.addCommentProcessor(IRepeatDocPartProcessor.class, RepeatDocPartProcessor::new);
         configuration.addCommentProcessor(ITableResolver.class, TableResolver::new);
         configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::new);

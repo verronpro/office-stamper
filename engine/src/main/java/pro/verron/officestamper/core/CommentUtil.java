@@ -1,6 +1,5 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.OpcPackage;
@@ -11,18 +10,18 @@ import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.utils.wml.DocxIterator;
 
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.docx4j.XmlUtils.unwrap;
-import static pro.verron.officestamper.utils.wml.WmlFactory.newBody;
-import static pro.verron.officestamper.utils.wml.WmlFactory.newComments;
 
 /// Utility class for working with comments in a DOCX document.
 ///
@@ -112,61 +111,20 @@ public class CommentUtil {
         }
         CommentRangeStart start = comment.getCommentRangeStart();
         if (start != null) {
-            ContentAccessor startParent = (ContentAccessor) start.getParent();
+            var parent = start.getParent();
+            ContentAccessor startParent = (ContentAccessor) parent;
             startParent.getContent()
                        .remove(start);
+            if (startParent instanceof CTSmartTagRun tag && tag.getContent()
+                                                               .isEmpty())
+                ((ContentAccessor) tag.getParent()).getContent()
+                                                   .remove(tag);
         }
         CommentReference reference = comment.getCommentReference();
         if (reference != null) {
             ContentAccessor referenceParent = (ContentAccessor) reference.getParent();
             referenceParent.getContent()
                            .remove(reference);
-        }
-    }
-
-    /// Creates a sub Word document by extracting a specified comment and its associated content from the original
-    /// document.
-    ///
-    /// @param comment The comment to be extracted from the original document.
-    ///
-    /// @return The sub Word document containing the content of the specified comment.
-    public static WordprocessingMLPackage createSubWordDocument(
-            Comment comment,
-            WordprocessingMLPackage sourceDocument
-    ) {
-        var elements = comment.getElements();
-
-        var target = createWordPackageWithCommentsPart();
-
-        // copy the elements without comment range anchors
-        var finalElements = elements.stream()
-                                    .map(XmlUtils::deepCopy)
-                                    .collect(Collectors.toCollection(ArrayList::new));
-        deleteCommentFromElements(comment, finalElements);
-        target.getMainDocumentPart()
-              .getContent()
-              .addAll(finalElements);
-
-        // copy the images from parent document using the original repeat elements
-        var fakeBody = newBody(elements);
-        DocumentUtil.walkObjectsAndImportImages(fakeBody, sourceDocument, target);
-
-        var comments = extractComments(comment.getChildren());
-        target.getMainDocumentPart()
-              .getCommentsPart()
-              .setContents(comments);
-        return target;
-    }
-
-    private static WordprocessingMLPackage createWordPackageWithCommentsPart() {
-        try {
-            CommentsPart targetCommentsPart = new CommentsPart();
-            var target = WordprocessingMLPackage.createPackage();
-            var mainDocumentPart = target.getMainDocumentPart();
-            mainDocumentPart.addTargetPart(targetCommentsPart);
-            return target;
-        } catch (InvalidFormatException e) {
-            throw new OfficeStamperException("Failed to create a Word package with comment Part", e);
         }
     }
 
@@ -182,6 +140,11 @@ public class CommentUtil {
                 items.forEach(item -> {
                     Object unwrapped = unwrap(item);
                     elementsToRemove.addAll(switch (unwrapped) {
+                        case CTSmartTagRun str when str.getContent()
+                                                       .stream()
+                                                       .anyMatch(i -> i instanceof CommentRangeStart crs
+                                                                      && predicate.test(crs.getId())) ->
+                                from(items, item);
                         case CommentRangeStart crs when predicate.test(crs.getId()) -> from(items, item);
                         case CommentRangeEnd cre when predicate.test(cre.getId()) -> from(items, item);
                         case CommentReference rcr when predicate.test(rcr.getId()) -> from(items, item);
@@ -211,16 +174,40 @@ public class CommentUtil {
                       .forEach(p -> p.container.removeAll(p.items));
     }
 
-    private static Comments extractComments(Set<Comment> commentChildren) {
-        var list = new ArrayList<Comments.Comment>();
-        var queue = new ArrayDeque<>(commentChildren);
-        while (!queue.isEmpty()) {
-            var comment = queue.remove();
-            list.add(comment.getComment());
-            queue.addAll(comment.getChildren());
+    public static Comment comment(
+            DocxPart docxPart,
+            CommentRangeStart crs,
+            WordprocessingMLPackage document,
+            ContentAccessor contentAccessor
+    ) {
+        var comment = new StandardComment(docxPart);
+        var iterator = new DocxIterator(contentAccessor);
+        iterator.setTo(crs);
+        CommentRangeEnd cre = null;
+        CommentReference cr = null;
+        while (iterator.hasNext() && (cr == null || cre == null)) {
+            var element = iterator.next();
+            if (element instanceof CommentRangeEnd found && cre == null && Objects.equals(found.getId(), crs.getId())) {
+                cre = found;
+            }
+            else if (element instanceof CommentReference found && cr == null && Objects.equals(found.getId(),
+                    crs.getId())) {
+                cr = found;
+            }
         }
-        return newComments(list);
+
+        var commentMap = getCommentsPart(document.getParts())
+                .map(CommentUtil::extractContent)
+                .map(Comments::getComment)
+                .stream()
+                .flatMap(Collection::stream)
+                .collect(toMap(Comments.Comment::getId, identity()));
+
+        comment.setCommentRangeStart(crs);
+        comment.setStartTagRun((CTSmartTagRun) crs.getParent());
+        comment.setCommentReference(cr);
+        comment.setCommentRangeEnd(cre);
+        comment.setComment(commentMap.get(crs.getId()));
+        return comment;
     }
-
-
 }

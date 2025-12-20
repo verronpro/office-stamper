@@ -8,48 +8,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.util.function.Function.identity;
 import static pro.verron.officestamper.core.Invokers.streamInvokersFromClass;
 import static pro.verron.officestamper.core.Invokers.streamInvokersFromCustomFunction;
 
 public final class OfficeStamperEvaluationContextFactory {
-    private final List<CustomFunction> functions;
-    private final Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors;
-    private final Map<Class<?>, Object> expressionFunctions;
-    private final EvaluationContextFactory evaluationContextFactory;
+    private final List<CustomFunction> customFunctions;
+    private final Map<Class<?>, CommentProcessorFactory> commentProcessors;
+    private final Map<Class<?>, Object> interfaceFunctions;
+    private final EvaluationContextFactory contextFactory;
 
     OfficeStamperEvaluationContextFactory(
-            List<CustomFunction> functions,
-            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
-            Map<Class<?>, Object> expressionFunctions,
-            EvaluationContextFactory evaluationContextFactory
+            List<CustomFunction> customFunctions,
+            Map<Class<?>, CommentProcessorFactory> commentProcessors,
+            Map<Class<?>, Object> interfaceFunctions,
+            EvaluationContextFactory contextFactory
     ) {
-        this.functions = functions;
-        this.configurationCommentProcessors = configurationCommentProcessors;
-        this.expressionFunctions = expressionFunctions;
-        this.evaluationContextFactory = evaluationContextFactory;
+        this.customFunctions = customFunctions;
+        this.commentProcessors = commentProcessors;
+        this.interfaceFunctions = interfaceFunctions;
+        this.contextFactory = contextFactory;
     }
 
     public EvaluationContext create(ProcessorContext processorContext, ContextBranch branch) {
-        var ec = evaluationContextFactory.create(branch);
-        var invokers = computeInvokers(functions,
-                configurationCommentProcessors,
-                processorContext,
-                expressionFunctions);
-        return new UnionEvaluationContext(ec, invokers);
-    }
-
-    private static Invokers computeInvokers(
-            List<CustomFunction> functions,
-            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
-            ProcessorContext processorContext,
-            Map<Class<?>, Object> expressionFunctions1
-    ) {
-        var processors = instantiate(configurationCommentProcessors, processorContext);
+        var ec = contextFactory.create(branch);
+        var processors = instantiate(commentProcessors, processorContext);
         var invokerStream = Stream.of(streamInvokersFromClass(processors),
-                                          streamInvokersFromClass(expressionFunctions1),
-                                          streamInvokersFromCustomFunction(functions))
-                                  .flatMap(s -> s);
-        return new Invokers(invokerStream);
+                                          streamInvokersFromClass(interfaceFunctions),
+                                          streamInvokersFromCustomFunction(customFunctions))
+                                  .flatMap(identity());
+        var invokers = new Invokers(invokerStream);
+        return new UnionEvaluationContext(ec, invokers);
     }
 
     /// Returns a set view of the mappings contained in this map. Each entry in the set is a mapping between a
@@ -59,11 +48,11 @@ public final class OfficeStamperEvaluationContextFactory {
     ///         values in this map.
 
     private static Map<Class<?>, CommentProcessor> instantiate(
-            Map<Class<?>, CommentProcessorFactory> processorFactoryMap,
+            Map<Class<?>, CommentProcessorFactory> commentProcessorFactories,
             ProcessorContext processorContext
     ) {
-        Map<Class<?>, CommentProcessor> map = new HashMap<>();
-        for (Map.Entry<Class<?>, CommentProcessorFactory> entry : processorFactoryMap.entrySet()) {
+        var map = new HashMap<Class<?>, CommentProcessor>();
+        for (var entry : commentProcessorFactories.entrySet()) {
             var processorClass = entry.getKey();
             var processorFactory = entry.getValue();
             var processor = processorFactory.create(processorContext);

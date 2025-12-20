@@ -72,7 +72,7 @@ public class ParagraphRepeatProcessor
                     });
             if (oddNumberOfBreaks && previousSectionBreak.isPresent() && iterator.hasNext()) {
                 assert paragraphsToAdd.peekLast() != null : "There should be at least one ";
-                SectionUtil.applySectionBreakToParagraph(previousSectionBreak.get(), paragraphsToAdd.peekLast());
+                SectionUtil.addSectionBreak(previousSectionBreak.get(), paragraphsToAdd.peekLast());
             }
         }
         paragraph().replace(toRemove, paragraphsToAdd);

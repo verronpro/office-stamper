@@ -4,6 +4,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PostProcessor;
 import pro.verron.officestamper.preset.postprocessors.cleanendnotes.RemoveOrphanedEndnotesProcessor;
 import pro.verron.officestamper.preset.postprocessors.cleanfootnotes.RemoveOrphanedFootnotesProcessor;
+import pro.verron.officestamper.preset.postprocessors.cleantags.RemoveTagsProcessor;
 
 /// The Postprocessors class provides static utility methods for obtaining implementations of the
 /// [PostProcessor] interface that perform specific post-processing operations on
@@ -33,5 +34,9 @@ public class Postprocessors {
     /// @return a PostProcessor instance that performs the removal of orphaned endnotes
     public static PostProcessor removeOrphanedEndnotes() {
         return new RemoveOrphanedEndnotesProcessor();
+    }
+
+    public static PostProcessor removeTags(String element) {
+        return new RemoveTagsProcessor(element);
     }
 }

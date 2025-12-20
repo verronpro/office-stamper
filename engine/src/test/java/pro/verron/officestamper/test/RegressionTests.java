@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,54 +26,14 @@ class RegressionTests {
     private static final Path TEMPLATE_52 = Path.of("#52.docx");
 
     public static Stream<Arguments> source52() {
-        return Stream.of(arguments(Conditions.values(), ""), arguments(Conditions.values(true), """
-                Start
-                
-                Hello, World!
-                
-                End
-                
-                """), arguments(Conditions.values(false), """
-                Start
-                
-                End
-                
-                """), arguments(Conditions.values(true, true), """
-                Start
-                
-                Hello, World!
-                
-                End
-                
-                Start
-                
-                Hello, World!
-                
-                End
-                
-                """), arguments(Conditions.values(true, false), """
-                Start
-                
-                Hello, World!
-                
-                End
-                
-                Start
-                
-                End
-                
-                """), arguments(Conditions.values(false, true), """
-                Start
-                
-                End
-                
-                Start
-                
-                Hello, World!
-                
-                End
-                
-                """), arguments(Conditions.values(false, false), "Start\n\nEnd\n\nStart\n\nEnd\n\n"));
+        return Stream.of(arguments(Conditions.values(), ""),
+                arguments(Conditions.values(true), "Start\n\nHello, World!\n\nEnd\n\n"),
+                arguments(Conditions.values(false), "Start\n\nEnd\n\n"),
+                arguments(Conditions.values(true, true),
+                        "Start\n\nHello, World!\n\nEnd\n\nStart\n\nHello, World!\n\nEnd\n\n"),
+                arguments(Conditions.values(true, false), "Start\n\nHello, World!\n\nEnd\n\nStart\n\nEnd\n\n"),
+                arguments(Conditions.values(false, true), "Start\n\nEnd\n\nStart\n\nHello, World!\n\nEnd\n\n"),
+                arguments(Conditions.values(false, false), "Start\n\nEnd\n\nStart\n\nEnd\n\n"));
     }
 
     /// Test that table of content specific instruction text (instrText) is not modified by error
@@ -221,13 +182,25 @@ class RegressionTests {
         }
     }
 
-    record Condition(boolean condition) {}
+    record Condition(boolean condition) {
+        @Override
+        @NonNull
+        public String toString() {
+            return String.valueOf(condition);
+        }
+    }
 
     record Conditions(List<Condition> conditions) {
         private static Conditions values(boolean... bits) {
             var elements = new ArrayList<Condition>(bits.length);
             for (var bit : bits) elements.add(new Condition(bit));
             return new Conditions(elements);
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return String.valueOf(conditions);
         }
     }
 }

@@ -3,7 +3,6 @@ package pro.verron.officestamper.core;
 import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;
-import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 import pro.verron.officestamper.utils.wml.DocxIterator;
@@ -33,17 +32,14 @@ public interface Hook {
     }
 
     static boolean isPotentialHook(Object o) {
-        return switch (o) {
-            case CommentRangeStart _ -> true;
-            case CTSmartTagRun tag when isTagElement(tag, "officestamper") -> true;
-            default -> false;
-        };
+        return o instanceof CTSmartTagRun tag && isTagElement(tag, "officestamper");
     }
 
     static Hook asHook(DocxPart part, Object o) {
         return switch (o) {
-            case CommentRangeStart commentRangeStart -> newCommentHook(part, commentRangeStart);
-            case CTSmartTagRun tag -> newTagHook(part, tag);
+            case CTSmartTagRun tag when isTagElement(tag, "officestamper") && isType(tag, "cProcessor") ->
+                    newCommentHook(part, tag);
+            case CTSmartTagRun tag when isTagElement(tag, "officestamper") -> new TagHook(part, new Tag(part, tag));
             default -> throw new IllegalArgumentException("Unexpected value: " + o);
         };
     }
@@ -53,18 +49,19 @@ public interface Hook {
         return Objects.equals(expectedElement, actualElement);
     }
 
-    static Hook newCommentHook(DocxPart part, CommentRangeStart commentRangeStart) {
-        return part.comment(commentRangeStart.getId())
-                   .map(c -> newCommentHook(part, c))
-                   .orElse(NULL_HOOK);
+    static boolean isType(CTSmartTagRun tag, String type) {
+        return tag.getSmartTagPr()
+                  .getAttr()
+                  .stream()
+                  .anyMatch(attr -> "type".equals(attr.getName()) && type.equals(attr.getVal()));
     }
 
-    static Hook newTagHook(DocxPart part, CTSmartTagRun tag) {
-        return new TagHook(part, new Tag(part, tag));
-    }
-
-    private static Hook newCommentHook(DocxPart part, Comment comment) {
-        return new CommentHook(part, comment);
+    static Hook newCommentHook(DocxPart part, CTSmartTagRun tag) {
+        var tagContent = tag.getContent();
+        var commentRangeStart = (CommentRangeStart) tagContent.getFirst();
+        var myTag = new Tag(part, tag);
+        var comment = CommentUtil.comment(part, commentRangeStart, part.document(), part::content);
+        return new CommentHook(part, myTag, comment);
     }
 
     boolean run(

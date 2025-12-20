@@ -7,10 +7,12 @@ import pro.verron.officestamper.api.ProcessorContext;
 public class CommentHook
         implements Hook {
     private final DocxPart part;
+    private final Tag tag;
     private final Comment comment;
 
-    CommentHook(DocxPart part, Comment comment) {
+    CommentHook(DocxPart part, Tag tag, Comment comment) {
         this.part = part;
+        this.tag = tag;
         this.comment = comment;
     }
 
@@ -22,10 +24,12 @@ public class CommentHook
     ) {
         var paragraph = comment.getParagraph();
         var expression = comment.expression();
-        var contextStack = contextTree.find(comment.getContextKey());
+        var contextKey = tag.getContextKey();
+        var contextStack = contextTree.find(contextKey);
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
+        var evaluationContext = officeStamperEvaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
-        if (engine.process(officeStamperEvaluationContextFactory.create(processorContext, contextStack))) {
+        if (engine.process(evaluationContext)) {
             CommentUtil.deleteComment(comment);
             return true;
         }
@@ -34,7 +38,7 @@ public class CommentHook
 
     @Override
     public void setContextKey(String contextKey) {
-        comment.setContextKey(contextKey);
+        tag.setContextKey(contextKey);
     }
 
 }

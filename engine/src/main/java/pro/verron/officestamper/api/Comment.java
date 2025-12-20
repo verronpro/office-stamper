@@ -9,6 +9,10 @@ import java.util.List;
 /// The Comment interface provides methods for managing comments in a document.
 public interface Comment {
 
+
+    /// Retrieves the paragraph associated with this comment.
+    ///
+    /// @return the [Paragraph] object associated with this comment
     Paragraph getParagraph();
 
     @Nullable CTSmartTagRun getStartTagRun();

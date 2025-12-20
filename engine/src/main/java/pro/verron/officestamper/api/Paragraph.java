@@ -58,7 +58,16 @@ public interface Paragraph {
     /// @return a collection of [Comments.Comment] objects related to the paragraph
     Collection<Comments.Comment> getComment();
 
+
+    /// Retrieves the parent table row of the current paragraph, if it exists.
+    ///
+    /// @return an [Optional] containing the parent [Table.Row] if the paragraph is within a table row, otherwise an
+    ///         empty [Optional]
     Optional<Table.Row> parentTableRow();
 
+    /// Retrieves the parent table of the current paragraph, if it exists.
+    ///
+    /// @return an [Optional] containing the parent [Table] if the paragraph is within a table, otherwise an empty
+    ///         [Optional]
     Optional<Table> parentTable();
 }

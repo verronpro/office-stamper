@@ -152,7 +152,12 @@ public class PowerpointParagraph
     /// @param insert the content to replace the placeholder with; must be a valid and compatible text run
     @Override
     public void replace(String expression, Insert insert) {
-        var replacementRun = insert.assertSingleton(CTRegularTextRun.class);
+        var elements = insert.elements();
+        if (elements.size() != 1) throw new AssertionError("Insert must contain exactly one element");
+        var element = elements.getFirst();
+        if (!(element instanceof CTRegularTextRun replacementRun))
+            throw new AssertionError("Insert '%s' is not a unique element of expected type '%s'".formatted(element,
+                    CTRegularTextRun.class));
 
         String text = asString();
         int matchStartIndex = text.indexOf(expression);

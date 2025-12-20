@@ -41,27 +41,11 @@ public final class TextualDocxPart
     @Override
     public Part part() {return part;}
 
-    /// Creates a new instance of [DocxPart] using the provided [ContentAccessor].
-    ///
-    /// @param accessor the content accessor associated with the document part to derive a new instance.
-    ///
-    /// @return a new instance of [DocxPart], specifically a [TextualDocxPart], initialized with the given content
-    ///         accessor.
-    @Override
-    public DocxPart from(ContentAccessor accessor) {
-        return new TextualDocxPart(document, part, accessor);
-    }
-
     /// Retrieves the list of content objects associated with this document part.
     ///
     /// @return a list of objects representing the content of the document part.
     @Override
     public List<Object> content() {return contentAccessor.getContent();}
-
-    @Override
-    public String type() {
-        return part.getRelationshipType();
-    }
 
     /// Returns the [WordprocessingMLPackage] instance representing the document associated with this part.
     ///

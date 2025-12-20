@@ -29,11 +29,4 @@ public record Insert(List<Object> elements) {
                 .map(R.class::cast)
                 .forEach(r -> r.setRPr(rPr));
     }
-
-    public <T> T assertSingleton(Class<T> clazz) {
-        if (elements.size() != 1) throw new AssertionError("Insert must contain exactly one element");
-        var element = elements.getFirst();
-        if (clazz.isInstance(element)) return clazz.cast(element);
-        throw new AssertionError("Insert '%s' is not a unique element of expected type '%s'".formatted(element, clazz));
-    }
 }

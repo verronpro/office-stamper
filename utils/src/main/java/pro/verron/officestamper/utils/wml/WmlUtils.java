@@ -257,7 +257,7 @@ public final class WmlUtils {
     /// @return a list of [Object] representing the updated content
     public static List<Object> insertSmartTag(String element, P paragraph, String expression, int start, int end) {
         var run = newRun(expression);
-        var smartTag = newSmartTag("officestamper", run, newCtAttr("type", element));
+        var smartTag = newSmartTag("officestamper", newCtAttr("type", element), run);
         findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
         return replace(paragraph, List.of(smartTag), start, end);
     }

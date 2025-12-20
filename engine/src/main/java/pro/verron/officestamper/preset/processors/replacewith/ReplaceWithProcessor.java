@@ -20,7 +20,6 @@ public class ReplaceWithProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IReplaceWithProcessor {
 
-
     /// Constructs a new [ReplaceWithProcessor] instance.
     ///
     /// @param processorContext the context in which this processor operates, providing access to document
@@ -28,7 +27,6 @@ public class ReplaceWithProcessor
     public ReplaceWithProcessor(ProcessorContext processorContext) {
         super(processorContext);
     }
-
 
     /// Replaces the content between the start and end of the comment with the given expression.
     ///

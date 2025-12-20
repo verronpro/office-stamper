@@ -26,6 +26,9 @@ public class TableResolver
         extends CommentProcessor
         implements CommentProcessorFactory.ITableResolver {
 
+    /// Constructs a new TableResolver with the given processor context.
+    ///
+    /// @param processorContext the context in which this processor operates
     public TableResolver(ProcessorContext processorContext) {
         super(processorContext);
     }

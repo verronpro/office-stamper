@@ -7,10 +7,18 @@ import pro.verron.officestamper.api.PostProcessor;
 
 import static pro.verron.officestamper.core.DocumentUtil.visitDocument;
 
+/// A post-processor implementation that removes smart tags from a WordprocessingML document.
+///
+/// This processor is designed to clean up documents by removing specific smart tags while preserving their content. It
+/// operates on the document's XML structure to find and eliminate smart tag elements.
 public class RemoveTagsProcessor
         implements PostProcessor {
     private final String element;
 
+
+    /// Constructs a new [RemoveTagsProcessor] with the specified element name.
+    ///
+    /// @param element the name of the element to be removed from the document
     public RemoveTagsProcessor(String element) {this.element = element;}
 
     @Override

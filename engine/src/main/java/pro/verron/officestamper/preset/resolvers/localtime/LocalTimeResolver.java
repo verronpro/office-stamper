@@ -28,7 +28,6 @@ public final class LocalTimeResolver
         this.formatter = formatter;
     }
 
-    /// {@inheritDoc}
     @Override
     protected String resolve(LocalTime localTime) {
         return localTime.format(formatter);

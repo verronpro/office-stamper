@@ -30,7 +30,8 @@ public class SectionUtil {
     /// Creates a new section break object.
     ///
     /// @param firstObject a [Object] object
-    /// @param parent      a [ContentAccessor] object
+    /// @param parent a [ContentAccessor] object
+    ///
     /// @return a new section break object.
     public static Optional<SectPr> getPreviousSectionBreakIfPresent(Object firstObject, ContentAccessor parent) {
         List<Object> parentContent = parent.getContent();
@@ -40,8 +41,7 @@ public class SectionUtil {
         while (i >= 0) {
             if (parentContent.get(i) instanceof P prevParagraph) {
                 // the first P preceding the object is the one carrying a section break
-                return ofNullable(prevParagraph.getPPr())
-                        .map(PPr::getSectPr);
+                return ofNullable(prevParagraph.getPPr()).map(PPr::getSectPr);
             }
             else log.debug("The previous sibling was not a P, continuing search");
             i--;
@@ -72,9 +72,9 @@ public class SectionUtil {
 
     /// Creates a new section break object.
     ///
-    /// @param sectPr    a [SectPr] object
+    /// @param sectPr a [SectPr] object
     /// @param paragraph a [P] object
-    public static void applySectionBreakToParagraph(SectPr sectPr, P paragraph) {
+    public static void addSectionBreak(SectPr sectPr, P paragraph) {
         PPr nextPPr = ofNullable(paragraph.getPPr()).orElseGet(WmlFactory::newPPr);
         nextPPr.setSectPr(XmlUtils.deepCopy(sectPr));
         paragraph.setPPr(nextPPr);

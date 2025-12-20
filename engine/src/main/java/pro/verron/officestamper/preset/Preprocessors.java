@@ -5,6 +5,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PreProcessor;
 import pro.verron.officestamper.preset.preprocessors.malformedcomments.RemoveMalformedComments;
 import pro.verron.officestamper.preset.preprocessors.placeholders.PrepareInlinePlaceholders;
+import pro.verron.officestamper.preset.preprocessors.processors.PrepareCommentProcessors;
 import pro.verron.officestamper.preset.preprocessors.prooferror.RemoveProofErrors;
 import pro.verron.officestamper.preset.preprocessors.rmlang.RemoveLang;
 import pro.verron.officestamper.preset.preprocessors.similarrun.MergeSameStyleRuns;
@@ -50,5 +51,9 @@ public class Preprocessors {
 
     public static PreProcessor preparePlaceholders(String regex, String element) {
         return new PrepareInlinePlaceholders(regex, element);
+    }
+
+    public static PreProcessor prepareCommentProcessor() {
+        return new PrepareCommentProcessors();
     }
 }

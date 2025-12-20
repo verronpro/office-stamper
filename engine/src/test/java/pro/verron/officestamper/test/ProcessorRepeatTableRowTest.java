@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.of;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
@@ -43,7 +43,7 @@ class ProcessorRepeatTableRowTest {
 
     private static Arguments repeatingRows(ContextFactory factory) {
         return of("Repeating table rows should be possible",
-                standard(),
+                full(),
                 factory.roles("Homer Simpson",
                         "Dan Castellaneta",
                         "Marge Simpson",
@@ -95,7 +95,7 @@ class ProcessorRepeatTableRowTest {
 
     private static Arguments repeatingRowsWithLineBreak(ContextFactory factory) {
         return of("Repeating table rows should be possible while replacing various linebreaks",
-                standard(),
+                full(),
                 factory.roles("Homer Simpson",
                         "Dan Castellaneta",
                         "Marge Simpson",
@@ -156,7 +156,7 @@ class ProcessorRepeatTableRowTest {
 
     static Arguments repeatTableRowKeepsFormatTest(ContextFactory factory) {
         return of("Repeat Table row Integration test (keeps formatting)",
-                standard(),
+                full(),
                 factory.show(),
                 getWordResource(Path.of("ProcessorRepeatTableRow_KeepsFormatTest.docx")),
                 """
@@ -196,7 +196,7 @@ class ProcessorRepeatTableRowTest {
 
     @Test
     void shouldAcceptList() {
-        var config = standard();
+        var config = full();
         var stamper = docxPackageStamper(config);
         var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
@@ -227,7 +227,7 @@ class ProcessorRepeatTableRowTest {
 
     @Test
     void shouldAcceptSet() {
-        var config = standard();
+        var config = full();
         var stamper = docxPackageStamper(config);
         var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
@@ -258,7 +258,7 @@ class ProcessorRepeatTableRowTest {
 
     @Test
     void shouldAcceptQueue() {
-        var config = standard();
+        var config = full();
         var stamper = docxPackageStamper(config);
         var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
@@ -287,5 +287,4 @@ class ProcessorRepeatTableRowTest {
                 """;
         assertEquals(expected, actual);
     }
-
 }

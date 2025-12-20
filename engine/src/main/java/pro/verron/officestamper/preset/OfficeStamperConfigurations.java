@@ -84,7 +84,7 @@ public class OfficeStamperConfigurations {
         configuration.addCommentProcessor(IParagraphRepeatProcessor.class, ParagraphRepeatProcessor::new);
         configuration.addCommentProcessor(IRepeatDocPartProcessor.class, RepeatDocPartProcessor::new);
         configuration.addCommentProcessor(ITableResolver.class, TableResolver::new);
-        configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::newInstance);
+        configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::new);
         configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::new);
 
         configuration.setResolvers(List.of(Resolvers.image(),

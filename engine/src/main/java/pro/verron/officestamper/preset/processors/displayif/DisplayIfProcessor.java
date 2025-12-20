@@ -24,17 +24,8 @@ public class DisplayIfProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IDisplayIfProcessor {
 
-    private DisplayIfProcessor(ProcessorContext processorContext) {
+    public DisplayIfProcessor(ProcessorContext processorContext) {
         super(processorContext);
-    }
-
-    /// Creates a new DisplayIfProcessor instance.
-    ///
-    /// @param processorContext the [ProcessorContext] used for processing expressions.
-    ///
-    /// @return a new DisplayIfProcessor instance.
-    public static CommentProcessor newInstance(ProcessorContext processorContext) {
-        return new DisplayIfProcessor(processorContext);
     }
 
     @Override

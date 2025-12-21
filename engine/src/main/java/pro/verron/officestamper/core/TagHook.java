@@ -22,7 +22,8 @@ public class TagHook
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();
         var expression = tag.expression();
-        var contextStack = contextTree.find(tag.getContextKey());
+        var contextKey = tag.getContextKey();
+        var contextStack = contextTree.find(contextKey);
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);

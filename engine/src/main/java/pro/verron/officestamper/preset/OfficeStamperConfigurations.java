@@ -170,7 +170,7 @@ public class OfficeStamperConfigurations {
         var configuration = new DocxStamperConfiguration();
         configuration.addResolver(Resolvers.fallback("\n"));
         configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
-        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\#\\{([^{]+?)})", "processor"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\#\\{([^{]+?)})", "inlineProcessor"));
         configuration.addPreprocessor(Preprocessors.prepareCommentProcessor());
         configuration.addPostprocessor(Postprocessors.removeTags("officestamper"));
         return configuration;

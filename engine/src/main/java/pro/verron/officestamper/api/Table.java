@@ -1,7 +1,6 @@
 package pro.verron.officestamper.api;
 
 import org.docx4j.wml.Tr;
-import pro.verron.officestamper.core.Hook;
 
 import java.util.List;
 
@@ -32,7 +31,7 @@ public interface Table {
 
         void removeComment(Comment comment);
 
-        Iterable<Hook> hooks();
+        Iterable<ContextDependent> hooks();
 
         Tr asTr();
     }

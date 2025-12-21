@@ -3,28 +3,15 @@ package pro.verron.officestamper.core;
 import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;
+import pro.verron.officestamper.api.ContextDependent;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 import pro.verron.officestamper.utils.wml.DocxIterator;
 
 import java.util.Objects;
 
-public interface Hook {
-    Hook NULL_HOOK = new Hook() {
-        @Override
-        public boolean run(
-                EngineFactory engineFactory,
-                ContextTree contextTree,
-                OfficeStamperEvaluationContextFactory evaluationContextFactory
-        ) {
-            return false;
-        }
-
-        @Override
-        public void setContextKey(String contextKey) {
-            // DO NOTHING
-        }
-    };
+public interface Hook
+        extends ContextDependent {
 
     static ResetableIterator<Hook> ofHooks(ContentAccessor contentAccessor, DocxPart part) {
         return new DocxIterator(contentAccessor).filter(Hook::isPotentialHook)
@@ -70,5 +57,5 @@ public interface Hook {
             OfficeStamperEvaluationContextFactory evaluationContextFactory
     );
 
-    void setContextKey(String contextKey);
+
 }

@@ -14,7 +14,7 @@ import pro.verron.officestamper.preset.CommentProcessorFactory;
 /// @since 1.0.0
 public class RepeatRowProcessor
         extends CommentProcessor
-        implements CommentProcessorFactory.IRepeatProcessor {
+        implements CommentProcessorFactory.IRepeatRowProcessor {
 
 
     /// Constructs a new RepeatRowProcessor with the given processor context.

@@ -184,7 +184,7 @@ public class StandardParagraph
 
     @Override
     public Optional<Table.Row> parentTableRow() {
-        return parent(Tr.class).map(StandardRow::new);
+        return parent(Tr.class).map((Tr tr) -> new StandardRow(part, (Tbl) tr.getParent(), tr));
     }
 
     @Override

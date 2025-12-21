@@ -52,7 +52,7 @@ public class StandardComment
         var commentWrapper = new StandardComment(document);
         var start = newCommentRangeStart(id, parent);
         commentWrapper.setComment(newComment(id, expression));
-        commentWrapper.setStartTagRun(newSmartTag("officestamper", newCtAttr("type", "cProcessor"), start));
+        commentWrapper.setStartTagRun(newSmartTag("officestamper", newCtAttr("type", "processor"), start));
         commentWrapper.setCommentRangeStart(start);
         commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
         commentWrapper.setCommentReference(newCommentReference(id, parent));

@@ -35,7 +35,7 @@ This detaches expressions from their original text runs and makes them easy to i
 ----
 // In OfficeStamperConfigurations.standard():
 configuration.addPreprocessor(Preprocessors.removeMalformedComments());
-configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "processor"));
+configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "inlineProcessor"));
 configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
 ----
 

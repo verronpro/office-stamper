@@ -24,7 +24,7 @@ public interface Hook
 
     static Hook asHook(DocxPart part, Object o) {
         return switch (o) {
-            case CTSmartTagRun tag when isTagElement(tag, "officestamper") && isType(tag, "cProcessor") ->
+            case CTSmartTagRun tag when isTagElement(tag, "officestamper") && isType(tag, "processor") ->
                     newCommentHook(part, tag);
             case CTSmartTagRun tag when isTagElement(tag, "officestamper") -> new TagHook(part, new Tag(part, tag));
             default -> throw new IllegalArgumentException("Unexpected value: " + o);

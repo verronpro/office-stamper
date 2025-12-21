@@ -21,7 +21,7 @@ public class PrepareCommentProcessors
             var parent = (ContentAccessor) commentRangeStart.getParent();
             var siblings = parent.getContent();
             var crsIndex = siblings.indexOf(commentRangeStart);
-            var tag = newSmartTag("officestamper", newCtAttr("type", "cProcessor"), commentRangeStart);
+            var tag = newSmartTag("officestamper", newCtAttr("type", "processor"), commentRangeStart);
             siblings.set(crsIndex, tag);
         }
     }

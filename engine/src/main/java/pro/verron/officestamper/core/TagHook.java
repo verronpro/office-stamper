@@ -29,7 +29,7 @@ public class TagHook
         var tagType = tag.type()
                          .orElse(null);
         boolean processed = false;
-        if ("processor".equals(tagType)) {
+        if ("inlineProcessor".equals(tagType)) {
             if (engine.process(evaluationContext)) processed = true;
             tag.remove();
         }

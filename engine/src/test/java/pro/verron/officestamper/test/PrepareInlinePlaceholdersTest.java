@@ -11,7 +11,7 @@ class PrepareInlinePlaceholdersTest {
 
     @Test
     void process() {
-        var preparePlaceholders = new PrepareInlinePlaceholders("(#\\{([^{]+?)})", "processor");
+        var preparePlaceholders = new PrepareInlinePlaceholders("(#\\{([^{]+?)})", "inlineProcessor");
         var document = makeWordResource("Hello, #{name}!");
         var before = docxToString(document);
         assertEquals("""
@@ -21,7 +21,7 @@ class PrepareInlinePlaceholdersTest {
         preparePlaceholders.process(document);
         var actual = docxToString(document);
         assertEquals("""
-                Hello, <tag element="officestamper" attr="type:processor">name<\\tag>!
+                Hello, <tag element="officestamper" attr="type:inlineProcessor">name<\\tag>!
                 
                 """, actual);
     }

@@ -4,6 +4,7 @@ import org.docx4j.XmlUtils;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.ContextDependent;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Table;
 import pro.verron.officestamper.utils.wml.WmlUtils;
@@ -50,7 +51,7 @@ public class StandardRow
     }
 
     @Override
-    public List<Hook> hooks() {
+    public List<ContextDependent> hooks() {
         return Hook.ofHooks(tr, part)
                    .collect(toList());
     }

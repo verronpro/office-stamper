@@ -13,6 +13,7 @@ import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.core.Hook;
 import pro.verron.officestamper.core.SectionUtil;
+import pro.verron.officestamper.preset.CommentProcessorFactory.IRepeatProcessor;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.util.ArrayList;
@@ -25,7 +26,9 @@ import static java.util.stream.Collectors.toCollection;
 import static pro.verron.officestamper.core.SectionUtil.addSectionBreak;
 
 public class RepeatProcessor
-        extends CommentProcessor {
+        extends CommentProcessor
+        implements IRepeatProcessor {
+
     /// Constructs a new instance of CommentProcessor to process comments and placeholders within a paragraph.
     ///
     /// @param context the context containing the paragraph, comment, and placeholder associated with the
@@ -34,6 +37,7 @@ public class RepeatProcessor
         super(context);
     }
 
+    @Override
     public void repeat(@Nullable Iterable<Object> items) {
         if (items == null) return;
         var comment = context().comment();

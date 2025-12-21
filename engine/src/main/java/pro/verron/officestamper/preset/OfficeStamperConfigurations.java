@@ -81,7 +81,7 @@ public class OfficeStamperConfigurations {
     public static OfficeStamperConfiguration standard(ObjectResolver fallback) {
         var configuration = new DocxStamperConfiguration();
 
-        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatRowProcessor::new);
+        configuration.addCommentProcessor(IRepeatRowProcessor.class, RepeatRowProcessor::new);
         configuration.addCommentProcessor(IParagraphRepeatProcessor.class, RepeatParagraphProcessor::new);
         configuration.addCommentProcessor(IRepeatDocPartProcessor.class, RepeatDocPartProcessor::new);
         configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::new);

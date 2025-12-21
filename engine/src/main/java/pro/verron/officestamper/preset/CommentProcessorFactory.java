@@ -14,8 +14,8 @@ public class CommentProcessorFactory {
         throw new OfficeStamperException("CommentProcessorFactory cannot be instantiated");
     }
 
-    /// Used to resolve a table in the template document.
-    /// Take the table passed-in to fill an existing Tbl object in the document.
+    /// Used to resolve a table in the template document. Take the table passed-in to fill an existing Tbl object in the
+    /// document.
     ///
     /// @author Joseph Verron
     /// @version ${version}
@@ -27,8 +27,7 @@ public class CommentProcessorFactory {
         void resolveTable(@Nullable StampTable table);
     }
 
-    /// Interface for processors that replace a single word with an expression defined
-    /// in a comment.
+    /// Interface for processors that replace a single word with an expression defined in a comment.
     ///
     /// @author Joseph Verron
     /// @author Tom Hombergs
@@ -41,46 +40,50 @@ public class CommentProcessorFactory {
         void replaceWith(@Nullable String expression);
     }
 
-    /// An interface that defines a processor for repeating a paragraph
-    /// for each element present in the given iterable collection of objects.
+    /// An interface that defines a processor for repeating a paragraph for each element present in the given iterable
+    /// collection of objects.
     ///
     /// @author Joseph Verron
     /// @author Romain Lamarche
     /// @version ${version}
     /// @since 1.0.0
     public interface IParagraphRepeatProcessor {
-        /// Mark a paragraph to be copied once for each element in the passed-in iterable.
-        /// Within each copy, the placeholder evaluation context is the next object in the iterable.
+        /// Mark a paragraph to be copied once for each element in the passed-in iterable. Within each copy, the
+        /// placeholder evaluation context is the next object in the iterable.
         ///
         /// @param objects objects serving as evaluation context seeding a new copy.
         void repeatParagraph(@Nullable Iterable<Object> objects);
     }
 
-    /// An interface that defines a processor for repeating a document part
-    /// for each element present in the given iterable collection of objects.
+    public interface IRepeatProcessor {
+        void repeat(@Nullable Iterable<Object> items);
+    }
+
+    /// An interface that defines a processor for repeating a document part for each element present in the given
+    /// iterable collection of objects.
     ///
     /// @author Joseph Verron
     /// @author Artem Medvedev
     /// @version ${version}
     /// @since 1.0.0
     public interface IRepeatDocPartProcessor {
-        /// Mark a document part to be copied once for each element in the passed-in iterable.
-        /// Within each copy, the placeholder evaluation context is the next object in the iterable.
+        /// Mark a document part to be copied once for each element in the passed-in iterable. Within each copy, the
+        /// placeholder evaluation context is the next object in the iterable.
         ///
         /// @param objects objects serving as evaluation context seeding a new copy.
         void repeatDocPart(@Nullable Iterable<Object> objects);
     }
 
-    /// An interface that defines a processor for repeating a table row
-    /// for each element present in the given iterable collection of objects.
+    /// An interface that defines a processor for repeating a table row for each element present in the given iterable
+    /// collection of objects.
     ///
     /// @author Joseph Verron
     /// @author Tom Hombergs
     /// @version ${version}
     /// @since 1.0.0
-    public interface IRepeatProcessor {
-        /// Mark a table row to be copied once for each element in the passed-in iterable.
-        /// Within each copy, the placeholder evaluation context is the next object in the iterable.
+    public interface IRepeatRowProcessor {
+        /// Mark a table row to be copied once for each element in the passed-in iterable. Within each copy, the
+        /// placeholder evaluation context is the next object in the iterable.
         ///
         /// @param objects objects serving as evaluation context seeding a new copy.
         void repeatTableRow(@Nullable Iterable<Object> objects);
@@ -94,32 +97,38 @@ public class CommentProcessorFactory {
     /// @since 1.0.0
     public interface IDisplayIfProcessor {
 
-        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given condition.
+        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given
+        /// condition.
         ///
         /// @param condition if non-null, keep the paragraph surrounding the comment, else remove.
         void displayParagraphIf(@Nullable Boolean condition);
 
-        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given condition.
+        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given
+        /// condition.
         ///
         /// @param condition if non-null, keep the paragraph surrounding the comment, else remove.
         void displayParagraphIfPresent(@Nullable Object condition);
 
-        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given condition.
+        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given
+        /// condition.
         ///
         /// @param condition if null, keep the paragraph surrounding the comment, else remove.
         void displayParagraphIfAbsent(@Nullable Object condition);
 
-        /// Displays or removes the table row surrounding a specific comment in a document based on the given condition.
+        /// Displays or removes the table row surrounding a specific comment in a document based on the given
+        /// condition.
         ///
         /// @param condition if true, keep the table row surrounding the comment, else remove.
         void displayTableRowIf(@Nullable Boolean condition);
 
-        /// Displays or removes the table row surrounding a specific comment in a document based on the given condition.
+        /// Displays or removes the table row surrounding a specific comment in a document based on the given
+        /// condition.
         ///
         /// @param condition if non-null, keep the table row surrounding the comment, else remove.
         void displayTableRowIfPresent(@Nullable Object condition);
 
-        /// Displays or removes the table row surrounding a specific comment in a document based on the given condition.
+        /// Displays or removes the table row surrounding a specific comment in a document based on the given
+        /// condition.
         ///
         /// @param condition if null, keep the table row surrounding the comment, else remove.
         void displayTableRowIfAbsent(@Nullable Object condition);

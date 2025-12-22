@@ -181,8 +181,7 @@ public class CommentUtil {
             ContentAccessor contentAccessor
     ) {
         var comment = new StandardComment(docxPart);
-        var iterator = new DocxIterator(contentAccessor);
-        iterator.setTo(crs);
+        var iterator = new DocxIterator(contentAccessor).slice(crs, null);
         CommentRangeEnd cre = null;
         CommentReference cr = null;
         while (iterator.hasNext() && (cr == null || cre == null)) {

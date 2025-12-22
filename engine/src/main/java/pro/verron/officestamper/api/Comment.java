@@ -20,7 +20,7 @@ public interface Comment {
     /// Retrieves the CommentRangeStart object associated with this comment.
     ///
     /// @return the [CommentRangeStart] object associated with this comment
-    @Nullable CommentRangeStart getCommentRangeStart();
+    CommentRangeStart getCommentRangeStart();
 
     /// Retrieves the parent of the comment.
     ///
@@ -35,7 +35,7 @@ public interface Comment {
     /// Retrieves the [CommentRangeEnd] object associated with this comment.
     ///
     /// @return the [CommentRangeEnd] object associated with this comment
-    @Nullable CommentRangeEnd getCommentRangeEnd();
+    CommentRangeEnd getCommentRangeEnd();
 
     /// Retrieves the [CommentReference] object associated with this comment.
     ///
@@ -45,7 +45,7 @@ public interface Comment {
     /// Retrieves the comment associated with this object.
     ///
     /// @return the comment associated with this object
-    Comments.@Nullable Comment getComment();
+    Comments.Comment getComment();
 
     /// Retrieves the expression associated with the implementing entity.
     ///

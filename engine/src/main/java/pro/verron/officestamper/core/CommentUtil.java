@@ -180,33 +180,35 @@ public class CommentUtil {
             WordprocessingMLPackage document,
             ContentAccessor contentAccessor
     ) {
-        var comment = new StandardComment(docxPart);
         var iterator = new DocxIterator(contentAccessor).slice(crs, null);
         CommentRangeEnd cre = null;
         CommentReference cr = null;
+        var commentId = crs.getId();
         while (iterator.hasNext() && (cr == null || cre == null)) {
             var element = iterator.next();
-            if (element instanceof CommentRangeEnd found && cre == null && Objects.equals(found.getId(), crs.getId())) {
+            if (element instanceof CommentRangeEnd found && cre == null && Objects.equals(found.getId(), commentId)) {
                 cre = found;
             }
             else if (element instanceof CommentReference found && cr == null && Objects.equals(found.getId(),
-                    crs.getId())) {
+                    commentId)) {
                 cr = found;
             }
         }
 
-        var commentMap = getCommentsPart(document.getParts())
-                .map(CommentUtil::extractContent)
-                .map(Comments::getComment)
-                .stream()
-                .flatMap(Collection::stream)
-                .collect(toMap(Comments.Comment::getId, identity()));
+        if (cre == null) throw new IllegalStateException("Could not find comment range end or reference");
 
-        comment.setCommentRangeStart(crs);
-        comment.setStartTagRun((CTSmartTagRun) crs.getParent());
-        comment.setCommentReference(cr);
-        comment.setCommentRangeEnd(cre);
-        comment.setComment(commentMap.get(crs.getId()));
-        return comment;
+        var comment = comment(document, commentId);
+
+
+        return new StandardComment(docxPart, (CTSmartTagRun) crs.getParent(), crs, cre, comment, cr);
+    }
+
+    private static Comments.Comment comment(WordprocessingMLPackage document, BigInteger commentId) {
+        return getCommentsPart(document.getParts()).map(CommentUtil::extractContent)
+                                                   .map(Comments::getComment)
+                                                   .stream()
+                                                   .flatMap(Collection::stream)
+                                                   .collect(toMap(Comments.Comment::getId, identity()))
+                                                   .get(commentId);
     }
 }

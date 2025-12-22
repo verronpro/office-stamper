@@ -11,7 +11,6 @@ import pro.verron.officestamper.api.Paragraph;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.wml.WmlFactory.*;
@@ -29,14 +28,26 @@ public class StandardComment
     private Comments.Comment comment;
     private CommentRangeStart commentRangeStart;
     private CommentRangeEnd commentRangeEnd;
-    private CommentReference commentReference;
+    private @Nullable CommentReference commentReference;
     private CTSmartTagRun startTagRun;
 
     /// Constructs a new [StandardComment] object.
     ///
     /// @param part the [DocxPart] representing the document section this comment belongs to
-    public StandardComment(DocxPart part) {
+    public StandardComment(
+            DocxPart part,
+            CTSmartTagRun startTagRun,
+            CommentRangeStart commentRangeStart,
+            CommentRangeEnd commentRangeEnd,
+            Comments.Comment comment,
+            @Nullable CommentReference commentReference
+    ) {
         this.part = part;
+        this.startTagRun = startTagRun;
+        this.commentRangeStart = commentRangeStart;
+        this.commentRangeEnd = commentRangeEnd;
+        this.comment = comment;
+        this.commentReference = commentReference;
     }
 
     /// Creates a new instance of [StandardComment] and initializes it with the given parameters, including a comment,
@@ -49,14 +60,13 @@ public class StandardComment
     ///
     /// @return a [StandardComment] instance initialized with the specified parameters
     public static StandardComment create(DocxPart document, ContentAccessor parent, String expression, BigInteger id) {
-        var commentWrapper = new StandardComment(document);
         var start = newCommentRangeStart(id, parent);
-        commentWrapper.setComment(newComment(id, expression));
-        commentWrapper.setStartTagRun(newSmartTag("officestamper", newCtAttr("type", "processor"), start));
-        commentWrapper.setCommentRangeStart(start);
-        commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
-        commentWrapper.setCommentReference(newCommentReference(id, parent));
-        return commentWrapper;
+        return new StandardComment(document,
+                newSmartTag("officestamper", newCtAttr("type", "processor"), start),
+                start,
+                newCommentRangeEnd(id, parent),
+                newComment(id, expression),
+                newCommentReference(id, parent));
     }
 
     /// Generates a string representation of the [StandardComment] object, including its ID, content, and the amount
@@ -70,7 +80,7 @@ public class StandardComment
                 comment.getContent()
                        .stream()
                        .map(TextUtils::getText)
-                       .collect(Collectors.joining(",")));
+                       .collect(joining(",")));
     }
 
     /// {@inheritDoc}
@@ -100,7 +110,7 @@ public class StandardComment
 
     @Override
     public ContentAccessor getParent() {
-        return DocumentUtil.findSmallestCommonParent(commentRangeStart, getCommentRangeEnd());
+        return DocumentUtil.findSmallestCommonParent(commentRangeStart, commentRangeEnd);
     }
 
     /// {@inheritDoc}
@@ -132,14 +142,14 @@ public class StandardComment
 
     /// {@inheritDoc}
     @Override
-    public CommentReference getCommentReference() {
+    public @Nullable CommentReference getCommentReference() {
         return commentReference;
     }
 
     /// Sets the comment reference for the current comment.
     ///
     /// @param commentReference the [CommentReference] object to associate with this comment
-    public void setCommentReference(CommentReference commentReference) {
+    public void setCommentReference(@Nullable CommentReference commentReference) {
         this.commentReference = commentReference;
     }
 

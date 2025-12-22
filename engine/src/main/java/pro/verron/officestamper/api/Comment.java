@@ -15,7 +15,12 @@ public interface Comment {
     /// @return the [Paragraph] object associated with this comment
     Paragraph getParagraph();
 
-    @Nullable CTSmartTagRun getStartTagRun();
+    //TODO: Remove this visibility change
+
+    /// Retrieves the CTSmartTagRun object associated with the start of this comment.
+    ///
+    /// @return the [CTSmartTagRun] object representing the start tag run of the comment
+    CTSmartTagRun getStartTagRun();
 
     /// Retrieves the CommentRangeStart object associated with this comment.
     ///

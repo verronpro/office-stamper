@@ -9,6 +9,7 @@ import org.docx4j.wml.P;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.Table;
 import pro.verron.officestamper.core.CommentUtil;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
@@ -151,7 +152,12 @@ public class PowerpointParagraph
     /// @param insert the content to replace the placeholder with; must be a valid and compatible text run
     @Override
     public void replace(String expression, Insert insert) {
-        var replacementRun = insert.assertSingleton(CTRegularTextRun.class);
+        var elements = insert.elements();
+        if (elements.size() != 1) throw new AssertionError("Insert must contain exactly one element");
+        var element = elements.getFirst();
+        if (!(element instanceof CTRegularTextRun replacementRun))
+            throw new AssertionError("Insert '%s' is not a unique element of expected type '%s'".formatted(element,
+                    CTRegularTextRun.class));
 
         String text = asString();
         int matchStartIndex = text.indexOf(expression);
@@ -214,6 +220,16 @@ public class PowerpointParagraph
     @Override
     public Collection<Comments.Comment> getComment() {
         return CommentUtil.getCommentFor(paragraph::getEGTextRun, part.document());
+    }
+
+    @Override
+    public Optional<Table.Row> parentTableRow() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Table> parentTable() {
+        return Optional.empty();
     }
 
     private List<Object> siblings() {

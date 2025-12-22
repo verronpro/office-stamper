@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toCollection;
 
 /// Utility class for creating and configuring various WordML (WML) elements. Provides static methods to generate
@@ -318,8 +319,8 @@ public class WmlFactory {
     }
 
     /// Creates a new [CommentsPart] object. This method attempts to create a new instance of [CommentsPart]. If an
-    /// [InvalidFormatException] occurs during the creation process, it wraps the exception in an
-    /// [UtilsException] and throws it.
+    /// [InvalidFormatException] occurs during the creation process, it wraps the exception in an [UtilsException] and
+    /// throws it.
     ///
     /// @return A new instance of [CommentsPart].
     public static CommentsPart newCommentsPart() {
@@ -347,19 +348,22 @@ public class WmlFactory {
     /// Creates a new smart tag run with the specified element, run and attribute.
     ///
     /// @param element The element name for the smart tag.
-    /// @param run The [R] to include in the smart tag content.
     /// @param attribute The [CTAttr] to add to the smart tag properties.
+    /// @param object The [Object] to include in the smart tag content.
     ///
     /// @return A new [CTSmartTagRun] object configured with the specified parameters.
-    public static CTSmartTagRun newSmartTag(String element, R run, CTAttr attribute) {
+    public static CTSmartTagRun newSmartTag(String element, CTAttr attribute, Object... object) {
         var smartTag = new CTSmartTagRun();
         smartTag.setElement(element);
+
         var smartTagPr = new CTSmartTagPr();
+        smartTag.setSmartTagPr(smartTagPr);
+
         var smartTagPrAttr = smartTagPr.getAttr();
         smartTagPrAttr.add(attribute);
+
         var smartTagContent = smartTag.getContent();
-        smartTag.setSmartTagPr(smartTagPr);
-        smartTagContent.add(run);
+        smartTagContent.addAll(asList(object));
         return smartTag;
     }
 

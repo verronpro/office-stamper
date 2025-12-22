@@ -38,9 +38,8 @@ public class DisplayIfProcessor
     @Override
     public void displayParagraphIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        this.context()
-            .paragraph()
-            .remove();
+        context().paragraph()
+                 .remove();
     }
 
     @Override
@@ -51,10 +50,9 @@ public class DisplayIfProcessor
     @Override
     public void displayTableRowIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        this.context()
-            .tableRow()
-            .orElseThrow(throwing("Paragraph is not within a row!"))
-            .remove();
+        context().tableRow()
+                 .orElseThrow(throwing("Paragraph is not within a row!"))
+                 .remove();
     }
 
     @Override
@@ -70,10 +68,9 @@ public class DisplayIfProcessor
     @Override
     public void displayTableIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        this.context()
-            .table()
-            .orElseThrow(throwing("Paragraph is not within a table!"))
-            .remove();
+        context().table()
+                 .orElseThrow(throwing("Paragraph is not within a table!"))
+                 .remove();
     }
 
     @Override

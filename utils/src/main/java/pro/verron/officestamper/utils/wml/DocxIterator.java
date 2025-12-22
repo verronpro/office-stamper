@@ -59,14 +59,6 @@ public class DocxIterator
         initialize();
     }
 
-    public void setTo(Object obj) {
-        while (hasNext()) {
-            if (next != obj) next();
-            else return;
-        }
-        throw new NoSuchElementException("Could not find element " + obj);
-    }
-
     @Override
     public boolean hasNext() {
         return next != null;

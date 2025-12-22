@@ -89,13 +89,13 @@ public class DisplayIfProcessor
     @Override
     public void displayWordsIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var iterator = new DocxIterator(comment().getParent());
-        iterator.setTo(comment().getCommentRangeStart());
+        var crs = comment().getCommentRangeStart();
+        var cre = comment().getCommentRangeEnd();
+        var iterator = new DocxIterator(comment().getParent()).slice(crs, cre);
         var toRemove = new ArrayList<Child>();
         while (iterator.hasNext()) {
             var it = iterator.next();
             toRemove.add((Child) it);
-            if (it.equals(comment().getCommentRangeEnd())) break;
         }
         toRemove.forEach(WmlUtils::remove);
     }

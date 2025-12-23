@@ -37,9 +37,7 @@ public class ReplaceWithProcessor
     public void replaceWith(@Nullable String expression) {
         if (expression == null) throw new OfficeStamperException("Cannot replace with null expression");
         var from = comment().getStartTagRun();
-        if (from == null) throw new OfficeStamperException("Cannot replace with no comment range start");
         var to = comment().getCommentRangeEnd();
-        if (to == null) throw new OfficeStamperException("Cannot replace with no comment range end");
         paragraph().replace(from, to, new Insert(newRun(expression)));
     }
 }

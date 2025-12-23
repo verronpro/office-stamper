@@ -25,11 +25,11 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 public class StandardComment
         implements Comment {
     private final DocxPart part;
-    private Comments.Comment comment;
-    private CommentRangeStart commentRangeStart;
-    private CommentRangeEnd commentRangeEnd;
-    private @Nullable CommentReference commentReference;
-    private CTSmartTagRun startTagRun;
+    private final Comments.Comment comment;
+    private final CommentRangeStart commentRangeStart;
+    private final CommentRangeEnd commentRangeEnd;
+    private final @Nullable CommentReference commentReference;
+    private final CTSmartTagRun startTagRun;
 
     /// Constructs a new [StandardComment] object.
     ///
@@ -70,7 +70,7 @@ public class StandardComment
     }
 
     /// Generates a string representation of the [StandardComment] object, including its ID, content, and the amount
-    /// children comments.
+    /// children comment.
     ///
     /// @return a formatted string describing the [StandardComment]'s properties, including its ID, content, and the
     ///         size of its children.
@@ -83,7 +83,6 @@ public class StandardComment
                        .collect(joining(",")));
     }
 
-    /// {@inheritDoc}
     @Override
     public Paragraph getParagraph() {
         var parent = commentRangeStart.getParent();
@@ -91,21 +90,13 @@ public class StandardComment
     }
 
     @Override
-    public @Nullable CTSmartTagRun getStartTagRun() {
+    public CTSmartTagRun getStartTagRun() {
         return startTagRun;
     }
 
-    /// {@inheritDoc}
     @Override
     public CommentRangeStart getCommentRangeStart() {
         return commentRangeStart;
-    }
-
-    /// Sets the starting point of the comment range for the current comment.
-    ///
-    /// @param commentRangeStart the [CommentRangeStart] object representing the beginning of the comment range
-    public void setCommentRangeStart(CommentRangeStart commentRangeStart) {
-        this.commentRangeStart = commentRangeStart;
     }
 
     @Override
@@ -113,7 +104,6 @@ public class StandardComment
         return DocumentUtil.findSmallestCommonParent(commentRangeStart, commentRangeEnd);
     }
 
-    /// {@inheritDoc}
     @Override
     public List<Object> getElements() {
         List<Object> elements = new ArrayList<>();
@@ -133,40 +123,16 @@ public class StandardComment
         return commentRangeEnd;
     }
 
-    /// Sets the comment range end for the current comment.
-    ///
-    /// @param commentRangeEnd the [CommentRangeEnd] object representing the end of the comment range
-    public void setCommentRangeEnd(CommentRangeEnd commentRangeEnd) {
-        this.commentRangeEnd = commentRangeEnd;
-    }
-
-    /// {@inheritDoc}
     @Override
     public @Nullable CommentReference getCommentReference() {
         return commentReference;
     }
 
-    /// Sets the comment reference for the current comment.
-    ///
-    /// @param commentReference the [CommentReference] object to associate with this comment
-    public void setCommentReference(@Nullable CommentReference commentReference) {
-        this.commentReference = commentReference;
-    }
-
-    /// {@inheritDoc}
     @Override
     public Comments.Comment getComment() {
         return comment;
     }
 
-    /// Sets the comment for the current [StandardComment].
-    ///
-    /// @param comment the [Comments.Comment] object to associate with this [StandardComment]
-    public void setComment(Comments.Comment comment) {
-        this.comment = comment;
-    }
-
-    /// {@inheritDoc}
     @Override
     public String expression() {
         return this.getComment()
@@ -177,9 +143,5 @@ public class StandardComment
                    .map(p -> StandardParagraph.from(new TextualDocxPart(part.document()), p))
                    .map(StandardParagraph::asString)
                    .collect(joining());
-    }
-
-    public void setStartTagRun(CTSmartTagRun startTagRun) {
-        this.startTagRun = startTagRun;
     }
 }

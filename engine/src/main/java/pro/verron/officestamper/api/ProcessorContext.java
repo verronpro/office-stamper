@@ -2,6 +2,8 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import pro.verron.officestamper.core.ContextBranch;
+import pro.verron.officestamper.utils.iterator.ResetableIterator;
+import pro.verron.officestamper.utils.wml.DocxIterator;
 
 import java.util.Optional;
 
@@ -21,6 +23,14 @@ import java.util.Optional;
 public record ProcessorContext(
         DocxPart part, Paragraph paragraph, Comment comment, String expression, ContextBranch branch
 ) {
+    public ResetableIterator<Object> contentIterator() {
+        var comment = comment();
+        var parent = comment.getParent();
+        var crs = comment.getCommentRangeStart();
+        var cre = comment.getCommentRangeEnd();
+        return new DocxIterator(parent).slice(crs, cre);
+    }
+
     public Optional<Table.Row> tableRow() {
         return paragraph.parentTableRow();
     }

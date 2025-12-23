@@ -5,7 +5,6 @@ import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
-import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.ArrayList;
@@ -86,9 +85,7 @@ public class DisplayIfProcessor
     @Override
     public void displayWordsIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var crs = comment().getCommentRangeStart();
-        var cre = comment().getCommentRangeEnd();
-        var iterator = new DocxIterator(comment().getParent()).slice(crs, cre);
+        var iterator = context().contentIterator();
         var toRemove = new ArrayList<Child>();
         while (iterator.hasNext()) {
             var it = iterator.next();

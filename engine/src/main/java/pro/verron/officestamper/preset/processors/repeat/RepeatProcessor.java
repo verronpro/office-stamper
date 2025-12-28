@@ -7,14 +7,14 @@ import org.docx4j.wml.PPr;
 import org.docx4j.wml.SectPr;
 import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ProcessorContext;
-import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.core.Hook;
-import pro.verron.officestamper.core.SectionUtil;
 import pro.verron.officestamper.preset.CommentProcessorFactory.IRepeatProcessor;
 import pro.verron.officestamper.utils.wml.WmlFactory;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +23,11 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toCollection;
-import static pro.verron.officestamper.core.SectionUtil.addSectionBreak;
 
 public class RepeatProcessor
         extends CommentProcessor
         implements IRepeatProcessor {
+    private static final Logger log = LoggerFactory.getLogger(RepeatProcessor.class);
 
     /// Constructs a new instance of CommentProcessor to process comments and placeholders within a paragraph.
     ///
@@ -35,43 +35,6 @@ public class RepeatProcessor
     ///         processing of this CommentProcessor.
     public RepeatProcessor(ProcessorContext context) {
         super(context);
-    }
-
-    @Override
-    public void repeat(@Nullable Iterable<Object> items) {
-        if (items == null) return;
-        var comment = context().comment();
-        var elements = comment.getElements();
-        var branch = context().branch();
-        var part = context().part();
-        var parent = comment.getParent();
-        var siblings = parent.getContent();
-        var firstElement = elements.getFirst();
-        var previousSectionBreak = SectionUtil.getPreviousSectionBreakIfPresent(firstElement, parent)
-                                              .orElse(RepeatProcessor.getDocumentSection(context()));
-        var index = siblings.indexOf(firstElement);
-        siblings.removeAll(elements);
-        var iterator = items.iterator();
-        while (iterator.hasNext()) {
-            var item = iterator.next();
-            var copiedElements = elements.stream()
-                                         .map(XmlUtils::deepCopy)
-                                         .collect(toCollection(ArrayList::new));
-            CommentUtil.deleteCommentFromElements(comment, copiedElements);
-            if (iterator.hasNext() && RepeatProcessor.containsSectionBreaks(copiedElements)) {
-                var lastParagraph = RepeatProcessor.lastParagraph(copiedElements)
-                                                   .orElseGet(RepeatProcessor.newEndParagraph(copiedElements));
-                if (!RepeatProcessor.hasSectionBreak(lastParagraph)) {
-                    addSectionBreak(previousSectionBreak, lastParagraph);
-                }
-            }
-            siblings.addAll(index, copiedElements);
-            index += copiedElements.size();
-            copiedElements.forEach(element -> {if (element instanceof Child child) child.setParent(parent);});
-            var subContextKey = branch.add(item);
-            Hook.ofHooks(() -> copiedElements, part)
-                .forEachRemaining(hook -> hook.setContextKey(subContextKey));
-        }
     }
 
     private static SectPr getDocumentSection(ProcessorContext context) {
@@ -84,6 +47,43 @@ public class RepeatProcessor
                           .getSectPr();
         } catch (Docx4JException e) {
             throw new OfficeStamperException(e);
+        }
+    }
+
+    @Override
+    public void repeat(@Nullable Iterable<Object> items) {
+        if (items == null) return;
+        var comment = context().comment();
+        var elements = comment.getElements();
+        var contextHolder = context().contextHolder();
+        var part = context().part();
+        var parent = comment.getParent();
+        var siblings = parent.getContent();
+        var firstElement = elements.getFirst();
+        var previousSectionBreak = previousSectionBreak(firstElement, parent).orElse(documentSection(context().part()));
+        var index = siblings.indexOf(firstElement);
+        siblings.removeAll(elements);
+        var iterator = items.iterator();
+        // Iterates items; copies elements; conditionally adds section break; adds elements
+        while (iterator.hasNext()) {
+            var item = iterator.next();
+            var copiedElements = elements.stream()
+                                         .map(XmlUtils::deepCopy)
+                                         .collect(toCollection(ArrayList::new));
+            WmlUtils.deleteCommentFromElements(comment.getId(), copiedElements);
+            // Adds section break to last paragraph if needed
+            if (iterator.hasNext() && containsSectionBreaks(copiedElements)) {
+                var lastParagraph = lastParagraph(copiedElements).orElseGet(newEndParagraph(copiedElements));
+                if (!hasSectionBreak(lastParagraph)) {
+                    addSectionBreak(previousSectionBreak, lastParagraph);
+                }
+            }
+            siblings.addAll(index, copiedElements);
+            index += copiedElements.size();
+            copiedElements.forEach(element -> {if (element instanceof Child child) child.setParent(parent);});
+            var subContextKey = contextHolder.addBranch(item);
+            Hooks.ofHooks(() -> copiedElements)
+                 .forEachRemaining(hook -> hook.setContextKey(subContextKey));
         }
     }
 

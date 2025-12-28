@@ -5,19 +5,19 @@ It summarizes the processing model and the extension points you will touch, with
 
 Key packages and types:
 - `pro.verron.officestamper.api`: SPI you implement (`CommentProcessor`, `CommentProcessorFactory`, `ObjectResolver`, `CustomFunction`, `OfficeStamperConfiguration`, `EvaluationContextFactory`, `ProcessorContext`).
-- `pro.verron.officestamper.core`: engine/runtime (`DocxStamper`, `Engine`, `OfficeStamperEvaluationContextFactory`, `ContextTree`, `ContextBranch`).
+- `pro.verron.officestamper.core`: engine/runtime (`DocxStamper`, `Engine`, `OfficeStamperEvaluationContextFactory`, `ContextRoot`, `ContextBranch`).
 - `pro.verron.officestamper.preset`: presets (`OfficeStamperConfigurations`, `EvaluationContextFactories`).
 
 === 1. Processing model (short)
 
 Stamping runs in document order.
-The engine iterates a textual part (document body, headers, footers), discovers “hooks” (DOCX comments and smart‑tag runs created by the placeholder preprocessor), and executes them one by one.
-Each hook builds a fresh `ProcessorContext`, an `Engine`, and a fresh Spring `EvaluationContext`.
+The engine iterates a textual part (document body, headers, footers), discovers “hooks” (DOCX comments and smart-tag runs created by the placeholder preprocessor), and executes them one by one.
+Each hook builds a fresh `ProcessorContext` and a fresh Spring `EvaluationContext`.
 If a hook changes structure (e.g., removes a comment, replaces a tag), the iterator restarts to keep traversal coherent.
 
-Scopes are tracked with `ContextTree`/`ContextBranch`.
+Scopes are tracked with `ContextTree`.
 Both comments and tags can specify a context key; the engine resolves the branch and evaluates within it.
-Nested processors (repeaters) push/pop values on the branch they receive.
+Nested processors (repeaters) push values on the branch they receive by creating new branches.
 
 Expression evaluation uses a pluggable `org.springframework.expression.ExpressionParser` (SpEL by default).
 Object results are turned into DOCX content by registered `ObjectResolver`s. Errors flow to an `ExceptionResolver`.
@@ -27,7 +27,7 @@ Object results are turned into DOCX content by registered `ObjectResolver`s. Err
 Before the main pass, standard configurations run a preprocessor that scans paragraphs for placeholder markers and rewrites them into DOCX smart‑tag runs.
 This detaches expressions from their original text runs and makes them easy to iterate during the main processing pass.
 
-- Class: `pro.verron.officestamper.preset.preprocessors.placeholders.PrepareInlinePlaceholders`
+- Class: `pro.verron.officestamper.api.PlaceholderHooker`
 - Registered by: `pro.verron.officestamper.preset.Preprocessors.preparePlaceholders(String regex, String type)`
 - Standard wiring (`OfficeStamperConfigurations.standard()`):
 
@@ -131,11 +131,11 @@ final class HideIfProcessor extends CommentProcessor {
 }
 ----
 
-Factory registration (through the configuration SPI) exposes the methods of your processor to the evaluation context, so `${hideParagraphIf(...)} ` invokes it. Your processor receives a per‑hook `ProcessorContext` containing the current `DocxPart`, `Paragraph`, optional `Comment`, the raw expression, and the current `ContextBranch`.
+Factory registration (through the configuration SPI) exposes the methods of your processor to the evaluation context, so `${hideParagraphIf(...)} ` invokes it. Your processor receives a per-hook `ProcessorContext` containing the current `DocxPart`, `Paragraph`, optional `Comment`, the raw expression, and the current `ContextTree`.
 
 Good practices:
 - Keep processors focused on manipulating the DOCX tree they are given.
-- If you create nested scopes (repeaters), push/pop iteration values on the provided `ContextBranch`.
+- If you create nested scopes (repeaters), add new branches to the provided `ContextTree`.
 - Return `true` only when you changed the structure so the iterator can restart if needed.
 
 === 4. Object resolvers
@@ -177,7 +177,7 @@ Union lookup means a name is resolved against the deepest object first, then bub
 Deeper values shadow outer ones.
 
 Context keys: both comments and tags have a `String` context key.
-The engine calls `ContextTree.find(key)` to pick the branch; if absent, it uses the current branch (or root).
+The engine picks the branch based on the key; if absent, it uses the current branch (or root).
 Use keys to jump to a named scope established by your processors.
 
 === 7. Minimal end‑to‑end example

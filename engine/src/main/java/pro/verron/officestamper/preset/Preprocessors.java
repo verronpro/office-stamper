@@ -50,6 +50,12 @@ public class Preprocessors {
         return new RemoveMalformedComments();
     }
 
+    /// Returns a [PreProcessor] object that prepares inline placeholders based on the provided regex and element name.
+    ///
+    /// @param regex the regular expression used to identify placeholders in the document
+    /// @param element the name of the smart tag element to be used for the placeholders
+    ///
+    /// @return a [PreProcessor] object that prepares inline placeholders.
     public static PreProcessor preparePlaceholders(String regex, String element) {
         return new PrepareInlinePlaceholders(regex, element);
     }

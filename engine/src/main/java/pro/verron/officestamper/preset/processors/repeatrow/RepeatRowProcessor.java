@@ -29,7 +29,7 @@ public class RepeatRowProcessor
     public void repeatTableRow(@Nullable Iterable<Object> items) {
         if (items == null) return;
 
-        var branch = context().branch();
+        var contextHolder = context().contextHolder();
         var row = context().paragraph()
                            .parentTableRow()
                            .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));
@@ -39,7 +39,7 @@ public class RepeatRowProcessor
         var index = table.indexOf(row);
         for (Object item : items) {
             var copy = row.copy();
-            var contextKey = branch.add(item);
+            var contextKey = contextHolder.addBranch(item);
             copy.hooks()
                 .forEach(hook -> hook.setContextKey(contextKey));
             table.add(index++, copy);

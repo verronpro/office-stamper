@@ -165,7 +165,15 @@ public interface OfficeStamperConfiguration {
     /// @param postProcessor the PostProcessor instance to be added
     void addPostprocessor(PostProcessor postProcessor);
 
+    /// Retrieves the expression parser used by the office stamper.
+    ///
+    /// @return the [ExpressionParser] instance.
     ExpressionParser getExpressionParser();
 
+    /// Sets the expression parser to be used by the office stamper.
+    ///
+    /// @param expressionParser the [ExpressionParser] instance to set.
+    ///
+    /// @return the updated [OfficeStamperConfiguration] object.
     OfficeStamperConfiguration setExpressionParser(ExpressionParser expressionParser);
 }

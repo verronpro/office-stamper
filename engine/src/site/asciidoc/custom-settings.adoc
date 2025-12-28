@@ -95,18 +95,22 @@ var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
 
 == Custom Comment Processors
 
-For additional flexibility, you can create your own comment processors by implementing the `ICommentProcessor` interface.
+For additional flexibility, you can create your own comment processors by implementing the `CommentProcessor` class.
 
 [source,java]
 ----
 // Define an interface for your comment processor
-interface IYourCommentProcessor {
+interface YourCommentProcessorInterface {
     void yourComment(String parameter);
     void yourSecondComment(String param1, CustomType param2);
 }
 
 // Implement the comment processor
-class YourCommentProcessor extends BaseCommentProcessor implements IYourCommentProcessor {
+class YourCommentProcessor extends CommentProcessor implements YourCommentProcessorInterface {
+    public YourCommentProcessor(ProcessorContext context) {
+        super(context);
+    }
+
     @Override
     public void yourComment(String parameter) {
         // Implementation
@@ -116,48 +120,40 @@ class YourCommentProcessor extends BaseCommentProcessor implements IYourCommentP
     public void yourSecondComment(String param1, CustomType param2) {
         // Implementation
     }
-
-    @Override
-    public void commitChanges(WordprocessingMLPackage document) {
-        // Do something to the document
-    }
-
-    @Override
-    public void reset() {
-        // Reset processor state for re-run of the stamper
-    }
 }
 
 // Register the comment processor
-var commentProcessor = new YourCommentProcessor();
 var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
-    .addCommentProcessor(IYourCommentProcessor.class, commentProcessor);
+    .addCommentProcessor(YourCommentProcessorInterface.class, YourCommentProcessor::new);
 ----
 
 == Custom SpEL Evaluation Context
 
-At times, you might want more control over how expressions are evaluated. You can customize the Spring `StandardEvaluationContext` according to your requirements.
+At times, you might want more control over how expressions are evaluated.
+You can provide an `EvaluationContextFactory` to create the Spring `EvaluationContext` according to your requirements.
 
 [source,java]
 ----
-import static pro.verron.officestamper.preset.EvaluationContextConfigurers.defaultConfigurer;
-import static pro.verron.officestamper.preset.EvaluationContextConfigurers.noopConfigurer;
+import static pro.verron.officestamper.preset.EvaluationContextFactories.defaultFactory;
+import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 
 var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
 
-    // Use the default configurer (safer, with limited features)
-    .setEvaluationContextConfigurer(defaultConfigurer())
+    // Use the default factory (safer, with limited features)
+    .setEvaluationContextFactory(defaultFactory())
 
-    // Or use the noop configurer (more features, potentially less safe)
-    .setEvaluationContextConfigurer(noopConfigurer())
+    // Or use the noop factory (more features, potentially less safe)
+    .setEvaluationContextFactory(noopFactory())
 
-    // Or create a custom configurer
-     .setEvaluationContextConfigurer(ctx -> {
+    // Or create a custom factory
+     .setEvaluationContextFactory(root -> {
+        var ctx = new StandardEvaluationContext(root);
         // Add a property accessor for maps
         ctx.addPropertyAccessor(new MapAccessor());
 
         // Add other customizations
         // ...
+        return ctx;
     });
 ----
 

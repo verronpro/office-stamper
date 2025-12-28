@@ -4,8 +4,8 @@ import org.docx4j.XmlUtils;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.ContextDependent;
 import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.Hook;
 import pro.verron.officestamper.api.Table;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 

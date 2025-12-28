@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
-import static pro.verron.officestamper.preset.ExperimentalStampers.pptxPackageStamper;
+import static pro.verron.officestamper.experimental.ExperimentalStampers.pptxPackageStamper;
 import static pro.verron.officestamper.utils.pml.PptxRenderer.pptxToString;
 
 @DisplayName("Basic Powerpoint Test") class BasicPowerpointTest {

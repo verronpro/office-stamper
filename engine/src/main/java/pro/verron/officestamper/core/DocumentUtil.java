@@ -1,26 +1,13 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
-import org.docx4j.model.structure.HeaderFooterPolicy;
-import org.docx4j.model.structure.SectionWrapper;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.JaxbXmlPart;
-import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.*;
-import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.function.ThrowingFunction;
 import pro.verron.officestamper.api.OfficeStamperException;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Stream.Builder;
 
 /// Utility class to retrieve elements from a document.
 ///
@@ -86,41 +73,6 @@ public class DocumentUtil {
         };
     }
 
-    /// Visits the document's main content, header, footer, footnotes, and endnotes using the specified visitor.
-    ///
-    /// @param document the WordprocessingMLPackage representing the document to be visited
-    /// @param visitor the TraversalUtilVisitor to be applied to each relevant part of the document
-    public static void visitDocument(WordprocessingMLPackage document, TraversalUtilVisitor<?> visitor) {
-        var mainDocumentPart = document.getMainDocumentPart();
-        TraversalUtil.visit(mainDocumentPart, visitor);
-        streamHeaderFooterPart(document).forEach(f -> TraversalUtil.visit(f, visitor));
-        visitPartIfExists(visitor, mainDocumentPart.getFootnotesPart());
-        visitPartIfExists(visitor, mainDocumentPart.getEndNotesPart());
-    }
 
-    private static Stream<Object> streamHeaderFooterPart(WordprocessingMLPackage document) {
-        return document.getDocumentModel()
-                       .getSections()
-                       .stream()
-                       .map(SectionWrapper::getHeaderFooterPolicy)
-                       .flatMap(DocumentUtil::extractHeaderFooterParts);
-    }
 
-    private static void visitPartIfExists(TraversalUtilVisitor<?> visitor, @Nullable JaxbXmlPart<?> part) {
-        ThrowingFunction<JaxbXmlPart<?>, Object> throwingFunction = JaxbXmlPart::getContents;
-        Optional.ofNullable(part)
-                .map(c -> throwingFunction.apply(c, OfficeStamperException::new))
-                .ifPresent(c -> TraversalUtil.visit(c, visitor));
-    }
-
-    private static Stream<JaxbXmlPart<?>> extractHeaderFooterParts(HeaderFooterPolicy hfp) {
-        Builder<JaxbXmlPart<?>> builder = Stream.builder();
-        ofNullable(hfp.getFirstHeader()).ifPresent(builder::add);
-        ofNullable(hfp.getDefaultHeader()).ifPresent(builder::add);
-        ofNullable(hfp.getEvenHeader()).ifPresent(builder::add);
-        ofNullable(hfp.getFirstFooter()).ifPresent(builder::add);
-        ofNullable(hfp.getDefaultFooter()).ifPresent(builder::add);
-        ofNullable(hfp.getEvenFooter()).ifPresent(builder::add);
-        return builder.build();
-    }
 }

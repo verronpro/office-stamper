@@ -37,6 +37,8 @@ This detaches expressions from their original text runs and makes them easy to i
 configuration.addPreprocessor(Preprocessors.removeMalformedComments());
 configuration.addPreprocessor(Preprocessors.preparePlaceholders("(#\\{([^{]+?)})", "inlineProcessor"));
 configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
+configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\#\\{([^{]+?)})", "inlineProcessor"));
+configuration.addPreprocessor(Preprocessors.prepareCommentProcessor());
 ----
 
 How it works (simplified):
@@ -148,8 +150,8 @@ Register them on the configuration; the engine chooses an `ObjectResolver` based
 import pro.verron.officestamper.api.*;
 
 final class MoneyResolver implements ObjectResolver {
-    @Override public boolean supports(Object value) { return value instanceof Money; }
-    @Override public Insert resolve(Object value) { return Inserts.text(((Money) value).formatted()); }
+    @Override public boolean canResolve(Object value) { return value instanceof Money; }
+    @Override public Insert resolve(DocxPart docxPart, String expression, Object value) { return Inserts.text(((Money) value).formatted()); }
 }
 ----
 
@@ -209,5 +211,5 @@ ${order.total}
 Where to explore in code:
 - Orchestration: `core.DocxStamper`
 - Evaluation: `core.Engine`
-- Scopes: `core.ContextTree` / `core.ContextBranch`
+- Scopes: `api.ContextTree` / `core.ContextBranch`
 - Configuration SPI: `api.OfficeStamperConfiguration`

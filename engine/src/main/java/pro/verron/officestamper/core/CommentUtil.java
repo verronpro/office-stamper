@@ -16,12 +16,9 @@ import pro.verron.officestamper.utils.wml.DocxIterator;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.function.Predicate;
 
-import static java.util.Collections.emptyList;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-import static org.docx4j.XmlUtils.unwrap;
 
 /// Utility class for working with comments in a DOCX document.
 ///
@@ -104,74 +101,23 @@ public class CommentUtil {
     /// @param comment a [Comment] object
     public static void deleteComment(Comment comment) {
         CommentRangeEnd end = comment.getCommentRangeEnd();
-        if (end != null) {
-            ContentAccessor endParent = (ContentAccessor) end.getParent();
-            endParent.getContent()
-                     .remove(end);
-        }
+        ContentAccessor endParent = (ContentAccessor) end.getParent();
+        endParent.getContent()
+                 .remove(end);
         CommentRangeStart start = comment.getCommentRangeStart();
-        if (start != null) {
-            var parent = start.getParent();
-            ContentAccessor startParent = (ContentAccessor) parent;
-            startParent.getContent()
-                       .remove(start);
-            if (startParent instanceof CTSmartTagRun tag && tag.getContent()
-                                                               .isEmpty())
-                ((ContentAccessor) tag.getParent()).getContent()
-                                                   .remove(tag);
-        }
+        var parent = start.getParent();
+        ContentAccessor startParent = (ContentAccessor) parent;
+        startParent.getContent()
+                   .remove(start);
+        if (startParent instanceof CTSmartTagRun tag && tag.getContent()
+                                                           .isEmpty()) ((ContentAccessor) tag.getParent()).getContent()
+                                                                                                          .remove(tag);
         CommentReference reference = comment.getCommentReference();
         if (reference != null) {
             ContentAccessor referenceParent = (ContentAccessor) reference.getParent();
             referenceParent.getContent()
                            .remove(reference);
         }
-    }
-
-    /// Deletes all elements associated with the specified comment from the provided list of items.
-    ///
-    /// @param comment the comment whose associated elements should be removed
-    /// @param items the list of items from which elements associated with the comment will be deleted
-    public static void deleteCommentFromElements(Comment comment, List<Object> items) {
-        record DeletableItems(List<Object> container, List<Object> items) {
-            static List<DeletableItems> findAll(List<Object> items, BigInteger commentId) {
-                Predicate<BigInteger> predicate = bi -> Objects.equals(bi, commentId);
-                List<DeletableItems> elementsToRemove = new ArrayList<>();
-                items.forEach(item -> {
-                    Object unwrapped = unwrap(item);
-                    elementsToRemove.addAll(switch (unwrapped) {
-                        case CTSmartTagRun str when str.getContent()
-                                                       .stream()
-                                                       .anyMatch(i -> i instanceof CommentRangeStart crs
-                                                                      && predicate.test(crs.getId())) ->
-                                from(items, item);
-                        case CommentRangeStart crs when predicate.test(crs.getId()) -> from(items, item);
-                        case CommentRangeEnd cre when predicate.test(cre.getId()) -> from(items, item);
-                        case CommentReference rcr when predicate.test(rcr.getId()) -> from(items, item);
-                        case ContentAccessor ca -> findAll(ca, commentId);
-                        case SdtRun sdtRun -> findAll(sdtRun, commentId);
-                        default -> emptyList();
-                    });
-                });
-                return elementsToRemove;
-            }
-
-            private static Collection<DeletableItems> findAll(SdtRun sdtRun, BigInteger commentId) {
-                return findAll(sdtRun.getSdtContent(), commentId);
-            }
-
-            private static Collection<DeletableItems> findAll(ContentAccessor ca, BigInteger commentId) {
-                return findAll(ca.getContent(), commentId);
-            }
-
-            private static List<DeletableItems> from(List<Object> items, Object item) {
-                return Collections.singletonList(new DeletableItems(items, List.of(item)));
-            }
-        }
-        var docx4jComment = comment.getComment();
-        var commentId = docx4jComment.getId();
-        DeletableItems.findAll(items, commentId)
-                      .forEach(p -> p.container.removeAll(p.items));
     }
 
     public static Comment comment(

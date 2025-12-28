@@ -3,10 +3,14 @@ package pro.verron.officestamper.utils.wml;
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
 import org.docx4j.finders.CommentFinder;
+import org.docx4j.model.structure.HeaderFooterPolicy;
+import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.model.styles.StyleUtil;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.JaxbXmlPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
+import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.vml.CTShadow;
 import org.docx4j.vml.CTTextbox;
 import org.docx4j.vml.VmlShapeElements;
@@ -23,8 +27,12 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
+import static org.docx4j.XmlUtils.unwrap;
 import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
 /// Utility class with methods to help in the interaction with [WordprocessingMLPackage] documents and their elements,
@@ -441,6 +449,127 @@ public final class WmlUtils {
         int matchEndIndex = matchStartIndex + expression.length();
         findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(onRPr);
         return replace(contentAccessor, insert, matchStartIndex, matchEndIndex);
+    }
+
+    public static boolean isTagElement(CTSmartTagRun tag, String expectedElement) {
+        var actualElement = tag.getElement();
+        return Objects.equals(expectedElement, actualElement);
+    }
+
+    public static void setTagAttribute(CTSmartTagRun smartTag, String attributeKey, String attributeValue) {
+        var smartTagPr = smartTag.getSmartTagPr();
+        if (smartTagPr == null) {
+            smartTagPr = new CTSmartTagPr();
+            smartTag.setSmartTagPr(smartTagPr);
+        }
+        var smartTagPrAttr = smartTagPr.getAttr();
+        if (smartTagPrAttr == null) {
+            smartTagPrAttr = new ArrayList<>();
+            smartTag.setSmartTagPr(smartTagPr);
+        }
+        for (CTAttr attribute : smartTagPrAttr) {
+            if (attributeKey.equals(attribute.getName())) {
+                attribute.setVal(attributeValue);
+                return;
+            }
+        }
+        var ctAttr = newAttribute(attributeKey, attributeValue);
+        smartTagPrAttr.add(ctAttr);
+    }
+
+    public static CTAttr newAttribute(String attributeKey, String attributeValue) {
+        return newCtAttr(attributeKey, attributeValue);
+    }
+
+    /// Deletes all elements associated with the specified comment from the provided list of items.
+    ///
+    /// @param commentId the ID of the comment to be deleted
+    /// @param items the list of items from which elements associated with the comment will be deleted
+    public static void deleteCommentFromElements(BigInteger commentId, List<Object> items) {
+        record DeletableItems(List<Object> container, List<Object> items) {
+            static List<DeletableItems> findAll(List<Object> items, BigInteger commentId) {
+                Predicate<BigInteger> predicate = bi -> Objects.equals(bi, commentId);
+                List<DeletableItems> elementsToRemove = new ArrayList<>();
+                items.forEach(item -> {
+                    Object unwrapped = unwrap(item);
+                    // Recursively finds deletable items associated with comment ID
+                    elementsToRemove.addAll(switch (unwrapped) {
+                        case CTSmartTagRun str when str.getContent()
+                                                       .stream()
+                                                       .anyMatch(i -> i instanceof CommentRangeStart crs
+                                                                      && predicate.test(crs.getId())) ->
+                                from(items, item);
+                        case CommentRangeStart crs when predicate.test(crs.getId()) -> from(items, item);
+                        case CommentRangeEnd cre when predicate.test(cre.getId()) -> from(items, item);
+                        case R.CommentReference rcr when predicate.test(rcr.getId()) -> from(items, item);
+                        case ContentAccessor ca -> findAll(ca, commentId);
+                        case SdtRun sdtRun -> findAll(sdtRun, commentId);
+                        default -> emptyList();
+                    });
+                });
+                return elementsToRemove;
+            }
+
+            private static Collection<DeletableItems> findAll(SdtRun sdtRun, BigInteger commentId) {
+                return findAll(sdtRun.getSdtContent(), commentId);
+            }
+
+            private static Collection<DeletableItems> findAll(ContentAccessor ca, BigInteger commentId) {
+                return findAll(ca.getContent(), commentId);
+            }
+
+            private static List<DeletableItems> from(List<Object> items, Object item) {
+                return Collections.singletonList(new DeletableItems(items, List.of(item)));
+            }
+        }
+        DeletableItems.findAll(items, commentId)
+                      .forEach(p -> p.container.removeAll(p.items));
+    }
+
+    /// Visits the document's main content, header, footer, footnotes, and endnotes using the specified visitor.
+    ///
+    /// @param document the WordprocessingMLPackage representing the document to be visited
+    /// @param visitor the TraversalUtilVisitor to be applied to each relevant part of the document
+    public static void visitDocument(WordprocessingMLPackage document, TraversalUtilVisitor<?> visitor) {
+        var mainDocumentPart = document.getMainDocumentPart();
+        TraversalUtil.visit(mainDocumentPart, visitor);
+        WmlUtils.streamHeaderFooterPart(document)
+                .forEach(f -> TraversalUtil.visit(f, visitor));
+        WmlUtils.visitPartIfExists(visitor, mainDocumentPart.getFootnotesPart());
+        WmlUtils.visitPartIfExists(visitor, mainDocumentPart.getEndNotesPart());
+    }
+
+    private static Stream<Object> streamHeaderFooterPart(WordprocessingMLPackage document) {
+        return document.getDocumentModel()
+                       .getSections()
+                       .stream()
+                       .map(SectionWrapper::getHeaderFooterPolicy)
+                       .flatMap(WmlUtils::extractHeaderFooterParts);
+    }
+
+    private static void visitPartIfExists(TraversalUtilVisitor<?> visitor, @Nullable JaxbXmlPart<?> part) {
+        Optional.ofNullable(part)
+                .map(WmlUtils::extractContent)
+                .ifPresent(c -> TraversalUtil.visit(c, visitor));
+    }
+
+    private static Stream<JaxbXmlPart<?>> extractHeaderFooterParts(HeaderFooterPolicy hfp) {
+        Stream.Builder<JaxbXmlPart<?>> builder = Stream.builder();
+        ofNullable(hfp.getFirstHeader()).ifPresent(builder::add);
+        ofNullable(hfp.getDefaultHeader()).ifPresent(builder::add);
+        ofNullable(hfp.getEvenHeader()).ifPresent(builder::add);
+        ofNullable(hfp.getFirstFooter()).ifPresent(builder::add);
+        ofNullable(hfp.getDefaultFooter()).ifPresent(builder::add);
+        ofNullable(hfp.getEvenFooter()).ifPresent(builder::add);
+        return builder.build();
+    }
+
+    private static Object extractContent(JaxbXmlPart<?> jaxbXmlPart) {
+        try {
+            return jaxbXmlPart.getContents();
+        } catch (Docx4JException e) {
+            throw new UtilsException(e);
+        }
     }
 
     /// @param startIndex the start index of the run relative to the containing paragraph.

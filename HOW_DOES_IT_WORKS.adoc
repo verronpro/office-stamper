@@ -4,7 +4,7 @@ This guide is for power users extending Office‑stamper via custom comment proc
 It summarizes the processing model and the extension points you will touch, with correct class and method names for v3.
 
 Key packages and types:
-- `pro.verron.officestamper.api`: SPI you implement (`CommentProcessor`, `CommentProcessorFactory`, `ObjectResolver`, `CustomFunction`, `OfficeStamperConfiguration`, `EvaluationContextFactory`, `ProcessorContext`).
+- `pro.verron.officestamper.api`: SPI you implement (`CommentProcessor`, `CommentProcessorFactory`, `ObjectResolver`, `CustomFunction`, `OfficeStamperConfiguration`, `EvaluationContextFactory`, `ProcessorContext`, `Hook`, `HookRemover`, `CommentHooker`, `PlaceholderHooker`).
 - `pro.verron.officestamper.core`: engine/runtime (`DocxStamper`, `Engine`, `OfficeStamperEvaluationContextFactory`, `ContextRoot`, `ContextBranch`).
 - `pro.verron.officestamper.preset`: presets (`OfficeStamperConfigurations`, `EvaluationContextFactories`).
 

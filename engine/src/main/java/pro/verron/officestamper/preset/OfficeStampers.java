@@ -49,9 +49,8 @@ public class OfficeStampers {
     /// @param configuration an instance of [OfficeStamperConfiguration] that defines the behavior of the
     ///         stamper
     ///
-    /// @return an [OfficeStamper] of type [WordprocessingMLPackage] configured to process DOCX documents
+    /// @return an [OfficeStamper] for [WordprocessingMLPackage] configured to process DOCX documents
     public static OfficeStamper<WordprocessingMLPackage> docxPackageStamper(OfficeStamperConfiguration configuration) {
         return new DocxStamper(configuration);
     }
-
 }

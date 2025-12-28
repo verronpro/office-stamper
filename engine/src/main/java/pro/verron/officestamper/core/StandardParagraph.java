@@ -13,8 +13,8 @@ import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
-import static pro.verron.officestamper.core.Hook.isTagElement;
 import static pro.verron.officestamper.utils.wml.WmlUtils.getFirstParentWithClass;
+import static pro.verron.officestamper.utils.wml.WmlUtils.isTagElement;
 
 /// Represents a wrapper for managing and manipulating DOCX paragraph elements. This class provides methods to
 /// manipulate the underlying paragraph content, process placeholders, and interact with runs within the paragraph.

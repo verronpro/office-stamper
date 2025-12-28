@@ -2,11 +2,11 @@ package pro.verron.officestamper.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ProofErr;
+import pro.verron.officestamper.api.CommentHooker;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.PlaceholderHooker;
 import pro.verron.officestamper.api.PreProcessor;
 import pro.verron.officestamper.preset.preprocessors.malformedcomments.RemoveMalformedComments;
-import pro.verron.officestamper.preset.preprocessors.placeholders.PrepareInlinePlaceholders;
-import pro.verron.officestamper.preset.preprocessors.processors.PrepareCommentProcessors;
 import pro.verron.officestamper.preset.preprocessors.prooferror.RemoveProofErrors;
 import pro.verron.officestamper.preset.preprocessors.rmlang.RemoveLang;
 import pro.verron.officestamper.preset.preprocessors.similarrun.MergeSameStyleRuns;
@@ -57,7 +57,7 @@ public class Preprocessors {
     ///
     /// @return a [PreProcessor] object that prepares inline placeholders.
     public static PreProcessor preparePlaceholders(String regex, String element) {
-        return new PrepareInlinePlaceholders(regex, element);
+        return new PlaceholderHooker(regex, element);
     }
 
 
@@ -65,6 +65,6 @@ public class Preprocessors {
     ///
     /// @return a [PreProcessor] object that prepares comment processors.
     public static PreProcessor prepareCommentProcessor() {
-        return new PrepareCommentProcessors();
+        return new CommentHooker();
     }
 }

@@ -24,11 +24,14 @@ This allows you to conditionally display content or repeat elements in headers a
 Preprocessors allow you to perform operations on the document before the stamping process begins.
 This can be useful for document preparation, validation, or setting up complex transformations.
 
+Standard preprocessors are available in the `pro.verron.officestamper.preset.Preprocessors` class.
+You can also implement the `pro.verron.officestamper.api.PreProcessor` interface for custom logic.
+
 [source,java]
 ----
 void main(String[] args){
     // Create a custom preprocessor
-    class CustomPreprocessor implements Preprocessor {
+    class CustomPreprocessor implements PreProcessor {
         @Override
         public void process(WordprocessingMLPackage document) {
             // Perform operations on the document before stamping
@@ -36,7 +39,7 @@ void main(String[] args){
     }
 
     // Add the preprocessor to the configuration
-    var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+    var configuration = OfficeStamperConfigurations.standard();
     configuration.addPreprocessor(new CustomPreprocessor());
 }
 ----
@@ -45,6 +48,9 @@ void main(String[] args){
 
 Post-processors allow you to perform additional operations after the stamping process is complete.
 This can be useful for cleaning up the document or adding summaries.
+
+Standard post-processors are available in the `pro.verron.officestamper.preset.Postprocessors` class.
+You can also implement the `pro.verron.officestamper.api.PostProcessor` interface for custom logic.
 
 [source,java]
 ----
@@ -58,15 +64,18 @@ void main(String[] args){
     }
 
     // Add the post-processor to the configuration
-    var configuration = OfficeStamperConfigurations.standardWithPreprocessing();
+    var configuration = OfficeStamperConfigurations.standard();
     configuration.addPostProcessor(new CustomPostProcessor());
+
+    // Use a standard post-processor to remove engine-specific tags
+    configuration.addPostProcessor(Postprocessors.removeTags("placeholder"));
 }
 ----
 
 == Working with Footnotes and Endnotes
 
 As of version 2.7.0, Office-stamper is aware of footnotes and endnotes.
-With the `standardWithPreprocessing` configuration, it cleans orphaned notes automatically.
+With the `standard()` configuration, it cleans orphaned notes automatically.
 
 Future versions may include more comprehensive support for stamping within footnotes and endnotes.
 

@@ -115,12 +115,14 @@ See `3.0_UPDATE.md` for the full rationale and migration guidance.
 * Hierarchical scopes: `ContextTree` resolve placeholders along the current branch; unresolved values bubble up to parent scopes.
 * Preprocessor-driven placeholders: include the placeholder preprocessor in your `OfficeStamperConfiguration` (already present in standard presets) to enable resolution.
 * Comment processor lifecycle simplified: processors are created per comment and executed once.
-* Postprocessors added: `cleanTags` can remove all smart tags used by the engine after processing.
+* Postprocessors added: `Postprocessors.removeTags(String)` can remove all smart tags used by the engine after processing.
 
 Breaking API highlights:
 
 * `AbstractCommentProcessor` → `CommentProcessor`; introduce `CommentProcessorFactory`.
-* `ContextDependent` renamed to `Hook`.
+* `ContextDependent` renamed to `Hook` (in `pro.verron.officestamper.api`).
+* Preprocessors moved: `PlaceholderHooker` and `CommentHooker` are now public in `pro.verron.officestamper.api`.
+* Postprocessors moved: `HookRemover` is now public in `pro.verron.officestamper.api`.
 * `EvaluationContextConfigurer` → `EvaluationContextFactory` (fresh context per hook).
 * `DocxDocument` removed in favor of `DocxPart`.
 * New `Insert` API for multi-run insertions; `PlaceholderReplacer` removed.

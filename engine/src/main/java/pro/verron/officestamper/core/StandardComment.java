@@ -144,4 +144,9 @@ public class StandardComment
                    .map(StandardParagraph::asString)
                    .collect(joining());
     }
+
+    @Override
+    public BigInteger getId() {
+        return comment.getId();
+    }
 }

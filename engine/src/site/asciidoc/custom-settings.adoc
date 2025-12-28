@@ -157,6 +157,20 @@ var configuration = OfficeStamperConfigurations.standard()
     });
 ----
 
+== Preprocessors and Postprocessors
+
+You can further customize the stamping process by adding preprocessors and postprocessors.
+Preprocessors run before the stamping starts, and postprocessors run after it completes.
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standard()
+    .addPreprocessor(Preprocessors.removeLanguageInfo())
+    .addPostProcessor(Postprocessors.removeTags("placeholder"));
+----
+
+For more details on preprocessors and post-processors, see link:advanced-features.html[Advanced Features].
+
 == Error Handling
 
 You can customize how Office-stamper handles errors during expression evaluation:

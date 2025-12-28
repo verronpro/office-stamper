@@ -3,7 +3,7 @@ package pro.verron.officestamper.preset.preprocessors.similarrun;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.PreProcessor;
-import pro.verron.officestamper.core.DocumentUtil;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.LinkedHashSet;
 
@@ -22,7 +22,7 @@ public class MergeSameStyleRuns
     @Override
     public void process(WordprocessingMLPackage document) {
         var visitor = new SimilarRunVisitor();
-        DocumentUtil.visitDocument(document, visitor);
+        WmlUtils.visitDocument(document, visitor);
         for (var similarStyleRuns : visitor.getSimilarStyleRuns()) {
             var firstRun = similarStyleRuns.getFirst();
             var runContent = firstRun.getContent();

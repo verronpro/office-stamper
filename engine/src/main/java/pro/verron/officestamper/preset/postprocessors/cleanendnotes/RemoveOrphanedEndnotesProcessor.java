@@ -13,7 +13,7 @@ import java.util.Optional;
 
 import static org.docx4j.wml.STFtnEdn.NORMAL;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
-import static pro.verron.officestamper.core.DocumentUtil.visitDocument;
+import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
 
 /// A post-processor that removes endnotes which are not referenced in the document.
 ///

@@ -49,14 +49,14 @@ public class RemoveMalformedComments
                 case CommentRangeStart crs -> {
                     var lastOpenedCommentId = crs.getId();
                     assert lastOpenedCommentId != null;
-                    log.debug("Comment {} opened.", lastOpenedCommentId);
+                    log.trace("Comment {} opened.", lastOpenedCommentId);
                     commentIds.add(lastOpenedCommentId);
                     openedCommentsIds.add(lastOpenedCommentId);
                 }
                 case CommentRangeEnd cre -> {
                     var lastClosedCommentId = cre.getId();
                     assert lastClosedCommentId != null;
-                    log.debug("Comment {} closed.", lastClosedCommentId);
+                    log.trace("Comment {} closed.", lastClosedCommentId);
                     commentIds.add(lastClosedCommentId);
 
                     var lastOpenedCommentId = openedCommentsIds.pollLast();
@@ -70,7 +70,7 @@ public class RemoveMalformedComments
                 case R.CommentReference cr -> {
                     var commentId = cr.getId();
                     assert commentId != null;
-                    log.debug("Comment {} referenced.", commentId);
+                    log.trace("Comment {} referenced.", commentId);
                     commentIds.add(commentId);
                 }
                 default -> { /* Do Nothing */ }

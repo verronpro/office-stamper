@@ -14,7 +14,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.preset.ExperimentalStampers;
+import pro.verron.officestamper.experimental.ExperimentalStampers;
 import pro.verron.officestamper.preset.OfficeStampers;
 
 import javax.xml.XMLConstants;

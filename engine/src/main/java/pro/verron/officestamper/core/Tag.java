@@ -7,10 +7,8 @@ import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.Paragraph;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Optional;
 
-import static pro.verron.officestamper.utils.wml.WmlFactory.newCtAttr;
 import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
 
 /// Represents a Tag entity consisting of a DocxPart and a CTSmartTagRun. A Tag provides functionality to manipulate and
@@ -30,6 +28,7 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     public static Tag of(DocxPart docxPart, CTSmartTagRun tag) {
         return new Tag(docxPart, tag);
     }
+
 
     /// Removes the current tag from its parent's content list.
     ///
@@ -109,30 +108,5 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
             }
         }
         return String.valueOf(0);
-    }
-
-    public void setContextKey(String contextKey) {
-        var smartTagPr = tag.getSmartTagPr();
-        if (smartTagPr == null) {
-            smartTagPr = new CTSmartTagPr();
-            tag.setSmartTagPr(smartTagPr);
-        }
-        var smartTagPrAttr = smartTagPr.getAttr();
-        if (smartTagPrAttr == null) {
-            smartTagPrAttr = new ArrayList<>();
-            tag.setSmartTagPr(smartTagPr);
-        }
-        for (CTAttr attribute : smartTagPrAttr) {
-            if ("context".equals(attribute.getName())) {
-                attribute.setVal(contextKey);
-                return;
-            }
-        }
-        var ctAttr = newContextAttr(contextKey);
-        smartTagPrAttr.add(ctAttr);
-    }
-
-    private static CTAttr newContextAttr(String value) {
-        return newCtAttr("context", value);
     }
 }

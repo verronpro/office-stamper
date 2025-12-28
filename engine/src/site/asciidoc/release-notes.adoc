@@ -7,66 +7,43 @@ This page provides information about the latest releases of Office-stamper, incl
 
 == Latest Release
 
-=== {proj}/v2.9.0[v2.9.0]
+=== {proj}/v3.0.0[v3.0.0]
 
-==== Features
+==== Core Overhaul
 
-* EXPERIMENTAL: CLI now implements a crude loading of csv, xml, json and property files.
+* **Processing model overhaul**: The engine now iterates "hooks" (placeholders, inline processors, comments) strictly in document order.
+* **New Hook concept**: Each placeholder or comment is treated as a `Hook`.
+The iterator walks hooks one by one, allowing for more predictable results.
+* **Hierarchical Scopes**: `ContextTree` resolves placeholders along the current branch; unresolved values bubble up to parent scopes.
+* **Simplified Comment Processors**: Processors are created per hook and executed once, with a fresh `ProcessorContext`.
 
-==== Bugfixes
+==== API Changes
 
-* MAY BREAK: Changed behavior of the processor `replaceWordWith(context)` to be able to handle several test run as notified by {gh}/jonath92[@jonath92] in {os}/issues/585[#585]
-** It may break the formatting of the following paragraphs if there was an empty run with formatting instruction inside the comment selection, but I have not been able to reproduce this theoretical issue with both Word, and WPS writer. Do not hesitate to inform me if you encounter the issue.
+* **Moved API classes**: `PlaceholderHooker`, `CommentHooker`, and `HookRemover` are now public in the `pro.verron.officestamper.api` package.
+* **Renamed classes**: `ContextDependent` renamed to `Hook`.
+* **Standard configuration**: `OfficeStamperConfigurations.standard()` now includes recommended preprocessors and post-processors by default.
+* **Evaluation Context**: `EvaluationContextConfigurer` replaced by `EvaluationContextFactory`.
+* **Insert API**: Introduced a new `Insert` API for more flexible content insertion.
 
 ==== Dependencies
 
-* Upgrade Java version from 21 to 25
-* Bump `org.springframework:spring-expression` from `6.2.8` to `6.2.12`
-* Bump `org.springframework:spring-context` from `6.2.8` to `6.2.12`
-
-==== Documentation
-
-* Updated all Javadoc to use Markdown style
-* Globally added a lot of Javadoc, to improve self-documentation and leverage AI capabilities.
-* Add documentation about preprocessors, allowing cleanup of documents before stamping
-
-* Added an .aiignore to improve the vibe coding experience
-* Add contributors details to generated documentation site
-
-==== Continuous Integration
-
-* Updated deployment to Maven Central to follow OSSRH process changes.
-** Added dependency to plugin `org.sonatype.central:central-publishing-maven-plugin:0.9.0`
-
-* Bump `actions/checkout` from `v4` to `v5`
-* Bump `actions/setup-java` from `v4` to `v5`
-* Bump `github/codeql-action/analyze` from `v3` to `v4`
-* Bump `actions/upload-pages-artifact` from `v3` to `v4`
-
-* Bump `org.apache.maven.plugins:maven-compiler-plugin` from `3.14.0` to `3.14.1`
-* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.11.2` to `3.12.0`
-* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.3` to `3.5.4`
-* Bump `org.apache.maven.plugins:maven-surefire-report-plugin` from `3.5.3` to `3.5.4`
-* Bump `org.jacoco:jacoco-maven-plugin` from `0.8.13` to `0.8.14`
-
-==== Tests
-
-* An improved stringification for paragraphs indentation data (ind elements) as notified by {gh}/jonath92[@jonath92] in {os}/issues/585[#585]
-* Added all recent `docx4j` version to test matrix (`11.5.0..11.5.6`)
-* Bump `org.pitest:pitest-maven` from `1.20.0` to `1.20.1`
-* Bump `org.junit.jupiter:junit-jupiter` from `5.13.3` to `6.0.0`
-
-==== Refactorings
-
-* Improved the comment deletion procedure, to make it less complex and do only one pass through all elements
-* Replace the `IndexedRun` concept by the `StandardRun` concept
-* MAY BREAK Removed 2 unused public methods from `DocxImageExtractor`
+* Upgrade Java version to 25.
+* Spring dependencies bumped to 7.0.2 (when available, currently tracking latest).
 
 == Previous Releases
 
 For information about previous releases, see the link:https://github.com/verronpro/office-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
 
 == Upgrading
+
+=== From v2.9.0 to v3.0.0
+
+* **Java 25 required**: Ensure your project is running on Java 25 or higher.
+* **API Package**: If you were using `PlaceholderHooker`, `CommentHooker`, or `HookRemover` from internal packages, update your imports to `pro.verron.officestamper.api`.
+* **Hooks**: The engine now uses a "hook" based processing.
+If you have custom processors, they now receive a `ProcessorContext`.
+* **Standard Configuration**: `OfficeStamperConfigurations.standard()` now includes preprocessing by default.
+You may no longer need `standardWithPreprocessing()`.
 
 === From v2.8.x to v2.9.0
 

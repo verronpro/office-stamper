@@ -14,7 +14,8 @@ public class SlicingIterator<T>
     private final T start;
     private final T end;
     private @Nullable T next;
-    private boolean foundStart;
+    private boolean foundStart = false;
+    private boolean foundEnd = false;
 
 
     /// Constructs a new SlicingIterator with the specified source iterator and boundaries.
@@ -31,15 +32,25 @@ public class SlicingIterator<T>
 
     private void findNext() {
         next = null;
-        while (source.hasNext() && (!foundStart || (next == end || next == null))) {
+        while (source.hasNext() && !foundStart) {
+            var o = source.next();
+            if (o == start) {
+                foundStart = true;
+                next = o;
+            }
+        }
+
+        if (source.hasNext() && !foundEnd) {
             next = source.next();
-            if (next == start) foundStart = true;
+            if (next == end) foundEnd = true;
         }
     }
 
     @Override
     public void reset() {
         source.reset();
+        foundStart = false;
+        foundEnd = false;
         findNext();
     }
 

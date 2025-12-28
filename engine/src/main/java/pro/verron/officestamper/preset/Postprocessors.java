@@ -1,10 +1,10 @@
 package pro.verron.officestamper.preset;
 
+import pro.verron.officestamper.api.HookRemover;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PostProcessor;
 import pro.verron.officestamper.preset.postprocessors.cleanendnotes.RemoveOrphanedEndnotesProcessor;
 import pro.verron.officestamper.preset.postprocessors.cleanfootnotes.RemoveOrphanedFootnotesProcessor;
-import pro.verron.officestamper.preset.postprocessors.cleantags.RemoveTagsProcessor;
 
 /// The Postprocessors class provides static utility methods for obtaining implementations of the [PostProcessor]
 /// interface that perform specific post-processing operations on WordprocessingMLPackage documents.
@@ -43,6 +43,6 @@ public class Postprocessors {
     ///
     /// @return a [PostProcessor] instance that performs the removal of specified tags
     public static PostProcessor removeTags(String element) {
-        return new RemoveTagsProcessor(element);
+        return new HookRemover(element);
     }
 }

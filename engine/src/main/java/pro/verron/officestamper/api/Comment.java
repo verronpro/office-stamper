@@ -4,6 +4,7 @@ import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import org.jspecify.annotations.Nullable;
 
+import java.math.BigInteger;
 import java.util.List;
 
 /// The Comment interface provides methods for managing comments in a document.
@@ -56,4 +57,6 @@ public interface Comment {
     ///
     /// @return a string representing the expression
     String expression();
+
+    BigInteger getId();
 }

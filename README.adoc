@@ -33,6 +33,7 @@ class Example {
         // an object to use as context for the expressions found in the template.
         var context = new YourPojoContext(_, _ , _);
 
+        // create a stamper that handles streams
         var stamper = OfficeStampers.docxStamper();
 
         var templatePath = Paths.get("your/docx/template/file.docx");
@@ -45,6 +46,14 @@ class Example {
         }
     }
 }
+----
+
+If you already have a `WordprocessingMLPackage` (Docx4J document), you can use `docxPackageStamper` instead:
+
+[source,java]
+----
+var stamper = OfficeStampers.docxPackageStamper(OfficeStamperConfigurations.standard());
+WordprocessingMLPackage stamped = stamper.stamp(document, context);
 ----
 
 == Maven Coordinates
@@ -103,18 +112,20 @@ The latest release is v3.0.0. See the link:{docs}/release-notes.html[Release Not
 * Processing model overhaul: the engine now iterates hooks (placeholders, inline processors, comments) strictly in document order.
 See `3.0_UPDATE.md` for the full rationale and migration guidance.
 * New hook concept: each placeholder/comment is treated as a hook — the iterator walks hooks one by one.
-* Hierarchical scopes: `ContextTree`/`ContextBranch` resolve placeholders along the current branch; unresolved values bubble up to parent scopes.
-* Preprocessor‑driven placeholders: include the placeholder preprocessor in your `OfficeStamperConfiguration` (already present in standard presets) to enable resolution.
+* Hierarchical scopes: `ContextTree` resolve placeholders along the current branch; unresolved values bubble up to parent scopes.
+* Preprocessor-driven placeholders: include the placeholder preprocessor in your `OfficeStamperConfiguration` (already present in standard presets) to enable resolution.
 * Comment processor lifecycle simplified: processors are created per comment and executed once.
 
 Breaking API highlights:
 
 * `AbstractCommentProcessor` → `CommentProcessor`; introduce `CommentProcessorFactory`.
+* `ContextDependent` renamed to `Hook`.
 * `EvaluationContextConfigurer` → `EvaluationContextFactory` (fresh context per hook).
 * `DocxDocument` removed in favor of `DocxPart`.
-* New `Insert` API for multi‑run insertions; `PlaceholderReplacer` removed in favor of context‑stack management.
-* `OfficeStamper` handles `OpcPackage`; use `StreamStamper` for stream‑to‑stream.
+* New `Insert` API for multi-run insertions; `PlaceholderReplacer` removed.
+* `OfficeStamper` handles `OpcPackage`; use `StreamStamper` for stream-to-stream.
 * Expression parser is pluggable (`ExpressionParser`), SpEL by default.
+* `DocxStamper#stamp` now returns the document.
 
 Minor updates:
 

@@ -10,11 +10,11 @@
 * Processing model overhaul: the engine now iterates hooks in strict document order.
 The API around iteration has been adapted accordingly.
 Consult the root file `3.0_UPDATE.md` for details and migration notes.
-* Introduced the hook concept: a hook represents a concrete target point in the DOCX to process (e.g., placeholder smart‑tags, inline processors, and comments) and is the unit the iterator walks through.
-* New hierarchical scopes with `ContextTree` and `ContextBranch`.
+* Introduced the hook concept: a hook represents a concrete target point in the DOCX to process (e.g., placeholder smart-tags, inline processors, and comments) and is the unit the iterator walks through.
+* New hierarchical scopes with `ContextTree`.
 If a placeholder cannot resolve in the current scope, resolution walks up the branch (parent, then ancestors).
-Comment processors that create sub‑scopes (e.g., repeaters) can control whether a hook evaluates in a nested branch or reuses the current one.
-* Placeholders are now resolved from smart‑tags produced by preprocessors.
+Comment processors that create sub-scopes (e.g., repeaters) can control whether a hook evaluates in a nested branch or reuses the current one.
+* Placeholders are now resolved from smart-tags produced by preprocessors.
 Ensure the appropriate placeholder preprocessor is included in your `OfficeStamperConfiguration` (standard presets already do this).
 * Simplified lifecycle for comment processors: a processor instance is created for each encountered comment and executed once.
 
@@ -29,9 +29,11 @@ Ensure the appropriate placeholder preprocessor is included in your `OfficeStamp
 Provide a factory that creates a fresh `EvaluationContext` per hook.
 * Introduced `Insert` in the API, allowing resolvers to return content that spans multiple runs instead of a single run.
 * `OfficeStamper` now focuses on `OpcPackage` handling.
-Stream‑based stamping is handled by the dedicated `StreamStamper` interface.
+Stream-based stamping is handled by the dedicated `StreamStamper` interface.
 * Expression parsing is configurable: you can supply your own `org.springframework.expression.ExpressionParser` (SpEL by default).
-* Removed `PlaceholderReplacer` in favor of the context‑stack driven placeholder management.
+* `ContextDependent` was renamed to `Hook`.
+* `ProcessorContext` now includes the `ContextTree` and `expression`.
+* `DocxStamper#stamp` now returns the stamped document.
 
 For a complete migration guide and code examples, see `3.0_UPDATE.md` and the contributor‑focused `HOW_DOES_IT_WORKS.adoc`.
 

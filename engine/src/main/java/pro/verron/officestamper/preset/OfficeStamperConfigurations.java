@@ -211,6 +211,8 @@ public class OfficeStamperConfigurations {
     ///
     /// @return a basic [OfficeStamperConfiguration] instance with no extra configurations
     public static OfficeStamperConfiguration raw() {
-        return new DocxStamperConfiguration();
+        var defaultFactory = EvaluationContextFactories.defaultFactory();
+        var defaultExceptionResolver = ExceptionResolvers.throwing();
+        return new DocxStamperConfiguration(defaultFactory, defaultExceptionResolver);
     }
 }

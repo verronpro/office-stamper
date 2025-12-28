@@ -1,26 +1,29 @@
 package pro.verron.officestamper.core;
 
+import pro.verron.officestamper.api.ContextTree;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContextBranch {
-    private final ContextTree tree;
+public class ContextBranch
+        implements ContextTree {
+    private final ContextRoot tree;
     private final List<Object> branch;
 
-    public ContextBranch(ContextTree tree, Object root) {
+    public ContextBranch(ContextRoot tree, Object root) {
         this(tree, List.of(root));
     }
 
-    public ContextBranch(ContextTree tree, List<Object> branch) {
+    public ContextBranch(ContextRoot tree, List<Object> branch) {
         this.tree = tree;
         this.branch = branch;
     }
 
-    public String add(Object object) {
+    public String addBranch(Object object) {
         var newBranch = new ArrayList<>(branch);
         newBranch.add(object);
         var contextBranch = new ContextBranch(tree, newBranch);
-        return tree.add(contextBranch);
+        return tree.addBranch(contextBranch);
     }
 
     public Object root() {

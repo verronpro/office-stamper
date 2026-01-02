@@ -30,12 +30,12 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - run: mvn -B -ntp verify site -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 -f engine/pom.xml
+      - run: mvn -B -ntp verify site site:stage -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: 'engine/target/site'
+          path: 'target/staging'
 
       - uses: actions/deploy-pages@v4

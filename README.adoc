@@ -63,7 +63,7 @@ WordprocessingMLPackage stamped = stamper.stamp(document, context);
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>engine</artifactId>
-    <version>3.0</version>
+    <version>3.1</version>
 </dependency>
 
 <!-- You also need to provide a dependency to Docx4J -->
@@ -105,7 +105,14 @@ This repository is structured in several Maven/Java modules:
 
 == Latest Release
 
-The latest release is v3.0. See the link:{docs}/release-notes.html[Release Notes] for details.
+The latest release is v3.1. See the link:{docs}/release-notes.html[Release Notes] for details.
+
+=== What's new in 3.1 (high level)
+
+* **API Consolidation**: Continued streamlining of the public API by moving core interfaces like `PlaceholderHooker`, `CommentHooker`, and `HookRemover` to the `pro.verron.officestamper.api` package.
+* **Internal Cleanup**: Removed several internal utility classes and simplified the engine's internal structure for better maintainability.
+* **Experimental Features**: Moved experimental stamper implementations to a dedicated `pro.verron.officestamper.experimental` package to clearly distinguish them from the stable API.
+* **Logging**: Refined logging levels; many verbose debug messages moved to trace level.
 
 === What's new in 3.0 (high level)
 

@@ -7,6 +7,21 @@ This page provides information about the latest releases of Office-stamper, incl
 
 == Latest Release
 
+=== {proj}/v3.1.0[v3.1.0]
+
+==== API Consolidation
+
+* **Public API**: Moved `PlaceholderHooker`, `CommentHooker`, and `HookRemover` to the `pro.verron.officestamper.api` package for better accessibility and consistent extension points.
+* **Experimental Features**: All experimental stamper implementations are now located in the `pro.verron.officestamper.experimental` package.
+
+==== Cleanup & Refinement
+
+* **Internal streamlining**: Removed several internal utility classes (`SectionUtil`, `ParagraphCollector`, etc.) to simplify the engine's architecture.
+* **Logging**: Switched many verbose debug messages to trace level to reduce noise during normal development.
+* **Post-processing**: Replaced `cleanTags` with the more powerful `Postprocessors.removeTags(String)`.
+
+== Previous Releases
+
 === {proj}/v3.0.0[v3.0.0]
 
 ==== Core Overhaul
@@ -30,11 +45,17 @@ The iterator walks hooks one by one, allowing for more predictable results.
 * Upgrade Java version to 25.
 * Spring dependencies bumped to 7.0.2 (when available, currently tracking latest).
 
-== Previous Releases
-
 For information about previous releases, see the link:https://github.com/verronpro/office-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
 
 == Upgrading
+
+=== From v3.0.0 to v3.1.0
+
+* **Package Moves**: Update your imports for `PlaceholderHooker`, `CommentHooker`, and `HookRemover` to `pro.verron.officestamper.api`.
+* **Experimental API**: If you used `ExperimentalStampers`, it has moved to `pro.verron.officestamper.experimental`.
+* **Post-processing**: Replace any usage of `cleanTags` with `Postprocessors.removeTags(String)`.
+* **Internal Classes**: If you were using internal classes like `SectionUtil`, they have been removed.
+You will need to implement this logic yourself if needed.
 
 === From v2.9.0 to v3.0.0
 

@@ -3,6 +3,27 @@
 :os: https://github.com/verronpro/office-stamper
 :proj: https://github.com/verronpro/office-stamper/releases/tag
 
+== {proj}/v3.1.0[v3.1.0]
+
+=== Major changes
+
+* **API Consolidation**: Continued streamlining of the public API by moving core interfaces like `PlaceholderHooker`, `CommentHooker`, and `HookRemover` to the `pro.verron.officestamper.api` package.
+* **Internal Cleanup**: Removed several internal utility classes and simplified the engine's internal structure for better maintainability.
+* **Experimental Features**: Moved experimental stamper implementations to a dedicated `pro.verron.officestamper.experimental` package to clearly distinguish them from the stable API.
+
+=== Breaking API Changes
+
+* **Package Moves**:
+** `PlaceholderHooker`, `CommentHooker`, and `HookRemover` moved to `pro.verron.officestamper.api`.
+** `ExperimentalStampers` moved to `pro.verron.officestamper.experimental`.
+* **Class Deletions**: Removed several internal classes that were previously exposed but intended for internal use only: `SectionUtil`, `RemoveTagsProcessor`, `TagsVisitor`, `ParagraphCollector`, `CRSCollector`, and `PrepareCommentProcessors`.
+* **Post-processing**: The `cleanTags` functionality has been replaced by `Postprocessors.removeTags(String)`.
+
+=== Minor changes
+
+* **Logging**: Refined logging levels across the engine; many verbose debug messages have been moved to trace level to reduce noise in standard debug logs.
+* **Iteration**: Enhanced `SlicingIterator` with more robust state tracking for document segments.
+
 == {proj}/v3.0.0[v3.0.0]
 
 === Major changes

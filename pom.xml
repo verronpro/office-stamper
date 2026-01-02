@@ -7,7 +7,7 @@
     <name>Office-stamper</name>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>office-stamper</artifactId>
-    <version>3.0</version>
+    <version>3.1</version>
     <description>
         Office-stamper is a Java library for stamping DOCX templates with data.
         It allows you to create professional documents by merging data with pre-designed templates,

@@ -7,7 +7,7 @@
     <parent>
         <groupId>pro.verron.office-stamper</groupId>
         <artifactId>office-stamper</artifactId>
-        <version>3.0</version>
+        <version>3.1</version>
     </parent>
 
     <name>Office-stamper CLI</name>

@@ -11,8 +11,6 @@ import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
 import pro.verron.officestamper.core.functions.BiFunctionBuilder;
 import pro.verron.officestamper.core.functions.FunctionBuilder;
 import pro.verron.officestamper.core.functions.TriFunctionBuilder;
-import pro.verron.officestamper.preset.EvaluationContextFactories;
-import pro.verron.officestamper.preset.ExceptionResolvers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,16 +47,22 @@ public class DocxStamperConfiguration
     /// - Setting default values for expression handling and evaluation.
     /// - Creating and configuring a default `SpelParserConfiguration`.
     /// - Establishing resolvers and exception handling strategies.
-    public DocxStamperConfiguration() {
-        commentProcessors = new HashMap<>();
-        resolvers = new ArrayList<>();
-        expressionFunctions = new HashMap<>();
-        preprocessors = new ArrayList<>();
-        postprocessors = new ArrayList<>();
-        functions = new ArrayList<>();
-        evaluationContextFactory = EvaluationContextFactories.defaultFactory();
-        expressionParser = new SpelExpressionParser();
-        exceptionResolver = ExceptionResolvers.throwing();
+    ///
+    /// @param evaluationContextFactory the factory used to create [EvaluationContext] instances.
+    /// @param exceptionResolver the exception resolver to use for handling exceptions during stamping.
+    public DocxStamperConfiguration(
+            EvaluationContextFactory evaluationContextFactory,
+            ExceptionResolver exceptionResolver
+    ) {
+        this.commentProcessors = new HashMap<>();
+        this.resolvers = new ArrayList<>();
+        this.expressionFunctions = new HashMap<>();
+        this.preprocessors = new ArrayList<>();
+        this.postprocessors = new ArrayList<>();
+        this.functions = new ArrayList<>();
+        this.evaluationContextFactory = evaluationContextFactory;
+        this.expressionParser = new SpelExpressionParser();
+        this.exceptionResolver = exceptionResolver;
     }
 
     /// Exposes all methods of a given interface to the expression language.

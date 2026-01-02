@@ -34,6 +34,10 @@ public class DocxIterator
 
     private DocxIterator(Supplier<Iterator<Object>> supplier) {
         this.supplier = supplier;
+        initialize();
+    }
+
+    private void initialize() {
         var startingIterator = supplier.get();
         this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
         this.iteratorQueue.add(startingIterator);
@@ -43,10 +47,16 @@ public class DocxIterator
     /// Selects and casts elements of the specified class type from the iterator.
     ///
     /// @param aClass the class type to filter and cast elements to
-    /// @param <T>    the type of elements to select
+    /// @param <T> the type of elements to select
+    ///
     /// @return a new [ResetableIterator] containing only elements of the specified class type
     public <T> ResetableIterator<T> selectClass(Class<T> aClass) {
         return filter(aClass::isInstance).map(aClass::cast);
+    }
+
+    @Override
+    public void reset() {
+        initialize();
     }
 
     @Override
@@ -59,6 +69,7 @@ public class DocxIterator
         if (next == null) throw new NoSuchElementException("No more elements to iterate");
 
         var result = next;
+
         next = null;
         switch (result) {
             case ContentAccessor contentAccessor -> {
@@ -89,13 +100,5 @@ public class DocxIterator
             }
         }
         return result;
-    }
-
-    @Override
-    public void reset() {
-        var startingIterator = supplier.get();
-        this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
-        this.iteratorQueue.add(startingIterator);
-        this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
     }
 }

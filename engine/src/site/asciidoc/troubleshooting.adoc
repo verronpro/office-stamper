@@ -106,7 +106,11 @@ Example with Logback:
 
 [source,xml]
 ----
+<!-- Use DEBUG to see major steps and evaluation results -->
 <logger name="pro.verron.officestamper" level="DEBUG" />
+
+<!-- Use TRACE to see detailed hook iteration and internal state (v3.1+) -->
+<logger name="pro.verron.officestamper" level="TRACE" />
 ----
 
 === Inspecting the Template

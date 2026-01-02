@@ -7,7 +7,6 @@ import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.Paragraph;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
@@ -29,6 +28,7 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     public static Tag of(DocxPart docxPart, CTSmartTagRun tag) {
         return new Tag(docxPart, tag);
     }
+
 
     /// Removes the current tag from its parent's content list.
     ///
@@ -108,27 +108,5 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
             }
         }
         return String.valueOf(0);
-    }
-
-    public void setContextKey(String contextKey) {
-        var name = "context";
-
-        var smartTagPr = tag.getSmartTagPr();
-        if (smartTagPr == null) {
-            smartTagPr = new CTSmartTagPr();
-            tag.setSmartTagPr(smartTagPr);
-        }
-        var smartTagPrAttr = smartTagPr.getAttr();
-        if (smartTagPrAttr == null) {
-            smartTagPrAttr = new ArrayList<>();
-            tag.setSmartTagPr(smartTagPr);
-        }
-        for (CTAttr attribute : smartTagPrAttr) {
-            if (name.equals(attribute.getName())) attribute.setVal(contextKey);
-        }
-        var ctAttr = new CTAttr();
-        ctAttr.setName(name);
-        ctAttr.setVal(contextKey);
-        smartTagPrAttr.add(ctAttr);
     }
 }

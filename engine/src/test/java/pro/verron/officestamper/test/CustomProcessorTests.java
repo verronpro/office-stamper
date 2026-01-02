@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.preset.OfficeStamperConfigurations.raw;
+import static pro.verron.officestamper.preset.OfficeStamperConfigurations.minimal;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
@@ -33,7 +33,7 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
     @DisplayName("Should allow to inject custom processors")
     @ParameterizedTest(name = "Should allow to inject custom processors ({argumentSetName})")
     void should_allow_custom_processors_injection(ContextFactory factory) {
-        var config = raw().addCommentProcessor(ICustomProcessor.class, CustomProcessor::new);
+        var config = minimal().addCommentProcessor(ICustomProcessor.class, CustomProcessor::new);
         var template = getWordResource(Path.of("CustomCommentProcessorTest.docx"));
         var expected = """
                 == Custom Comment Processor Test

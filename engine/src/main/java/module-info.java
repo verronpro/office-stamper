@@ -1,7 +1,7 @@
 /// The module descriptor for the `pro.verron.officestamper` module.
 ///
-/// This module provides functionalities related to office document manipulation
-/// and stamping, leveraging libraries like docx4j and Spring Framework.
+/// This module provides functionalities related to office document manipulation and stamping, leveraging libraries like
+/// docx4j and Spring Framework.
 ///
 /// Requirements:
 /// - Requires `spring.core` and `spring.expression` for using Spring Framework functionalities.
@@ -14,7 +14,7 @@
 /// - Exports `pro.verron.officestamper.api` for public API access.
 /// - Exports `pro.verron.officestamper.preset` for predefined document processing utilities.
 /// - Exports `pro.verron.officestamper.experimental` and `pro.verron.officestamper.preset.preprocessors.placeholders`
-///   to `pro.verron.officestamper.test` for experimental features and testing purposes.
+/// to `pro.verron.officestamper.test` for experimental features and testing purposes.
 /// - Exports `pro.verron.officestamper.utils` for utility functionalities.
 ///
 /// Opens:
@@ -40,7 +40,7 @@ module pro.verron.officestamper {
     opens pro.verron.officestamper.preset;
     exports pro.verron.officestamper.preset;
 
-    opens pro.verron.officestamper.experimental to pro.verron.officestamper.test;
-    exports pro.verron.officestamper.experimental to pro.verron.officestamper.test;
-    exports pro.verron.officestamper.preset.preprocessors.placeholders to pro.verron.officestamper.test;
+    exports pro.verron.officestamper.experimental;
+    opens pro.verron.officestamper.experimental;
+    exports pro.verron.officestamper.core to pro.verron.officestamper.test;
 }

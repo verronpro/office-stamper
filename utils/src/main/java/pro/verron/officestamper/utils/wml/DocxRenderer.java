@@ -13,6 +13,7 @@ import org.docx4j.model.structure.HeaderFooterPolicy;
 import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.WordprocessingML.*;
 import org.docx4j.vml.CTShadow;
 import org.docx4j.vml.CTShapetype;
@@ -24,7 +25,6 @@ import pro.verron.officestamper.utils.UtilsException;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -74,6 +74,152 @@ public class DocxRenderer {
                       .collect(joining(",", "[", "]")));
     }
 
+    private String stringify(WordprocessingMLPackage mlPackage) {
+        var header = stringifyHeaders(getHeaderPart(mlPackage));
+        var mainDocumentPart = mlPackage.getMainDocumentPart();
+        var body = stringify(mainDocumentPart);
+
+        var footer = stringifyFooters(getFooterPart(mlPackage));
+        var hStr = header.map("%s\n\n"::formatted)
+                         .orElse("");
+        var fStr = footer.map("\n%s\n"::formatted)
+                         .orElse("");
+        var footnotesPart = mainDocumentPart.getFootnotesPart();
+        var endnotesPart = mainDocumentPart.getEndNotesPart();
+        return hStr + body + stringify(footnotesPart).orElse("") + stringify(endnotesPart).orElse("") + fStr;
+    }
+
+    private Optional<String> stringifyHeaders(Stream<HeaderPart> headerPart) {
+        return headerPart.map(this::stringify)
+                         .flatMap(Optional::stream)
+                         .reduce((a, b) -> a + "\n\n" + b);
+    }
+
+    private Stream<HeaderPart> getHeaderPart(WordprocessingMLPackage document) {
+        var sections = document.getDocumentModel()
+                               .getSections();
+
+        var set = new LinkedHashSet<HeaderPart>();
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getFirstHeader)
+                           .filter(Objects::nonNull)
+                           .toList());
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getDefaultHeader)
+                           .filter(Objects::nonNull)
+                           .toList());
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getEvenHeader)
+                           .filter(Objects::nonNull)
+                           .toList());
+
+        return set.stream();
+    }
+
+    private Object stringify(MainDocumentPart mainDocumentPart) {
+        return stringify(mainDocumentPart.getContent(), mainDocumentPart);
+    }
+
+    private Optional<String> stringifyFooters(Stream<FooterPart> footerPart) {
+        return footerPart.map(this::stringify)
+                         .flatMap(Optional::stream)
+                         .reduce((a, b) -> a + "\n\n" + b);
+    }
+
+    private Stream<FooterPart> getFooterPart(WordprocessingMLPackage document) {
+        var sections = document.getDocumentModel()
+                               .getSections();
+
+        var set = new LinkedHashSet<FooterPart>();
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getFirstFooter)
+                           .filter(Objects::nonNull)
+                           .toList());
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getDefaultFooter)
+                           .filter(Objects::nonNull)
+                           .toList());
+        set.addAll(sections.stream()
+                           .map(SectionWrapper::getHeaderFooterPolicy)
+                           .map(HeaderFooterPolicy::getEvenFooter)
+                           .filter(Objects::nonNull)
+                           .toList());
+
+        return set.stream();
+    }
+
+    private Optional<String> stringify(FootnotesPart footnotesPart) {
+        if (footnotesPart == null) return Optional.empty();
+        try {
+            var list = footnotesPart.getContents()
+                                    .getFootnote()
+                                    .stream()
+                                    .map(c -> stringify(c, footnotesPart))
+                                    .flatMap(Optional::stream)
+                                    .toList();
+            if (list.isEmpty()) return Optional.empty();
+            return Optional.of(list.stream()
+                                   .collect(joining("\n", "[footnotes]\n---\n", "\n---\n")));
+
+        } catch (Docx4JException e) {
+            throw new UtilsException("Error processing footnotes", e);
+        }
+    }
+
+    private Optional<String> stringify(EndnotesPart endnotesPart) {
+        if (endnotesPart == null) return Optional.empty();
+        try {
+            var list = endnotesPart.getContents()
+                                   .getEndnote()
+                                   .stream()
+                                   .map(c -> stringify(c, endnotesPart))
+                                   .flatMap(Optional::stream)
+                                   .toList();
+            if (list.isEmpty()) return Optional.empty();
+            return Optional.of(list.stream()
+                                   .collect(joining("\n", "[endnotes]\n---\n", "\n---\n")));
+        } catch (Docx4JException e) {
+            throw new UtilsException("Error processing footnotes", e);
+        }
+    }
+
+    private Optional<String> stringify(HeaderPart part) {
+        var content = stringify(part.getContent(), part);
+        if (content.isEmpty()) return empty();
+        return of("""
+                [header, name="%s"]
+                ----
+                %s
+                ----""".formatted(part.getPartName(), content));
+    }
+
+    private String stringify(List<?> list, Part part) {
+        return list.stream()
+                   .map(o -> stringify(o, part))
+                   .collect(joining());
+    }
+
+    private Optional<String> stringify(FooterPart part) {
+        var content = stringify(part.getContent(), part);
+        if (content.isEmpty()) return empty();
+        return of("""
+                [footer, name="%s"]
+                ----
+                %s
+                ----""".formatted(part.getPartName(), content));
+    }
+
+    private Optional<String> stringify(CTFtnEdn c, Part part) {
+        var type = ofNullable(c.getType()).orElse(STFtnEdn.NORMAL);
+        if (STFtnEdn.NORMAL != type) return Optional.empty();
+        return Optional.of("[%s]%s".formatted(c.getId(), stringify(c.getContent(), part)));
+    }
+
     /// Converts a [PPrBase.Spacing] object into an optional string representation. The method extracts and includes
     /// non-null spacing properties such as "after", "before", "beforeLines", "afterLines", "line", and "lineRule" in
     /// the resulting string. If all properties are null, the method returns an empty optional.
@@ -120,18 +266,9 @@ public class DocxRenderer {
     ///
     /// @return a formatted string containing metadata about the image extracted from the [CTBlip], including its size
     ///         and hash
-    private String stringify(CTBlip blip) {
-        var image = wmlPackage.getParts()
-                              .getParts()
-                              .entrySet()
-                              .stream()
-                              .filter(e -> e.getKey()
-                                            .getName()
-                                            .contains(blip.getEmbed()))
-                              .map(Entry::getValue)
-                              .findFirst()
-                              .map(BinaryPartAbstractImage.class::cast)
-                              .orElseThrow();
+    private String stringify(CTBlip blip, Part part) {
+        var image = (BinaryPartAbstractImage) part.getRelationshipsPart()
+                                                  .getPart(blip.getEmbed());
         byte[] imageBytes = image.getBytes();
         return "%s:%s:%s:%s:sha1=%s:cy=$d".formatted(image.getPartName(),
                 blip.getEmbed(),
@@ -166,25 +303,26 @@ public class DocxRenderer {
     ///         or `CTMarkupRange`, an empty string may be returned. For objects like `R.Tab` or `R.Cr`, specific
     ///         strings such as tab or carriage return characters may be returned. In case of unsupported types or null,
     ///         an exception is thrown.
-    private String stringify(Object o) {
-        if (o instanceof JAXBElement<?> jaxb) return stringify(jaxb);
+    private String stringify(Object o, Part part) {
+        if (o instanceof JAXBElement<?> jaxb) return stringify(jaxb, part);
         if (o instanceof WordprocessingMLPackage mlPackage) return stringify(mlPackage);
-        if (o instanceof Tbl tbl) return stringify(tbl);
-        if (o instanceof Tr tr) return stringify(tr);
-        if (o instanceof Tc tc) return stringify(tc);
-        if (o instanceof MainDocumentPart mainDocumentPart) return stringify(mainDocumentPart.getContent());
-        if (o instanceof Body body) return stringify(body.getContent());
-        if (o instanceof List<?> list) return stringify(list);
+        if (o instanceof Tbl tbl) return stringify(tbl, part);
+        if (o instanceof Tr tr) return stringify(tr, part);
+        if (o instanceof Tc tc) return stringify(tc, part);
+        if (o instanceof MainDocumentPart mainDocumentPart)
+            return stringify(mainDocumentPart.getContent(), mainDocumentPart);
+        if (o instanceof Body body) return stringify(body.getContent(), part);
+        if (o instanceof List<?> list) return stringify(list, part);
         if (o instanceof Text text) return stringify(text);
-        if (o instanceof P p) return stringify(p);
-        if (o instanceof R r) return stringify(r);
-        if (o instanceof Drawing drawing) return stringify(drawing);
-        if (o instanceof Inline inline) return stringify(inline);
-        if (o instanceof Graphic graphic) return stringify(graphic);
-        if (o instanceof GraphicData graphicData) return stringify(graphicData);
-        if (o instanceof Pic pic) return stringify(pic);
-        if (o instanceof CTBlipFillProperties bfp) return stringify(bfp);
-        if (o instanceof CTBlip blip) return stringify(blip);
+        if (o instanceof P p) return stringify(p, part);
+        if (o instanceof R r) return stringify(r, part);
+        if (o instanceof Drawing drawing) return stringify(drawing, part);
+        if (o instanceof Inline inline) return stringify(inline, part);
+        if (o instanceof Graphic graphic) return stringify(graphic, part);
+        if (o instanceof GraphicData graphicData) return stringify(graphicData, part);
+        if (o instanceof Pic pic) return stringify(pic, part);
+        if (o instanceof CTBlipFillProperties bfp) return stringify(bfp, part);
+        if (o instanceof CTBlip blip) return stringify(blip, part);
         if (o instanceof R.LastRenderedPageBreak) return ""; // do not render
         if (o instanceof Br br) return stringify(br);
         if (o instanceof R.Tab) return "\t";
@@ -194,16 +332,16 @@ public class DocxRenderer {
         if (o instanceof ProofErr) return "";
         if (o instanceof CommentRangeStart crs) return stringify(crs);
         if (o instanceof CommentRangeEnd cre) return stringify(cre);
-        if (o instanceof SdtBlock block) return stringify(block);
+        if (o instanceof SdtBlock block) return stringify(block, part);
         if (o instanceof AlternateContent) return "";
-        if (o instanceof Pict pict) return stringify(pict.getAnyAndAny());
+        if (o instanceof Pict pict) return stringify(pict.getAnyAndAny(), part);
         if (o instanceof CTShapetype) return "";
-        if (o instanceof VmlShapeElements vmlShapeElements) return stringify(vmlShapeElements);
-        if (o instanceof CTTextbox ctTextbox) return stringify(ctTextbox.getTxbxContent());
-        if (o instanceof CTTxbxContent content) return stringify(content.getContent());
+        if (o instanceof VmlShapeElements vmlShapeElements) return stringify(vmlShapeElements, part);
+        if (o instanceof CTTextbox ctTextbox) return stringify(ctTextbox.getTxbxContent(), part);
+        if (o instanceof CTTxbxContent content) return stringify(content.getContent(), part);
         if (o instanceof CTShadow) return "";
-        if (o instanceof SdtRun run) return stringify(run.getSdtContent());
-        if (o instanceof SdtContent content) return stringify(content);
+        if (o instanceof SdtRun run) return stringify(run.getSdtContent(), part);
+        if (o instanceof SdtContent content) return stringify(content, part);
         if (o instanceof R.AnnotationRef) return "";
         if (o instanceof CTFtnEdnRef ref) return "[" + ref.getId() + "]";
         if (o instanceof FootnotesPart footnotesPart) return stringify(footnotesPart).orElse("");
@@ -213,8 +351,8 @@ public class DocxRenderer {
         if (o instanceof R.FootnoteRef) return "";
         if (o instanceof R.EndnoteRef) return "";
         if (o instanceof FldChar fldChar) return stringify(fldChar).orElse("");
-        if (o instanceof P.Hyperlink hyperlink) return stringify(hyperlink).orElse("");
-        if (o instanceof CTSmartTagRun smartTagRun) return stringify(smartTagRun);
+        if (o instanceof P.Hyperlink hyperlink) return stringify(hyperlink, part).orElse("");
+        if (o instanceof CTSmartTagRun smartTagRun) return stringify(smartTagRun, part);
         if (o instanceof CTAttr ctAttr) return stringify(ctAttr);
         if (o == null) throw new RuntimeException("Unsupported content: NULL");
         throw new RuntimeException("Unsupported content: " + o.getClass());
@@ -224,54 +362,19 @@ public class DocxRenderer {
         return "%s:%s".formatted(ctAttr.getName(), ctAttr.getVal());
     }
 
-    private @NonNull String stringify(CTSmartTagRun smartTagRun) {
+    private @NonNull String stringify(CTSmartTagRun smartTagRun, Part part) {
+        var smartTagPr = smartTagRun.getSmartTagPr();
         return "<tag element=\"%s\" attr=\"%s\">%s<\\tag>".formatted(smartTagRun.getElement(),
-                stringify(smartTagRun.getSmartTagPr()
-                                     .getAttr()),
-                stringify(smartTagRun.getContent()));
+                stringify(smartTagPr.getAttr(), part),
+                stringify(smartTagRun.getContent(), part));
     }
 
-    private Optional<String> stringify(EndnotesPart endnotesPart) {
-        if (endnotesPart == null) return Optional.empty();
-        try {
-            var list = endnotesPart.getContents()
-                                   .getEndnote()
-                                   .stream()
-                                   .map(this::stringify)
-                                   .flatMap(Optional::stream)
-                                   .toList();
-            if (list.isEmpty()) return Optional.empty();
-            return Optional.of(list.stream()
-                                   .collect(joining("\n", "[endnotes]\n---\n", "\n---\n")));
-        } catch (Docx4JException e) {
-            throw new UtilsException("Error processing footnotes", e);
-        }
-    }
-
-    private Optional<String> stringify(FootnotesPart footnotesPart) {
-        if (footnotesPart == null) return Optional.empty();
-        try {
-            var list = footnotesPart.getContents()
-                                    .getFootnote()
-                                    .stream()
-                                    .map(this::stringify)
-                                    .flatMap(Optional::stream)
-                                    .toList();
-            if (list.isEmpty()) return Optional.empty();
-            return Optional.of(list.stream()
-                                   .collect(joining("\n", "[footnotes]\n---\n", "\n---\n")));
-
-        } catch (Docx4JException e) {
-            throw new UtilsException("Error processing footnotes", e);
-        }
-    }
-
-    private String stringify(JAXBElement<?> element) {
+    private String stringify(JAXBElement<?> element, Part part) {
         if (element == null) return "";
-        if (element.getName()
-                   .getLocalPart()
-                   .equals("instrText")) return "[instrText=" + stringify(element.getValue()) + "]";
-        return stringify(element.getValue());
+        var elementName = element.getName();
+        var localPart = elementName.getLocalPart();
+        if (localPart.equals("instrText")) return "[instrText=" + stringify(element.getValue(), part) + "]";
+        return stringify(element.getValue(), part);
     }
 
     private Optional<String> stringify(FldChar fldChar) {
@@ -280,26 +383,20 @@ public class DocxRenderer {
                                   .map("[fldchar %s]"::formatted);
     }
 
-    private Optional<String> stringify(P.Hyperlink hyperlink) {
-        return of("[link data=%s]".formatted(stringify(hyperlink.getContent())));
+    private Optional<String> stringify(P.Hyperlink hyperlink, Part part) {
+        return of("[link data=%s]".formatted(stringify(hyperlink.getContent(), part)));
     }
 
-    private Optional<String> stringify(CTFtnEdn c) {
-        var type = ofNullable(c.getType()).orElse(STFtnEdn.NORMAL);
-        if (STFtnEdn.NORMAL != type) return Optional.empty();
-        return Optional.of("[%s]%s".formatted(c.getId(), stringify(c.getContent())));
+    private String stringify(SdtBlock block, Part part) {
+        return stringify(block.getSdtContent(), part) + "\n";
     }
 
-    private String stringify(SdtBlock block) {
-        return stringify(block.getSdtContent()) + "\n";
+    private String stringify(SdtContent content, Part part) {
+        return "[" + stringify(content.getContent(), part).trim() + "]";
     }
 
-    private String stringify(SdtContent content) {
-        return "[" + stringify(content.getContent()).trim() + "]";
-    }
-
-    private String stringify(VmlShapeElements vmlShapeElements) {
-        return "[" + stringify(vmlShapeElements.getEGShapeElements()).trim() + "]\n";
+    private String stringify(VmlShapeElements vmlShapeElements, Part part) {
+        return "[" + stringify(vmlShapeElements.getEGShapeElements(), part).trim() + "]\n";
     }
 
     private String stringify(CommentRangeStart crs) {
@@ -310,130 +407,27 @@ public class DocxRenderer {
         return "|" + cre.getId() + ">";
     }
 
-    private String stringify(WordprocessingMLPackage mlPackage) {
-        var header = stringifyHeaders(getHeaderPart(mlPackage));
-        var mainDocumentPart = mlPackage.getMainDocumentPart();
-        var body = stringify(mainDocumentPart);
-
-        var footer = stringifyFooters(getFooterPart(mlPackage));
-        var hStr = header.map("%s\n\n"::formatted)
-                         .orElse("");
-        var fStr = footer.map("\n%s\n"::formatted)
-                         .orElse("");
-        var footnotesPart = mainDocumentPart.getFootnotesPart();
-        var endnotesPart = mainDocumentPart.getEndNotesPart();
-        return hStr + body + stringify(footnotesPart).orElse("") + stringify(endnotesPart).orElse("") + fStr;
+    private String stringify(Tc tc, Part part) {
+        var content = stringify(tc.getContent(), part);
+        return "|%s\n".formatted(content.trim());
     }
 
-    private String stringify(Tc tc) {
-        var content = stringify(tc.getContent());
-        return """
-                |%s
-                """.formatted(content.trim());
+    private String stringify(Tr tr, Part part) {
+        var content = stringify(tr.getContent(), part);
+        return "%s\n".formatted(content);
     }
 
-    private String stringify(Tr tr) {
-        var content = stringify(tr.getContent());
-        return """
-                %s
-                """.formatted(content);
+    private String stringify(Tbl tbl, Part part) {
+        var content = stringify(tbl.getContent(), part);
+        return ("|===\n%s\n|===\n").formatted(content);
     }
 
-    private String stringify(Tbl tbl) {
-        var content = stringify(tbl.getContent());
-        return """
-                |===
-                %s
-                |===
-                """.formatted(content);
+    private String stringify(Pic pic, Part part) {
+        return stringify(pic.getBlipFill(), part);
     }
 
-    private Optional<String> stringifyFooters(Stream<FooterPart> footerPart) {
-        return footerPart.map(this::stringify)
-                         .flatMap(Optional::stream)
-                         .reduce((a, b) -> a + "\n\n" + b);
-    }
-
-    private Optional<String> stringifyHeaders(Stream<HeaderPart> headerPart) {
-        return headerPart.map(this::stringify)
-                         .flatMap(Optional::stream)
-                         .reduce((a, b) -> a + "\n\n" + b);
-    }
-
-    private Optional<String> stringify(HeaderPart part) {
-        var content = stringify(part.getContent());
-        if (content.isEmpty()) return empty();
-        return of("""
-                [header, name="%s"]
-                ----
-                %s
-                ----""".formatted(part.getPartName(), content));
-    }
-
-    private Optional<String> stringify(FooterPart part) {
-        var content = stringify(part.getContent());
-        if (content.isEmpty()) return empty();
-        return of("""
-                [footer, name="%s"]
-                ----
-                %s
-                ----""".formatted(part.getPartName(), content));
-    }
-
-    private Stream<HeaderPart> getHeaderPart(WordprocessingMLPackage document) {
-        var sections = document.getDocumentModel()
-                               .getSections();
-
-        var set = new LinkedHashSet<HeaderPart>();
-        set.addAll(sections.stream()
-                           .map(SectionWrapper::getHeaderFooterPolicy)
-                           .map(HeaderFooterPolicy::getFirstHeader)
-                           .filter(Objects::nonNull)
-                           .toList());
-        set.addAll(sections.stream()
-                           .map(SectionWrapper::getHeaderFooterPolicy)
-                           .map(HeaderFooterPolicy::getDefaultHeader)
-                           .filter(Objects::nonNull)
-                           .toList());
-        set.addAll(sections.stream()
-                           .map(SectionWrapper::getHeaderFooterPolicy)
-                           .map(HeaderFooterPolicy::getEvenHeader)
-                           .filter(Objects::nonNull)
-                           .toList());
-
-        return set.stream();
-    }
-
-    private Stream<FooterPart> getFooterPart(WordprocessingMLPackage document) {
-        var sections = document.getDocumentModel()
-                               .getSections();
-
-        var set = new LinkedHashSet<FooterPart>();
-        set.addAll(sections.stream()
-                           .map(SectionWrapper::getHeaderFooterPolicy)
-                           .map(HeaderFooterPolicy::getFirstFooter)
-                           .filter(Objects::nonNull)
-                           .toList());
-        set.addAll(sections.stream()
-                           .map(SectionWrapper::getHeaderFooterPolicy)
-                           .map(HeaderFooterPolicy::getDefaultFooter)
-                           .filter(Objects::nonNull)
-                           .toList());
-        set.addAll(sections.stream()
-                           .map(SectionWrapper::getHeaderFooterPolicy)
-                           .map(HeaderFooterPolicy::getEvenFooter)
-                           .filter(Objects::nonNull)
-                           .toList());
-
-        return set.stream();
-    }
-
-    private String stringify(Pic pic) {
-        return stringify(pic.getBlipFill());
-    }
-
-    private String stringify(CTBlipFillProperties blipFillProperties) {
-        return stringify(blipFillProperties.getBlip());
+    private String stringify(CTBlipFillProperties blipFillProperties, Part part) {
+        return stringify(blipFillProperties.getBlip(), part);
     }
 
     private String stringify(R.CommentReference commentReference) {
@@ -445,33 +439,27 @@ public class DocxRenderer {
     private String stringifyComment(BigInteger id) {
         return WmlUtils.findComment(wmlPackage, id)
                        .map(Comments.Comment::getContent)
-                       .map(this::stringify)
+                       .map(l -> stringify(l, wmlPackage.getMainDocumentPart()))
                        .orElseThrow()
                        .strip();
     }
 
-    private String stringify(GraphicData graphicData) {
-        return stringify(graphicData.getPic());
+    private String stringify(GraphicData graphicData, Part part) {
+        return stringify(graphicData.getPic(), part);
     }
 
-    private String stringify(Graphic graphic) {
-        return stringify(graphic.getGraphicData());
+    private String stringify(Graphic graphic, Part part) {
+        return stringify(graphic.getGraphicData(), part);
     }
 
-    private String stringify(Inline inline) {
+    private String stringify(Inline inline, Part part) {
         var graphic = inline.getGraphic();
         var extent = inline.getExtent();
-        return "%s:%d".formatted(stringify(graphic), extent.getCx());
+        return "%s:%d".formatted(stringify(graphic, part), extent.getCx());
     }
 
-    private String stringify(Drawing drawing) {
-        return stringify(drawing.getAnchorOrInline());
-    }
-
-    private String stringify(List<?> list) {
-        return list.stream()
-                   .map(this::stringify)
-                   .collect(joining());
+    private String stringify(Drawing drawing, Part part) {
+        return stringify(drawing.getAnchorOrInline(), part);
     }
 
     /// Converts the properties of the provided [RPrAbstract] object into a string representation. The method extracts
@@ -523,8 +511,8 @@ public class DocxRenderer {
         return map.isEmpty() ? empty() : of(stringify(map));
     }
 
-    private String stringify(P p) {
-        var runs = stringify(p.getContent());
+    private String stringify(P p, Part part) {
+        var runs = stringify(p.getContent(), part);
         var ppr = stringify(p.getPPr());
         return ppr.apply(runs) + "\n\n";
     }
@@ -586,8 +574,8 @@ public class DocxRenderer {
         };
     }
 
-    private String stringify(R run) {
-        String serialized = stringify(run.getContent());
+    private String stringify(R run, Part part) {
+        String serialized = stringify(run.getContent(), part);
         if (serialized.isEmpty()) return "";
         return ofNullable(run.getRPr()).flatMap(this::stringify)
                                        .map(rPr -> "❬%s❘%s❭".formatted(serialized, rPr))

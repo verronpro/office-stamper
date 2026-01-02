@@ -29,9 +29,9 @@ public class StampTable
         this.records = records;
     }
 
-    /// empty.
+    /// Creates an empty table with a single placeholder column and row
     ///
-    /// @return a [StampTable] object
+    /// @return a [StampTable] object with placeholder content
     public static StampTable empty() {
         return new StampTable(singletonList("placeholder"), singletonList(singletonList("placeholder")));
     }
@@ -60,9 +60,9 @@ public class StampTable
         return records.listIterator(index);
     }
 
-    /// headers.
+    /// Gets the headers of the table
     ///
-    /// @return a [List] object
+    /// @return a [List] object representing the headers of the table
     public List<String> headers() {
         return headers;
     }

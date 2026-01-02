@@ -20,7 +20,6 @@ public class ReplaceWithProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IReplaceWithProcessor {
 
-
     /// Constructs a new [ReplaceWithProcessor] instance.
     ///
     /// @param processorContext the context in which this processor operates, providing access to document
@@ -28,7 +27,6 @@ public class ReplaceWithProcessor
     public ReplaceWithProcessor(ProcessorContext processorContext) {
         super(processorContext);
     }
-
 
     /// Replaces the content between the start and end of the comment with the given expression.
     ///
@@ -38,10 +36,8 @@ public class ReplaceWithProcessor
     @Override
     public void replaceWith(@Nullable String expression) {
         if (expression == null) throw new OfficeStamperException("Cannot replace with null expression");
-        var from = comment().getCommentRangeStart();
-        if (from == null) throw new OfficeStamperException("Cannot replace with no comment range start");
+        var from = comment().getStartTagRun();
         var to = comment().getCommentRangeEnd();
-        if (to == null) throw new OfficeStamperException("Cannot replace with no comment range end");
         paragraph().replace(from, to, new Insert(newRun(expression)));
     }
 }

@@ -2,9 +2,10 @@ package pro.verron.officestamper.core;
 
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 public class TagHook
-        implements Hook {
+        implements DocxHook {
     private final Tag tag;
     private final DocxPart part;
 
@@ -16,20 +17,21 @@ public class TagHook
     @Override
     public boolean run(
             EngineFactory engineFactory,
-            ContextTree contextTree,
+            ContextRoot contextRoot,
             OfficeStamperEvaluationContextFactory evaluationContextFactory
     ) {
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();
         var expression = tag.expression();
-        var contextStack = contextTree.find(tag.getContextKey());
+        var contextKey = tag.getContextKey();
+        var contextStack = contextRoot.find(contextKey);
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
         var tagType = tag.type()
                          .orElse(null);
         boolean processed = false;
-        if ("processor".equals(tagType)) {
+        if ("inlineProcessor".equals(tagType)) {
             if (engine.process(evaluationContext)) processed = true;
             tag.remove();
         }
@@ -43,7 +45,7 @@ public class TagHook
 
     @Override
     public void setContextKey(String contextKey) {
-        tag.setContextKey(contextKey);
+        WmlUtils.setTagAttribute(tag.tag(), "context", contextKey);
     }
 
 }

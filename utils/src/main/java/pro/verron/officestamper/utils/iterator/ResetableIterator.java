@@ -40,6 +40,21 @@ public interface ResetableIterator<T>
         return new FilteringIterator<>(this, predicate);
     }
 
+
+    /// Returns a new [ResetableIterator] that provides a slice of the original iterator's elements.
+    ///
+    /// This method creates a new iterator that wraps the current iterator and provides only the elements between the
+    /// specified start and end elements. The slicing is performed by iterating through the elements and including those
+    /// that fall within the specified range.
+    ///
+    /// @param start the starting element of the slice (inclusive)
+    /// @param end the ending element of the slice (inclusive)
+    ///
+    /// @return a new [ResetableIterator] instance that provides the sliced elements
+    default ResetableIterator<T> slice(T start, T end) {
+        return new SlicingIterator<>(this, start, end);
+    }
+
     /// Returns a new [ResetableIterator] that applies the given function to each element.
     ///
     /// This method creates a new iterator that wraps the current iterator and applies the provided function to

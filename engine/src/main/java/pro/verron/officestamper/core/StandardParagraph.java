@@ -2,10 +2,7 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.wml.*;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Insert;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
@@ -17,6 +14,7 @@ import java.util.function.Consumer;
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 import static pro.verron.officestamper.utils.wml.WmlUtils.getFirstParentWithClass;
+import static pro.verron.officestamper.utils.wml.WmlUtils.isTagElement;
 
 /// Represents a wrapper for managing and manipulating DOCX paragraph elements. This class provides methods to
 /// manipulate the underlying paragraph content, process placeholders, and interact with runs within the paragraph.
@@ -42,6 +40,8 @@ public class StandardParagraph
         return switch (parent) {
             case P p -> from(part, p);
             case CTSdtContentRun contentRun -> from(part, contentRun);
+            case CTSmartTagRun smartTagRun when isTagElement(smartTagRun, "officestamper") ->
+                    from(part, smartTagRun.getParent());
             default -> throw new OfficeStamperException("Unsupported parent type: " + parent.getClass());
         };
     }
@@ -180,6 +180,16 @@ public class StandardParagraph
     @Override
     public Collection<Comments.Comment> getComment() {
         return CommentUtil.getCommentFor(() -> p, part.document());
+    }
+
+    @Override
+    public Optional<Table.Row> parentTableRow() {
+        return parent(Tr.class).map((Tr tr) -> new StandardRow(part, (Tbl) tr.getParent(), tr));
+    }
+
+    @Override
+    public Optional<Table> parentTable() {
+        return parent(Tbl.class).map(StandardTable::new);
     }
 
     /// Returns the string representation of the paragraph. This method delegates to the `asString` method to aggregate

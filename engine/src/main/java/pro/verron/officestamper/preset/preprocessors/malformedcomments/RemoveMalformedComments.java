@@ -13,47 +13,67 @@ import pro.verron.officestamper.api.PreProcessor;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 
+/// This pre-processor removes malformed comments from a WordprocessingMLPackage document.
+///
+/// Malformed comments are those that:
+///
+///     - Are opened but never closed (unbalanced comments)
+///     - Are referenced in the document body but have no corresponding comment content
+///
+///
+/// The processor traverses all comment-related elements in the document, validates their structure, and removes any
+/// malformed comment references, range starts, and range ends.
+///
+/// @author Joseph Verron
+/// @version ${version}
 public class RemoveMalformedComments
         implements PreProcessor {
     private static final Logger log = LoggerFactory.getLogger(RemoveMalformedComments.class);
 
-    @Override public void process(WordprocessingMLPackage document) {
+    @Override
+    public void process(WordprocessingMLPackage document) {
         var commentElements = WmlUtils.extractCommentElements(document);
 
         var commentIds = new ArrayList<BigInteger>(commentElements.size());
         var openedCommentsIds = new ArrayDeque<BigInteger>();
         for (Child commentElement : commentElements) {
-            if (commentElement instanceof CommentRangeStart crs) {
-                var lastOpenedCommentId = crs.getId();
-                assert lastOpenedCommentId != null;
-                log.debug("Comment {} opened.", lastOpenedCommentId);
-                commentIds.add(lastOpenedCommentId);
-                openedCommentsIds.add(lastOpenedCommentId);
-            }
-            else if (commentElement instanceof CommentRangeEnd cre) {
-                var lastClosedCommentId = cre.getId();
-                assert lastClosedCommentId != null;
-                log.debug("Comment {} closed.", lastClosedCommentId);
-                commentIds.add(lastClosedCommentId);
-
-                var lastOpenedCommentId = openedCommentsIds.pollLast();
-                if (!lastClosedCommentId.equals(lastOpenedCommentId)) {
-                    log.debug("Comment {} is closing just after comment {} starts.",
-                            lastClosedCommentId,
-                            lastOpenedCommentId);
-                    throw new OfficeStamperException("Cannot figure which comment contains the other !");
+            switch (commentElement) {
+                case CommentRangeStart crs -> {
+                    var lastOpenedCommentId = crs.getId();
+                    assert lastOpenedCommentId != null;
+                    log.trace("Comment {} opened.", lastOpenedCommentId);
+                    commentIds.add(lastOpenedCommentId);
+                    openedCommentsIds.add(lastOpenedCommentId);
                 }
-            }
-            else if (commentElement instanceof R.CommentReference cr) {
-                var commentId = cr.getId();
-                assert commentId != null;
-                log.debug("Comment {} referenced.", commentId);
-                commentIds.add(commentId);
+                case CommentRangeEnd cre -> {
+                    var lastClosedCommentId = cre.getId();
+                    assert lastClosedCommentId != null;
+                    log.trace("Comment {} closed.", lastClosedCommentId);
+                    commentIds.add(lastClosedCommentId);
+
+                    var lastOpenedCommentId = openedCommentsIds.pollLast();
+                    if (!lastClosedCommentId.equals(lastOpenedCommentId)) {
+                        log.debug("Comment {} is closing just after comment {} starts.",
+                                lastClosedCommentId,
+                                lastOpenedCommentId);
+                        throw new OfficeStamperException("Cannot figure which comment contains the other !");
+                    }
+                }
+                case R.CommentReference cr -> {
+                    var commentId = cr.getId();
+                    assert commentId != null;
+                    log.trace("Comment {} referenced.", commentId);
+                    commentIds.add(commentId);
+                }
+                default -> { /* Do Nothing */ }
             }
         }
 
@@ -61,14 +81,14 @@ public class RemoveMalformedComments
         var malformedCommentIds = new ArrayList<>(openedCommentsIds);
 
         var mainDocumentPart = document.getMainDocumentPart();
-        Set<BigInteger> writtenCommentsId = Optional.ofNullable(mainDocumentPart.getCommentsPart())
-                                                    .map(RemoveMalformedComments::tryGetCommentsPart)
-                                                    .map(Comments::getComment)
-                                                    .orElse(emptyList())
-                                                    .stream()
-                                                    .filter(c -> !isEmpty(c))
-                                                    .map(CTMarkup::getId)
-                                                    .collect(toSet());
+        var writtenCommentsId = Optional.ofNullable(mainDocumentPart.getCommentsPart())
+                                        .map(RemoveMalformedComments::tryGetCommentsPart)
+                                        .map(Comments::getComment)
+                                        .orElse(emptyList())
+                                        .stream()
+                                        .filter(c -> !isEmpty(c))
+                                        .map(CTMarkup::getId)
+                                        .collect(toSet());
 
         commentIds.removeAll(writtenCommentsId);
 
@@ -96,5 +116,4 @@ public class RemoveMalformedComments
         var content = c.getContent();
         return content == null || content.isEmpty();
     }
-
 }

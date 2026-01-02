@@ -11,10 +11,11 @@ import pro.verron.officestamper.api.EvaluationContextFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-/// Utility class for configuring the EvaluationContext used by officestamper.
+import static java.util.Collections.emptyList;
+
+/// Utility class for configuring the [EvaluationContext] used by officestamper.
 public class EvaluationContextFactories {
 
     private EvaluationContextFactories() {
@@ -22,7 +23,7 @@ public class EvaluationContextFactories {
     }
 
     /// Returns an [EvaluationContextFactory] instance that does no customization.
-    /// This factory does nothing to the StandardEvaluationContext class, and therefore all the unfiltered features
+    /// This factory does nothing to the [StandardEvaluationContext] class, and therefore all the unfiltered features
     /// are accessible. It should be used when there is a need to use the powerful features of the aforementioned class,
     /// and there is a trust that the template won't contain any dangerous injections.
     ///
@@ -53,7 +54,7 @@ public class EvaluationContextFactories {
             };
             standardEvaluationContext.setPropertyAccessors(List.of(DataBindingPropertyAccessor.forReadWriteAccess(),
                     new MapAccessor()));
-            standardEvaluationContext.setConstructorResolvers(Collections.emptyList());
+            standardEvaluationContext.setConstructorResolvers(emptyList());
             standardEvaluationContext.setMethodResolvers(new ArrayList<>(List.of(DataBindingMethodResolver.forInstanceMethodInvocation())));
             standardEvaluationContext.setBeanResolver((_, _) -> {
                 throw new AccessException("Bean resolution not supported for security reasons.");

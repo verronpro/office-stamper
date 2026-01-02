@@ -3,13 +3,11 @@ package pro.verron.officestamper.core;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
-import org.springframework.expression.ExpressionParser;
 import pro.verron.officestamper.api.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import static org.docx4j.openpackaging.parts.relationships.Namespaces.FOOTER;
 import static org.docx4j.openpackaging.parts.relationships.Namespaces.HEADER;
@@ -27,58 +25,31 @@ public class DocxStamper
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
     private final EngineFactory engineFactory;
-    private final EvaluationContextFactory evaluationContextFactory;
-    private final Map<Class<?>, Object> expressionFunctions;
-    private final List<CustomFunction> functions;
-    private final Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors;
+    private final EvaluationContextFactory contextFactory;
+    private final Map<Class<?>, Object> interfaceFunctions;
+    private final List<CustomFunction> customFunctions;
+    private final Map<Class<?>, CommentProcessorFactory> commentProcessors;
 
     /// Creates new [DocxStamper] with the given configuration.
     ///
     /// @param configuration the configuration to use for this [DocxStamper].
     public DocxStamper(OfficeStamperConfiguration configuration) {
-        this(configuration.getEvaluationContextFactory(),
-                configuration.getExpressionFunctions(),
-                configuration.customFunctions(),
-                configuration.getResolvers(),
-                configuration.getCommentProcessors(),
-                configuration.getPreprocessors(),
-                configuration.getPostprocessors(),
-                configuration.getExceptionResolver(),
-                configuration.getExpressionParser());
-    }
-
-    private DocxStamper(
-            EvaluationContextFactory evaluationContextFactory,
-            Map<Class<?>, Object> expressionFunctions,
-            List<CustomFunction> functions,
-            List<ObjectResolver> resolvers,
-            Map<Class<?>, CommentProcessorFactory> configurationCommentProcessors,
-            List<PreProcessor> preprocessors,
-            List<PostProcessor> postprocessors,
-            ExceptionResolver exceptionResolver,
-            ExpressionParser expressionParser
-    ) {
-        this.evaluationContextFactory = evaluationContextFactory;
-        this.expressionFunctions = expressionFunctions;
-        this.functions = functions;
-        this.configurationCommentProcessors = configurationCommentProcessors;
-        engineFactory = computeEngine(resolvers, exceptionResolver, expressionParser);
-        this.preprocessors = new ArrayList<>(preprocessors);
-        this.postprocessors = new ArrayList<>(postprocessors);
-    }
-
-    private EngineFactory computeEngine(
-            List<ObjectResolver> resolvers,
-            ExceptionResolver exceptionResolver,
-            ExpressionParser expressionParser
-    ) {
-        return processorContext -> {
-            var typeResolverRegistry = new ObjectResolverRegistry(resolvers);
-            return new Engine(expressionParser, exceptionResolver, typeResolverRegistry, processorContext);
+        this.contextFactory = configuration.getEvaluationContextFactory();
+        this.interfaceFunctions = configuration.getExpressionFunctions();
+        this.customFunctions = configuration.customFunctions();
+        this.commentProcessors = configuration.getCommentProcessors();
+        this.engineFactory = processorContext -> {
+            var expressionParser = configuration.getExpressionParser();
+            var exceptionResolver = configuration.getExceptionResolver();
+            var resolvers = configuration.getResolvers();
+            var registry = new ObjectResolverRegistry(resolvers);
+            return new Engine(expressionParser, exceptionResolver, registry, processorContext);
         };
+        this.preprocessors = new ArrayList<>(configuration.getPreprocessors());
+        this.postprocessors = new ArrayList<>(configuration.getPostprocessors());
     }
 
-    /// Reads in a .docx template and "stamps" it into the given OutputStream, using the specified context object to
+    /// Reads in a .docx template and "stamps" it, using the specified context object to
     /// fill out any expressions it finds.
     ///
     /// In the .docx template you have the following options to influence the "stamping" process:
@@ -94,7 +65,7 @@ public class DocxStamper
     /// within the table cells against one of the objects within the list.
     ///
     /// If you need a wider vocabulary of methods available in the comments, you can create your own [CommentProcessor]
-    /// and register it via [OfficeStamperConfiguration#addCommentProcessor(Class, Function)].
+    /// and register it via [OfficeStamperConfiguration#addCommentProcessor(Class, CommentProcessorFactory)].
     ///
     /// @param document the .docx template to stamp
     /// @param contextRoot the context object to use for stamping
@@ -136,19 +107,18 @@ public class DocxStamper
     }
 
     private void process(DocxPart part, Object contextRoot) {
-        var contextTree = new ContextTree(contextRoot);
-        var iterator = Hook.ofHooks(part::content, part);
+        var contextTree = new ContextRoot(contextRoot);
+        var iterator = DocxHook.ofHooks(part::content, part);
         while (iterator.hasNext()) {
             var hook = iterator.next();
-            var officeStamperEvaluationContextFactory = computeEvaluationContext();
-            if (hook.run(engineFactory, contextTree, officeStamperEvaluationContextFactory)) iterator.reset();
+            var officeStamperContextFactory = new OfficeStamperEvaluationContextFactory(customFunctions,
+                    commentProcessors,
+                    interfaceFunctions,
+                    contextFactory);
+            if (hook.run(engineFactory, contextTree, officeStamperContextFactory)) {
+                iterator.reset();
+            }
         }
     }
 
-    private OfficeStamperEvaluationContextFactory computeEvaluationContext() {
-        return new OfficeStamperEvaluationContextFactory(functions,
-                configurationCommentProcessors,
-                expressionFunctions,
-                evaluationContextFactory);
-    }
 }

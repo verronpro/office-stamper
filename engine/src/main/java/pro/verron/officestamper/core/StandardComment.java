@@ -3,18 +3,14 @@ package pro.verron.officestamper.core;
 import org.docx4j.TextUtils;
 import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.utils.wml.WmlFactory.*;
@@ -28,19 +24,30 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 /// @since 1.0.2
 public class StandardComment
         implements Comment {
-    private static final Logger log = LoggerFactory.getLogger(StandardComment.class);
-    private final Set<Comment> children = new HashSet<>();
     private final DocxPart part;
-    private Comments.Comment comment;
-    private CommentRangeStart commentRangeStart;
-    private CommentRangeEnd commentRangeEnd;
-    private CommentReference commentReference;
+    private final Comments.Comment comment;
+    private final CommentRangeStart commentRangeStart;
+    private final CommentRangeEnd commentRangeEnd;
+    private final @Nullable CommentReference commentReference;
+    private final CTSmartTagRun startTagRun;
 
     /// Constructs a new [StandardComment] object.
     ///
     /// @param part the [DocxPart] representing the document section this comment belongs to
-    public StandardComment(DocxPart part) {
+    public StandardComment(
+            DocxPart part,
+            CTSmartTagRun startTagRun,
+            CommentRangeStart commentRangeStart,
+            CommentRangeEnd commentRangeEnd,
+            Comments.Comment comment,
+            @Nullable CommentReference commentReference
+    ) {
         this.part = part;
+        this.startTagRun = startTagRun;
+        this.commentRangeStart = commentRangeStart;
+        this.commentRangeEnd = commentRangeEnd;
+        this.comment = comment;
+        this.commentReference = commentReference;
     }
 
     /// Creates a new instance of [StandardComment] and initializes it with the given parameters, including a comment,
@@ -53,55 +60,50 @@ public class StandardComment
     ///
     /// @return a [StandardComment] instance initialized with the specified parameters
     public static StandardComment create(DocxPart document, ContentAccessor parent, String expression, BigInteger id) {
-        var commentWrapper = new StandardComment(document);
-        commentWrapper.setComment(newComment(id, expression));
-        commentWrapper.setCommentRangeStart(newCommentRangeStart(id, parent));
-        commentWrapper.setCommentRangeEnd(newCommentRangeEnd(id, parent));
-        commentWrapper.setCommentReference(newCommentReference(id, parent));
-        return commentWrapper;
+        var start = newCommentRangeStart(id, parent);
+        return new StandardComment(document,
+                newSmartTag("officestamper", newCtAttr("type", "processor"), start),
+                start,
+                newCommentRangeEnd(id, parent),
+                newComment(id, expression),
+                newCommentReference(id, parent));
     }
 
     /// Generates a string representation of the [StandardComment] object, including its ID, content, and the amount
-    /// children comments.
+    /// children comment.
     ///
     /// @return a formatted string describing the [StandardComment]'s properties, including its ID, content, and the
     ///         size of its children.
     @Override
     public String toString() {
-        return "StandardComment{comment={id=%s, content=%s, children=%s}}}".formatted(comment.getId(),
+        return "StandardComment{comment={id=%s, content=%s}}}".formatted(comment.getId(),
                 comment.getContent()
                        .stream()
                        .map(TextUtils::getText)
-                       .collect(Collectors.joining(",")),
-                children.size());
+                       .collect(joining(",")));
     }
 
-    /// {@inheritDoc}
     @Override
     public Paragraph getParagraph() {
         var parent = commentRangeStart.getParent();
         return StandardParagraph.from(part, parent);
     }
 
-    /// {@inheritDoc}
+    @Override
+    public CTSmartTagRun getStartTagRun() {
+        return startTagRun;
+    }
+
     @Override
     public CommentRangeStart getCommentRangeStart() {
         return commentRangeStart;
     }
 
-    /// Sets the starting point of the comment range for the current comment.
-    ///
-    /// @param commentRangeStart the [CommentRangeStart] object representing the beginning of the comment range
-    public void setCommentRangeStart(CommentRangeStart commentRangeStart) {
-        this.commentRangeStart = commentRangeStart;
-    }
-
     @Override
     public ContentAccessor getParent() {
-        return DocumentUtil.findSmallestCommonParent(commentRangeStart, getCommentRangeEnd());
+        return DocumentUtil.findSmallestCommonParent(commentRangeStart, commentRangeEnd);
     }
 
-    /// {@inheritDoc}
     @Override
     public List<Object> getElements() {
         List<Object> elements = new ArrayList<>();
@@ -111,7 +113,7 @@ public class StandardComment
         for (Object element : siblings) {
             startFound = startFound || DocumentUtil.depthElementSearch(commentRangeStart, element);
             if (startFound && !endFound) elements.add(element);
-            endFound = endFound || DocumentUtil.depthElementSearch(getCommentRangeEnd(), element);
+            endFound = endFound || DocumentUtil.depthElementSearch(commentRangeEnd, element);
         }
         return elements;
     }
@@ -121,46 +123,16 @@ public class StandardComment
         return commentRangeEnd;
     }
 
-    /// Sets the comment range end for the current comment.
-    ///
-    /// @param commentRangeEnd the [CommentRangeEnd] object representing the end of the comment range
-    public void setCommentRangeEnd(CommentRangeEnd commentRangeEnd) {
-        this.commentRangeEnd = commentRangeEnd;
-    }
-
-    /// {@inheritDoc}
     @Override
-    public CommentReference getCommentReference() {
+    public @Nullable CommentReference getCommentReference() {
         return commentReference;
     }
 
-    /// Sets the comment reference for the current comment.
-    ///
-    /// @param commentReference the [CommentReference] object to associate with this comment
-    public void setCommentReference(CommentReference commentReference) {
-        this.commentReference = commentReference;
-    }
-
-    /// {@inheritDoc}
-    @Override
-    public Set<Comment> getChildren() {
-        return children;
-    }
-
-    /// {@inheritDoc}
     @Override
     public Comments.Comment getComment() {
         return comment;
     }
 
-    /// Sets the comment for the current [StandardComment].
-    ///
-    /// @param comment the [Comments.Comment] object to associate with this [StandardComment]
-    public void setComment(Comments.Comment comment) {
-        this.comment = comment;
-    }
-
-    /// {@inheritDoc}
     @Override
     public String expression() {
         return this.getComment()
@@ -173,33 +145,8 @@ public class StandardComment
                    .collect(joining());
     }
 
-    /// {@inheritDoc}
-    ///
-    /// We expects the author field of the comment to be an integer representing the context ID. If it is not found,
-    /// then we return the root context with index 0.
     @Override
-    public String getContextKey() {
-        var author = comment.getAuthor();
-        if (author == null) return String.valueOf(0);
-        try {
-            return String.valueOf(Integer.parseInt(author));
-        } catch (NumberFormatException _) {
-            log.debug("Expected an context id in the author field: found '{}'", author);
-            return String.valueOf(0);
-        }
+    public BigInteger getId() {
+        return comment.getId();
     }
-
-    @Override
-    public void setContextKey(String contextKey) {
-        comment.setAuthor(contextKey);
-    }
-
-    /// Adds a [Comment] to this comment children set.
-    ///
-    /// @param comment the child comment to be added
-    public void addChild(Comment comment) {
-        children.add(comment);
-    }
-
-
 }

@@ -14,9 +14,7 @@ public final class LocalDateTimeResolver
         extends StringResolver<LocalDateTime> {
     private final DateTimeFormatter formatter;
 
-    /// Creates a new resolver that uses [DateTimeFormatter#ISO_LOCAL_DATE_TIME] to format
-    /// [LocalDateTime]
-    /// values.
+    /// Creates a new resolver that uses [DateTimeFormatter#ISO_LOCAL_DATE_TIME] to format [LocalDateTime] values.
     public LocalDateTimeResolver() {
         this(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
@@ -29,7 +27,6 @@ public final class LocalDateTimeResolver
         this.formatter = formatter;
     }
 
-    /// {@inheritDoc}
     @Override
     protected String resolve(LocalDateTime localDateTime) {
         return localDateTime.format(formatter);

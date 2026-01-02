@@ -3,29 +3,35 @@ package pro.verron.officestamper.core;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 public class CommentHook
-        implements Hook {
+        implements DocxHook {
     private final DocxPart part;
+    private final Tag tag;
     private final Comment comment;
 
-    CommentHook(DocxPart part, Comment comment) {
+    CommentHook(DocxPart part, Tag tag, Comment comment) {
         this.part = part;
+        this.tag = tag;
         this.comment = comment;
     }
 
     @Override
     public boolean run(
             EngineFactory engineFactory,
-            ContextTree contextTree,
-            OfficeStamperEvaluationContextFactory officeStamperEvaluationContextFactory
+            ContextRoot contextRoot,
+            OfficeStamperEvaluationContextFactory evaluationContextFactory
     ) {
-        var paragraph = comment.getParagraph();
+        var comment = this.comment;
+        var paragraph = tag.getParagraph();
         var expression = comment.expression();
-        var contextStack = contextTree.find(comment.getContextKey());
+        var contextKey = tag.getContextKey();
+        var contextStack = contextRoot.find(contextKey);
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
+        var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
-        if (engine.process(officeStamperEvaluationContextFactory.create(processorContext, contextStack))) {
+        if (engine.process(evaluationContext)) {
             CommentUtil.deleteComment(comment);
             return true;
         }
@@ -34,7 +40,7 @@ public class CommentHook
 
     @Override
     public void setContextKey(String contextKey) {
-        comment.setContextKey(contextKey);
+        WmlUtils.setTagAttribute(tag.tag(), "context", contextKey);
     }
 
 }

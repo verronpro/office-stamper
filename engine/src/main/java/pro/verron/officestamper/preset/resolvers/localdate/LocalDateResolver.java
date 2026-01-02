@@ -27,7 +27,6 @@ public final class LocalDateResolver
         this.formatter = formatter;
     }
 
-    /// {@inheritDoc}
     @Override
     protected String resolve(LocalDate localDateTime) {
         return localDateTime.format(formatter);

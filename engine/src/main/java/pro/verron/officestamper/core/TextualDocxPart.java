@@ -2,15 +2,10 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
-import org.docx4j.wml.*;
-import org.jvnet.jaxb2_commons.ppp.Child;
-import pro.verron.officestamper.api.Comment;
+import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.utils.wml.WmlUtils;
 
-import java.math.BigInteger;
-import java.util.*;
+import java.util.List;
 
 /// Represents a textual part of a DOCX document, encapsulating the content and structure of the part while enabling
 /// various operations such as accessing paragraphs, runs, and related parts. This class functions as a concrete
@@ -40,77 +35,11 @@ public final class TextualDocxPart
         this.contentAccessor = contentAccessor;
     }
 
-    @Override
-    public Optional<Comment> comment(BigInteger id) {
-        return Optional.ofNullable(comments().get(id));
-    }
-
-    static void onRangeStart(
-            DocxPart source,
-            CommentRangeStart crs,
-            Map<BigInteger, StandardComment> allComments,
-            Queue<StandardComment> stack,
-            Map<BigInteger, Comment> rootComments
-    ) {
-        StandardComment comment = allComments.get(crs.getId());
-        if (comment == null) {
-            comment = new StandardComment(source);
-            allComments.put(crs.getId(), comment);
-            if (stack.isEmpty()) {
-                rootComments.put(crs.getId(), comment);
-            }
-            else {
-                stack.peek()
-                     .addChild(comment);
-            }
-        }
-        comment.setCommentRangeStart(crs);
-        stack.add(comment);
-    }
-
-    static void onRangeEnd(
-            CommentRangeEnd cre,
-            Map<BigInteger, StandardComment> allComments,
-            Queue<StandardComment> stack
-    ) {
-        StandardComment comment = allComments.get(cre.getId());
-        if (comment == null)
-            throw new OfficeStamperException("Found a comment range end before the comment range start !");
-
-        comment.setCommentRangeEnd(cre);
-
-        if (!stack.isEmpty()) {
-            var peek = stack.peek();
-            if (peek.equals(comment)) stack.remove();
-            else throw new OfficeStamperException("Cannot figure which comment contains the other !");
-        }
-    }
-
-    static void onReference(DocxPart source, R.CommentReference cr, Map<BigInteger, StandardComment> allComments) {
-        StandardComment comment = allComments.get(cr.getId());
-        if (comment == null) {
-            comment = new StandardComment(source);
-            allComments.put(cr.getId(), comment);
-        }
-        comment.setCommentReference(cr);
-    }
-
     /// Retrieves the part associated with this instance of the document part.
     ///
     /// @return the [Part] object representing the specific part associated with this instance.
     @Override
     public Part part() {return part;}
-
-    /// Creates a new instance of [DocxPart] using the provided [ContentAccessor].
-    ///
-    /// @param accessor the content accessor associated with the document part to derive a new instance.
-    ///
-    /// @return a new instance of [DocxPart], specifically a [TextualDocxPart], initialized with the given content
-    ///         accessor.
-    @Override
-    public DocxPart from(ContentAccessor accessor) {
-        return new TextualDocxPart(document, part, accessor);
-    }
 
     /// Retrieves the list of content objects associated with this document part.
     ///
@@ -118,39 +47,8 @@ public final class TextualDocxPart
     @Override
     public List<Object> content() {return contentAccessor.getContent();}
 
-    @Override
-    public String type() {
-        return part.getRelationshipType();
-    }
-
-    @Override
-    public Map<BigInteger, Comment> comments() {
-        var rootComments = new HashMap<BigInteger, Comment>();
-        var allComments = new HashMap<BigInteger, StandardComment>();
-        var stack = Collections.asLifoQueue(new ArrayDeque<StandardComment>());
-
-        var list = WmlUtils.extractCommentElements(document);
-        for (Child commentElement : list) {
-            if (commentElement instanceof CommentRangeStart crs)
-                onRangeStart(this, crs, allComments, stack, rootComments);
-            else if (commentElement instanceof CommentRangeEnd cre) onRangeEnd(cre, allComments, stack);
-            else if (commentElement instanceof R.CommentReference cr) onReference(this, cr, allComments);
-        }
-        CommentUtil.getCommentsPart(document.getParts())
-                   .map(CommentUtil::extractContent)
-                   .map(Comments::getComment)
-                   .stream()
-                   .flatMap(Collection::stream)
-                   .filter(comment -> allComments.containsKey(comment.getId()))
-                   .forEach(comment -> allComments.get(comment.getId())
-                                                  .setComment(comment));
-        return new HashMap<>(rootComments);
-    }
-
     /// Returns the [WordprocessingMLPackage] instance representing the document associated with this part.
     ///
     /// @return the [WordprocessingMLPackage] instance representing the document.
     public WordprocessingMLPackage document() {return document;}
-
-
 }

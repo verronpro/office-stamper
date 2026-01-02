@@ -1,24 +1,32 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.CommentRangeEnd;
-import org.docx4j.wml.CommentRangeStart;
-import org.docx4j.wml.Comments;
-import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import org.jspecify.annotations.Nullable;
 
+import java.math.BigInteger;
 import java.util.List;
-import java.util.Set;
 
 /// The Comment interface provides methods for managing comments in a document.
 public interface Comment {
 
+
+    /// Retrieves the paragraph associated with this comment.
+    ///
+    /// @return the [Paragraph] object associated with this comment
     Paragraph getParagraph();
+
+    //TODO: Remove this visibility change
+
+    /// Retrieves the CTSmartTagRun object associated with the start of this comment.
+    ///
+    /// @return the [CTSmartTagRun] object representing the start tag run of the comment
+    CTSmartTagRun getStartTagRun();
 
     /// Retrieves the CommentRangeStart object associated with this comment.
     ///
     /// @return the [CommentRangeStart] object associated with this comment
-    @Nullable CommentRangeStart getCommentRangeStart();
+    CommentRangeStart getCommentRangeStart();
 
     /// Retrieves the parent of the comment.
     ///
@@ -33,29 +41,22 @@ public interface Comment {
     /// Retrieves the [CommentRangeEnd] object associated with this comment.
     ///
     /// @return the [CommentRangeEnd] object associated with this comment
-    @Nullable CommentRangeEnd getCommentRangeEnd();
+    CommentRangeEnd getCommentRangeEnd();
 
     /// Retrieves the [CommentReference] object associated with this comment.
     ///
     /// @return the [CommentReference] object associated with this comment
     @Nullable CommentReference getCommentReference();
 
-    /// Retrieves the children of the comment.
-    ///
-    /// @return a set of Comment objects representing the children of the comment
-    Set<Comment> getChildren();
-
     /// Retrieves the comment associated with this object.
     ///
     /// @return the comment associated with this object
-    Comments.@Nullable Comment getComment();
+    Comments.Comment getComment();
 
     /// Retrieves the expression associated with the implementing entity.
     ///
     /// @return a string representing the expression
     String expression();
 
-    String getContextKey();
-
-    void setContextKey(String key);
+    BigInteger getId();
 }

@@ -1,18 +1,14 @@
 package pro.verron.officestamper.preset.processors.displayif;
 
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.Tbl;
-import org.docx4j.wml.Tr;
+
 import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
@@ -26,21 +22,12 @@ public class DisplayIfProcessor
         extends CommentProcessor
         implements CommentProcessorFactory.IDisplayIfProcessor {
 
-    private final List<Paragraph> paragraphsToBeRemoved = new ArrayList<>();
-    private final List<Child> elementsToBeRemoved = new ArrayList<>();
 
-    private DisplayIfProcessor(ProcessorContext processorContext) {
+    /// Creates a new [DisplayIfProcessor].
+    ///
+    /// @param processorContext the context in which this processor runs
+    public DisplayIfProcessor(ProcessorContext processorContext) {
         super(processorContext);
-    }
-
-
-    /// Creates a new DisplayIfProcessor instance.
-    ///
-    /// @param processorContext the [ProcessorContext] used for processing expressions.
-    ///
-    /// @return a new DisplayIfProcessor instance.
-    public static CommentProcessor newInstance(ProcessorContext processorContext) {
-        return new DisplayIfProcessor(processorContext);
     }
 
     @Override
@@ -51,9 +38,8 @@ public class DisplayIfProcessor
     @Override
     public void displayParagraphIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        paragraphsToBeRemoved.add(paragraph());
-        paragraphsToBeRemoved.forEach(Paragraph::remove);
-        elementsToBeRemoved.forEach(WmlUtils::remove);
+        context().paragraph()
+                 .remove();
     }
 
     @Override
@@ -61,15 +47,12 @@ public class DisplayIfProcessor
         displayParagraphIf(condition != null);
     }
 
-
     @Override
     public void displayTableRowIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var tr = paragraph().parent(Tr.class)
-                            .orElseThrow(throwing("Paragraph is not within a row!"));
-        elementsToBeRemoved.add(tr);
-        paragraphsToBeRemoved.forEach(Paragraph::remove);
-        elementsToBeRemoved.forEach(WmlUtils::remove);
+        context().tableRow()
+                 .orElseThrow(throwing("Paragraph is not within a row!"))
+                 .remove();
     }
 
     @Override
@@ -85,11 +68,9 @@ public class DisplayIfProcessor
     @Override
     public void displayTableIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var tbl = paragraph().parent(Tbl.class)
-                             .orElseThrow(throwing("Paragraph is not within a table!"));
-        elementsToBeRemoved.add(tbl);
-        paragraphsToBeRemoved.forEach(Paragraph::remove);
-        elementsToBeRemoved.forEach(WmlUtils::remove);
+        context().table()
+                 .orElseThrow(throwing("Paragraph is not within a table!"))
+                 .remove();
     }
 
     @Override
@@ -105,20 +86,13 @@ public class DisplayIfProcessor
     @Override
     public void displayWordsIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        var start = comment().getCommentRangeStart();
-        var end = comment().getCommentRangeEnd();
-        var parent = (ContentAccessor) start.getParent();
-        var startIndex = parent.getContent()
-                               .indexOf(start);
-        var iterator = parent.getContent()
-                             .listIterator(startIndex);
+        var iterator = context().contentIterator();
+        var toRemove = new ArrayList<Child>();
         while (iterator.hasNext()) {
             var it = iterator.next();
-            elementsToBeRemoved.add((Child) it);
-            if (it.equals(end)) break;
+            toRemove.add((Child) it);
         }
-        paragraphsToBeRemoved.forEach(Paragraph::remove);
-        elementsToBeRemoved.forEach(WmlUtils::remove);
+        toRemove.forEach(WmlUtils::remove);
     }
 
     @Override
@@ -137,8 +111,6 @@ public class DisplayIfProcessor
         comment().getParent()
                  .getContent()
                  .removeAll(comment().getElements());
-        paragraphsToBeRemoved.forEach(Paragraph::remove);
-        elementsToBeRemoved.forEach(WmlUtils::remove);
     }
 
     @Override

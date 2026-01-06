@@ -92,7 +92,7 @@ public class RemoveMalformedComments
 
         commentIds.removeAll(writtenCommentsId);
 
-        log.debug("These comments have been referenced in body, but have no related content: {}", commentIds);
+        if (!commentIds.isEmpty()) log.debug("Comments referenced in body, without related content: {}", commentIds);
         malformedCommentIds.addAll(commentIds);
 
         var crVisitor = new CommentReferenceRemoverVisitor(malformedCommentIds);

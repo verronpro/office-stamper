@@ -20,12 +20,13 @@ class CommentRangeEndRemoverVisitor
         this.ids = ids;
     }
 
-    @Override public void apply(CommentRangeEnd element, Object parent, List<Object> siblings) {
+    @Override
+    public void apply(CommentRangeEnd element, Object parent, List<Object> siblings) {
         if (ids.contains(element.getId())) toRemove.put(element, siblings);
     }
 
     void run() {
-        log.debug("Removed Comment Range Ends: {}", toRemove);
+        if (!toRemove.isEmpty()) log.debug("Removed Comment Range Ends: {}", toRemove);
         toRemove.forEach((object, siblings) -> siblings.remove(object));
     }
 }

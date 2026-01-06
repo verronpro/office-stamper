@@ -8,6 +8,7 @@
         <groupId>pro.verron.office-stamper</groupId>
         <artifactId>office-stamper</artifactId>
         <version>3.1</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <name>Office-stamper CLI</name>
@@ -16,6 +17,7 @@
     <description>
         Command Line Interface for Office-Stamper, a Java library for stamping DOCX templates with data
     </description>
+
     <build>
         <plugins>
             <plugin>
@@ -75,6 +77,69 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.17.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>mut</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <configuration>
+                            <jvmArgs>
+                                <jvmArg>--add-opens</jvmArg>
+                                <jvmArg>java.base/java.lang=ALL-UNNAMED</jvmArg>
+                            </jvmArgs>
+                            <features>
+                                <feature>+auto_threads</feature>
+                            </features>
+                            <useSlf4j>true</useSlf4j>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.pitest</groupId>
+                                <artifactId>pitest-junit5-plugin</artifactId>
+                                <version>1.2.3</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.slf4j</groupId>
+                                <artifactId>slf4j-nop</artifactId>
+                                <version>2.0.17</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>mutationCoverage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+    </profiles>
 
 </project>

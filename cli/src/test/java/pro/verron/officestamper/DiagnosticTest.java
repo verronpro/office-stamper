@@ -8,7 +8,19 @@ import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DiagnosticTest {
+/// The DiagnosticTest class contains unit test methods to validate the behavior of the Diagnostic utility and ensure
+/// the correctness of its context generation capabilities. These tests cover properties such as report date, report
+/// user, environment variables, JVM properties, and user preferences. This class leverages JUnit test cases to test the
+/// Diagnostic.context() method under various conditions and scenarios, including default and custom configurations. Key
+/// test methods verify:
+/// 1. The inclusion of a 'reportDate' field with the correct value.
+/// 2. The presence and correctness of a 'reportUser' field.
+/// 3. Validation of environment variables within the context.
+/// 4. Validation of JVM properties within the context.
+/// 5. Presence and validation of user preferences in the context.
+/// 6. Custom context values provided through method parameters. Assertions are used throughout to ensure the context
+/// data matches expectations, utilizing both default values and custom-configured values for all supported fields.
+public class DiagnosticTest {
 
     @Test
     void testContextContainsReportDate() {

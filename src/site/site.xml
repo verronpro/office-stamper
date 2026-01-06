@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         name="office-stamper"
-         xmlns="http://maven.apache.org/DECORATION/1.8.0"
-         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 https://maven.apache.org/xsd/decoration-1.8.0.xsd">
+<site xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      name="office-stamper"
+      xmlns="http://maven.apache.org/SITE/2.0.0"
+      xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd">
     <skin>
         <groupId>org.apache.maven.skins</groupId>
         <artifactId>maven-fluido-skin</artifactId>
         <version>2.1.0</version>
     </skin>
-
     <body>
         <menu name="Office-stamper">
             <item name="Overview" href="index.html"/>
@@ -18,12 +17,12 @@
 
         <menu name="User Guide">
             <!-- Documentation is currently authored in the engine module -->
-            <item name="Template Expressions" href="engine/template-expressions.html"/>
-            <item name="Comment Processors" href="engine/comment-processors.html"/>
-            <item name="SpEL Functions" href="engine/spel-functions.html"/>
-            <item name="Custom Settings" href="engine/custom-settings.html"/>
-            <item name="Advanced Features" href="engine/advanced-features.html"/>
-            <item name="Troubleshooting" href="engine/troubleshooting.html"/>
+            <item name="Template Expressions" href="template-expressions.html"/>
+            <item name="Comment Processors" href="comment-processors.html"/>
+            <item name="SpEL Functions" href="spel-functions.html"/>
+            <item name="Custom Settings" href="custom-settings.html"/>
+            <item name="Advanced Features" href="advanced-features.html"/>
+            <item name="Troubleshooting" href="troubleshooting.html"/>
         </menu>
 
         <!-- Modules and Reports menus will aggregate content from all modules -->
@@ -36,12 +35,10 @@
     </body>
 
     <poweredBy>
-        <logo name="verron.pro" title="verron.pro" alt="verron.pro logo"
-              img="engine/images/logo.png" width="80%"
-              target="https://verron.pro"/>
+        <logo name="verron.pro" href="engine/images/logo.png" target="https://verron.pro"/>
     </poweredBy>
 
     <edit>https://github.com/verronpro/office-stamper.git</edit>
     <publishDate/>
     <version/>
-</project>
+</site>

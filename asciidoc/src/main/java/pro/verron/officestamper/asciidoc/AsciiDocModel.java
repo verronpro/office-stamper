@@ -50,32 +50,32 @@ public final class AsciiDocModel {
     }
 
     /** Heading block (levels 1..6). */
-        public record Heading(int level, List<Inline> inlines)
-                implements Block {
-            public Heading(int level, List<Inline> inlines) {
-                if (level < 1 || level > 6) {
-                    throw new IllegalArgumentException("Heading level must be between 1 and 6");
-                }
-                this.level = level;
-                this.inlines = List.copyOf(inlines);
+    public record Heading(int level, List<Inline> inlines)
+            implements Block {
+        public Heading(int level, List<Inline> inlines) {
+            if (level < 1 || level > 6) {
+                throw new IllegalArgumentException("Heading level must be between 1 and 6");
             }
+            this.level = level;
+            this.inlines = List.copyOf(inlines);
         }
+    }
 
     /** Paragraph block. */
-        public record Paragraph(List<Inline> inlines)
-                implements Block {
-            public Paragraph(List<Inline> inlines) {
-                this.inlines = List.copyOf(inlines);
-            }
+    public record Paragraph(List<Inline> inlines)
+            implements Block {
+        public Paragraph(List<Inline> inlines) {
+            this.inlines = List.copyOf(inlines);
         }
+    }
 
     public record Text(String text)
-                implements Inline {
+            implements Inline {
     }
 
     /** Bold inline that can contain nested inlines. */
     public record Bold(List<Inline> children)
-                implements Inline {
+            implements Inline {
         public Bold(List<Inline> children) {
             this.children = List.copyOf(children);
         }
@@ -90,7 +90,7 @@ public final class AsciiDocModel {
 
     /** Italic inline that can contain nested inlines. */
     public record Italic(List<Inline> children)
-                implements Inline {
+            implements Inline {
         public Italic(List<Inline> children) {
             this.children = List.copyOf(children);
         }

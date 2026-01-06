@@ -21,12 +21,13 @@ class CommentReferenceRemoverVisitor
         this.ids = ids;
     }
 
-    @Override public void apply(R.CommentReference element, Object parent, List<Object> siblings) {
+    @Override
+    public void apply(R.CommentReference element, Object parent, List<Object> siblings) {
         if (ids.contains(element.getId())) toRemove.put(element, siblings);
     }
 
     void run() {
-        log.debug("Removed Comment References: {}", toRemove);
+        if (!toRemove.isEmpty()) log.debug("Removed Comment References: {}", toRemove);
         toRemove.forEach((object, siblings) -> siblings.remove(object));
     }
 }

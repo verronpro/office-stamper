@@ -1,7 +1,7 @@
 // suppress inspection "AsciiDocLinkResolve" for whole file
 :proj: https://github.com/verronpro/office-stamper
 :repo: https://github.com/verronpro/office-stamper/blob/main
-:docs: https://verronpro.github.io/office-stamper
+:docs: https://verronpro.github.io/office-stamper/engine
 
 = Office-stamper
 

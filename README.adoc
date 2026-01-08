@@ -140,8 +140,10 @@ Breaking API highlights:
 
 Minor updates:
 
-* Spring dependencies bumped to 7.0.2 * New docs: `engine/src/site/asciidoc/how-to-custom.adoc` and `HOW_DOES_IT_WORKS.adoc`
-* Test matrix extended for Docx4J 11.5.7 and 11.5.8 * New modules: `asciidoc`, `utils`
+* Spring dependencies bumped to 7.0.2 
+* New docs: `engine/src/site/asciidoc/how-to-custom.adoc` and `HOW_DOES_IT_WORKS.adoc`
+* Test matrix extended for Docx4J 11.5.7 and 11.5.8 
+* New modules: `asciidoc`, `utils`
 
 == Sample Code
 

@@ -9,21 +9,7 @@
         <version>2.1.0</version>
     </skin>
     <body>
-        <menu name="Office-stamper">
-            <item name="Overview" href="index.html"/>
-            <item name="Introduction" href="introduction.html"/>
-            <item name="Getting Started" href="getting-started.html"/>
-        </menu>
 
-        <menu name="User Guide">
-            <!-- Documentation is currently authored in the engine module -->
-            <item name="Template Expressions" href="template-expressions.html"/>
-            <item name="Comment Processors" href="comment-processors.html"/>
-            <item name="SpEL Functions" href="spel-functions.html"/>
-            <item name="Custom Settings" href="custom-settings.html"/>
-            <item name="Advanced Features" href="advanced-features.html"/>
-            <item name="Troubleshooting" href="troubleshooting.html"/>
-        </menu>
 
         <!-- Modules and Reports menus will aggregate content from all modules -->
         <menu ref="modules"/>

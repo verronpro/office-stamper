@@ -42,7 +42,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - run: mvn -B -ntp test
+      - run: mvn -B -ntp verify -Pmut
       - run: mkdir -p ./.qodana/code-coverage && cp ./engine/target/site/jacoco/jacoco.xml ./.qodana/code-coverage/jacoco.xml
 
       - uses: github/codeql-action/analyze@v4

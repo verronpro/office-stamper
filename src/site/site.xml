@@ -9,8 +9,6 @@
         <version>2.1.0</version>
     </skin>
     <body>
-
-
         <!-- Modules and Reports menus will aggregate content from all modules -->
         <menu ref="modules"/>
         <menu name="Project Info">
@@ -21,7 +19,7 @@
     </body>
 
     <poweredBy>
-        <logo name="verron.pro" href="engine/images/logo.png" target="https://verron.pro"/>
+        <logo name="verron.pro" href="images/logo.png" target="https://verron.pro"/>
     </poweredBy>
 
     <edit>https://github.com/verronpro/office-stamper.git</edit>

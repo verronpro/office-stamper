@@ -228,6 +228,11 @@
                         <waitUntil>published</waitUntil>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.pitest</groupId>
+                    <artifactId>pitest-maven</artifactId>
+                    <version>1.22.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>

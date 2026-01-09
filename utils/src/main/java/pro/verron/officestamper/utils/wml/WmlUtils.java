@@ -247,7 +247,7 @@ public final class WmlUtils {
     }
 
     private static String asString(Text text) {
-        // According to specs, 'space' value can be empty or 'preserve'.
+        // According to specs, the 'space' value can be empty or 'preserve'.
         // In the first case, we are supposed to ignore spaces around the 'text' value.
         var value = text.getValue();
         var space = text.getSpace();
@@ -451,11 +451,24 @@ public final class WmlUtils {
         return replace(contentAccessor, insert, matchStartIndex, matchEndIndex);
     }
 
+    /// Checks if the given [CTSmartTagRun] contains an element that matches the expected element.
+    ///
+    /// @param tag the [CTSmartTagRun] object to be evaluated
+    /// @param expectedElement the expected element to compare against
+    ///
+    /// @return true if the actual element of the given tag matches the expected element, false otherwise
     public static boolean isTagElement(CTSmartTagRun tag, String expectedElement) {
         var actualElement = tag.getElement();
         return Objects.equals(expectedElement, actualElement);
     }
 
+    /// Sets or updates an attribute for the specified smart tag. This method ensures that the provided attribute
+    /// key-value pair is added to the smart tag's attribute list. If the attribute already exists, its value is
+    /// updated. If the smart tag or its attribute metadata is null, they are initialized.
+    ///
+    /// @param smartTag the smart tag object to modify
+    /// @param attributeKey the key of the attribute to set or update
+    /// @param attributeValue the value to assign to the specified attribute key
     public static void setTagAttribute(CTSmartTagRun smartTag, String attributeKey, String attributeValue) {
         var smartTagPr = smartTag.getSmartTagPr();
         if (smartTagPr == null) {
@@ -477,6 +490,11 @@ public final class WmlUtils {
         smartTagPrAttr.add(ctAttr);
     }
 
+    /// Creates a new attribute object with the specified key and value.
+    ///
+    /// @param attributeKey the key for the new attribute
+    /// @param attributeValue the value for the new attribute
+    /// @return a CTAttr object representing the new attribute
     public static CTAttr newAttribute(String attributeKey, String attributeValue) {
         return newCtAttr(attributeKey, attributeValue);
     }

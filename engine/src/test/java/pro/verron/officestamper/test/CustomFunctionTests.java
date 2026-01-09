@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pro.verron.officestamper.ContextFactory;
+import pro.verron.officestamper.test.utils.ContextFactory;
 
 import java.math.BigDecimal;
 import java.nio.file.Path;
@@ -17,13 +17,13 @@ import java.util.stream.Stream;
 import static java.util.Locale.forLanguageTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.minimal;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.TestUtils.getWordResource;
-import static pro.verron.officestamper.test.TestUtils.makeWordResource;
+import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
+import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
+import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 @DisplayName("Custom function features") class CustomFunctionTests {

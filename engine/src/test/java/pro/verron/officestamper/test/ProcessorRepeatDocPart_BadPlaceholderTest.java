@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pro.verron.officestamper.ContextFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.OfficeStampers;
+import pro.verron.officestamper.test.utils.ContextFactory;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -15,9 +15,9 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.TestUtils.getWordResource;
+import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
+import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
 /// @author Jenei Attila
 /// @author Joseph Verrron

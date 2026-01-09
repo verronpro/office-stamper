@@ -61,7 +61,7 @@ public final class Image {
     /// @param maxWidth - max width of the image in twip
     ///
     /// @throws IOException if any.
-    public Image(InputStream in, Integer maxWidth)
+    public Image(InputStream in, @Nullable Integer maxWidth)
             throws IOException {
         this(in.readAllBytes(), maxWidth);
     }

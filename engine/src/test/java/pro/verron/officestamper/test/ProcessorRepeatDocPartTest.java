@@ -9,9 +9,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.verron.officestamper.ContextFactory;
-import pro.verron.officestamper.ObjectContextFactory;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import pro.verron.officestamper.test.utils.ContextFactory;
+import pro.verron.officestamper.test.utils.DocxFactory;
+import pro.verron.officestamper.test.utils.ObjectContextFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,12 +25,13 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.TestUtils.*;
+import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
+import static pro.verron.officestamper.test.utils.ResourceUtils.getImage;
+import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class ProcessorRepeatDocPartTest {
@@ -800,7 +802,7 @@ class ProcessorRepeatDocPartTest {
     void shouldAcceptList() {
         var config = standard();
         var stamper = docxPackageStamper(config);
-        var template = makeWordResource("""
+        var template = DocxFactory.makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
                 ${name}
                 """);
@@ -826,7 +828,7 @@ class ProcessorRepeatDocPartTest {
     void shouldAcceptSet() {
         var config = standard();
         var stamper = docxPackageStamper(config);
-        var template = makeWordResource("""
+        var template = DocxFactory.makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
                 ${name}
                 """);
@@ -852,7 +854,7 @@ class ProcessorRepeatDocPartTest {
     void shouldAcceptQueue() {
         var config = standard();
         var stamper = docxPackageStamper(config);
-        var template = makeWordResource("""
+        var template = DocxFactory.makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
                 ${name}
                 """);

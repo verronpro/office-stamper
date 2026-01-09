@@ -3,6 +3,7 @@ package pro.verron.officestamper.test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import pro.verron.officestamper.test.utils.ResourceUtils;
 
 import java.nio.file.Path;
 
@@ -14,7 +15,7 @@ import static pro.verron.officestamper.utils.pml.PptxRenderer.pptxToString;
     @DisplayName("Should stamp a PowerPoint document")
     void testStamper() {
         var stamper = pptxPackageStamper();
-        var template = TestUtils.getPowerPointResource(Path.of("powerpoint-base.pptx"));
+        var template = ResourceUtils.getPowerPointResource(Path.of("powerpoint-base.pptx"));
         record Person(String name) {}
         var context = new Person("Bart");
         var stamped = stamper.stamp(template, context);

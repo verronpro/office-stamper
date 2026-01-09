@@ -464,6 +464,54 @@ public class DocxRenderer {
         return stringify(drawing.getAnchorOrInline(), part);
     }
 
+    private Function<String, String> stringify(PPr pPr) {
+        if (pPr == null) return Function.identity();
+        var set = new TreeMap<String, String>();
+        ofNullable(pPr.getPStyle()).ifPresent(element -> set.put("pStyle", styleID(element.getVal())));
+        ofNullable(pPr.getJc()).ifPresent(element -> set.put("jc",
+                element.getVal()
+                       .toString()));
+        ofNullable(pPr.getInd()).ifPresent(element -> set.put("ind", stringify(element)));
+        ofNullable(pPr.getKeepLines()).ifPresent(element -> set.put("keepLines", String.valueOf(element.isVal())));
+        ofNullable(pPr.getKeepNext()).ifPresent(element -> set.put("keepNext", String.valueOf(element.isVal())));
+        ofNullable(pPr.getOutlineLvl()).ifPresent(element -> set.put("outlineLvl",
+                element.getVal()
+                       .toString()));
+        ofNullable(pPr.getPageBreakBefore()).ifPresent(element -> set.put("pageBreakBefore",
+                String.valueOf(element.isVal())));
+        ofNullable(pPr.getPBdr()).ifPresent(_ -> set.put("pBdr", "xxx"));
+        ofNullable(pPr.getPPrChange()).ifPresent(_ -> set.put("pPrChange", "xxx"));
+        stringify(pPr.getRPr()).ifPresent(key -> set.put("rPr", key));
+        stringify(pPr.getSectPr()).ifPresent(key -> set.put("sectPr", key));
+        ofNullable(pPr.getShd()).ifPresent(element -> set.put("shd", "xxx"));
+        stringify(pPr.getSpacing()).ifPresent(spacing -> set.put("spacing", spacing));
+        ofNullable(pPr.getSuppressAutoHyphens()).ifPresent(_ -> set.put("suppressAutoHyphens", "xxx"));
+        ofNullable(pPr.getSuppressLineNumbers()).ifPresent(_ -> set.put("suppressLineNumbers", "xxx"));
+        ofNullable(pPr.getSuppressOverlap()).ifPresent(_ -> set.put("suppressOverlap", "xxx"));
+        ofNullable(pPr.getTabs()).ifPresent(element -> set.put("tabs", "xxx"));
+        ofNullable(pPr.getTextAlignment()).ifPresent(_ -> set.put("textAlignment", "xxx"));
+        ofNullable(pPr.getTextDirection()).ifPresent(_ -> set.put("textDirection", "xxx"));
+        ofNullable(pPr.getTopLinePunct()).ifPresent(_ -> set.put("topLinePunct", "xxx"));
+        ofNullable(pPr.getWidowControl()).ifPresent(_ -> set.put("widowControl", "xxx"));
+        ofNullable(pPr.getFramePr()).ifPresent(_ -> set.put("framePr", "xxx"));
+        ofNullable(pPr.getWordWrap()).ifPresent(_ -> set.put("wordWrap", "xxx"));
+        ofNullable(pPr.getDivId()).ifPresent(_ -> set.put("divId", "xxx"));
+        ofNullable(pPr.getCnfStyle()).ifPresent(style -> set.put("cnfStyle", style.getVal()));
+        return set.entrySet()
+                  .stream()
+                  .reduce(Function.identity(), (f, entry) -> switch (entry.getKey()) {
+                      case "pStyle" -> f.compose(decorateWithStyle(entry.getValue()));
+                      case "sectPr" -> f.compose(str -> str + "\n[section-break, " + entry.getValue() + "]\n<<<");
+                      default -> f.andThen(s -> s + "<%s=%s>".formatted(entry.getKey(), entry.getValue()));
+                  }, Function::andThen);
+    }
+
+    private String stringify(P p, Part part) {
+        var runs = stringify(p.getContent(), part);
+        var ppr = stringify(p.getPPr());
+        return ppr.apply(runs) + "\n\n";
+    }
+
     /// Converts the properties of the provided [RPrAbstract] object into a string representation. The method extracts
     /// various attributes of the [RPrAbstract] object, such as formatting, styling, and other properties, and maps them
     /// to a key-value representation. If no attributes are present or the provided object is null, an empty `Optional`
@@ -477,7 +525,7 @@ public class DocxRenderer {
         if (rPr == null) return empty();
         var map = new TreeMap<String, String>();
         ofNullable(rPr.getB()).ifPresent(value -> map.put("b", String.valueOf(value.isVal())));
-        ofNullable(rPr.getBdr()).ifPresent(value -> map.put("bdr", "xxx"));
+        ofNullable(rPr.getBdr()).ifPresent(_ -> map.put("bdr", "xxx"));
         ofNullable(rPr.getCaps()).ifPresent(value -> map.put("caps", String.valueOf(value.isVal())));
         ofNullable(rPr.getColor()).ifPresent(value -> map.put("color", value.getVal()));
         ofNullable(rPr.getDstrike()).ifPresent(value -> map.put("dstrike", String.valueOf(value.isVal())));
@@ -511,54 +559,6 @@ public class DocxRenderer {
                 value.getVal()
                      .value()));
         return map.isEmpty() ? empty() : of(stringify(map));
-    }
-
-    private String stringify(P p, Part part) {
-        var runs = stringify(p.getContent(), part);
-        var ppr = stringify(p.getPPr());
-        return ppr.apply(runs) + "\n\n";
-    }
-
-    private Function<String, String> stringify(PPr pPr) {
-        if (pPr == null) return Function.identity();
-        var set = new TreeMap<String, String>();
-        ofNullable(pPr.getPStyle()).ifPresent(element -> set.put("pStyle", styleID(element.getVal())));
-        ofNullable(pPr.getJc()).ifPresent(element -> set.put("jc",
-                element.getVal()
-                       .toString()));
-        ofNullable(pPr.getInd()).ifPresent(element -> set.put("ind", stringify(element)));
-        ofNullable(pPr.getKeepLines()).ifPresent(element -> set.put("keepLines", String.valueOf(element.isVal())));
-        ofNullable(pPr.getKeepNext()).ifPresent(element -> set.put("keepNext", String.valueOf(element.isVal())));
-        ofNullable(pPr.getOutlineLvl()).ifPresent(element -> set.put("outlineLvl",
-                element.getVal()
-                       .toString()));
-        ofNullable(pPr.getPageBreakBefore()).ifPresent(element -> set.put("pageBreakBefore",
-                String.valueOf(element.isVal())));
-        ofNullable(pPr.getPBdr()).ifPresent(element -> set.put("pBdr", "xxx"));
-        ofNullable(pPr.getPPrChange()).ifPresent(element -> set.put("pPrChange", "xxx"));
-        stringify(pPr.getRPr()).ifPresent(key -> set.put("rPr", key));
-        stringify(pPr.getSectPr()).ifPresent(key -> set.put("sectPr", key));
-        ofNullable(pPr.getShd()).ifPresent(element -> set.put("shd", "xxx"));
-        stringify(pPr.getSpacing()).ifPresent(spacing -> set.put("spacing", spacing));
-        ofNullable(pPr.getSuppressAutoHyphens()).ifPresent(element -> set.put("suppressAutoHyphens", "xxx"));
-        ofNullable(pPr.getSuppressLineNumbers()).ifPresent(element -> set.put("suppressLineNumbers", "xxx"));
-        ofNullable(pPr.getSuppressOverlap()).ifPresent(element -> set.put("suppressOverlap", "xxx"));
-        ofNullable(pPr.getTabs()).ifPresent(element -> set.put("tabs", "xxx"));
-        ofNullable(pPr.getTextAlignment()).ifPresent(element -> set.put("textAlignment", "xxx"));
-        ofNullable(pPr.getTextDirection()).ifPresent(element -> set.put("textDirection", "xxx"));
-        ofNullable(pPr.getTopLinePunct()).ifPresent(element -> set.put("topLinePunct", "xxx"));
-        ofNullable(pPr.getWidowControl()).ifPresent(element -> set.put("widowControl", "xxx"));
-        ofNullable(pPr.getFramePr()).ifPresent(element -> set.put("framePr", "xxx"));
-        ofNullable(pPr.getWordWrap()).ifPresent(element -> set.put("wordWrap", "xxx"));
-        ofNullable(pPr.getDivId()).ifPresent(element -> set.put("divId", "xxx"));
-        ofNullable(pPr.getCnfStyle()).ifPresent(style -> set.put("cnfStyle", style.getVal()));
-        return set.entrySet()
-                  .stream()
-                  .reduce(Function.identity(), (f, entry) -> switch (entry.getKey()) {
-                      case "pStyle" -> f.compose(decorateWithStyle(entry.getValue()));
-                      case "sectPr" -> f.compose(str -> str + "\n[section-break, " + entry.getValue() + "]\n<<<");
-                      default -> f.andThen(s -> s + "<%s=%s>".formatted(entry.getKey(), entry.getValue()));
-                  }, Function::andThen);
     }
 
     private Function<? super String, String> decorateWithStyle(String value) {
@@ -605,16 +605,16 @@ public class DocxRenderer {
                 value));
         stringify(sectPr.getPgSz()).ifPresent(value -> map.put("pgSz", value));
         stringify(sectPr.getPgMar()).ifPresent(value -> map.put("pgMar", value));
-        ofNullable(sectPr.getPaperSrc()).ifPresent(value -> map.put("paperSrc", "xxx"));
-        ofNullable(sectPr.getBidi()).ifPresent(value -> map.put("bidi", "xxx"));
-        ofNullable(sectPr.getRtlGutter()).ifPresent(value -> map.put("rtlGutter", "xxx"));
+        ofNullable(sectPr.getPaperSrc()).ifPresent(_ -> map.put("paperSrc", "xxx"));
+        ofNullable(sectPr.getBidi()).ifPresent(_ -> map.put("bidi", "xxx"));
+        ofNullable(sectPr.getRtlGutter()).ifPresent(_ -> map.put("rtlGutter", "xxx"));
         stringify(sectPr.getDocGrid()).ifPresent(value -> map.put("docGrid", value));
-        ofNullable(sectPr.getFormProt()).ifPresent(value -> map.put("formProt", "xxx"));
-        ofNullable(sectPr.getVAlign()).ifPresent(value -> map.put("vAlign", "xxx"));
-        ofNullable(sectPr.getNoEndnote()).ifPresent(value -> map.put("noEndnote", "xxx"));
-        ofNullable(sectPr.getTitlePg()).ifPresent(value -> map.put("titlePg", "xxx"));
-        ofNullable(sectPr.getTextDirection()).ifPresent(value -> map.put("textDirection", "xxx"));
-        ofNullable(sectPr.getRtlGutter()).ifPresent(value -> map.put("rtlGutter", "xxx"));
+        ofNullable(sectPr.getFormProt()).ifPresent(_ -> map.put("formProt", "xxx"));
+        ofNullable(sectPr.getVAlign()).ifPresent(_ -> map.put("vAlign", "xxx"));
+        ofNullable(sectPr.getNoEndnote()).ifPresent(_ -> map.put("noEndnote", "xxx"));
+        ofNullable(sectPr.getTitlePg()).ifPresent(_ -> map.put("titlePg", "xxx"));
+        ofNullable(sectPr.getTextDirection()).ifPresent(_ -> map.put("textDirection", "xxx"));
+        ofNullable(sectPr.getRtlGutter()).ifPresent(_ -> map.put("rtlGutter", "xxx"));
         return map.isEmpty() ? empty() : of(stringify(map));
     }
 

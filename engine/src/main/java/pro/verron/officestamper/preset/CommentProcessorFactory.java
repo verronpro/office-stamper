@@ -55,7 +55,13 @@ public class CommentProcessorFactory {
         void repeatParagraph(@Nullable Iterable<Object> objects);
     }
 
+    /// An interface that defines a processor for repeating content for each element present in the given iterable
+    /// collection of objects.
     public interface IRepeatProcessor {
+
+        /// Mark content to be copied once for each element in the passed-in iterable.
+        ///
+        /// @param items objects serving as evaluation context seeding a new copy.
         void repeat(@Nullable Iterable<Object> items);
     }
 

@@ -483,12 +483,12 @@ public class DocxRenderer {
         ofNullable(pPr.getPPrChange()).ifPresent(_ -> set.put("pPrChange", "xxx"));
         stringify(pPr.getRPr()).ifPresent(key -> set.put("rPr", key));
         stringify(pPr.getSectPr()).ifPresent(key -> set.put("sectPr", key));
-        ofNullable(pPr.getShd()).ifPresent(element -> set.put("shd", "xxx"));
+        ofNullable(pPr.getShd()).ifPresent(_ -> set.put("shd", "xxx"));
         stringify(pPr.getSpacing()).ifPresent(spacing -> set.put("spacing", spacing));
         ofNullable(pPr.getSuppressAutoHyphens()).ifPresent(_ -> set.put("suppressAutoHyphens", "xxx"));
         ofNullable(pPr.getSuppressLineNumbers()).ifPresent(_ -> set.put("suppressLineNumbers", "xxx"));
         ofNullable(pPr.getSuppressOverlap()).ifPresent(_ -> set.put("suppressOverlap", "xxx"));
-        ofNullable(pPr.getTabs()).ifPresent(element -> set.put("tabs", "xxx"));
+        ofNullable(pPr.getTabs()).ifPresent(_ -> set.put("tabs", "xxx"));
         ofNullable(pPr.getTextAlignment()).ifPresent(_ -> set.put("textAlignment", "xxx"));
         ofNullable(pPr.getTextDirection()).ifPresent(_ -> set.put("textDirection", "xxx"));
         ofNullable(pPr.getTopLinePunct()).ifPresent(_ -> set.put("topLinePunct", "xxx"));

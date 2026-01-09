@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import pro.verron.officestamper.ContextFactory;
 
 import java.math.BigDecimal;
 import java.nio.file.Path;
@@ -11,16 +12,16 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Stream;
 
+import static java.util.Locale.forLanguageTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.minimal;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
 import static pro.verron.officestamper.test.TestUtils.makeWordResource;
 import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
@@ -167,7 +168,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
     void trifunctions(ContextFactory factory, String tag, String expected) {
         var config = minimal().addCustomFunction("format", LocalDate.class, String.class, String.class)
                               .withImplementation((date, pattern, languageTag) -> {
-                                  var locale = Locale.forLanguageTag(languageTag);
+                                  var locale = forLanguageTag(languageTag);
                                   var formatter = DateTimeFormatter.ofPattern(pattern, locale);
                                   return formatter.format(date);
                               });

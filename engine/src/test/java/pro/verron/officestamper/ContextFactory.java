@@ -1,4 +1,4 @@
-package pro.verron.officestamper.test;
+package pro.verron.officestamper;
 
 import pro.verron.officestamper.preset.Image;
 

@@ -22,4 +22,5 @@ module pro.verron.officestamper.test {
     opens pro.verron.officestamper.test;
     exports pro.verron.officestamper.test;
     opens pro.verron.officestamper;
+    exports pro.verron.officestamper;
 }

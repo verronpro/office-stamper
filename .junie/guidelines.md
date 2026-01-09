@@ -183,6 +183,11 @@ guidelines ensures consistency across the codebase and helps maintain code quali
 - Keep tests independent and isolated
 - Use mocks and stubs appropriately
 
+### Dependencies
+
+- Modules should never depend on test artifacts (e.g., `test-jar`) from other modules. Shared test utilities should be
+  moved to the main source set of an appropriate module (e.g., `asciidoc` or `utils`).
+
 ### Test Coverage
 
 - Aim for high test coverage, especially for core functionality

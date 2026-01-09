@@ -36,28 +36,29 @@ import java.util.stream.Collectors;
 
 import static java.nio.file.Files.newOutputStream;
 
+/// Main class for the CLI.
 @Command(name = "officestamper", mixinStandardHelpOptions = true, description = "Office Stamper CLI tool")
 public class Main
         implements Runnable {
 
     private static final Logger logger = Utils.getLogger();
-
     @Option(names = {"-i", "--input"},
             required = true,
             description = "Input file path (csv, properties, html, xml, json, excel) or a keyword (diagnostic) for "
                           + "documented data sources") private String inputFile;
-
     @Option(names = {"-t", "--template"},
             required = true,
             description = "Template file path or a keyword (diagnostic) for documented template packages") private String templateFile;
-
     @Option(names = {"-o", "--output"},
             defaultValue = "output.docx",
             description = "Output file path") private String outputPath;
-
     @Option(names = {"-s", "--stamper"},
             defaultValue = "word",
             description = "Stamper type (word, powerpoint)") private String stamperType;
+
+    /// Default constructor.
+    public Main() {
+    }
 
     static void main(String[] args) {
         var main = new Main();

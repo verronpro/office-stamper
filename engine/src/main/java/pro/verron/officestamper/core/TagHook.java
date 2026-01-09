@@ -4,6 +4,7 @@ import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
+/// Hook for processing tags.
 public class TagHook
         implements DocxHook {
     private final Tag tag;

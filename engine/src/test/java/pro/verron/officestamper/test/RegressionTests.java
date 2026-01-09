@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pro.verron.officestamper.ObjectContextFactory;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.test.utils.ObjectContextFactory;
+import pro.verron.officestamper.test.utils.ResourceUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -18,8 +19,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.TestUtils.getWordResource;
-import static pro.verron.officestamper.test.TestUtils.makeWordResource;
+import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
+import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class RegressionTests {
@@ -159,7 +160,7 @@ class RegressionTests {
     @ParameterizedTest
     void test52(Conditions conditions, String expected) {
         var stamper = docxPackageStamper(OfficeStamperConfigurations.full());
-        var template = TestUtils.getWordResource(TEMPLATE_52);
+        var template = ResourceUtils.getWordResource(TEMPLATE_52);
         var wordprocessingMLPackage = stamper.stamp(template, conditions);
         var actual = docxToString(wordprocessingMLPackage);
         assertEquals(expected, actual);

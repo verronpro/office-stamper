@@ -15,12 +15,10 @@
 /// - Exports `pro.verron.officestamper.preset` for predefined document processing utilities.
 /// - Exports `pro.verron.officestamper.experimental` and `pro.verron.officestamper.preset.preprocessors.placeholders`
 /// to `pro.verron.officestamper.test` for experimental features and testing purposes.
-/// - Exports `pro.verron.officestamper.utils` for utility functionalities.
 ///
 /// Opens:
 /// - Opens `pro.verron.officestamper.api` and `pro.verron.officestamper.preset` for reflective access.
 /// - Opens `pro.verron.officestamper.experimental` specifically to `pro.verron.officestamper.test`.
-/// - Opens `pro.verron.officestamper.utils` for reflective access.
 module pro.verron.officestamper {
     requires spring.core;
     requires spring.expression;

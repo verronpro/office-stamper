@@ -1,34 +1,22 @@
-package pro.verron.officestamper.test;
+package pro.verron.officestamper.test.utils;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.asciidoc.AsciiDocCompiler;
-import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.loadWord;
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
-
-/// A utility class for testing. Provides methods for retrieving InputStreams from specified resource paths. Typically
-/// used for accessing test resources.
-public class TestUtils {
-
-
+public class DocxFactory {
     public static WordprocessingMLPackage makeWordResource(String asciidoc) {
         // Extract comment macros and strip them from the AsciiDoc before compilation
         var extraction = extractAndStripCommentMacros(asciidoc);
@@ -77,6 +65,7 @@ public class TestUtils {
         return new MacroExtraction(sb.toString(), specs);
     }
 
+    /// New comment macro processing for AsciiDoc
     private static void applyCommentMacros(WordprocessingMLPackage pkg, List<CommentSpec> specs) {
         if (specs.isEmpty()) return;
         ensureCommentsPart(pkg);
@@ -145,7 +134,7 @@ public class TestUtils {
                     newContent.add(crs);
                     var ref = new R.CommentReference();
                     ref.setId(id);
-                    newContent.add(newRun(java.util.List.of(ref)));
+                    newContent.add(newRun(List.of(ref)));
                 }
                 else {
                     var cre = new CommentRangeEnd();
@@ -238,7 +227,7 @@ public class TestUtils {
                 newContent.add(cre);
                 var ref = new R.CommentReference();
                 ref.setId(id);
-                newContent.add(newRun(java.util.List.of(ref)));
+                newContent.add(newRun(List.of(ref)));
             }
             if (!rightRun.getContent()
                          .isEmpty()) newContent.add(rightRun);
@@ -272,58 +261,7 @@ public class TestUtils {
             var ref = new R.CommentReference();
             ref.setId(id);
             p.getContent()
-             .add(newRun(java.util.List.of(ref)));
-        }
-    }
-
-    // ===== New comment macro processing for AsciiDoc =====
-
-    static Image getImage(Path path) {
-        try {
-            return new Image(getResource(path));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /// Retrieves an InputStream for the specified resource path.
-    ///
-    /// @param path the path of the resource
-    ///
-    /// @return an InputStream for the specified resource
-    public static InputStream getResource(Path path) {
-        try {
-            var testRoot = Path.of("..", "test", "sources");
-            var resolve = testRoot.resolve(path);
-            return Files.newInputStream(resolve);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static WordprocessingMLPackage getWordResource(String path) {
-        return getWordResource(Path.of(path));
-    }
-
-    static WordprocessingMLPackage getWordResource(Path path) {
-        var templateStream = getResource(path);
-        return loadWord(templateStream);
-    }
-
-    static Image getImage(Path path, int size) {
-        try {
-            return new Image(getResource(path), size);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static PresentationMLPackage getPowerPointResource(Path path) {
-        var templateStream = getResource(path);
-        try {
-            return PresentationMLPackage.load(templateStream);
-        } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
+             .add(newRun(List.of(ref)));
         }
     }
 

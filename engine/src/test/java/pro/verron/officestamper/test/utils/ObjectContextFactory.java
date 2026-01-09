@@ -1,4 +1,4 @@
-package pro.verron.officestamper;
+package pro.verron.officestamper.test.utils;
 
 import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.preset.StampTable;
@@ -117,7 +117,8 @@ public final class ObjectContextFactory
 
     /// Creates a Characters object from an array of string inputs containing names and actors.
     ///
-    /// @param input an array of strings where each pair of strings represents a character's name and actor's name.
+    /// @param input an array of strings where each pair of strings represents a character's name and actor's
+    ///         name.
     ///
     /// @return a Characters object containing a list of Role objects constructed from the input array.
     @Override

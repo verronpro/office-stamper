@@ -4,17 +4,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pro.verron.officestamper.ContextFactory;
 import pro.verron.officestamper.preset.OfficeStampers;
+import pro.verron.officestamper.test.utils.ContextFactory;
+import pro.verron.officestamper.test.utils.ResourceUtils;
 
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.preset.ExceptionResolvers.passing;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
+import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 
@@ -31,7 +32,7 @@ class TextBoxesTest {
     @ParameterizedTest
     void placeholders(ContextFactory factory) {
         var context = factory.name("Bart Simpson");
-        var template = TestUtils.getWordResource("ExpressionReplacementInTextBoxesTest.docx");
+        var template = ResourceUtils.getWordResource("ExpressionReplacementInTextBoxesTest.docx");
         var config = standard().setExceptionResolver(passing());
         var stamper = OfficeStampers.docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);

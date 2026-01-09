@@ -32,12 +32,6 @@
         <menu name="Reports" ref="reports"/>
     </body>
 
-    <poweredBy>
-        <logo name="verron.pro" href="https://verron.pro">
-            <image src="images/logo.png"/>
-        </logo>
-    </poweredBy>
-
     <edit>https://github.com/verronpro/office-stamper.git</edit>
     <publishDate/>
     <version/>

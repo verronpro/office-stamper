@@ -12,6 +12,7 @@
         <menu name="Parent">
             <item name="Parent" href="https://verronpro.github.io/office-stamper"/>
         </menu>
+
         <menu name="Office-stamper">
             <item name="Overview" href="index.html"/>
             <item name="Introduction" href="introduction.html"/>
@@ -32,7 +33,9 @@
     </body>
 
     <poweredBy>
-        <logo name="verron.pro" href="https://verron.pro" img="images/logo.png"/>
+        <logo name="verron.pro" href="https://verron.pro">
+            <image src="images/logo.png"/>
+        </logo>
     </poweredBy>
 
     <edit>https://github.com/verronpro/office-stamper.git</edit>

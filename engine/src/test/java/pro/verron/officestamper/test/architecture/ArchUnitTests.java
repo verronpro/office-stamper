@@ -9,6 +9,7 @@ import pro.verron.officestamper.core.DocxStamperConfiguration;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
+/// Architecture tests using ArchUnit.
 @AnalyzeClasses(packages = "pro.verron.officestamper", importOptions = ImportOption.DoNotIncludeTests.class)
 public class ArchUnitTests {
 
@@ -30,7 +31,6 @@ public class ArchUnitTests {
                                                                  .dependOnClassesThat()
                                                                  .belongToAnyOf(DocxStamper.class,
                                                                          DocxStamperConfiguration.class);
-
     @ArchTest ArchRule core_depend_on_utils_and_api = classes().that()
                                                                .resideInAPackage("..core..")
                                                                .should()
@@ -45,4 +45,8 @@ public class ArchUnitTests {
                                                                        "jakarta.xml.bind..",
                                                                        "org.slf4j..",
                                                                        "org.springframework..");
+
+    /// Default constructor.
+    public ArchUnitTests() {
+    }
 }

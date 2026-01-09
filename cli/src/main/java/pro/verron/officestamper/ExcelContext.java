@@ -18,12 +18,17 @@ import java.util.*;
 
 import static java.util.Collections.emptyList;
 
+/// Context for Excel-based data.
 public class ExcelContext
         extends AbstractMap<String, List<Map<String, String>>> {
 
+    /// Data formatter for Excel cells.
     public static final DataFormatter formatter = new DataFormatter();
     private final Map<String, List<Map<String, String>>> source;
 
+    /// Constructs an ExcelContext from the specified spreadsheet package.
+    ///
+    /// @param spreadsheetPackage the spreadsheet package
     public ExcelContext(SpreadsheetMLPackage spreadsheetPackage) {
         var workbookPart = spreadsheetPackage.getWorkbookPart();
         var workbook = getWorkbook(workbookPart);
@@ -96,6 +101,11 @@ public class ExcelContext
         return formatter.formatCellValue(cells.get(i));
     }
 
+    /// Creates an ExcelContext from the specified input stream.
+    ///
+    /// @param inputStream the input stream
+    ///
+    /// @return the ExcelContext
     public static Object from(InputStream inputStream) {
         try {
             return from(SpreadsheetMLPackage.load(inputStream));

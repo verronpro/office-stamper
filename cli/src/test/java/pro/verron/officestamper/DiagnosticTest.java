@@ -22,6 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /// data matches expectations, utilizing both default values and custom-configured values for all supported fields.
 public class DiagnosticTest {
 
+    /// Default constructor.
+    public DiagnosticTest() {
+    }
+
     @Test
     void testContextContainsReportDate() {
         // Act

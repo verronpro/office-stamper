@@ -54,6 +54,14 @@ public class DocxRenderer {
         this.styleDefinitionsPart = mainDocumentPart.getStyleDefinitionsPart(true);
     }
 
+    /// Converts a DOCX document represented by a [WordprocessingMLPackage] into its string representation. The method
+    /// processes the main document content, headers, footers, footnotes, and endnotes (if present), and generates a
+    /// unified string representation of the document.
+    ///
+    /// @param wordprocessingMLPackage the [WordprocessingMLPackage] instance representing the DOCX document to
+    ///         be converted into a string; must not be null
+    ///
+    /// @return a string containing the text and structural elements of the provided DOCX document
     public static String docxToString(WordprocessingMLPackage wordprocessingMLPackage) {
         return new DocxRenderer(wordprocessingMLPackage).stringify(wordprocessingMLPackage);
     }

@@ -25,6 +25,8 @@ public record CustomFunction(String name, List<Class<?>> parameterTypes, Functio
         ///
         /// @param function the function implementation to set; it takes an input of type `T` and returns a
         ///         result.
+        ///
+        /// @return the configuration object.
         OfficeStamperConfiguration withImplementation(Function<T, ?> function);
     }
 
@@ -43,6 +45,8 @@ public record CustomFunction(String name, List<Class<?>> parameterTypes, Functio
         ///
         /// @param object the BiFunction implementation that defines the behavior for processing inputs of types
         ///         T and U.
+        ///
+        /// @return the configuration object.
         OfficeStamperConfiguration withImplementation(BiFunction<T, U, ?> object);
     }
 
@@ -62,8 +66,10 @@ public record CustomFunction(String name, List<Class<?>> parameterTypes, Functio
         /// This method allows the user to provide a specific functional behavior to be executed with the given input
         /// arguments.
         ///
-        /// @param function the implementation of a TriFunction that takes three inputs of types T, U, and V,
-        ///         and produces a result.
+        /// @param function the implementation of a TriFunction that takes three inputs of types T, U, and V, and
+        ///         produces a result.
+        ///
+        /// @return the configuration object.
         OfficeStamperConfiguration withImplementation(TriFunction<T, U, V, ?> function);
     }
 }

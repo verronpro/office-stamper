@@ -11,6 +11,7 @@ import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ProcessorContext;
 
+/// The core engine of OfficeStamper, responsible for processing expressions.
 public class Engine {
     private static final Logger log = LoggerFactory.getLogger(Engine.class);
 
@@ -19,6 +20,12 @@ public class Engine {
     private final ObjectResolverRegistry objectResolverRegistry;
     private final ProcessorContext processorContext;
 
+    /// Constructs an Engine.
+    ///
+    /// @param expressionParser the expression parser.
+    /// @param exceptionResolver the exception resolver.
+    /// @param objectResolverRegistry the object resolver registry.
+    /// @param processorContext the processor context.
     public Engine(
             ExpressionParser expressionParser,
             ExceptionResolver exceptionResolver,

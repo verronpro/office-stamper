@@ -48,6 +48,12 @@ public final class Image {
         this(imageBytes, maxWidth, "dummyFileName", "dummyAltText");
     }
 
+    /// Constructor for Image.
+    ///
+    /// @param imageBytes content of the image as an array of the bytes
+    /// @param maxWidth max width of the image in twip
+    /// @param filenameHint filename hint for the image.
+    /// @param altText alternative text for the image.
     public Image(byte[] imageBytes, @Nullable Integer maxWidth, String filenameHint, String altText) {
         this.imageBytes = imageBytes;
         this.maxWidth = maxWidth;

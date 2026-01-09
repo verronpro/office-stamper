@@ -58,5 +58,8 @@ public interface Comment {
     /// @return a string representing the expression
     String expression();
 
+    /// Retrieves the ID of this comment.
+    ///
+    /// @return the ID.
     BigInteger getId();
 }

@@ -31,9 +31,14 @@ public class StandardComment
     private final @Nullable CommentReference commentReference;
     private final CTSmartTagRun startTagRun;
 
-    /// Constructs a new [StandardComment] object.
+    /// Constructs a new `StandardComment` object.
     ///
-    /// @param part the [DocxPart] representing the document section this comment belongs to
+    /// @param part              the [DocxPart] representing the document section this comment belongs to.
+    /// @param startTagRun       the start tag run.
+    /// @param commentRangeStart the comment range start.
+    /// @param commentRangeEnd   the comment range end.
+    /// @param comment           the comment.
+    /// @param commentReference the comment reference.
     public StandardComment(
             DocxPart part,
             CTSmartTagRun startTagRun,

@@ -43,10 +43,9 @@ public class CommentUtil {
 
     /// Retrieves the comment associated with a given paragraph content within a WordprocessingMLPackage document.
     ///
-    /// @param document the WordprocessingMLPackage document containing the paragraph and its comments.
-    ///
-    /// @return an Optional containing the found comment, or Optional.empty() if no comment is associated with the given
-    ///         paragraph content.
+    /// @param contentAccessor the content accessor to search for comments.
+    /// @param document        the WordprocessingMLPackage document containing the paragraph and its comments.
+    /// @return a collection of found comments.
     public static Collection<Comments.Comment> getCommentFor(ContentAccessor contentAccessor, OpcPackage document) {
         var comments = getCommentsPart(document.getParts()).map(CommentUtil::extractContent)
                                                            .map(Comments::getComment)
@@ -120,6 +119,14 @@ public class CommentUtil {
         }
     }
 
+    /// Creates a [Comment] object.
+    ///
+    /// @param docxPart the document part.
+    /// @param crs the comment range start.
+    /// @param document the document.
+    /// @param contentAccessor the content accessor.
+    ///
+    /// @return the comment.
     public static Comment comment(
             DocxPart docxPart,
             CommentRangeStart crs,

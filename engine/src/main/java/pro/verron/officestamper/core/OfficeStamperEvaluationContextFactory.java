@@ -12,12 +12,20 @@ import static java.util.function.Function.identity;
 import static pro.verron.officestamper.core.Invokers.streamInvokersFromClass;
 import static pro.verron.officestamper.core.Invokers.streamInvokersFromCustomFunction;
 
+/// Factory for creating [EvaluationContext] instances for OfficeStamper.
 public final class OfficeStamperEvaluationContextFactory {
+
     private final List<CustomFunction> customFunctions;
     private final Map<Class<?>, CommentProcessorFactory> commentProcessors;
     private final Map<Class<?>, Object> interfaceFunctions;
     private final EvaluationContextFactory contextFactory;
 
+    /// Constructs a factory.
+    ///
+    /// @param customFunctions custom functions to be registered.
+    /// @param commentProcessors comment processor factories.
+    /// @param interfaceFunctions interface functions.
+    /// @param contextFactory the base evaluation context factory.
     OfficeStamperEvaluationContextFactory(
             List<CustomFunction> customFunctions,
             Map<Class<?>, CommentProcessorFactory> commentProcessors,
@@ -30,6 +38,11 @@ public final class OfficeStamperEvaluationContextFactory {
         this.contextFactory = contextFactory;
     }
 
+    /// Creates an evaluation context.
+    ///
+    /// @param processorContext the processor context.
+    /// @param branch           the context branch.
+    /// @return the evaluation context.
     public EvaluationContext create(ProcessorContext processorContext, ContextBranch branch) {
         var ec = contextFactory.create(branch);
         var processors = instantiate(commentProcessors, processorContext);

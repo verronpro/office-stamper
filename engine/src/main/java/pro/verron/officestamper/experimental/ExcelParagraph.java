@@ -17,6 +17,7 @@ public class ExcelParagraph {
     /// Replaces the given expression with the replacement object within the paragraph. The replacement object must be a
     /// valid DOCX4J Object.
     ///
+    /// @param expression  the expression to replace.
     /// @param replacement the object to replace the expression.
     public void replace(String expression, String replacement) {
         var ctXstringWhitespace = paragraph.getT();

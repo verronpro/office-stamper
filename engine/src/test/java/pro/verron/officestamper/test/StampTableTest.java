@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import pro.verron.officestamper.ContextFactory;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.OfficeStampers;
 
@@ -12,8 +13,8 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
+import static pro.verron.officestamper.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
 import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 

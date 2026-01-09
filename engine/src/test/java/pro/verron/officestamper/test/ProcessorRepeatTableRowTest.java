@@ -7,6 +7,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pro.verron.officestamper.ContextFactory;
+import pro.verron.officestamper.ObjectContextFactory;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 
 import java.nio.file.Path;
@@ -17,10 +19,10 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.of;
+import static pro.verron.officestamper.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.test.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.TestUtils.getWordResource;
 import static pro.verron.officestamper.test.TestUtils.makeWordResource;
 import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;

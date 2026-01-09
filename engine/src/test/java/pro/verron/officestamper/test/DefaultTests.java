@@ -7,10 +7,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import pro.verron.officestamper.ContextFactory;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Resolvers;
+import pro.verron.officestamper.test.utils.ContextFactory;
+import pro.verron.officestamper.test.utils.DocxFactory;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -18,13 +19,14 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.ArgumentSet;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.TestUtils.*;
+import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
+import static pro.verron.officestamper.test.utils.ResourceUtils.getImage;
+import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 @DisplayName("Core Features") class DefaultTests {
@@ -130,7 +132,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
             var evaluationContext = new StandardEvaluationContext(evalContext);
             evaluationContext.addPropertyAccessor(new SimpleGetter("foo", "bar"));
             return evaluationContext;
-        }), factory.empty(), makeWordResource("""
+        }), factory.empty(), DocxFactory.makeWordResource("""
                 Custom EvaluationContextConfigurer Test
                 
                 This paragraph stays untouched.
@@ -150,7 +152,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
         return argumentSet("Expression replacement in global paragraphs",
                 standard().setExceptionResolver(ExceptionResolvers.passing()),
                 factory.name("Homer Simpson"),
-                makeWordResource("""
+                DocxFactory.makeWordResource("""
                         Expression Replacement in global paragraphs
                         This paragraph is untouched.
                         In this paragraph, the variable name should be resolved to the value ${name}.
@@ -340,7 +342,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
         return argumentSet("Line Break Replacement Test",
                 standard(Resolvers.fallback("#")),
                 factory.sentence("whatever # split in # three lines"),
-                makeWordResource("""
+                DocxFactory.makeWordResource("""
                         This paragraph should not be # split.
                         This paragraph should have a split input: ${sentence}.
                         """),

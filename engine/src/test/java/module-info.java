@@ -1,3 +1,4 @@
+/// Test module for Office-stamper engine.
 module pro.verron.officestamper.test {
     requires pro.verron.officestamper;
     requires org.objectweb.asm;

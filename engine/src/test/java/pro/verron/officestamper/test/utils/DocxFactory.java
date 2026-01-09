@@ -16,7 +16,18 @@ import java.util.regex.Pattern;
 
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
+/// Factory for creating DOCX documents for testing.
 public class DocxFactory {
+
+    /// Default constructor.
+    public DocxFactory() {
+    }
+
+    /// Creates a WordprocessingMLPackage from an AsciiDoc string.
+    ///
+    /// @param asciidoc AsciiDoc string
+    ///
+    /// @return WordprocessingMLPackage
     public static WordprocessingMLPackage makeWordResource(String asciidoc) {
         // Extract comment macros and strip them from the AsciiDoc before compilation
         var extraction = extractAndStripCommentMacros(asciidoc);

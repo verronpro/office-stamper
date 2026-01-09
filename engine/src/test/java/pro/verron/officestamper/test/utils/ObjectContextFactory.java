@@ -14,8 +14,13 @@ import static java.util.Arrays.stream;
 /// @author Joseph Verron
 /// @version ${version}
 /// @since 1.6.5
+/// Factory for creating object-based contexts.
 public final class ObjectContextFactory
         implements ContextFactory {
+
+    /// Default constructor.
+    public ObjectContextFactory() {
+    }
 
     @Override
     public Object units(Image... images) {

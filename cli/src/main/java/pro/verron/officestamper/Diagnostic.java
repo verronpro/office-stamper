@@ -13,6 +13,7 @@ import java.util.prefs.Preferences;
 
 import static java.util.stream.Collectors.toMap;
 
+/// Diagnostic class for collecting system information.
 public final class Diagnostic {
 
     private static final Logger logger = Utils.getLogger();
@@ -97,8 +98,14 @@ public final class Diagnostic {
         return map;
     }
 
+    /// Returns the diagnostic date.
+    ///
+    /// @return the date
     public LocalDate date() {return date;}
 
+    /// Returns the diagnostic user.
+    ///
+    /// @return the user
     public String user() {return user;}
 
     private Map<String, String> environmentVariables() {

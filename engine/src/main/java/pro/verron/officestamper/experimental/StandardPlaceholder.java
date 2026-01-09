@@ -6,6 +6,9 @@ import pro.verron.officestamper.core.Matcher;
 /// matching condition and associated expression.
 /// It uses a [Matcher] to determine if the placeholder expression matches
 /// a given prefix and suffix, and to extract the inner content of the placeholder.
+///
+/// @param matcher    the matcher to use for determining if the expression matches.
+/// @param expression the expression string.
 public record StandardPlaceholder(Matcher matcher, String expression)
         implements Placeholder {
 

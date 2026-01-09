@@ -20,6 +20,11 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newSmartTag;
 /// hooks for subsequent processing steps.
 public final class CommentHooker
         implements PreProcessor {
+
+    /// Default constructor for CommentHooker.
+    public CommentHooker() {
+    }
+
     @Override
     public void process(WordprocessingMLPackage document) {
         var visitor = new CRSCollector();
@@ -41,6 +46,10 @@ public final class CommentHooker
             extends TraversalUtilVisitor<CommentRangeStart> {
 
         private final List<CommentRangeStart> results = new ArrayList<>();
+
+        /// Default constructor for CRSCollector.
+        public CRSCollector() {
+        }
 
         @Override
         public void apply(CommentRangeStart element) {

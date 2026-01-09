@@ -14,7 +14,6 @@ import java.util.Optional;
 ///
 /// The [ProcessorContext] provides structured access to these elements, enabling seamless document traversal,
 /// manipulation, and analysis during processing workflows.
-///
 public final class ProcessorContext {
     private final DocxPart part;
     private final Paragraph paragraph;
@@ -22,6 +21,8 @@ public final class ProcessorContext {
     private final String expression;
     private final ContextTree contextTree;
 
+    /// Constructs a ProcessorContext.
+    ///
     /// @param part The [DocxPart] representing a specific part of the document being processed.
     /// @param paragraph The [Paragraph] associated with the processing context.
     /// @param comment The [Comment] that is relevant to the current processing context.

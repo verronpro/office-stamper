@@ -28,12 +28,11 @@ public final class ObjectResolverRegistry {
 
     /// Resolves the expression in the given document with the provided object.
     ///
-    /// @param part the WordprocessingMLPackage document in which to resolve the placeholder
-    /// @param object the object to be used for resolving the expression
-    ///
-    /// @return the resolved value for the expression
-    ///
-    /// @throws OfficeStamperException if no resolver is found for the object
+    /// @param part       the document part in which to resolve the placeholder.
+    /// @param expression the expression to resolve.
+    /// @param object     the object to be used for resolving the expression.
+    /// @return the resolved value for the expression.
+    /// @throws OfficeStamperException if no resolver is found for the object.
     public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
         for (ObjectResolver resolver : resolvers)
             if (resolver.canResolve(object)) return resolver.resolve(part, expression, object);

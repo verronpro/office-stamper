@@ -67,6 +67,11 @@ public class Invokers
                         .map(Invokers::ofCustomFunction);
     }
 
+    /// Creates an [Invoker] for a custom function.
+    ///
+    /// @param cf the custom function.
+    ///
+    /// @return the invoker.
     public static Invoker ofCustomFunction(CustomFunction cf) {
         var cfName = cf.name();
         var cfArgs = new Args(cf.parameterTypes());

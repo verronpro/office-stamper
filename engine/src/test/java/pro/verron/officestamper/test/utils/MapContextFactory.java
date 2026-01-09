@@ -9,8 +9,13 @@ import java.util.stream.IntStream;
 
 import static java.util.Arrays.stream;
 
+/// Factory for creating map-based contexts.
 public final class MapContextFactory
         implements ContextFactory {
+
+    /// Default constructor.
+    public MapContextFactory() {
+    }
 
     @Override
     public Object units(Image... images) {

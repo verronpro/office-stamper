@@ -5,6 +5,8 @@ package pro.verron.officestamper.asciidoc;
 /// COMPAT aims at preserving the legacy Stringifier output (used by existing tests). ADOC emits a cleaner, more
 /// idiomatic AsciiDoc representation.
 public enum AsciiDocDialect {
+    /// Compatibility mode.
     COMPAT,
+    /// Idiomatic AsciiDoc mode.
     ADOC
 }

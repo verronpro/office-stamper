@@ -18,10 +18,25 @@ import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.lo
 /// used for accessing test resources.
 public class ResourceUtils {
 
+    /// Default constructor.
+    public ResourceUtils() {
+    }
+
+    /// Retrieves an image from the specified resource path.
+    ///
+    /// @param path the path of the resource
+    ///
+    /// @return an image for the specified resource
     public static Image getImage(Path path) {
         return getImage(path, null);
     }
 
+    /// Retrieves an image from the specified resource path.
+    ///
+    /// @param path the path of the resource
+    /// @param size the size of the image
+    ///
+    /// @return an image for the specified resource
     public static Image getImage(Path path, @Nullable Integer size) {
         try {
             return new Image(getResource(path), size);
@@ -45,15 +60,30 @@ public class ResourceUtils {
         }
     }
 
+    /// Retrieves a WordprocessingMLPackage from the specified resource path.
+    ///
+    /// @param path the path of the resource
+    ///
+    /// @return a WordprocessingMLPackage for the specified resource
     public static WordprocessingMLPackage getWordResource(String path) {
         return getWordResource(Path.of(path));
     }
 
+    /// Retrieves a WordprocessingMLPackage from the specified resource path.
+    ///
+    /// @param path the path of the resource
+    ///
+    /// @return a WordprocessingMLPackage for the specified resource
     public static WordprocessingMLPackage getWordResource(Path path) {
         var templateStream = getResource(path);
         return loadWord(templateStream);
     }
 
+    /// Retrieves a PresentationMLPackage from the specified resource path.
+    ///
+    /// @param path the path of the resource
+    ///
+    /// @return a PresentationMLPackage for the specified resource
     public static PresentationMLPackage getPowerPointResource(Path path) {
         var templateStream = getResource(path);
         return loadPowerPoint(templateStream);

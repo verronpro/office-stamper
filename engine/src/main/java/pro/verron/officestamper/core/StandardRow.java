@@ -20,6 +20,8 @@ public class StandardRow
 
     /// Constructs a new StandardRow with the specified table row element.
     ///
+    /// @param part the document part containing the table
+    /// @param tbl the table containing the row
     /// @param tr the table row element to wrap
     public StandardRow(DocxPart part, Tbl tbl, Tr tr) {
         this.part = part;

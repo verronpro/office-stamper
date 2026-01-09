@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/// An {@link EvaluationContext} that combines multiple contexts.
 public class UnionEvaluationContext
         implements EvaluationContext {
     private final EvaluationContext evaluationContext;
@@ -89,8 +90,14 @@ public class UnionEvaluationContext
         return evaluationContext.lookupVariable(name);
     }
 
+    /// Returns the wrapped evaluation context.
+    ///
+    /// @return the evaluation context
     public EvaluationContext evaluationContext() {return evaluationContext;}
 
+    /// Returns the invokers.
+    ///
+    /// @return the invokers
     public Invokers invokers() {return invokers;}
 
     @Override

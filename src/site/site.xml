@@ -19,9 +19,7 @@
     </body>
 
     <poweredBy>
-        <logo name="verron.pro" href="https://verron.pro" target="_blank">
-					<img src="images/logo.png"/>
-				</logo>
+        <logo name="verron.pro" href="https://verron.pro" img="images/logo.png"/>
     </poweredBy>
 
     <edit>https://github.com/verronpro/office-stamper.git</edit>

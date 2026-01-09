@@ -12,6 +12,10 @@ import static java.util.Arrays.asList;
 /// to be invoked.
 /// It acts as a wrapper to facilitate method invocation with specific parameters,
 /// and a dedicated execution strategy.
+///
+/// @param name     the name of the method to be invoked.
+/// @param args     the arguments for the method invocation.
+/// @param executor the executor responsible for executing the method.
 public record Invoker(String name, Invokers.Args args, MethodExecutor executor) {
 
     /// Constructs an `Invoker` instance by extracting the method name, parameter types,

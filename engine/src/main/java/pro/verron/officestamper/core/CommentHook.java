@@ -5,6 +5,7 @@ import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
+/// A hook that processes comments in a document.
 public class CommentHook
         implements DocxHook {
     private final DocxPart part;

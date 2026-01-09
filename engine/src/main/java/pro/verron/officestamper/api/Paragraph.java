@@ -25,7 +25,8 @@ public interface Paragraph {
 
     /// Replaces a specified placeholder within the paragraph with the provided insert.
     ///
-    /// @param insert the insert containing elements that will replace the placeholder
+    /// @param expression the expression to replace.
+    /// @param insert     the insert containing elements that will replace the placeholder.
     void replace(String expression, Insert insert);
 
     /// Replaces a section of elements within the document, defined by the start and end objects,

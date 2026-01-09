@@ -13,16 +13,27 @@ import static java.util.Collections.singletonList;
 ///
 /// This record is used to wrap various types of document elements such as text runs, smart tag runs, and other WML
 /// objects that can be inserted into a document.
+///
+/// @param elements The list of document elements to be inserted.
 public record Insert(List<Object> elements) {
 
+    /// Creates an Insert with a single element.
+    ///
+    /// @param element the element to be inserted.
     public Insert(Object element) {
         this(singletonList(element));
     }
 
+    /// Compact constructor for Insert.
+    ///
+    /// @param elements elements to be copied.
     public Insert {
         elements = List.copyOf(elements);
     }
 
+    /// Sets the run properties for all runs in the list.
+    ///
+    /// @param rPr the run properties to set.
     public void setRPr(@Nullable RPr rPr) {
         elements.stream()
                 .filter(R.class::isInstance)

@@ -36,6 +36,12 @@ public class StandardParagraph
         this.p = p;
     }
 
+    /// Creates a new instance of `StandardParagraph` from the provided [DocxPart] and parent object.
+    ///
+    /// @param part the source DocxPart.
+    /// @param parent the parent object.
+    ///
+    /// @return a new StandardParagraph instance.
     public static StandardParagraph from(DocxPart part, Object parent) {
         return switch (parent) {
             case P p -> from(part, p);

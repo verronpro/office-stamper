@@ -27,10 +27,16 @@ public abstract class CommentProcessor {
         return context;
     }
 
+    /// Returns the paragraph associated with this processor.
+    ///
+    /// @return the paragraph.
     protected Paragraph paragraph() {
         return context.paragraph();
     }
 
+    /// Returns the comment associated with this processor.
+    ///
+    /// @return the comment.
     protected Comment comment() {
         return context.comment();
     }

@@ -1,8 +1,14 @@
-package pro.verron.officestamper.asciidoc;
+package pro.verron.officestamper.asciidoc.test;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import pro.verron.officestamper.asciidoc.AsciiDocModel;
 import pro.verron.officestamper.asciidoc.AsciiDocModel.Heading;
 import pro.verron.officestamper.asciidoc.AsciiDocModel.Paragraph;
+import pro.verron.officestamper.asciidoc.AsciiDocParser;
 
 import java.util.List;
 
@@ -23,43 +29,15 @@ import static org.junit.jupiter.api.Assertions.*;
 /// - Validate the parsing of multiple headings with hierarchical levels.
 /// - Test the correct parsing of paragraphs containing inline text.
 /// - Confirm the correct parsing of a simple AsciiDoc table with header and data rows.
-public class AsciiDocParserTest {
+class AsciiDocParserTest {
 
     /// Tests for the parse method in [AsciiDocParser]. This method is responsible for converting an AsciiDoc string
     /// into an [AsciiDocModel].
-    @Test
-    void parse_shouldReturnEmptyModel_whenInputIsNull() {
-        // Arrange
-        String asciidoc = null;
-
-        // Act
-        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
-
-        // Assert
-        assertNotNull(result);
-        var blocks = result.getBlocks();
-        assertTrue(blocks.isEmpty());
-    }
-
-    @Test
-    void parse_shouldReturnEmptyModel_whenInputIsEmpty() {
-        // Arrange
-        String asciidoc = "";
-
-        // Act
-        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
-
-        // Assert
-        assertNotNull(result);
-        var blocks = result.getBlocks();
-        assertTrue(blocks.isEmpty());
-    }
-
-    @Test
-    void parse_shouldReturnEmptyModel_whenInputIsBlank() {
-        // Arrange
-        String asciidoc = "   ";
-
+    @NullSource
+    @EmptySource
+    @ValueSource(strings = {"   "})
+    @ParameterizedTest
+    void parse_shouldReturnEmptyModel_whenInputIsNull(String asciidoc) {
         // Act
         AsciiDocModel result = AsciiDocParser.parse(asciidoc);
 

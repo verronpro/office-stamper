@@ -143,6 +143,7 @@ guidelines ensures consistency across the codebase and helps maintain code quali
 ### Javadoc
 
 - Add Javadoc comments for all public classes, interfaces, and methods
+- Redact all Javadoc comments in Markdown style
 - Include a brief description of the purpose and behavior
 - Document parameters, return values, and exceptions
 - Use `@param`, `@return`, and `@throws` tags appropriately

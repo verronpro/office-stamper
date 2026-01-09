@@ -312,58 +312,52 @@ public class DocxRenderer {
     ///         strings such as tab or carriage return characters may be returned. In case of unsupported types or null,
     ///         an exception is thrown.
     private String stringify(Object o, Part part) {
-        if (o instanceof JAXBElement<?> jaxb) return stringify(jaxb, part);
-        if (o instanceof WordprocessingMLPackage mlPackage) return stringify(mlPackage);
-        if (o instanceof Tbl tbl) return stringify(tbl, part);
-        if (o instanceof Tr tr) return stringify(tr, part);
-        if (o instanceof Tc tc) return stringify(tc, part);
-        if (o instanceof MainDocumentPart mainDocumentPart)
-            return stringify(mainDocumentPart.getContent(), mainDocumentPart);
-        if (o instanceof Body body) return stringify(body.getContent(), part);
-        if (o instanceof List<?> list) return stringify(list, part);
-        if (o instanceof Text text) return stringify(text);
-        if (o instanceof P p) return stringify(p, part);
-        if (o instanceof R r) return stringify(r, part);
-        if (o instanceof Drawing drawing) return stringify(drawing, part);
-        if (o instanceof Inline inline) return stringify(inline, part);
-        if (o instanceof Graphic graphic) return stringify(graphic, part);
-        if (o instanceof GraphicData graphicData) return stringify(graphicData, part);
-        if (o instanceof Pic pic) return stringify(pic, part);
-        if (o instanceof CTBlipFillProperties bfp) return stringify(bfp, part);
-        if (o instanceof CTBlip blip) return stringify(blip, part);
-        if (o instanceof R.LastRenderedPageBreak) return ""; // do not render
-        if (o instanceof Br br) return stringify(br);
-        if (o instanceof R.Tab) return "\t";
-        if (o instanceof R.Cr) return "<carriage return>\n";
-        if (o instanceof R.CommentReference cr) return stringify(cr);
-        if (o instanceof CTMarkupRange) return "";
-        if (o instanceof ProofErr) return "";
-        if (o instanceof CommentRangeStart crs) return stringify(crs);
-        if (o instanceof CommentRangeEnd cre) return stringify(cre);
-        if (o instanceof SdtBlock block) return stringify(block, part);
-        if (o instanceof AlternateContent) return "";
-        if (o instanceof Pict pict) return stringify(pict.getAnyAndAny(), part);
-        if (o instanceof CTShapetype) return "";
-        if (o instanceof VmlShapeElements vmlShapeElements) return stringify(vmlShapeElements, part);
-        if (o instanceof CTTextbox ctTextbox) return stringify(ctTextbox.getTxbxContent(), part);
-        if (o instanceof CTTxbxContent content) return stringify(content.getContent(), part);
-        if (o instanceof CTShadow) return "";
-        if (o instanceof SdtRun run) return stringify(run.getSdtContent(), part);
-        if (o instanceof SdtContent content) return stringify(content, part);
-        if (o instanceof R.AnnotationRef) return "";
-        if (o instanceof CTFtnEdnRef ref) return "[" + ref.getId() + "]";
-        if (o instanceof FootnotesPart footnotesPart) return stringify(footnotesPart).orElse("");
-        if (o instanceof EndnotesPart endnotesPart) return stringify(endnotesPart).orElse("");
-        if (o instanceof R.Separator) return "\n";
-        if (o instanceof R.ContinuationSeparator) return "\n";
-        if (o instanceof R.FootnoteRef) return "";
-        if (o instanceof R.EndnoteRef) return "";
-        if (o instanceof FldChar fldChar) return stringify(fldChar).orElse("");
-        if (o instanceof P.Hyperlink hyperlink) return stringify(hyperlink, part).orElse("");
-        if (o instanceof CTSmartTagRun smartTagRun) return stringify(smartTagRun, part);
-        if (o instanceof CTAttr ctAttr) return stringify(ctAttr);
-        if (o == null) throw new RuntimeException("Unsupported content: NULL");
-        throw new RuntimeException("Unsupported content: " + o.getClass());
+        return switch (o) {
+            case JAXBElement<?> jaxb -> stringify(jaxb, part);
+            case WordprocessingMLPackage mlPackage -> stringify(mlPackage);
+            case Tbl tbl -> stringify(tbl, part);
+            case Tr tr -> stringify(tr, part);
+            case Tc tc -> stringify(tc, part);
+            case MainDocumentPart mainDocumentPart -> stringify(mainDocumentPart.getContent(), mainDocumentPart);
+            case Body body -> stringify(body.getContent(), part);
+            case List<?> list -> stringify(list, part);
+            case Text text -> stringify(text);
+            case P p -> stringify(p, part);
+            case R r -> stringify(r, part);
+            case Drawing drawing -> stringify(drawing, part);
+            case Inline inline -> stringify(inline, part);
+            case Graphic graphic -> stringify(graphic, part);
+            case GraphicData graphicData -> stringify(graphicData, part);
+            case Pic pic -> stringify(pic, part);
+            case CTBlipFillProperties bfp -> stringify(bfp, part);
+            case CTBlip blip -> stringify(blip, part);
+            case Br br -> stringify(br);
+            case R.Tab _ -> "\t";
+            case R.Cr _ -> "<carriage return>\n";
+            case R.CommentReference cr -> stringify(cr);
+            case CommentRangeStart crs -> stringify(crs);
+            case CommentRangeEnd cre -> stringify(cre);
+            case SdtBlock block -> stringify(block, part);
+            case Pict pict -> stringify(pict.getAnyAndAny(), part);
+            case CTShapetype _ -> "jsldkflksdhlkfhszdlkfnsdl";
+            case VmlShapeElements vmlShapeElements -> stringify(vmlShapeElements, part);
+            case CTTextbox ctTextbox -> stringify(ctTextbox.getTxbxContent(), part);
+            case CTTxbxContent content -> stringify(content.getContent(), part);
+            case SdtRun run -> stringify(run.getSdtContent(), part);
+            case SdtContent content -> stringify(content, part);
+            case CTFtnEdnRef ref -> "[%s]".formatted(ref.getId());
+            case FootnotesPart footnotesPart -> stringify(footnotesPart).orElse("");
+            case EndnotesPart endnotesPart -> stringify(endnotesPart).orElse("");
+            case FldChar fldChar -> stringify(fldChar).orElse("");
+            case P.Hyperlink hyperlink -> stringify(hyperlink, part).orElse("");
+            case CTSmartTagRun smartTagRun -> stringify(smartTagRun, part);
+            case CTAttr ctAttr -> stringify(ctAttr);
+            case R.Separator _, R.ContinuationSeparator _ -> "\n";
+            case AlternateContent _, R.LastRenderedPageBreak _, CTShadow _, CTMarkupRange _, ProofErr _,
+                 R.AnnotationRef _, R.FootnoteRef _, R.EndnoteRef _ -> "";
+            case null -> throw new RuntimeException("Unsupported content: NULL");
+            default -> throw new RuntimeException("Unsupported content: " + o.getClass());
+        };
     }
 
     private @NonNull String stringify(CTAttr ctAttr) {

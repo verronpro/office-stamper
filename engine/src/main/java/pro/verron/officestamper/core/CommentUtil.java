@@ -148,7 +148,8 @@ public class CommentUtil {
             }
         }
 
-        if (cre == null) throw new IllegalStateException("Could not find comment range end or reference");
+        if (cre == null)
+            throw new IllegalStateException("Could not find comment range end or reference");
 
         var comment = comment(document, commentId);
 

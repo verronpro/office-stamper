@@ -179,6 +179,7 @@ public class OfficeStamperConfigurations {
         configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\#\\{([^{]+?)})", "inlineProcessor"));
         configuration.addPreprocessor(Preprocessors.prepareCommentProcessor());
         configuration.addPostprocessor(Postprocessors.removeTags("officestamper"));
+        configuration.addPostprocessor(Postprocessors.removeComments());
         return configuration;
     }
 

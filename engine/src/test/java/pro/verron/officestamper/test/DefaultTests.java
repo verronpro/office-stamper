@@ -286,7 +286,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
                         
                         In this paragraph, the variable name should be resolved to the value Homer Simpson.
                         
-                        In this paragraph, the variable foo should not be resolved: <1|unresolvedValueWithComment|1><1|replaceWith(foo)>.
+                        In this paragraph, the variable foo should not be resolved: unresolvedValueWithComment.
                         
                         """);
     }

@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static org.docx4j.XmlUtils.unwrap;
@@ -588,6 +589,14 @@ public final class WmlUtils {
         } catch (Docx4JException e) {
             throw new UtilsException(e);
         }
+    }
+
+    public static boolean hasTagAttribute(CTSmartTagRun tag, String attrKey, String attrVal) {
+        var smartTagPr = tag.getSmartTagPr();
+        var smartTagPrAttr = smartTagPr.getAttr();
+        for (CTAttr ctAttr : smartTagPrAttr)
+            if (Objects.equals(ctAttr.getName(), attrKey)) return Objects.equals(ctAttr.getVal(), attrVal);
+        return false;
     }
 
     /// @param startIndex the start index of the run relative to the containing paragraph.

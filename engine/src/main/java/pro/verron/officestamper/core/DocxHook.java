@@ -37,7 +37,8 @@ public interface DocxHook
     /// Converts an object to a hook.
     ///
     /// @param part the document part.
-    /// @param o    the object to convert.
+    /// @param o the object to convert.
+    ///
     /// @return the hook.
     static DocxHook asHook(DocxPart part, Object o) {
         return switch (o) {
@@ -49,9 +50,10 @@ public interface DocxHook
 
     /// Checks if the given tag is of the specified type.
     ///
-    /// @param tag     the tag to check.
-    /// @param type    the expected type value.
+    /// @param tag the tag to check.
+    /// @param type the expected type value.
     /// @param typeKey the attribute name for the type.
+    ///
     /// @return `true` if the tag matches the type.
     static boolean isType(CTSmartTagRun tag, String type, String typeKey) {
         return tag.getSmartTagPr()
@@ -63,7 +65,8 @@ public interface DocxHook
     /// Creates a new comment hook.
     ///
     /// @param part the document part.
-    /// @param tag  the tag.
+    /// @param tag the tag.
+    ///
     /// @return the comment hook.
     static DocxHook newCommentHook(DocxPart part, CTSmartTagRun tag) {
         var tagContent = tag.getContent();
@@ -75,15 +78,13 @@ public interface DocxHook
 
     /// Executes the hook's logic within the context of a document processing flow.
     ///
-    /// @param engineFactory               a factory responsible for creating instances of the `Engine` class, which
-    /// may be
-    ///                                    used during the execution of the hook's logic
-    /// @param contextTree                 the root of the context tree, representing the hierarchical structure of
-    /// context
-    ///                                    branches available during document processing
+    /// @param engineFactory a factory responsible for creating instances of the `Engine` class, which may be
+    ///         used during the execution of the hook's logic
+    /// @param contextTree the root of the context tree, representing the hierarchical structure of context
+    ///         branches available during document processing
     /// @param officeStamperContextFactory a factory for creating evaluation contexts, which are used to
-    ///                                    evaluate expressions and handle dynamic behavior during the document
-    /// processing flow
+    ///         evaluate expressions and handle dynamic behavior during the document processing flow
+    ///
     /// @return `true` if the execution of the hook was successful, otherwise `false`
     boolean run(
             EngineFactory engineFactory,

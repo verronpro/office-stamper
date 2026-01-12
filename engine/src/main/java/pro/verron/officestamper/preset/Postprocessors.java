@@ -1,5 +1,6 @@
 package pro.verron.officestamper.preset;
 
+import pro.verron.officestamper.api.CommentRemover;
 import pro.verron.officestamper.api.HookRemover;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.PostProcessor;
@@ -44,5 +45,9 @@ public class Postprocessors {
     /// @return a [PostProcessor] instance that performs the removal of specified tags
     public static PostProcessor removeTags(String element) {
         return new HookRemover(element);
+    }
+
+    public static PostProcessor removeComments() {
+        return new CommentRemover();
     }
 }

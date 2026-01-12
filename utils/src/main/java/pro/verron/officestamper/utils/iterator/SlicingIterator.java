@@ -34,15 +34,15 @@ public class SlicingIterator<T>
         next = null;
         while (source.hasNext() && !foundStart) {
             var o = source.next();
-            if (o == start) {
-                foundStart = true;
-                next = o;
-            }
+            if (o == start) foundStart = true;
         }
 
         if (source.hasNext() && !foundEnd) {
             next = source.next();
-            if (next == end) foundEnd = true;
+            if (next == end) {
+                next = null;
+                foundEnd = true;
+            }
         }
     }
 

@@ -23,7 +23,8 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
 
     /// Creates a new Tag instance using the provided DocxPart and CTSmartTagRun.
     ///
-    /// @param docxPart the DocxPart instance representing the part of the document associated with the new Tag.
+    /// @param docxPart the DocxPart instance representing the part of the document associated with the new
+    ///         Tag.
     /// @param tag the CTSmartTagRun representing the smart tag element in the document.
     ///
     /// @return a new Tag instance initialized with the given DocxPart and CTSmartTagRun.
@@ -67,9 +68,8 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     }
 
     /// Replaces the current tag with the provided Insert object in the parent's content list. It sets the Run
-    /// Properties
-    /// [RPr] of the provided Insert object and then removes the current tag and inserts the elements from the Insert
-    /// object at the appropriate position.
+    /// Properties [RPr] of the provided Insert object and then removes the current tag and inserts the elements from
+    /// the Insert object at the appropriate position.
     ///
     /// @param insert the Insert object containing elements to replace the current tag. It also provides the
     ///         ability to set Run Properties [RPr] for styling purposes.

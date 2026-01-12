@@ -49,8 +49,8 @@ public class DocxStamper
         this.postprocessors = new ArrayList<>(configuration.getPostprocessors());
     }
 
-    /// Reads in a .docx template and "stamps" it, using the specified context object to
-    /// fill out any expressions it finds.
+    /// Reads in a .docx template and "stamps" it, using the specified context object to fill out any expressions it
+    /// finds.
     ///
     /// In the .docx template you have the following options to influence the "stamping" process:
     ///   - Use expressions like `${name}` or `${person.isOlderThan(18)}` in the template's text. These expressions are

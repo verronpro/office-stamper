@@ -62,11 +62,11 @@ public final class WmlUtils {
         var currentDepth = 0;
         while (currentDepth <= depth) {
             currentDepth++;
-            if (parent == null) return Optional.empty();
+            if (parent == null) return empty();
             if (clazz.isInstance(parent)) return Optional.of(clazz.cast(parent));
             if (parent instanceof Child next) parent = next.getParent();
         }
-        return Optional.empty();
+        return empty();
     }
 
     /// Extracts a list of comment elements from the specified [WordprocessingMLPackage] document.
@@ -288,7 +288,7 @@ public final class WmlUtils {
 
         var firstRun = affectedRuns.getFirst();
         var firstRunPr = firstRun.getPr();
-        return Optional.ofNullable(firstRunPr);
+        return ofNullable(firstRunPr);
     }
 
     /// Replaces content within the specified range with the provided insert objects.
@@ -495,6 +495,7 @@ public final class WmlUtils {
     ///
     /// @param attributeKey the key for the new attribute
     /// @param attributeValue the value for the new attribute
+    ///
     /// @return a CTAttr object representing the new attribute
     public static CTAttr newAttribute(String attributeKey, String attributeValue) {
         return newCtAttr(attributeKey, attributeValue);
@@ -567,9 +568,8 @@ public final class WmlUtils {
     }
 
     private static void visitPartIfExists(TraversalUtilVisitor<?> visitor, @Nullable JaxbXmlPart<?> part) {
-        Optional.ofNullable(part)
-                .map(WmlUtils::extractContent)
-                .ifPresent(c -> TraversalUtil.visit(c, visitor));
+        ofNullable(part).map(WmlUtils::extractContent)
+                        .ifPresent(c -> TraversalUtil.visit(c, visitor));
     }
 
     private static Stream<JaxbXmlPart<?>> extractHeaderFooterParts(HeaderFooterPolicy hfp) {

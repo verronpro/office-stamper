@@ -21,6 +21,7 @@ public class TagHook
             ContextRoot contextRoot,
             OfficeStamperEvaluationContextFactory evaluationContextFactory
     ) {
+        if (WmlUtils.hasTagAttribute(tag.tag(), "status", "executed")) return false;
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();
         var expression = tag.expression();
@@ -41,6 +42,7 @@ public class TagHook
             processed = true;
             tag.replace(insert);
         }
+        WmlUtils.setTagAttribute(tag.tag(), "status", "executed");
         return processed;
     }
 

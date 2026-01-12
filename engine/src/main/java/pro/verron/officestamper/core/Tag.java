@@ -76,11 +76,9 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     public void replace(Insert insert) {
         var optionalRun = getFirst(tag, R.class);
         optionalRun.ifPresent(firstRun -> insert.setRPr(firstRun.getRPr()));
-        var parent = (ContentAccessor) tag.getParent();
-        var siblings = parent.getContent();
-        var index = siblings.indexOf(tag);
-        siblings.remove(index);
-        siblings.addAll(index, insert.elements());
+        var siblings = tag.getContent();
+        siblings.clear();
+        siblings.addAll(insert.elements());
     }
 
     private static <T> Optional<T> getFirst(CTSmartTagRun tagRun, Class<T> clazz) {

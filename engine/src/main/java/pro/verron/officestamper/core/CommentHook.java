@@ -24,7 +24,7 @@ public class CommentHook
             ContextRoot contextRoot,
             OfficeStamperEvaluationContextFactory evaluationContextFactory
     ) {
-        var comment = this.comment;
+        if (WmlUtils.hasTagAttribute(tag.tag(), "status", "executed")) return false;
         var paragraph = tag.getParagraph();
         var expression = comment.expression();
         var contextKey = tag.getContextKey();
@@ -32,16 +32,17 @@ public class CommentHook
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
-        if (engine.process(evaluationContext)) {
-            CommentUtil.deleteComment(comment);
-            return true;
-        }
-        return false;
+        var processed = engine.process(evaluationContext);
+        WmlUtils.setTagAttribute(tag.tag(), "status", "executed");
+        return processed;
     }
 
     @Override
     public void setContextKey(String contextKey) {
-        WmlUtils.setTagAttribute(tag.tag(), "context", contextKey);
+        var smartTag = tag.tag();
+        var attributeKey = "context";
+        var attributeValue = contextKey;
+        WmlUtils.setTagAttribute(smartTag, attributeKey, attributeValue);
     }
 
 }

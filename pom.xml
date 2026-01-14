@@ -14,12 +14,13 @@
         supporting various features like tables, images, and conditional content.
     </description>
     <packaging>pom</packaging>
-
     <url>https://github.com/verronpro/office-stamper</url>
+
     <organization>
         <name>Verron.pro</name>
         <url>https://verron.pro</url>
     </organization>
+
     <licenses>
         <license>
             <name>MIT License</name>

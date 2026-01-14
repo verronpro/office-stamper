@@ -66,16 +66,6 @@ public final class AsciiDocCompiler {
     ///
     /// @return textual representation
     public static String toAsciiDoc(WordprocessingMLPackage pkg) {
-        return DocxToAsciiDoc.compile(pkg, AsciiDocDialect.COMPAT);
-    }
-
-    /// Compiles a WordprocessingMLPackage into AsciiDoc using the specified dialect.
-    ///
-    /// @param pkg a Word document package
-    /// @param dialect output dialect (compat or adoc)
-    ///
-    /// @return textual representation
-    public static String toAsciiDoc(WordprocessingMLPackage pkg, AsciiDocDialect dialect) {
-        return DocxToAsciiDoc.compile(pkg, dialect);
+        return DocxToAsciiDoc.compile(pkg);
     }
 }

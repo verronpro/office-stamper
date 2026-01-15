@@ -4,6 +4,7 @@ import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -23,6 +24,9 @@ public final class AsciiDocToDocx {
         try {
             var pkg = WordprocessingMLPackage.createPackage();
             var factory = Context.getWmlObjectFactory();
+            pkg.getMainDocumentPart()
+               .getContent()
+               .clear();
 
             for (Block block : model.getBlocks()) {
                 if (block instanceof Heading h) {
@@ -36,6 +40,31 @@ public final class AsciiDocToDocx {
                 else if (block instanceof Table t) {
                     pkg.getMainDocumentPart()
                        .addObject(createTable(factory, t));
+                }
+                else if (block instanceof UnorderedList(List<ListItem> items1)) {
+                    for (ListItem item : items1) {
+                        pkg.getMainDocumentPart()
+                           .addObject(createListItem(factory, item, "* "));
+                    }
+                }
+                else if (block instanceof OrderedList(List<ListItem> items)) {
+                    int i = 1;
+                    for (ListItem item : items) {
+                        pkg.getMainDocumentPart()
+                           .addObject(createListItem(factory, item, (i++) + ". "));
+                    }
+                }
+                else if (block instanceof Blockquote b) {
+                    pkg.getMainDocumentPart()
+                       .addObject(createBlockquote(factory, b));
+                }
+                else if (block instanceof CodeBlock cb) {
+                    pkg.getMainDocumentPart()
+                       .addObject(createCodeBlock(factory, cb));
+                }
+                else if (block instanceof ImageBlock ib) {
+                    pkg.getMainDocumentPart()
+                       .addObject(createImageBlock(factory, ib));
                 }
             }
             return pkg;
@@ -77,7 +106,7 @@ public final class AsciiDocToDocx {
         return p;
     }
 
-    private static void addInlines(ObjectFactory factory, P p, List<Inline> inlines, RPr base) {
+    private static void addInlines(ObjectFactory factory, P p, List<Inline> inlines, @Nullable RPr base) {
         for (Inline inline : inlines) {
             emitInline(factory, p, inline, base);
         }
@@ -104,19 +133,95 @@ public final class AsciiDocToDocx {
         return tbl;
     }
 
-    private static void emitInline(ObjectFactory factory, P p, Inline inline, RPr base) {
-        if (inline instanceof AsciiDocModel.Text(String text)) {
+    private static P createListItem(ObjectFactory factory, ListItem item, String prefix) {
+        P p = factory.createP();
+        R r = factory.createR();
+        org.docx4j.wml.Text t = factory.createText();
+        t.setValue(prefix);
+        r.getContent()
+         .add(t);
+        p.getContent()
+         .add(r);
+        addInlines(factory, p, item.inlines(), null);
+        return p;
+    }
+
+    private static P createBlockquote(ObjectFactory factory, Blockquote blockquote) {
+        P p = factory.createP();
+        PPr ppr = factory.createPPr();
+        PPrBase.Ind ind = factory.createPPrBaseInd();
+        ind.setLeft(BigInteger.valueOf(720)); // 0.5 inch
+        ppr.setInd(ind);
+        p.setPPr(ppr);
+        addInlines(factory, p, blockquote.inlines(), null);
+        return p;
+    }
+
+    private static P createCodeBlock(ObjectFactory factory, CodeBlock codeBlock) {
+        P p = factory.createP();
+        RPr rpr = factory.createRPr();
+        RFonts fonts = factory.createRFonts();
+        fonts.setAscii("Courier New");
+        fonts.setHAnsi("Courier New");
+        rpr.setRFonts(fonts);
+
+        String[] lines = codeBlock.content()
+                                  .split("\n");
+        for (int i = 0; i < lines.length; i++) {
             R r = factory.createR();
-            RPr rpr = base != null ? deepCopy(factory, base) : factory.createRPr();
-            org.docx4j.wml.Text tx = factory.createText();
-            tx.setValue(text);
-            // Preserve spaces/tabs if present within text segments
-            tx.setSpace("preserve");
-            r.getContent()
-             .add(tx);
             r.setRPr(rpr);
+            org.docx4j.wml.Text t = factory.createText();
+            t.setValue(lines[i]);
+            t.setSpace("preserve");
+            r.getContent()
+             .add(t);
+            if (i < lines.length - 1) {
+                r.getContent()
+                 .add(factory.createBr());
+            }
             p.getContent()
              .add(r);
+        }
+        return p;
+    }
+
+    private static P createImageBlock(ObjectFactory factory, ImageBlock imageBlock) {
+        P p = factory.createP();
+        R r = factory.createR();
+        org.docx4j.wml.Text t = factory.createText();
+        t.setValue("[Image: " + imageBlock.url() + " - " + imageBlock.altText() + "]");
+        r.getContent()
+         .add(t);
+        p.getContent()
+         .add(r);
+        return p;
+    }
+
+    private static void emitInline(ObjectFactory factory, P p, Inline inline, @Nullable RPr base) {
+        if (inline instanceof AsciiDocModel.Text(String text)) {
+            RPr rpr = base != null ? deepCopy(factory, base) : factory.createRPr();
+            String[] lines = text.split("\n", -1);
+            for (int i = 0; i < lines.length; i++) {
+                if (!lines[i].isEmpty()) {
+                    R r = factory.createR();
+                    r.setRPr(rpr);
+                    org.docx4j.wml.Text tx = factory.createText();
+                    tx.setValue(lines[i]);
+                    tx.setSpace("preserve");
+                    r.getContent()
+                     .add(tx);
+                    p.getContent()
+                     .add(r);
+                }
+                if (i < lines.length - 1) {
+                    R r = factory.createR();
+                    r.setRPr(rpr);
+                    r.getContent()
+                     .add(factory.createBr());
+                    p.getContent()
+                     .add(r);
+                }
+            }
             return;
         }
 
@@ -143,6 +248,34 @@ public final class AsciiDocToDocx {
             R.Tab tab = factory.createRTab();
             r.getContent()
              .add(tab);
+            p.getContent()
+             .add(r);
+        }
+
+        if (inline instanceof Link link) {
+            R r = factory.createR();
+            RPr rpr = base != null ? deepCopy(factory, base) : factory.createRPr();
+            Color color = factory.createColor();
+            color.setVal("0000FF");
+            rpr.setColor(color);
+            U u = factory.createU();
+            u.setVal(UnderlineEnumeration.SINGLE);
+            rpr.setU(u);
+            r.setRPr(rpr);
+            org.docx4j.wml.Text t = factory.createText();
+            t.setValue(link.text());
+            r.getContent()
+             .add(t);
+            p.getContent()
+             .add(r);
+        }
+
+        if (inline instanceof InlineImage ii) {
+            R r = factory.createR();
+            org.docx4j.wml.Text t = factory.createText();
+            t.setValue("[Image: " + ii.url() + "]");
+            r.getContent()
+             .add(t);
             p.getContent()
              .add(r);
         }

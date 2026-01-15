@@ -39,6 +39,48 @@ public final class AsciiDocToFx {
                     emitInline(flow, inline, Font.getDefault(), FontWeight.NORMAL, FontPosture.REGULAR);
                 }
             }
+            else if (block instanceof UnorderedList(List<ListItem> items1)) {
+                for (ListItem item : items1) {
+                    TextFlow itemFlow = new TextFlow();
+                    itemFlow.getChildren()
+                            .add(new Text("• "));
+                    for (Inline inline : item.inlines()) {
+                        emitInline(itemFlow, inline, Font.getDefault(), FontWeight.NORMAL, FontPosture.REGULAR);
+                    }
+                    rootBox.getChildren()
+                           .add(itemFlow);
+                }
+                continue;
+            }
+            else if (block instanceof OrderedList(List<ListItem> items)) {
+                int i = 1;
+                for (ListItem item : items) {
+                    TextFlow itemFlow = new TextFlow();
+                    itemFlow.getChildren()
+                            .add(new Text((i++) + ". "));
+                    for (Inline inline : item.inlines()) {
+                        emitInline(itemFlow, inline, Font.getDefault(), FontWeight.NORMAL, FontPosture.REGULAR);
+                    }
+                    rootBox.getChildren()
+                           .add(itemFlow);
+                }
+                continue;
+            }
+            else if (block instanceof Blockquote(List<Inline> inlines)) {
+                flow.setPadding(new Insets(0, 0, 0, 20));
+                for (Inline inline : inlines) {
+                    emitInline(flow, inline, Font.getDefault(), FontWeight.NORMAL, FontPosture.ITALIC);
+                }
+            }
+            else if (block instanceof CodeBlock cb) {
+                flow.setStyle("-fx-background-color: #f4f4f4; -fx-font-family: 'monospace';");
+                flow.getChildren()
+                    .add(new Text(cb.content()));
+            }
+            else if (block instanceof ImageBlock(String url, String altText)) {
+                flow.getChildren()
+                    .add(new Text("[Image: " + url + " - " + altText + "]"));
+            }
             rootBox.getChildren()
                    .add(flow);
         }
@@ -67,6 +109,18 @@ public final class AsciiDocToFx {
             for (Inline child : children) {
                 emitInline(flow, child, base, weight, nextP);
             }
+            return;
+        }
+        if (inline instanceof Link link) {
+            Text t = styledText(link.text(), base, weight, posture);
+            t.setUnderline(true);
+            t.setFill(javafx.scene.paint.Color.BLUE);
+            flow.getChildren()
+                .add(t);
+        }
+        if (inline instanceof InlineImage ii) {
+            flow.getChildren()
+                .add(new Text("[Image: " + ii.url() + "]"));
         }
     }
 
@@ -84,10 +138,8 @@ public final class AsciiDocToFx {
     }
 
     private static Text styledText(String value, Font base, FontWeight weight, FontPosture posture) {
-        FontWeight w = weight != null ? weight : FontWeight.NORMAL;
-        FontPosture p = posture != null ? posture : FontPosture.REGULAR;
         Text t = new Text(value);
-        t.setFont(Font.font(base.getFamily(), w, p, base.getSize()));
+        t.setFont(Font.font(base.getFamily(), weight, posture, base.getSize()));
         return t;
     }
 }

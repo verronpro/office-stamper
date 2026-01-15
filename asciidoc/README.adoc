@@ -1,12 +1,12 @@
 = Office-stamper AsciiDoc Module
 
-The `asciidoc` module provides adapters to convert AsciiDoc content into DOCX-compatible structures using AsciidoctorJ and docx4j.
+The `asciidoc` module provides adapters to convert AsciiDoc content into DOCX-compatible structures using a built-in parser and docx4j.
 It is intended to help incorporate rich text generated from AsciiDoc into Office-stamper workflows.
 
 == Key Points
 
 * Converts AsciiDoc to WordprocessingML (DOCX) objects
-* Integrates with AsciidoctorJ and docx4j
+* Built-in lightweight AsciiDoc parser (no external dependencies like AsciidoctorJ)
 * Designed to be used alongside the core `engine` module
 
 == Maven Coordinates
@@ -18,7 +18,7 @@ It is intended to help incorporate rich text generated from AsciiDoc into Office
   <artifactId>asciidoc</artifactId>
   <version>${office-stamper.version}</version>
   <scope>compile</scope>
-  <!-- Requires AsciidoctorJ and docx4j at runtime -->
+  <!-- Requires docx4j at runtime -->
 </dependency>
 ----
 

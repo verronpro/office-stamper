@@ -257,11 +257,6 @@
                 <version>${javafx.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.asciidoctor</groupId>
-                <artifactId>asciidoctorj</artifactId>
-                <version>3.0.1</version>
-            </dependency>
-            <dependency>
                 <groupId>info.picocli</groupId>
                 <artifactId>picocli</artifactId>
                 <version>4.7.7</version>

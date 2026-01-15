@@ -16,7 +16,7 @@ public final class AsciiDocModel {
         this.blocks = List.copyOf(blocks);
     }
 
-    /// Creates a new {@link AsciiDocModel} from the provided blocks.
+    /// Creates a new [AsciiDocModel] from the provided blocks.
     ///
     /// @param blocks ordered content blocks
     ///
@@ -35,11 +35,11 @@ public final class AsciiDocModel {
 
     /// Marker interface for document blocks.
     public sealed interface Block
-            permits Heading, Paragraph, Table {}
+            permits Heading, Paragraph, Table, UnorderedList, OrderedList, Blockquote, CodeBlock, ImageBlock {}
 
     /// Inline fragment inside a paragraph/heading.
     public sealed interface Inline
-            permits Text, Bold, Italic, Tab {
+            permits Text, Bold, Italic, Tab, Link, InlineImage {
         /// Returns the text of the inline fragment.
         ///
         /// @return text
@@ -168,6 +168,76 @@ public final class AsciiDocModel {
         /// @param inlines inline fragments
         public Cell(List<Inline> inlines) {
             this.inlines = List.copyOf(inlines);
+        }
+    }
+
+    /// Unordered list.
+    ///
+    /// @param items list items
+    public record UnorderedList(List<ListItem> items)
+            implements Block {}
+
+    /// Ordered list.
+    ///
+    /// @param items list items
+    public record OrderedList(List<ListItem> items)
+            implements Block {}
+
+    /// List item.
+    ///
+    /// @param inlines inline fragments
+    public record ListItem(List<Inline> inlines) {
+        /// Constructor.
+        ///
+        /// @param inlines inline fragments
+        public ListItem(List<Inline> inlines) {
+            this.inlines = List.copyOf(inlines);
+        }
+    }
+
+    /// Blockquote.
+    ///
+    /// @param inlines inline fragments
+    public record Blockquote(List<Inline> inlines)
+            implements Block {
+        /// Constructor.
+        ///
+        /// @param inlines inline fragments
+        public Blockquote(List<Inline> inlines) {
+            this.inlines = List.copyOf(inlines);
+        }
+    }
+
+    /// Code block.
+    ///
+    /// @param language language
+    /// @param content code content
+    public record CodeBlock(String language, String content)
+            implements Block {}
+
+    /// Image block.
+    ///
+    /// @param url image URL
+    /// @param altText alternative text
+    public record ImageBlock(String url, String altText)
+            implements Block {}
+
+    /// Link inline.
+    ///
+    /// @param url link URL
+    /// @param text link text
+    public record Link(String url, String text)
+            implements Inline {}
+
+    /// Inline image.
+    ///
+    /// @param url image URL
+    /// @param altText alternative text
+    public record InlineImage(String url, String altText)
+            implements Inline {
+        @Override
+        public String text() {
+            return altText;
         }
     }
 }

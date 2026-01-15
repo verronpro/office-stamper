@@ -6,10 +6,6 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 /// Facade utilities to parse AsciiDoc and compile it to different targets.
 public final class AsciiDocCompiler {
 
-    static {
-        System.setProperty("jruby.compat.version", "RUBY1_9");
-        System.setProperty("jruby.compile.mode", "OFF");
-    }
     private AsciiDocCompiler() {
 
     }
@@ -57,6 +53,33 @@ public final class AsciiDocCompiler {
     /// @return scene with rendered content
     public static Scene toScene(AsciiDocModel model) {
         return AsciiDocToFx.compileToScene(model);
+    }
+
+    /// Compiles the AsciiDoc source text directly to HTML.
+    ///
+    /// @param asciidoc source text
+    ///
+    /// @return HTML representation
+    public static String toHtml(String asciidoc) {
+        return toHtml(toAsciiModel(asciidoc));
+    }
+
+    /// Compiles the parsed model to HTML.
+    ///
+    /// @param model parsed model
+    ///
+    /// @return HTML representation
+    public static String toHtml(AsciiDocModel model) {
+        return AsciiDocToHtml.compileToHtml(model);
+    }
+
+    /// Compiles the parsed model to its textual AsciiDoc representation.
+    ///
+    /// @param model parsed model
+    ///
+    /// @return textual representation
+    public static String toText(AsciiDocModel model) {
+        return AsciiDocToText.compileToText(model);
     }
 
     /// Compiles a WordprocessingMLPackage into the textual AsciiDoc representation used by tests. This mirrors the

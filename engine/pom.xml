@@ -92,18 +92,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jruby</groupId>
-            <artifactId>jruby</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctorj</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

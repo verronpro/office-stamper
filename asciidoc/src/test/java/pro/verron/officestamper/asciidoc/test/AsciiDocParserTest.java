@@ -6,184 +6,236 @@ import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import pro.verron.officestamper.asciidoc.AsciiDocModel;
-import pro.verron.officestamper.asciidoc.AsciiDocModel.Heading;
-import pro.verron.officestamper.asciidoc.AsciiDocModel.Paragraph;
+import pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 import pro.verron.officestamper.asciidoc.AsciiDocParser;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/// Unit test class for the `AsciiDocParser`. This class contains a suite of test cases that verify the functionality
-/// and correctness of the `AsciiDocParser.parse` method. Each test case isolates specific scenarios and checks the
-/// parser's output against expected results. Responsibilities:
-/// - Validate the behavior when parsing `null`, empty, or blank AsciiDoc input.
-/// - Test parsing of singular and hierarchical heading structures within AsciiDoc documents.
-/// - Verify the parsing of a single paragraph and handling of inline text.
-/// - Check the construction and structure of AsciiDoc tables, including rows and columns. Purpose:
-/// - Ensure the `AsciiDocParser` handles a variety of input cases correctly.
-/// - Test the fidelity of the parsed `AsciiDocModel` against the structural elements from the input. Test Scenarios:
-/// - Parsing `null` input should return an empty model.
-/// - Parsing an empty or blank AsciiDoc string should result in an empty model.
-/// - Verify correct parsing of a single heading and associated text.
-/// - Validate the parsing of multiple headings with hierarchical levels.
-/// - Test the correct parsing of paragraphs containing inline text.
-/// - Confirm the correct parsing of a simple AsciiDoc table with header and data rows.
 class AsciiDocParserTest {
 
-    /// Tests for the parse method in [AsciiDocParser]. This method is responsible for converting an AsciiDoc string
-    /// into an [AsciiDocModel].
     @NullSource
     @EmptySource
     @ValueSource(strings = {"   "})
     @ParameterizedTest
     void parse_shouldReturnEmptyModel_whenInputIsNull(String asciidoc) {
-        // Act
         AsciiDocModel result = AsciiDocParser.parse(asciidoc);
-
-        // Assert
         assertNotNull(result);
-        var blocks = result.getBlocks();
-        assertTrue(blocks.isEmpty());
-    }
-
-    @Test
-    void parse_shouldParseSingleHeading() {
-        // Arrange
-        String asciidoc = """
-                = Title
-                
-                == Heading Level 1
-                
-                """;
-
-        // Act
-        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
-
-        // Assert
-        assertNotNull(result);
-        var blocks = result.getBlocks();
-        assertEquals(1, blocks.size());
-        var heading = assertInstanceOf(Heading.class, blocks.getFirst());
-        assertEquals(1, heading.level());
-        var inlines = heading.inlines();
-        assertEquals("Heading Level 1",
-                inlines.getFirst()
-                       .text());
-    }
-
-    @Test
-    void parse_shouldParseMultipleHeadings() {
-        // Arrange
-        String asciidoc = """
-                = Title
-                
-                == Heading Level 1
-                
-                === Heading Level 2
-                
-                ==== Heading Level 3
-                
-                """;
-
-        // Act
-        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
-
-        // Assert
-        assertNotNull(result);
-        var blocks = result.getBlocks();
-        assertEquals(3, blocks.size());
-
-        Heading heading1 = (Heading) blocks.getFirst();
-        assertEquals(1, heading1.level());
-        assertEquals("Heading Level 1",
-                heading1.inlines()
-                        .getFirst()
-                        .text());
-
-        Heading heading2 = (Heading) blocks.get(1);
-        assertEquals(2, heading2.level());
-        assertEquals("Heading Level 2",
-                heading2.inlines()
-                        .getFirst()
-                        .text());
-
-        Heading heading3 = (Heading) blocks.get(2);
-        assertEquals(3, heading3.level());
-        assertEquals("Heading Level 3",
-                heading3.inlines()
-                        .getFirst()
-                        .text());
+        assertTrue(result.getBlocks()
+                         .isEmpty());
     }
 
     @Test
     void parse_shouldParseParagraph() {
-        // Arrange
         String asciidoc = "This is a simple paragraph.";
-
-        // Act
         AsciiDocModel result = AsciiDocParser.parse(asciidoc);
+        var blocks = result.getBlocks();
+        assertEquals(1, blocks.size());
+        var paragraph = assertInstanceOf(Paragraph.class, blocks.getFirst());
+        assertEquals("This is a simple paragraph.",
+                paragraph.inlines()
+                         .getFirst()
+                         .text());
+    }
 
-        // Assert
-        assertNotNull(result);
+    @Test
+    void parse_shouldParseHeading() {
+        String asciidoc = """
+                = Heading 1
+                
+                == Heading 2""";
+        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
+        var blocks = result.getBlocks();
+        assertEquals(2, blocks.size());
+
+        var h1 = assertInstanceOf(Heading.class, blocks.get(0));
+        assertEquals(1, h1.level());
+        assertEquals("Heading 1",
+                h1.inlines()
+                  .getFirst()
+                  .text());
+
+        var h2 = assertInstanceOf(Heading.class, blocks.get(1));
+        assertEquals(2, h2.level());
+        assertEquals("Heading 2",
+                h2.inlines()
+                  .getFirst()
+                  .text());
+    }
+
+    @Test
+    void parse_shouldParseUnorderedList() {
+        String asciidoc = """
+                * Item 1
+                * Item 2""";
+        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
         var blocks = result.getBlocks();
         assertEquals(1, blocks.size());
 
-        var paragraph = assertInstanceOf(Paragraph.class, blocks.getFirst());
-        var inlines = paragraph.inlines();
-        var first = inlines.getFirst();
-        assertEquals("This is a simple paragraph.", first.text());
+        var list = assertInstanceOf(UnorderedList.class, blocks.getFirst());
+        assertEquals(2,
+                list.items()
+                    .size());
+        assertEquals("Item 1",
+                list.items()
+                    .get(0)
+                    .inlines()
+                    .getFirst()
+                    .text());
+        assertEquals("Item 2",
+                list.items()
+                    .get(1)
+                    .inlines()
+                    .getFirst()
+                    .text());
     }
 
+    @Test
+    void parse_shouldParseOrderedList() {
+        String asciidoc = """
+                . Item 1
+                . Item 2""";
+        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
+        var blocks = result.getBlocks();
+        assertEquals(1, blocks.size());
+
+        var list = assertInstanceOf(OrderedList.class, blocks.getFirst());
+        assertEquals(2,
+                list.items()
+                    .size());
+        assertEquals("Item 1",
+                list.items()
+                    .get(0)
+                    .inlines()
+                    .getFirst()
+                    .text());
+        assertEquals("Item 2",
+                list.items()
+                    .get(1)
+                    .inlines()
+                    .getFirst()
+                    .text());
+    }
 
     @Test
     void parse_shouldParseTable() {
-        // Arrange
         String asciidoc = """
                 |===
                 |Column 1 |Column 2
                 |Value 1  |Value 2
                 |===
                 """;
-
-        // Act
         AsciiDocModel result = AsciiDocParser.parse(asciidoc);
-
-        // Assert
-        assertNotNull(result);
         var blocks = result.getBlocks();
         assertEquals(1, blocks.size());
 
-        AsciiDocModel.Table table = assertInstanceOf(AsciiDocModel.Table.class, blocks.getFirst());
-        List<AsciiDocModel.Row> rows = table.rows();
+        var table = assertInstanceOf(Table.class, blocks.getFirst());
+        var rows = table.rows();
         assertEquals(2, rows.size());
 
-        AsciiDocModel.Row headerRow = rows.getFirst();
-        var headerCells = headerRow.cells();
-        assertEquals(2, headerCells.size());
         assertEquals("Column 1",
-                headerCells.get(0)
-                           .inlines()
-                           .getFirst()
-                           .text());
+                rows.get(0)
+                    .cells()
+                    .get(0)
+                    .inlines()
+                    .getFirst()
+                    .text());
         assertEquals("Column 2",
-                headerCells.get(1)
-                           .inlines()
-                           .getFirst()
-                           .text());
-
-        AsciiDocModel.Row dataRow = rows.get(1);
-        var dataCells = dataRow.cells();
-        assertEquals(2, dataCells.size());
+                rows.get(0)
+                    .cells()
+                    .get(1)
+                    .inlines()
+                    .getFirst()
+                    .text());
         assertEquals("Value 1",
-                dataCells.get(0)
-                         .inlines()
-                         .getFirst()
-                         .text());
+                rows.get(1)
+                    .cells()
+                    .get(0)
+                    .inlines()
+                    .getFirst()
+                    .text());
         assertEquals("Value 2",
-                dataCells.get(1)
-                         .inlines()
-                         .getFirst()
-                         .text());
+                rows.get(1)
+                    .cells()
+                    .get(1)
+                    .inlines()
+                    .getFirst()
+                    .text());
+    }
+
+    @Test
+    void parse_shouldParseInlines() {
+        String asciidoc = "Text with *bold*, _italic_, and a http://example.com[Link].";
+        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
+        var blocks = result.getBlocks();
+        var paragraph = assertInstanceOf(Paragraph.class, blocks.getFirst());
+        var inlines = paragraph.inlines();
+
+        assertEquals("Text with ",
+                inlines.get(0)
+                       .text());
+        assertInstanceOf(Bold.class, inlines.get(1));
+        assertEquals("bold",
+                inlines.get(1)
+                       .text());
+        assertEquals(", ",
+                inlines.get(2)
+                       .text());
+        assertInstanceOf(Italic.class, inlines.get(3));
+        assertEquals("italic",
+                inlines.get(3)
+                       .text());
+        assertEquals(", and a ",
+                inlines.get(4)
+                       .text());
+        var link = assertInstanceOf(Link.class, inlines.get(5));
+        assertEquals("http://example.com", link.url());
+        assertEquals("Link", link.text());
+        assertEquals(".",
+                inlines.get(6)
+                       .text());
+    }
+
+    @Test
+    void parse_shouldParseBlockquote() {
+        String asciidoc = """
+                ____
+                This is a quote.
+                ____
+                """;
+        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
+        var blocks = result.getBlocks();
+        assertEquals(1, blocks.size());
+        var quote = assertInstanceOf(Blockquote.class, blocks.getFirst());
+        assertEquals("This is a quote.",
+                quote.inlines()
+                     .getFirst()
+                     .text());
+    }
+
+    @Test
+    void parse_shouldParseCodeBlock() {
+        String asciidoc = """
+                [source,java]
+                ----
+                public class Main {}
+                ----
+                """;
+        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
+        var blocks = result.getBlocks();
+        assertEquals(1, blocks.size());
+        var code = assertInstanceOf(CodeBlock.class, blocks.getFirst());
+        assertEquals("java", code.language());
+        assertEquals("public class Main {}", code.content());
+    }
+
+    @Test
+    void parse_shouldParseImageBlock() {
+        String asciidoc = "image::path/to/img.png[Alt Text]";
+        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
+        var blocks = result.getBlocks();
+        assertEquals(1, blocks.size());
+        var image = assertInstanceOf(ImageBlock.class, blocks.getFirst());
+        assertEquals("path/to/img.png", image.url());
+        assertEquals("Alt Text", image.altText());
     }
 }

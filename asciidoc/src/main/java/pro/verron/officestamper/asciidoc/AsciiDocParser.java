@@ -1,91 +1,230 @@
 package pro.verron.officestamper.asciidoc;
 
-import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.Options;
-import org.asciidoctor.ast.*;
-import org.asciidoctor.ast.Block;
-import org.asciidoctor.ast.Cell;
-import org.asciidoctor.ast.Row;
-import org.asciidoctor.ast.Table;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 
-/// Parser based on AsciidoctorJ producing an [AsciiDocModel].
-///
-/// Supported subset mapped into our model:
-///  - Headings: document title (if present) and sections (levels 1..6)
-///  - Paragraphs: paragraph blocks
-///  - Inline emphasis: <code>*bold*</code> and <code>_italic_</code> via a lightweight inline parser
 public final class AsciiDocParser {
 
     private AsciiDocParser() {
         // utility
     }
 
-    /// Parses the given AsciiDoc string into a model using AsciidoctorJ AST traversal.
-    ///
-    /// Notes:
-    ///  - If the document has a header/title (e.g. a leading "= Title"), it is emitted as a level-1 Heading.
-    ///  - Section levels are offset by +1 when a document title is present to preserve the perceived hierarchy of the
-    /// previous homemade parser where "= Title" was treated as a heading, not a special header.
-    ///
-    /// @param asciidoc source text
-    ///
-    /// @return parsed model
     public static AsciiDocModel parse(String asciidoc) {
-        var blocks = new ArrayList<AsciiDocModel.Block>();
+        var blocks = new ArrayList<Block>();
         if (asciidoc == null || asciidoc.isBlank()) {
             return AsciiDocModel.of(blocks);
         }
 
-        try (Asciidoctor engine = Asciidoctor.Factory.create()) {
-            Options options = Options.builder()
-                                     .sourcemap(true)
-                                     .build();
-            Document doc = engine.load(asciidoc, options);
+        String[] lines = asciidoc.split("\r?\n");
+        StringBuilder currentParagraph = new StringBuilder();
+        boolean inTable = false;
+        boolean inBlockquote = false;
+        boolean inCodeBlock = false;
+        String currentLanguage = "";
+        List<Row> currentTableRows = new ArrayList<>();
+        StringBuilder currentBlockContent = new StringBuilder();
 
-            for (StructuralNode child : doc.getBlocks()) {
-                traverse(child, blocks);
+        for (String line : lines) {
+            String trimmed = line.trim();
+
+            if (trimmed.equals("____")) {
+                if (inBlockquote) {
+                    blocks.add(new Blockquote(parseInlines(currentBlockContent.toString()
+                                                                              .trim())));
+                    currentBlockContent.setLength(0);
+                    inBlockquote = false;
+                }
+                else {
+                    if (!currentParagraph.isEmpty()) {
+                        blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                              .trim())));
+                        currentParagraph.setLength(0);
+                    }
+                    inBlockquote = true;
+                }
+                continue;
             }
+
+            if (inBlockquote) {
+                if (!currentBlockContent.isEmpty()) {
+                    currentBlockContent.append(" ");
+                }
+                currentBlockContent.append(trimmed);
+                continue;
+            }
+
+            if (trimmed.startsWith("[source")) {
+                int commaIndex = trimmed.indexOf(',');
+                if (commaIndex != -1) {
+                    int bracketIndex = trimmed.indexOf(']');
+                    currentLanguage = trimmed.substring(commaIndex + 1, bracketIndex)
+                                             .trim();
+                }
+                continue;
+            }
+
+            if (trimmed.equals("----")) {
+                if (inCodeBlock) {
+                    blocks.add(new CodeBlock(currentLanguage,
+                            currentBlockContent.toString()
+                                               .trim()));
+                    currentBlockContent.setLength(0);
+                    currentLanguage = "";
+                    inCodeBlock = false;
+                }
+                else {
+                    if (!currentParagraph.isEmpty()) {
+                        blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                              .trim())));
+                        currentParagraph.setLength(0);
+                    }
+                    inCodeBlock = true;
+                }
+                continue;
+            }
+
+            if (inCodeBlock) {
+                if (!currentBlockContent.isEmpty()) {
+                    currentBlockContent.append("\n");
+                }
+                currentBlockContent.append(line); // Preserve indentation in code blocks
+                continue;
+            }
+
+            if (trimmed.startsWith("image::")) {
+                if (!currentParagraph.isEmpty()) {
+                    blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                          .trim())));
+                    currentParagraph.setLength(0);
+                }
+                int endUrl = trimmed.indexOf('[', 7);
+                if (endUrl != -1) {
+                    int endText = trimmed.indexOf(']', endUrl);
+                    if (endText != -1) {
+                        String url = trimmed.substring(7, endUrl);
+                        String altText = trimmed.substring(endUrl + 1, endText);
+                        blocks.add(new ImageBlock(url, altText));
+                        continue;
+                    }
+                }
+            }
+
+            if (trimmed.equals("|===")) {
+                if (inTable) {
+                    blocks.add(new Table(currentTableRows));
+                    currentTableRows = new ArrayList<>();
+                    inTable = false;
+                }
+                else {
+                    if (!currentParagraph.isEmpty()) {
+                        blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                              .trim())));
+                        currentParagraph.setLength(0);
+                    }
+                    inTable = true;
+                }
+                continue;
+            }
+
+            if (inTable) {
+                if (trimmed.startsWith("|")) {
+                    String[] cellTexts = trimmed.substring(1)
+                                                .split("\\|");
+                    List<Cell> cells = new ArrayList<>();
+                    for (String cellText : cellTexts) {
+                        cells.add(new Cell(parseInlines(cellText.trim())));
+                    }
+                    currentTableRows.add(new Row(cells));
+                }
+                continue;
+            }
+
+            if (trimmed.isBlank()) {
+                if (!currentParagraph.isEmpty()) {
+                    blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                          .trim())));
+                    currentParagraph.setLength(0);
+                }
+                continue;
+            }
+
+            // Check for Headings
+            if (trimmed.startsWith("=")) {
+                int level = 0;
+                while (level < trimmed.length() && trimmed.charAt(level) == '=') {
+                    level++;
+                }
+                if (level > 0 && level <= 6 && level < trimmed.length()
+                    && Character.isWhitespace(trimmed.charAt(level))) {
+                    if (!currentParagraph.isEmpty()) {
+                        blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                              .trim())));
+                        currentParagraph.setLength(0);
+                    }
+                    String title = trimmed.substring(level)
+                                          .trim();
+                    blocks.add(new Heading(level, parseInlines(title)));
+                    continue;
+                }
+            }
+
+            // Check for Unordered List Item
+            if (trimmed.startsWith("* ")) {
+                if (!currentParagraph.isEmpty()) {
+                    blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                          .trim())));
+                    currentParagraph.setLength(0);
+                }
+                String itemText = trimmed.substring(2)
+                                         .trim();
+                var item = new ListItem(parseInlines(itemText));
+                if (!blocks.isEmpty() && blocks.getLast() instanceof UnorderedList(List<ListItem> items1)) {
+                    List<ListItem> items = new ArrayList<>(items1);
+                    items.add(item);
+                    blocks.set(blocks.size() - 1, new UnorderedList(items));
+                }
+                else {
+                    blocks.add(new UnorderedList(List.of(item)));
+                }
+                continue;
+            }
+
+            // Check for Ordered List Item
+            if (trimmed.startsWith(". ")) {
+                if (!currentParagraph.isEmpty()) {
+                    blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                          .trim())));
+                    currentParagraph.setLength(0);
+                }
+                String itemText = trimmed.substring(2)
+                                         .trim();
+                var item = new ListItem(parseInlines(itemText));
+                if (!blocks.isEmpty() && blocks.getLast() instanceof OrderedList(List<ListItem> items1)) {
+                    List<ListItem> items = new ArrayList<>(items1);
+                    items.add(item);
+                    blocks.set(blocks.size() - 1, new OrderedList(items));
+                }
+                else {
+                    blocks.add(new OrderedList(List.of(item)));
+                }
+                continue;
+            }
+
+            // Otherwise, it's a paragraph part
+            if (!currentParagraph.isEmpty()) {
+                currentParagraph.append("\n");
+            }
+            currentParagraph.append(trimmed);
+        }
+
+        if (!currentParagraph.isEmpty()) {
+            blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                  .trim())));
         }
 
         return AsciiDocModel.of(blocks);
-    }
-
-    private static void traverse(StructuralNode node, List<AsciiDocModel.Block> out) {
-        switch (node) {
-            case Section section -> {
-                int lvl = section.getLevel();
-                if (lvl >= 1 && lvl <= 6) {
-                    out.add(new Heading(lvl, parseInlines(section.getTitle())));
-                }
-                for (StructuralNode b : section.getBlocks()) {
-                    traverse(b, out);
-                }
-            }
-            case Table table -> {
-                List<AsciiDocModel.Row> rows = extractTableRowsViaReflection(table);
-                if (!rows.isEmpty()) {
-                    out.add(new AsciiDocModel.Table(rows));
-                }
-                // If extraction failed, continue traversal into children to salvage paragraphs
-            }
-            case PhraseNode phraseNode -> out.add(new Paragraph(parseInlines(phraseNode.getText())));
-            case Block block when "simple".equals(block.getContentModel()) ->
-                    out.add(new Paragraph(parseInlines(String.join("\n", block.getLines()))));
-            default -> {
-                // Recurse into other container nodes to keep paragraphs found within
-                List<StructuralNode> children = node.getBlocks();
-                if (children != null) {
-                    for (StructuralNode c : children) traverse(c, out);
-                }
-            }
-        }
     }
 
     private static List<Inline> parseInlines(String text) {
@@ -130,6 +269,7 @@ public final class AsciiDocParser {
                 }
                 else if (top.type == FrameType.BOLD || top.type == FrameType.ITALIC || top.type == FrameType.ROOT) {
                     // Open new frame
+                    top.flushTextToChildren();
                     Frame f = new Frame(type);
                     stack.add(f);
                 }
@@ -149,6 +289,40 @@ public final class AsciiDocParser {
                 stack.getLast().children.add(new Tab());
                 i += 4;
                 continue;
+            }
+
+            // Simple Link detection: https://example.com[Text]
+            if (c == 'h' && text.startsWith("http", i)) {
+                int endUrl = text.indexOf('[', i);
+                if (endUrl != -1) {
+                    int endText = text.indexOf(']', endUrl);
+                    if (endText != -1) {
+                        stack.getLast()
+                             .flushTextToChildren();
+                        String url = text.substring(i, endUrl);
+                        String linkText = text.substring(endUrl + 1, endText);
+                        stack.getLast().children.add(new Link(url, linkText));
+                        i = endText;
+                        continue;
+                    }
+                }
+            }
+
+            // Simple Image detection: image:url[AltText]
+            if (c == 'i' && text.startsWith("image:", i)) {
+                int endUrl = text.indexOf('[', i + 6);
+                if (endUrl != -1) {
+                    int endText = text.indexOf(']', endUrl);
+                    if (endText != -1) {
+                        stack.getLast()
+                             .flushTextToChildren();
+                        String url = text.substring(i + 6, endUrl);
+                        String altText = text.substring(endUrl + 1, endText);
+                        stack.getLast().children.add(new InlineImage(url, altText));
+                        i = endText;
+                        continue;
+                    }
+                }
             }
 
             // Regular char
@@ -172,37 +346,6 @@ public final class AsciiDocParser {
         // Flush remainder text on root
         root.flushTextToChildren();
         return root.children;
-    }
-
-    private static List<AsciiDocModel.Row> extractTableRowsViaReflection(Table table) {
-        var header = table.getHeader()
-                          .stream()
-                          .map(AsciiDocParser::convertRowReflective)
-                          .toList();
-        var body = table.getBody()
-                        .stream()
-                        .map(AsciiDocParser::convertRowReflective)
-                        .toList();
-        var footer = table.getFooter()
-                          .stream()
-                          .map(AsciiDocParser::convertRowReflective)
-                          .toList();
-        return Stream.of(header, body, footer)
-                     .flatMap(Collection::stream)
-                     .toList();
-    }
-
-    private static AsciiDocModel.Row convertRowReflective(Row row) {
-
-        return new AsciiDocModel.Row(row.getCells()
-                                        .stream()
-                                        .map(AsciiDocParser::convertCell)
-                                        .toList());
-
-    }
-
-    private static AsciiDocModel.Cell convertCell(Cell cell) {
-        return new AsciiDocModel.Cell(parseInlines(cell.getText()));
     }
 
     private enum FrameType {

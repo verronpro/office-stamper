@@ -348,8 +348,8 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
                         """),
                 """
                         This paragraph should not be # split.
-                        This paragraph should have a split input: whatever <br/>
-                         split in <br/>
+                        This paragraph should have a split input: whatever\s
+                         split in\s
                          three lines.
                         
                         """);

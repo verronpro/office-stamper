@@ -66,8 +66,8 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
                 
                 In this paragraph, we uppercase a variable: THE SIMPSONS.
                 
-                In this paragraph, we uppercase some multiline text: IT ALSO WORKS WITH<br/>
-                MULTILINE<br/>
+                In this paragraph, we uppercase some multiline text: IT ALSO WORKS WITH
+                MULTILINE
                 STRINGS OF TEXT.
                 
                 We toggle this paragraph display with a processor using the custom function.

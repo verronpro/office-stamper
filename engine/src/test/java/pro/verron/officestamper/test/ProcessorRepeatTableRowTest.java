@@ -124,27 +124,27 @@ class ProcessorRepeatTableRowTest {
                         |Dan Castellaneta<cnfStyle=000000100000>
                         
                         |Marge Simpson
-                        |Julie<br/>
+                        |Julie
                         Kavner<cnfStyle=000000100000>
                         
                         |Bart Simpson
-                        |Nancy<br/>
-                        <br/>
+                        |Nancy
+                        
                         Cartwright<cnfStyle=000000100000>
                         
                         |Kent Brockman
-                        |Harry<br/>
-                        <br/>
-                        <br/>
+                        |Harry
+                        
+                        
                         Shearer<cnfStyle=000000100000>
                         
                         |Disco Stu
-                        |Hank<br/>
-                        <br/>
+                        |Hank
+                        
                         Azaria<cnfStyle=000000100000>
                         
                         |Krusty the Clown
-                        |Dan<br/>
+                        |Dan
                         Castellaneta<cnfStyle=000000100000>
                         
                         

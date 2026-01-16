@@ -18,6 +18,7 @@ module pro.verron.officestamper.utils {
     requires org.slf4j;
     requires org.docx4j.core;
     requires org.jspecify;
+    requires pro.verron.officestamper.asciidoc;
 
     exports pro.verron.officestamper.utils.iterator;
     exports pro.verron.officestamper.utils.function;

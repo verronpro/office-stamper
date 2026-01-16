@@ -260,8 +260,8 @@ public class DocxRenderer {
         var type = br.getType();
         if (type == STBrType.PAGE) return "\n[page-break]\n<<<\n";
         else if (type == STBrType.COLUMN) return "\n[col-break]\n<<<\n";
-        else if (type == STBrType.TEXT_WRAPPING) return "<br/>\n";
-        else if (type == null) return "<br/>\n";
+        else if (type == STBrType.TEXT_WRAPPING) return "\n";
+        else if (type == null) return "\n";
         else throw new UtilsException("Unexpected type: " + type);
     }
 

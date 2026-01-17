@@ -6,7 +6,12 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 /// Facade utilities to parse AsciiDoc and compile it to different targets.
 public final class AsciiDocCompiler {
 
-    public static final DocxToAsciiDoc DOCX_TO_ASCII_DOC_MODEL = new DocxToAsciiDoc();
+    public static final AsciiDocToHtml MODEL_TO_HTML = new AsciiDocToHtml();
+    public static final AsciiDocToFx MODEL_TO_SCENE = new AsciiDocToFx();
+    public static final AsciiDocParser ASCIIDOC_TO_MODEL = new AsciiDocParser();
+    public static final AsciiDocToDocx MODEL_TO_DOCX = new AsciiDocToDocx();
+    private static final DocxToAsciiDoc DOCX_TO_MODEL = new DocxToAsciiDoc();
+    private static final AsciiDocToText MODEL_TO_ASCIIDOC = new AsciiDocToText();
 
     private AsciiDocCompiler() {
         throw new IllegalStateException("Utility class");
@@ -27,7 +32,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return package with rendered content
     public static WordprocessingMLPackage toDocx(AsciiDocModel model) {
-        return AsciiDocToDocx.compileToPackage(model);
+        return MODEL_TO_DOCX.apply(model);
     }
 
     /// Parses AsciiDoc source text into an [AsciiDocModel].
@@ -36,7 +41,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return parsed model
     public static AsciiDocModel toModel(String asciidoc) {
-        return AsciiDocParser.parse(asciidoc);
+        return ASCIIDOC_TO_MODEL.apply(asciidoc);
     }
 
     /// Compiles the AsciiDoc source text directly to a JavaFX Scene.
@@ -45,7 +50,8 @@ public final class AsciiDocCompiler {
     ///
     /// @return scene with rendered content
     public static Scene toScene(String asciidoc) {
-        return toScene(toModel(asciidoc));
+        var model = ASCIIDOC_TO_MODEL.apply(asciidoc);
+        return MODEL_TO_SCENE.apply(model);
     }
 
     /// Compiles the parsed model to a JavaFX Scene.
@@ -54,7 +60,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return scene with rendered content
     public static Scene toScene(AsciiDocModel model) {
-        return AsciiDocToFx.compileToScene(model);
+        return MODEL_TO_SCENE.apply(model);
     }
 
     /// Compiles the AsciiDoc source text directly to HTML.
@@ -63,7 +69,8 @@ public final class AsciiDocCompiler {
     ///
     /// @return HTML representation
     public static String toHtml(String asciidoc) {
-        return toHtml(toModel(asciidoc));
+        var model = ASCIIDOC_TO_MODEL.apply(asciidoc);
+        return MODEL_TO_HTML.apply(model);
     }
 
     /// Compiles the parsed model to HTML.
@@ -72,7 +79,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return HTML representation
     public static String toHtml(AsciiDocModel model) {
-        return AsciiDocToHtml.compileToHtml(model);
+        return MODEL_TO_HTML.apply(model);
     }
 
     /// Compiles a WordprocessingMLPackage into the textual AsciiDoc representation used by tests. This mirrors the
@@ -82,7 +89,8 @@ public final class AsciiDocCompiler {
     ///
     /// @return textual representation
     public static String toText(WordprocessingMLPackage pkg) {
-        return toText(toModel(pkg));
+        var model = DOCX_TO_MODEL.apply(pkg);
+        return MODEL_TO_ASCIIDOC.apply(model);
     }
 
     /// Compiles the parsed model to its textual AsciiDoc representation.
@@ -91,7 +99,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return textual representation
     public static String toText(AsciiDocModel model) {
-        return AsciiDocToText.compileToText(model);
+        return MODEL_TO_ASCIIDOC.apply(model);
     }
 
     /// Parses a Word document into an [AsciiDocModel].
@@ -100,6 +108,6 @@ public final class AsciiDocCompiler {
     ///
     /// @return parsed model
     public static AsciiDocModel toModel(WordprocessingMLPackage pkg) {
-        return DOCX_TO_ASCII_DOC_MODEL.apply(pkg);
+        return DOCX_TO_MODEL.apply(pkg);
     }
 }

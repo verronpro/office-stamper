@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.Text;
-import static pro.verron.officestamper.asciidoc.AsciiDocToText.compileToText;
 
 /// Minimal DOCX → AsciiDoc text extractor used by tests. This intentionally mirrors a subset of the legacy Stringifier
 /// formatting for:
@@ -141,7 +140,7 @@ public final class DocxToAsciiDoc
                                     var textContent = txbxContent.getContent();
                                     var blocks = toBlocks(textContent);
                                     var docModel = of(blocks);
-                                    var compileToText = compileToText(docModel);
+                                    var compileToText = AsciiDocCompiler.toText(docModel);
                                     var trimmed = compileToText.trim();
                                     tbText.append(trimmed);
                                 }
@@ -176,7 +175,7 @@ public final class DocxToAsciiDoc
                                .getAny()) {
             Object val = unwrap(o);
             // Handling WML textboxes (Wordprocessing Shape)
-            if (val instanceof CTObject obj) {
+            if (val instanceof CTObject _) {
                 // Textboxes in DML are often buried. For now, let's keep it simple.
             }
         }

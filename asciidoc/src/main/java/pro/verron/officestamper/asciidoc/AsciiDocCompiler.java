@@ -88,7 +88,7 @@ public final class AsciiDocCompiler {
     /// @param pkg a Word document package
     ///
     /// @return textual representation
-    public static String toText(WordprocessingMLPackage pkg) {
+    public static String toAsciidoc(WordprocessingMLPackage pkg) {
         var model = DOCX_TO_MODEL.apply(pkg);
         return MODEL_TO_ASCIIDOC.apply(model);
     }
@@ -98,7 +98,7 @@ public final class AsciiDocCompiler {
     /// @param model parsed model
     ///
     /// @return textual representation
-    public static String toText(AsciiDocModel model) {
+    public static String toAsciidoc(AsciiDocModel model) {
         return MODEL_TO_ASCIIDOC.apply(model);
     }
 

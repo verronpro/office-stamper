@@ -31,7 +31,7 @@ public class DocxFactory {
     public static WordprocessingMLPackage makeWordResource(String asciidoc) {
         // Extract comment macros and strip them from the AsciiDoc before compilation
         var extraction = extractAndStripCommentMacros(asciidoc);
-        var model = AsciiDocCompiler.toAsciiModel(extraction.cleanedAsciiDoc());
+        var model = AsciiDocCompiler.toModel(extraction.cleanedAsciiDoc());
         WordprocessingMLPackage aPackage = AsciiDocCompiler.toDocx(model);
         // Apply comments specified by macros onto the generated DOCX
         applyCommentMacros(aPackage, extraction.specs());

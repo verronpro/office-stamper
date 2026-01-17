@@ -140,7 +140,7 @@ public final class DocxToAsciiDoc
                                     var textContent = txbxContent.getContent();
                                     var blocks = toBlocks(textContent);
                                     var docModel = of(blocks);
-                                    var compileToText = AsciiDocCompiler.toText(docModel);
+                                    var compileToText = AsciiDocCompiler.toAsciidoc(docModel);
                                     var trimmed = compileToText.trim();
                                     tbText.append(trimmed);
                                 }

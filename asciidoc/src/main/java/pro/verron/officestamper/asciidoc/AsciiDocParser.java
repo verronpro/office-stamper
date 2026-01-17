@@ -2,16 +2,14 @@ package pro.verron.officestamper.asciidoc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 
-public final class AsciiDocParser {
+public final class AsciiDocParser
+        implements Function<String, AsciiDocModel> {
 
-    private AsciiDocParser() {
-        // utility
-    }
-
-    public static AsciiDocModel parse(String asciidoc) {
+    public AsciiDocModel apply(String asciidoc) {
         var blocks = new ArrayList<Block>();
         if (asciidoc == null || asciidoc.isBlank()) {
             return AsciiDocModel.of(blocks);

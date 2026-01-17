@@ -8,70 +8,13 @@ import org.jspecify.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.function.Function;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 
 /// Renders [AsciiDocModel] into a [WordprocessingMLPackage] using docx4j.
-public final class AsciiDocToDocx {
-    private AsciiDocToDocx() {}
-
-    /// Creates a new WordprocessingMLPackage and fills it with content from the model.
-    ///
-    /// @param model parsed AsciiDoc model
-    ///
-    /// @return package containing the rendered document
-    public static WordprocessingMLPackage compileToPackage(AsciiDocModel model) {
-        try {
-            var pkg = WordprocessingMLPackage.createPackage();
-            var factory = Context.getWmlObjectFactory();
-            pkg.getMainDocumentPart()
-               .getContent()
-               .clear();
-
-            for (Block block : model.getBlocks()) {
-                if (block instanceof Heading h) {
-                    pkg.getMainDocumentPart()
-                       .addObject(createHeading(factory, h));
-                }
-                else if (block instanceof Paragraph p) {
-                    pkg.getMainDocumentPart()
-                       .addObject(createParagraph(factory, p));
-                }
-                else if (block instanceof Table t) {
-                    pkg.getMainDocumentPart()
-                       .addObject(createTable(factory, t));
-                }
-                else if (block instanceof UnorderedList(List<ListItem> items1)) {
-                    for (ListItem item : items1) {
-                        pkg.getMainDocumentPart()
-                           .addObject(createListItem(factory, item, "* "));
-                    }
-                }
-                else if (block instanceof OrderedList(List<ListItem> items)) {
-                    int i = 1;
-                    for (ListItem item : items) {
-                        pkg.getMainDocumentPart()
-                           .addObject(createListItem(factory, item, (i++) + ". "));
-                    }
-                }
-                else if (block instanceof Blockquote b) {
-                    pkg.getMainDocumentPart()
-                       .addObject(createBlockquote(factory, b));
-                }
-                else if (block instanceof CodeBlock cb) {
-                    pkg.getMainDocumentPart()
-                       .addObject(createCodeBlock(factory, cb));
-                }
-                else if (block instanceof ImageBlock ib) {
-                    pkg.getMainDocumentPart()
-                       .addObject(createImageBlock(factory, ib));
-                }
-            }
-            return pkg;
-        } catch (Docx4JException e) {
-            throw new IllegalStateException("Unable to create WordprocessingMLPackage", e);
-        }
-    }
+public final class AsciiDocToDocx
+        implements Function<AsciiDocModel, WordprocessingMLPackage> {
 
     private static P createHeading(ObjectFactory factory, Heading heading) {
         P p = factory.createP();
@@ -198,58 +141,58 @@ public final class AsciiDocToDocx {
     }
 
     private static void emitInline(ObjectFactory factory, P p, Inline inline, @Nullable RPr base) {
-        if (inline instanceof AsciiDocModel.Text(String text)) {
-            RPr rpr = base != null ? deepCopy(factory, base) : factory.createRPr();
-            String[] lines = text.split("\n", -1);
-            for (int i = 0; i < lines.length; i++) {
-                if (!lines[i].isEmpty()) {
-                    R r = factory.createR();
-                    r.setRPr(rpr);
-                    org.docx4j.wml.Text tx = factory.createText();
-                    tx.setValue(lines[i]);
-                    tx.setSpace("preserve");
-                    r.getContent()
-                     .add(tx);
-                    p.getContent()
-                     .add(r);
+        switch (inline) {
+            case AsciiDocModel.Text(String text) -> {
+                RPr rpr = base != null ? deepCopy(factory, base) : factory.createRPr();
+                String[] lines = text.split("\n", -1);
+                for (int i = 0; i < lines.length; i++) {
+                    if (!lines[i].isEmpty()) {
+                        R r = factory.createR();
+                        r.setRPr(rpr);
+                        org.docx4j.wml.Text tx = factory.createText();
+                        tx.setValue(lines[i]);
+                        tx.setSpace("preserve");
+                        r.getContent()
+                         .add(tx);
+                        p.getContent()
+                         .add(r);
+                    }
+                    if (i < lines.length - 1) {
+                        R r = factory.createR();
+                        r.setRPr(rpr);
+                        r.getContent()
+                         .add(factory.createBr());
+                        p.getContent()
+                         .add(r);
+                    }
                 }
-                if (i < lines.length - 1) {
-                    R r = factory.createR();
-                    r.setRPr(rpr);
-                    r.getContent()
-                     .add(factory.createBr());
-                    p.getContent()
-                     .add(r);
+                return;
+            }
+            case Bold(List<Inline> children) -> {
+                RPr next = base != null ? deepCopy(factory, base) : factory.createRPr();
+                next.setB(new BooleanDefaultTrue());
+                for (Inline child : children) {
+                    emitInline(factory, p, child, next);
                 }
+                return;
             }
-            return;
-        }
-
-        if (inline instanceof Bold(List<Inline> children)) {
-            RPr next = base != null ? deepCopy(factory, base) : factory.createRPr();
-            next.setB(new BooleanDefaultTrue());
-            for (Inline child : children) {
-                emitInline(factory, p, child, next);
+            case Italic(List<Inline> children) -> {
+                RPr next = base != null ? deepCopy(factory, base) : factory.createRPr();
+                next.setI(new BooleanDefaultTrue());
+                for (Inline child : children) {
+                    emitInline(factory, p, child, next);
+                }
+                return;
             }
-            return;
-        }
-
-        if (inline instanceof Italic(List<Inline> children)) {
-            RPr next = base != null ? deepCopy(factory, base) : factory.createRPr();
-            next.setI(new BooleanDefaultTrue());
-            for (Inline child : children) {
-                emitInline(factory, p, child, next);
+            case Tab _ -> {
+                R r = factory.createR();
+                R.Tab tab = factory.createRTab();
+                r.getContent()
+                 .add(tab);
+                p.getContent()
+                 .add(r);
             }
-            return;
-        }
-
-        if (inline instanceof AsciiDocModel.Tab) {
-            R r = factory.createR();
-            R.Tab tab = factory.createRTab();
-            r.getContent()
-             .add(tab);
-            p.getContent()
-             .add(r);
+            default -> { /* DO NOTHING */ }
         }
 
         if (inline instanceof Link link) {
@@ -303,5 +246,47 @@ public final class AsciiDocToDocx {
             c.setSzCs(szCs);
         }
         return c;
+    }
+
+    /// Creates a new WordprocessingMLPackage and fills it with content from the model.
+    ///
+    /// @param model parsed AsciiDoc model
+    ///
+    /// @return package containing the rendered document
+    public WordprocessingMLPackage apply(AsciiDocModel model) {
+        try {
+            var pkg = WordprocessingMLPackage.createPackage();
+            var factory = Context.getWmlObjectFactory();
+            pkg.getMainDocumentPart()
+               .getContent()
+               .clear();
+
+            for (Block block : model.getBlocks()) {
+                final var mainDocumentPart = pkg.getMainDocumentPart();
+                switch (block) {
+                    case Heading h -> mainDocumentPart.addObject(createHeading(factory, h));
+                    case Paragraph p -> mainDocumentPart.addObject(createParagraph(factory, p));
+                    case Table t -> mainDocumentPart.addObject(createTable(factory, t));
+                    case UnorderedList(List<ListItem> items1) -> {
+                        for (ListItem item : items1) {
+                            mainDocumentPart.addObject(createListItem(factory, item, "* "));
+                        }
+                    }
+                    case OrderedList(List<ListItem> items) -> {
+                        int i = 1;
+                        for (ListItem item : items) {
+                            mainDocumentPart.addObject(createListItem(factory, item, (i++) + ". "));
+                        }
+                    }
+                    case Blockquote b -> mainDocumentPart.addObject(createBlockquote(factory, b));
+                    case CodeBlock cb -> mainDocumentPart.addObject(createCodeBlock(factory, cb));
+                    case ImageBlock ib -> mainDocumentPart.addObject(createImageBlock(factory, ib));
+                    default -> { /* DO NOTHING */ }
+                }
+            }
+            return pkg;
+        } catch (Docx4JException e) {
+            throw new IllegalStateException("Unable to create WordprocessingMLPackage", e);
+        }
     }
 }

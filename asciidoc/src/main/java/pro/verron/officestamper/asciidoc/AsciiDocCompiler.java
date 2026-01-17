@@ -6,8 +6,10 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 /// Facade utilities to parse AsciiDoc and compile it to different targets.
 public final class AsciiDocCompiler {
 
-    private AsciiDocCompiler() {
+    public static final DocxToAsciiDoc DOCX_TO_ASCII_DOC_MODEL = new DocxToAsciiDoc();
 
+    private AsciiDocCompiler() {
+        throw new IllegalStateException("Utility class");
     }
 
     /// Compiles the AsciiDoc source text directly to a WordprocessingMLPackage.
@@ -16,7 +18,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return package with rendered content
     public static WordprocessingMLPackage toDocx(String asciidoc) {
-        return toDocx(toAsciiModel(asciidoc));
+        return toDocx(toModel(asciidoc));
     }
 
     /// Compiles the parsed model to a WordprocessingMLPackage.
@@ -33,7 +35,7 @@ public final class AsciiDocCompiler {
     /// @param asciidoc source text
     ///
     /// @return parsed model
-    public static AsciiDocModel toAsciiModel(String asciidoc) {
+    public static AsciiDocModel toModel(String asciidoc) {
         return AsciiDocParser.parse(asciidoc);
     }
 
@@ -43,7 +45,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return scene with rendered content
     public static Scene toScene(String asciidoc) {
-        return toScene(toAsciiModel(asciidoc));
+        return toScene(toModel(asciidoc));
     }
 
     /// Compiles the parsed model to a JavaFX Scene.
@@ -61,7 +63,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return HTML representation
     public static String toHtml(String asciidoc) {
-        return toHtml(toAsciiModel(asciidoc));
+        return toHtml(toModel(asciidoc));
     }
 
     /// Compiles the parsed model to HTML.
@@ -73,6 +75,16 @@ public final class AsciiDocCompiler {
         return AsciiDocToHtml.compileToHtml(model);
     }
 
+    /// Compiles a WordprocessingMLPackage into the textual AsciiDoc representation used by tests. This mirrors the
+    /// legacy Stringifier output to preserve expectations.
+    ///
+    /// @param pkg a Word document package
+    ///
+    /// @return textual representation
+    public static String toText(WordprocessingMLPackage pkg) {
+        return toText(toModel(pkg));
+    }
+
     /// Compiles the parsed model to its textual AsciiDoc representation.
     ///
     /// @param model parsed model
@@ -82,13 +94,12 @@ public final class AsciiDocCompiler {
         return AsciiDocToText.compileToText(model);
     }
 
-    /// Compiles a WordprocessingMLPackage into the textual AsciiDoc representation used by tests. This mirrors the
-    /// legacy Stringifier output to preserve expectations.
+    /// Parses a Word document into an [AsciiDocModel].
     ///
     /// @param pkg a Word document package
     ///
-    /// @return textual representation
-    public static String toAsciiDoc(WordprocessingMLPackage pkg) {
-        return DocxToAsciiDoc.compile(pkg);
+    /// @return parsed model
+    public static AsciiDocModel toModel(WordprocessingMLPackage pkg) {
+        return DOCX_TO_ASCII_DOC_MODEL.apply(pkg);
     }
 }

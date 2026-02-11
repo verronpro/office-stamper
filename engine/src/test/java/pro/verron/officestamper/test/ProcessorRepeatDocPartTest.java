@@ -17,10 +17,7 @@ import pro.verron.officestamper.test.utils.ObjectContextFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -665,6 +662,26 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 // section {docGrid={linePitch=100}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
+                """, actual);
+    }
+
+    @MethodSource("factories")
+    @DisplayName("Repeat doc part specifications with #self")
+    @Test
+    void shouldImportImageDataWithThisInTheMainDocument() {
+        var stamper = docxPackageStamper(standard());
+        var stamped = stamper.stamp(getWordResource(Path.of("ProcessorRepeatDocPart_Image2.docx")),
+                Map.of("images", List.of(getImage(Path.of("butterfly.png")), getImage(Path.of("map.jpg")))));
+        var actual = docxToString(stamped);
+        assertEquals("""
+                
+                
+                /word/media/document_image_rId11.png:rId11:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                
+                /word/media/document_image_rId12.jpeg:rId12:image/jpeg:407.5 kB:sha1=Ujo3UzL8WmeZN/1K6weBydaI73I=:cy=$d:6120130
+                
+                
                 
                 """, actual);
     }

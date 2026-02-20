@@ -10,11 +10,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 /// @author Joseph Verron
 class MultiSectionTest {
@@ -31,7 +31,7 @@ class MultiSectionTest {
         var configuration = OfficeStamperConfigurations.standard();
         var stamper = docxPackageStamper(configuration);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         String expected = """
                 Homer
                 

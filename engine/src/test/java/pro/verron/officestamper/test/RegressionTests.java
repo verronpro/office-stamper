@@ -16,12 +16,12 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class RegressionTests {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -46,10 +46,9 @@ class RegressionTests {
         var template = getWordResource(Path.of("TOC.docx"));
         var context = new Object();
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         var expected = """
                 == Table Of Content
-                
                 
                 [toc 1] [instrText= TOC \\o "1-3" \\h \\z \\u ][link data=❬Table Of Content❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699773 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
                 
@@ -73,27 +72,19 @@ class RegressionTests {
                 
                 == First Title
                 
-                
                 === Subtitle 1.1
-                
                 
                 == Second Title
                 
-                
                 === Subtitle 2.1
-                
                 
                 === Subtitle 2.2
                 
-                
                 === Subtitle 2.3
-                
                 
                 == Third Title
                 
-                
                 === Subtitle 3.1
-                
                 
                 === Subtitle 3.2
                 
@@ -113,7 +104,7 @@ class RegressionTests {
         var template = makeWordResource("${test()}");
         var context = new Object();
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals("""
                 
                 
@@ -128,28 +119,20 @@ class RegressionTests {
         var template = getWordResource(Path.of("#114.docx"));
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = """
                 = Issue #114
                 
-                
                 |===
                 |Name
-                
                 |Homer
-                
                 |Marge
-                
                 |Bart
-                
                 |Lisa
-                
                 |Maggie
-                
                 |So…
-                
-                
                 |===
+                
                 
                 
                 """;
@@ -162,7 +145,7 @@ class RegressionTests {
         var stamper = docxPackageStamper(OfficeStamperConfigurations.full());
         var template = ResourceUtils.getWordResource(TEMPLATE_52);
         var wordprocessingMLPackage = stamper.stamp(template, conditions);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 

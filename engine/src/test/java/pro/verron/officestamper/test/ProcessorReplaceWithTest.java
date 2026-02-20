@@ -7,10 +7,10 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class ProcessorReplaceWithTest {
     @Test
@@ -21,7 +21,7 @@ class ProcessorReplaceWithTest {
         var template = getWordResource(Path.of("ProcessorReplaceWith_#585.docx"));
         var context = Map.of("name", "Homer Simpson");
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = "This variable name should be resolved to the value Homer Simpson.\n\n";
         assertEquals(expected, actual);
     }

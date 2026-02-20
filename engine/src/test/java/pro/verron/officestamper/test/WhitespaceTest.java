@@ -11,11 +11,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 @DisplayName("Whitespaces manipulations") class WhitespaceTest {
 
@@ -42,7 +42,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         var expected = """
                 Space %s
                 
@@ -60,7 +60,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         var expected = "Tab\tHomer\tSimpson\n\n";
         assertEquals(expected, actual);
     }

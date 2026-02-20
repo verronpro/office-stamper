@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.ArgumentSet;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
@@ -27,7 +28,6 @@ import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFacto
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getImage;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 @DisplayName("Core Features") class DefaultTests {
 
@@ -84,14 +84,12 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
                 """
                         == ReplaceWith Integration
                         
-                        
                         This variable name should be resolved to the value Simpsons.
                         
                         |===
                         |This variable name should be resolved to the value Simpsons.
-                        
-                        
                         |===
+                        
                         
                         
                         
@@ -253,7 +251,6 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
                 """
                         == Expression Replacement when expression has leading and/or trailing spaces
                         
-                        
                         When an expression within a paragraph is resolved, the spaces between the replacement and the surrounding text should be as expected. The following paragraphs should all look the same.
                         
                         Before Expression After.
@@ -280,7 +277,6 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
                 getWordResource(Path.of("ExpressionReplacementWithCommentsTest.docx")),
                 """
                         == Expression Replacement with comments
-                        
                         
                         This paragraph is untouched.
                         
@@ -501,7 +497,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
     ) {
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
-        assertEquals(expected, actual);
+        var actual = toAsciidoc(wordprocessingMLPackage);
+        assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
     }
 }

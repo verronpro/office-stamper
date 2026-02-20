@@ -20,13 +20,13 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class ProcessorRepeatParagraphTest {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -61,7 +61,6 @@ class ProcessorRepeatParagraphTest {
         var expected = """
                 == Characters 1 line
                 
-                
                 Homer Simpson: Dan Castellaneta
                 
                 Marge Simpson: Julie Kavner
@@ -78,34 +77,27 @@ class ProcessorRepeatParagraphTest {
                 
                 == Characters multi-line
                 
-                
                 === Homer Simpson
-                
                 
                 Actor: Dan Castellaneta
                 
                 === Marge Simpson
                 
-                
                 Actor: Julie Kavner
                 
                 === Bart Simpson
-                
                 
                 Actor: Nancy Cartwright
                 
                 === Kent Brockman
                 
-                
                 Actor: Harry Shearer
                 
                 === Disco Stu
                 
-                
                 Actor: Hank Azaria
                 
                 === Krusty the Clown
-                
                 
                 Actor: Dan Castellaneta
                 
@@ -223,7 +215,7 @@ class ProcessorRepeatParagraphTest {
         log.info(name);
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -237,7 +229,7 @@ class ProcessorRepeatParagraphTest {
                 """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = """
                 Homer
                 
@@ -263,7 +255,7 @@ class ProcessorRepeatParagraphTest {
                 """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = """
                 Marge
                 
@@ -289,7 +281,7 @@ class ProcessorRepeatParagraphTest {
                 """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         var expected = """
                 Homer
                 

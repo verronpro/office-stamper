@@ -11,11 +11,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 /// @author Joseph Verron
 /// @author Tom Hombergs
@@ -36,33 +36,32 @@ class MultiStampTest {
         var filename = "MultiStampTest.docx";
         var template = getWordResource(filename);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals("""
                 == Multi-Stamp-Test
                 
-                
                 |===
+                [cnfStyle=100000000000]
                 |The next row will repeat multiple times with a different name:
-                
+                [cnfStyle=000000100000]
                 |Homer
-                
+                [cnfStyle=000000100000]
                 |Marge
-                
+                [cnfStyle=000000100000]
                 |Bart
-                
+                [cnfStyle=000000100000]
                 |Lisa
-                
+                [cnfStyle=000000100000]
                 |Maggie
-                
-                
                 |===
+                
                 
                 
                 """, actual);
 
         var template2 = getWordResource(filename);
         var wordprocessingMLPackage = stamper.stamp(template2, context);
-        var document2 = docxToString(wordprocessingMLPackage);
+        var document2 = toAsciidoc(wordprocessingMLPackage);
         assertEquals("""
                 == Multi-Stamp-Test
                 

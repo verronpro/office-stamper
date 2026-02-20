@@ -19,13 +19,13 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.of;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class ProcessorRepeatTableRowTest {
     private static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -65,29 +65,29 @@ class ProcessorRepeatTableRowTest {
                         List of Simpsons characters
                         
                         |===
-                        |Character name
-                        |Voice Actor<cnfStyle=100000000000>
-                        
-                        |Homer Simpson
-                        |Dan Castellaneta<cnfStyle=000000100000>
-                        
-                        |Marge Simpson
-                        |Julie Kavner<cnfStyle=000000100000>
-                        
-                        |Bart Simpson
-                        |Nancy Cartwright<cnfStyle=000000100000>
-                        
-                        |Kent Brockman
-                        |Harry Shearer<cnfStyle=000000100000>
-                        
-                        |Disco Stu
-                        |Hank Azaria<cnfStyle=000000100000>
-                        
-                        |Krusty the Clown
-                        |Dan Castellaneta<cnfStyle=000000100000>
-                        
-                        
+                        [cnfStyle=100000000000]
+                        |Character name<cnfStyle=001000000000>
+                        |Voice Actor
+                        [cnfStyle=000000100000]
+                        |Homer Simpson<cnfStyle=001000000000>
+                        |Dan Castellaneta
+                        [cnfStyle=000000100000]
+                        |Marge Simpson<cnfStyle=001000000000>
+                        |Julie Kavner
+                        [cnfStyle=000000100000]
+                        |Bart Simpson<cnfStyle=001000000000>
+                        |Nancy Cartwright
+                        [cnfStyle=000000100000]
+                        |Kent Brockman<cnfStyle=001000000000>
+                        |Harry Shearer
+                        [cnfStyle=000000100000]
+                        |Disco Stu<cnfStyle=001000000000>
+                        |Hank Azaria
+                        [cnfStyle=000000100000]
+                        |Krusty the Clown<cnfStyle=001000000000>
+                        |Dan Castellaneta
                         |===
+                        
                         
                         
                         There are 6 characters in the above table.
@@ -117,38 +117,38 @@ class ProcessorRepeatTableRowTest {
                         List of Simpsons characters
                         
                         |===
-                        |Character name
-                        |Voice Actor<cnfStyle=100000000000>
-                        
-                        |Homer Simpson
-                        |Dan Castellaneta<cnfStyle=000000100000>
-                        
-                        |Marge Simpson
+                        [cnfStyle=100000000000]
+                        |Character name<cnfStyle=001000000000>
+                        |Voice Actor
+                        [cnfStyle=000000100000]
+                        |Homer Simpson<cnfStyle=001000000000>
+                        |Dan Castellaneta
+                        [cnfStyle=000000100000]
+                        |Marge Simpson<cnfStyle=001000000000>
                         |Julie
-                        Kavner<cnfStyle=000000100000>
-                        
-                        |Bart Simpson
+                        Kavner
+                        [cnfStyle=000000100000]
+                        |Bart Simpson<cnfStyle=001000000000>
                         |Nancy
                         
-                        Cartwright<cnfStyle=000000100000>
-                        
-                        |Kent Brockman
+                        Cartwright
+                        [cnfStyle=000000100000]
+                        |Kent Brockman<cnfStyle=001000000000>
                         |Harry
                         
                         
-                        Shearer<cnfStyle=000000100000>
-                        
-                        |Disco Stu
+                        Shearer
+                        [cnfStyle=000000100000]
+                        |Disco Stu<cnfStyle=001000000000>
                         |Hank
                         
-                        Azaria<cnfStyle=000000100000>
-                        
-                        |Krusty the Clown
+                        Azaria
+                        [cnfStyle=000000100000]
+                        |Krusty the Clown<cnfStyle=001000000000>
                         |Dan
-                        Castellaneta<cnfStyle=000000100000>
-                        
-                        
+                        Castellaneta
                         |===
+                        
                         
                         
                         There are 6 characters in the above table.
@@ -163,18 +163,13 @@ class ProcessorRepeatTableRowTest {
                 getWordResource(Path.of("ProcessorRepeatTableRow_KeepsFormatTest.docx")),
                 """
                         |===
-                        |1❬st❘{vertAlign=superscript}❭ Homer Simpson-❬Dan Castellaneta❘{b=true}❭
-                        
-                        |2❬nd❘{vertAlign=superscript}❭ Marge Simpson-❬Julie Kavner❘{b=true}❭
-                        
-                        |3❬rd❘{vertAlign=superscript}❭ Bart Simpson-❬Nancy Cartwright❘{b=true}❭
-                        
-                        |4❬th❘{vertAlign=superscript}❭ Lisa Simpson-❬Yeardley Smith❘{b=true}❭
-                        
-                        |5❬th❘{vertAlign=superscript}❭ Maggie Simpson-❬Julie Kavner❘{b=true}❭
-                        
-                        
+                        |1^st^ Homer Simpson-Dan Castellaneta
+                        |2^nd^ Marge Simpson-Julie Kavner
+                        |3^rd^ Bart Simpson-Nancy Cartwright
+                        |4^th^ Lisa Simpson-Yeardley Smith
+                        |5^th^ Maggie Simpson-Julie Kavner
                         |===
+                        
                         
                         
                         """);
@@ -192,7 +187,7 @@ class ProcessorRepeatTableRowTest {
         log.info(name);
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 
@@ -208,21 +203,16 @@ class ProcessorRepeatTableRowTest {
                 """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         var expected = """
                 |===
                 |Homer
-                
                 |Marge
-                
                 |Bart
-                
                 |Lisa
-                
                 |Maggie
-                
-                
                 |===
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -239,21 +229,16 @@ class ProcessorRepeatTableRowTest {
                 """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = """
                 |===
                 |Marge
-                
                 |Homer
-                
                 |Maggie
-                
                 |Bart
-                
                 |Lisa
-                
-                
                 |===
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -271,21 +256,16 @@ class ProcessorRepeatTableRowTest {
                 """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = """
                 |===
                 |Homer
-                
                 |Marge
-                
                 |Bart
-                
                 |Lisa
-                
                 |Maggie
-                
-                
                 |===
+                
                 """;
         assertEquals(expected, actual);
     }

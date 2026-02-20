@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import static java.util.Locale.forLanguageTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.minimal;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
@@ -24,7 +25,6 @@ import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFacto
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 @DisplayName("Custom function features") class CustomFunctionTests {
 
@@ -63,7 +63,6 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
         var expected = """
                 == Custom Expression Function
                 
-                
                 In this paragraph, we uppercase a variable: THE SIMPSONS.
                 
                 In this paragraph, we uppercase some multiline text: IT ALSO WORKS WITH
@@ -83,31 +82,31 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
                 We check custom functions runs in placeholders after processing: MAGGIE SIMPSON.
                 
                 |===
-                |We check custom functions runs in placeholders after processing:
-                
-                |HOMER SIMPSON
-                |DAN CASTELLANETA<cnfStyle=000000100000>
-                
-                |MARGE SIMPSON
-                |JULIE KAVNER<cnfStyle=000000100000>
-                
-                |BART SIMPSON
-                |NANCY CARTWRIGHT<cnfStyle=000000100000>
-                
-                |LISA SIMPSON
-                |YEARDLEY SMITH<cnfStyle=000000100000>
-                
-                |MAGGIE SIMPSON
-                |JULIE KAVNER<cnfStyle=000000100000>
-                
-                
+                [cnfStyle=100000000000]
+                |We check custom functions runs in placeholders after processing:<cnfStyle=001000000100>
+                [cnfStyle=000000100000]
+                |HOMER SIMPSON<cnfStyle=001000000000>
+                |DAN CASTELLANETA
+                [cnfStyle=000000100000]
+                |MARGE SIMPSON<cnfStyle=001000000000>
+                |JULIE KAVNER
+                [cnfStyle=000000100000]
+                |BART SIMPSON<cnfStyle=001000000000>
+                |NANCY CARTWRIGHT
+                [cnfStyle=000000100000]
+                |LISA SIMPSON<cnfStyle=001000000000>
+                |YEARDLEY SMITH
+                [cnfStyle=000000100000]
+                |MAGGIE SIMPSON<cnfStyle=001000000000>
+                |JULIE KAVNER
                 |===
+                
                 
                 
                 """;
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
-        assertEquals(expected, actual);
+        var actual = toAsciidoc(stamped);
+        assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
     }
 
     @MethodSource("factories")
@@ -124,7 +123,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
                 
                 """;
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -142,7 +141,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
                 
                 """;
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -158,7 +157,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
         var stamper = docxPackageStamper(config);
         var expected = "7.22\n\n";
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -176,7 +175,7 @@ import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
         var context = factory.date(LocalDate.of(2024, Month.APRIL, 1));
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected + "\n", actual);
     }
 

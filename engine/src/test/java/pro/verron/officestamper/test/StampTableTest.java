@@ -13,10 +13,10 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 
 /// Verifies stampTable feature works correctly
@@ -43,36 +43,36 @@ class StampTableTest {
                         List.of("Disco Stu", "Hank Azaria"),
                         List.of("Krusty the Clown", "Dan Castellaneta")));
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var string = docxToString(wordprocessingMLPackage);
+        var string = toAsciidoc(wordprocessingMLPackage);
         assertEquals("""
                 Stamping Table
                 
                 List of Simpsons characters
                 
                 |===
-                |Character
-                |Actor
-                
-                |Homer Simpson
-                |Dan Castellaneta
-                
-                |Marge Simpson
-                |Julie Kavner
-                
-                |Bart Simpson
-                |Nancy Cartwright
-                
-                |Kent Brockman
-                |Harry Shearer
-                
-                |Disco Stu
-                |Hank Azaria
-                
-                |Krusty the Clown
-                |Dan Castellaneta
-                
-                
+                [cnfStyle=100000000000]
+                |Character<cnfStyle=001000000000>
+                |Actor<cnfStyle=001000000000>
+                [cnfStyle=000000100000]
+                |Homer Simpson<cnfStyle=001000000000>
+                |Dan Castellaneta<cnfStyle=001000000000>
+                [cnfStyle=000000100000]
+                |Marge Simpson<cnfStyle=001000000000>
+                |Julie Kavner<cnfStyle=001000000000>
+                [cnfStyle=000000100000]
+                |Bart Simpson<cnfStyle=001000000000>
+                |Nancy Cartwright<cnfStyle=001000000000>
+                [cnfStyle=000000100000]
+                |Kent Brockman<cnfStyle=001000000000>
+                |Harry Shearer<cnfStyle=001000000000>
+                [cnfStyle=000000100000]
+                |Disco Stu<cnfStyle=001000000000>
+                |Hank Azaria<cnfStyle=001000000000>
+                [cnfStyle=000000100000]
+                |Krusty the Clown<cnfStyle=001000000000>
+                |Dan Castellaneta<cnfStyle=001000000000>
                 |===
+                
                 
                 
                 There are 6 characters in the above table.

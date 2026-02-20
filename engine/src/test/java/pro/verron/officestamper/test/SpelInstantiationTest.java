@@ -11,13 +11,13 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class SpelInstantiationTest {
 
@@ -34,7 +34,7 @@ class SpelInstantiationTest {
         var template = getWordResource(Path.of("date.docx"));
         var context = factory.empty();
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         var expected = """
                 01.01.1970
                 

@@ -46,41 +46,40 @@ public final class AsciiDocToText
 
     private static String renderBlock(Block block) {
         return switch (block) {
-            case Heading(int level, List<Inline> inlines2) -> "=".repeat(level) + " " + renderInlines(inlines2) + "\n";
-            case Paragraph(List<Inline> inlines1) -> renderInlines(inlines1) + "\n";
+            case Heading(int level, List<Inline> inlines2) ->
+                    "=".repeat(level) + " " + renderInlines(inlines2) + "\n\n";
+            case Paragraph(List<Inline> inlines1) -> renderInlines(inlines1) + "\n\n";
             case UnorderedList(List<ListItem> items1) -> items1.stream()
                                                                .map(item -> "* " + renderInlines(item.inlines()) + "\n")
-                                                               .collect(Collectors.joining());
+                                                               .collect(Collectors.joining()) + "\n";
             case OrderedList(List<ListItem> items) -> items.stream()
                                                            .map(item -> ". " + renderInlines(item.inlines()) + "\n")
-                                                           .collect(Collectors.joining());
+                                                           .collect(Collectors.joining()) + "\n";
             case Table(List<Row> rows) -> {
                 StringBuilder sb = new StringBuilder("|===\n");
                 for (Row row : rows) {
-                    sb.append("|")
-                      .append(row.cells()
-                                 .stream()
-                                 .map(cell -> renderInlines(cell.inlines()))
-                                 .collect(Collectors.joining(" |")))
-                      .append("\n");
+                    var style = row.style();
+                    style.ifPresent(s -> sb.append("[%s]\n".formatted(s)));
+                    for (Cell cell : row.cells()) {
+                        sb.append("|")
+                          .append(renderInlines(cell.inlines()))
+                          .append("\n");
+                    }
                 }
-                sb.append("|===\n");
+                sb.append("|===\n\n");
                 yield sb.toString();
             }
-            case Blockquote(List<Inline> inlines) -> "____\n" + renderInlines(inlines) + "\n____\n";
+            case Blockquote(List<Inline> inlines) -> "____\n" + renderInlines(inlines) + "\n____\n\n";
             case CodeBlock(String language, String content) ->
-                    (language.isEmpty() ? "" : "[source," + language + "]\n") + "----\n" + content + "\n----\n";
-            case ImageBlock(String url, String altText) -> "image::" + url + "[" + altText + "]\n";
+                    (language.isEmpty() ? "" : "[source," + language + "]\n") + "----\n" + content + "\n----\n\n";
+            case ImageBlock(String url, String altText) -> "image::" + url + "[" + altText + "]\n\n";
         };
     }
 
     public String apply(AsciiDocModel model) {
-        StringBuilder adoc = new StringBuilder();
-        for (Block block : model.getBlocks()) {
-            adoc.append(renderBlock(block));
-            adoc.append("\n");
-        }
-        return adoc.toString()
-                   .trim();
+        return model.getBlocks()
+                    .stream()
+                    .map(AsciiDocToText::renderBlock)
+                    .collect(Collectors.joining());
     }
 }

@@ -9,13 +9,13 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class ProcessorDisplayIfTest {
 
@@ -243,7 +243,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -256,17 +256,13 @@ class ProcessorDisplayIfTest {
         var expected = """
                 = Springfield Chronicles: The Simpsons Edition
                 
-                
                 == Introduction
-                
                 
                 [Quote] "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
                 
                 == Homer Simpson's Favorite Pastimes
                 
-                
                 == Marge Simpson: The Heart of the Family
-                
                 
                 Marge Simpson, with her iconic blue hair, is the moral center of the family. She manages the household with the chaos around her, Marge always finds a way to keep the family together.
                 
@@ -318,7 +314,7 @@ class ProcessorDisplayIfTest {
         var configuration = full();
         var stamper = docxPackageStamper(configuration);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -393,7 +389,7 @@ class ProcessorDisplayIfTest {
         var configuration = full();
         var stamper = docxPackageStamper(configuration);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -581,7 +577,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -769,7 +765,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -781,7 +777,6 @@ class ProcessorDisplayIfTest {
         var template = getWordResource(Path.of("ProcessorDisplayIf_Inlined.docx"));
         var expected = """
                 == Conditional Display of Paragraphs
-                
                 
                 Paragraph 1 stays untouched.
                 
@@ -805,12 +800,13 @@ class ProcessorDisplayIfTest {
                 |===
                 
                 
+                
                 """;
 
         var config = standard();
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 
@@ -855,7 +851,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -868,24 +864,17 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display of Table Rows
                 
-                
                 This paragraph stays untouched.
                 
                 |===
+                [cnfStyle=000000100000]
                 |This row stays untouched.
-                
+                [cnfStyle=000000100000]
                 |This row stays untouched.
-                
-                ||===
-                |Also works on nested Tables
-                
-                |This row stays untouched.
-                
-                
+                [cnfStyle=000000100000]
+                |
                 |===
                 
-                
-                |===
                 
                 
                 """;
@@ -893,7 +882,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = docxToString(wordprocessingMLPackage);
+        var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }
 
@@ -906,29 +895,28 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display of Tables
                 
-                
                 This paragraph stays untouched.
                 
                 
                 
                 |===
-                |This table stays untouched.
-                |<cnfStyle=100000000000>
-                
+                [cnfStyle=100000000000]
+                |This table stays untouched.<cnfStyle=001000000000>
                 |
-                |<cnfStyle=000000100000>
-                
-                
-                |===
-                
-                
-                |===
-                |Also works on nested tables
-                
+                [cnfStyle=000000100000]
+                |<cnfStyle=001000000000>
                 |
+                |===
+                
                 
                 
                 |===
+                [cnfStyle=100000000000]
+                |Also works on nested tables<cnfStyle=001000000000>
+                [cnfStyle=000000100000]
+                |<cnfStyle=001000000000>
+                |===
+                
                 
                 
                 This paragraph stays untouched.
@@ -938,7 +926,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -951,29 +939,27 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display of Tables
                 
-                
                 This paragraph stays untouched.
                 
                 
                 
                 |===
+                [cnfStyle=000000100000]
                 |This table stays untouched.
                 |
-                
                 |
                 |
-                
-                
                 |===
                 
                 
+                
                 |===
+                [cnfStyle=100000000000]
                 |Also works on nested tables
-                
+                [cnfStyle=000000100000]
                 |
-                
-                
                 |===
+                
                 
                 
                 This paragraph stays untouched.
@@ -982,7 +968,7 @@ class ProcessorDisplayIfTest {
         var config = standard();
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 }

@@ -10,7 +10,6 @@ public final class AsciiDocCompiler {
     public static final AsciiDocToFx MODEL_TO_SCENE = new AsciiDocToFx();
     public static final AsciiDocParser ASCIIDOC_TO_MODEL = new AsciiDocParser();
     public static final AsciiDocToDocx MODEL_TO_DOCX = new AsciiDocToDocx();
-    private static final DocxToAsciiDoc DOCX_TO_MODEL = new DocxToAsciiDoc();
     private static final AsciiDocToText MODEL_TO_ASCIIDOC = new AsciiDocToText();
 
     private AsciiDocCompiler() {
@@ -89,16 +88,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return textual representation
     public static String toAsciidoc(WordprocessingMLPackage pkg) {
-        var model = DOCX_TO_MODEL.apply(pkg);
-        return MODEL_TO_ASCIIDOC.apply(model);
-    }
-
-    /// Compiles the parsed model to its textual AsciiDoc representation.
-    ///
-    /// @param model parsed model
-    ///
-    /// @return textual representation
-    public static String toAsciidoc(AsciiDocModel model) {
+        var model = toModel(pkg);
         return MODEL_TO_ASCIIDOC.apply(model);
     }
 
@@ -108,6 +98,15 @@ public final class AsciiDocCompiler {
     ///
     /// @return parsed model
     public static AsciiDocModel toModel(WordprocessingMLPackage pkg) {
-        return DOCX_TO_MODEL.apply(pkg);
+        return new DocxToAsciiDoc(pkg).apply(pkg);
+    }
+
+    /// Compiles the parsed model to its textual AsciiDoc representation.
+    ///
+    /// @param model parsed model
+    ///
+    /// @return textual representation
+    public static String toAsciidoc(AsciiDocModel model) {
+        return MODEL_TO_ASCIIDOC.apply(model);
     }
 }

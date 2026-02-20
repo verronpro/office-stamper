@@ -3,6 +3,7 @@ package pro.verron.officestamper.asciidoc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /// Represents a minimal in-memory model of an AsciiDoc document.
 ///
@@ -82,8 +83,7 @@ public final class AsciiDocModel {
     ///
     /// @param text text
     public record Text(String text)
-            implements Inline {
-    }
+            implements Inline {}
 
     /// Bold inline that can contain nested inlines.
     ///
@@ -150,12 +150,17 @@ public final class AsciiDocModel {
     /// Table row.
     ///
     /// @param cells table cells
-    public record Row(List<Cell> cells) {
+    public record Row(List<Cell> cells, Optional<String> style) {
         /// Constructor.
         ///
         /// @param cells table cells
         public Row(List<Cell> cells) {
+            this(cells, Optional.empty());
+        }
+
+        public Row(List<Cell> cells, Optional<String> style) {
             this.cells = List.copyOf(cells);
+            this.style = style;
         }
     }
 

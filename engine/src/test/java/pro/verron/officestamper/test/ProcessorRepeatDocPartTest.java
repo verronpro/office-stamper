@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
@@ -32,7 +33,6 @@ import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFacto
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getImage;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.DocxRenderer.docxToString;
 
 class ProcessorRepeatDocPartTest {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
@@ -76,14 +76,14 @@ class ProcessorRepeatDocPartTest {
                 
                 Fourth page is set to landscape again.
                 
-                """, docxToString(template));
+                """, toAsciidoc(template));
 
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
         stamped.save(tempFile);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals("""
                 First page is landscape.
                 
@@ -136,11 +136,9 @@ class ProcessorRepeatDocPartTest {
                 
                 |===
                 |firstTable value1
-                
                 |firstTable value2
-                
-                
                 |===
+                
                 
                 
                 This will also stay untouched.
@@ -169,15 +167,11 @@ class ProcessorRepeatDocPartTest {
                 
                 |===
                 |secondTable value1
-                
                 |secondTable value2
-                
                 |secondTable value3
-                
                 |secondTable value4
-                
-                
                 |===
+                
                 
                 
                 This will stay untouched too.
@@ -186,7 +180,7 @@ class ProcessorRepeatDocPartTest {
 
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -243,7 +237,7 @@ class ProcessorRepeatDocPartTest {
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
         stamped.save(tempFile);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -356,7 +350,7 @@ class ProcessorRepeatDocPartTest {
 
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expect, actual);
     }
 
@@ -655,7 +649,7 @@ class ProcessorRepeatDocPartTest {
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
         stamped.save(tempFile);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expect, actual);
     }
 
@@ -666,7 +660,7 @@ class ProcessorRepeatDocPartTest {
         var stamper = docxPackageStamper(standard());
         var stamped = stamper.stamp(getWordResource(Path.of("ProcessorRepeatDocPart_Image.docx")),
                 factory.units(getImage(Path.of("butterfly.png")), getImage(Path.of("map.jpg"))));
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals("""
                 
                 
@@ -722,7 +716,7 @@ class ProcessorRepeatDocPartTest {
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
         stamped.save(tempFile);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
 
@@ -744,7 +738,7 @@ class ProcessorRepeatDocPartTest {
         log.debug(tempFile.getAbsolutePath());
         stamped.save(tempFile);
 
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = """
                 First page is portrait.
                 
@@ -808,7 +802,7 @@ class ProcessorRepeatDocPartTest {
                 """);
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = """
                 Homer
                 
@@ -834,7 +828,7 @@ class ProcessorRepeatDocPartTest {
                 """);
         var context = FACTORY.names(Set.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = """
                 Marge
                 
@@ -860,7 +854,7 @@ class ProcessorRepeatDocPartTest {
                 """);
         var context = FACTORY.names(Queue.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         var expected = """
                 Homer
                 

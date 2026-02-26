@@ -22,7 +22,12 @@ class ProcessorReplaceWithTest {
         var context = Map.of("name", "Homer Simpson");
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
-        var expected = "This variable name should be resolved to the value Homer Simpson.\n\n";
+        var expected = """
+                This variable name should be resolved to the value Homer Simpson.
+                
+                // section {pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
+                """;
         assertEquals(expected, actual);
     }
 }

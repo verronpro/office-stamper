@@ -33,7 +33,10 @@ public final class AsciiDocToHtml
                     sb.append("  <tr>\n");
                     for (Cell cell : row.cells()) {
                         sb.append("    <td>")
-                          .append(renderInlines(cell.inlines()))
+                          .append(cell.blocks()
+                                      .stream()
+                                      .map(AsciiDocToHtml::renderBlock)
+                                      .collect(Collectors.joining()))
                           .append("</td>\n");
                     }
                     sb.append("  </tr>\n");

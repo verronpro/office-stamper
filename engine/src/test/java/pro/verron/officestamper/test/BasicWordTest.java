@@ -27,6 +27,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         var expected = """
                 Hello, Bart!
                 
+                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
+                
                 """;
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);

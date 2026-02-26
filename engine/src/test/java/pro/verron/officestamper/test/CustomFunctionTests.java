@@ -65,8 +65,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 
                 In this paragraph, we uppercase a variable: THE SIMPSONS.
                 
-                In this paragraph, we uppercase some multiline text: IT ALSO WORKS WITH
-                MULTILINE
+                In this paragraph, we uppercase some multiline text: IT ALSO WORKS WITH +
+                MULTILINE +
                 STRINGS OF TEXT.
                 
                 We toggle this paragraph display with a processor using the custom function.
@@ -82,26 +82,34 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 We check custom functions runs in placeholders after processing: MAGGIE SIMPSON.
                 
                 |===
-                [cnfStyle=100000000000]
-                |We check custom functions runs in placeholders after processing:<cnfStyle=001000000100>
-                [cnfStyle=000000100000]
-                |HOMER SIMPSON<cnfStyle=001000000000>
+                [rowStyle=2048]
+                [style=516]
+                |We check custom functions runs in placeholders after processing:
+                [rowStyle=32]
+                [style=512]
+                |HOMER SIMPSON
                 |DAN CASTELLANETA
-                [cnfStyle=000000100000]
-                |MARGE SIMPSON<cnfStyle=001000000000>
+                [rowStyle=32]
+                [style=512]
+                |MARGE SIMPSON
                 |JULIE KAVNER
-                [cnfStyle=000000100000]
-                |BART SIMPSON<cnfStyle=001000000000>
+                [rowStyle=32]
+                [style=512]
+                |BART SIMPSON
                 |NANCY CARTWRIGHT
-                [cnfStyle=000000100000]
-                |LISA SIMPSON<cnfStyle=001000000000>
+                [rowStyle=32]
+                [style=512]
+                |LISA SIMPSON
                 |YEARDLEY SMITH
-                [cnfStyle=000000100000]
-                |MAGGIE SIMPSON<cnfStyle=001000000000>
+                [rowStyle=32]
+                [style=512]
+                |MAGGIE SIMPSON
                 |JULIE KAVNER
                 |===
                 
                 
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
         var stamped = stamper.stamp(template, context);
@@ -121,6 +129,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         var expected = """
                 THE SIMPSONS
                 
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
                 """;
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
@@ -139,6 +149,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         var expected = """
                 [a, b, c]
                 
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
                 """;
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
@@ -155,7 +167,12 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         var template = makeWordResource("${Add('3.22', 4)}");
         var context = factory.empty();
         var stamper = docxPackageStamper(config);
-        var expected = "7.22\n\n";
+        var expected = """
+                7.22
+                
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
+                """;
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
@@ -176,7 +193,11 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
-        assertEquals(expected + "\n", actual);
+        assertEquals("""
+                %s
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
+                """.formatted(expected), actual);
     }
 
     /// The UppercaseFunction interface defines a method for converting a string to uppercase.

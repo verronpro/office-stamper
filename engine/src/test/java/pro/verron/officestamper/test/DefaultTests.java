@@ -73,6 +73,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                          <-- this should be empty.
                         
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                        
                         """);
     }
 
@@ -94,6 +96,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         
                         
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                        
                         """);
     }
 
@@ -104,6 +108,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 getWordResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
                         I am ${name}.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
                         
                         """);
     }
@@ -116,6 +122,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 getWordResource(Path.of("ReplaceNullExpressionTest.docx")),
                 """
                         I am .
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
                         
                         """);
     }
@@ -143,6 +151,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 
                 The variable foo has the value bar.
                 
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
                 """);
     }
 
@@ -156,10 +166,12 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         In this paragraph, the variable name should be resolved to the value ${name}.
                         In this paragraph, the variable foo should not be resolved: ${foo}."""),
                 """
-                        Expression Replacement in global paragraphs
-                        This paragraph is untouched.
-                        In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                        Expression Replacement in global paragraphs +
+                        This paragraph is untouched. +
+                        In this paragraph, the variable name should be resolved to the value Homer Simpson. +
                         In this paragraph, the variable foo should not be resolved: ${foo}.
+                        
+                        // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                         
                         """);
     }
@@ -172,29 +184,24 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 """
                         == Expression Replacement in Tables
                         
-                        
                         |===
                         |This should resolve to a name:
                         |Bart Simpson
-                        
                         |This should not resolve:
                         |${foo}
+                        a|Nested Table:
                         
-                        |Nested Table:
-                        
-                        |===
-                        |This should resolve to a name:
-                        |Bart Simpson
-                        
-                        |This should not resolve:
-                        |${foo}
-                        
-                        
+                        !===
+                        !This should resolve to a name:
+                        !Bart Simpson
+                        !This should not resolve:
+                        !${foo}
+                        !===
                         |===
                         
                         
-                        |===
                         
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
                         """);
     }
@@ -207,38 +214,39 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 """
                         == Expression Replacement with text format
                         
-                        
                         The text format should be kept intact when an expression is replaced.
                         
-                        It should be bold: ❬Homer Simpson❘{b=true}❭.
+                        It should be bold: *Homer Simpson*.
                         
-                        It should be italic: ❬Homer Simpson❘{i=true}❭.
+                        It should be italic: _Homer Simpson_.
                         
-                        It should be superscript: ❬Homer Simpson❘{vertAlign=superscript}❭.
+                        It should be superscript: ^Homer Simpson^.
                         
-                        It should be subscript: ❬Homer Simpson❘{vertAlign=subscript}❭.
+                        It should be subscript: ~Homer Simpson~.
                         
-                        It should be striked: ❬Homer Simpson❘{strike=true}❭.
+                        It should be striked: [strike]#Homer Simpson#.
                         
-                        It should be underlined: ❬Homer Simpson❘{u=single}❭.
+                        It should be underlined: [u_single]#Homer Simpson#.
                         
-                        It should be doubly underlined: ❬Homer Simpson❘{u=double}❭.
+                        It should be doubly underlined: [u_double]#Homer Simpson#.
                         
-                        It should be thickly underlined: ❬Homer Simpson❘{u=thick}❭.
+                        It should be thickly underlined: [u_thick]#Homer Simpson#.
                         
-                        It should be dot underlined: ❬Homer Simpson❘{u=dotted}❭.
+                        It should be dot underlined: [u_dotted]#Homer Simpson#.
                         
-                        It should be dash underlined: ❬Homer Simpson❘{u=dash}❭.
+                        It should be dash underlined: [u_dash]#Homer Simpson#.
                         
-                        It should be dot and dash underlined: ❬Homer Simpson❘{u=dotDash}❭.
+                        It should be dot and dash underlined: [u_dotDash]#Homer Simpson#.
                         
-                        It should be dot, dot and dash underlined: ❬Homer Simpson❘{u=dotDotDash}❭.
+                        It should be dot, dot and dash underlined: [u_dotDotDash]#Homer Simpson#.
                         
-                        It should be highlighted yellow: ❬Homer Simpson❘{highlight=yellow}❭.
+                        It should be highlighted yellow: [highlight_yellow]#Homer Simpson#.
                         
-                        It should be white over darkblue: ❬Homer Simpson❘{color=FFFFFF,highlight=darkBlue}❭.
+                        It should be white over darkblue: [color_FFFFFF]#[highlight_darkBlue]#Homer Simpson##.
                         
-                        It should be with header formatting: ❬Homer Simpson❘{rStyle=TitreCar}❭.
+                        It should be with header formatting: [rStyle_TitreCar]#Homer Simpson#.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
                         """);
     }
@@ -267,6 +275,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         Before Expression After.
                         
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                        
                         """);
     }
 
@@ -283,6 +293,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         In this paragraph, the variable name should be resolved to the value Homer Simpson.
                         
                         In this paragraph, the variable foo should not be resolved: unresolvedValueWithComment.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
                         """);
     }
@@ -331,6 +343,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 """
                         Leave me empty .
                         
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
+                        
                         """);
     }
 
@@ -343,10 +357,12 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         This paragraph should have a split input: ${sentence}.
                         """),
                 """
-                        This paragraph should not be # split.
-                        This paragraph should have a split input: whatever\s
-                         split in\s
+                        This paragraph should not be # split. +
+                        This paragraph should have a split input: whatever  +
+                         split in  +
                          three lines.
+                        
+                        // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                         
                         """);
     }
@@ -366,13 +382,10 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         |===
                         |Values
-                        
-                        |first value
-                        
-                        |second value
-                        
-                        
+                        a|first value
+                        a|second value
                         |===
+                        
                         
                         
                         
@@ -390,6 +403,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         Paragraph end
                         
                         
+                        
+                        // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                         
                         """);
     }
@@ -423,6 +438,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         Deal with: ${nullish.li[2] ?: "Nullish value!!"}
                         
                         
+                        
+                        // section {pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
                         """);
     }
@@ -482,6 +499,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         Deal with: Nullish value!!
                         
                         
+                        
+                        // section {pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
                         """);
     }

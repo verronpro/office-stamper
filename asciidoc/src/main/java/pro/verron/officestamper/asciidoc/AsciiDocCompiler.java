@@ -98,7 +98,8 @@ public final class AsciiDocCompiler {
     ///
     /// @return parsed model
     public static AsciiDocModel toModel(WordprocessingMLPackage pkg) {
-        return new DocxToAsciiDoc(pkg).apply(pkg);
+        var compiler = new DocxToAsciiDoc(pkg);
+        return compiler.apply(pkg);
     }
 
     /// Compiles the parsed model to its textual AsciiDoc representation.

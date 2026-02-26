@@ -36,11 +36,12 @@ public final class AsciiDocModel {
 
     /// Marker interface for document blocks.
     public sealed interface Block
-            permits Heading, Paragraph, Table, UnorderedList, OrderedList, Blockquote, CodeBlock, ImageBlock {}
+            permits Blockquote, Break, CodeBlock, CommentLine, Heading, ImageBlock, OpenBlock, OrderedList, Paragraph
+            , Table, UnorderedList {}
 
     /// Inline fragment inside a paragraph/heading.
     public sealed interface Inline
-            permits Text, Bold, Italic, Tab, Link, InlineImage {
+            permits Bold, InlineImage, Italic, Link, Styled, Sub, Sup, Tab, Text {
         /// Returns the text of the inline fragment.
         ///
         /// @return text
@@ -94,6 +95,34 @@ public final class AsciiDocModel {
         ///
         /// @param children nested inline fragments
         public Bold(List<Inline> children) {
+            this.children = List.copyOf(children);
+        }
+
+        @Override
+        public String text() {
+            StringBuilder sb = new StringBuilder();
+            for (Inline in : children) sb.append(in.text());
+            return sb.toString();
+        }
+    }
+
+    public record Sup(List<Inline> children)
+            implements Inline {
+        public Sup(List<Inline> children) {
+            this.children = List.copyOf(children);
+        }
+
+        @Override
+        public String text() {
+            StringBuilder sb = new StringBuilder();
+            for (Inline in : children) sb.append(in.text());
+            return sb.toString();
+        }
+    }
+
+    public record Sub(List<Inline> children)
+            implements Inline {
+        public Sub(List<Inline> children) {
             this.children = List.copyOf(children);
         }
 
@@ -162,17 +191,38 @@ public final class AsciiDocModel {
             this.cells = List.copyOf(cells);
             this.style = style;
         }
+
+        public static List<Row> listOf() {
+            return List.of(of(Cell.listOf()));
+        }
+
+        private static Row of(List<Cell> cells) {
+            return new Row(cells);
+        }
     }
 
     /// Table cell.
     ///
-    /// @param inlines inline fragments
-    public record Cell(List<Inline> inlines) {
+    /// @param blocks cell content blocks
+    public record Cell(List<Block> blocks, Optional<String> style) {
+        public Cell(List<Block> blocks) {
+            this(blocks, Optional.empty());
+        }
+
         /// Constructor.
         ///
-        /// @param inlines inline fragments
-        public Cell(List<Inline> inlines) {
-            this.inlines = List.copyOf(inlines);
+        /// @param blocks cell content blocks
+        public Cell(List<Block> blocks, Optional<String> style) {
+            this.blocks = List.copyOf(blocks);
+            this.style = style;
+        }
+
+        private static List<Cell> listOf() {
+            return List.of(ofInlines(List.of(new Text("A"))), ofInlines(List.of(new Text("B"))));
+        }
+
+        public static Cell ofInlines(List<Inline> inlines) {
+            return new Cell(List.of(new Paragraph(inlines)));
         }
     }
 
@@ -243,6 +293,26 @@ public final class AsciiDocModel {
         @Override
         public String text() {
             return altText;
+        }
+    }
+
+
+    public record OpenBlock(String blockRole, List<Block> content)
+            implements Block {}
+
+    public record Break()
+            implements Block {}
+
+    public record CommentLine(String comment)
+            implements Block {}
+
+    public record Styled(String role, List<Inline> children)
+            implements Inline {
+        @Override
+        public String text() {
+            StringBuilder sb = new StringBuilder();
+            for (Inline in : children) sb.append(in.text());
+            return sb.toString();
         }
     }
 }

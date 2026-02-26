@@ -50,32 +50,48 @@ class StampTableTest {
                 List of Simpsons characters
                 
                 |===
-                [cnfStyle=100000000000]
-                |Character<cnfStyle=001000000000>
-                |Actor<cnfStyle=001000000000>
-                [cnfStyle=000000100000]
-                |Homer Simpson<cnfStyle=001000000000>
-                |Dan Castellaneta<cnfStyle=001000000000>
-                [cnfStyle=000000100000]
-                |Marge Simpson<cnfStyle=001000000000>
-                |Julie Kavner<cnfStyle=001000000000>
-                [cnfStyle=000000100000]
-                |Bart Simpson<cnfStyle=001000000000>
-                |Nancy Cartwright<cnfStyle=001000000000>
-                [cnfStyle=000000100000]
-                |Kent Brockman<cnfStyle=001000000000>
-                |Harry Shearer<cnfStyle=001000000000>
-                [cnfStyle=000000100000]
-                |Disco Stu<cnfStyle=001000000000>
-                |Hank Azaria<cnfStyle=001000000000>
-                [cnfStyle=000000100000]
-                |Krusty the Clown<cnfStyle=001000000000>
-                |Dan Castellaneta<cnfStyle=001000000000>
+                [rowStyle=2048]
+                [style=512]
+                |Character
+                [style=512]
+                |Actor
+                [rowStyle=32]
+                [style=512]
+                |Homer Simpson
+                [style=512]
+                |Dan Castellaneta
+                [rowStyle=32]
+                [style=512]
+                |Marge Simpson
+                [style=512]
+                |Julie Kavner
+                [rowStyle=32]
+                [style=512]
+                |Bart Simpson
+                [style=512]
+                |Nancy Cartwright
+                [rowStyle=32]
+                [style=512]
+                |Kent Brockman
+                [style=512]
+                |Harry Shearer
+                [rowStyle=32]
+                [style=512]
+                |Disco Stu
+                [style=512]
+                |Hank Azaria
+                [rowStyle=32]
+                [style=512]
+                |Krusty the Clown
+                [style=512]
+                |Dan Castellaneta
                 |===
                 
                 
                 
                 There are 6 characters in the above table.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """, string);
     }

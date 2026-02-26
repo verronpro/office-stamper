@@ -45,6 +45,8 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
                 
                 Visited
                 
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
                 """;
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, factory.empty());

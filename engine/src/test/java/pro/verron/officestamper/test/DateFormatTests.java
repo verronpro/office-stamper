@@ -240,6 +240,8 @@ import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFa
                 
                 ISO Localized Datetime (SHORT, SHORT): 00. 1. 12. 오후 11:34
                 
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
                 """;
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);

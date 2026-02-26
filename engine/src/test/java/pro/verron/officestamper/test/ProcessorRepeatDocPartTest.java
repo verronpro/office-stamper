@@ -176,6 +176,8 @@ class ProcessorRepeatDocPartTest {
                 
                 This will stay untouched too.
                 
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
                 """;
 
         var stamper = docxPackageStamper(config);
@@ -199,36 +201,38 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 Second page is landscape, layout change should survive to repeatDocPart (Homer).
                 
                 
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 With a break setting the layout to portrait in between.
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 Second page is landscape, layout change should survive to repeatDocPart (Marge).
                 
                 
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 With a break setting the layout to portrait in between.
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 Fourth page is set to landscape again.
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 """;
 
@@ -262,89 +266,77 @@ class ProcessorRepeatDocPartTest {
         String expect = """
                 = Repeating Doc Part
                 
-                
                 == List of Simpsons characters
-                
                 
                 Paragraph for test: Homer Simpson - Dan Castellaneta
                 
                 |===
                 |Homer Simpson
                 |Dan Castellaneta
-                
-                
                 |===
-                \s
-                [page-break]
-                <<<
                 
+                
+                
+                <<<
                 
                 Paragraph for test: Marge Simpson - Julie Kavner
                 
                 |===
                 |Marge Simpson
                 |Julie Kavner
-                
-                
                 |===
-                \s
-                [page-break]
-                <<<
                 
+                
+                
+                <<<
                 
                 Paragraph for test: Bart Simpson - Nancy Cartwright
                 
                 |===
                 |Bart Simpson
                 |Nancy Cartwright
-                
-                
                 |===
-                \s
-                [page-break]
-                <<<
                 
+                
+                
+                <<<
                 
                 Paragraph for test: Kent Brockman - Harry Shearer
                 
                 |===
                 |Kent Brockman
                 |Harry Shearer
-                
-                
                 |===
-                \s
-                [page-break]
-                <<<
                 
+                
+                
+                <<<
                 
                 Paragraph for test: Disco Stu - Hank Azaria
                 
                 |===
                 |Disco Stu
                 |Hank Azaria
-                
-                
                 |===
-                \s
-                [page-break]
-                <<<
                 
+                
+                
+                <<<
                 
                 Paragraph for test: Krusty the Clown - Dan Castellaneta
                 
                 |===
                 |Krusty the Clown
                 |Dan Castellaneta
-                
-                
                 |===
-                \s
-                [page-break]
+                
+                
+                
                 <<<
                 
-                
                 There are 6 characters.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -745,48 +737,48 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 Second page is landscape, layout change should survive to repeatDocPart (Homer).
                 
                 
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 With a break setting the layout to portrait in between.
                 
                 |===
                 |
-                
-                
                 |===
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
-                <<<
+                
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 Second page is landscape, layout change should survive to repeatDocPart (Marge).
                 
                 
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 With a break setting the layout to portrait in between.
                 
                 |===
                 |
-                
-                
                 |===
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
-                <<<
+                
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 Fourth page is set to landscape again.
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 """;
         assertEquals(expected, actual);
@@ -814,6 +806,8 @@ class ProcessorRepeatDocPartTest {
                 
                 Maggie
                 
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -840,6 +834,8 @@ class ProcessorRepeatDocPartTest {
                 
                 Lisa
                 
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -865,6 +861,8 @@ class ProcessorRepeatDocPartTest {
                 Lisa
                 
                 Maggie
+                
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         assertEquals(expected, actual);

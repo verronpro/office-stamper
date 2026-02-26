@@ -108,6 +108,8 @@ class RegressionTests {
         assertEquals("""
                 
                 
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
                 """, actual);
         assertEquals(1, testFunction.counter());
     }
@@ -135,6 +137,8 @@ class RegressionTests {
                 
                 
                 
+                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -146,7 +150,10 @@ class RegressionTests {
         var template = ResourceUtils.getWordResource(TEMPLATE_52);
         var wordprocessingMLPackage = stamper.stamp(template, conditions);
         var actual = toAsciidoc(wordprocessingMLPackage);
-        assertEquals(expected, actual);
+        assertEquals(expected + """
+                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
+                
+                """, actual);
     }
 
     public interface TestFunction {

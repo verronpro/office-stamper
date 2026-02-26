@@ -46,6 +46,8 @@ import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
         var expected = """
                 Space %s
                 
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
                 """.formatted(out);
         assertEquals(expected, actual);
     }
@@ -61,7 +63,12 @@ import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
         var actual = toAsciidoc(wordprocessingMLPackage);
-        var expected = "Tab\tHomer\tSimpson\n\n";
+        var expected = """
+                Tab	Homer	Simpson
+                
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
+                """;
         assertEquals(expected, actual);
     }
 }

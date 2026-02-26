@@ -9,6 +9,10 @@ import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 public final class AsciiDocParser
         implements Function<String, AsciiDocModel> {
 
+    public static AsciiDocModel parse(String asciidoc) {
+        return new AsciiDocParser().apply(asciidoc);
+    }
+
     public AsciiDocModel apply(String asciidoc) {
         var blocks = new ArrayList<Block>();
         if (asciidoc == null || asciidoc.isBlank()) {
@@ -132,7 +136,7 @@ public final class AsciiDocParser
                                                 .split("\\|");
                     List<Cell> cells = new ArrayList<>();
                     for (String cellText : cellTexts) {
-                        cells.add(new Cell(parseInlines(cellText.trim())));
+                        cells.add(Cell.ofInlines(parseInlines(cellText.trim())));
                     }
                     currentTableRows.add(new Row(cells));
                 }

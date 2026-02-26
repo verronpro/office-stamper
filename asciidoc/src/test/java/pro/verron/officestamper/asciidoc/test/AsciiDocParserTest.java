@@ -133,33 +133,37 @@ class AsciiDocParserTest {
         assertEquals(2, rows.size());
 
         assertEquals("Column 1",
-                rows.get(0)
-                    .cells()
-                    .get(0)
-                    .inlines()
-                    .getFirst()
-                    .text());
+                ((Paragraph) rows.get(0)
+                                 .cells()
+                                 .get(0)
+                                 .blocks()
+                                 .getFirst()).inlines()
+                                             .getFirst()
+                                             .text());
         assertEquals("Column 2",
-                rows.get(0)
-                    .cells()
-                    .get(1)
-                    .inlines()
-                    .getFirst()
-                    .text());
+                ((Paragraph) rows.get(0)
+                                 .cells()
+                                 .get(1)
+                                 .blocks()
+                                 .getFirst()).inlines()
+                                             .getFirst()
+                                             .text());
         assertEquals("Value 1",
-                rows.get(1)
-                    .cells()
-                    .get(0)
-                    .inlines()
-                    .getFirst()
-                    .text());
+                ((Paragraph) rows.get(1)
+                                 .cells()
+                                 .get(0)
+                                 .blocks()
+                                 .getFirst()).inlines()
+                                             .getFirst()
+                                             .text());
         assertEquals("Value 2",
-                rows.get(1)
-                    .cells()
-                    .get(1)
-                    .inlines()
-                    .getFirst()
-                    .text());
+                ((Paragraph) rows.get(1)
+                                 .cells()
+                                 .get(1)
+                                 .blocks()
+                                 .getFirst()).inlines()
+                                             .getFirst()
+                                             .text());
     }
 
     @Test

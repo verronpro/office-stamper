@@ -1,5 +1,6 @@
 package pro.verron.officestamper.asciidoc;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -62,11 +63,9 @@ public final class AsciiDocToDocx
             Tr tr = factory.createTr();
             for (Cell cell : row.cells()) {
                 Tc tc = factory.createTc();
-                // Add a single paragraph per cell for now
-                P p = factory.createP();
-                addInlines(factory, p, cell.inlines(), null);
-                tc.getContent()
-                  .add(p);
+                for (Block block : cell.blocks()) {
+                    addBlock(factory, tc.getContent(), block);
+                }
                 tr.getContent()
                   .add(tc);
             }
@@ -74,6 +73,31 @@ public final class AsciiDocToDocx
                .add(tr);
         }
         return tbl;
+    }
+
+    private static void addBlock(ObjectFactory factory, List<Object> content, Block block) {
+        switch (block) {
+            case Heading h -> content.add(createHeading(factory, h));
+            case Paragraph p -> content.add(createParagraph(factory, p));
+            case Table t -> content.add(createTable(factory, t));
+            case UnorderedList(List<ListItem> items1) -> {
+                for (ListItem item : items1) {
+                    content.add(createListItem(factory, item, "* "));
+                }
+            }
+            case OrderedList(List<ListItem> items) -> {
+                int i = 1;
+                for (ListItem item : items) {
+                    content.add(createListItem(factory, item, (i++) + ". "));
+                }
+            }
+            case Blockquote b -> content.add(createBlockquote(factory, b));
+            case CodeBlock cb -> content.add(createCodeBlock(factory, cb));
+            case ImageBlock ib -> content.add(createImageBlock(factory, ib));
+            case Break aBreak -> throw new NotImplementedException();
+            case CommentLine commentLine -> throw new NotImplementedException();
+            case OpenBlock openBlock -> throw new NotImplementedException();
+        }
     }
 
     private static P createListItem(ObjectFactory factory, ListItem item, String prefix) {
@@ -262,27 +286,10 @@ public final class AsciiDocToDocx
                .clear();
 
             for (Block block : model.getBlocks()) {
-                final var mainDocumentPart = pkg.getMainDocumentPart();
-                switch (block) {
-                    case Heading h -> mainDocumentPart.addObject(createHeading(factory, h));
-                    case Paragraph p -> mainDocumentPart.addObject(createParagraph(factory, p));
-                    case Table t -> mainDocumentPart.addObject(createTable(factory, t));
-                    case UnorderedList(List<ListItem> items1) -> {
-                        for (ListItem item : items1) {
-                            mainDocumentPart.addObject(createListItem(factory, item, "* "));
-                        }
-                    }
-                    case OrderedList(List<ListItem> items) -> {
-                        int i = 1;
-                        for (ListItem item : items) {
-                            mainDocumentPart.addObject(createListItem(factory, item, (i++) + ". "));
-                        }
-                    }
-                    case Blockquote b -> mainDocumentPart.addObject(createBlockquote(factory, b));
-                    case CodeBlock cb -> mainDocumentPart.addObject(createCodeBlock(factory, cb));
-                    case ImageBlock ib -> mainDocumentPart.addObject(createImageBlock(factory, ib));
-                    default -> { /* DO NOTHING */ }
-                }
+                addBlock(factory,
+                        pkg.getMainDocumentPart()
+                           .getContent(),
+                        block);
             }
             return pkg;
         } catch (Docx4JException e) {

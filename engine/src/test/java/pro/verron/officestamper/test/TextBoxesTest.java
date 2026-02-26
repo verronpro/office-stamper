@@ -44,6 +44,8 @@ class TextBoxesTest {
                 
                 ${foo}This should not resolve:\s
                 
+                // section {docGrid={linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
                 """;
         assertEquals(expected, actual);
     }

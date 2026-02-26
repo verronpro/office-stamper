@@ -65,32 +65,41 @@ class ProcessorRepeatTableRowTest {
                         List of Simpsons characters
                         
                         |===
-                        [cnfStyle=100000000000]
-                        |Character name<cnfStyle=001000000000>
+                        [rowStyle=2048]
+                        [style=512]
+                        |Character name
                         |Voice Actor
-                        [cnfStyle=000000100000]
-                        |Homer Simpson<cnfStyle=001000000000>
+                        [rowStyle=32]
+                        [style=512]
+                        |Homer Simpson
                         |Dan Castellaneta
-                        [cnfStyle=000000100000]
-                        |Marge Simpson<cnfStyle=001000000000>
+                        [rowStyle=32]
+                        [style=512]
+                        |Marge Simpson
                         |Julie Kavner
-                        [cnfStyle=000000100000]
-                        |Bart Simpson<cnfStyle=001000000000>
+                        [rowStyle=32]
+                        [style=512]
+                        |Bart Simpson
                         |Nancy Cartwright
-                        [cnfStyle=000000100000]
-                        |Kent Brockman<cnfStyle=001000000000>
+                        [rowStyle=32]
+                        [style=512]
+                        |Kent Brockman
                         |Harry Shearer
-                        [cnfStyle=000000100000]
-                        |Disco Stu<cnfStyle=001000000000>
+                        [rowStyle=32]
+                        [style=512]
+                        |Disco Stu
                         |Hank Azaria
-                        [cnfStyle=000000100000]
-                        |Krusty the Clown<cnfStyle=001000000000>
+                        [rowStyle=32]
+                        [style=512]
+                        |Krusty the Clown
                         |Dan Castellaneta
                         |===
                         
                         
                         
                         There are 6 characters in the above table.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
                         """);
     }
@@ -117,41 +126,50 @@ class ProcessorRepeatTableRowTest {
                         List of Simpsons characters
                         
                         |===
-                        [cnfStyle=100000000000]
-                        |Character name<cnfStyle=001000000000>
+                        [rowStyle=2048]
+                        [style=512]
+                        |Character name
                         |Voice Actor
-                        [cnfStyle=000000100000]
-                        |Homer Simpson<cnfStyle=001000000000>
+                        [rowStyle=32]
+                        [style=512]
+                        |Homer Simpson
                         |Dan Castellaneta
-                        [cnfStyle=000000100000]
-                        |Marge Simpson<cnfStyle=001000000000>
-                        |Julie
+                        [rowStyle=32]
+                        [style=512]
+                        |Marge Simpson
+                        |Julie +
                         Kavner
-                        [cnfStyle=000000100000]
-                        |Bart Simpson<cnfStyle=001000000000>
-                        |Nancy
-                        
+                        [rowStyle=32]
+                        [style=512]
+                        |Bart Simpson
+                        |Nancy +
+                         +
                         Cartwright
-                        [cnfStyle=000000100000]
-                        |Kent Brockman<cnfStyle=001000000000>
-                        |Harry
-                        
-                        
+                        [rowStyle=32]
+                        [style=512]
+                        |Kent Brockman
+                        |Harry +
+                         +
+                         +
                         Shearer
-                        [cnfStyle=000000100000]
-                        |Disco Stu<cnfStyle=001000000000>
-                        |Hank
-                        
+                        [rowStyle=32]
+                        [style=512]
+                        |Disco Stu
+                        |Hank +
+                         +
                         Azaria
-                        [cnfStyle=000000100000]
-                        |Krusty the Clown<cnfStyle=001000000000>
-                        |Dan
+                        [rowStyle=32]
+                        [style=512]
+                        |Krusty the Clown
+                        |Dan +
                         Castellaneta
                         |===
                         
                         
                         
                         There are 6 characters in the above table.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
                         """);
     }
@@ -163,14 +181,16 @@ class ProcessorRepeatTableRowTest {
                 getWordResource(Path.of("ProcessorRepeatTableRow_KeepsFormatTest.docx")),
                 """
                         |===
-                        |1^st^ Homer Simpson-Dan Castellaneta
-                        |2^nd^ Marge Simpson-Julie Kavner
-                        |3^rd^ Bart Simpson-Nancy Cartwright
-                        |4^th^ Lisa Simpson-Yeardley Smith
-                        |5^th^ Maggie Simpson-Julie Kavner
+                        |1^st^ Homer Simpson-*Dan Castellaneta*
+                        |2^nd^ Marge Simpson-*Julie Kavner*
+                        |3^rd^ Bart Simpson-*Nancy Cartwright*
+                        |4^th^ Lisa Simpson-*Yeardley Smith*
+                        |5^th^ Maggie Simpson-*Julie Kavner*
                         |===
                         
                         
+                        
+                        // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                         
                         """);
     }
@@ -213,6 +233,8 @@ class ProcessorRepeatTableRowTest {
                 |Maggie
                 |===
                 
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
                 """;
         assertEquals(expected, actual);
     }
@@ -238,6 +260,8 @@ class ProcessorRepeatTableRowTest {
                 |Bart
                 |Lisa
                 |===
+                
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         assertEquals(expected, actual);
@@ -265,6 +289,8 @@ class ProcessorRepeatTableRowTest {
                 |Lisa
                 |Maggie
                 |===
+                
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         assertEquals(expected, actual);

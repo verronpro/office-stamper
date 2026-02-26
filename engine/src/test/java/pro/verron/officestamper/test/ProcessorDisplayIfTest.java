@@ -32,9 +32,7 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display
                 
-                
                 === Paragraphs
-                
                 
                 This paragraph 1 stays untouched.
                 
@@ -48,195 +46,150 @@ class ProcessorDisplayIfTest {
                 
                 ==== Paragraphs in table
                 
-                
                 |===
                 |Works in tables
-                
                 |
                 |This paragraph 1.2 stays if “name” is “Bart”.
-                
                 |This paragraph 2.1 stays if “name” is “Bart”.
                 |This paragraph 2.2 stays if “name” is not null.
-                
-                
                 |===
-                ==== Paragraphs in nested table
                 
+                ==== Paragraphs in nested table
                 
                 |===
                 |Works in nested tables
-                
-                ||===
-                |Really
-                
-                |This paragraph stays if “name” is “Bart”.
-                
-                
+                a|!===
+                !Really
+                !This paragraph stays if “name” is “Bart”.
+                !===
                 |===
                 
+                // runPr {color=0F4761, rFonts={asciiTheme=majorHAnsi, cs=majorBidi, eastAsia=majorEastAsia, hAnsi=majorHAnsi}, sz=32, szCs=32}
                 
-                |===
                 
-                [page-break]
+                
                 <<<
-                <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
                 
                 === Table Rows
                 
-                
                 ==== Rows in table
-                
                 
                 |===
                 |Works in tables
-                
                 |This row 1 is:
                 |Untouched.
-                
                 |This row 2 stays:
                 |if “name” is “Bart”.
-                
                 |This row 4 stays:
                 |if “name” is “Bart”.
-                
                 |This row 6 stays:
                 |if “name” is not null.
-                
                 |This row 7 stays:
                 |if “name” is not null.
-                
-                
                 |===
-                ==== Rows in nested table
                 
+                ==== Rows in nested table
                 
                 |===
                 |Works in nested tables
-                
-                ||===
-                |Really'
-                
-                |This row stays if “name” is “Bart”.
-                
-                
+                a|!===
+                !Really'
+                !This row stays if “name” is “Bart”.
+                !===
                 |===
                 
                 
-                |===
                 
-                [page-break]
                 <<<
-                
                 
                 === Tables
                 
-                
                 ==== Mono-cell fully commented.
-                
                 
                 |===
                 |A mono-cell table.
-                
-                
                 |===
-                ==== Mono-cell partially commented.
                 
+                ==== Mono-cell partially commented.
                 
                 |===
                 |Another mono-cell table.
-                
-                
                 |===
+                
                 ==== Multi-cell fully commented.
                 
-                
                 |===
                 |Cell 1.1
                 |Cell 1.2
-                
                 |Cell 2.1
                 |Cell 2.2
-                
-                
                 |===
+                
                 ==== Multi-cell partially commented.
                 
-                
                 |===
                 |Cell 1.1
                 |Cell 1.2
-                
                 |Cell 2.1
                 |Cell 2.2
-                
-                
                 |===
+                
                 ==== If present Case.
                 
-                
                 |===
                 |Cell 1.1
                 |Cell 1.2
-                
                 |Cell 2.1
                 |Cell 2.2
-                
-                
                 |===
-                ==== If absent Case.
                 
+                ==== If absent Case.
                 
                 ==== Works in nested tables
                 
-                
                 |===
                 |Cell 1.1
-                
-                ||===
-                |Cell 2.1, Sub cell 1.1
-                
-                |Cell 2.1, Sub cell 2.1
-                
-                
+                a|!===
+                !Cell 2.1, Sub cell 1.1
+                !Cell 2.1, Sub cell 2.1
+                !===
                 |===
                 
                 
-                |===
                 
-                [page-break]
                 <<<
                 
-                
                 === Words
-                
                 
                 These words should appear conditionally:  Bart .
                 
                 These words should appear conditionally:   Bart Simpson .
                 
+                // runPr {color=0F4761, rFonts={asciiTheme=majorHAnsi, cs=majorBidi, eastAsia=majorEastAsia, hAnsi=majorHAnsi}, sz=32, szCs=32}
                 
-                [page-break]
+                
+                
                 <<<
-                <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
                 
                 === Doc Parts
                 
-                
-                These 1❬sts❘{vertAlign=superscript}❭ multiple paragraph block stays untouched.
-                
-                To show how comments spanning multiple paragraphs works.
-                
-                These 2❬nd❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is “Bart”.
+                These 1^sts^ multiple paragraph block stays untouched.
                 
                 To show how comments spanning multiple paragraphs works.
                 
-                These 4❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is “Bart”.
+                These 2^nd^ multiple paragraph block stays if “name” is “Bart”.
                 
                 To show how comments spanning multiple paragraphs works.
                 
-                These 6❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “null”.
+                These 4^th^ multiple paragraph block stays if “name” is “Bart”.
                 
                 To show how comments spanning multiple paragraphs works.
+                
+                These 6^th^ multiple paragraph block stays if “name” is not “null”.
+                
+                To show how comments spanning multiple paragraphs works.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -258,7 +211,9 @@ class ProcessorDisplayIfTest {
                 
                 == Introduction
                 
-                [Quote] "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
+                ____
+                "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
+                ____
                 
                 == Homer Simpson's Favorite Pastimes
                 
@@ -267,48 +222,60 @@ class ProcessorDisplayIfTest {
                 Marge Simpson, with her iconic blue hair, is the moral center of the family. She manages the household with the chaos around her, Marge always finds a way to keep the family together.
                 
                 |===
+                [rowStyle=2048]
+                [style=512]
                 |Character
-                |Role<cnfStyle=100000000000>
-                |Fun Fact<cnfStyle=100000000000>
-                
+                |Role
+                |Fun Fact
+                [style=512]
                 |Marge Simpson
-                |Matriarch<cnfStyle=000000000000>
-                |Her hair once hid an entire toolbox❬[6]❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000000000>
-                
+                |Matriarch
+                |Her hair once hid an entire toolbox[rStyle_Appelnotedebasdep]#footnote:6[]#.
+                [rowStyle=32]
+                [style=512]
                 |Bart Simpson
-                |Eldest Child<cnfStyle=000000100000>
-                |Bart's famous catchphrase is "Eat my shorts!"❬[7]❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000100000>
-                
+                |Eldest Child
+                |Bart's famous catchphrase is "Eat my shorts!"[rStyle_Appelnotedebasdep]#footnote:7[]#.
+                [style=512]
                 |Lisa Simpson
-                |Middle Child<cnfStyle=000000000000>
-                |Lisa is a talented saxophonist❬[8]❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000000000>
-                
+                |Middle Child
+                |Lisa is a talented saxophonist[rStyle_Appelnotedebasdep]#footnote:8[]#.
+                [rowStyle=32]
+                [style=512]
                 |Maggie Simpson
-                |Youngest Child<cnfStyle=000000100000>
-                |Maggie is known for her pacifier and silent wisdom❬[9]❘{rStyle=Appelnotedebasdep}❭.<cnfStyle=000000100000>
-                
-                
+                |Youngest Child
+                |Maggie is known for her pacifier and silent wisdom[rStyle_Appelnotedebasdep]#footnote:9[]#.
                 |===
+                
                 == Conclusion
                 
+                ____
+                "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
+                ____
                 
-                [Quote] "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
+                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
                 [footnotes]
-                ---
-                [6] Marge's hairdo was designed to hide various items, a nod to cartoon logic.
+                --
+                6::
+                
+                 Marge's hairdo was designed to hide various items, a nod to cartoon logic.
+                
+                7::
+                
+                 Bart's rebellious attitude is encapsulated in this catchphrase.
+                
+                8::
+                
+                 Lisa's musical talent often shines through her saxophone solos.
+                
+                9::
+                
+                 Despite her silence, Maggie has saved her family on multiple occasions.
+                
+                --
                 
                 
-                [7] Bart's rebellious attitude is encapsulated in this catchphrase.
-                
-                
-                [8] Lisa's musical talent often shines through her saxophone solos.
-                
-                
-                [9] Despite her silence, Maggie has saved her family on multiple occasions.
-                
-                
-                ---
                 """;
 
         var configuration = full();
@@ -327,63 +294,73 @@ class ProcessorDisplayIfTest {
         var expected = """
                 = Springfield Chronicles: The Simpsons Edition
                 
-                
                 == Introduction
                 
-                
-                [Quote] "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
+                ____
+                "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
+                ____
                 
                 == Homer Simpson's Favorite Pastimes
                 
-                
                 == Marge Simpson: The Heart of the Family
-                
                 
                 Marge Simpson, with her iconic blue hair, is the moral center of the family. She manages the household with the chaos around her, Marge always finds a way to keep the family together.
                 
                 |===
+                [rowStyle=2048]
+                [style=512]
                 |Character
-                |Role<cnfStyle=100000000000>
-                |Fun Fact<cnfStyle=100000000000>
-                
+                |Role
+                |Fun Fact
+                [style=512]
                 |Marge Simpson
-                |Matriarch<cnfStyle=000000000000>
-                |Her hair once hid an entire toolbox❬[6]❘{rStyle=Appeldenotedefin}❭.<cnfStyle=000000000000>
-                
+                |Matriarch
+                |Her hair once hid an entire toolbox[rStyle_Appeldenotedefin]#footnote:6[]#.
+                [rowStyle=32]
+                [style=512]
                 |Bart Simpson
-                |Eldest Child<cnfStyle=000000100000>
-                |Bart's famous catchphrase is "Eat my shorts!"❬[7]❘{rStyle=Appeldenotedefin}❭.<cnfStyle=000000100000>
-                
+                |Eldest Child
+                |Bart's famous catchphrase is "Eat my shorts!"[rStyle_Appeldenotedefin]#footnote:7[]#.
+                [style=512]
                 |Lisa Simpson
-                |Middle Child<cnfStyle=000000000000>
-                |Lisa is a talented saxophonist❬[8]❘{rStyle=Appeldenotedefin}❭.<cnfStyle=000000000000>
-                
+                |Middle Child
+                |Lisa is a talented saxophonist[rStyle_Appeldenotedefin]#footnote:8[]#.
+                [rowStyle=32]
+                [style=512]
                 |Maggie Simpson
-                |Youngest Child<cnfStyle=000000100000>
-                |Maggie is known for her pacifier and silent wisdom❬[9]❘{rStyle=Appeldenotedefin}❭.<cnfStyle=000000100000>
-                
-                
+                |Youngest Child
+                |Maggie is known for her pacifier and silent wisdom[rStyle_Appeldenotedefin]#footnote:9[]#.
                 |===
+                
                 == Conclusion
                 
+                ____
+                "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
+                ____
                 
-                [Quote] "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
+                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
                 [endnotes]
-                ---
-                [6] Marge's hairdo was designed to hide various items, a nod to cartoon logic.
+                --
+                6::
+                
+                 Marge's hairdo was designed to hide various items, a nod to cartoon logic.
+                
+                7::
+                
+                 Bart's rebellious attitude is encapsulated in this catchphrase.
+                
+                8::
+                
+                 Lisa's musical talent often shines through her saxophone solos.
+                
+                9::
+                
+                 Despite her silence, Maggie has saved her family on multiple occasions.
+                
+                --
                 
                 
-                [7] Bart's rebellious attitude is encapsulated in this catchphrase.
-                
-                
-                [8] Lisa's musical talent often shines through her saxophone solos.
-                
-                
-                [9] Despite her silence, Maggie has saved her family on multiple occasions.
-                
-                
-                ---
                 """;
 
         var configuration = full();
@@ -402,9 +379,7 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display
                 
-                
                 === Paragraphs
-                
                 
                 This paragraph 1 stays untouched.
                 
@@ -418,159 +393,124 @@ class ProcessorDisplayIfTest {
                 
                 ==== Paragraphs in table
                 
-                
                 |===
                 |Works in tables
-                
                 |
                 |
-                
                 |
                 |This paragraph 2.2 stays if “name” is not null.
-                
-                
                 |===
-                ==== Paragraphs in nested table
                 
+                ==== Paragraphs in nested table
                 
                 |===
                 |Works in nested tables
-                
-                ||===
-                |Really
-                
-                |
-                
-                
+                a|!===
+                !Really
+                !
+                !===
                 |===
                 
+                // runPr {color=0F4761, rFonts={asciiTheme=majorHAnsi, cs=majorBidi, eastAsia=majorEastAsia, hAnsi=majorHAnsi}, sz=32, szCs=32}
                 
-                |===
                 
-                [page-break]
+                
                 <<<
-                <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
                 
                 === Table Rows
                 
-                
                 ==== Rows in table
-                
                 
                 |===
                 |Works in tables
-                
                 |This row 1 is:
                 |Untouched.
-                
                 |This row 3 stays:
                 |if “name” is not “Bart”.
-                
                 |This row 5 stays:
                 |if “name” is not “Bart”.
-                
                 |This row 6 stays:
                 |if “name” is not null.
-                
                 |This row 7 stays:
                 |if “name” is not null.
-                
-                
                 |===
-                ==== Rows in nested table
                 
+                ==== Rows in nested table
                 
                 |===
                 |Works in nested tables
-                
-                ||===
-                |Really'
-                
-                
+                a|!===
+                !Really'
+                !===
                 |===
                 
                 
-                |===
                 
-                [page-break]
                 <<<
-                
                 
                 === Tables
                 
-                
                 ==== Mono-cell fully commented.
-                
                 
                 ==== Mono-cell partially commented.
                 
-                
                 ==== Multi-cell fully commented.
-                
                 
                 ==== Multi-cell partially commented.
                 
-                
                 ==== If present Case.
-                
                 
                 |===
                 |Cell 1.1
                 |Cell 1.2
-                
                 |Cell 2.1
                 |Cell 2.2
-                
-                
                 |===
-                ==== If absent Case.
                 
+                ==== If absent Case.
                 
                 ==== Works in nested tables
                 
-                
                 |===
                 |Cell 1.1
-                
                 |
-                
-                
                 |===
                 
-                [page-break]
+                
+                
                 <<<
                 
-                
                 === Words
-                
                 
                 These words should appear conditionally: Homer  .
                 
                 These words should appear conditionally: Homer Simpson   .
                 
+                // runPr {color=0F4761, rFonts={asciiTheme=majorHAnsi, cs=majorBidi, eastAsia=majorEastAsia, hAnsi=majorHAnsi}, sz=32, szCs=32}
                 
-                [page-break]
+                
+                
                 <<<
-                <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
                 
                 === Doc Parts
                 
-                
-                These 1❬sts❘{vertAlign=superscript}❭ multiple paragraph block stays untouched.
-                
-                To show how comments spanning multiple paragraphs works.
-                
-                These 3❬rd❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “Bart”.
+                These 1^sts^ multiple paragraph block stays untouched.
                 
                 To show how comments spanning multiple paragraphs works.
                 
-                These 5❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “Bart”.
+                These 3^rd^ multiple paragraph block stays if “name” is not “Bart”.
                 
                 To show how comments spanning multiple paragraphs works.
                 
-                These 6❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “null”.
+                These 5^th^ multiple paragraph block stays if “name” is not “Bart”.
                 
                 To show how comments spanning multiple paragraphs works.
+                
+                These 6^th^ multiple paragraph block stays if “name” is not “null”.
+                
+                To show how comments spanning multiple paragraphs works.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -590,9 +530,7 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display
                 
-                
                 === Paragraphs
-                
                 
                 This paragraph 1 stays untouched.
                 
@@ -606,159 +544,124 @@ class ProcessorDisplayIfTest {
                 
                 ==== Paragraphs in table
                 
-                
                 |===
                 |Works in tables
-                
                 |This paragraph 1.1 stays if “name” is null.
                 |
-                
                 |
                 |
-                
-                
                 |===
-                ==== Paragraphs in nested table
                 
+                ==== Paragraphs in nested table
                 
                 |===
                 |Works in nested tables
-                
-                ||===
-                |Really
-                
-                |
-                
-                
+                a|!===
+                !Really
+                !
+                !===
                 |===
                 
+                // runPr {color=0F4761, rFonts={asciiTheme=majorHAnsi, cs=majorBidi, eastAsia=majorEastAsia, hAnsi=majorHAnsi}, sz=32, szCs=32}
                 
-                |===
                 
-                [page-break]
+                
                 <<<
-                <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
                 
                 === Table Rows
                 
-                
                 ==== Rows in table
-                
                 
                 |===
                 |Works in tables
-                
                 |This row 1 is:
                 |Untouched.
-                
                 |This row 3 stays:
                 |if “name” is not “Bart”.
-                
                 |This row 5 stays:
                 |if “name” is not “Bart”.
-                
                 |This row 8 stays:
                 |if “name” is null.
-                
                 |This row 9 stays:
                 |if “name” is null.
-                
-                
                 |===
-                ==== Rows in nested table
                 
+                ==== Rows in nested table
                 
                 |===
                 |Works in nested tables
-                
-                ||===
-                |Really'
-                
-                
+                a|!===
+                !Really'
+                !===
                 |===
                 
                 
-                |===
                 
-                [page-break]
                 <<<
-                
                 
                 === Tables
                 
-                
                 ==== Mono-cell fully commented.
-                
                 
                 ==== Mono-cell partially commented.
                 
-                
                 ==== Multi-cell fully commented.
-                
                 
                 ==== Multi-cell partially commented.
                 
-                
                 ==== If present Case.
                 
-                
                 ==== If absent Case.
-                
                 
                 |===
                 |Cell 1.1
                 |Cell 1.2
-                
                 |Cell 2.1
                 |Cell 2.2
-                
-                
                 |===
-                ==== Works in nested tables
                 
+                ==== Works in nested tables
                 
                 |===
                 |Cell 1.1
-                
                 |
-                
-                
                 |===
                 
-                [page-break]
+                
+                
                 <<<
                 
-                
                 === Words
-                
                 
                    None.
                 
                    No Simpsons.
                 
+                // runPr {color=0F4761, rFonts={asciiTheme=majorHAnsi, cs=majorBidi, eastAsia=majorEastAsia, hAnsi=majorHAnsi}, sz=32, szCs=32}
                 
-                [page-break]
+                
+                
                 <<<
-                <rPr={color=0F4761,rFont={asciiTheme=majorHAnsi,cstheme=majorBidi,eastAsiaTheme=majorEastAsia,hAnsiTheme=majorHAnsi}}>
                 
                 === Doc Parts
                 
-                
-                These 1❬sts❘{vertAlign=superscript}❭ multiple paragraph block stays untouched.
-                
-                To show how comments spanning multiple paragraphs works.
-                
-                These 3❬rd❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “Bart”.
+                These 1^sts^ multiple paragraph block stays untouched.
                 
                 To show how comments spanning multiple paragraphs works.
                 
-                These 5❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is not “Bart”.
+                These 3^rd^ multiple paragraph block stays if “name” is not “Bart”.
                 
                 To show how comments spanning multiple paragraphs works.
                 
-                These 7❬th❘{vertAlign=superscript}❭ multiple paragraph block stays if “name” is “null”.
+                These 5^th^ multiple paragraph block stays if “name” is not “Bart”.
                 
                 To show how comments spanning multiple paragraphs works.
+                
+                These 7^th^ multiple paragraph block stays if “name” is “null”.
+                
+                To show how comments spanning multiple paragraphs works.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -783,23 +686,18 @@ class ProcessorDisplayIfTest {
                 Paragraph 3 stays untouched.
                 
                 |===
-                |=== Conditional Display of paragraphs also works in tables
-                
+                a|=== Conditional Display of paragraphs also works in tables
                 |Paragraph 4 in cell 2,1 stays untouched.
                 |
-                
-                ||===
-                |=== Also works in nested tables
-                
-                |Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
-                
-                
+                a|!===
+                a!=== Also works in nested tables
+                !Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
+                !===
                 |===
                 
                 
-                |===
                 
-                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -819,7 +717,6 @@ class ProcessorDisplayIfTest {
         var expected = """
                 == Conditional Display of Paragraphs
                 
-                
                 Paragraph 1 stays untouched.
                 
                 Paragraph 2 is only included if the “name” is “Bart”.
@@ -827,24 +724,20 @@ class ProcessorDisplayIfTest {
                 Paragraph 3 stays untouched.
                 
                 |===
-                |=== Conditional Display of paragraphs also works in tables
-                
+                a|=== Conditional Display of paragraphs also works in tables
                 |Paragraph 4 in cell 2,1 stays untouched.
                 |Paragraph 5 in cell 2,2 is only included if the “name” is “Bart”.
-                
-                ||===
-                |=== Also works in nested tables
-                
-                |Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
+                a|!===
+                a!=== Also works in nested tables
+                a!Paragraph 6 in cell 2,1 in cell 3,1 stays untouched.
                 
                 Paragraph 7  in cell 2,1 in cell 3,1 is only included if the “name” is “Bart”.
-                
-                
+                !===
                 |===
                 
                 
-                |===
                 
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -867,15 +760,22 @@ class ProcessorDisplayIfTest {
                 This paragraph stays untouched.
                 
                 |===
-                [cnfStyle=000000100000]
+                [rowStyle=32]
                 |This row stays untouched.
-                [cnfStyle=000000100000]
+                [rowStyle=32]
                 |This row stays untouched.
-                [cnfStyle=000000100000]
-                |
+                [rowStyle=32]
+                a|!===
+                [rowStyle=2048]
+                !Also works on nested Tables
+                [rowStyle=32]
+                !This row stays untouched.
+                !===
                 |===
                 
                 
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -900,26 +800,32 @@ class ProcessorDisplayIfTest {
                 
                 
                 |===
-                [cnfStyle=100000000000]
-                |This table stays untouched.<cnfStyle=001000000000>
+                [rowStyle=2048]
+                [style=512]
+                |This table stays untouched.
                 |
-                [cnfStyle=000000100000]
-                |<cnfStyle=001000000000>
+                [rowStyle=32]
+                [style=512]
+                |
                 |
                 |===
                 
                 
                 
                 |===
-                [cnfStyle=100000000000]
-                |Also works on nested tables<cnfStyle=001000000000>
-                [cnfStyle=000000100000]
-                |<cnfStyle=001000000000>
+                [rowStyle=2048]
+                [style=512]
+                |Also works on nested tables
+                [rowStyle=32]
+                [style=512]
+                |
                 |===
                 
                 
                 
                 This paragraph stays untouched.
+                
+                // section {docGrid={linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -944,7 +850,7 @@ class ProcessorDisplayIfTest {
                 
                 
                 |===
-                [cnfStyle=000000100000]
+                [rowStyle=32]
                 |This table stays untouched.
                 |
                 |
@@ -954,15 +860,17 @@ class ProcessorDisplayIfTest {
                 
                 
                 |===
-                [cnfStyle=100000000000]
+                [rowStyle=2048]
                 |Also works on nested tables
-                [cnfStyle=000000100000]
+                [rowStyle=32]
                 |
                 |===
                 
                 
                 
                 This paragraph stays untouched.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
         var config = standard();

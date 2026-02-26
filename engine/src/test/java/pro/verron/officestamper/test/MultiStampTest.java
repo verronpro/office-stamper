@@ -41,21 +41,23 @@ class MultiStampTest {
                 == Multi-Stamp-Test
                 
                 |===
-                [cnfStyle=100000000000]
+                [rowStyle=2048]
                 |The next row will repeat multiple times with a different name:
-                [cnfStyle=000000100000]
+                [rowStyle=32]
                 |Homer
-                [cnfStyle=000000100000]
+                [rowStyle=32]
                 |Marge
-                [cnfStyle=000000100000]
+                [rowStyle=32]
                 |Bart
-                [cnfStyle=000000100000]
+                [rowStyle=32]
                 |Lisa
-                [cnfStyle=000000100000]
+                [rowStyle=32]
                 |Maggie
                 |===
                 
                 
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """, actual);
 

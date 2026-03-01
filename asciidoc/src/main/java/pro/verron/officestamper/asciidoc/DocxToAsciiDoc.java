@@ -178,6 +178,7 @@ public final class DocxToAsciiDoc
                     inlines.addAll(toInlines(tag));
                     inlines.add(new AsciiDocModel.InlineMacro("tag", "", List.of("end")));
                 }
+                case P.Hyperlink hyperlink -> inlines.addAll(toInlines(hyperlink));
                 default -> log.debug("Unexpected inline: {}", val);
             }
         }

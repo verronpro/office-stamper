@@ -67,23 +67,24 @@ class MultiStampTest {
         assertEquals("""
                 == Multi-Stamp-Test
                 
-                
                 |===
+                [rowStyle=2048]
                 |The next row will repeat multiple times with a different name:
-                
+                [rowStyle=32]
                 |Homer
-                
+                [rowStyle=32]
                 |Marge
-                
+                [rowStyle=32]
                 |Bart
-                
+                [rowStyle=32]
                 |Lisa
-                
+                [rowStyle=32]
                 |Maggie
-                
-                
                 |===
                 
+                
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """, document2);
     }

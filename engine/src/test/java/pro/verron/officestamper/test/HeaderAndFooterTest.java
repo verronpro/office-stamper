@@ -39,34 +39,44 @@ class HeaderAndFooterTest {
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals("""
-                [header, name="/word/header2.xml"]
-                ----
-                [header] This header paragraph is untouched.
+                [header]
+                --
+                [header]
+                This header paragraph is untouched.
                 
-                [header] In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                [header]
+                In this paragraph, the variable name should be resolved to the value Homer Simpson.
                 
-                [header] In this paragraph, the variable foo should not be resolved: ${foo}.
+                [header]
+                In this paragraph, the variable foo should not be resolved: ${foo}.
                 
-                [header] Here, the picture should be resolved /word/media/header2_image_rId1.png:rId1:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720.
+                [header]
+                Here, the picture should be resolved image:rId1[cx=5760720, cy=2880360].
                 
+                --
                 
-                ----
                 
                 Expression Replacement in header and footer
                 
+                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
-                [footer, name="/word/footer2.xml"]
-                ----
-                [footer] This footer paragraph is untouched.
+                [footer]
+                --
+                [footer]
+                This footer paragraph is untouched.
                 
-                [footer] In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                [footer]
+                In this paragraph, the variable name should be resolved to the value Homer Simpson.
                 
-                [footer] In this paragraph, the variable foo should not be resolved: ${foo}.
+                [footer]
+                In this paragraph, the variable foo should not be resolved: ${foo}.
                 
-                [footer] Here, the picture should be resolved /word/media/footer2_image_rId1.png:rId1:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5760720.
+                [footer]
+                Here, the picture should be resolved image:rId1[cx=5760720, cy=2880360].
+                
+                --
                 
                 
-                ----
                 """, actual);
     }
 }

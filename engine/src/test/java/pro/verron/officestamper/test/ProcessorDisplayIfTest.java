@@ -211,9 +211,8 @@ class ProcessorDisplayIfTest {
                 
                 == Introduction
                 
-                ____
+                [Quote]
                 "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
-                ____
                 
                 == Homer Simpson's Favorite Pastimes
                 
@@ -249,9 +248,8 @@ class ProcessorDisplayIfTest {
                 
                 == Conclusion
                 
-                ____
+                [Quote]
                 "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
-                ____
                 
                 // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
@@ -259,18 +257,22 @@ class ProcessorDisplayIfTest {
                 --
                 6::
                 
+                [footnote text]
                  Marge's hairdo was designed to hide various items, a nod to cartoon logic.
                 
                 7::
                 
+                [footnote text]
                  Bart's rebellious attitude is encapsulated in this catchphrase.
                 
                 8::
                 
+                [footnote text]
                  Lisa's musical talent often shines through her saxophone solos.
                 
                 9::
                 
+                [footnote text]
                  Despite her silence, Maggie has saved her family on multiple occasions.
                 
                 --
@@ -296,9 +298,8 @@ class ProcessorDisplayIfTest {
                 
                 == Introduction
                 
-                ____
+                [Quote]
                 "Springfield, USA is a town like no other, brought to life through the antics of the Simpson family. Here, in the heart of Springfield, every day is an adventure."
-                ____
                 
                 == Homer Simpson's Favorite Pastimes
                 
@@ -334,9 +335,8 @@ class ProcessorDisplayIfTest {
                 
                 == Conclusion
                 
-                ____
+                [Quote]
                 "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
-                ____
                 
                 // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
@@ -344,18 +344,22 @@ class ProcessorDisplayIfTest {
                 --
                 6::
                 
+                [endnote text]
                  Marge's hairdo was designed to hide various items, a nod to cartoon logic.
                 
                 7::
                 
+                [endnote text]
                  Bart's rebellious attitude is encapsulated in this catchphrase.
                 
                 8::
                 
+                [endnote text]
                  Lisa's musical talent often shines through her saxophone solos.
                 
                 9::
                 
+                [endnote text]
                  Despite her silence, Maggie has saved her family on multiple occasions.
                 
                 --

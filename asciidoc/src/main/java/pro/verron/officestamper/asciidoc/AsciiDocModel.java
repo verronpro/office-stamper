@@ -1,9 +1,8 @@
 package pro.verron.officestamper.asciidoc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+
+import static java.util.Collections.emptyList;
 
 /// Represents a minimal in-memory model of an AsciiDoc document.
 ///
@@ -36,12 +35,14 @@ public final class AsciiDocModel {
 
     /// Marker interface for document blocks.
     public sealed interface Block
-            permits Blockquote, Break, CodeBlock, CommentLine, Heading, ImageBlock, OpenBlock, OrderedList, Paragraph
-            , Table, UnorderedList {}
+            permits Blockquote, Break, CodeBlock, CommentLine, Heading, ImageBlock, MacroBlock, OpenBlock,
+            OrderedList, Paragraph, Table, UnorderedList {
+        int size();
+    }
 
     /// Inline fragment inside a paragraph/heading.
     public sealed interface Inline
-            permits Bold, InlineImage, Italic, Link, Styled, Sub, Sup, Tab, Text {
+            permits Bold, InlineImage, InlineMacro, Italic, Link, Styled, Sub, Sup, Tab, Text {
         /// Returns the text of the inline fragment.
         ///
         /// @return text
@@ -52,31 +53,51 @@ public final class AsciiDocModel {
     ///
     /// @param level heading level
     /// @param inlines inline fragments
-    public record Heading(int level, List<Inline> inlines)
+    public record Heading(List<String> header, int level, List<Inline> inlines)
             implements Block {
+        public Heading(int level, List<Inline> inlines) {
+            this(emptyList(), level, inlines);
+        }
+
         /// Constructor.
         ///
         /// @param level heading level
         /// @param inlines inline fragments
-        public Heading(int level, List<Inline> inlines) {
+        public Heading(List<String> header, int level, List<Inline> inlines) {
             if (level < 1 || level > 6) {
                 throw new IllegalArgumentException("Heading level must be between 1 and 6");
             }
+            this.header = List.copyOf(header);
             this.level = level;
             this.inlines = List.copyOf(inlines);
+        }
+
+        @Override
+        public int size() {
+            return 1;
         }
     }
 
     /// Paragraph block.
     ///
     /// @param inlines inline fragments
-    public record Paragraph(List<Inline> inlines)
+    public record Paragraph(List<String> header, List<Inline> inlines)
             implements Block {
+        public Paragraph(List<Inline> inlines) {
+            this(emptyList(), inlines);
+        }
+
         /// Constructor.
         ///
         /// @param inlines inline fragments
-        public Paragraph(List<Inline> inlines) {
+        public Paragraph(List<String> header, List<Inline> inlines) {
+            this.header = List.copyOf(header);
             this.inlines = List.copyOf(inlines);
+        }
+
+        @Override
+        public int size() {
+            return 1;
         }
     }
 
@@ -174,6 +195,17 @@ public final class AsciiDocModel {
         public Table(List<Row> rows) {
             this.rows = List.copyOf(rows);
         }
+
+        @Override
+        public int size() {
+            return rows.stream()
+                       .map(Row::cells)
+                       .flatMap(Collection::stream)
+                       .map(Cell::blocks)
+                       .flatMap(Collection::stream)
+                       .mapToInt(Block::size)
+                       .sum();
+        }
     }
 
     /// Table row.
@@ -230,13 +262,23 @@ public final class AsciiDocModel {
     ///
     /// @param items list items
     public record UnorderedList(List<ListItem> items)
-            implements Block {}
+            implements Block {
+        @Override
+        public int size() {
+            return items.size();
+        }
+    }
 
     /// Ordered list.
     ///
     /// @param items list items
     public record OrderedList(List<ListItem> items)
-            implements Block {}
+            implements Block {
+        @Override
+        public int size() {
+            return items.size();
+        }
+    }
 
     /// List item.
     ///
@@ -261,6 +303,11 @@ public final class AsciiDocModel {
         public Blockquote(List<Inline> inlines) {
             this.inlines = List.copyOf(inlines);
         }
+
+        @Override
+        public int size() {
+            return 1;
+        }
     }
 
     /// Code block.
@@ -268,14 +315,24 @@ public final class AsciiDocModel {
     /// @param language language
     /// @param content code content
     public record CodeBlock(String language, String content)
-            implements Block {}
+            implements Block {
+        @Override
+        public int size() {
+            return 1;
+        }
+    }
 
     /// Image block.
     ///
     /// @param url image URL
     /// @param altText alternative text
     public record ImageBlock(String url, String altText)
-            implements Block {}
+            implements Block {
+        @Override
+        public int size() {
+            return 1;
+        }
+    }
 
     /// Link inline.
     ///
@@ -286,25 +343,48 @@ public final class AsciiDocModel {
 
     /// Inline image.
     ///
-    /// @param url image URL
-    /// @param altText alternative text
-    public record InlineImage(String url, String altText)
+    /// @param path image path
+    /// @param map alternative text
+    public record InlineImage(String path, Map<String, String> map)
             implements Inline {
+
+        public InlineImage(String path, Map<String, String> map) {
+            this.path = path;
+            this.map = Collections.unmodifiableMap(new TreeMap<>(map));
+        }
+
         @Override
         public String text() {
-            return altText;
+            return path;
         }
     }
 
 
-    public record OpenBlock(String blockRole, List<Block> content)
-            implements Block {}
+    public record OpenBlock(List<String> header, List<Block> content)
+            implements Block {
+        @Override
+        public int size() {
+            return content.stream()
+                          .mapToInt(Block::size)
+                          .sum();
+        }
+    }
 
     public record Break()
-            implements Block {}
+            implements Block {
+        @Override
+        public int size() {
+            return 0;
+        }
+    }
 
     public record CommentLine(String comment)
-            implements Block {}
+            implements Block {
+        @Override
+        public int size() {
+            return 0;
+        }
+    }
 
     public record Styled(String role, List<Inline> children)
             implements Inline {
@@ -313,6 +393,23 @@ public final class AsciiDocModel {
             StringBuilder sb = new StringBuilder();
             for (Inline in : children) sb.append(in.text());
             return sb.toString();
+        }
+    }
+
+    public record MacroBlock(String name, String id, List<String> list)
+            implements Block {
+        @Override
+        public int size() {
+            return 1;
+        }
+    }
+
+    public record InlineMacro(String name, String id, List<String> list)
+            implements Inline {
+
+        @Override
+        public String text() {
+            return String.join("", list);
         }
     }
 }

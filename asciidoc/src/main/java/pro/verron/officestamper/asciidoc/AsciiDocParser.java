@@ -2,6 +2,7 @@ package pro.verron.officestamper.asciidoc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
@@ -319,8 +320,8 @@ public final class AsciiDocParser
                         stack.getLast()
                              .flushTextToChildren();
                         String url = text.substring(i + 6, endUrl);
-                        String altText = text.substring(endUrl + 1, endText);
-                        stack.getLast().children.add(new InlineImage(url, altText));
+                        String title = text.substring(endUrl + 1, endText);
+                        stack.getLast().children.add(new InlineImage(url, Map.of("title", title)));
                         i = endText;
                         continue;
                     }

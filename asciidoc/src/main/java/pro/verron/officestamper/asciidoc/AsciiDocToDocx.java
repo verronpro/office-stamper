@@ -1,6 +1,5 @@
 package pro.verron.officestamper.asciidoc;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -75,7 +74,8 @@ public final class AsciiDocToDocx
         return tbl;
     }
 
-    private static void addBlock(ObjectFactory factory, List<Object> content, Block block) {
+    private static void addBlock(ObjectFactory factory, List<Object> content, Block block)
+            throws UnsupportedOperationException {
         switch (block) {
             case Heading h -> content.add(createHeading(factory, h));
             case Paragraph p -> content.add(createParagraph(factory, p));
@@ -94,9 +94,10 @@ public final class AsciiDocToDocx
             case Blockquote b -> content.add(createBlockquote(factory, b));
             case CodeBlock cb -> content.add(createCodeBlock(factory, cb));
             case ImageBlock ib -> content.add(createImageBlock(factory, ib));
-            case Break aBreak -> throw new NotImplementedException();
-            case CommentLine commentLine -> throw new NotImplementedException();
-            case OpenBlock openBlock -> throw new NotImplementedException();
+            case Break _ -> throw new java.lang.UnsupportedOperationException("Breaks are not supported");
+            case CommentLine _ -> throw new UnsupportedOperationException("Comments are not supported");
+            case OpenBlock _ -> throw new UnsupportedOperationException("Open blocks are not supported");
+            case MacroBlock macroBlock -> throw new UnsupportedOperationException("Macro blocks are not supported");
         }
     }
 
@@ -240,7 +241,7 @@ public final class AsciiDocToDocx
         if (inline instanceof InlineImage ii) {
             R r = factory.createR();
             org.docx4j.wml.Text t = factory.createText();
-            t.setValue("[Image: " + ii.url() + "]");
+            t.setValue("[Image: " + ii.path() + "]");
             r.getContent()
              .add(t);
             p.getContent()

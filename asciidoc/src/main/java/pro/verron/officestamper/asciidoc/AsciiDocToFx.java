@@ -45,7 +45,7 @@ public final class AsciiDocToFx {
         }
         if (inline instanceof InlineImage ii) {
             flow.getChildren()
-                .add(new Text("[Image: " + ii.url() + "]"));
+                .add(new Text("[Image: " + ii.path() + "]"));
         }
     }
 
@@ -82,12 +82,12 @@ public final class AsciiDocToFx {
         for (Block block : model.getBlocks()) {
             TextFlow flow = new TextFlow();
             switch (block) {
-                case Heading(int level, List<Inline> inlines) -> {
+                case Heading(_, int level, List<Inline> inlines) -> {
                     for (Inline inline : inlines) {
                         emitInline(flow, inline, fontForHeading(level), FontWeight.NORMAL, FontPosture.REGULAR);
                     }
                 }
-                case Paragraph(List<Inline> inlines) -> {
+                case Paragraph(_, List<Inline> inlines) -> {
                     for (Inline inline : inlines) {
                         emitInline(flow, inline, Font.getDefault(), FontWeight.NORMAL, FontPosture.REGULAR);
                     }

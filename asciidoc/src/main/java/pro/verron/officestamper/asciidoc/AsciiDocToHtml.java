@@ -1,6 +1,7 @@
 package pro.verron.officestamper.asciidoc;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -11,11 +12,12 @@ public final class AsciiDocToHtml
 
     private static String renderBlock(Block block) {
         switch (block) {
-            case Heading(int level, List<Inline> inlines) -> {
+            case Heading(_, int level, List<Inline> inlines) -> {
                 return String.format("<h%d>%s</h%d>\n", level, renderInlines(inlines), level);
             }
-            case Paragraph(List<Inline> inlines) -> {
-                return String.format("<p>%s</p>\n", renderInlines(inlines));
+            case Paragraph(List<String> header, List<Inline> inlines) -> {
+                if (header.isEmpty()) return String.format("<p>%s</p>\n", renderInlines(inlines));
+                else return String.format("<p class=\"%s\">%s</p>\n", header.getFirst(), renderInlines(inlines));
             }
             case UnorderedList(List<ListItem> items) -> {
                 return "<ul>\n" + items.stream()
@@ -71,8 +73,8 @@ public final class AsciiDocToHtml
                                                         .append("</i>");
                 case Tab _ -> sb.append("&nbsp;&nbsp;&nbsp;&nbsp;");
                 case Link(String url1, String text) -> sb.append(String.format("<a href=\"%s\">%s</a>", url1, text));
-                case InlineImage(String url, String altText) ->
-                        sb.append(String.format("<img src=\"%s\" alt=\"%s\">", url, altText));
+                case InlineImage(String url, Map<String, String> map) ->
+                        sb.append(String.format("<img src=\"%s\" alt=\"%s\">", url, map.get("title")));
                 default -> { /* DO NOTHING */ }
             }
         }

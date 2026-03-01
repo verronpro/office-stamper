@@ -17,6 +17,7 @@ module pro.verron.officestamper.asciidoc {
     requires org.docx4j.openxml_objects;
     requires jakarta.xml.bind;
     requires org.jspecify;
+    requires org.slf4j;
 
     opens pro.verron.officestamper.asciidoc;
     exports pro.verron.officestamper.asciidoc;

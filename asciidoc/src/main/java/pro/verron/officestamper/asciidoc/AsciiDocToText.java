@@ -3,6 +3,7 @@ package pro.verron.officestamper.asciidoc;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,8 +23,14 @@ public final class AsciiDocToText
                 case Sub(List<Inline> children) -> "~%s~".formatted(renderInlines(children));
                 case Tab _ -> sb.append("\t");
                 case Link(String url, String text) -> "%s[%s]".formatted(url, text);
-                case InlineImage(String url, String altText) -> "image:%s[%s]".formatted(url, altText);
+                case InlineImage(String path, Map<String, String> map) -> "image:%s[%s]".formatted(path,
+                        map.entrySet()
+                           .stream()
+                           .map(e -> e.getKey() + "=" + e.getValue())
+                           .collect(Collectors.joining(", ")));
                 case Styled(String role, List<Inline> children) -> "[%s]#%s#".formatted(role, renderInlines(children));
+                case InlineMacro(String name, String id, List<String> list) ->
+                        "%s:%s[%s]".formatted(name, id, String.join(", ", list));
             });
         }
         return sb.toString();
@@ -46,8 +53,8 @@ public final class AsciiDocToText
 
     private static String renderBlock(Block block, int tableLevel) {
         return switch (block) {
-            case Heading(int level, List<Inline> inlines) -> renderHeading(level, inlines);
-            case Paragraph(List<Inline> inlines1) -> renderInlines(inlines1);
+            case Heading(_, int level, List<Inline> inlines) -> renderHeading(level, inlines);
+            case Paragraph(List<String> header, List<Inline> inlines) -> renderHeader(header) + renderInlines(inlines);
             case UnorderedList(List<ListItem> items1) -> renderList(items1, "* ");
             case OrderedList(List<ListItem> items) -> renderList(items, ". ");
             case Table(List<Row> rows) -> renderTable(rows, tableLevel);
@@ -55,6 +62,8 @@ public final class AsciiDocToText
             case CodeBlock(String language, String content) -> renderCodeBlock(language, content);
             case ImageBlock(String url, String altText) -> renderImageBlock(url, altText);
             case OpenBlock openBlock -> render(openBlock);
+            case MacroBlock(String name, String id, List<String> list) ->
+                    "%s::%s[%s]".formatted(name, id, String.join(", ", list));
             case Break _ -> "<<<";
             case CommentLine(String comment) -> ("// %s").formatted(comment);
         } + "\n\n";
@@ -62,7 +71,7 @@ public final class AsciiDocToText
 
     private static String render(OpenBlock openBlock) {
         var sb = new StringBuilder();
-        sb.append("[%s]\n".formatted(openBlock.blockRole()));
+        sb.append("[%s]\n".formatted(String.join(", ", openBlock.header())));
         sb.append("--\n");
         openBlock.content()
                  .stream()
@@ -120,6 +129,11 @@ public final class AsciiDocToText
 
     private static String renderHeading(int level, List<Inline> inlines) {
         return "=".repeat(level) + " " + renderInlines(inlines);
+    }
+
+    private static String renderHeader(List<String> header) {
+        if (header.isEmpty()) return "";
+        return "[%s]\n".formatted(String.join(", ", header));
     }
 
     public String apply(AsciiDocModel model) {

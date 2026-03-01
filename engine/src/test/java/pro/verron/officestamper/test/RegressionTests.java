@@ -50,25 +50,35 @@ class RegressionTests {
         var expected = """
                 == Table Of Content
                 
-                [toc 1] [instrText= TOC \\o "1-3" \\h \\z \\u ][link data=❬Table Of Content❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699773 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1]
+                 TOC \\o "1-3" \\h \\z \\u [rStyle_Lienhypertexte]#Table Of Content#	 PAGEREF _Toc201699773 \\h 1
                 
-                [toc 1] [link data=❬First Title❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699774 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1]
+                [rStyle_Lienhypertexte]#First Title#	 PAGEREF _Toc201699774 \\h 1
                 
-                [toc 2] [link data=❬Subtitle 1.1❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699775 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2]
+                [rStyle_Lienhypertexte]#Subtitle 1.1#	 PAGEREF _Toc201699775 \\h 1
                 
-                [toc 1] [link data=❬Second Title❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699776 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1]
+                [rStyle_Lienhypertexte]#Second Title#	 PAGEREF _Toc201699776 \\h 1
                 
-                [toc 2] [link data=❬Subtitle 2.1❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699777 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2]
+                [rStyle_Lienhypertexte]#Subtitle 2.1#	 PAGEREF _Toc201699777 \\h 1
                 
-                [toc 2] [link data=❬Subtitle 2.2❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699778 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2]
+                [rStyle_Lienhypertexte]#Subtitle 2.2#	 PAGEREF _Toc201699778 \\h 1
                 
-                [toc 2] [link data=❬Subtitle 2.3❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699779 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2]
+                [rStyle_Lienhypertexte]#Subtitle 2.3#	 PAGEREF _Toc201699779 \\h 1
                 
-                [toc 1] [link data=❬Third Title❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699780 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 1]
+                [rStyle_Lienhypertexte]#Third Title#	 PAGEREF _Toc201699780 \\h 1
                 
-                [toc 2] [link data=❬Subtitle 3.1❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699781 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2]
+                [rStyle_Lienhypertexte]#Subtitle 3.1#	 PAGEREF _Toc201699781 \\h 1
                 
-                [toc 2] [link data=❬Subtitle 3.2❘{rStyle=Lienhypertexte}❭❬	❘{webHidden=true}❭❬[instrText= PAGEREF _Toc201699782 \\h ]❘{webHidden=true}❭❬1❘{webHidden=true}❭]<tabs=xxx>
+                [toc 2]
+                [rStyle_Lienhypertexte]#Subtitle 3.2#	 PAGEREF _Toc201699782 \\h 1
                 
                 == First Title
                 
@@ -90,6 +100,7 @@ class RegressionTests {
                 
                 
                 
+                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
                 """;
         assertEquals(expected, actual);

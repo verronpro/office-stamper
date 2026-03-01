@@ -232,7 +232,7 @@
                 <plugin>
                     <groupId>org.pitest</groupId>
                     <artifactId>pitest-maven</artifactId>
-                    <version>1.22.0</version>
+                    <version>1.22.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -302,7 +302,7 @@
             <dependency>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.22.0</version>
+                <version>1.22.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

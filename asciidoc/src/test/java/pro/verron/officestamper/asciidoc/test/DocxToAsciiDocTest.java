@@ -33,10 +33,10 @@ class DocxToAsciiDocTest {
                 |===
                 a|Nested:
                 
-                |===
-                |A
-                |B
-                |===
+                !===
+                !A
+                !B
+                !===
                 |Other
                 |===
                 

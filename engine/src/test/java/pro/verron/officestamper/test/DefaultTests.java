@@ -307,12 +307,13 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 """
                         == Image Replacement in global paragraphs
                         
-                        
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8 kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350.
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=1276350, cy=962025].
                         
-                        This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8 kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:1276350 in the middle.
+                        This paragraph has the image image:rId7[cx=1276350, cy=962025] in the middle.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
                         """);
     }
@@ -325,12 +326,13 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 """
                         == Image Replacement in global paragraphs
                         
-                        
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: /word/media/document_image_rId6.jpeg:rId6:image/jpeg:8.8 kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000.
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=635000, cy=478619].
                         
-                        This paragraph has the image /word/media/document_image_rId7.jpeg:rId7:image/jpeg:8.8 kB:sha1=XMpVtDbetKjZTkPhy598GdJQM/4=:cy=$d:635000 in the middle.
+                        This paragraph has the image image:rId7[cx=635000, cy=478619] in the middle.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
                         """);
     }
@@ -452,15 +454,34 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 """
                         == Expression Replacement in Form Controls
                         
+                        [form, id=8a282f9]
+                        --
+                        Rich text control line Homer
                         
-                        [Rich text control line Homer]
-                        Rich text control inlined [Homer]
+                        --
                         
-                        [Raw text control line Homer]
-                        Raw text control inlined [Homer]
                         
-                        [Homer]
+                        Rich text control inlined form:df261932[Homer]
                         
+                        [form, id=fe2b2bd9]
+                        --
+                        Raw text control line Homer
+                        
+                        --
+                        
+                        
+                        Raw text control inlined form:50007206[Homer]
+                        
+                        [form, id=a90c90aa]
+                        --
+                        Homer
+                        
+                        --
+                        
+                        
+                        
+                        
+                        // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                         
                         """);
     }

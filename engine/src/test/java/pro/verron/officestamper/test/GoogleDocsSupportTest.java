@@ -23,17 +23,17 @@ class GoogleDocsSupportTest {
                 
                 
                 
-                This block is shown
+                form:[tag=goog_rdk_0, ]This block is shown
                 
                 List items:
                 
                 // runPr {u=NONE}
                 
-                item 1
+                form:[tag=goog_rdk_2, ]item 1
                 
                 // runPr {u=NONE}
                 
-                item 2
+                form:[tag=goog_rdk_2, ]item 2
                 
                 // section {pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, orient=portrait, w=11906}}
                 

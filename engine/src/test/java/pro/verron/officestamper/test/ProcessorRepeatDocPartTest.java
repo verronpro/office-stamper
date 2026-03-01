@@ -53,28 +53,31 @@ class ProcessorRepeatDocPartTest {
         Object context = Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge")));
         WordprocessingMLPackage template = getWordResource(Path.of("ProcessorRepeatDocPart_OutLayout.docx"));
         assertEquals("""
+                comment::0[start="3,0", end="5,0", value="repeatDocPart(repeatValues)"]
+                
                 First page is landscape.
                 
                 
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                
+                Second page is portrait, layout change should survive to repeatDocPart (${name}).
+                
+                
+                
                 <<<
                 
-                <0|Second page is portrait, layout change should survive to repeatDocPart (${name}).
+                Without a break changing the layout in between (page break should be repeated).
                 
                 
-                [page-break]
-                <<<
                 
-                
-                Without a break changing the layout in between (page break should be repeated).|0>❬<0|repeatDocPart(repeatValues)>❘{rStyle=Marquedecommentaire}❭
-                
-                
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
-                <<<
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 Fourth page is set to landscape again.
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 """, toAsciidoc(template));
 
@@ -90,32 +93,32 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=11906,orient=LANDSCAPE,w=16838}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 Second page is portrait, layout change should survive to repeatDocPart (Homer).
                 
                 
-                [page-break]
-                <<<
                 
+                <<<
                 
                 Without a break changing the layout in between (page break should be repeated).
                 
                 Second page is portrait, layout change should survive to repeatDocPart (Marge).
                 
                 
-                [page-break]
-                <<<
                 
+                <<<
                 
                 Without a break changing the layout in between (page break should be repeated).
                 
                 
-                [section-break, {docGrid={linePitch=360},pgMar={bottom=1418,footer=709,gutter=0,header=709,left=1418,right=1418,top=1418},pgSz={h=16838,w=11906}}]
-                <<<
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 Fourth page is set to landscape again.
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 """, actual);
     }
@@ -275,7 +278,7 @@ class ProcessorRepeatDocPartTest {
                 |Dan Castellaneta
                 |===
                 
-                
+                \s
                 
                 <<<
                 
@@ -286,7 +289,7 @@ class ProcessorRepeatDocPartTest {
                 |Julie Kavner
                 |===
                 
-                
+                \s
                 
                 <<<
                 
@@ -297,7 +300,7 @@ class ProcessorRepeatDocPartTest {
                 |Nancy Cartwright
                 |===
                 
-                
+                \s
                 
                 <<<
                 
@@ -308,7 +311,7 @@ class ProcessorRepeatDocPartTest {
                 |Harry Shearer
                 |===
                 
-                
+                \s
                 
                 <<<
                 
@@ -319,7 +322,7 @@ class ProcessorRepeatDocPartTest {
                 |Hank Azaria
                 |===
                 
-                
+                \s
                 
                 <<<
                 
@@ -330,7 +333,7 @@ class ProcessorRepeatDocPartTest {
                 |Dan Castellaneta
                 |===
                 
-                
+                \s
                 
                 <<<
                 
@@ -357,282 +360,271 @@ class ProcessorRepeatDocPartTest {
         String expect = """
                 = Repeating Doc Part
                 
-                
-                [Subtitle] Nested doc parts
+                [Subtitle]
+                Nested doc parts
                 
                 == List the students of all grades.
-                
                 
                 South Park Primary School
                 
                 === Grade No.0
                 
-                
                 Grade No.0 have 3 classes
                 
                 ==== Class No.0
                 
-                
                 Class No.0 have 5 students
                 
                 |===
+                [rowStyle=32]
                 |0
                 |Bruce·No0
                 |1
-                
+                [rowStyle=32]
                 |1
                 |Bruce·No1
                 |2
-                
+                [rowStyle=32]
                 |2
                 |Bruce·No2
                 |3
-                
+                [rowStyle=32]
                 |3
                 |Bruce·No3
                 |4
-                
+                [rowStyle=32]
                 |4
                 |Bruce·No4
                 |5
-                
-                
                 |===
-                ==== Class No.1
                 
+                ==== Class No.1
                 
                 Class No.1 have 5 students
                 
                 |===
+                [rowStyle=32]
                 |0
                 |Bruce·No0
                 |1
-                
+                [rowStyle=32]
                 |1
                 |Bruce·No1
                 |2
-                
+                [rowStyle=32]
                 |2
                 |Bruce·No2
                 |3
-                
+                [rowStyle=32]
                 |3
                 |Bruce·No3
                 |4
-                
+                [rowStyle=32]
                 |4
                 |Bruce·No4
                 |5
-                
-                
                 |===
-                ==== Class No.2
                 
+                ==== Class No.2
                 
                 Class No.2 have 5 students
                 
                 |===
+                [rowStyle=32]
                 |0
                 |Bruce·No0
                 |1
-                
+                [rowStyle=32]
                 |1
                 |Bruce·No1
                 |2
-                
+                [rowStyle=32]
                 |2
                 |Bruce·No2
                 |3
-                
+                [rowStyle=32]
                 |3
                 |Bruce·No3
                 |4
-                
+                [rowStyle=32]
                 |4
                 |Bruce·No4
                 |5
-                
-                
                 |===
-                === Grade No.1
                 
+                === Grade No.1
                 
                 Grade No.1 have 3 classes
                 
                 ==== Class No.0
                 
-                
                 Class No.0 have 5 students
                 
                 |===
+                [rowStyle=32]
                 |0
                 |Bruce·No0
                 |1
-                
+                [rowStyle=32]
                 |1
                 |Bruce·No1
                 |2
-                
+                [rowStyle=32]
                 |2
                 |Bruce·No2
                 |3
-                
+                [rowStyle=32]
                 |3
                 |Bruce·No3
                 |4
-                
+                [rowStyle=32]
                 |4
                 |Bruce·No4
                 |5
-                
-                
                 |===
-                ==== Class No.1
                 
+                ==== Class No.1
                 
                 Class No.1 have 5 students
                 
                 |===
+                [rowStyle=32]
                 |0
                 |Bruce·No0
                 |1
-                
+                [rowStyle=32]
                 |1
                 |Bruce·No1
                 |2
-                
+                [rowStyle=32]
                 |2
                 |Bruce·No2
                 |3
-                
+                [rowStyle=32]
                 |3
                 |Bruce·No3
                 |4
-                
+                [rowStyle=32]
                 |4
                 |Bruce·No4
                 |5
-                
-                
                 |===
-                ==== Class No.2
                 
+                ==== Class No.2
                 
                 Class No.2 have 5 students
                 
                 |===
+                [rowStyle=32]
                 |0
                 |Bruce·No0
                 |1
-                
+                [rowStyle=32]
                 |1
                 |Bruce·No1
                 |2
-                
+                [rowStyle=32]
                 |2
                 |Bruce·No2
                 |3
-                
+                [rowStyle=32]
                 |3
                 |Bruce·No3
                 |4
-                
+                [rowStyle=32]
                 |4
                 |Bruce·No4
                 |5
-                
-                
                 |===
-                === Grade No.2
                 
+                === Grade No.2
                 
                 Grade No.2 have 3 classes
                 
                 ==== Class No.0
                 
-                
                 Class No.0 have 5 students
                 
                 |===
+                [rowStyle=32]
                 |0
                 |Bruce·No0
                 |1
-                
+                [rowStyle=32]
                 |1
                 |Bruce·No1
                 |2
-                
+                [rowStyle=32]
                 |2
                 |Bruce·No2
                 |3
-                
+                [rowStyle=32]
                 |3
                 |Bruce·No3
                 |4
-                
+                [rowStyle=32]
                 |4
                 |Bruce·No4
                 |5
-                
-                
                 |===
-                ==== Class No.1
                 
+                ==== Class No.1
                 
                 Class No.1 have 5 students
                 
                 |===
+                [rowStyle=32]
                 |0
                 |Bruce·No0
                 |1
-                
+                [rowStyle=32]
                 |1
                 |Bruce·No1
                 |2
-                
+                [rowStyle=32]
                 |2
                 |Bruce·No2
                 |3
-                
+                [rowStyle=32]
                 |3
                 |Bruce·No3
                 |4
-                
+                [rowStyle=32]
                 |4
                 |Bruce·No4
                 |5
-                
-                
                 |===
-                ==== Class No.2
                 
+                ==== Class No.2
                 
                 Class No.2 have 5 students
                 
                 |===
+                [rowStyle=32]
                 |0
                 |Bruce·No0
                 |1
-                
+                [rowStyle=32]
                 |1
                 |Bruce·No1
                 |2
-                
+                [rowStyle=32]
                 |2
                 |Bruce·No2
                 |3
-                
+                [rowStyle=32]
                 |3
                 |Bruce·No3
                 |4
-                
+                [rowStyle=32]
                 |4
                 |Bruce·No4
                 |5
-                
-                
                 |===
-                ❬There are ❘{rStyle=lev}❭❬3❘{rStyle=lev}❭❬ grades.❘{rStyle=lev}❭<rPr={rStyle=lev}>
+                
+                [rStyle_lev]#There are #[rStyle_lev]#3#[rStyle_lev]# grades.#
+                
+                // section {cols={col=[{w=8640}]}, pgMar={bottom=720, footer=720, header=720, left=720, right=720, top=720}, pgSz={h=15840, w=12240}, space=720}
                 
                 """;
 
@@ -656,9 +648,9 @@ class ProcessorRepeatDocPartTest {
         assertEquals("""
                 
                 
-                /word/media/document_image_rId11.png:rId11:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                image:rId11[cx=6120130, cy=3060065]
                 
-                /word/media/document_image_rId12.jpeg:rId12:image/jpeg:407.5 kB:sha1=Ujo3UzL8WmeZN/1K6weBydaI73I=:cy=$d:6120130
+                image:rId12[cx=6120130, cy=3761840]
                 
                 
                 
@@ -668,9 +660,11 @@ class ProcessorRepeatDocPartTest {
                 
                 Always rendered:
                 
-                /word/media/document_image_rId13.png:rId13:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:6120130
+                image:rId13[cx=6120130, cy=3060065]
                 
                 
+                
+                // section {docGrid={linePitch=100}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """, actual);
     }
@@ -690,17 +684,19 @@ class ProcessorRepeatDocPartTest {
                 
                 This should be repeated : first doc part
                 
-                /word/media/image1.png:rId4:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5715000
+                image:rId4[cx=5715000, cy=2857500]
                 
                 This should be repeated too
                 
                 This should be repeated : second doc part
                 
-                /word/media/image1.png:rId4:image/png:193.6 kB:sha1=t8UNAmo7yJgZJk9g7pLLIb3AvCA=:cy=$d:5715000
+                image:rId4[cx=5715000, cy=2857500]
                 
                 This should be repeated too
                 
                 This is not repeated
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
                 """;
         var stamper = docxPackageStamper(config);

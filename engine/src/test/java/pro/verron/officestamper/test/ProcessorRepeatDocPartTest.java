@@ -17,7 +17,10 @@ import pro.verron.officestamper.test.utils.ObjectContextFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -668,12 +671,12 @@ class ProcessorRepeatDocPartTest {
 
     @MethodSource("factories")
     @DisplayName("Repeat doc part specifications with #self")
-    @Test
+    @ParameterizedTest(name = "Repeat doc part specifications with #self: {argumentSetName}")
     void shouldImportImageDataWithThisInTheMainDocument() {
         var stamper = docxPackageStamper(standard());
         var stamped = stamper.stamp(getWordResource(Path.of("ProcessorRepeatDocPart_Image2.docx")),
                 Map.of("images", List.of(getImage(Path.of("butterfly.png")), getImage(Path.of("map.jpg")))));
-        var actual = docxToString(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals("""
                 
                 

@@ -39,11 +39,11 @@ public class DocxStamper
         this.customFunctions = configuration.customFunctions();
         this.commentProcessors = configuration.getCommentProcessors();
         this.engineFactory = processorContext -> {
-            var expressionParser = configuration.getExpressionParser();
+            var parserConfiguration = configuration.getParserConfiguration();
             var exceptionResolver = configuration.getExceptionResolver();
             var resolvers = configuration.getResolvers();
             var registry = new ObjectResolverRegistry(resolvers);
-            return new Engine(expressionParser, exceptionResolver, registry, processorContext);
+            return new Engine(parserConfiguration, exceptionResolver, registry, processorContext);
         };
         this.preprocessors = new ArrayList<>(configuration.getPreprocessors());
         this.postprocessors = new ArrayList<>(configuration.getPostprocessors());

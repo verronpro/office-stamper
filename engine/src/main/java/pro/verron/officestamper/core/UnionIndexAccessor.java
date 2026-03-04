@@ -20,25 +20,19 @@ record UnionIndexAccessor(List<IndexAccessor> accessors)
     public boolean canRead(EvaluationContext context, Object target, Object index)
             throws AccessException {
         if (!(target instanceof ContextBranch branch)) return false;
-        for (Object subTarget : branch.list())
+        for (Object element : branch)
             for (IndexAccessor accessor : accessors)
-                if (accessor.canRead(context, subTarget, index)) return true;
+                if (accessor.canRead(context, element, index)) return true;
         return false;
     }
 
     @Override
     public TypedValue read(EvaluationContext context, Object target, Object index)
             throws AccessException {
-        if (!(target instanceof ContextBranch branch))
-            throw new AccessException("Target is not a ContextBranch");
-
-        for (Object subTarget : branch.list()) {
-            for (IndexAccessor accessor : accessors) {
-                if (accessor.canRead(context, subTarget, index)) {
-                    return accessor.read(context, subTarget, index);
-                }
-            }
-        }
+        if (!(target instanceof ContextBranch branch)) throw new AccessException("Target is not a ContextBranch");
+        for (Object element : branch)
+            for (IndexAccessor accessor : accessors)
+                if (accessor.canRead(context, element, index)) return accessor.read(context, element, index);
         throw new AccessException("Unable to read index '" + index + "' from any context object");
     }
 
@@ -46,24 +40,23 @@ record UnionIndexAccessor(List<IndexAccessor> accessors)
     public boolean canWrite(EvaluationContext context, Object target, Object index)
             throws AccessException {
         if (!(target instanceof ContextBranch branch)) return false;
-        for (Object subTarget : branch.list())
+        for (Object element : branch)
             for (IndexAccessor accessor : accessors)
-                if (accessor.canWrite(context, subTarget, index)) return true;
+                if (accessor.canWrite(context, element, index)) return true;
         return false;
     }
 
     @Override
     public void write(EvaluationContext context, @Nullable Object target, Object index, @Nullable Object newValue)
             throws AccessException {
-        if (!(target instanceof ContextBranch branch))
-            throw new AccessException("Target is not a ContextBranch");
+        if (!(target instanceof ContextBranch branch)) throw new AccessException("Target is not a ContextBranch");
 
         AccessException lastException = null;
-        for (Object subTarget : branch.list()) {
+        for (Object element : branch) {
             for (IndexAccessor accessor : accessors) {
-                if (accessor.canWrite(context, subTarget, index)) {
+                if (accessor.canWrite(context, element, index)) {
                     try {
-                        accessor.write(context, subTarget, index, newValue);
+                        accessor.write(context, element, index, newValue);
                         return;
                     } catch (AccessException e) {
                         lastException = e;

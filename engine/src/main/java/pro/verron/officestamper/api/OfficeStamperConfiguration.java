@@ -1,7 +1,7 @@
 package pro.verron.officestamper.api;
 
 import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
@@ -165,15 +165,15 @@ public interface OfficeStamperConfiguration {
     /// @param postProcessor the PostProcessor instance to be added
     void addPostprocessor(PostProcessor postProcessor);
 
-    /// Retrieves the expression parser used by the office stamper.
+    /// Retrieves the  parser configuration used by the office stamper.
     ///
-    /// @return the [ExpressionParser] instance.
-    ExpressionParser getExpressionParser();
+    /// @return the [SpelParserConfiguration] instance.
+    SpelParserConfiguration getParserConfiguration();
 
-    /// Sets the expression parser to be used by the office stamper.
+    /// Sets the parser configuration to be used by the office stamper.
     ///
-    /// @param expressionParser the [ExpressionParser] instance to set.
+    /// @param parserConfiguration the [SpelParserConfiguration] instance to set.
     ///
     /// @return the updated [OfficeStamperConfiguration] object.
-    OfficeStamperConfiguration setExpressionParser(ExpressionParser expressionParser);
+    OfficeStamperConfiguration setParserConfiguration(SpelParserConfiguration parserConfiguration);
 }

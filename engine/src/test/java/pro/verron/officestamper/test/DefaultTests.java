@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.expression.spel.SpelParserConfiguration;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.ExceptionResolvers;
@@ -489,9 +488,9 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
     private static ArgumentSet nullPointerResolutionTest_testWithCustomSpel(ContextFactory factory) {
         // Beware, this configuration only autogrows pojos and java beans,
         // so it will not work if your type has no default constructor and no setters.
-        var expressionParser = new SpelExpressionParser(new SpelParserConfiguration(true, true));
+        var parserConfiguration = new SpelParserConfiguration(true, true);
         return argumentSet("Null Pointer Resolution with Custom SpEL Configuration",
-                standard().setExpressionParser(expressionParser)
+                standard().setParserConfiguration(parserConfiguration)
                           .setEvaluationContextFactory(noopFactory())
                           .addResolver(Resolvers.nullToDefault("Nullish value!!")),
                 factory.nullishContext(),

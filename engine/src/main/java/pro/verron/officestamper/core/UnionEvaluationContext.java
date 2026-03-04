@@ -11,10 +11,12 @@ import java.util.Objects;
 public class UnionEvaluationContext
         implements EvaluationContext {
     private final EvaluationContext evaluationContext;
+    private final ContextBranch root;
     private final Invokers invokers;
 
-    UnionEvaluationContext(EvaluationContext evaluationContext, Invokers invokers) {
+    UnionEvaluationContext(EvaluationContext evaluationContext, ContextBranch root, Invokers invokers) {
         this.evaluationContext = evaluationContext;
+        this.root = root;
         this.invokers = invokers;
     }
 
@@ -88,6 +90,10 @@ public class UnionEvaluationContext
     @Nullable
     public Object lookupVariable(String name) {
         return evaluationContext.lookupVariable(name);
+    }
+
+    public TypedValue getLeafObject() {
+        return new TypedValue(root.getLeaf());
     }
 
     /// Returns the wrapped evaluation context.

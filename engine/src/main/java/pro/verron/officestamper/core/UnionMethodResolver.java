@@ -25,16 +25,17 @@ record UnionMethodResolver(List<MethodResolver> resolvers)
     ) {
         if (!(target instanceof ContextBranch branch)) return null;
 
-        for (Object subTarget : branch.list()) {
+        for (Object elements : branch) {
             for (MethodResolver resolver : resolvers) {
                 try {
-                    var executor = resolver.resolve(context, subTarget, name, argumentTypes);
+                    var executor = resolver.resolve(context, elements, name, argumentTypes);
                     if (executor != null) return executor;
                 } catch (AccessException e) {
                     log.atInfo()
                        .setCause(e)
-                       .log("AccessException while resolving sub-target '{}' for method '{}'."
-                            + " Continue to next target.", subTarget, name);
+                       .log("AccessException while resolving element '{}' for method '{}'. Continue to next element.",
+                               elements,
+                               name);
                 }
             }
         }

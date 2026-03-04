@@ -670,6 +670,34 @@ class ProcessorRepeatDocPartTest {
     }
 
     @MethodSource("factories")
+    @DisplayName("Repeat doc part specifications with #self")
+    @ParameterizedTest(name = "Repeat doc part specifications with #self: {argumentSetName}")
+    void shouldImportImageDataWithThisInTheMainDocument() {
+        var stamper = docxPackageStamper(standard());
+        var template = DocxFactory.makeWordResource("""
+                comment::1[start="0,0", end="1,18", value="repeatDocPart(images)"]
+                ${#this}
+                
+                ${#root.images[0]}
+                """);
+        var context = Map.of("images", List.of(getImage(Path.of("butterfly.png")), getImage(Path.of("map.jpg"))));
+        var stamped = stamper.stamp(template, context);
+        var actual = toAsciidoc(stamped);
+        assertEquals("""
+                image:rId4[cx=5732145, cy=2866073]
+                
+                image:rId5[cx=5732145, cy=2866073]
+                
+                image:rId6[cx=5732145, cy=3523358]
+                
+                image:rId7[cx=5732145, cy=2866073]
+                
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
+                """, actual);
+    }
+
+    @MethodSource("factories")
     @DisplayName("repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate")
     @ParameterizedTest(name =
             "repeatDocPartWithImagesInSourceTestshouldReplicateImageFromTheMainDocumentInTheSubTemplate: "

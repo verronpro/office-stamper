@@ -2,8 +2,7 @@ package pro.verron.officestamper.core;
 
 
 import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
@@ -35,7 +34,7 @@ public class DocxStamperConfiguration
     private final List<PostProcessor> postprocessors;
     private final List<CustomFunction> functions;
     private EvaluationContextFactory evaluationContextFactory;
-    private ExpressionParser expressionParser;
+    private SpelParserConfiguration parserConfiguration;
     private ExceptionResolver exceptionResolver;
 
     /// Constructs a new instance of the [DocxStamperConfiguration] class and initializes its default configuration
@@ -61,7 +60,7 @@ public class DocxStamperConfiguration
         this.postprocessors = new ArrayList<>();
         this.functions = new ArrayList<>();
         this.evaluationContextFactory = evaluationContextFactory;
-        this.expressionParser = new SpelExpressionParser();
+        this.parserConfiguration = new SpelParserConfiguration();
         this.exceptionResolver = exceptionResolver;
     }
 
@@ -301,22 +300,23 @@ public class DocxStamperConfiguration
     }
 
     @Override
-    public ExpressionParser getExpressionParser() {
-        return expressionParser;
+    public SpelParserConfiguration getParserConfiguration() {
+        return parserConfiguration;
     }
 
-    /// Sets the expression parser used for expression evaluation.
+    /// Sets the parser configuration used for expression evaluation.
     ///
-    /// Note that the provided parser will be used for all expressions in the document, including expressions in
-    /// comments. If you use SpEL, construct a `SpelExpressionParser` (optionally with a `SpelParserConfiguration`) and
+    /// Note that the provided parser configuration will be used for all expressions in the document, including
+    /// expressions in comments. If you use SpEL, construct a `SpelExpressionParser` (optionally with a `
+    /// SpelParserConfiguration`) and
     /// pass it here.
     ///
-    /// @param expressionParser the parser to use.
+    /// @param parserConfiguration the parser to use.
     ///
     /// @return the configuration object for chaining.
     @Override
-    public DocxStamperConfiguration setExpressionParser(ExpressionParser expressionParser) {
-        this.expressionParser = expressionParser;
+    public DocxStamperConfiguration setParserConfiguration(SpelParserConfiguration parserConfiguration) {
+        this.parserConfiguration = parserConfiguration;
         return this;
     }
 

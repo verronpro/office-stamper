@@ -2,11 +2,14 @@ package pro.verron.officestamper.core;
 
 import pro.verron.officestamper.api.ContextTree;
 
+import java.util.AbstractSequentialList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /// A branch in the context tree.
 public class ContextBranch
+        extends AbstractSequentialList<Object>
         implements ContextTree {
     private final ContextRoot tree;
     private final List<Object> branch;
@@ -25,7 +28,7 @@ public class ContextBranch
     /// @param branch the list of objects in the branch.
     public ContextBranch(ContextRoot tree, List<Object> branch) {
         this.tree = tree;
-        this.branch = branch;
+        this.branch = List.copyOf(branch);
     }
 
     /// Adds a new branch with the given object.
@@ -47,16 +50,23 @@ public class ContextBranch
         return branch.getLast();
     }
 
-    /// Returns the list of objects in the branch, in reverse order.
-    ///
-    /// @return the list of objects.
-    public List<Object> list() {
-        return List.copyOf(branch)
-                   .reversed();
+    @Override
+    public int size() {
+        return branch.size();
     }
 
     @Override
     public String toString() {
-        return String.valueOf(branch.getLast());
+        return String.valueOf(branch);
+    }
+
+    public Object getLeaf() {
+        return branch.getLast();
+    }
+
+    @Override
+    public ListIterator<Object> listIterator(int index) {
+        return branch.reversed()
+                     .listIterator();
     }
 }

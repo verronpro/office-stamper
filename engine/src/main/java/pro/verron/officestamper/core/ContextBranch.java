@@ -47,7 +47,7 @@ public class ContextBranch
     ///
     /// @return the root object.
     public Object root() {
-        return branch.getLast();
+        return branch.getFirst();
     }
 
     @Override
@@ -60,13 +60,8 @@ public class ContextBranch
         return String.valueOf(branch);
     }
 
-    public Object getLeaf() {
-        return branch.getLast();
-    }
-
     @Override
     public ListIterator<Object> listIterator(int index) {
-        return branch.reversed()
-                     .listIterator();
+        return branch.listIterator();
     }
 }

@@ -37,6 +37,9 @@ jobs:
           - 11.5.6
           - 11.5.7
           - 11.5.8
+          - 11.5.9
+          #         - 11.5.10 has been skipped by the docx4j team
+          - 11.5.11
 
     runs-on: ${{ matrix.os }}
 

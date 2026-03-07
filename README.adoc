@@ -56,6 +56,24 @@ var stamper = OfficeStampers.docxPackageStamper(OfficeStamperConfigurations.stan
 WordprocessingMLPackage stamped = stamper.stamp(document, context);
 ----
 
+== Configuration Presets
+
+Office-stamper provides three main configuration presets in `OfficeStamperConfigurations` to help you get started quickly:
+
+* `minimal()`: Sets up the base engine with placeholder preprocessors.
+Ideal for simple use cases.
+* `standard()`: Builds on `minimal()` by adding common comment processors (repeat, displayIf, replaceWith) and date/time formatting functions.
+This is the recommended starting point for most users.
+* `full()`: Further extends `standard()` with additional preprocessors for cleaning up language information and post-processors for cleaning up orphaned footnotes and endnotes.
+
+You can create a configuration via one of these presets and then further customize it:
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standard()
+    .addResolver(new MyCustomResolver());
+----
+
 == Maven Coordinates
 
 [source,xml]

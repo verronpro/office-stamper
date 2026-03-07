@@ -10,6 +10,13 @@ It provides helpers for WordprocessingML (docx4j) manipulation, iterator utiliti
 * `pro.verron.officestamper.utils.function` – functional helpers
 * `pro.verron.officestamper.utils.bit` – bit/byte helpers
 
+== Iterator Utilities
+
+The `utils` module provides specialized iterator implementations for WordprocessingML manipulation.
+
+* `SlicingIterator`: An iterator that allows for robust segmenting and "slicing" of document content during processing.
+It provides mechanisms for state tracking and efficient iteration over document parts.
+
 == Maven Coordinates
 
 [source,xml]

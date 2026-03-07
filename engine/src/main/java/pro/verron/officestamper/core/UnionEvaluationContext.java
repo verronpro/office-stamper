@@ -11,12 +11,10 @@ import java.util.Objects;
 public class UnionEvaluationContext
         implements EvaluationContext {
     private final EvaluationContext evaluationContext;
-    private final ContextBranch root;
     private final Invokers invokers;
 
-    UnionEvaluationContext(EvaluationContext evaluationContext, ContextBranch root, Invokers invokers) {
+    UnionEvaluationContext(EvaluationContext evaluationContext, Invokers invokers) {
         this.evaluationContext = evaluationContext;
-        this.root = root;
         this.invokers = invokers;
     }
 
@@ -92,20 +90,6 @@ public class UnionEvaluationContext
         return evaluationContext.lookupVariable(name);
     }
 
-    public TypedValue getLeafObject() {
-        return new TypedValue(root.getLeaf());
-    }
-
-    /// Returns the wrapped evaluation context.
-    ///
-    /// @return the evaluation context
-    public EvaluationContext evaluationContext() {return evaluationContext;}
-
-    /// Returns the invokers.
-    ///
-    /// @return the invokers
-    public Invokers invokers() {return invokers;}
-
     @Override
     public int hashCode() {
         return Objects.hash(evaluationContext, invokers);
@@ -122,9 +106,6 @@ public class UnionEvaluationContext
 
     @Override
     public String toString() {
-        return "UnionEvaluationContext[" + "evaluationContext=" + evaluationContext + ", " + "invokers=" + invokers
-               + ']';
+        return "UnionEvaluationContext[evaluationContext=%s, invokers=%s]".formatted(evaluationContext, invokers);
     }
-
-
 }

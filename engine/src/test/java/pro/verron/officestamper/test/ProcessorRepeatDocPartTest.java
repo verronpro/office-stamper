@@ -736,6 +736,51 @@ class ProcessorRepeatDocPartTest {
         assertEquals(expected, actual);
     }
 
+    @DisplayName("List of Lists resolution")
+    @Test
+    void shouldResolveListOfLists()
+            throws Docx4JException, IOException {
+        OfficeStamperConfiguration config = full();
+        Object context = List.of(List.of("S1, Episode 1", "S1, Episode 2"),
+                List.of("S2, Episode 1", "S2, Episode 2", "S2, Episode 3", "S2, Episode 4"));
+        WordprocessingMLPackage template = getWordResource(Path.of("ProcessorRepeatDocPart_ListOfList.docx"));
+        String expected = """
+                = List of Lists
+                
+                == List of Simpsons Seasons & Episodes
+                
+                === Season 1
+                
+                Episode S1, Episode 1
+                
+                Episode S1, Episode 2
+                
+                NB Episodes: 2
+                
+                === Season 2
+                
+                Episode S2, Episode 1
+                
+                Episode S2, Episode 2
+                
+                Episode S2, Episode 3
+                
+                Episode S2, Episode 4
+                
+                NB Episodes: 4
+                
+                // section {docGrid={charSpace=-6145, linePitch=299}, pgMar={bottom=1417, left=1417, right=1417, top=1417}, pgSz={code=9, h=16838, w=11906}, space=720}
+                
+                """;
+        var stamper = docxPackageStamper(config);
+        var stamped = stamper.stamp(template, context);
+        var tempFile = File.createTempFile("pre", ".docx");
+        log.debug(tempFile.getAbsolutePath());
+        stamped.save(tempFile);
+        var actual = toAsciidoc(stamped);
+        assertEquals(expected, actual);
+    }
+
     @DisplayName("In multiple layouts, keeps section orientations inside RepeatDocPart comments with a table as last "
                  + "element")
     @MethodSource("factories")

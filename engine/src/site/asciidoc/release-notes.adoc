@@ -7,6 +7,29 @@ This page provides information about the latest releases of Office-stamper, incl
 
 == Latest Release
 
+=== {proj}/v3.2.0[v3.2.0]
+
+==== Core Refactoring
+
+* **Expression API**: Replaced `ExpressionParser` with a new `Expression` abstraction to improve internal handling and support different expression languages.
+
+==== New Features
+
+* **Table and Row Manipulation**: Introduced new `Table` and `Table.Row` interfaces in the public API for easier structural modification of documents.
+* **Comment Removal**: Added `CommentRemover` post-processor for automatic document cleanup.
+* **Configuration Presets**: Enhanced `OfficeStamperConfigurations` with `minimal()`, `standard()`, and `full()` presets.
+
+==== AsciiDoc Enhancements
+
+* **Conversion Improvements**: Major updates to the AsciiDoc module with better support for nested tables, hyperlinks, headers, and footers.
+
+==== Dependencies
+
+* **Docx4j**: Updated to version 11.5.11.
+* **Spring**: Updated Spring Expression and Context to version 7.0.5.
+
+== Previous Releases
+
 === {proj}/v3.1.0[v3.1.0]
 
 ==== API Consolidation
@@ -19,8 +42,6 @@ This page provides information about the latest releases of Office-stamper, incl
 * **Internal streamlining**: Removed several internal utility classes (`SectionUtil`, `ParagraphCollector`, etc.) to simplify the engine's architecture.
 * **Logging**: Switched many verbose debug messages to trace level to reduce noise during normal development.
 * **Post-processing**: Replaced `cleanTags` with the more powerful `Postprocessors.removeTags(String)`.
-
-== Previous Releases
 
 === {proj}/v3.0.0[v3.0.0]
 
@@ -48,6 +69,12 @@ The iterator walks hooks one by one, allowing for more predictable results.
 For information about previous releases, see the link:https://github.com/verronpro/office-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
 
 == Upgrading
+
+=== From v3.1.0 to v3.2.0
+
+* **Table Manipulation**: Use the new `Table` and `Table.Row` interfaces for custom table-related logic.
+* **Configuration**: Use the new presets in `OfficeStamperConfigurations` for a quicker setup.
+* **Expression Parser**: If you were using a custom `ExpressionParser`, note that the configuration now uses `SpelParserConfiguration`.
 
 === From v3.0.0 to v3.1.0
 

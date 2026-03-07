@@ -37,11 +37,11 @@ public class Engine {
             ProcessorContext processorContext
     ) {
         this.parserConfiguration = parserConfiguration;
+        this.expressionParser = new SpelExpressionParser(parserConfiguration);
         this.exceptionResolver = exceptionResolver;
         this.objectResolverRegistry = objectResolverRegistry;
         this.expression = processorContext.expression();
         this.docxPart = processorContext.part();
-        this.expressionParser = new SpelExpressionParser(parserConfiguration);
     }
 
     /// Processes the provided evaluation context against the expression defined in the processor context.
@@ -59,8 +59,7 @@ public class Engine {
     public boolean process(EvaluationContext evaluationContext) {
         SpelNode spelNode;
         try {
-            spelNode = parseAST();
-            log.trace("Parsed '{}' successfully.", expression);
+            spelNode = parseAST(expressionParser, expression);
         } catch (SpelParseException e) {
             var msgTemplate = "Expression %s could not be parsed successfully.";
             var message = msgTemplate.formatted(expression, evaluationContext);
@@ -82,8 +81,9 @@ public class Engine {
         return true;
     }
 
-    private SpelNode parseAST() {
-        var parsedExpression = expressionParser.parseRaw(expression);
+    private static SpelNode parseAST(SpelExpressionParser parser, String expression) {
+        var parsedExpression = parser.parseRaw(expression);
+        log.trace("Parsed '{}' successfully.", expression);
         return parsedExpression.getAST();
     }
 
@@ -109,8 +109,7 @@ public class Engine {
     public Insert resolve(EvaluationContext evaluationContext) {
         SpelNode spelNode;
         try {
-            spelNode = parseAST();
-            log.trace("Parsed '{}' successfully.", expression);
+            spelNode = parseAST(expressionParser, expression);
         } catch (SpelParseException e) {
             var msgTemplate = "Expression %s could not be parsed successfully.";
             var message = msgTemplate.formatted(expression, evaluationContext);

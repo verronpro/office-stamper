@@ -35,9 +35,8 @@ public record ReflectionExecutor(Object object, Method method)
             var value = method.invoke(object, arguments);
             return new TypedValue(value);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            var message = "Failed to invoke method %s with arguments [%s] from object %s".formatted(method,
-                    Arrays.toString(arguments),
-                    object);
+            var template = "Failed to invoke method %s with arguments [%s] from object %s";
+            var message = template.formatted(method, Arrays.toString(arguments), object);
             throw new AccessException(message, e);
         }
     }

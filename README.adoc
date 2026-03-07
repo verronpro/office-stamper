@@ -81,19 +81,19 @@ var configuration = OfficeStamperConfigurations.standard()
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>engine</artifactId>
-    <version>3.1</version>
+    <version>3.2</version>
 </dependency>
 
 <!-- You also need to provide a dependency to Docx4J -->
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-core</artifactId>
-    <version>11.5.8</version>
+    <version>11.5.11</version>
 </dependency>
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-    <version>11.5.8</version>
+    <version>11.5.11</version>
 </dependency>
 ----
 
@@ -123,7 +123,15 @@ This repository is structured in several Maven/Java modules:
 
 == Latest Release
 
-The latest release is v3.1. See the link:{docs}/release-notes.html[Release Notes] for details.
+The latest release is v3.2. See the link:{docs}/release-notes.html[Release Notes] for details.
+
+=== What's new in 3.2 (high level)
+
+* **Expression API Refactor**: Improved expression handling with the new `Expression` abstraction.
+* **Table and Row Manipulation**: New public APIs for easier document structure modification.
+* **Comment Removal**: Optional automatic cleanup of comments after processing.
+* **Asciidoc Enhancements**: Major improvements to Docx to Asciidoc conversion capabilities.
+* **Updated Dependencies**: Latest `docx4j` and Spring versions.
 
 === What's new in 3.1 (high level)
 
@@ -158,9 +166,9 @@ Breaking API highlights:
 
 Minor updates:
 
-* Spring dependencies bumped to 7.0.2 
+* Spring dependencies bumped to 7.0.2
 * New docs: `engine/src/site/asciidoc/how-to-custom.adoc` and `HOW_DOES_IT_WORKS.adoc`
-* Test matrix extended for Docx4J 11.5.7 and 11.5.8 
+* Test matrix extended for Docx4J 11.5.7 and 11.5.8
 * New modules: `asciidoc`, `utils`
 
 == Sample Code

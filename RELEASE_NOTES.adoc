@@ -3,6 +3,33 @@
 :os: https://github.com/verronpro/office-stamper
 :proj: https://github.com/verronpro/office-stamper/releases/tag
 
+== {proj}/v3.2.0[v3.2.0]
+
+=== Major changes
+
+* **Expression API Refactor**: Replaced `ExpressionParser` with a new `Expression` abstraction.
+This improves the internal handling of expressions and allows for better support of different expression languages.
+* **Table and Row Manipulation**: Introduced new `Table` and `Table.Row` interfaces to the public API.
+Custom processors can now easily remove tables or rows, copy rows, and access parent table/row structures directly from a paragraph.
+* **Asciidoc Module Overhaul**: Significant enhancements to the AsciiDoc module, including support for nested tables, hyperlinks, headers, footers, and improved text extraction.
+
+=== New Features
+
+* **Comment Removal**: Added `CommentRemover` post-processor, allowing for the automatic removal of all comments from the document after processing.
+* **Configuration Presets**: Enhanced `OfficeStamperConfigurations` with `minimal()`, `standard()`, and `full()` presets to provide better out-of-the-box behavior for various use cases.
+
+=== Dependencies
+
+* **Docx4j**: Updated to version 11.5.11.
+* **Spring**: Updated Spring Expression and Context to version 7.0.5.
+* **Jackson**: Updated Jackson monorepo to version 2.21.1.
+
+=== Quality and Tooling
+
+* **Code Quality**: Integrated Qodana for continuous code quality analysis.
+* **Mutation Testing**: Added PIT mutation testing to ensure high test effectiveness.
+* **CI/CD**: Expanded the Docx4j testing matrix and updated GitHub Actions workflows.
+
 == {proj}/v3.1.0[v3.1.0]
 
 === Major changes

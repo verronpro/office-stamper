@@ -13,7 +13,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>engine</artifactId>
-    <version>3.1</version>
+    <version>3.2</version>
 </dependency>
 ----
 
@@ -24,12 +24,12 @@ You also need to provide a dependency to Docx4J:
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-core</artifactId>
-    <version>11.5.8</version>
+    <version>11.5.11</version>
 </dependency>
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-    <version>11.5.8</version>
+    <version>11.5.11</version>
 </dependency>
 ----
 
@@ -40,9 +40,9 @@ Add the following to your `build.gradle`:
 [source,groovy]
 ----
 dependencies {
-    implementation 'pro.verron.office-stamper:engine:3.1'
-    implementation 'org.docx4j:docx4j-core:11.5.8'
-    implementation 'org.docx4j:docx4j-JAXB-ReferenceImpl:11.5.8'
+    implementation 'pro.verron.office-stamper:engine:3.2'
+    implementation 'org.docx4j:docx4j-core:11.5.11'
+    implementation 'org.docx4j:docx4j-JAXB-ReferenceImpl:11.5.11'
 }
 ----
 

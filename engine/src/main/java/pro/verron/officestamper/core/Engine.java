@@ -2,12 +2,16 @@ package pro.verron.officestamper.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.expression.spel.ExpressionState;
-import org.springframework.expression.spel.SpelEvaluationException;
-import org.springframework.expression.spel.SpelParseException;
-import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.TypedValue;
+import org.springframework.expression.spel.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.DocxPart;
+import pro.verron.officestamper.api.ExceptionResolver;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.ProcessorContext;
+
+import java.util.Objects;
 
 /// The core engine of OfficeStamper, responsible for processing expressions.
 public class Engine {
@@ -16,7 +20,6 @@ public class Engine {
     private final SpelParserConfiguration parserConfiguration;
     private final ExceptionResolver exceptionResolver;
     private final ObjectResolverRegistry objectResolverRegistry;
-    private final ProcessorContext processorContext;
     private final String expression;
     private final DocxPart docxPart;
     private final SpelExpressionParser expressionParser;
@@ -36,7 +39,6 @@ public class Engine {
         this.parserConfiguration = parserConfiguration;
         this.exceptionResolver = exceptionResolver;
         this.objectResolverRegistry = objectResolverRegistry;
-        this.processorContext = processorContext;
         this.expression = processorContext.expression();
         this.docxPart = processorContext.part();
         this.expressionParser = new SpelExpressionParser(parserConfiguration);
@@ -54,18 +56,48 @@ public class Engine {
     /// @param evaluationContext the evaluation context for processing the expression.
     ///
     /// @return true if the processing was successful, otherwise false
-    public boolean process(UnionEvaluationContext evaluationContext) {
+    public boolean process(EvaluationContext evaluationContext) {
+        SpelNode spelNode;
         try {
-            var parsedExpression = expressionParser.parseRaw(expression);
-            parsedExpression.getValue(evaluationContext);
+            spelNode = parseAST();
+            log.trace("Parsed '{}' successfully.", expression);
+        } catch (SpelParseException e) {
+            var msgTemplate = "Expression %s could not be parsed successfully.";
+            var message = msgTemplate.formatted(expression, evaluationContext);
+            exceptionResolver.resolve(expression, message, e);
+            return false;
+        }
+
+        var expressionState = buildExpressionState(evaluationContext);
+        try {
+            spelNode.getValue(expressionState);
             log.debug("Processed '{}' successfully.", expression);
-            return true;
-        } catch (SpelEvaluationException | SpelParseException e) {
+        } catch (SpelEvaluationException e) {
             var msgTemplate = "Expression %s could not be processed against context '%s'";
             var message = msgTemplate.formatted(expression, evaluationContext);
             exceptionResolver.resolve(expression, message, e);
             return false;
         }
+
+        return true;
+    }
+
+    private SpelNode parseAST() {
+        var parsedExpression = expressionParser.parseRaw(expression);
+        return parsedExpression.getAST();
+    }
+
+    private ExpressionState buildExpressionState(EvaluationContext evaluationContext) {
+        var contextBranchTypedValue = evaluationContext.getRootObject();
+        var contextBranch = (ContextBranch) Objects.requireNonNull(contextBranchTypedValue.getValue());
+        var rootObject = contextBranch.root();
+        var rootObjectTypedValue = new TypedValue(rootObject);
+        var expressionState = new ExpressionState(evaluationContext, rootObjectTypedValue, parserConfiguration);
+        for (Object o : contextBranch) {
+            expressionState.pushActiveContextObject(new TypedValue(o));
+            expressionState.enterScope();
+        }
+        return expressionState;
     }
 
     /// Resolves an [Insert] object by processing the provided evaluation context using the current processor context.
@@ -74,18 +106,34 @@ public class Engine {
     /// @param evaluationContext the evaluation context for processing the expression.
     ///
     /// @return an [Insert] object representing the resolved result of the expression within the context.
-    public Insert resolve(UnionEvaluationContext evaluationContext) {
+    public Insert resolve(EvaluationContext evaluationContext) {
+        SpelNode spelNode;
         try {
-            var parsedExpression = expressionParser.parseRaw(expression);
-            var parsedAst = parsedExpression.getAST();
-            var expressionState = new ExpressionState(evaluationContext, parserConfiguration);
-            expressionState.pushActiveContextObject(evaluationContext.getLeafObject());
-            var resolution = parsedAst.getValue(expressionState);
-            var resolve = objectResolverRegistry.resolve(docxPart, expression, resolution);
+            spelNode = parseAST();
+            log.trace("Parsed '{}' successfully.", expression);
+        } catch (SpelParseException e) {
+            var msgTemplate = "Expression %s could not be parsed successfully.";
+            var message = msgTemplate.formatted(expression, evaluationContext);
+            return exceptionResolver.resolve(expression, message, e);
+        }
+
+        var expressionState = buildExpressionState(evaluationContext);
+        Object javaResolution;
+        try {
+            javaResolution = spelNode.getValue(expressionState);
             log.debug("Resolved '{}' successfully.", expression);
-            return resolve;
-        } catch (SpelEvaluationException | SpelParseException | OfficeStamperException e) {
+        } catch (SpelEvaluationException e) {
             var msgTemplate = "Expression %s could not be resolved against context '%s'";
+            var message = msgTemplate.formatted(expression, evaluationContext);
+            return exceptionResolver.resolve(expression, message, e);
+        }
+
+        try {
+            var docxResolution = objectResolverRegistry.resolve(docxPart, expression, javaResolution);
+            log.debug("Converted '{}' to docx ({}) successfully.", expression, docxResolution);
+            return docxResolution;
+        } catch (SpelEvaluationException e) {
+            var msgTemplate = "Expression %s could not be converted to docx inserts.";
             var message = msgTemplate.formatted(expression, evaluationContext);
             return exceptionResolver.resolve(expression, message, e);
         }

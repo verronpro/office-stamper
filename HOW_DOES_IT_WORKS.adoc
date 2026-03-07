@@ -47,6 +47,14 @@ How it works (simplified):
 - The preprocessor replaces the matched text range with a `CTSmartTagRun` whose `type` attribute is set to the provided value (`"placeholder"` or `"processor"`) and whose content is the raw expression text.
 Implementation detail: it uses `WmlUtils.insertSmartTag(type, paragraph, expression, start, end)`.
 
+=== 1.2. Post-processing: cleaning up markup
+
+After the main stamping pass, post-processors can be executed to clean up the document.
+A common task is removing the smart tags used by the engine.
+
+The `cleanTags` functionality from previous versions has been replaced by `Postprocessors.removeTags(String)`.
+The `minimal()` configuration automatically includes a post-processor to remove the default `officestamper` tags.
+
 Why this matters:
 - The main iterator sees these smart tags as hooks (besides comments).
 In code, they are handled via `core.Tag`/`TagHook` and later replaced with resolved content.
@@ -72,7 +80,14 @@ The engine maps this to a `ContextBranch` when executing the hook.
 
 === 2. Configuration essentials
 
-Create a configuration via presets and then customize:
+There are three main configuration presets available in `OfficeStamperConfigurations`:
+
+- `minimal()`: Sets up the base engine with placeholder preprocessors and the `removeTags` post-processor.
+Ideal for simple use cases.
+- `standard()`: Builds on `minimal()` by adding common comment processors (repeat, displayIf, replaceWith) and date/time formatting functions.
+- `full()`: Further extends `standard()` with additional preprocessors for cleaning up language information and merging similar text runs, and post-processors for cleaning up orphaned footnotes and endnotes.
+
+Create a configuration via one of these presets and then customize:
 
 [source,java]
 ----
@@ -140,7 +155,23 @@ Good practices:
 - If you create nested scopes (repeaters), add new branches to the provided `ContextTree`.
 - Return `true` only when you changed the structure so the iterator can restart if needed.
 
-=== 4. Object resolvers
+=== 4. Table and row manipulation
+
+Processors can manipulate tables and rows using the `Table` and `Table.Row` interfaces.
+These interfaces provide methods to remove, copy, and iterate over hooks within tables and rows.
+
+`Paragraph` provides access to its parent table or row:
+
+[source,java]
+----
+Optional<Table.Row> row = paragraph.parentTableRow();
+Optional<Table> table = paragraph.parentTable();
+----
+
+A `Table.Row` can be used to remove itself, copy its content, or access its underlying docx4j `Tr` object.
+A `Table` can be used to add or remove rows, and to find the index of a row.
+
+=== 5. Object resolvers
 
 Purpose: turn evaluated objects into document content (`Insert`).
 Register them on the configuration; the engine chooses an `ObjectResolver` based on the runtime type.
@@ -160,7 +191,7 @@ Guidelines:
 Avoid bulky wrappers unless required.
 - For collections, either return one composite `Insert` or let higher‑level processors handle iteration explicitly.
 
-=== 5. Functions in expressions
+=== 6. Functions in expressions
 
 Two options are available and can be combined:
 - Expression functions via `exposeInterfaceToExpressionLanguage(Class<?>, Object)` bind a provider to a name.
@@ -168,7 +199,7 @@ Two options are available and can be combined:
 
 Both end up as method resolvers in the evaluation context and are available from comments and smart tags.
 
-=== 6. Evaluation context and scopes
+=== 7. Evaluation context and scopes
 
 Provide an `EvaluationContextFactory` (creation, not mutation).
 Use presets from `pro.verron.officestamper.preset.EvaluationContextFactories` or build your own.
@@ -182,7 +213,7 @@ Context keys: both comments and tags have a `String` context key.
 The engine picks the branch based on the key; if absent, it uses the current branch (or root).
 Use keys to jump to a named scope established by your processors.
 
-=== 7. Minimal end‑to‑end example
+=== 8. Minimal end‑to‑end example
 
 [source,java]
 ----
@@ -201,7 +232,7 @@ ${hideParagraphIf(order.total == 0)}
 ${order.total}
 ----
 
-=== 8. API names to double‑check (v3)
+=== 9. API names to double‑check (v3)
 
 - `EvaluationContextConfigurer` → `EvaluationContextFactory` (interface moved to `pro.verron.officestamper.api`).
 - `DocxDocument` removed; use `DocxPart` abstractions exposed by the engine.

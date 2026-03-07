@@ -43,7 +43,7 @@ public final class OfficeStamperEvaluationContextFactory {
     /// @param processorContext the processor context.
     /// @param branch           the context branch.
     /// @return the evaluation context.
-    public UnionEvaluationContext create(ProcessorContext processorContext, ContextBranch branch) {
+    public EvaluationContext create(ProcessorContext processorContext, ContextBranch branch) {
         var ec = contextFactory.create(branch);
         var processors = instantiate(commentProcessors, processorContext);
         var invokerStream = Stream.of(streamInvokersFromClass(processors),
@@ -51,7 +51,7 @@ public final class OfficeStamperEvaluationContextFactory {
                                           streamInvokersFromCustomFunction(customFunctions))
                                   .flatMap(identity());
         var invokers = new Invokers(invokerStream);
-        return new UnionEvaluationContext(ec, branch, invokers);
+        return new UnionEvaluationContext(ec, invokers);
     }
 
     /// Returns a set view of the mappings contained in this map. Each entry in the set is a mapping between a

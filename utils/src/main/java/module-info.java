@@ -9,7 +9,6 @@
 /// DOCX documents
 ///     - [pro.verron.officestamper.utils.openpackaging] - Utilities for working with Open Packaging Format
 ///     - [pro.verron.officestamper.utils.function] - Functional programming helpers and utilities
-///     - [pro.verron.officestamper.utils.bit] - Low-level bit and byte manipulation utilities
 ///     - [pro.verron.officestamper.utils.iterator] - Iterator implementations and utilities
 ///
 /// @since 3.0

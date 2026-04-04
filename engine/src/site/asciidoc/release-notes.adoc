@@ -7,28 +7,30 @@ This page provides information about the latest releases of Office-stamper, incl
 
 == Latest Release
 
-=== {proj}/v3.2.0[v3.2.0]
+=== {proj}/v3.3.0[v3.3.0]
 
-==== Core Refactoring
+==== Image Processing
 
-* **Expression API**: Replaced `ExpressionParser` with a new `Expression` abstraction to improve internal handling and support different expression languages.
+* **SVG Support**: Built-in support for inserting SVG images into documents.
+The `Image` class and engine now automatically detect SVG content and handle its insertion using a new `WmlFactory.newSVGDrawing` method.
 
 ==== New Features
 
-* **Table and Row Manipulation**: Introduced new `Table` and `Table.Row` interfaces in the public API for easier structural modification of documents.
-* **Comment Removal**: Added `CommentRemover` post-processor for automatic document cleanup.
-* **Configuration Presets**: Enhanced `OfficeStamperConfigurations` with `minimal()`, `standard()`, and `full()` presets.
+* **Smart Tag Attribute Validation**: New utility method `WmlUtils.hasTagAttribute` to check for attributes within DOCX smart tags.
 
-==== AsciiDoc Enhancements
+==== Cleanup & Refinement
 
-* **Conversion Improvements**: Major updates to the AsciiDoc module with better support for nested tables, hyperlinks, headers, and footers.
+* **Internal refactoring**: Simplified the `utils` module by removing legacy classes like `ByteUtils` and `DocxRenderer`.
 
 ==== Dependencies
 
-* **Docx4j**: Updated to version 11.5.11.
-* **Spring**: Updated Spring Expression and Context to version 7.0.5.
+* **Spring**: Updated Spring Expression and Context to version 7.0.6.
+* **Jackson**: Updated Jackson monorepo to version 2.21.2.
+* **Tooling**: Updated PIT mutation testing to 1.23.0.
 
 == Previous Releases
+
+=== {proj}/v3.2.0[v3.2.0]
 
 === {proj}/v3.1.0[v3.1.0]
 
@@ -69,6 +71,11 @@ The iterator walks hooks one by one, allowing for more predictable results.
 For information about previous releases, see the link:https://github.com/verronpro/office-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
 
 == Upgrading
+
+=== From v3.2.0 to v3.3.0
+
+* **SVG Images**: You can now pass SVG content to the `Image` class; the engine will handle the conversion and insertion into the DOCX document automatically.
+* **Utility Changes**: If you were using `ByteUtils` or `DocxRenderer` from the `utils` module, you will need to find alternative implementations as these have been removed.
 
 === From v3.1.0 to v3.2.0
 

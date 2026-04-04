@@ -3,6 +3,32 @@
 :os: https://github.com/verronpro/office-stamper
 :proj: https://github.com/verronpro/office-stamper/releases/tag
 
+== {proj}/v3.3.0[v3.3.0]
+
+=== Major changes
+
+* **SVG Support**: Office-stamper now supports inserting SVG images into documents.
+The `Image` class has been updated to automatically detect SVG content and handle its insertion using a new `WmlFactory.newSVGDrawing` method.
+
+=== New Features
+
+* **Smart Tag Attribute Validation**: A new utility method `WmlUtils.hasTagAttribute` allows for checking the existence and value of attributes within DOCX smart tags.
+
+=== Refactorings
+
+* **Internal Cleanup**: Removed `ByteUtils` and `DocxRenderer` from the `utils` module as part of an internal refactoring to streamline the codebase.
+
+=== Dependencies
+
+* **Spring**: Updated Spring Expression and Context to version 7.0.6.
+* **Jackson**: Updated Jackson monorepo to version 2.21.2.
+* **Testing**: Updated PIT mutation testing to 1.23.0 and Mockito JUnit Jupiter to 5.23.0.
+
+=== Quality and Tooling
+
+* **Build System**: Added `maven-jxr-plugin` to the build process for generating cross-reference source documentation.
+* **JavaFX**: Updated to version 27-ea+10 for the CLI and testing.
+
 == {proj}/v3.2.0[v3.2.0]
 
 === Major changes

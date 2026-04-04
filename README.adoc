@@ -81,7 +81,7 @@ var configuration = OfficeStamperConfigurations.standard()
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>engine</artifactId>
-    <version>3.2</version>
+    <version>3.3</version>
 </dependency>
 
 <!-- You also need to provide a dependency to Docx4J -->
@@ -123,7 +123,14 @@ This repository is structured in several Maven/Java modules:
 
 == Latest Release
 
-The latest release is v3.2. See the link:{docs}/release-notes.html[Release Notes] for details.
+The latest release is v3.3. See the link:{docs}/release-notes.html[Release Notes] for details.
+
+=== What's new in 3.3 (high level)
+
+* **SVG Support**: Built-in support for inserting SVG images into documents.
+* **Smart Tag Attribute Validation**: New utility method to check attributes in DOCX smart tags.
+* **Internal Cleanup**: Simplified codebase by removing legacy utility classes.
+* **Updated Dependencies**: Latest Spring and Jackson versions for better security and performance.
 
 === What's new in 3.2 (high level)
 

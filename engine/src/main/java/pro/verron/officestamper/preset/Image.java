@@ -5,6 +5,8 @@ import org.docx4j.wml.R;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory;
+import pro.verron.officestamper.utils.svg.SvgUtils;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.io.IOException;
@@ -17,7 +19,6 @@ import java.io.InputStream;
 /// @version ${version}
 /// @since 1.0.0
 public final class Image {
-
     private final byte[] imageBytes;
     private final @Nullable Integer maxWidth;
     private final String filenameHint;
@@ -85,8 +86,29 @@ public final class Image {
     public R newRun(DocxPart part) {
         var mlPackage = part.document();
         try {
-            var image = BinaryPartAbstractImage.createImagePart(mlPackage, part.part(), imageBytes);
-            return WmlFactory.newRun(maxWidth, image, filenameHint, altText);
+            var parts = part.part();
+            var document = part.document();
+            if (SvgUtils.isSvg(imageBytes)) {
+                var relationship = OpenpackagingFactory.newXmlPart(parts, imageBytes);
+                var documentModel = document.getDocumentModel();
+                var documentSections = documentModel.getSections();
+                var lastSection = documentSections.getLast();
+                var lastPageDimensions = lastSection.getPageDimensions();
+                var imageInfo = SvgUtils.extractSVGImageInfo(imageBytes);
+                var drawing = WmlFactory.newSVGDrawing(relationship,
+                        imageInfo,
+                        lastPageDimensions,
+                        altText,
+                        filenameHint,
+                        maxWidth);
+                return WmlFactory.newRun(drawing);
+            }
+            else {
+                var image = BinaryPartAbstractImage.createImagePart(mlPackage, parts, imageBytes);
+                var inline = WmlFactory.newInline(image, filenameHint, altText, maxWidth);
+                var drawing = WmlFactory.newDrawing(inline);
+                return WmlFactory.newRun(drawing);
+            }
         } catch (Exception e) {
             throw new OfficeStamperException("Failed to create an ImagePart", e);
         }

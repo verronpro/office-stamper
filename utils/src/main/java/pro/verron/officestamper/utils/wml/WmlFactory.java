@@ -1,20 +1,22 @@
 package pro.verron.officestamper.utils.wml;
 
+import jakarta.xml.bind.JAXBException;
+import org.apache.xmlgraphics.image.loader.ImageInfo;
+import org.docx4j.XmlUtils;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
+import org.docx4j.model.structure.PageDimensions;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
+import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.*;
 import org.docx4j.wml.Comments.Comment;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.utils.UtilsException;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toCollection;
@@ -418,5 +420,79 @@ public class WmlFactory {
         var sdtRun = new SdtRun();
         sdtRun.setSdtContent(sdtContentRun);
         return sdtRun;
+    }
+
+    public static Drawing newSVGDrawing(
+            Relationship relationship,
+            ImageInfo imageInfo,
+            PageDimensions pageDimensions,
+            String altText,
+            String filenameHint,
+            @Nullable Integer maxWidth
+    )
+            throws JAXBException {
+        var scale = maxWidth != null
+                ? BinaryPartAbstractImage.CxCy.scale(imageInfo, pageDimensions, maxWidth)
+                : BinaryPartAbstractImage.CxCy.scale(imageInfo, pageDimensions);
+        String template = """
+                <w:drawing
+                  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+                  xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+                  xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+                  xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"
+                  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+                    <wp:inline distB="0" distL="0" distR="0" distT="0">
+                      <wp:extent cx="${cx}" cy="${cy}"/>
+                      <wp:effectExtent b="0" l="0" r="0" t="0"/>
+                      <wp:docPr id="${id1}" name="${filenameHint}" descr="${altText}"/>
+                      <wp:cNvGraphicFramePr>
+                        <a:graphicFrameLocks noChangeAspect="true"/>
+                      </wp:cNvGraphicFramePr>
+                      <a:graphic>
+                        <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                          <pic:pic>
+                            <pic:nvPicPr>
+                              <pic:cNvPr id="${id2}" name="${filenameHint}"/>
+                              <pic:cNvPicPr/>
+                            </pic:nvPicPr>
+                            <pic:blipFill>
+                              <a:blip>
+                                <a:extLst>
+                                  <a:ext uri="{96DAC541-7B7A-43D3-8B79-37D633B846F1}">
+                                    <asvg:svgBlip
+                                      xmlns:asvg="http://schemas.microsoft.com/office/drawing/2016/SVG/main"
+                                      r:embed="${relId}"/>
+                                  </a:ext>
+                                </a:extLst>
+                              </a:blip>
+                              <a:stretch><a:fillRect/></a:stretch>
+                            </pic:blipFill>
+                            <pic:spPr>
+                              <a:xfrm>
+                                <a:off x="0" y="0"/>
+                                <a:ext cx="${cx}" cy="${cy}"/>
+                              </a:xfrm>
+                              <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+                            </pic:spPr>
+                          </pic:pic>
+                        </a:graphicData>
+                      </a:graphic>
+                    </wp:inline>
+                </w:drawing>
+                """;
+
+        var id1 = RANDOM.nextLong(100_000L);
+        var id2 = RANDOM.nextInt(100_000);
+
+        var mappings = new HashMap<String, Object>();
+        mappings.put("cx", scale.getCx());
+        mappings.put("cy", scale.getCy());
+        mappings.put("id1", id1);
+        mappings.put("id2", id2);
+        mappings.put("filenameHint", filenameHint);
+        mappings.put("altText", altText);
+        mappings.put("relId", relationship.getId());
+
+        return (Drawing) XmlUtils.unmarshallFromTemplate(template, mappings);
     }
 }

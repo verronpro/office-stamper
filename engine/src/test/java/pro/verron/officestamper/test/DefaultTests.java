@@ -1,9 +1,12 @@
 package pro.verron.officestamper.test;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
@@ -12,6 +15,8 @@ import pro.verron.officestamper.preset.Resolvers;
 import pro.verron.officestamper.test.utils.ContextFactory;
 import pro.verron.officestamper.test.utils.DocxFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -30,6 +35,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
 @DisplayName("Core Features") class DefaultTests {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
+
     private static Stream<ArgumentSet> tests() {
         return Stream.concat(factories().mapMulti((factory, pipe) -> {
             pipe.accept(ternary(factory));
@@ -44,6 +51,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
             pipe.accept(expressionReplacementWithCommentTest(factory));
             pipe.accept(imageReplacementInGlobalParagraphsTest(factory));
             pipe.accept(imageReplacementInGlobalParagraphsTestWithMaxWidth(factory));
+            pipe.accept(svgReplacementInGlobalParagraphsTest(factory));
+            pipe.accept(svgReplacementInGlobalParagraphsTestWithMaxWidth(factory));
             pipe.accept(leaveEmptyOnExpressionErrorTest(factory));
             pipe.accept(lineBreakReplacementTest(factory));
             pipe.accept(mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(factory));
@@ -336,6 +345,44 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         """);
     }
 
+    private static ArgumentSet svgReplacementInGlobalParagraphsTest(ContextFactory factory) {
+        return argumentSet("SVG Image Replacement in global paragraphs",
+                standard(),
+                factory.image(getImage(Path.of("circle.svg"))),
+                getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
+                """
+                        == Image Replacement in global paragraphs
+                        
+                        This paragraph is untouched.
+                        
+                        In this paragraph, an image of Mona Lisa is inserted: image:[cx=952500, cy=952500].
+                        
+                        This paragraph has the image image:[cx=952500, cy=952500] in the middle.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                        
+                        """);
+    }
+
+    private static ArgumentSet svgReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
+        return argumentSet("SVG Image Replacement in global paragraphs with max width",
+                standard(),
+                factory.image(getImage(Path.of("circle.svg"), 100)),
+                getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
+                """
+                        == Image Replacement in global paragraphs
+                        
+                        This paragraph is untouched.
+                        
+                        In this paragraph, an image of Mona Lisa is inserted: image:[cx=63500, cy=63500].
+                        
+                        This paragraph has the image image:[cx=63500, cy=63500] in the middle.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                        
+                        """);
+    }
+
     private static ArgumentSet leaveEmptyOnExpressionErrorTest(ContextFactory factory) {
         return argumentSet("Leave Empty On Expression Error Test",
                 standard().setExceptionResolver(ExceptionResolvers.defaulting()),
@@ -528,14 +575,13 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
     @MethodSource("tests")
     @DisplayName("Core Features")
     @ParameterizedTest(name = "Core Features: {argumentSetName}")
-    void features(
-            OfficeStamperConfiguration config,
-            Object context,
-            WordprocessingMLPackage template,
-            String expected
-    ) {
+    void features(OfficeStamperConfiguration config, Object context, WordprocessingMLPackage template, String expected)
+            throws IOException, Docx4JException {
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
+        var tempFile = Files.createTempFile("stamper", "docx");
+        log.info("Write to {}", tempFile.toString());
+        wordprocessingMLPackage.save(tempFile.toFile());
         var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
     }

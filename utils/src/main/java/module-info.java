@@ -25,4 +25,5 @@ module pro.verron.officestamper.utils {
     exports pro.verron.officestamper.utils.wml;
     exports pro.verron.officestamper.utils.pml;
     exports pro.verron.officestamper.utils.sml;
+    exports pro.verron.officestamper.utils.svg;
 }

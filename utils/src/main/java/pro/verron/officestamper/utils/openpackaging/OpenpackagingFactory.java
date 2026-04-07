@@ -3,14 +3,17 @@ package pro.verron.officestamper.utils.openpackaging;
 import org.docx4j.openpackaging.contenttype.ContentType;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
-import org.docx4j.openpackaging.parts.DefaultXmlPart;
+import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.PartName;
+import org.docx4j.openpackaging.parts.XmlPart;
 import org.docx4j.relationships.Relationship;
 import pro.verron.officestamper.utils.UtilsException;
 
 import java.io.ByteArrayInputStream;
-import java.util.UUID;
+
+import static org.docx4j.openpackaging.contenttype.ContentTypes.IMAGE_SVG;
+import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage.createImageName;
 
 /// Utility class for creating Open Packaging objects.
 ///
@@ -40,13 +43,16 @@ public class OpenpackagingFactory {
         }
     }
 
-    public static Relationship newXmlPart(Part parts, byte[] imageBytes)
+    public static Relationship newSvgPart(OpcPackage opcPackage, Part sourcePart, byte[] bytes)
             throws Docx4JException {
-        var imagePartName = new PartName("/word/media/image-%s.svg".formatted(UUID.randomUUID()));
-        var imagePart = new DefaultXmlPart(imagePartName);
-        imagePart.setRelationshipType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
-        imagePart.setContentType(new ContentType("image/svg+xml"));
-        imagePart.setDocument(new ByteArrayInputStream(imageBytes));
-        return parts.addTargetPart(imagePart);
+        var contentTypeManager = opcPackage.getContentTypeManager();
+        var relationshipsPart = sourcePart.getRelationshipsPart();
+        var proposedRelId = relationshipsPart.getNextId();
+        var partName = createImageName(opcPackage, sourcePart, proposedRelId, "svg");
+        var part = (XmlPart) contentTypeManager.newPartForContentType(IMAGE_SVG, partName, null);
+        part.setRelationshipType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
+        part.setContentType(new ContentType(IMAGE_SVG));
+        part.setDocument(new ByteArrayInputStream(bytes));
+        return sourcePart.addTargetPart(part);
     }
 }

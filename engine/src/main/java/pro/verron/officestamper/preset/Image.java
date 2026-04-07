@@ -98,8 +98,8 @@ public final class Image {
         try {
             var parts = part.part();
             var document = part.document();
-            if (SvgUtils.isSvg(imageBytes)) {
-                var relationship = OpenpackagingFactory.newXmlPart(parts, imageBytes);
+            if (SvgUtils.isSvg(bytes())) {
+                var relationship = OpenpackagingFactory.newSvgPart(mlPackage, parts, bytes());
                 var documentModel = document.getDocumentModel();
                 var documentSections = documentModel.getSections();
                 var lastSection = documentSections.getLast();

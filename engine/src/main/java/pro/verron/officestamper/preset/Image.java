@@ -9,6 +9,7 @@ import pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory;
 import pro.verron.officestamper.utils.svg.SvgUtils;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -19,26 +20,48 @@ import java.io.InputStream;
 /// @version ${version}
 /// @since 1.0.0
 public final class Image {
-    private final byte[] imageBytes;
+    private final InputStream source;
     private final @Nullable Integer maxWidth;
     private final String filenameHint;
     private final String altText;
+    private byte @Nullable [] bytes = null;
 
     /// Constructor for Image.
     ///
-    /// @param in - content of the image as InputStream
+    /// @param source - content of the image as InputStream
     ///
     /// @throws IOException if any.
-    public Image(InputStream in)
+    public Image(InputStream source)
             throws IOException {
-        this(in.readAllBytes());
+        this(source, null);
+    }
+
+    /// Constructor for Image.
+    ///
+    /// @param source content of the image as InputStream
+    /// @param maxWidth max width of the image in twip
+    public Image(InputStream source, @Nullable Integer maxWidth) {
+        this(source, maxWidth, "dummyFileName", "dummyAltText");
+    }
+
+    /// Constructor for Image.
+    ///
+    /// @param source content of the image as InputStream
+    /// @param maxWidth max width of the image in twip
+    /// @param filenameHint filename hint for the image.
+    /// @param altText alternative text for the image.
+    public Image(InputStream source, @Nullable Integer maxWidth, String filenameHint, String altText) {
+        this.source = source;
+        this.maxWidth = maxWidth;
+        this.filenameHint = filenameHint;
+        this.altText = altText;
     }
 
     /// Constructor for Image.
     ///
     /// @param imageBytes - content of the image as an array of the bytes
     public Image(byte[] imageBytes) {
-        this(imageBytes, null);
+        this(new ByteArrayInputStream(imageBytes), null);
     }
 
     /// Constructor for Image.
@@ -56,21 +79,8 @@ public final class Image {
     /// @param filenameHint filename hint for the image.
     /// @param altText alternative text for the image.
     public Image(byte[] imageBytes, @Nullable Integer maxWidth, String filenameHint, String altText) {
-        this.imageBytes = imageBytes;
-        this.maxWidth = maxWidth;
-        this.filenameHint = filenameHint;
-        this.altText = altText;
-    }
-
-    /// Constructor for Image.
-    ///
-    /// @param in       - content of the image as InputStream
-    /// @param maxWidth - max width of the image in twip
-    ///
-    /// @throws IOException if any.
-    public Image(InputStream in, @Nullable Integer maxWidth)
-            throws IOException {
-        this(in.readAllBytes(), maxWidth);
+        var inputStream = new ByteArrayInputStream(imageBytes);
+        this(inputStream, maxWidth, filenameHint, altText);
     }
 
     /// Creates a new run with the provided image and associated metadata.
@@ -94,7 +104,7 @@ public final class Image {
                 var documentSections = documentModel.getSections();
                 var lastSection = documentSections.getLast();
                 var lastPageDimensions = lastSection.getPageDimensions();
-                var imageInfo = SvgUtils.extractSVGImageInfo(imageBytes);
+                var imageInfo = SvgUtils.extractSVGImageInfo(bytes());
                 var drawing = WmlFactory.newSVGDrawing(relationship,
                         imageInfo,
                         lastPageDimensions,
@@ -104,7 +114,7 @@ public final class Image {
                 return WmlFactory.newRun(drawing);
             }
             else {
-                var image = BinaryPartAbstractImage.createImagePart(mlPackage, parts, imageBytes);
+                var image = BinaryPartAbstractImage.createImagePart(mlPackage, parts, bytes());
                 var inline = WmlFactory.newInline(image, filenameHint, altText, maxWidth);
                 var drawing = WmlFactory.newDrawing(inline);
                 return WmlFactory.newRun(drawing);
@@ -112,5 +122,14 @@ public final class Image {
         } catch (Exception e) {
             throw new OfficeStamperException("Failed to create an ImagePart", e);
         }
+    }
+
+    private synchronized byte[] bytes() {
+        if (bytes == null) try (InputStream source = this.source) {
+            bytes = source.readAllBytes();
+        } catch (IOException e) {
+            throw new OfficeStamperException("Failed to cache the image bytes", e);
+        }
+        return bytes;
     }
 }

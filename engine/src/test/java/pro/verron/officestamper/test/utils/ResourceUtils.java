@@ -38,11 +38,7 @@ public class ResourceUtils {
     ///
     /// @return an image for the specified resource
     public static Image getImage(Path path, @Nullable Integer size) {
-        try {
-            return new Image(getResource(path), size);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return new Image(getResource(path), size);
     }
 
     /// Retrieves an InputStream for the specified resource path.

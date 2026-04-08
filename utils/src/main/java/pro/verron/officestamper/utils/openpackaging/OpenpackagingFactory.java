@@ -1,14 +1,18 @@
 package pro.verron.officestamper.utils.openpackaging;
 
+import org.apache.xmlgraphics.image.loader.ImageInfo;
 import org.docx4j.openpackaging.contenttype.ContentType;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.OpcPackage;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.PartName;
+import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.XmlPart;
 import org.docx4j.relationships.Relationship;
 import pro.verron.officestamper.utils.UtilsException;
+import pro.verron.officestamper.utils.svg.SvgUtils;
 
 import java.io.ByteArrayInputStream;
 
@@ -43,7 +47,7 @@ public class OpenpackagingFactory {
         }
     }
 
-    public static Relationship newSvgPart(OpcPackage opcPackage, Part sourcePart, byte[] bytes)
+    public static ImgPart newSvgPart(OpcPackage opcPackage, Part sourcePart, byte[] bytes)
             throws Docx4JException {
         var contentTypeManager = opcPackage.getContentTypeManager();
         var relationshipsPart = sourcePart.getRelationshipsPart();
@@ -53,6 +57,18 @@ public class OpenpackagingFactory {
         part.setRelationshipType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
         part.setContentType(new ContentType(IMAGE_SVG));
         part.setDocument(new ByteArrayInputStream(bytes));
-        return sourcePart.addTargetPart(part);
+        var relationship = sourcePart.addTargetPart(part);
+        var imageInfo = SvgUtils.extractSVGImageInfo(bytes);
+        return new ImgPart(imageInfo, relationship);
     }
+
+    public static ImgPart newImgPart(WordprocessingMLPackage mlPackage, Part parts, byte[] bytes)
+            throws Exception {
+        var imagePart = BinaryPartAbstractImage.createImagePart(mlPackage, parts, bytes);
+        var relationship = imagePart.getRelLast();
+        var imageInfo = imagePart.getImageInfo();
+        return new ImgPart(imageInfo, relationship);
+    }
+
+    public record ImgPart(ImageInfo imageInfo, Relationship relationship) {}
 }

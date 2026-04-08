@@ -1,7 +1,6 @@
 package pro.verron.officestamper.preset;
 
 import org.docx4j.dml.wordprocessingDrawing.Inline;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.R;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.DocxPart;
@@ -105,21 +104,18 @@ public final class Image {
             var lastSectionDimensions = lastSection.getPageDimensions();
             Inline inline;
             if (SvgUtils.isSvg(bytes())) {
-                var relationship = OpenpackagingFactory.newSvgPart(mlPackage, parts, bytes());
-                var imageInfo = SvgUtils.extractSVGImageInfo(bytes());
-                inline = WmlFactory.newSVGInline(relationship,
-                        imageInfo,
+                var imgPart = OpenpackagingFactory.newSvgPart(mlPackage, parts, this.bytes());
+                inline = WmlFactory.newSVGInline(imgPart.relationship(),
+                        imgPart.imageInfo(),
                         lastSectionDimensions,
                         altText,
                         filenameHint,
                         maxWidth);
             }
             else {
-                var imagePart = BinaryPartAbstractImage.createImagePart(mlPackage, parts, bytes());
-                var relationship = imagePart.getRelLast();
-                var imageInfo = imagePart.getImageInfo();
-                inline = WmlFactory.newImgInline(relationship,
-                        imageInfo,
+                var imgPart = OpenpackagingFactory.newImgPart(mlPackage, parts, this.bytes());
+                inline = WmlFactory.newImgInline(imgPart.relationship(),
+                        imgPart.imageInfo(),
                         lastSectionDimensions,
                         filenameHint,
                         altText,
@@ -140,4 +136,5 @@ public final class Image {
         }
         return bytes;
     }
+
 }

@@ -1,5 +1,6 @@
 package pro.verron.officestamper.preset;
 
+import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.R;
 import org.jspecify.annotations.Nullable;
@@ -98,27 +99,34 @@ public final class Image {
         try {
             var parts = part.part();
             var document = part.document();
+            var documentModel = document.getDocumentModel();
+            var sections = documentModel.getSections();
+            var lastSection = sections.getLast();
+            var lastSectionDimensions = lastSection.getPageDimensions();
+            Inline inline;
             if (SvgUtils.isSvg(bytes())) {
                 var relationship = OpenpackagingFactory.newSvgPart(mlPackage, parts, bytes());
-                var documentModel = document.getDocumentModel();
-                var documentSections = documentModel.getSections();
-                var lastSection = documentSections.getLast();
-                var lastPageDimensions = lastSection.getPageDimensions();
                 var imageInfo = SvgUtils.extractSVGImageInfo(bytes());
-                var drawing = WmlFactory.newSVGDrawing(relationship,
+                inline = WmlFactory.newSVGInline(relationship,
                         imageInfo,
-                        lastPageDimensions,
+                        lastSectionDimensions,
                         altText,
                         filenameHint,
                         maxWidth);
-                return WmlFactory.newRun(drawing);
             }
             else {
-                var image = BinaryPartAbstractImage.createImagePart(mlPackage, parts, bytes());
-                var inline = WmlFactory.newInline(image, filenameHint, altText, maxWidth);
-                var drawing = WmlFactory.newDrawing(inline);
-                return WmlFactory.newRun(drawing);
+                var imagePart = BinaryPartAbstractImage.createImagePart(mlPackage, parts, bytes());
+                var relationship = imagePart.getRelLast();
+                var imageInfo = imagePart.getImageInfo();
+                inline = WmlFactory.newImgInline(relationship,
+                        imageInfo,
+                        lastSectionDimensions,
+                        filenameHint,
+                        altText,
+                        maxWidth);
             }
+            var drawing = WmlFactory.newDrawing(inline);
+            return WmlFactory.newRun(drawing);
         } catch (Exception e) {
             throw new OfficeStamperException("Failed to create an ImagePart", e);
         }

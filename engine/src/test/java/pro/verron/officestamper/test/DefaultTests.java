@@ -579,10 +579,16 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
             throws IOException, Docx4JException {
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var tempFile = Files.createTempFile("stamper", "docx");
-        log.info("Write to {}", tempFile.toString());
-        wordprocessingMLPackage.save(tempFile.toFile());
+        writeOutputFile(wordprocessingMLPackage);
         var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
+    }
+
+    private static void writeOutputFile(WordprocessingMLPackage wordprocessingMLPackage)
+            throws IOException, Docx4JException {
+        if (!Boolean.parseBoolean(System.getProperty("keepOutputFile"))) return;
+        var tempFile = Files.createTempFile("stamper", ".docx");
+        log.info("Write to {}", tempFile.toString());
+        wordprocessingMLPackage.save(tempFile.toFile());
     }
 }

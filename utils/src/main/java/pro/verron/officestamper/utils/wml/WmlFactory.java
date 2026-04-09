@@ -2,13 +2,12 @@ package pro.verron.officestamper.utils.wml;
 
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
-import org.apache.xmlgraphics.image.loader.ImageInfo;
+import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.XmlUtils;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.model.structure.PageDimensions;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.*;
@@ -16,6 +15,7 @@ import org.docx4j.wml.Comments.Comment;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.utils.UtilsException;
 
+import java.awt.geom.Dimension2D;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -180,24 +180,23 @@ public class WmlFactory {
     /// @param altText Alternative text for the image.
     /// @param maxWidth The image width not to exceed, in points.
     ///
+    /// @param dimensionPx
     /// @return A new [Inline] object containing the specified image information.
     ///
     /// @throws UtilsException If there is an error creating the image inline.
     public static Inline newImgInline(
             Relationship relationship,
-            ImageInfo imageInfo,
             PageDimensions pageDimensions,
             String filenameHint,
             String altText,
-            @Nullable Integer maxWidth
+            @Nullable Integer maxWidth,
+            Dimension2D dimensionPx
     ) {
         // creating random ids assuming unicity, id must not be too large otherwise Word cannot open the document
         var id1 = RANDOM.nextLong(100_000L);
         var id2 = RANDOM.nextInt(100_000);
         try {
-            BinaryPartAbstractImage.CxCy cxcy = maxWidth == null
-                    ? BinaryPartAbstractImage.CxCy.scale(imageInfo, pageDimensions)
-                    : BinaryPartAbstractImage.CxCy.scale(imageInfo, pageDimensions, maxWidth);
+            Scale scale = computeScale(pageDimensions, maxWidth == null ? -1 : maxWidth, dimensionPx);
             String ml = """
                     <wp:inline distT="0" distB="0" distL="0" distR="0"
                       xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -232,8 +231,8 @@ public class WmlFactory {
                       </a:graphic>
                     </wp:inline>""";
             var mappings = new HashMap<String, String>();
-            mappings.put("cx", Long.toString(cxcy.getCx()));
-            mappings.put("cy", Long.toString(cxcy.getCy()));
+            mappings.put("cx", Long.toString(scale.cx()));
+            mappings.put("cy", Long.toString(scale.cy()));
             mappings.put("filenameHint", filenameHint);
             mappings.put("altText", altText);
             mappings.put("rEmbedId", relationship.getId());
@@ -244,6 +243,24 @@ public class WmlFactory {
         } catch (Exception e) {
             throw new UtilsException(e);
         }
+    }
+
+    private static Scale computeScale(PageDimensions pageDimensions, Integer maxWidth, Dimension2D dpx) {
+        double writableWidthTwips = pageDimensions.getWritableWidthTwips();
+        if (maxWidth > 0 && maxWidth < writableWidthTwips) writableWidthTwips = maxWidth;
+        double imageWidthTwips = UnitsOfMeasurement.pxToTwipDouble(dpx.getWidth());
+        double imageHeightTwips = UnitsOfMeasurement.pxToTwipDouble(dpx.getHeight());
+        long cx;
+        long cy;
+        if (imageWidthTwips > writableWidthTwips) {
+            cx = UnitsOfMeasurement.twipToEMU(writableWidthTwips);
+            cy = UnitsOfMeasurement.twipToEMU(imageHeightTwips * writableWidthTwips / imageWidthTwips);
+        }
+        else {
+            cx = UnitsOfMeasurement.twipToEMU(imageWidthTwips);
+            cy = UnitsOfMeasurement.twipToEMU(imageHeightTwips);
+        }
+        return new Scale(cx, cy);
     }
 
     /// Creates a new run containing a single drawing.
@@ -449,16 +466,14 @@ public class WmlFactory {
 
     public static Inline newSVGInline(
             Relationship relationship,
-            ImageInfo imageInfo,
             PageDimensions pageDimensions,
             String altText,
             String filenameHint,
-            @Nullable Integer maxWidth
+            @Nullable Integer maxWidth,
+            Dimension2D dimensionPx
     )
             throws JAXBException {
-        var scale = maxWidth != null
-                ? BinaryPartAbstractImage.CxCy.scale(imageInfo, pageDimensions, maxWidth)
-                : BinaryPartAbstractImage.CxCy.scale(imageInfo, pageDimensions);
+        Scale scale = computeScale(pageDimensions, maxWidth != null ? maxWidth : -1, dimensionPx);
         String template = """
                 <wp:inline distB="0" distL="0" distR="0" distT="0"
                 xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -507,11 +522,11 @@ public class WmlFactory {
         var id1 = RANDOM.nextLong(100_000L);
         var id2 = RANDOM.nextInt(100_000);
 
-        var mappings = new HashMap<String, Object>();
-        mappings.put("cx", scale.getCx());
-        mappings.put("cy", scale.getCy());
-        mappings.put("id1", id1);
-        mappings.put("id2", id2);
+        var mappings = new HashMap<String, String>();
+        mappings.put("cx", Long.toString(scale.cx()));
+        mappings.put("cy", Long.toString(scale.cy()));
+        mappings.put("id1", Long.toString(id1));
+        mappings.put("id2", Integer.toString(id2));
         mappings.put("filenameHint", filenameHint);
         mappings.put("altText", altText);
         mappings.put("relId", relationship.getId());
@@ -519,4 +534,6 @@ public class WmlFactory {
         var jaxbElement = (JAXBElement<?>) XmlUtils.unmarshallFromTemplate(template, mappings);
         return (Inline) jaxbElement.getValue();
     }
+
+    record Scale(long cx, long cy) {}
 }

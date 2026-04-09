@@ -1,10 +1,5 @@
 package pro.verron.officestamper.utils.openpackaging;
 
-import org.apache.xmlgraphics.image.loader.ImageInfo;
-import org.apache.xmlgraphics.image.loader.ImageManager;
-import org.apache.xmlgraphics.image.loader.impl.DefaultImageContext;
-import org.apache.xmlgraphics.image.loader.impl.DefaultImageSessionContext;
-import org.apache.xmlgraphics.image.loader.spi.ImagePreloader;
 import org.docx4j.openpackaging.contenttype.ContentType;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
@@ -15,19 +10,18 @@ import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.XmlPart;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.utils.UtilsException;
 import pro.verron.officestamper.utils.svg.SvgUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.Dimension2D;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.Set;
 
-import static org.docx4j.openpackaging.contenttype.ContentTypes.*;
+import static org.docx4j.openpackaging.contenttype.ContentTypes.IMAGE_SVG;
 import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage.createImageName;
 
 /// Utility class for creating Open Packaging objects.
@@ -71,88 +65,48 @@ public class OpenpackagingFactory {
         part.setContentType(new ContentType(IMAGE_SVG));
         part.setDocument(new ByteArrayInputStream(bytes));
         var relationship = sourcePart.addTargetPart(part);
-        var imageInfo = SvgUtils.extractSVGImageInfo(bytes);
-        return new ImgPart(imageInfo, relationship);
+        var imageDimensions = SvgUtils.extractSVGImageInfo(bytes);
+        return new ImgPart(imageDimensions, relationship);
     }
 
     public static ImgPart newImgPart(OpcPackage opcPackage, Part sourcePart, byte[] bytes)
             throws Exception {
         if (bytes.length == 0) throw new Docx4JException("Can't create image from empty byte array");
-        var tmpImageFile = File.createTempFile("img", ".img");
-        var fos = new FileOutputStream(tmpImageFile);
-        fos.write(bytes);
-        fos.close();
-        var uri = tmpImageFile.toURI();
-        var url = uri.toURL();
-        var info = getSupportedImageInfo(url);
 
+        var imageInputStream = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes));
+        var imageReaders = ImageIO.getImageReaders(imageInputStream);
+        String formatName = null;
+        int width = 0;
+        int height = 0;
+        while (imageReaders.hasNext()) {
+            var imageReader = imageReaders.next();
+            imageReader.setInput(imageInputStream);
+            formatName = imageReader.getFormatName()
+                                    .toLowerCase();
+            var image = imageReader.read(0);
+            width = image.getWidth();
+            height = image.getHeight();
+        }
+        isSupported(formatName);
         var ctm = opcPackage.getContentTypeManager();
         if (sourcePart.getRelationshipsPart() == null) RelationshipsPart.createRelationshipsPartForPart(sourcePart);
-
         var relationshipsPart = sourcePart.getRelationshipsPart();
         var proposedRelId = relationshipsPart.getNextId();
-
-        var mimeType = info.getMimeType();
-        var ext = mimeType.substring(mimeType.indexOf("/") + 1);
-
-        var partName = createImageName(opcPackage, sourcePart, proposedRelId, ext);
-        var imagePart = (BinaryPartAbstractImage) ctm.newPartForContentType(mimeType, partName, null);
-
-        log.debug("created part {} with name {}",
-                imagePart.getClass()
-                         .getName(),
-                imagePart.getPartName()
-                         .toString());
-
+        var partName = createImageName(opcPackage, sourcePart, proposedRelId, formatName);
+        var imagePart = (BinaryPartAbstractImage) ctm.newPartForContentType("image/" + formatName, partName, null);
         imagePart.setBinaryData(new ByteArrayInputStream(bytes));
-
         var relationship = sourcePart.addTargetPart(imagePart, proposedRelId);
-        imagePart.getRels()
-                 .add(relationship);
-
-        return new ImgPart(info, relationship);
+        var relationships = imagePart.getRels();
+        relationships.add(relationship);
+        Dimension2D imageDimensions = new Dimension(width, height);
+        return new ImgPart(imageDimensions, relationship);
     }
 
-    private static @NonNull ImageInfo getSupportedImageInfo(URL url) {
-        ImageInfo info;
-        try {
-            info = getImageInfo(url);
-            var supportedImageTypes = Set.of(IMAGE_TIFF,
-                    IMAGE_EMF2,
-                    IMAGE_WMF,
-                    IMAGE_PNG,
-                    IMAGE_JPEG,
-                    IMAGE_GIF,
-                    IMAGE_BMP);
-            if (!supportedImageTypes.contains(info.getMimeType()))
-                throw new UtilsException("Unsupported linked image type.");
-        } catch (Exception e) {
-            throw new UtilsException("Error checking image format", e);
-        }
-        return info;
+    private static void isSupported(String type) {
+        var supportedImageTypes = Set.of("tiff", "emf", "wmf", "png", "jpeg", "gif", "bmp");
+        if (!supportedImageTypes.contains(type.toLowerCase()))
+            throw new UtilsException("Unsupported linked image type: " + type);
     }
 
-    private static ImageInfo getImageInfo(URL url)
-            throws Docx4JException {
-        var imageManager = new ImageManager(new DefaultImageContext());
-        var imageContext = imageManager.getImageContext();
-        try {
-            var sessionContext = new DefaultImageSessionContext(imageContext, null);
-            var source = sessionContext.needSource(url.toString());
-            var registry = imageManager.getRegistry();
-            var preloaderIterator = registry.getPreloaderIterator();
-            ImageInfo info;
-            while (preloaderIterator.hasNext()) {
-                var p = (ImagePreloader) preloaderIterator.next();
-                info = p.preloadImage(url.toString(), source, imageContext);
-                if (info != null) return info;
-            }
-        } catch (Exception e) {
-            log.warn(e.getMessage());
-            log.info(e.getMessage(), e);
-        }
-        throw new Docx4JException("Unsupported linked image type.");
-    }
-
-    public record ImgPart(ImageInfo imageInfo, Relationship relationship) {}
+    public record ImgPart(Dimension2D dimension, Relationship relationship) {}
 }

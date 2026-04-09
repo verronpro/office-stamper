@@ -101,25 +101,29 @@ public final class Image {
             var documentModel = document.getDocumentModel();
             var sections = documentModel.getSections();
             var lastSection = sections.getLast();
-            var lastSectionDimensions = lastSection.getPageDimensions();
+            var pageDimension = lastSection.getPageDimensions();
             Inline inline;
             if (SvgUtils.isSvg(bytes())) {
                 var imgPart = OpenpackagingFactory.newSvgPart(mlPackage, parts, this.bytes());
-                inline = WmlFactory.newSVGInline(imgPart.relationship(),
-                        imgPart.imageInfo(),
-                        lastSectionDimensions,
+                var relationship = imgPart.relationship();
+                var dimension = imgPart.dimension();
+                inline = WmlFactory.newSVGInline(relationship,
+                        pageDimension,
                         altText,
                         filenameHint,
-                        maxWidth);
+                        maxWidth,
+                        dimension);
             }
             else {
                 var imgPart = OpenpackagingFactory.newImgPart(mlPackage, parts, this.bytes());
-                inline = WmlFactory.newImgInline(imgPart.relationship(),
-                        imgPart.imageInfo(),
-                        lastSectionDimensions,
+                var relationship = imgPart.relationship();
+                var dimension = imgPart.dimension();
+                inline = WmlFactory.newImgInline(relationship,
+                        pageDimension,
                         filenameHint,
                         altText,
-                        maxWidth);
+                        maxWidth,
+                        dimension);
             }
             var drawing = WmlFactory.newDrawing(inline);
             return WmlFactory.newRun(drawing);

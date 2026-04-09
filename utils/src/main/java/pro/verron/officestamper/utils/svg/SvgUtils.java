@@ -1,8 +1,5 @@
 package pro.verron.officestamper.utils.svg;
 
-import org.apache.xmlgraphics.image.loader.ImageInfo;
-import org.apache.xmlgraphics.image.loader.ImageSize;
-import org.apache.xmlgraphics.util.MimeConstants;
 import org.docx4j.XmlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +7,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import pro.verron.officestamper.utils.UtilsException;
 
+import java.awt.*;
+import java.awt.geom.Dimension2D;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
@@ -28,7 +27,7 @@ public class SvgUtils {
         return content.contains("<svg") || content.contains("http://www.w3.org/2000/svg");
     }
 
-    public static ImageInfo extractSVGImageInfo(byte[] bytes) {
+    public static Dimension2D extractSVGImageInfo(byte[] bytes) {
         var documentBuilder = XmlUtils.getNewDocumentBuilder();
         Document doc;
         try {
@@ -57,11 +56,7 @@ public class SvgUtils {
                 height = Double.parseDouble(vb[3]);
             }
         }
-
-        var imageSize = new ImageSize((int) width, (int) height, 72);
-        var imageInfo = new ImageInfo("whatever", MimeConstants.MIME_SVG);
-        imageInfo.setSize(imageSize);
-        return imageInfo;
+        return new Dimension((int) width, (int) height);
     }
 
     private static double parseLength(String value) {

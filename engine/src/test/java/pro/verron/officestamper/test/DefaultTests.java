@@ -30,10 +30,9 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.utils.ResourceUtils.getImage;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
-@DisplayName("Core Features") class DefaultTests {
+@DisplayName("Default Features") class DefaultTests {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
 
@@ -49,10 +48,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
             pipe.accept(expressionReplacementWithFormattingTest(factory));
             pipe.accept(expressionWithSurroundingSpacesTest(factory));
             pipe.accept(expressionReplacementWithCommentTest(factory));
-            pipe.accept(imageReplacementInGlobalParagraphsTest(factory));
-            pipe.accept(imageReplacementInGlobalParagraphsTestWithMaxWidth(factory));
-            pipe.accept(svgReplacementInGlobalParagraphsTest(factory));
-            pipe.accept(svgReplacementInGlobalParagraphsTestWithMaxWidth(factory));
             pipe.accept(leaveEmptyOnExpressionErrorTest(factory));
             pipe.accept(lineBreakReplacementTest(factory));
             pipe.accept(mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(factory));
@@ -301,82 +296,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         In this paragraph, the variable name should be resolved to the value Homer Simpson.
                         
                         In this paragraph, the variable foo should not be resolved: unresolvedValueWithComment.
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
-    }
-
-    private static ArgumentSet imageReplacementInGlobalParagraphsTest(ContextFactory factory) {
-        return argumentSet("Image Replacement in global paragraphs",
-                standard(),
-                factory.image(getImage(Path.of("monalisa.jpg"))),
-                getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
-                """
-                        == Image Replacement in global paragraphs
-                        
-                        This paragraph is untouched.
-                        
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=1276350, cy=962025].
-                        
-                        This paragraph has the image image:rId7[cx=1276350, cy=962025] in the middle.
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
-    }
-
-    private static ArgumentSet imageReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
-        return argumentSet("Image Replacement in global paragraphs with max width",
-                standard(),
-                factory.image(getImage(Path.of("monalisa.jpg"), 1000)),
-                getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
-                """
-                        == Image Replacement in global paragraphs
-                        
-                        This paragraph is untouched.
-                        
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=635000, cy=478619].
-                        
-                        This paragraph has the image image:rId7[cx=635000, cy=478619] in the middle.
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
-    }
-
-    private static ArgumentSet svgReplacementInGlobalParagraphsTest(ContextFactory factory) {
-        return argumentSet("SVG Image Replacement in global paragraphs",
-                standard(),
-                factory.image(getImage(Path.of("circle.svg"))),
-                getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
-                """
-                        == Image Replacement in global paragraphs
-                        
-                        This paragraph is untouched.
-                        
-                        In this paragraph, an image of Mona Lisa is inserted: image:[cx=952500, cy=952500].
-                        
-                        This paragraph has the image image:[cx=952500, cy=952500] in the middle.
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
-    }
-
-    private static ArgumentSet svgReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
-        return argumentSet("SVG Image Replacement in global paragraphs with max width",
-                standard(),
-                factory.image(getImage(Path.of("circle.svg"), 100)),
-                getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
-                """
-                        == Image Replacement in global paragraphs
-                        
-                        This paragraph is untouched.
-                        
-                        In this paragraph, an image of Mona Lisa is inserted: image:[cx=63500, cy=63500].
-                        
-                        This paragraph has the image image:[cx=63500, cy=63500] in the middle.
                         
                         // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         

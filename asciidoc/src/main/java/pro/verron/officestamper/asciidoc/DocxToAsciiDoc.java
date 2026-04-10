@@ -630,16 +630,26 @@ public final class DocxToAsciiDoc
         public Collection<AsciiDocModel.MacroBlock> all() {
             return ids.stream()
                       .map(map::get)
-                      .map(comment -> new AsciiDocModel.MacroBlock("comment",
-                              comment.id()
-                                     .toString(),
-                              List.of("start=\"%d,%d\"".formatted(comment.blockStart(), comment.lineStart()),
-                                      "end=\"%d,%d\"".formatted(comment.blockEnd(), comment.lineEnd()),
-                                      "value=\"%s\"".formatted(getCom(comment.id())))))
+                      .map(this::asBlock)
                       .toList();
         }
 
-        private String getCom(BigInteger id) {
+        private AsciiDocModel.MacroBlock asBlock(Comment comment) {
+            var id = comment.id();
+            var idStr = String.valueOf(id);
+            var blockStart = comment.blockStart();
+            var lineStart = comment.lineStart();
+            var blockEnd = comment.blockEnd();
+            var lineEnd = comment.lineEnd();
+            var commentMessage = extractComment(id);
+            var startProp = "start=\"%d,%d\"".formatted(blockStart, lineStart);
+            var endProp = "end=\"%d,%d\"".formatted(blockEnd, lineEnd);
+            var valueProp = "value=\"%s\"".formatted(commentMessage);
+            var list = List.of(startProp, endProp, valueProp);
+            return new AsciiDocModel.MacroBlock("comment", idStr, list);
+        }
+
+        private String extractComment(BigInteger id) {
             try {
                 return this.commentsPart.getContents()
                                         .getComment()

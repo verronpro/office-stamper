@@ -301,6 +301,8 @@ public final class DocxToAsciiDoc
         for (Object o : accessor.getContent()) {
             Object val = unwrap(o);
             switch (val) {
+                case CommentRangeStart crs -> commentRecorder.open(crs.getId(), blocks.size(), 0);
+                case CommentRangeEnd cre -> commentRecorder.close(cre.getId(), blocks.size(), 0);
                 case P p -> {
                     var headerLevel = getHeaderLevel(p);
                     var breakRecorder = new BreakRecorder();

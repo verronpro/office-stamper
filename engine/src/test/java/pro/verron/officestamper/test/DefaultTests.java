@@ -380,11 +380,27 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         return argumentSet("Null Pointer Resolution with Default SpEL Configuration",
                 standard().setExceptionResolver(ExceptionResolvers.passing()),
                 factory.nullishContext(),
-                getWordResource(Path.of("NullPointerResolution.docx")),
-                """
+                DocxFactory.makeWordResource("""
                         Deal with null references
                         
+                        Deal with: ${fullish_value ?: "Fullish value?!"}
                         
+                        Deal with: ${fullish.value ?: "Fullish value?!"}
+                        
+                        Deal with: ${fullish.li[0] ?: "Fullish value?!"}
+                        
+                        Deal with: ${fullish.li[2] ?: "Fullish value?!"}
+                        
+                        Deal with: ${nullish_value ?: "Nullish value!!"}
+                        
+                        Deal with: ${nullish.value ?: "Nullish value!!"}
+                        
+                        Deal with: ${nullish.li[0] ?: "Nullish value!!"}
+                        
+                        Deal with: ${nullish.li[2] ?: "Nullish value!!"}
+                        """),
+                """
+                        Deal with null references
                         
                         Deal with: Fullish1
                         
@@ -394,8 +410,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         Deal with: Fullish5
                         
-                        
-                        
                         Deal with: Nullish value!!
                         
                         Deal with: ${nullish.value ?: "Nullish value!!"}
@@ -404,9 +418,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         Deal with: ${nullish.li[2] ?: "Nullish value!!"}
                         
-                        
-                        
-                        // section {pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                        // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                         
                         """);
     }
@@ -460,11 +472,27 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                           .setEvaluationContextFactory(noopFactory())
                           .addResolver(Resolvers.nullToDefault("Nullish value!!")),
                 factory.nullishContext(),
-                getWordResource(Path.of("NullPointerResolution.docx")),
-                """
+                DocxFactory.makeWordResource("""
                         Deal with null references
                         
+                        Deal with: ${fullish_value ?: "Fullish value?!"}
                         
+                        Deal with: ${fullish.value ?: "Fullish value?!"}
+                        
+                        Deal with: ${fullish.li[0] ?: "Fullish value?!"}
+                        
+                        Deal with: ${fullish.li[2] ?: "Fullish value?!"}
+                        
+                        Deal with: ${nullish_value ?: "Nullish value!!"}
+                        
+                        Deal with: ${nullish.value ?: "Nullish value!!"}
+                        
+                        Deal with: ${nullish.li[0] ?: "Nullish value!!"}
+                        
+                        Deal with: ${nullish.li[2] ?: "Nullish value!!"}
+                        """),
+                """
+                        Deal with null references
                         
                         Deal with: Fullish1
                         
@@ -474,8 +502,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         Deal with: Fullish5
                         
-                        
-                        
                         Deal with: Nullish value!!
                         
                         Deal with: Nullish value!!
@@ -484,9 +510,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         Deal with: Nullish value!!
                         
-                        
-                        
-                        // section {pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                        // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                         
                         """);
     }

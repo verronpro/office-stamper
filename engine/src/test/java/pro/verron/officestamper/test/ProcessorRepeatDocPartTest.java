@@ -643,7 +643,7 @@ class ProcessorRepeatDocPartTest {
     void shouldImportImageDataInTheMainDocument(ContextFactory factory) {
         var stamper = docxPackageStamper(standard());
         var stamped = stamper.stamp(getWordResource(Path.of("ProcessorRepeatDocPart_Image.docx")),
-                factory.units(getImage(Path.of("butterfly.png")), getImage(Path.of("map.jpg"))));
+                factory.units(getImage(Path.of("sample-butterfly.png")), getImage(Path.of("sample-map.jpg"))));
         var actual = toAsciidoc(stamped);
         assertEquals("""
                 
@@ -680,7 +680,9 @@ class ProcessorRepeatDocPartTest {
                 
                 ${#root.images[0]}
                 """);
-        var context = Map.of("images", List.of(getImage(Path.of("butterfly.png")), getImage(Path.of("map.jpg"))));
+        var butterflyImage = Path.of("sample-butterfly.png");
+        var mapImage = Path.of("sample-map.jpg");
+        var context = Map.of("images", List.of(getImage(butterflyImage), getImage(mapImage)));
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals("""

@@ -164,8 +164,8 @@ public final class MapContextFactory
     /// TODO make a Simpsons version
     @Override
     public Object nullishContext() {
-        var stringList = List.of("Fullish3", "Fullish4", "Fullish5");
-        var subContext = Map.of("value", "Fullish2", "li", stringList);
+        var stringList = new ArrayList<>(List.of("Fullish3", "Fullish4", "Fullish5"));
+        var subContext = new HashMap<>(Map.of("value", "Fullish2", "li", stringList));
         Map<String, Object> stringObjectMap = new HashMap<>();
         stringObjectMap.put("fullish_value", "Fullish1");
         stringObjectMap.put("fullish", subContext);

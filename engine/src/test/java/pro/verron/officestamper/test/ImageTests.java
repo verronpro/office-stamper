@@ -60,9 +60,9 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
     @MethodSource("factories")
     @ParameterizedTest(name = "SVG Image Replacement in global paragraphs with max width")
-    private void svgReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
+    void svgReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
         testStamper(standard(),
-                factory.image(getImage(Path.of("circle.svg"), 100)),
+                factory.image(getImage(Path.of("sample-circle.svg"), 100)),
                 getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
                 """
                         == Image Replacement in global paragraphs
@@ -80,9 +80,9 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
     @MethodSource("factories")
     @ParameterizedTest(name = "SVG Image Replacement in global paragraphs")
-    private void svgReplacementInGlobalParagraphsTest(ContextFactory factory) {
+    void svgReplacementInGlobalParagraphsTest(ContextFactory factory) {
         testStamper(standard(),
-                factory.image(getImage(Path.of("circle.svg"))),
+                factory.image(getImage(Path.of("sample-circle.svg"))),
                 getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
                 """
                         == Image Replacement in global paragraphs
@@ -100,18 +100,18 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
     @MethodSource("factories")
     @ParameterizedTest(name = "Image Replacement in global paragraphs with max width")
-    private void imageReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
+    void imageReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
         testStamper(standard(),
-                factory.image(getImage(Path.of("monalisa.jpg"), 1000)),
+                factory.image(getImage(Path.of("sample-monalisa-50x50.jpg"), 100)),
                 getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
                 """
                         == Image Replacement in global paragraphs
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=635000, cy=478619].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=63500, cy=63500].
                         
-                        This paragraph has the image image:rId7[cx=635000, cy=478619] in the middle.
+                        This paragraph has the image image:rId7[cx=63500, cy=63500] in the middle.
                         
                         // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
@@ -120,18 +120,18 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
     @MethodSource("factories")
     @ParameterizedTest(name = "Image Replacement in global paragraphs")
-    private void imageReplacementInGlobalParagraphsTest(ContextFactory factory) {
+    void imageReplacementInGlobalParagraphsTest(ContextFactory factory) {
         testStamper(standard(),
-                factory.image(getImage(Path.of("monalisa.jpg"))),
+                factory.image(getImage(Path.of("sample-monalisa-50x50.jpg"))),
                 getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
                 """
                         == Image Replacement in global paragraphs
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=1276350, cy=962025].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=476250, cy=476250].
                         
-                        This paragraph has the image image:rId7[cx=1276350, cy=962025] in the middle.
+                        This paragraph has the image image:rId7[cx=476250, cy=476250] in the middle.
                         
                         // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         

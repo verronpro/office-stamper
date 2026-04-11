@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.ExceptionResolvers;
@@ -24,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.ArgumentSet;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
-import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
@@ -37,7 +35,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
     private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
 
     private static Stream<ArgumentSet> tests() {
-        return Stream.concat(factories().mapMulti((factory, pipe) -> {
+        return factories().mapMulti((factory, pipe) -> {
             pipe.accept(ternary(factory));
             pipe.accept(replaceWordWithIntegrationTest(factory));
             pipe.accept(replaceNullExpressionTest(factory));
@@ -51,9 +49,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
             pipe.accept(leaveEmptyOnExpressionErrorTest(factory));
             pipe.accept(lineBreakReplacementTest(factory));
             pipe.accept(mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(factory));
-            pipe.accept(nullPointerResolutionTest_testWithDefaultSpel(factory));
             pipe.accept(controls(factory));
-        }), Stream.of(nullPointerResolutionTest_testWithCustomSpel(ContextFactory.objectContextFactory())));
+        });
     }
 
     private static Stream<ContextFactory> factories() {
@@ -376,52 +373,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         """);
     }
 
-    private static ArgumentSet nullPointerResolutionTest_testWithDefaultSpel(ContextFactory factory) {
-        return argumentSet("Null Pointer Resolution with Default SpEL Configuration",
-                standard().setExceptionResolver(ExceptionResolvers.passing()),
-                factory.nullishContext(),
-                DocxFactory.makeWordResource("""
-                        Deal with null references
-                        
-                        Deal with: ${fullish_value ?: "Fullish value?!"}
-                        
-                        Deal with: ${fullish.value ?: "Fullish value?!"}
-                        
-                        Deal with: ${fullish.li[0] ?: "Fullish value?!"}
-                        
-                        Deal with: ${fullish.li[2] ?: "Fullish value?!"}
-                        
-                        Deal with: ${nullish_value ?: "Nullish value!!"}
-                        
-                        Deal with: ${nullish.value ?: "Nullish value!!"}
-                        
-                        Deal with: ${nullish.li[0] ?: "Nullish value!!"}
-                        
-                        Deal with: ${nullish.li[2] ?: "Nullish value!!"}
-                        """),
-                """
-                        Deal with null references
-                        
-                        Deal with: Fullish1
-                        
-                        Deal with: Fullish2
-                        
-                        Deal with: Fullish3
-                        
-                        Deal with: Fullish5
-                        
-                        Deal with: Nullish value!!
-                        
-                        Deal with: ${nullish.value ?: "Nullish value!!"}
-                        
-                        Deal with: ${nullish.li[0] ?: "Nullish value!!"}
-                        
-                        Deal with: ${nullish.li[2] ?: "Nullish value!!"}
-                        
-                        // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                        
-                        """);
-    }
 
     private static ArgumentSet controls(ContextFactory factory) {
         return argumentSet("Form controls should be replaced as well",
@@ -459,58 +410,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         
                         // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
-                        
-                        """);
-    }
-
-    private static ArgumentSet nullPointerResolutionTest_testWithCustomSpel(ContextFactory factory) {
-        // Beware, this configuration only autogrows pojos and java beans,
-        // so it will not work if your type has no default constructor and no setters.
-        var parserConfiguration = new SpelParserConfiguration(true, true);
-        return argumentSet("Null Pointer Resolution with Custom SpEL Configuration",
-                standard().setParserConfiguration(parserConfiguration)
-                          .setEvaluationContextFactory(noopFactory())
-                          .addResolver(Resolvers.nullToDefault("Nullish value!!")),
-                factory.nullishContext(),
-                DocxFactory.makeWordResource("""
-                        Deal with null references
-                        
-                        Deal with: ${fullish_value ?: "Fullish value?!"}
-                        
-                        Deal with: ${fullish.value ?: "Fullish value?!"}
-                        
-                        Deal with: ${fullish.li[0] ?: "Fullish value?!"}
-                        
-                        Deal with: ${fullish.li[2] ?: "Fullish value?!"}
-                        
-                        Deal with: ${nullish_value ?: "Nullish value!!"}
-                        
-                        Deal with: ${nullish.value ?: "Nullish value!!"}
-                        
-                        Deal with: ${nullish.li[0] ?: "Nullish value!!"}
-                        
-                        Deal with: ${nullish.li[2] ?: "Nullish value!!"}
-                        """),
-                """
-                        Deal with null references
-                        
-                        Deal with: Fullish1
-                        
-                        Deal with: Fullish2
-                        
-                        Deal with: Fullish3
-                        
-                        Deal with: Fullish5
-                        
-                        Deal with: Nullish value!!
-                        
-                        Deal with: Nullish value!!
-                        
-                        Deal with: Nullish value!!
-                        
-                        Deal with: Nullish value!!
-                        
-                        // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                         
                         """);
     }

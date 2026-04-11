@@ -14,7 +14,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
+import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 
 /// @author Joseph Verron
 class NullPointerResolutionTest {
@@ -27,7 +27,28 @@ class NullPointerResolutionTest {
     @ParameterizedTest
     void nullPointerResolutionTest_testThrowingCase(ContextFactory factory) {
         var context = factory.nullishContext();
-        var template = getWordResource("NullPointerResolution.docx");
+        var template = makeWordResource("""
+                Deal with null references
+                
+                
+                Deal with: ${fullish_value ?: "Fullish value?!"}
+                
+                Deal with: ${fullish.value ?: "Fullish value?!"}
+                
+                Deal with: ${fullish.li[0] ?: "Fullish value?!"}
+                
+                Deal with: ${fullish.li[2] ?: "Fullish value?!"}
+                
+                
+                Deal with: ${nullish_value ?: "Nullish value!!"}
+                
+                Deal with: ${nullish.value ?: "Nullish value!!"}
+                
+                Deal with: ${nullish.li[0] ?: "Nullish value!!"}
+                
+                Deal with: ${nullish.li[2] ?: "Nullish value!!"}
+                
+                """);
         var configuration = standard();
         var stamper = docxPackageStamper(configuration);
         assertThrows(OfficeStamperException.class, () -> stamper.stamp(template, context));

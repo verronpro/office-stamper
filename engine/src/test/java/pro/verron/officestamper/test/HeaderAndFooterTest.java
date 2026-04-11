@@ -32,7 +32,7 @@ class HeaderAndFooterTest {
     @MethodSource("factories")
     @ParameterizedTest
     void placeholders(ContextFactory factory) {
-        var context = factory.imagedName("Homer Simpson", getImage(Path.of("butterfly.png")));
+        var context = factory.imagedName("Homer Simpson", getImage(Path.of("sample-butterfly.png")));
         var template = getWordResource("ExpressionReplacementInHeaderAndFooterTest.docx");
         var config = standard().setExceptionResolver(ExceptionResolvers.passing());
         var stamper = OfficeStampers.docxPackageStamper(config);

@@ -71,7 +71,7 @@ public class OpenpackagingFactory {
 
     public static ImgPart newImgPart(OpcPackage opcPackage, Part sourcePart, byte[] bytes)
             throws Exception {
-        if (bytes.length == 0) throw new Docx4JException("Can't create image from empty byte array");
+        if (bytes.length == 0) throw new UtilsException("Can't create image from empty byte array");
 
         var imageInputStream = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes));
         var imageReaders = ImageIO.getImageReaders(imageInputStream);
@@ -81,19 +81,22 @@ public class OpenpackagingFactory {
         while (imageReaders.hasNext()) {
             var imageReader = imageReaders.next();
             imageReader.setInput(imageInputStream);
-            formatName = imageReader.getFormatName()
-                                    .toLowerCase();
+            formatName = imageReader.getFormatName();
             var image = imageReader.read(0);
             width = image.getWidth();
             height = image.getHeight();
         }
-        isSupported(formatName);
+        if (formatName == null) throw new UtilsException("Did not find a reader for that image");
+        var supportedImageTypes = Set.of("tiff", "emf", "wmf", "png", "jpeg", "gif", "bmp");
+        if (!supportedImageTypes.contains(formatName.toLowerCase()))
+            throw new UtilsException("Unsupported linked image type: " + formatName);
         var ctm = opcPackage.getContentTypeManager();
         if (sourcePart.getRelationshipsPart() == null) RelationshipsPart.createRelationshipsPartForPart(sourcePart);
         var relationshipsPart = sourcePart.getRelationshipsPart();
         var proposedRelId = relationshipsPart.getNextId();
         var partName = createImageName(opcPackage, sourcePart, proposedRelId, formatName);
-        var imagePart = (BinaryPartAbstractImage) ctm.newPartForContentType("image/" + formatName, partName, null);
+        var contentType = "image/%s".formatted(formatName.toLowerCase());
+        var imagePart = (BinaryPartAbstractImage) ctm.newPartForContentType(contentType, partName, null);
         imagePart.setBinaryData(new ByteArrayInputStream(bytes));
         var relationship = sourcePart.addTargetPart(imagePart, proposedRelId);
         var relationships = imagePart.getRels();
@@ -102,11 +105,6 @@ public class OpenpackagingFactory {
         return new ImgPart(imageDimensions, relationship);
     }
 
-    private static void isSupported(String type) {
-        var supportedImageTypes = Set.of("tiff", "emf", "wmf", "png", "jpeg", "gif", "bmp");
-        if (!supportedImageTypes.contains(type.toLowerCase()))
-            throw new UtilsException("Unsupported linked image type: " + type);
-    }
 
     public record ImgPart(Dimension2D dimension, Relationship relationship) {}
 }

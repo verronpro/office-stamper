@@ -17,6 +17,14 @@
         Minimal Java ImageIO plugin to detect EMF files and read metadata (width/height/bounds) without rendering.
     </description>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

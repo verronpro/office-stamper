@@ -2,6 +2,8 @@ package pro.verron.officestamper.asciidoc;
 
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TextUtils;
+import org.docx4j.com.microsoft.schemas.office.drawing.x2016.SVG.main.CTSVGBlip;
+import org.docx4j.dml.CTOfficeArtExtensionList;
 import org.docx4j.dml.Graphic;
 import org.docx4j.dml.picture.Pic;
 import org.docx4j.dml.wordprocessingDrawing.Anchor;
@@ -108,7 +110,17 @@ public final class DocxToAsciiDoc
         var ctShapePropertiesXfrmExt = ctShapePropertiesXfrm.getExt();
         var cx = ctShapePropertiesXfrmExt.getCx();
         var cy = ctShapePropertiesXfrmExt.getCy();
-        var embed = blip.getEmbed();
+        var embed = ofNullable(blip.getExtLst()).stream()
+                                                .map(CTOfficeArtExtensionList::getExt)
+                                                .flatMap(List::stream)
+                                                .filter(e -> Objects.equals(e.getUri(),
+                                                        "{96DAC541-7B7A-43D3-8B79-37D633B846F1}"))
+                                                .map(e -> (JAXBElement<?>) e.getAny())
+                                                .map(jaxbElement -> (CTSVGBlip) jaxbElement.getValue())
+                                                .map(CTSVGBlip::getEmbed)
+                                                .findFirst()
+                                                .orElse(blip.getEmbed());
+
         var map = Map.of("cx", String.valueOf(cx), "cy", String.valueOf(cy));
         return new AsciiDocModel.InlineImage(embed, map);
     }

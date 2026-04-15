@@ -692,18 +692,4 @@ public final class DocxToAsciiDoc
         }
     }
 
-    private static class InlineRecorder {
-        private final List<AsciiDocModel.Inline> inlines = new ArrayList<>();
-        private int size = 0;
-
-        public void add(AsciiDocModel.Inline inline) {
-            inlines.add(inline);
-            size += inline.text()
-                          .length();
-        }
-
-        public int size() {
-            return size;
-        }
-    }
 }

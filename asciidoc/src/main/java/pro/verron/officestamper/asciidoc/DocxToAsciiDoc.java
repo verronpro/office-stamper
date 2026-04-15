@@ -17,7 +17,6 @@ import org.docx4j.openpackaging.parts.WordprocessingML.StyleDefinitionsPart;
 import org.docx4j.vml.CTTextbox;
 import org.docx4j.wml.*;
 import org.docx4j.wml.PPrBase.PStyle;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +100,7 @@ public final class DocxToAsciiDoc
         return Optional.empty();
     }
 
-    private static AsciiDocModel.@NonNull InlineImage getInlineImage(Pic pic) {
+    private static AsciiDocModel.InlineImage getInlineImage(Pic pic) {
         var blipFill = pic.getBlipFill();
         var blip = blipFill.getBlip();
         var ctShapeProperties = pic.getSpPr();

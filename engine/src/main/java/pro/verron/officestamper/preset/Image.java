@@ -1,12 +1,10 @@
 package pro.verron.officestamper.preset;
 
-import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.wml.R;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory;
-import pro.verron.officestamper.utils.svg.SvgUtils;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.io.ByteArrayInputStream;
@@ -102,29 +100,15 @@ public final class Image {
             var sections = documentModel.getSections();
             var lastSection = sections.getLast();
             var pageDimension = lastSection.getPageDimensions();
-            Inline inline;
-            if (SvgUtils.isSvg(bytes())) {
-                var imgPart = OpenpackagingFactory.newSvgPart(mlPackage, parts, this.bytes());
-                var relationship = imgPart.relationship();
-                var dimension = imgPart.dimension();
-                inline = WmlFactory.newSVGInline(relationship,
-                        pageDimension,
-                        altText,
-                        filenameHint,
-                        maxWidth,
-                        dimension);
-            }
-            else {
-                var imgPart = OpenpackagingFactory.newImgPart(mlPackage, parts, this.bytes());
-                var relationship = imgPart.relationship();
-                var dimension = imgPart.dimension();
-                inline = WmlFactory.newImgInline(relationship,
-                        pageDimension,
-                        filenameHint,
-                        altText,
-                        maxWidth,
-                        dimension);
-            }
+            var imgPart = OpenpackagingFactory.newImgPart(mlPackage, parts, this.bytes());
+            var relationship = imgPart.relationship();
+            var imgFormat = imgPart.format();
+            var dimension = imgFormat.dimension();
+            var format = imgFormat.name();
+            var scale = WmlFactory.computeScale(pageDimension, maxWidth == null ? -1 : maxWidth, dimension);
+            var inline = format.equals("svg")
+                    ? WmlFactory.newSVGInline(relationship, filenameHint, altText, scale)
+                    : WmlFactory.newImgInline(relationship, filenameHint, altText, scale);
             var drawing = WmlFactory.newDrawing(inline);
             return WmlFactory.newRun(drawing);
         } catch (Exception e) {

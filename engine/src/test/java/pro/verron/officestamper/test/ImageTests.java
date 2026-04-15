@@ -106,9 +106,9 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:[cx=952500, cy=952500].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=952500, cy=952500].
                         
-                        This paragraph has the image image:[cx=952500, cy=952500] in the middle.
+                        This paragraph has the image image:rId9[cx=952500, cy=952500] in the middle.
                         
                         // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         

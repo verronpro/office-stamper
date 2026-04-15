@@ -35,6 +35,11 @@
             <artifactId>imageio-wmf</artifactId>
             <version>3.3</version>
         </dependency>
+        <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>imageio-svg</artifactId>
+            <version>3.3</version>
+        </dependency>
 
         <dependency>
             <groupId>org.docx4j</groupId>

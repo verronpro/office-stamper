@@ -34,6 +34,8 @@
         <module>asciidoc</module>
         <module>utils</module>
         <module>imageio-emf</module>
+        <module>imageio-wmf</module>
+        <module>imageio-svg</module>
     </modules>
 
     <properties>

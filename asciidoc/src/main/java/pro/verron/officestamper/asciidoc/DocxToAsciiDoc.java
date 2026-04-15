@@ -166,13 +166,11 @@ public final class DocxToAsciiDoc
                 case CTSmartTagRun tag -> {
                     var list = new ArrayList<String>();
                     list.add("start");
-                    Optional.ofNullable(tag.getElement())
-                            .ifPresent(e -> list.add("element=" + e));
-                    Optional.ofNullable(tag.getSmartTagPr())
-                            .stream()
-                            .map(CTSmartTagPr::getAttr)
-                            .flatMap(Collection::stream)
-                            .forEach(a -> list.add("%s=%s".formatted(a.getName(), a.getVal())));
+                    ofNullable(tag.getElement()).ifPresent(e -> list.add("element=" + e));
+                    ofNullable(tag.getSmartTagPr()).stream()
+                                                   .map(CTSmartTagPr::getAttr)
+                                                   .flatMap(Collection::stream)
+                                                   .forEach(a -> list.add("%s=%s".formatted(a.getName(), a.getVal())));
                     inlines.add(new AsciiDocModel.InlineMacro("tag", "", list));
                     inlines.addAll(toInlines(tag));
                     inlines.add(new AsciiDocModel.InlineMacro("tag", "", List.of("end")));

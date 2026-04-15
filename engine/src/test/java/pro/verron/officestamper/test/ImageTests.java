@@ -74,6 +74,25 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         """);
     }
 
+    @MethodSource("factories")
+    @ParameterizedTest(name = "Wmf Image Replacement in global paragraphs with max width")
+    void wmfReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
+        testStamper(standard(),
+                factory.image(getImage(Path.of("sample.wmf"), 100)),
+                getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
+                """
+                        == Image Replacement in global paragraphs
+                        
+                        This paragraph is untouched.
+                        
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=63500, cy=53515].
+                        
+                        This paragraph has the image image:rId7[cx=63500, cy=53515] in the middle.
+                        
+                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                        
+                        """);
+    }
 
     @MethodSource("factories")
     @ParameterizedTest(name = "Emf Image Replacement in global paragraphs with max width")

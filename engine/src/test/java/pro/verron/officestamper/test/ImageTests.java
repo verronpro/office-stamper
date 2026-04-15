@@ -116,8 +116,8 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
     }
 
     @MethodSource("factories")
-    @ParameterizedTest(name = "Image Replacement in global paragraphs with max width")
-    void imageReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
+    @ParameterizedTest(name = "JPG Image Replacement in global paragraphs with max width")
+    void jpgImageReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
         testStamper(standard(),
                 factory.image(getImage(Path.of("sample-monalisa-50x50.jpg"), 100)),
                 getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
@@ -137,7 +137,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
     @MethodSource("factories")
     @ParameterizedTest(name = "Image Replacement in global paragraphs")
-    void imageReplacementInGlobalParagraphsTest(ContextFactory factory) {
+    void jpgImageReplacementInGlobalParagraphsTest(ContextFactory factory) {
         testStamper(standard(),
                 factory.image(getImage(Path.of("sample-monalisa-50x50.jpg"))),
                 getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),

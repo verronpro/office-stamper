@@ -33,6 +33,7 @@
         <module>cli</module>
         <module>asciidoc</module>
         <module>utils</module>
+        <module>imageio-emf</module>
     </modules>
 
     <properties>

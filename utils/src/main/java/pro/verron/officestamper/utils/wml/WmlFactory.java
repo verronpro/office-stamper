@@ -12,7 +12,6 @@ import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.*;
 import org.docx4j.wml.Comments.Comment;
-import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.utils.UtilsException;
 
 import java.awt.geom.Dimension2D;
@@ -174,29 +173,20 @@ public class WmlFactory {
         return comments;
     }
 
-    /// Creates a new [Inline] object for the given image part, filename hint, and alt text.
+    /// Creates a new Inline object representing an image with the specified parameters, properly formatted for use
+    /// in Word documents. The image is defined using WordprocessingML and associated relationships.
     ///
-    /// @param filenameHint A hint for the filename of the image.
-    /// @param altText Alternative text for the image.
-    /// @param maxWidth The image width not to exceed, in points.
-    ///
-    /// @param dimensionPx
-    /// @return A new [Inline] object containing the specified image information.
-    ///
-    /// @throws UtilsException If there is an error creating the image inline.
-    public static Inline newImgInline(
-            Relationship relationship,
-            PageDimensions pageDimensions,
-            String filenameHint,
-            String altText,
-            @Nullable Integer maxWidth,
-            Dimension2D dimensionPx
-    ) {
+    /// @param relationship The relationship object that provides the relationship ID for the image.
+    /// @param filenameHint A hint for the file name of the image, used to set display names in the document.
+    /// @param altText The alternate text for the image, used for accessibility purposes.
+    /// @param scale The scale object that defines the dimensions (cx, cy) of the image in EMUs (English Metric Units).
+    /// @return An Inline object that represents the formatted image element to be embedded in the document.
+    /// @throws UtilsException If any error occurs during the creation of the Inline object.
+    public static Inline newImgInline(Relationship relationship, String filenameHint, String altText, Scale scale) {
         // creating random ids assuming unicity, id must not be too large otherwise Word cannot open the document
         var id1 = RANDOM.nextLong(100_000L);
         var id2 = RANDOM.nextInt(100_000);
         try {
-            Scale scale = computeScale(pageDimensions, maxWidth == null ? -1 : maxWidth, dimensionPx);
             String ml = """
                     <wp:inline distT="0" distB="0" distL="0" distR="0"
                       xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -245,7 +235,7 @@ public class WmlFactory {
         }
     }
 
-    private static Scale computeScale(PageDimensions pageDimensions, Integer maxWidth, Dimension2D dpx) {
+    public static Scale computeScale(PageDimensions pageDimensions, Integer maxWidth, Dimension2D dpx) {
         double writableWidthTwips = pageDimensions.getWritableWidthTwips();
         if (maxWidth > 0 && maxWidth < writableWidthTwips) writableWidthTwips = maxWidth;
         double imageWidthTwips = UnitsOfMeasurement.pxToTwipDouble(dpx.getWidth());
@@ -464,16 +454,8 @@ public class WmlFactory {
         return sdtRun;
     }
 
-    public static Inline newSVGInline(
-            Relationship relationship,
-            PageDimensions pageDimensions,
-            String altText,
-            String filenameHint,
-            @Nullable Integer maxWidth,
-            Dimension2D dimensionPx
-    )
+    public static Inline newSVGInline(Relationship relationship, String altText, String filenameHint, Scale scale)
             throws JAXBException {
-        Scale scale = computeScale(pageDimensions, maxWidth != null ? maxWidth : -1, dimensionPx);
         String template = """
                 <wp:inline distB="0" distL="0" distR="0" distT="0"
                 xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -535,5 +517,5 @@ public class WmlFactory {
         return (Inline) jaxbElement.getValue();
     }
 
-    record Scale(long cx, long cy) {}
+    public record Scale(long cx, long cy) {}
 }

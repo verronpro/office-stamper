@@ -1,7 +1,5 @@
 package pro.verron.officestamper.imageio.emf;
 
-import org.freehep.graphicsio.emf.EMFInputStream;
-import org.freehep.graphicsio.emf.EMFRenderer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,9 +7,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.stream.ImageInputStream;
-import java.awt.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,12 +23,6 @@ class EmfImageReaderTest {
         File emfFile = emfPath.toFile();
         assertTrue(emfFile.exists(), "Test EMF file not found: " + emfFile.getAbsolutePath());
 
-        // Expected dimensions via FreeHEP
-        Dimension expected;
-        try (var fis = new FileInputStream(emfFile); var emfIn = new EMFInputStream(fis)) {
-            var renderer = new EMFRenderer(emfIn);
-            expected = renderer.getSize();
-        }
         ImageIO.scanForPlugins();
         // Register the SPI programmatically to avoid relying on test classpath resources
         IIORegistry.getDefaultInstance()
@@ -48,8 +38,8 @@ class EmfImageReaderTest {
             reader.dispose();
 
             assertTrue(w > 0 && h > 0, "Non-positive dimensions returned");
-            assertEquals(expected.width, w, "Width should match FreeHEP renderer");
-            assertEquals(expected.height, h, "Height should match FreeHEP renderer");
+            assertEquals(5716, w, "Width should match FreeHEP renderer");
+            assertEquals(1511, h, "Height should match FreeHEP renderer");
         }
     }
 }

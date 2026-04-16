@@ -1,14 +1,11 @@
 package pro.verron.officestamper.imageio.emf;
 
-import javax.imageio.IIOException;
 import javax.imageio.ImageReader;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
 
-/**
- * Service Provider Interface (SPI) for the EMF ImageIO reader.
- */
+/// Service Provider Interface (SPI) for the EMF ImageIO reader.
 public final class EmfImageReaderSpi
         extends ImageReaderSpi {
 
@@ -17,8 +14,7 @@ public final class EmfImageReaderSpi
     private static final String[] MIMES = {"image/x-emf"};
 
     public EmfImageReaderSpi() {
-        super(
-                "Office-stamper",
+        super("Office-stamper",
                 "3.3",
                 NAMES,
                 SUFFIXES,
@@ -26,14 +22,20 @@ public final class EmfImageReaderSpi
                 EmfImageReader.class.getName(),
                 new Class[]{ImageInputStream.class},
                 null,
-                false, null, null, null, null,
-                false, null, null, null, null
-        );
+                false,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null);
     }
 
     @Override
-    public boolean canDecodeInput(Object source)
-            throws IIOException {
+    public boolean canDecodeInput(Object source) {
         if (!(source instanceof ImageInputStream iis)) return false;
         long pos = 0L;
         try {
@@ -51,8 +53,7 @@ public final class EmfImageReaderSpi
     }
 
     @Override
-    public ImageReader createReaderInstance(Object extension)
-            throws IIOException {
+    public ImageReader createReaderInstance(Object extension) {
         return new EmfImageReader(this);
     }
 

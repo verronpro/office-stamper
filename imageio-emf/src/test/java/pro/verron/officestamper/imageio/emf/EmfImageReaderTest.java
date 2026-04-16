@@ -12,8 +12,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("EMF ImageIO reader metadata tests")
-class EmfImageReaderTest {
+@DisplayName("EMF ImageIO reader metadata tests") class EmfImageReaderTest {
 
     @Test
     @DisplayName("sample-cat.emf: reader detects format and matches FreeHEP dimensions")
@@ -38,8 +37,8 @@ class EmfImageReaderTest {
             reader.dispose();
 
             assertTrue(w > 0 && h > 0, "Non-positive dimensions returned");
-            assertEquals(5716, w, "Width should match FreeHEP renderer");
-            assertEquals(1511, h, "Height should match FreeHEP renderer");
+            assertEquals(5716, w, "Width should match expectations");
+            assertEquals(1511, h, "Height should match expectations");
         }
     }
 }

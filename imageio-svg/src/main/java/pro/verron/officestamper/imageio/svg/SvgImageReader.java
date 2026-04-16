@@ -7,39 +7,31 @@ import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Minimal ImageIO reader for SVG that exposes only image dimensions.
- *
- * <p>
- * Size resolution strategy:
- * </p>
- * <ul>
- *   <li>If {@code width} and {@code height} attributes are present on the root {@code <svg>} element,
- *   parse them (supporting units: px, in, cm, mm, pt, pc). Convert to pixels assuming 96 DPI.</li>
- *   <li>Else, if {@code viewBox="minX minY width height"} is present, use the width/height in user units
- *   as pixels (CSS: 1 user unit equals 1 px at 96 DPI).</li>
- *   <li>Else, throw an {@link IIOException} as dimensions cannot be determined safely.</li>
- * </ul>
- */
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import static java.util.regex.Pattern.compile;
+
+/// Minimal ImageIO reader for SVG that exposes only image dimensions.
+///
+/// Size resolution strategy:
+///   - If `width` and `height` attributes are present on the root `<svg>` element,
+///     parse them (supporting units: px, in, cm, mm, pt, pc). Convert to pixels assuming 96 DPI.
+///   - Else, if `viewBox="minX minY width height"` is present, use the width/height in user units
+///     as pixels (CSS: 1 user unit equals 1 px at 96 DPI).
+///   - Else, throw an [IIOException] as dimensions cannot be determined safely.
 public final class SvgImageReader
         extends ImageReader {
 
-    private static final Pattern ROOT_TAG_PATTERN = Pattern.compile("<svg(?:[\n\r\t :][^>]*)?>",
-            Pattern.CASE_INSENSITIVE);
-    private static final Pattern WIDTH_ATTR = Pattern.compile("\\bwidth\\s*=\\s*\"([^\"]+)\"",
-            Pattern.CASE_INSENSITIVE);
-    private static final Pattern HEIGHT_ATTR = Pattern.compile("\\bheight\\s*=\\s*\"([^\"]+)\"",
-            Pattern.CASE_INSENSITIVE);
-    private static final Pattern VIEWBOX_ATTR = Pattern.compile("\\bviewBox\\s*=\\s*\"([^\"]+)\"",
-            Pattern.CASE_INSENSITIVE);
+    private static final Pattern ROOT_TAG_PATTERN = compile("<svg(?:[\n\r\t :][^>]*)?>", CASE_INSENSITIVE);
+    private static final Pattern WIDTH_ATTR = compile("\\bwidth\\s*=\\s*\"([^\"]+)\"", CASE_INSENSITIVE);
+    private static final Pattern HEIGHT_ATTR = compile("\\bheight\\s*=\\s*\"([^\"]+)\"", CASE_INSENSITIVE);
+    private static final Pattern VIEWBOX_ATTR = compile("\\bviewBox\\s*=\\s*\"([^\"]+)\"", CASE_INSENSITIVE);
 
     private Dimension cachedSize;
 
@@ -108,8 +100,7 @@ public final class SvgImageReader
 
             String viewBox = extractAttr(rootTag, VIEWBOX_ATTR);
             if (viewBox != null) {
-                String[] parts = viewBox.trim()
-                                        .split("[\n\r\t ]+");
+                String[] parts = viewBox.split("[\n\r\t ]+");
                 if (parts.length == 4) {
                     double vbW = parseNumber(parts[2]);
                     double vbH = parseNumber(parts[3]);
@@ -131,31 +122,24 @@ public final class SvgImageReader
 
     private static Integer tryParseCssPixels(String value) {
         if (value == null) return null;
-        String v = value.trim()
-                        .toLowerCase(Locale.ROOT);
+        String v = value.toLowerCase(Locale.ROOT);
         try {
-            if (v.endsWith("px")) {
-                return (int) Math.round(parseNumber(v.substring(0, v.length() - 2)));
+            Map<String, Integer> unitToPixels = new HashMap<>();
+            unitToPixels.put("px", 1);
+            unitToPixels.put("in", 96);
+            unitToPixels.put("cm", (int) (96.0 / 2.54));
+            unitToPixels.put("mm", (int) (96.0 / 25.4));
+            unitToPixels.put("pt", (int) (96.0 / 72.0)); // 1pt = 1/72in
+            unitToPixels.put("pc", 12); // 1pc = 12pt
+
+            for (var e : unitToPixels.entrySet()) {
+                var unit = e.getKey();
+                var pixelRatio = e.getValue();
+                var index = v.indexOf(unit);
+                if (index > -1) return (int) Math.round(parseNumber(v.substring(0, index)) * pixelRatio);
             }
-            else if (v.endsWith("in")) {
-                return (int) Math.round(parseNumber(v.substring(0, v.length() - 2)) * 96.0);
-            }
-            else if (v.endsWith("cm")) {
-                return (int) Math.round(parseNumber(v.substring(0, v.length() - 2)) * (96.0 / 2.54));
-            }
-            else if (v.endsWith("mm")) {
-                return (int) Math.round(parseNumber(v.substring(0, v.length() - 2)) * (96.0 / 25.4));
-            }
-            else if (v.endsWith("pt")) { // 1pt = 1/72in
-                return (int) Math.round(parseNumber(v.substring(0, v.length() - 2)) * (96.0 / 72.0));
-            }
-            else if (v.endsWith("pc")) { // 1pc = 12pt
-                return (int) Math.round(parseNumber(v.substring(0, v.length() - 2)) * (96.0 / 72.0) * 12.0);
-            }
-            else {
-                // Unitless: CSS says unitless length in <svg> is in user units; treat as px in common practice.
-                return (int) Math.round(parseNumber(v));
-            }
+            // Unitless: CSS says unitless length in <svg> is in user units; treat as px in common practice.
+            return (int) Math.round(parseNumber(v));
         } catch (NumberFormatException ex) {
             return null;
         }
@@ -163,7 +147,11 @@ public final class SvgImageReader
 
     private static String extractAttr(String tag, Pattern pattern) {
         Matcher m = pattern.matcher(tag);
-        return m.find() ? m.group(1) : null;
+        if (m.find()) {
+            var group = m.group(1);
+            return group.trim();
+        }
+        return null;
     }
 
     private static double parseNumber(String s) {
@@ -190,8 +178,7 @@ public final class SvgImageReader
     }
 
     @Override
-    public IIOMetadata getStreamMetadata()
-            throws IIOException {
+    public IIOMetadata getStreamMetadata() {
         return null;
     }
 
@@ -203,8 +190,7 @@ public final class SvgImageReader
     }
 
     @Override
-    public java.awt.image.BufferedImage read(int imageIndex, ImageReadParam param)
-            throws IIOException {
+    public BufferedImage read(int imageIndex, ImageReadParam param) {
         throw new UnsupportedOperationException("SVG rasterization is not supported by this reader");
     }
 }

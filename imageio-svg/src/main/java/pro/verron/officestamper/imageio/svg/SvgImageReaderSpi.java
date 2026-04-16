@@ -1,20 +1,15 @@
 package pro.verron.officestamper.imageio.svg;
 
-import javax.imageio.IIOException;
 import javax.imageio.ImageReader;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Minimal ImageIO SPI for SVG.
- *
- * <p>
- * Detects an SVG if the stream prefix contains a {@code <svg} root element (case-insensitive),
- * allowing optional XML declarations and whitespace.
- * </p>
- */
+/// Minimal ImageIO SPI for SVG.
+///
+/// Detects an SVG if the stream prefix contains a `<svg` root element (case-insensitive),
+/// allowing optional XML declarations and whitespace.
 public final class SvgImageReaderSpi
         extends ImageReaderSpi {
 
@@ -23,8 +18,7 @@ public final class SvgImageReaderSpi
     private static final String[] MIMES = {"image/svg+xml"};
 
     public SvgImageReaderSpi() {
-        super(
-                "Office-stamper",
+        super("Office-stamper",
                 "3.3",
                 NAMES,
                 SUFFIXES,
@@ -32,14 +26,20 @@ public final class SvgImageReaderSpi
                 SvgImageReader.class.getName(),
                 new Class[]{ImageInputStream.class},
                 null,
-                false, null, null, null, null,
-                false, null, null, null, null
-        );
+                false,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null);
     }
 
     @Override
-    public boolean canDecodeInput(Object source)
-            throws IIOException {
+    public boolean canDecodeInput(Object source) {
         if (!(source instanceof ImageInputStream iis)) return false;
         long pos;
         try {
@@ -48,8 +48,7 @@ public final class SvgImageReaderSpi
             int n = iis.read(buf);
             iis.seek(pos);
             if (n <= 0) return false;
-            String s = new String(buf, 0, n, StandardCharsets.UTF_8)
-                    .toLowerCase();
+            String s = new String(buf, 0, n, StandardCharsets.UTF_8).toLowerCase();
             // Skip XML declaration if any and test presence of <svg
             int idx = s.indexOf("<svg");
             if (idx >= 0) return true;
@@ -62,8 +61,7 @@ public final class SvgImageReaderSpi
     }
 
     @Override
-    public ImageReader createReaderInstance(Object extension)
-            throws IIOException {
+    public ImageReader createReaderInstance(Object extension) {
         return new SvgImageReader(this);
     }
 

@@ -7,20 +7,17 @@ import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Collections;
 import java.util.Iterator;
 
-/**
- * Minimal ImageIO reader for Placeable WMF that exposes only image dimensions.
- *
- * <p>
- * Implementation parses the 22-byte Placeable WMF header to get the bounding box in metafile units
- * and the {@code Inch} units-per-inch factor. Dimensions are converted to pixels using an estimated
- * DPI (96 by default). Rasterization is not supported and {@link #read(int, ImageReadParam)} throws.
- * </p>
- */
+/// Minimal ImageIO reader for Placeable WMF that exposes only image dimensions.
+///
+/// Implementation parses the 22-byte Placeable WMF header to get the bounding box in metafile units
+/// and the `Inch` units-per-inch factor. Dimensions are converted to pixels using an estimated
+/// DPI (96 by default). Rasterization is not supported and [#read(int, ImageReadParam)] throws.
 public final class WmfImageReader
         extends ImageReader {
 
@@ -142,8 +139,7 @@ public final class WmfImageReader
     }
 
     @Override
-    public IIOMetadata getStreamMetadata()
-            throws IIOException {
+    public IIOMetadata getStreamMetadata() {
         return null;
     }
 
@@ -155,8 +151,7 @@ public final class WmfImageReader
     }
 
     @Override
-    public java.awt.image.BufferedImage read(int imageIndex, ImageReadParam param)
-            throws IIOException {
+    public BufferedImage read(int imageIndex, ImageReadParam param) {
         throw new UnsupportedOperationException("WMF rasterization is not supported by this reader");
     }
 }

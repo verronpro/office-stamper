@@ -1,19 +1,14 @@
 package pro.verron.officestamper.imageio.wmf;
 
-import javax.imageio.IIOException;
 import javax.imageio.ImageReader;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
 
-/**
- * Minimal ImageIO SPI for WMF (Windows Metafile).
- *
- * <p>
- * It recognizes Placeable WMF files by their magic key {@code 0x9AC6CDD7} and
- * creates a {@link WmfImageReader} that exposes only dimensions (no rasterization).
- * </p>
- */
+/// Minimal ImageIO SPI for WMF (Windows Metafile).
+///
+/// It recognizes Placeable WMF files by their magic key `0x9AC6CDD7` and
+/// creates a [WmfImageReader] that exposes only dimensions (no rasterization).
 public final class WmfImageReaderSpi
         extends ImageReaderSpi {
 
@@ -22,8 +17,7 @@ public final class WmfImageReaderSpi
     private static final String[] MIMES = {"image/x-wmf", "image/wmf", "application/x-msmetafile"};
 
     public WmfImageReaderSpi() {
-        super(
-                "Office-stamper",
+        super("Office-stamper",
                 "3.3",
                 NAMES,
                 SUFFIXES,
@@ -31,14 +25,20 @@ public final class WmfImageReaderSpi
                 WmfImageReader.class.getName(),
                 new Class[]{ImageInputStream.class},
                 null,
-                false, null, null, null, null,
-                false, null, null, null, null
-        );
+                false,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null);
     }
 
     @Override
-    public boolean canDecodeInput(Object source)
-            throws IIOException {
+    public boolean canDecodeInput(Object source) {
         if (!(source instanceof ImageInputStream iis)) return false;
         long pos;
         try {
@@ -48,9 +48,7 @@ public final class WmfImageReaderSpi
             int read = iis.read(header);
             iis.seek(pos);
             if (read < 4) return false;
-            return (header[0] == (byte) 0xD7
-                    && header[1] == (byte) 0xCD
-                    && header[2] == (byte) 0xC6
+            return (header[0] == (byte) 0xD7 && header[1] == (byte) 0xCD && header[2] == (byte) 0xC6
                     && header[3] == (byte) 0x9A);
         } catch (IOException e) {
             try {iis.seek(0);} catch (IOException ignore) {}
@@ -59,8 +57,7 @@ public final class WmfImageReaderSpi
     }
 
     @Override
-    public ImageReader createReaderInstance(Object extension)
-            throws IIOException {
+    public ImageReader createReaderInstance(Object extension) {
         return new WmfImageReader(this);
     }
 

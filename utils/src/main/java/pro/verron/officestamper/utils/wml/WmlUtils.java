@@ -591,14 +591,12 @@ public final class WmlUtils {
         }
     }
 
-    /**
-     * Checks if the provided smart tag contains an attribute with the specified key and value.
-     *
-     * @param tag the smart tag to search for the attribute
-     * @param attrKey the key of the attribute to search for
-     * @param attrVal the value of the attribute to match
-     * @return true if the smart tag contains an attribute with the specified key and value, false otherwise
-     */
+    /// Checks if the provided smart tag contains an attribute with the specified key and value.
+    ///
+    /// @param tag the smart tag to search for the attribute
+    /// @param attrKey the key of the attribute to search for
+    /// @param attrVal the value of the attribute to match
+    /// @return true if the smart tag contains an attribute with the specified key and value, false otherwise
     public static boolean hasTagAttribute(CTSmartTagRun tag, String attrKey, String attrVal) {
         var smartTagPr = tag.getSmartTagPr();
         var smartTagPrAttr = smartTagPr.getAttr();

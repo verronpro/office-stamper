@@ -12,7 +12,18 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("EMF ImageIO reader metadata tests") class EmfImageReaderTest {
+/// Test class for validating the functionality of the EMF ImageIO reader.
+/// This class includes tests to ensure that the reader correctly identifies EMF
+/// image files, reads the format metadata, and verifies image dimensions against
+/// expected values. It also ensures that the ImageInputStream is properly initialized and
+/// integrates with the ImageIO framework as intended.
+/// The tests use the \`EmfImageReaderSpi\` service provider to register the EMF reader
+/// dynamically and validate its integration with the ImageIO API.
+/// Key aspects tested include:
+/// - Format detection of EMF images.
+/// - Validation of non-null and valid dimensions.
+/// - Comparison of actual dimensions with expected values.
+@DisplayName("EMF ImageIO reader metadata tests") public class EmfImageReaderTest {
 
     @Test
     @DisplayName("sample-cat.emf: reader detects format and matches FreeHEP dimensions")

@@ -12,8 +12,18 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("WMF ImageIO reader metadata tests")
-class WmfImageReaderTest {
+/// Test class for validating the functionality of the WMF ImageIO reader implementation.
+/// The tests in this class ensure that the WMF ImageIO reader correctly identifies
+/// WMF files and extracts metadata, including image dimensions, from the Placeable WMF header.
+/// Various assertions verify the accuracy of the extracted metadata and the robustness of
+/// the reader against common errors.
+/// Key functionality tested:
+/// - Proper detection of WMF format from the input data.
+/// - Accurate extraction of width and height values from the Placeable WMF header.
+/// - Validation of positive, expected dimensions based on a known test WMF file.
+/// This test uses JUnit 5 for structured test case organization and descriptive assertions.
+/// Tests depend on the existence of required test resources in the expected file paths.
+@DisplayName("WMF ImageIO reader metadata tests") public class WmfImageReaderTest {
 
     @Test
     @DisplayName("sample.wmf: reader detects format and extracts dimensions from Placeable header")

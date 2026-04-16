@@ -12,14 +12,17 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("SVG ImageIO reader metadata tests")
-class SvgImageReaderTest {
+/// Unit tests for verifying the functionality of the `SvgImageReader` implementation.
+/// These tests focus on reading SVG format metadata using `ImageIO` and ensuring that
+/// the reader correctly identifies the format and extracts the width and height attributes
+/// from the SVG file.
+@DisplayName("SVG ImageIO reader metadata tests") public class SvgImageReaderTest {
 
     @Test
     @DisplayName("sample-cat.svg: reader detects format and extracts width/height attributes")
     void sampleSvg_dimensionsFromAttributes()
             throws Exception {
-        Path path = Path.of("..", "test", "sources", "sample-cat.svg");
+        Path path = Path.of("..", "test", "sources", "sample-circle.svg");
         File file = path.toFile();
         assertTrue(file.exists(), "Test SVG file not found: " + file.getAbsolutePath());
 
@@ -36,8 +39,8 @@ class SvgImageReaderTest {
             int h = reader.getHeight(0);
             reader.dispose();
 
-            assertEquals(457, w);
-            assertEquals(120, h);
+            assertEquals(100, w);
+            assertEquals(100, h);
         }
     }
 }

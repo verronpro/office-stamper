@@ -41,7 +41,9 @@ public class OfficeStamperTest {
     }
 
     private static void writeOutputFile(OpcPackage opcPackage) {
-        if (!Boolean.parseBoolean(System.getProperty("keepOutputFile"))) return;
+        var keepOutputFile = System.getenv("keepOutputFile");
+        var parsedBoolean = Boolean.parseBoolean(keepOutputFile);
+        if (!parsedBoolean) return;
         var tempFile = createTempFile();
         log.info("Write to {}", tempFile.toString());
         writeFile(opcPackage, tempFile);

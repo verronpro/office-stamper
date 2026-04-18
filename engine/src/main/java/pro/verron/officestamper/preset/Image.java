@@ -4,12 +4,14 @@ import org.docx4j.wml.R;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.newImgPart;
+import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.findImgPart;
 
 /// This class describes an image, which will be inserted into a document.
 ///
@@ -100,7 +102,7 @@ public final class Image {
             var sections = documentModel.getSections();
             var lastSection = sections.getLast();
             var pageDimension = lastSection.getPageDimensions();
-            var imgPart = OpenpackagingFactory.newImgPart(mlPackage, parts, this.bytes());
+            var imgPart = findImgPart(mlPackage, parts, bytes()).orElseGet(() -> newImgPart(mlPackage, parts, bytes()));
             var relationship = imgPart.relationship();
             var imgFormat = imgPart.format();
             var dimension = imgFormat.dimension();

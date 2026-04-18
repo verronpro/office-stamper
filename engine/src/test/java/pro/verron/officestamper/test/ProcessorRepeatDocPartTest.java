@@ -648,9 +648,9 @@ class ProcessorRepeatDocPartTest {
         assertEquals("""
                 
                 
-                image:rId11[cx=6120130, cy=3060065]
+                image:rId12[cx=6120130, cy=3060065]
                 
-                image:rId12[cx=6120130, cy=3761840]
+                image:rId14[cx=6120130, cy=3761840]
                 
                 
                 
@@ -660,7 +660,7 @@ class ProcessorRepeatDocPartTest {
                 
                 Always rendered:
                 
-                image:rId13[cx=6120130, cy=3060065]
+                image:rId12[cx=6120130, cy=3060065]
                 
                 
                 
@@ -686,13 +686,13 @@ class ProcessorRepeatDocPartTest {
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals("""
-                image:rId4[cx=5732145, cy=2866073]
+                image:rId5[cx=5732145, cy=2866073]
                 
                 image:rId5[cx=5732145, cy=2866073]
                 
-                image:rId6[cx=5732145, cy=3523358]
+                image:rId8[cx=5732145, cy=3523358]
                 
-                image:rId7[cx=5732145, cy=2866073]
+                image:rId5[cx=5732145, cy=2866073]
                 
                 // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 

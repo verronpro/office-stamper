@@ -27,7 +27,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=63500, cy=63500].
                         
-                        This paragraph has the image image:rId9[cx=63500, cy=63500] in the middle.
+                        This paragraph has the image image:rId7[cx=63500, cy=63500] in the middle.
                         
                         // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
@@ -45,7 +45,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=63500, cy=64537].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=63500, cy=64537].
                         
                         This paragraph has the image image:rId7[cx=63500, cy=64537] in the middle.
                         
@@ -65,7 +65,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=63500, cy=63500].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=63500, cy=63500].
                         
                         This paragraph has the image image:rId7[cx=63500, cy=63500] in the middle.
                         
@@ -85,7 +85,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=63500, cy=53521].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=63500, cy=53521].
                         
                         This paragraph has the image image:rId7[cx=63500, cy=53521] in the middle.
                         
@@ -98,16 +98,16 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
     @ParameterizedTest(name = "Emf Image Replacement in global paragraphs with max width")
     void emfReplacementInGlobalParagraphsTestWithMaxWidth(ContextFactory factory) {
         testStamper(standard(),
-                factory.image(getImage(Path.of("sample-cat.emf"), 100)),
+                factory.image(getImage(Path.of("sample-cat.emf"), 1000)),
                 getWordResource(Path.of("ImageReplacementInGlobalParagraphsTest.docx")),
                 """
                         == Image Replacement in global paragraphs
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=63500, cy=16786].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=635000, cy=167860].
                         
-                        This paragraph has the image image:rId7[cx=63500, cy=16786] in the middle.
+                        This paragraph has the image image:rId7[cx=635000, cy=167860] in the middle.
                         
                         // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
@@ -127,7 +127,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=952500, cy=952500].
                         
-                        This paragraph has the image image:rId9[cx=952500, cy=952500] in the middle.
+                        This paragraph has the image image:rId7[cx=952500, cy=952500] in the middle.
                         
                         // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                         
@@ -145,7 +145,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=63500, cy=63500].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=63500, cy=63500].
                         
                         This paragraph has the image image:rId7[cx=63500, cy=63500] in the middle.
                         
@@ -165,7 +165,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=476250, cy=476250].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=476250, cy=476250].
                         
                         This paragraph has the image image:rId7[cx=476250, cy=476250] in the middle.
                         
@@ -185,7 +185,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                         
                         This paragraph is untouched.
                         
-                        In this paragraph, an image of Mona Lisa is inserted: image:rId6[cx=476250, cy=476250].
+                        In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=476250, cy=476250].
                         
                         This paragraph has the image image:rId7[cx=476250, cy=476250] in the middle.
                         

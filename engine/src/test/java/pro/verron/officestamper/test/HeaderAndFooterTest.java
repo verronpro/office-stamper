@@ -51,7 +51,7 @@ class HeaderAndFooterTest {
                 In this paragraph, the variable foo should not be resolved: ${foo}.
                 
                 [header]
-                Here, the picture should be resolved image:rId1[cx=5760720, cy=2880360].
+                Here, the picture should be resolved image:rId2[cx=5760720, cy=2880360].
                 
                 --
                 

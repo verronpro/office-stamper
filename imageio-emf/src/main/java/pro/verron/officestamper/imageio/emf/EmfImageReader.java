@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Collections;
 import java.util.Iterator;
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.metadata.IIOMetadataFormat;
+import org.w3c.dom.Node;
 
 /// Minimal ImageIO reader for EMF (Enhanced Metafile) that exposes only image metadata
 /// (width, height, bounds). No rasterization is performed and [#read(int, ImageReadParam)]
@@ -195,13 +198,11 @@ public final class EmfImageReader
     }
 
     @Override
-    public IIOMetadata getImageMetadata(int imageIndex)
-            throws IIOException {
-        // Minimal implementation – no per-image metadata yet.
-        // TODO: Return a minimal IIOMetadata with width/height/bounds if consumers expect it.
-        checkImageIndex(imageIndex);
-        return null;
-    }
+    public IIOMetadata getImageMetadata(int imageIndex) throws IOException {
+    checkImageIndex(imageIndex);
+    Dimension size = getOrParseSize();
+    return new EMFMetadata(size.width, size.height);
+}
 
     @Override
     public java.awt.image.BufferedImage read(int imageIndex, ImageReadParam param)
@@ -213,4 +214,49 @@ public final class EmfImageReader
     public boolean canReadRaster() {
         return false;
     }
+}
+
+private static class EMFMetadata extends IIOMetadata {
+    private final int width;
+    private final int height;
+
+    protected EMFMetadata(int width, int height) {
+        super(false,
+              "javax_imageio_1.0",
+              "com.github.jaiimageio.impl.EMFMetadataFormat",
+              null, null);
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    public Node getAsTree(String formatName) {
+        if (formatName.equals(nativeMetadataFormatName)) {
+            IIOMetadataNode root = new IIOMetadataNode(nativeMetadataFormatName);
+            
+            IIOMetadataNode dimension = new IIOMetadataNode("Dimension");
+            
+            IIOMetadataNode widthNode = new IIOMetadataNode("PixelWidth");
+            widthNode.setAttribute("value", Integer.toString(width));
+            
+            IIOMetadataNode heightNode = new IIOMetadataNode("PixelHeight");
+            heightNode.setAttribute("value", Integer.toString(height));
+            
+            dimension.appendChild(widthNode);
+            dimension.appendChild(heightNode);
+            root.appendChild(dimension);
+            
+            return root;
+        }
+        throw new IllegalArgumentException("Unsupported format: " + formatName);
+    }
+
+    @Override public boolean isReadOnly() { return true; }
+    @Override public IIOMetadataFormat getMetadataFormat() { return null; }
+    @Override public void reset() { }
+    @Override public IIOMetadataNode getAsTree() { return (IIOMetadataNode) getAsTree(nativeMetadataFormatName); }
+    @Override public boolean isStandardMetadataFormatSupported() { return true; }
+    @Override public String getNativeMetadataFormatName() { return nativeMetadataFormatName; }
+    @Override public void setFromTree(String formatName, Node root) { throw new UnsupportedOperationException(); }
+    @Override public void mergeTree(String formatName, Node root) { throw new UnsupportedOperationException(); }
 }

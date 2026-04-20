@@ -7,7 +7,7 @@
     <parent>
         <groupId>pro.verron.office-stamper</groupId>
         <artifactId>office-stamper</artifactId>
-        <version>3.3</version>
+        <version>3.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -23,22 +23,22 @@
         <dependency>
             <groupId>pro.verron.office-stamper</groupId>
             <artifactId>utils</artifactId>
-            <version>3.3</version>
+            <version>3.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>pro.verron.office-stamper</groupId>
             <artifactId>imageio-emf</artifactId>
-            <version>3.3</version>
+            <version>3.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>pro.verron.office-stamper</groupId>
             <artifactId>imageio-wmf</artifactId>
-            <version>3.3</version>
+            <version>3.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>pro.verron.office-stamper</groupId>
             <artifactId>imageio-svg</artifactId>
-            <version>3.3</version>
+            <version>3.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>pro.verron.office-stamper</groupId>
             <artifactId>asciidoc</artifactId>
-            <version>3.3</version>
+            <version>3.4-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>

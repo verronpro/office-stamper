@@ -1,0 +1,72 @@
+= Compatibility Matrix
+
+This page summarizes the versions of Java and Docx4J known to work with each Office‑stamper version, and lists notes about DOCX “producers” (the applications used to author templates: Word, Google Docs, LibreOffice, WPS…).
+
+The goal is to help you quickly pick matching versions and be aware of common editor quirks.
+If something is unclear for your setup, please open an issue, and we will extend this page.
+
+== How to read this matrix
+
+* Java shows the minimum compiler/bytecode level required by that Office‑stamper line.
+Newer JDKs in the same major line usually work, but when the bytecode target is bumped, older JDKs will no longer run it.
+* Docx4J column lists the exact versions we test against; adjacent patch releases in the same stream usually work as well.
+* “Notes” provide important changes, (for example, a Java target bump) and links to additional tips.
+
+== Supported versions
+
+[cols="1,1,1,1,2"]
+|===
+| Office‑stamper | Java | Docx4J | Notes
+
+| 3.3.x          | 25  | 11.4.9-11, 11.5.0-11 | Current. See link:release-notes.html[Release Notes] for details.
+| 3.2.x          | 25  | 11.4.9-11, 11.5.0-11 | Uses Java 25 toolchain.
+| 3.1.x          | 25  | 11.4.9-11, 11.5.0-9  | Internal refactors; see Release Notes.
+| 3.0.x          | 25  | 11.4.9-11, 11.5.0-8  | Processing model overhaul; see link:release-notes.html[Release Notes].
+| 2.9.x          | 25  | 11.4.9-11, 11.5.0-6  | Java target bumped from 21 → 25 (see v2.9.0 notes).
+| 2.8.x          | 21  | 11.4.9-11,, 11.5.3   | Docs and test improvements; Google Docs support noted.
+| 2.7.x          | 21  | 11.4.9-11, 11.5.1    | —
+| 2.6.x          | 21  | 11.4.9-11, 11.5.0    | Java target bumped from 17 → 21.
+| 2.5.x          | 17  | 11.4.9-11, 11.5.0    | Last line requiring Java 17.
+|===
+
+Notes:
+
+* The root POM currently targets Java 25 and Docx4J 11.5.12, which applies to Office‑stamper 3.4.x at the time of writing.
+* We routinely test across several Docx4J 11.5.x versions; see link:release-notes.html[Release Notes] for the exact matrix per release.
+
+== DOCX producers (template editors)
+
+Different applications generate slightly different DOCX structures.
+Office‑stamper aims to be robust across the major producers, but here are practical notes and links to tips:
+
+=== Microsoft Word (Windows/Mac)
+
+* Recommended for authoring templates; feature‑complete for comments, content controls, fields, smart tags and images.
+* Templates created with recent Microsoft 365, 2021 and 2019 versions are known to work well.
+
+=== Google Docs
+
+* Supported for common scenarios.
+Google Docs can serialize comments, and some fields differently from Word.
+* If a comment‑based processor doesn’t trigger or tags appear missing, simplify formatting or recreate comments in Word.
+* See link:troubleshooting.html[Troubleshooting] for diagnostic tips.
+
+=== LibreOffice
+
+* Supported; prefer simple formatting when placing expressions and comment processors.
+* In some cases, advanced content controls/smart‑tags authored elsewhere may be flattened or altered.
+* If placeholders aren't detected, try recreating the selection or comments, or switch to Word for template authoring.
+
+=== WPS Office
+
+* Supported with caveats similar to LibreOffice.
+Some versions produce non‑standard anchors for comments.
+* Validate templates with a minimal reproduction if you rely heavily on nested comments or complex formatting.
+
+== Tips and references
+
+* link:troubleshooting.html[Troubleshooting]: common symptoms and fixes (expressions, comments, formatting, performance).
+* link:release-notes.html[Release Notes]: exact dependency versions and noteworthy changes per release.
+* link:https://github.com/verronpro/office-stamper/issues[Issue tracker]: search for your editor/JDK/Docx4J combo.
+
+If your environment isn't listed, or you validated additional combinations, feel free to contribute updates to this page.

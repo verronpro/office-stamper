@@ -29,16 +29,28 @@
             <groupId>pro.verron.office-stamper</groupId>
             <artifactId>imageio-emf</artifactId>
             <version>3.4-SNAPSHOT</version>
+            <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>pro.verron.office-stamper</groupId>
             <artifactId>imageio-wmf</artifactId>
             <version>3.4-SNAPSHOT</version>
+            <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>pro.verron.office-stamper</groupId>
             <artifactId>imageio-svg</artifactId>
             <version>3.4-SNAPSHOT</version>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>asciidoc</artifactId>
+            <version>3.4-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -97,12 +109,6 @@
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
             <version>1.4.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>pro.verron.office-stamper</groupId>
-            <artifactId>asciidoc</artifactId>
-            <version>3.4-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>

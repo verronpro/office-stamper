@@ -1,0 +1,41 @@
+= Office-stamper ImageIO EMF
+
+Minimal Java ImageIO plugin to detect EMF files and read metadata (width/height/bounds) without rendering.
+
+== Maven coordinates
+
+[source,xml]
+----
+<dependency>
+  <groupId>pro.verron.office-stamper</groupId>
+  <artifactId>imageio-emf</artifactId>
+  <version><!-- use the latest released version --></version>
+</dependency>
+----
+
+== Example (reading dimensions)
+
+[source,java]
+----
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import java.nio.file.Path;
+import java.util.Iterator;
+
+class EmfDimensionsExample {
+  static void main(String[] args) throws Exception {
+    try (var input = ImageIO.createImageInputStream(Path.of("diagram.emf").toFile())) {
+      Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("emf");
+      ImageReader reader = readers.next();
+      reader.setInput(input);
+      int width = reader.getWidth(0);
+      int height = reader.getHeight(0);
+    }
+  }
+}
+----
+
+== Links
+
+- Parent site: https://verronpro.github.io/office-stamper/
+- Module site: https://verronpro.github.io/office-stamper/imageio-emf/

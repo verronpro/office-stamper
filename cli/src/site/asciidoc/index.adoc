@@ -1,0 +1,44 @@
+= Office-stamper CLI
+
+The Command Line Interface (CLI) for Office-stamper lets you stamp DOCX templates from the terminal.
+It wraps the Engine module so you can generate documents without writing Java code.
+
+== Quick start
+
+Build the CLI fat JAR:
+
+[source,bash]
+----
+mvn -q -pl :cli -am -DskipTests package
+----
+
+Run it:
+
+[source,bash]
+----
+java -jar cli/target/cli-<VERSION>-jar-with-dependencies.jar --help
+----
+
+Replace `<VERSION>` with the built version.
+Use `--help` to discover available commands and options.
+
+== Typical usage
+
+[source,bash]
+----
+java -jar cli/target/cli-<VERSION>-jar-with-dependencies.jar \
+  --template path/to/template.docx \
+  --data path/to/data.json \
+  --out path/to/output.docx
+----
+
+Notes:
+
+- Templates use the same comment/processors and SpEL expressions as the Engine.
+- Input formats (JSON/CSV/etc.) depend on the selected command flags; see `--help` for details.
+
+== Links
+
+- Project homepage: https://github.com/verronpro/office-stamper
+- Engine documentation: https://verronpro.github.io/office-stamper/engine/
+- Module site: https://verronpro.github.io/office-stamper/cli/

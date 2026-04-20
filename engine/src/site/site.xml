@@ -25,6 +25,7 @@
             <item name="SpEL Functions" href="spel-functions.html"/>
             <item name="Custom Settings" href="custom-settings.html"/>
             <item name="Advanced Features" href="advanced-features.html"/>
+            <item name="Compatibility Matrix" href="compatibility.html"/>
             <item name="Troubleshooting" href="troubleshooting.html"/>
         </menu>
         <!-- Modules and Reports menus will aggregate content from all modules -->

@@ -1,0 +1,27 @@
+= Office-stamper Utils
+
+Utility classes and helpers shared across Office-stamper modules.
+These are primarily internal building blocks (iterators, XML helpers, etc.).
+
+== When to use
+
+You typically don’t need to depend on `utils` directly if you use the Engine or CLI.
+However, advanced users may pull it in for low-level document or iterator utilities.
+
+== Maven coordinates
+
+[source,xml]
+----
+<dependency>
+  <groupId>pro.verron.office-stamper</groupId>
+  <artifactId>utils</artifactId>
+  <version><!-- use the latest released version --></version>
+  <scope>compile</scope>
+  <!-- Engine already brings this transitively in most cases -->
+</dependency>
+----
+
+== Links
+
+- Engine documentation: https://verronpro.github.io/office-stamper/engine/
+- Module site: https://verronpro.github.io/office-stamper/utils/

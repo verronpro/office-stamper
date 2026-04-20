@@ -9,6 +9,14 @@
         <version>2.1.0</version>
     </skin>
     <body>
+        <menu name="Parent">
+            <item name="Parent" href="https://verronpro.github.io/office-stamper"/>
+        </menu>
+
+        <menu name="Module">
+            <item name="Overview" href="index.html"/>
+        </menu>
+
         <!-- Modules and Reports menus will aggregate content from all modules -->
         <menu ref="modules"/>
         <menu name="Reports" ref="reports"/>

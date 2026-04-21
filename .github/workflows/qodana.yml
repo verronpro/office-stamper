@@ -50,7 +50,7 @@ jobs:
           category: "/language:${{matrix.language}}"
 
       - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2025.2
+        uses: JetBrains/qodana-action@v2025.3.2
         with:
           args: |
             --baseline,qodana.sarif.json,

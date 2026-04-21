@@ -24,6 +24,11 @@
             <artifactId>engine</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>excel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>info.picocli</groupId>

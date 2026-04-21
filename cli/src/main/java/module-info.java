@@ -5,6 +5,7 @@
 /// `pro.verron.officestamper` and bundles parsing utilities (Jackson, OpenCSV).
 module pro.verron.officestamper.cli {
     requires pro.verron.officestamper; // engine
+    requires pro.verron.officestamper.excel; // excel context provider
 
     requires java.logging;
     requires java.xml;

@@ -14,18 +14,16 @@ It stamps DOCX (Word) and PPTX (PowerPoint) templates from a variety of input fo
 [source,bash]
 ----
 officestamper \
-  --input data.json \
-  --template template.docx \
-  --output output.docx \
-  --stamper word
+  -d data.json \
+  -t template.docx \
+  -o output.docx
 ----
 
 Options:
 
-* `-i, --input` (required): input data file or `diagnostic`
-* `-t, --template` (required): template file or `diagnostic`
-* `-o, --output` (default: `output.docx`): output path
-* `-s, --stamper` (default: `word`): `word` or `powerpoint`
+* `-d, --data` (required unless `--template=diagnostic`): data file, data directory, or `diagnostic`
+* `-t, --template` (required): template file (`.docx` or `.pptx`) or `diagnostic`
+* `-o, --output` (default: `output.docx`): output path (file or directory)
 
 == Module name
 

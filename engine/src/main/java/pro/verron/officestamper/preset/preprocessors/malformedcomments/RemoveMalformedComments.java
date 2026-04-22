@@ -77,7 +77,8 @@ public class RemoveMalformedComments
             }
         }
 
-        log.debug("These comments have been opened, but never closed: {}", openedCommentsIds);
+        if (!openedCommentsIds.isEmpty())
+            log.debug("These comments have been opened, but never closed: {}", openedCommentsIds);
         var malformedCommentIds = new ArrayList<>(openedCommentsIds);
 
         var mainDocumentPart = document.getMainDocumentPart();

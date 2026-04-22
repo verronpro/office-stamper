@@ -1,6 +1,6 @@
 = Office-stamper CLI
 
-The Command Line Interface (CLI) for Office-stamper lets you stamp DOCX templates from the terminal.
+The Command Line Interface (CLI) for Office-stamper lets you stamp DOCX or PPTX templates from the terminal.
 It wraps the Engine module so you can generate documents without writing Java code.
 
 == Quick start
@@ -22,20 +22,158 @@ java -jar cli/target/cli-<VERSION>-jar-with-dependencies.jar --help
 Replace `<VERSION>` with the built version.
 Use `--help` to discover available commands and options.
 
-== Typical usage
+== Synopsis
+
+[source]
+----
+officestamper \
+  -t|--template <template.docx|template.pptx|diagnostic> \
+  [-d|--data <file|dir|diagnostic>] \
+  [-o|--output <output.docx|outputDir>] \
+  [--dry-run] \
+  [--report <report.json>] \
+  [--log-format <human|json>]
+----
+
+The previous `--stamper` flag has been removed.
+Template type is auto‑detected by file extension.
+
+== Flags
+
+- `-t, --template`:: Template path.
+Supported: `.docx`, `.pptx`, or `diagnostic` (built‑in sample template).
+- `-d, --data`:: Data input.
+One of:
+** File: `json`, `yaml`, `yml`, `properties`, `csv`, `xlsx`, `xml`, `html`
+** Directory: special multi‑stamp behavior (see below)
+** Keyword: `diagnostic` (built‑in sample context)
+- `-o, --output` (default: `output.docx`):: Output target.
+Can be a file path or a directory.
+- `--dry-run`:: Validate template + data and variables without producing an output file.
+Fails on unresolved placeholders.
+- `--report`:: Optional JSON report file path.
+Contains run metadata and validation outcome.
+- `--log-format` (default: `human`):: Logging format: `human` for standard console logs, or `json` for structured logs printed to stdout.
+
+== Behavior
+
+=== Template auto‑detection
+
+- `.docx` → Word stamper
+- `.pptx` → PowerPoint stamper
+- `diagnostic` → uses an internally packaged DOCX demo template and generated context
+
+=== Directory data mode (multi‑stamp)
+
+When `--data` points to a directory:
+
+- For each top‑level file in the directory (with a supported extension), the CLI creates an individual context and stamps one output document.
+- For each immediate subfolder, all supported files inside that subfolder (recursively) are merged into a bigger context object, and one output document is stamped for that subfolder.
+
+Output naming rules when multiple documents are produced:
+
+- If `-o|--output` is an existing directory, outputs are written inside it as `<itemName>.docx|.pptx`.
+- If `-o|--output` is a single file path like `report.docx`, outputs are written next to it as `report-<itemName>.docx|.pptx`.
+- If `-o|--output` is a non‑existing path without an extension, it is treated as a directory and created as needed; outputs go inside it as `<itemName>.ext`.
+
+=== Dry‑run validation
+
+- Uses a strict resolver that throws on unresolved placeholders.
+- No output file is written.
+- Exit codes follow POSIX conventions (0 on success; non‑zero on failure).
+
+=== Structured JSON logging
+
+When `--log-format=json` is set, the CLI prints structured lines to stdout with the minimal schema:
+
+[source,json]
+----
+{ "ts": "2026-04-23T00:00:00Z", "level": "info", "msg": "Start", "fields": { "template": "invoice.docx", "dryRun": false } }
+----
+
+Other library logs are kept to a minimum and remain in human format.
+
+=== Report file format
+
+When `--report <file.json>` is provided, the CLI writes a JSON file similar to:
+
+[source,json]
+----
+{
+  "status": "ok|error",
+  "template": "<template>",
+  "data": "<data or <none>>",
+  "output": "<output path>",
+  "dryRun": true,
+  "timestamp": "<RFC 3339>",
+  "error": "<message if any>"
+}
+----
+
+When `--data` is a directory, the report aggregates results and includes an `items` array:
+
+[source,json]
+----
+{
+  "status": "ok|error",
+  "template": "<template>",
+  "data": "<data dir>",
+  "dryRun": false,
+  "timestamp": "<RFC 3339>",
+  "items": [
+    { "name": "a", "status": "ok", "output": "out/a.docx" },
+    { "name": "sales-q1", "status": "error", "error": "<message>" }
+  ]
+}
+----
+
+=== YAML support
+
+YAML input requires the `jackson-dataformat-yaml` dependency on the classpath.
+If missing, the CLI clearly reports the requirement.
+
+== Examples
+
+Stamp a DOCX template with JSON data:
 
 [source,bash]
 ----
 java -jar cli/target/cli-<VERSION>-jar-with-dependencies.jar \
-  --template path/to/template.docx \
-  --data path/to/data.json \
-  --out path/to/output.docx
+  -t invoice.docx \
+  -d data.json \
+  -o invoice-out.docx
 ----
 
-Notes:
+Validate without writing output and emit structured logs:
 
-- Templates use the same comment/processors and SpEL expressions as the Engine.
-- Input formats (JSON/CSV/etc.) depend on the selected command flags; see `--help` for details.
+[source,bash]
+----
+java -jar cli/target/cli-<VERSION>-jar-with-dependencies.jar \
+  --template invoice.docx \
+  --data data.json \
+  --dry-run \
+  --log-format json
+----
+
+Stamp once per file and per subfolder when data is a directory:
+
+[source,bash]
+----
+java -jar cli/target/cli-<VERSION>-jar-with-dependencies.jar \
+  -t report.docx \
+  -d ./data-dir \
+  -o ./out
+----
+
+Use the built‑in diagnostic template and context:
+
+[source,bash]
+----
+java -jar cli/target/cli-<VERSION>-jar-with-dependencies.jar \
+  -t diagnostic \
+  -d diagnostic \
+  -o diag.docx
+----
 
 == Links
 

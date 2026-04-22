@@ -1,6 +1,8 @@
 package pro.verron.officestamper.utils.image;
 
 import org.docx4j.openpackaging.contenttype.ContentTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.utils.UtilsException;
 
 import javax.imageio.ImageIO;
@@ -11,11 +13,16 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class ImgUtils {
+    private static final Logger log = LoggerFactory.getLogger(ImgUtils.class);
+
     public static Optional<ImgFormat> detectFormat(byte[] bytes) {
         var inputStream = new ByteArrayInputStream(bytes);
         try (var imageInputStream = ImageIO.createImageInputStream(inputStream)) {
             var readers = ImageIO.getImageReaders(imageInputStream);
-            if (!readers.hasNext()) return Optional.empty();
+            if (!readers.hasNext()) {
+                log.debug("Could not find an image reader for this file");
+                return Optional.empty();
+            }
             var reader = readers.next();
             reader.setInput(imageInputStream, false, false);
             var formatName = reader.getFormatName();

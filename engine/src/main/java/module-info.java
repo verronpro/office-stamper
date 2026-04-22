@@ -22,6 +22,7 @@
 module pro.verron.officestamper {
     requires spring.core;
     requires spring.expression;
+    uses javax.imageio.spi.ImageReaderSpi;
 
     requires transitive org.docx4j.core;
 

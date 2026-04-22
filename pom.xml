@@ -199,6 +199,9 @@
                     <version>3.5.5</version>
                     <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                        <systemPropertyVariables>
+                            <java.awt.headless>true</java.awt.headless>
+                        </systemPropertyVariables>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -274,7 +277,6 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>7.0.7</version>
-                <scope>compile</scope>
             </dependency>
 
             <dependency>
@@ -339,14 +341,14 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <!-- <reportSets>
+                <reportSets>
                     <reportSet>
                         <reports>
-                            <!- select non-aggregate reports -/>
+                            <!-- select non-aggregate reports -->
                             <report>report</report>
                         </reports>
                     </reportSet>
-                </reportSets>-->
+                </reportSets>
             </plugin>
         </plugins>
     </reporting>

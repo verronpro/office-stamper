@@ -25,6 +25,27 @@ Options:
 * `-t, --template` (required): template file (`.docx` or `.pptx`) or `diagnostic`
 * `-o, --output` (default: `output.docx`): output path (file or directory)
 
+== Windows packaging (EXE)
+
+Build a native Windows app-image that contains a console `officestamper.exe` launcher and an embedded runtime:
+
+[source,powershell]
+----
+mvn -pl :cli -am -P windows-exe -DskipTests package
+----
+
+Artifacts are generated under:
+
+- `cli/target/installer/officestamper/` — app image directory
+- `cli/target/installer/officestamper/officestamper.exe` — Windows launcher
+
+Notes:
+
+- Requires a JDK with `jpackage` (JDK 14+; tested with JDK 25).
+No WiX is required because we build an app-image, not an MSI.
+- The version embedded in the image is normalized (e.g., `3.4.0`) for `jpackage` compatibility.
+- Re-running the build cleans the previous app-image automatically.
+
 == Module name
 
 `pro.verron.officestamper.cli`

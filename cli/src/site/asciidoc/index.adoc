@@ -175,6 +175,28 @@ java -jar cli/target/cli-<VERSION>-jar-with-dependencies.jar \
   -o diag.docx
 ----
 
+== Native packaging (Windows)
+
+You can build a native Windows app-image that includes a console launcher `officestamper.exe` and an embedded Java runtime.
+
+Build command (from project root):
+
+[source,powershell]
+----
+mvn -pl :cli -am -P windows-exe -DskipTests package
+----
+
+Artifacts:
+
+- `cli/target/installer/officestamper/` — application image directory
+- `cli/target/installer/officestamper/officestamper.exe` — native Windows launcher
+
+Notes:
+
+- Requires a JDK with `jpackage` available (Java 14+; tested with JDK 25).
+- No WiX is required since we build an app-image (not an MSI installer).
+- The image version is normalized to numeric form for `jpackage` compatibility.
+
 == Links
 
 - Project homepage: https://github.com/verronpro/office-stamper

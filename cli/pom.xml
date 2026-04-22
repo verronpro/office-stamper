@@ -146,6 +146,96 @@
                 </plugins>
             </reporting>
         </profile>
+
+        <!-- Build a trimmed runtime image (jlink) and a Windows EXE installer (jpackage).
+             This profile is Windows-specific and requires a JDK that includes jlink/jpackage. -->
+        <profile>
+            <id>windows-exe</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Delete previous app-image to avoid jpackage failure when directory already exists -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>cleanup-jpackage-dest</id>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <target>
+                                        <delete dir="${project.build.directory}/installer/officestamper"
+                                                failonerror="false"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Produce numeric app.version from project.version for jpackage (no -SNAPSHOT allowed) -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>parse-version</id>
+                                <goals>
+                                    <goal>parse-version</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <propertyPrefix>parsedVersion</propertyPrefix>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Package the application as a Windows .exe; jpackage will drive jlink internally via jlinkOptions -->
+                    <plugin>
+                        <groupId>org.panteleyev</groupId>
+                        <artifactId>jpackage-maven-plugin</artifactId>
+                        <version>1.7.4</version>
+                        <executions>
+                            <execution>
+                                <id>make-windows-exe</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jpackage</goal>
+                                </goals>
+                                <configuration>
+                                    <name>officestamper</name>
+                                    <!-- Use numeric-only version, e.g. 3.4.0, as jpackage disallows SNAPSHOT/hyphens -->
+                                    <appVersion>
+                                        ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
+                                    </appVersion>
+                                    <vendor>Verron.pro</vendor>
+                                    <type>APP_IMAGE</type>
+                                    <destination>${project.build.directory}/installer</destination>
+                                    <!-- Use the fat JAR produced by the assembly plugin -->
+                                    <input>${project.build.directory}</input>
+                                    <mainJar>${project.artifactId}-${project.version}-jar-with-dependencies.jar
+                                    </mainJar>
+                                    <mainClass>pro.verron.officestamper.Main</mainClass>
+                                    <!-- Windows specific options -->
+                                    <winConsole>true</winConsole>
+                                    <!-- Avoid MSI to not require WiX; .exe should work out of the box -->
+                                    <arguments>
+                                        <!-- Pass nothing by default; users run from installed binary -->
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
 </project>

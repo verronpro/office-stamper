@@ -25,26 +25,64 @@ Options:
 * `-t, --template` (required): template file (`.docx` or `.pptx`) or `diagnostic`
 * `-o, --output` (default: `output.docx`): output path (file or directory)
 
-== Windows packaging (EXE)
+== Windows packaging (EXE installer with bundled runtime)
 
-Build a native Windows app-image that contains a console `officestamper.exe` launcher and an embedded runtime:
+Build a native Windows EXE installer that bundles a trimmed Java runtime.
+The installed app runs on machines without Java preinstalled and provides a console launcher `officestamper.exe`.
 
 [source,powershell]
 ----
 mvn -pl :cli -am -P windows-exe -DskipTests package
 ----
 
-Artifacts are generated under:
+Artifact is generated at:
 
-- `cli/target/installer/officestamper/` — app image directory
-- `cli/target/installer/officestamper/officestamper.exe` — Windows launcher
+- `cli/target/installer/officestamper-<VERSION>.exe` — Windows installer (self‑contained)
 
 Notes:
 
 - Requires a JDK with `jpackage` (JDK 14+; tested with JDK 25).
-No WiX is required because we build an app-image, not an MSI.
-- The version embedded in the image is normalized (e.g., `3.4.0`) for `jpackage` compatibility.
-- Re-running the build cleans the previous app-image automatically.
+WiX is NOT required for the EXE type.
+- The embedded application version is normalized (e.g., `3.4.0`) for `jpackage` compatibility.
+- Re-running the build cleans the previous output automatically.
+
+== Windows portable single-file EXE (no installer)
+
+Build a standalone, portable EXE that contains the app and the Java runtime.
+When executed, it self‑extracts to a temp directory and immediately runs `officestamper.exe` — no installation required.
+
+[WARNING]
+====
+Experimental: the Windows portable single‑file EXE is provided for convenience and is considered experimental.
+
+- It is a 7‑Zip self‑extracting archive that unpacks to a temporary directory on launch.
+- First‑run startup can be slower and may trigger Antivirus/SmartScreen warnings.
+- The binary is not code‑signed; Windows may show an "Unknown publisher" prompt.
+- No PATH integration, file associations, or auto‑update.
+- Packaging details and behavior may change between releases.
+
+For stable deployments, prefer the EXE installer profile.
+Please report issues you encounter.
+====
+
+Prerequisites:
+
+- Windows host with JDK that provides `jpackage` (JDK 14+; tested with JDK 25)
+- 7‑Zip installed and available on PATH (`7z.exe`) — standard 7‑Zip installation provides `7z.sfx`
+
+[source,powershell]
+----
+mvn -pl :cli -am -P windows-portable -DskipTests package
+----
+
+Artifact is generated at:
+
+- `cli/target/portable/officestamper-portable-<VERSION>.exe` — single portable EXE
+
+Notes:
+
+- The portable EXE is a 7‑Zip self‑extracting archive with an auto‑run configuration.
+- On first run it extracts to a temporary directory and launches immediately; temporary files are cleaned automatically when the process exits.
 
 == Module name
 

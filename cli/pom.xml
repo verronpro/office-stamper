@@ -197,7 +197,9 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Package the application as a Windows .exe; jpackage will drive jlink internally via jlinkOptions -->
+                    <!-- Package the application as a Windows EXE installer; jpackage will build and bundle
+                         a trimmed runtime image internally via addModules/jlinkOptions so the installer is
+                         self-contained on systems without Java installed. -->
                     <plugin>
                         <groupId>org.panteleyev</groupId>
                         <artifactId>jpackage-maven-plugin</artifactId>
@@ -216,7 +218,8 @@
                                         ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
                                     </appVersion>
                                     <vendor>Verron.pro</vendor>
-                                    <type>APP_IMAGE</type>
+                                    <!-- Build an EXE installer (standalone, bundles runtime). WiX is NOT required for EXE. -->
+                                    <type>EXE</type>
                                     <destination>${project.build.directory}/installer</destination>
                                     <!-- Use the fat JAR produced by the assembly plugin -->
                                     <input>${project.build.directory}</input>
@@ -225,11 +228,147 @@
                                     <mainClass>pro.verron.officestamper.Main</mainClass>
                                     <!-- Windows specific options -->
                                     <winConsole>true</winConsole>
+                                    <!-- Bundle the current JDK image as the application runtime to ensure a
+                                         self-contained installer even on systems without Java installed. -->
+                                    <runtimeImage>${java.home}</runtimeImage>
                                     <!-- Avoid MSI to not require WiX; .exe should work out of the box -->
                                     <arguments>
                                         <!-- Pass nothing by default; users run from installed binary -->
                                     </arguments>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Build a portable single-file EXE (self-extracting) that bundles the app-image and runtime.
+             Requirements:
+               - Windows host with JDK that provides jpackage
+               - 7-Zip installed and available on PATH (7z.exe) and the SFX module 7z.sfx present in the 7-Zip folder
+             Result:
+               - cli/target/portable/officestamper-portable-<version>.exe (single-file, no installer)
+        -->
+        <profile>
+            <id>windows-portable</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Ensure clean portable directory before packaging -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>cleanup-portable-dest</id>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <target>
+                                        <delete dir="${project.build.directory}/portable" failonerror="false"/>
+                                        <mkdir dir="${project.build.directory}/portable"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>run-jpackage-app-image</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Build APP_IMAGE using the current JDK's jpackage tool -->
+                                        <exec executable="${java.home}\bin\jpackage.exe" dir="${project.basedir}"
+                                              failonerror="true">
+                                            <arg value="--type"/>
+                                            <arg value="app-image"/>
+                                            <arg value="--name"/>
+                                            <arg value="officestamper"/>
+                                            <arg value="--dest"/>
+                                            <arg value="${project.build.directory}\portable"/>
+                                            <arg value="--input"/>
+                                            <arg value="${project.build.directory}"/>
+                                            <arg value="--main-jar"/>
+                                            <arg value="${project.artifactId}-${project.version}-jar-with-dependencies.jar"/>
+                                            <arg value="--main-class"/>
+                                            <arg value="pro.verron.officestamper.Main"/>
+                                            <arg value="--win-console"/>
+                                            <arg value="--runtime-image"/>
+                                            <arg value="${java.home}"/>
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Produce numeric app.version from project.version for jpackage (no -SNAPSHOT allowed) -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>parse-version-portable</id>
+                                <goals>
+                                    <goal>parse-version</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <propertyPrefix>parsedVersion</propertyPrefix>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Compose self-extracting EXE using 7-Zip SFX -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>make-portable-sfx</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Fail fast if 7z.exe is not available -->
+                                        <exec executable="cmd" failonerror="true">
+                                            <arg value="/c"/>
+                                            <arg value="where 7z"/>
+                                        </exec>
+
+                                        <!-- Copy SFX config from repository to target directory -->
+                                        <copy file="${project.basedir}/packaging/sfx-config.txt"
+                                              tofile="${project.build.directory}/portable/sfx-config.txt"/>
+
+                                        <!-- Create 7z payload from the app-image contents -->
+                                        <exec executable="cmd" dir="${project.build.directory}/portable/officestamper"
+                                              failonerror="true">
+                                            <arg value="/c"/>
+                                            <arg value="7z a -t7z -mx=7 -mmt=on ..\\payload.7z * -r"/>
+                                        </exec>
+
+                                        <!-- Compose the final portable EXE: 7z.sfx + config + payload.7z
+                                             Try %ProgramFiles% first, then %ProgramFiles(x86)% as fallback. -->
+                                        <mkdir dir="${project.build.directory}/portable"/>
+                                        <exec executable="cmd" dir="${project.build.directory}/portable"
+                                              failonerror="true">
+                                            <arg value="/c"/>
+                                            <arg value="if exist &quot;%ProgramFiles%\7-Zip\7z.sfx&quot; ( copy /b &quot;%ProgramFiles%\7-Zip\7z.sfx&quot;+&quot;${project.build.directory}\portable\sfx-config.txt&quot;+&quot;${project.build.directory}\portable\payload.7z&quot; &quot;${project.build.directory}\portable\officestamper-portable-${project.version}.exe&quot; ) else ( copy /b &quot;%ProgramFiles(x86)%\7-Zip\7z.sfx&quot;+&quot;${project.build.directory}\portable\sfx-config.txt&quot;+&quot;${project.build.directory}\portable\payload.7z&quot; &quot;${project.build.directory}\portable\officestamper-portable-${project.version}.exe&quot; )"/>
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>

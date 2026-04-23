@@ -1,0 +1,7 @@
+;!@Install@!UTF-8!
+Title=Office-stamper Portable
+ExtractTitle=Extracting Office-stamper Portable
+GUIMode="2"
+RunProgram="officestamper.exe"
+Delete=2
+;!@InstallEnd@!

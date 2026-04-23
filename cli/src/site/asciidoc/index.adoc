@@ -110,6 +110,75 @@ When `--report <file.json>` is provided, the CLI writes a JSON file similar to:
 }
 ----
 
+== Windows builds
+
+=== EXE installer (bundled runtime)
+
+Build a native Windows EXE installer that bundles a Java runtime:
+
+[source,powershell]
+----
+mvn -pl :cli -am -P windows-exe -DskipTests package
+----
+
+Artifact: `cli/target/installer/officestamper-<VERSION>.exe`
+
+=== Portable single-file EXE (no installer)
+
+Build a standalone EXE that self‑extracts to a temp directory and runs immediately:
+
+Prerequisites:
+
+- JDK with `jpackage` (14+)
+- 7‑Zip installed and available on PATH (`7z.exe`)
+
+[source,powershell]
+----
+mvn -pl :cli -am -P windows-portable -DskipTests package
+----
+
+Artifact: `cli/target/portable/officestamper-portable-<VERSION>.exe`
+
+[WARNING]
+====
+Experimental: the Windows portable single‑file EXE is provided for convenience and is considered experimental.
+
+- It is implemented as a 7‑Zip self‑extracting archive that unpacks to a temporary directory on launch.
+- First‑run startup can be slower and may trigger Antivirus/SmartScreen warnings.
+- The binary is not code‑signed; Windows may show an "Unknown publisher" prompt.
+- No PATH integration, file associations, or auto‑update.
+- Packaging details and behavior may change between releases.
+
+For stable deployments, prefer the EXE installer profile.
+Please report issues you encounter.
+====
+
+Notes:
+
+- The portable EXE is built as a 7‑Zip SFX that launches `officestamper.exe` after extraction.
+- Temporary files are cleaned automatically when the process exits.
+
+== Windows packaging (EXE installer with bundled runtime)
+
+Build a native Windows EXE installer that bundles a trimmed Java runtime.
+The installed app runs on machines without Java preinstalled and provides a console launcher `officestamper.exe`.
+
+[source,powershell]
+----
+mvn -pl :cli -am -P windows-exe -DskipTests package
+----
+
+Artifact is generated at:
+
+- `cli/target/installer/officestamper-<VERSION>.exe` — Windows installer (self‑contained)
+
+Notes:
+
+- Requires a JDK with `jpackage` (JDK 14+; tested with JDK 25).
+WiX is NOT required for the EXE type.
+- The embedded application version is normalized (e.g., `3.4.0`) for `jpackage` compatibility.
+- Re-running the build cleans the previous output automatically.
+
 When `--data` is a directory, the report aggregates results and includes an `items` array:
 
 [source,json]

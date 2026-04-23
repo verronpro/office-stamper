@@ -1,0 +1,55 @@
+name: Release portable Windows EXE
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-upload-portable-exe:
+    name: Build and upload portable EXE
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Temurin JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Show Java and Maven versions
+        run: |
+          java -version
+          mvn -version
+
+      - name: Install 7-Zip (CLI)
+        run: choco install 7zip -y
+
+      - name: Build portable EXE with Maven
+        run: mvn -pl :cli -am -P windows-portable,!windows-exe package
+
+      - name: Verify artifact exists
+        shell: pwsh
+        run: |
+          $artifact = Get-ChildItem -Path "cli/target/portable/officestamper-portable-*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $artifact) { Write-Error "Portable EXE was not produced." }
+          Write-Host "Found artifact: $($artifact.FullName)"
+
+      - name: Upload portable EXE to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: |
+            cli/target/portable/officestamper-portable-*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

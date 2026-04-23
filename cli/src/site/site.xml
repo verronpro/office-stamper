@@ -15,6 +15,7 @@
 
         <menu name="Module">
             <item name="Overview" href="index.html"/>
+            <item name="Quickstart (Windows)" href="quickstart-windows.html"/>
         </menu>
 
         <!-- Modules and Reports menus will aggregate content from all modules -->

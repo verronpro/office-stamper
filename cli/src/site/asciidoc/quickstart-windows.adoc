@@ -1,0 +1,159 @@
+\= Office-stamper Quickstart (Windows)
+
+This page helps first‑time Windows users stamp their first document in ~5 minutes.
+
+== What you’ll do
+
+1. Install the CLI (choose Installer EXE or Portable EXE)
+2. Run a one‑line command to stamp a DOCX template with JSON data
+3. Validate a template without writing any output (dry‑run)
+4. Optional: emit structured JSON logs (for automation/CI)
+
+== Prerequisites
+
+- Windows 10 or 11
+- No Java required when using our bundled builds (Installer or Portable)
+
+If you plan to run the fat JAR directly, you’ll need a JDK (Java 17+ recommended).
+
+== Install the CLI (pick one)
+
+=== Option A — Windows Installer (recommended)
+
+1. Download the latest `officestamper-<VERSION>.exe` from the project’s Releases page.
+2. Run the installer and follow the prompts.
+3. Launch the console app from the installation folder as `officestamper.exe`.
+
+=== Option B — Portable single‑file EXE (no installer)
+
+[WARNING]
+====
+Experimental packaging meant for convenience:
+
+- Implemented as a 7‑Zip self‑extracting archive that unpacks to a temporary directory
+- First‑run startup can be slower and may trigger Antivirus/SmartScreen prompts
+- Not code‑signed; Windows may show “Unknown publisher”
+- No PATH integration, file associations, or auto‑update
+====
+
+1. Download the latest `officestamper-portable-<VERSION>.exe` from Releases.
+2. Double‑click to run; it self‑extracts to a temp directory and starts immediately.
+
+== Your first stamp (5 minutes)
+
+We’ll create a tiny JSON file and stamp a DOCX template.
+
+=== 1) Prepare sample files
+
+Create a folder, for example `C:\\tmp\\os-demo`, and place:
+
+- `template.docx` — any Office‑stamper template (DOCX).
+If you don’t have one yet, use `diagnostic` in place of a file in the next step to try the built‑in sample template.
+- `data.json` — for example:
+
+[source,json]
+----
+{ "customer": { "name": "Ada Lovelace" }, "items": [ {"name": "Consulting", "qty": 1, "price": 1000 } ] }
+----
+
+=== 2) Run the CLI
+
+Open PowerShell in that folder and run:
+
+[source,powershell]
+----
+./officestamper.exe `
+  -t template.docx `
+  -d data.json `
+  -o output.docx
+----
+
+This writes `output.docx` in the current directory.
+
+Tip: If you don’t have a template yet, try the built‑in demo:
+
+[source,powershell]
+----
+./officestamper.exe -t diagnostic -d diagnostic -o diag.docx
+----
+
+=== 3) Directory data (multi‑stamp)
+
+Point `-d` to a directory to stamp multiple outputs:
+
+- Each top‑level supported file becomes its own context → one output per file
+- Each immediate subfolder is merged recursively into a single context → one output per subfolder
+
+[source,powershell]
+----
+./officestamper.exe -t report.docx -d .\data-dir -o .\out
+----
+
+Output naming rules:
+
+- If `-o` is an existing directory → writes `<itemName>.<ext>` inside it
+- If `-o` is a single file `report.docx` → writes `report-<itemName>.<ext>` next to it
+- If `-o` doesn’t exist and has no extension → treated as a directory and created
+
+== Validate without writing output (dry‑run)
+
+Use `--dry-run` to validate template + data strictly.
+Unresolved placeholders cause a non‑zero exit code.
+No output file is produced.
+
+[source,powershell]
+----
+./officestamper.exe -t template.docx -d data.json --dry-run
+----
+
+== Structured JSON logs (for automation/CI)
+
+Emit structured logs to stdout with `--log-format json`:
+
+[source,powershell]
+----
+./officestamper.exe -t template.docx -d data.json -o output.docx --log-format json
+----
+
+Minimal line schema (one JSON object per line):
+
+[source,json]
+----
+{ "ts": "2026-04-23T00:00:00Z", "level": "info|warn|error", "msg": "<message>",
+  "fields": { "template": "<path|diagnostic>", "data": "<path|diagnostic>",
+               "output": "<path|dir|none>", "dryRun": true,
+               "itemName": "<name when multi-stamp>", "durationMs": 123,
+               "error": "<message if any>" } }
+----
+
+== Supported input formats
+
+- Files: `json`, `yaml`/`yml` (requires `jackson-dataformat-yaml`), `properties`, `csv`, `xlsx`, `xml`, `html`
+
+[NOTE]
+====
+YAML requires the `jackson-dataformat-yaml` dependency on the classpath when running the fat JAR directly.
+Bundled Windows builds already include the runtime and typical parsers; if YAML is unavailable you will get a clear message.
+====
+
+== Exit codes
+
+- 0: success
+- non‑zero: validation or runtime failure (POSIX convention)
+
+== Troubleshooting
+
+- “Unknown publisher” or SmartScreen prompt (Portable EXE): the portable build is not code‑signed; choose “Run anyway” if you trust the binary.
+- Antivirus flagging (Portable EXE): portable is a self‑extracting archive; use the Installer EXE for fewer prompts.
+- “YAML support required”: add `jackson-dataformat-yaml` to the classpath when running the fat JAR, or convert YAML to JSON.
+- “Unresolved placeholder …” during `--dry-run`: provide the missing data key or adjust the template variable.
+
+== Uninstall / Cleanup
+
+- Installer EXE: use “Apps & features” to uninstall.
+- Portable EXE: simply delete the downloaded `.exe`; temporary extraction is cleaned up automatically when the process exits.
+
+== Next steps
+
+- Back to overview: link:index.html[CLI module site]
+- Explore the engine capabilities: link:../../engine/src/site/asciidoc/index.adoc[Engine docs]

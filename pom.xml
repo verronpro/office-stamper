@@ -41,7 +41,7 @@
 
     <properties>
         <docx4j.version>11.5.12</docx4j.version>
-        <javafx.version>27-ea+13</javafx.version>
+        <javafx.version>27-ea+14</javafx.version>
 
         <maven.compiler.release>25</maven.compiler.release>
         <maven.compiler.source>25</maven.compiler.source>

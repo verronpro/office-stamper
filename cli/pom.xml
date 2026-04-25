@@ -69,84 +69,14 @@
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>pro.verron.officestamper.Main</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
     </build>
 
     <profiles>
-        <profile>
-            <id>mut</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.pitest</groupId>
-                        <artifactId>pitest-maven</artifactId>
-                        <configuration>
-                            <jvmArgs>
-                                <jvmArg>--add-opens</jvmArg>
-                                <jvmArg>java.base/java.lang=ALL-UNNAMED</jvmArg>
-                            </jvmArgs>
-                            <features>
-                                <feature>+auto_threads</feature>
-                            </features>
-                            <useSlf4j>true</useSlf4j>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.pitest</groupId>
-                                <artifactId>pitest-junit5-plugin</artifactId>
-                                <version>1.2.3</version>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.slf4j</groupId>
-                                <artifactId>slf4j-nop</artifactId>
-                                <version>2.0.17</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>mutationCoverage</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <reporting>
-                <plugins>
-                    <plugin>
-                        <groupId>org.pitest</groupId>
-                        <artifactId>pitest-maven</artifactId>
-                    </plugin>
-                </plugins>
-            </reporting>
-        </profile>
-
         <!-- Build a trimmed runtime image (jlink) and a Windows EXE installer (jpackage).
              This profile is Windows-specific and requires a JDK that includes jlink/jpackage. -->
         <profile>
@@ -158,27 +88,6 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- Delete previous app-image to avoid jpackage failure when directory already exists -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>cleanup-jpackage-dest</id>
-                                <phase>prepare-package</phase>
-                                <configuration>
-                                    <target>
-                                        <delete dir="${project.build.directory}/installer/officestamper"
-                                                failonerror="false"/>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <!-- Produce numeric app.version from project.version for jpackage (no -SNAPSHOT allowed) -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>

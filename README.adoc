@@ -112,6 +112,25 @@ Comprehensive documentation is available at link:{docs}[verronpro.github.io/offi
 * link:{docs}/release-notes.html[Release Notes]
 * link:{docs}/contributing.html[Contributing]
 
+== Labeling conventions
+
+To keep the issue tracker consistent and easy to query, we use a small set of prefixed labels.
+
+Labels (apply as needed)
+
+* Exactly one type:* — e.g. `type: bug`, `type: feature`, `type: docs`, `type: test`, `type: refactor`, `type: performance`, `type: security`, `type: dependencies`, `type: research`, `type: epic`
+* One or more component:* — e.g. `component: engine`, `component: asciidoc`, `component: cli`, `component: imageio`, `component: excel`, `component: utils`
+* Optional tech:* — e.g. `tech: javafx`, `tech: docx4j`, `tech: graalvm`, `tech: junit`, `tech: qodana`
+* Optional format:* — e.g. `format: docx`, `format: pptx`, `format: odf`, `format: svg`, `format: emf`, `format: wmf`, `format: png`
+* Optional platform:* — `platform: windows`, `platform: linux`, `platform: macos`
+* Optional topic:* — for cross‑cutting themes (e.g. `topic: docx preview`, `topic: packaging`, `topic: observability`)
+* Status and priority — `status: needs triage`, `status: in progress`, `status: blocked`, `status: needs review`; `priority: P0-critical`, `priority: P1-high`, `priority: P2-normal`, `priority: P3-low`
+* Optional sizing — `size: XS|S|M|L|XL`
+
+Example
+
+* `type: feature`, `component: asciidoc`, `tech: javafx`, `topic: docx preview`, `format: png`, `status: in progress`, `priority: P2-normal`
+
 == Modules
 
 This repository is structured in several Maven/Java modules:

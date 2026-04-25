@@ -49,6 +49,15 @@ public class OpenpackagingFactory {
         }
     }
 
+    /// Creates a new [ImgPart] instance from the given [OpcPackage], source part, and image byte array.
+    /// This method detects the image format, validates its compatibility, and establishes
+    /// the necessary relationships within the package.
+    ///
+    /// @param opcPackage the [OpcPackage] to which this image part belongs
+    /// @param sourcePart the source [Part] where the relationship to the image part will be created
+    /// @param bytes the byte array containing image data
+    /// @return a new [ImgPart] containing the detected image format and its relationship
+    /// @throws UtilsException if byte array is empty, format cannot be detected, or image type is unsupported
     public static ImgPart newImgPart(OpcPackage opcPackage, Part sourcePart, byte[] bytes) {
         if (bytes.length == 0) throw new UtilsException("Can't create image from empty byte array");
 
@@ -73,7 +82,7 @@ public class OpenpackagingFactory {
         return new ImgPart(format, relationship);
     }
 
-    static Part createImagePart(byte[] bytes, ContentTypeManager ctm, String mimeType, String partName) {
+    private static Part createImagePart(byte[] bytes, ContentTypeManager ctm, String mimeType, String partName) {
         try {
             var imagePart = (BinaryPartAbstractImage) ctm.newPartForContentType(mimeType, partName, null);
             imagePart.setBinaryData(new ByteArrayInputStream(bytes));
@@ -83,7 +92,14 @@ public class OpenpackagingFactory {
         }
     }
 
-    static Relationship setupRelationship(Part sourcePart, Part targetPart, String relationshipId) {
+    /// Establishes a relationship between a source part and a target part using the specified relationship ID.
+    ///
+    /// @param sourcePart the source part from which the relationship originates
+    /// @param targetPart the target part to which the relationship points
+    /// @param relationshipId the unique identifier for the relationship
+    /// @return the created relationship between the source and target parts
+    /// @throws UtilsException if an error occurs while creating the relationship
+    public static Relationship setupRelationship(Part sourcePart, Part targetPart, String relationshipId) {
         try {
             var reuseExisting = RelationshipsPart.AddPartBehaviour.REUSE_EXISTING;
             return sourcePart.addTargetPart(targetPart, reuseExisting, relationshipId);

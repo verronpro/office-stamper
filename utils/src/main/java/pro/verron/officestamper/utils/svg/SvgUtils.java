@@ -11,6 +11,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+/// Utility class for working with SVG (Scalable Vector Graphics) documents.
+/// Provides methods to parse SVG data securely, mitigating common security risks
+/// such as XML External Entity (XXE) attacks.
 public class SvgUtils {
 
     private SvgUtils() {

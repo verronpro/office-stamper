@@ -47,6 +47,8 @@ public interface OfficeStamperConfiguration {
     /// instances used by the office stamper.
     ///
     /// @return the [EvaluationContextFactory] for creating SpEL EvaluationContext instances.
+    /// @deprecated since version 3.4, use alternative configuration method [#getSpelSecurityMode()]
+    @Deprecated(since = "3.4", forRemoval = true)
     EvaluationContextFactory getEvaluationContextFactory();
 
     /// Sets the [EvaluationContextFactory] for creating Spring Expression Language (SpEL) EvaluationContext instances.
@@ -55,6 +57,8 @@ public interface OfficeStamperConfiguration {
     ///         instances.
     ///
     /// @return the updated [OfficeStamperConfiguration] object.
+    /// @deprecated since version 3.4, use alternative configuration method [#setSpelSecurityMode(SecurityMode)]
+    @Deprecated(since = "3.4", forRemoval = true)
     OfficeStamperConfiguration setEvaluationContextFactory(EvaluationContextFactory evaluationContextFactory);
 
     /// Retrieves the map of expression functions associated with their corresponding classes.
@@ -165,7 +169,7 @@ public interface OfficeStamperConfiguration {
     /// @param postProcessor the PostProcessor instance to be added
     void addPostprocessor(PostProcessor postProcessor);
 
-    /// Retrieves the  parser configuration used by the office stamper.
+    /// Retrieves the parser configuration used by the office stamper.
     ///
     /// @return the [SpelParserConfiguration] instance.
     SpelParserConfiguration getParserConfiguration();
@@ -176,4 +180,38 @@ public interface OfficeStamperConfiguration {
     ///
     /// @return the updated [OfficeStamperConfiguration] object.
     OfficeStamperConfiguration setParserConfiguration(SpelParserConfiguration parserConfiguration);
+
+    /// Gets the current SpEL security mode.
+    ///
+    /// Defaults to [SecurityMode.RESTRICTED], which hardens the evaluation context to mitigate
+    /// risks such as type access, bean resolution, and constructor invocation.
+    ///
+    /// @return the current [SecurityMode] used for SpEL evaluation
+    SecurityMode getSpelSecurityMode();
+
+    /// Sets the SpEL security mode.
+    ///
+    /// Use [SecurityMode.RESTRICTED] for untrusted templates (default).
+    /// Use [SecurityMode.PERMISSIVE] only for trusted inputs when you need full SpEL capabilities.
+    ///
+    /// @param mode the desired [SecurityMode]
+    /// @return the updated [OfficeStamperConfiguration] object
+    OfficeStamperConfiguration setSpelSecurityMode(SecurityMode mode);
+
+    /// Indicates whether SVG safe mode is enabled.
+    ///
+    /// Defaults to [SecurityMode.RESTRICTED], which performs SVG parsing with hardened XML parser settings to
+    /// mitigate XXE/DTD and related risks. When disabled, a more permissive parser is used.
+    ///
+    /// @return the current [SecurityMode] used for SVG parsing
+    SecurityMode getSvgSecurityMode();
+
+    /// Enables or disables SVG safe mode.
+    ///
+    /// Safe mode is enabled by default to ensure secure SVG parsing. Disable only if you fully trust the SVG inputs
+    /// and need permissive behavior.
+    ///
+    /// @param mode the desired [SecurityMode]
+    /// @return the updated [OfficeStamperConfiguration] object
+    OfficeStamperConfiguration setSvgSecurityMode(SecurityMode mode);
 }

@@ -74,6 +74,38 @@ var configuration = OfficeStamperConfigurations.standard()
     .addResolver(new MyCustomResolver());
 ----
 
+== Security Modes
+
+Office-stamper is secure-by-default.
+
+- SpEL evaluation runs in a restricted mode that blocks risky features like type access (`T()`), bean resolution, constructor calls, and unrestricted static method invocation.
+- SVG parsing uses a hardened XML parser to mitigate XXE/DTD risks.
+
+You can opt into a permissive mode when working with trusted templates/inputs.
+
+[source,java]
+----
+import pro.verron.officestamper.api.SecurityMode;
+
+void main(){
+    // SpEL security mode (default: RESTRICTED)
+    var cfg = OfficeStamperConfigurations.standard()
+        .setSecurityMode(SecurityMode.PERMISSIVE); // enable full SpEL capabilities for trusted templates
+
+    // SVG safe mode (default: enabled)
+    cfg.setSvgSafeModeEnabled(false); // relax parser hardening for trusted SVG inputs
+}
+
+----
+
+You can also control modes via system properties:
+
+- `-Dofficestamper.spel.mode=restricted|permissive` (default: `restricted`)
+- `-Dofficestamper.svg.mode=restricted|permissive` (default: `restricted`)
+- Backward compatible: `-Dofficestamper.svg.safe=true|false` (default: `true`)
+
+Use permissive options only with fully trusted templates and assets.
+
 == Maven Coordinates
 
 [source,xml]

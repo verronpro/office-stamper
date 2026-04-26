@@ -4,6 +4,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.utils.svg.SvgUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,9 @@ public class DocxStamper
         this.interfaceFunctions = configuration.getExpressionFunctions();
         this.customFunctions = configuration.customFunctions();
         this.commentProcessors = configuration.getCommentProcessors();
+        // Apply global SVG safe-mode preference early so that any SVG manipulations during stamping honor it.
+        if (SecurityMode.PERMISSIVE.equals(configuration.getSvgSecurityMode())) SvgUtils.disableSafeMode();
+        else SvgUtils.enableSafeMode();
         this.engineFactory = processorContext -> {
             var parserConfiguration = configuration.getParserConfiguration();
             var exceptionResolver = configuration.getExceptionResolver();

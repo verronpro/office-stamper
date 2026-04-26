@@ -132,8 +132,43 @@ var configuration = OfficeStamperConfigurations.standard()
 At times, you might want more control over how expressions are evaluated.
 You can provide an `EvaluationContextFactory` to create the Spring `EvaluationContext` according to your requirements.
 
+== Security Modes
+
+=== SpEL Security Mode
+
+SpEL evaluation is secure-by-default.
+The default mode is `RESTRICTED`, which prevents unsafe features like type access (`T()`), bean resolution, constructor invocation, and unrestricted static calls.
+
+Switch to `PERMISSIVE` only for trusted templates:
+
 [source,java]
 ----
+
+import pro.verron.officestamper.api.SecurityMode;
+
+var configuration = OfficeStamperConfigurations.standard() .setSecurityMode(SecurityMode.PERMISSIVE);
+
+----
+
+You can also configure it via a system property:
+
+- `-Dofficestamper.spel.mode=restricted|permissive` (default: `restricted`)
+
+=== SVG Safe Mode
+
+SVG parsing uses a hardened XML parser by default.
+You can relax it for trusted inputs:
+
+[source,java]
+----
+
+var configuration = OfficeStamperConfigurations.standard() .setSvgSafeModeEnabled(false);
+
+----
+
+Or via system properties:
+
+- `-Dofficestamper.svg.mode=restricted|permissive` (default: `restricted`)
 import static pro.verron.officestamper.preset.EvaluationContextFactories.defaultFactory;
 import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 

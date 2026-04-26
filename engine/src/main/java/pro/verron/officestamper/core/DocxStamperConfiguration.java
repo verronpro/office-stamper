@@ -36,6 +36,8 @@ public class DocxStamperConfiguration
     private EvaluationContextFactory evaluationContextFactory;
     private SpelParserConfiguration parserConfiguration;
     private ExceptionResolver exceptionResolver;
+    private SecurityMode svgSecurityMode = SecurityMode.RESTRICTED;
+    private SecurityMode spelSecurityMode = SecurityMode.RESTRICTED;
 
     /// Constructs a new instance of the [DocxStamperConfiguration] class and initializes its default configuration
     /// settings.
@@ -225,7 +227,7 @@ public class DocxStamperConfiguration
     ///         of the function.
     @Override
     public void addCustomFunction(String name, Supplier<?> implementation) {
-        this.addCustomFunction(new CustomFunction(name, List.of(), args -> implementation.get()));
+        this.addCustomFunction(new CustomFunction(name, List.of(), _ -> implementation.get()));
     }
 
     /// Adds a custom function to the list of functions.
@@ -320,13 +322,50 @@ public class DocxStamperConfiguration
         return this;
     }
 
-    /// Resets all processors in the configuration.
-    public void resetCommentProcessors() {
-        this.commentProcessors.clear();
+    /// Gets the current SpEL security mode.
+    @Override
+    public SecurityMode getSpelSecurityMode() {
+        return spelSecurityMode;
     }
 
-    /// Resets all resolvers in the configuration.
-    public void resetResolvers() {
-        this.resolvers.clear();
+    /// Sets the SpEL security mode.
+    ///
+    /// Note: The actual [EvaluationContextFactory] selection is handled by presets
+    /// (e.g., in [OfficeStamperConfigurations]). This setter only stores the mode on the
+    /// configuration to be honored by the stamping engine.
+    @Override
+    public DocxStamperConfiguration setSpelSecurityMode(SecurityMode mode) {
+        this.spelSecurityMode = mode;
+        // Adjust the EvaluationContextFactory here directly to honor the selected mode.
+        this.evaluationContextFactory = switch (this.spelSecurityMode) {
+            case RESTRICTED -> EvaluationContextFactories.restrictedFactory();
+            case PERMISSIVE -> EvaluationContextFactories.permissiveFactory();
+        };
+        return this;
+    }
+
+    /// Indicates whether SVG safe mode is enabled.
+    ///
+    /// When enabled (default), SVG parsing is performed with hardened XML parser settings to mitigate XXE/DTD and
+    /// related risks. When disabled, a more permissive parser is used.
+    ///
+    /// @return the current SVG security mode
+    @Override
+    public SecurityMode getSvgSecurityMode() {
+        return svgSecurityMode;
+    }
+
+    /// Enables or disables SVG safe mode.
+    ///
+    /// Safe mode is enabled by default to ensure secure SVG parsing. Disable only if you fully trust the SVG inputs
+    /// and need permissive behavior.
+    ///
+    /// @param mode the SVG security mode to set
+    ///
+    /// @return the current instance of [DocxStamperConfiguration]
+    @Override
+    public DocxStamperConfiguration setSvgSecurityMode(SecurityMode mode) {
+        this.svgSecurityMode = mode;
+        return this;
     }
 }

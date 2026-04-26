@@ -146,7 +146,7 @@ Switch to `PERMISSIVE` only for trusted templates:
 
 import pro.verron.officestamper.api.SecurityMode;
 
-var configuration = OfficeStamperConfigurations.standard() .setSecurityMode(SecurityMode.PERMISSIVE);
+var configuration = OfficeStamperConfigurations.standard() .setSpelSecurityMode(SecurityMode.PERMISSIVE);
 
 ----
 
@@ -162,7 +162,7 @@ You can relax it for trusted inputs:
 [source,java]
 ----
 
-var configuration = OfficeStamperConfigurations.standard() .setSvgSafeModeEnabled(false);
+var configuration = OfficeStamperConfigurations.standard() .setSvgSecurityMode(SecurityMode.PERMISSIVE);
 
 ----
 

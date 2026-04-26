@@ -3,6 +3,7 @@ package pro.verron.officestamper.preset;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.SecurityMode;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 import pro.verron.officestamper.preset.CommentProcessorFactory.*;
 import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
@@ -214,6 +215,19 @@ public class OfficeStamperConfigurations {
     public static OfficeStamperConfiguration raw() {
         var defaultFactory = EvaluationContextFactories.defaultFactory();
         var defaultExceptionResolver = ExceptionResolvers.throwing();
-        return new DocxStamperConfiguration(defaultFactory, defaultExceptionResolver);
+        var configuration = new DocxStamperConfiguration(defaultFactory, defaultExceptionResolver);
+        // Honor system property: officestamper.spel.mode = restricted|permissive (default: restricted)
+        var spelModeProp = System.getProperty("officestamper.spel.mode");
+        var spelPermissive = spelModeProp != null && spelModeProp.equalsIgnoreCase("permissive");
+        configuration.setSpelSecurityMode(spelPermissive ? SecurityMode.PERMISSIVE : SecurityMode.RESTRICTED);
+        if (spelPermissive) {
+            configuration.setEvaluationContextFactory(EvaluationContextFactories.noopFactory());
+        }
+        // Honor system property: officestamper.svg.mode = restricted|permissive (default: restricted)
+        var svgModeProp = System.getProperty("officestamper.svg.mode");
+        configuration.setSvgSecurityMode(svgModeProp != null && svgModeProp.equalsIgnoreCase("permissive")
+                ? SecurityMode.PERMISSIVE
+                : SecurityMode.RESTRICTED);
+        return configuration;
     }
 }

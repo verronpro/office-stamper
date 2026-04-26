@@ -1,17 +1,14 @@
 package pro.verron.officestamper.preset;
 
 
-import org.springframework.expression.*;
-import org.springframework.expression.spel.SpelEvaluationException;
-import org.springframework.expression.spel.SpelMessage;
-import org.springframework.expression.spel.support.*;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.EvaluationContextFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
 
-import java.util.ArrayList;
-
 /// Utility class for configuring the [EvaluationContext] used by officestamper.
-public class EvaluationContextFactories {
+/// @deprecated since 3.4, for removal in a future version. The use of this class is no longer recommended.
+@Deprecated(since = "3.4", forRemoval = true) public class EvaluationContextFactories {
 
     private EvaluationContextFactories() {
         throw new OfficeStamperException("EvaluationContextConfigurers cannot be instantiated");
@@ -23,17 +20,10 @@ public class EvaluationContextFactories {
     /// and there is a trust that the template won't contain any dangerous injections.
     ///
     /// @return an [EvaluationContextFactory] instance
+    /// @deprecated since 3.4, for removal in a future version. The use of this factory is no longer recommended.
+    @Deprecated(since = "3.4", forRemoval = true)
     public static EvaluationContextFactory noopFactory() {
-        return object -> {
-            var standardEvaluationContext = new StandardEvaluationContext(object);
-            var reflectivePropertyAccessor = new ReflectivePropertyAccessor();
-            var mapAccessor = new MapAccessor();
-            var propertyAccessors = new ArrayList<PropertyAccessor>();
-            propertyAccessors.add(reflectivePropertyAccessor);
-            propertyAccessors.add(mapAccessor);
-            standardEvaluationContext.setPropertyAccessors(propertyAccessors);
-            return standardEvaluationContext;
-        };
+        return pro.verron.officestamper.api.EvaluationContextFactories.permissiveFactory();
     }
 
     /// Returns a default [EvaluationContextFactory] instance.
@@ -44,39 +34,10 @@ public class EvaluationContextFactories {
     /// potentially dangerous injections in the template.
     ///
     /// @return an [EvaluationContextFactory] instance with enhanced security features
+    /// @deprecated since 3.4, for removal in a future version. The use of this factory is no longer recommended.
+    @Deprecated(since = "3.4", forRemoval = true)
     public static EvaluationContextFactory defaultFactory() {
-        return object -> {
-            var standardEvaluationContext = new StandardEvaluationContext(object);
-
-            var propertyAccessor = DataBindingPropertyAccessor.forReadWriteAccess();
-            var mapAccessor = new MapAccessor();
-            var propertyAccessors = new ArrayList<PropertyAccessor>();
-            propertyAccessors.add(propertyAccessor);
-            propertyAccessors.add(mapAccessor);
-            standardEvaluationContext.setPropertyAccessors(propertyAccessors);
-
-            standardEvaluationContext.setConstructorResolvers(new ArrayList<>());
-
-            var instanceMethodInvocation = DataBindingMethodResolver.forInstanceMethodInvocation();
-            var methodResolvers = new ArrayList<MethodResolver>();
-            methodResolvers.add(instanceMethodInvocation);
-            standardEvaluationContext.setMethodResolvers(methodResolvers);
-
-            BeanResolver beanResolver = (_, _) -> {
-                throw new AccessException("Bean resolution not supported for security reasons.");
-            };
-            standardEvaluationContext.setBeanResolver(beanResolver);
-
-            TypeLocator typeLocator = typeName -> {
-                throw new SpelEvaluationException(SpelMessage.TYPE_NOT_FOUND, typeName);
-            };
-            standardEvaluationContext.setTypeLocator(typeLocator);
-
-            standardEvaluationContext.setTypeConverter(new StandardTypeConverter());
-            standardEvaluationContext.setTypeComparator(new StandardTypeComparator());
-            standardEvaluationContext.setOperatorOverloader(new StandardOperatorOverloader());
-            return standardEvaluationContext;
-        };
+        return pro.verron.officestamper.api.EvaluationContextFactories.restrictedFactory();
     }
 
 }

@@ -90,10 +90,10 @@ import pro.verron.officestamper.api.SecurityMode;
 void main(){
     // SpEL security mode (default: RESTRICTED)
     var cfg = OfficeStamperConfigurations.standard()
-        .setSecurityMode(SecurityMode.PERMISSIVE); // enable full SpEL capabilities for trusted templates
+        .setSpelSecurityMode(SecurityMode.PERMISSIVE); // enable full SpEL capabilities for trusted templates
 
     // SVG safe mode (default: enabled)
-    cfg.setSvgSafeModeEnabled(false); // relax parser hardening for trusted SVG inputs
+    cfg.setSvgSecurityMode(SecurityMode.PERMISSIVE); // relax parser hardening for trusted SVG inputs
 }
 
 ----

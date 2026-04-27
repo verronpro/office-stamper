@@ -216,18 +216,7 @@ public final class EmfImageReader
     }
 }
 
-private static class EMFMetadata extends IIOMetadata {
-    private final int width;
-    private final int height;
 
-    protected EMFMetadata(int width, int height) {
-        super(false,
-              "javax_imageio_1.0",
-              "com.github.jaiimageio.impl.EMFMetadataFormat",
-              null, null);
-        this.width = width;
-        this.height = height;
-    }
 
     @Override
     public Node getAsTree(String formatName) {

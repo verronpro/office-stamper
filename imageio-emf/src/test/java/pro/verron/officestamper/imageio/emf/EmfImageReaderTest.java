@@ -56,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.*;
     }
 
     @Test
-    @Disabled("Disabled until metadata parsing is implemented")
+ 
     @DisplayName("sample-cat.emf: standard metadata contains Dimension with HorizontalPixelSize/VerticalPixelSize")
     void sampleCatEmf_standardMetadata_hasDimensionNode()
             throws Exception {

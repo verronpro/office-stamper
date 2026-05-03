@@ -20,13 +20,6 @@
     </description>
 
     <dependencies>
-        <!-- Depend on engine for shared API types (exceptions, etc.) -->
-        <dependency>
-            <groupId>pro.verron.office-stamper</groupId>
-            <artifactId>engine</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.docx4j</groupId>
             <artifactId>docx4j-core</artifactId>
@@ -39,21 +32,18 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Annotations used in code (compile-only) -->
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
             <version>1.0.0</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
-        <!-- Test utilities -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Avoid external heavy test dependencies to keep module lean and offline-friendly -->
     </dependencies>
 
     <build>

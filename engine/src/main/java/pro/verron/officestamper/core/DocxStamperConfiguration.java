@@ -10,6 +10,7 @@ import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
 import pro.verron.officestamper.core.functions.BiFunctionBuilder;
 import pro.verron.officestamper.core.functions.FunctionBuilder;
 import pro.verron.officestamper.core.functions.TriFunctionBuilder;
+import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
 import java.util.ArrayList;
 import java.util.HashMap;

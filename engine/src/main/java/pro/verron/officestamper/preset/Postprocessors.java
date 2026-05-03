@@ -47,6 +47,11 @@ public class Postprocessors {
         return new HookRemover(element);
     }
 
+    /// Creates a PostProcessor that removes all comments from a WordprocessingMLPackage document.
+    /// This PostProcessor traverses the document, identifies comment elements, removes them
+    /// from their parent contents, and clears the comments stored in the document's comments part.
+    ///
+    /// @return a PostProcessor instance that performs the removal of all comments from a document
     public static PostProcessor removeComments() {
         return new CommentRemover();
     }

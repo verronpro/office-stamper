@@ -7,17 +7,14 @@ import org.docx4j.openpackaging.parts.SpreadsheetML.WorksheetPart;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.jspecify.annotations.NonNull;
 import org.xlsx4j.org.apache.poi.ss.usermodel.DataFormatter;
-import org.xlsx4j.sml.Row;
-import org.xlsx4j.sml.Sheet;
-import org.xlsx4j.sml.Workbook;
-import org.xlsx4j.sml.Worksheet;
-import pro.verron.officestamper.api.OfficeStamperException;
+import org.xlsx4j.sml.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 
@@ -49,12 +46,12 @@ public final class ExcelContext
     ///
     /// @param path Path to the Excel workbook file
     /// @return a new [ExcelContext] instance
-    /// @throws OfficeStamperException if the file cannot be read
+    /// @throws ExcelException if the file cannot be read
     public static ExcelContext from(Path path) {
         try (InputStream is = Files.newInputStream(path)) {
             return from(is);
         } catch (IOException e) {
-            throw new OfficeStamperException(e);
+            throw new ExcelException(e);
         }
     }
 
@@ -64,13 +61,13 @@ public final class ExcelContext
     ///
     /// @param inputStream Input stream of an Excel workbook
     /// @return a new [ExcelContext] instance
-    /// @throws OfficeStamperException if the stream cannot be parsed
+    /// @throws ExcelException if the stream cannot be parsed
     public static ExcelContext from(InputStream inputStream) {
         try {
             var pkg = SpreadsheetMLPackage.load(inputStream);
             return new ExcelContext(pkg);
         } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
+            throw new ExcelException(e);
         }
     }
 
@@ -86,7 +83,7 @@ public final class ExcelContext
                                           .findFirst();
         if (maybeSheet.isPresent()) {
             return rootCache.computeIfAbsent(name,
-                    k -> defaultTable(maybeSheet.get()
+                    _ -> defaultTable(maybeSheet.get()
                                                 .worksheetPart()));
         }
 
@@ -100,7 +97,7 @@ public final class ExcelContext
         var map = new LinkedHashMap<String, Object>();
         map.put("sheets", enumerateSheets());
         for (var sc : enumerateSheets()) {
-            map.computeIfAbsent(sc.name(), k -> defaultTable(sc.worksheetPart()));
+            map.computeIfAbsent(sc.name(), _ -> defaultTable(sc.worksheetPart()));
         }
         // include anything populated in cache (e.g., named tables resolved so far)
         map.putAll(rootCache);
@@ -134,7 +131,7 @@ public final class ExcelContext
         try {
             return workbookPart().getContents();
         } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
+            throw new ExcelException(e);
         }
     }
 
@@ -147,7 +144,7 @@ public final class ExcelContext
         try {
             return part.getContents();
         } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
+            throw new ExcelException(e);
         }
     }
 
@@ -159,16 +156,19 @@ public final class ExcelContext
     }
 
     private static List<Map<String, String>> toRecords(List<String> headers, List<Row> rows) {
-        if (rows.isEmpty()) return emptyList();
-        List<Map<String, String>> list = new ArrayList<>(rows.size());
-        for (var row : rows) {
-            Map<String, String> rec = new LinkedHashMap<>();
-            for (int i = 0; i < headers.size(); i++) {
-                rec.put(headers.get(i), SheetContext.formatCellValueAt(row, i));
-            }
-            list.add(rec);
-        }
-        return list;
+        return rows.stream()
+                   .map(row -> {
+                       LinkedHashMap<String, String> map = new LinkedHashMap<>();
+                       int bound = headers.size();
+                       for (int i = 0; i < bound; i++) {
+                           var cell = findCell(row, i);
+                           map.put(headers.get(i),
+                                   cell.map(SheetContext::formatCellValueAt)
+                                       .orElse(""));
+                       }
+                       return map;
+                   })
+                   .collect(Collectors.toCollection(() -> new ArrayList<>(rows.size())));
     }
 
     private WorkbookPart workbookPart() {
@@ -177,6 +177,14 @@ public final class ExcelContext
 
     private RelationshipsPart relationshipsPart() {
         return workbookPart().getRelationshipsPart();
+    }
+
+    private static @NonNull Optional<Cell> findCell(Row row, int i) {
+        List<Cell> rowCells = row.getC();
+        Optional<Cell> cell;
+        if (i >= rowCells.size()) cell = Optional.empty();
+        else cell = Optional.of(rowCells.get(i));
+        return cell;
     }
 
     private Object resolveNamedTableByNameOrNull(String tableName) {
@@ -194,8 +202,7 @@ public final class ExcelContext
                 try {
                     var table = (org.docx4j.openpackaging.parts.SpreadsheetML.TablePart) p;
                     var ct = table.getContents(); // org.xlsx4j.sml.Table
-                    if (ct.getName() != null && ct.getName()
-                                                  .equals(tableName)) {
+                    if (Objects.equals(ct.getName(), tableName)) {
                         var ref = ct.getRef(); // e.g., A1:C10
                         return SheetContext.extractRangeAsRecords(worksheetOf(part), ref);
                     }

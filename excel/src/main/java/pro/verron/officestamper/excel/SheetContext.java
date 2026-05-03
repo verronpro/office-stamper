@@ -43,10 +43,6 @@ final class SheetContext
 
         // Headers on first row of the range
         var headerRowIndex = startRC.rowIndex;
-        var headerRow = rows.stream()
-                            .filter(r -> r.getR() != null && r.getR() == headerRowIndex)
-                            .findFirst()
-                            .orElseGet(() -> rows.get((int) (headerRowIndex - 1)));
         var headers = new ArrayList<String>();
         for (int c = startRC.colIndex; c <= endRC.colIndex; c++) {
             headers.add(findCellByA1(worksheet, cellRef(c, headerRowIndex)).map(ExcelContext.FORMATTER::formatCellValue)
@@ -137,7 +133,13 @@ final class SheetContext
             var row = rows.get(r);
             Map<String, String> rec = new LinkedHashMap<>();
             for (int c = 0; c < headers.size(); c++) {
-                rec.put(headers.get(c), formatCellValueAt(row, c));
+                List<Cell> rowCells = row.getC();
+                Optional<Cell> cell;
+                if (c >= rowCells.size()) cell = Optional.empty();
+                else cell = Optional.of(rowCells.get(c));
+                rec.put(headers.get(c),
+                        cell.map(SheetContext::formatCellValueAt)
+                            .orElse(""));
             }
             list.add(rec);
         }
@@ -147,17 +149,15 @@ final class SheetContext
 
     private SheetData sheetData() {return worksheet().getSheetData();}
 
-    static String formatCellValueAt(Row row, int columnIndex) {
-        var cells = row.getC();
-        if (columnIndex >= cells.size()) return "";
-        return ExcelContext.FORMATTER.formatCellValue(cells.get(columnIndex));
+    static String formatCellValueAt(Cell cell) {
+        return ExcelContext.FORMATTER.formatCellValue(cell);
     }
 
     private Worksheet worksheet() {
         try {
             return worksheetPart.getContents();
         } catch (Docx4JException e) {
-            throw new pro.verron.officestamper.api.OfficeStamperException(e);
+            throw new ExcelException(e);
         }
     }
 

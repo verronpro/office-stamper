@@ -78,7 +78,7 @@ public interface DocxHook
 
     /// Executes the hook's logic within the context of a document processing flow.
     ///
-    /// @param engineFactory a factory responsible for creating instances of the `Engine` class, which may be
+    /// @param engineFactory a factory responsible for creating instances of the [Engine] class, which may be
     ///         used during the execution of the hook's logic
     /// @param contextTree the root of the context tree, representing the hierarchical structure of context
     ///         branches available during document processing

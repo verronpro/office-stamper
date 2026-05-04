@@ -16,7 +16,7 @@ import java.util.Map;
 public class MapAccessor
         implements PropertyAccessor {
 
-    /// Constructs a new instance of `MapAccessor`.
+    /// Constructs a new instance of [MapAccessor].
     public MapAccessor(){
         // Explicit default constructor for Javadoc
     }
@@ -56,7 +56,7 @@ public class MapAccessor
         map.put(name, newValue);
     }
 
-    /// Exception thrown from `read` in order to reset a cached
+    /// Exception thrown from [#read(EvaluationContext, Object, String)] in order to reset a cached
     /// PropertyAccessor, allowing other accessors to have a try.
     private static class MapAccessException
             extends AccessException {

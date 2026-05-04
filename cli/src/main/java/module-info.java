@@ -1,8 +1,8 @@
-/// The `pro.verron.officestamper.cli` module.
+/// The [pro.verron.officestamper] CLI module.
 ///
 /// Command Line Interface for Office‑stamper. It lets you stamp DOCX or PPTX templates from various input formats (CSV,
 /// Properties, XML/HTML, JSON, XLSX) directly from the terminal. This module depends on the core engine module
-/// `pro.verron.officestamper` and bundles parsing utilities (Jackson, OpenCSV).
+/// [pro.verron.officestamper] and bundles parsing utilities (Jackson, OpenCSV).
 module pro.verron.officestamper.cli {
     requires pro.verron.officestamper; // engine
     requires pro.verron.officestamper.excel; // excel context provider

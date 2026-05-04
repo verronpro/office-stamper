@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 
 /// ExcelContext exposes a lazy, query-oriented view over an XLSX workbook.
-/// - Sheets are accessible by index via the `sheets` list, each as a `SheetContext`.
+/// - Sheets are accessible by index via the `sheets` list, each as a [SheetContext].
 /// - Sheets are also accessible by name at the root level, resolving to their default table (first row = headers).
 /// - Cells on a sheet can be queried using A1 notation via `sheet.get("A1")`.
-/// - A sheet's default table is available via the special key `"rows"` on a `SheetContext`.
+/// - A sheet's default table is available via the special key `"rows"` on a [SheetContext].
 /// - Named tables, when present, are exposed at the root level by their table name, each as a list of records
 /// mapping header names to row values.
 ///

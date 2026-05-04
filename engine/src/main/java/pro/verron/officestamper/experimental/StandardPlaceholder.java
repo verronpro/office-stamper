@@ -13,7 +13,7 @@ public record StandardPlaceholder(Matcher matcher, String expression)
         implements Placeholder {
 
     /// Retrieves the processed content of the placeholder. If the expression matches
-    /// the criteria defined by the `Matcher`, the prefix and suffix are stripped from
+    /// the criteria defined by the [Matcher], the prefix and suffix are stripped from
     /// the expression. Otherwise, the original expression is returned.
     ///
     /// @return the inner content of the expression if the match criteria are met;

@@ -32,22 +32,22 @@ public class Invokers
         implements MethodResolver {
     private final Map<String, Map<Args, MethodExecutor>> map;
 
-    /// Constructs an `Invokers` instance, grouping and mapping invokers by their names and argument types to their
+    /// Constructs an [Invokers] instance, grouping and mapping invokers by their names and argument types to their
     /// corresponding executors.
     ///
-    /// @param invokerStream a stream of `Invoker` objects, where each invoker encapsulates the method name, its
+    /// @param invokerStream a stream of [Invoker] objects, where each invoker encapsulates the method name, its
     ///         parameter types, and the associated method executor.
     public Invokers(Stream<Invoker> invokerStream) {
         map = invokerStream.collect(groupingBy(Invoker::name, toMap(Invoker::args, Invoker::executor)));
     }
 
-    /// Transforms a map containing interface-to-implementation mappings into a stream of `Invoker` objects. Each entry
-    /// in the map is processed to generate a flat stream of relevant `Invoker` instances.
+    /// Transforms a map containing interface-to-implementation mappings into a stream of [Invoker] objects. Each entry
+    /// in the map is processed to generate a flat stream of relevant [Invoker] instances.
     ///
     /// @param interfaces2implementations a map where keys represent interface classes and values represent
     ///         their corresponding implementations, used to derive invoker instances.
     ///
-    /// @return a stream of `Invoker` objects derived from the provided map entries.
+    /// @return a stream of [Invoker] objects derived from the provided map entries.
     public static Stream<Invoker> streamInvokersFromClass(Map<Class<?>, ?> interfaces2implementations) {
         return interfaces2implementations.entrySet()
                                          .stream()
@@ -130,7 +130,7 @@ public class Invokers
     /// types matches the source types.
     ///
     /// The validation logic ensures that each target type is compatible with the corresponding source type. A type is
-    /// compatible if it matches precisely or is assignable from the source type. Additionally, the `Any` class acts as
+    /// compatible if it matches precisely or is assignable from the source type. Additionally, the [Any] class acts as
     /// a wildcard placeholder, making any type compatible.
     ///
     /// @param sourceTypes a list of parameter types representing the method's signature.
@@ -138,7 +138,7 @@ public class Invokers
 
         /// Validates if the provided list of classes matches the source types according to the compatibility rules. A
         /// type is considered compatible if it matches precisely or is assignable from the corresponding source type.
-        /// Additionally, the `Any` class serves as a wildcard, making any type compatible.
+        /// Additionally, the [Any] class serves as a wildcard, making any type compatible.
         ///
         /// @param searchedTypes the list of classes to validate against the source types.
         ///
@@ -162,7 +162,7 @@ public class Invokers
     /// Encapsulates a custom function as a method executor, allowing the execution of the function with a list of
     /// arguments in a given evaluation context.
     ///
-    /// This class implements the `MethodExecutor` interface from the Spring Expression framework.
+    /// This class implements the [MethodExecutor] interface from the Spring Expression framework.
     private record CustomFunctionExecutor(Function<List<@Nullable Object>, Object> function)
             implements MethodExecutor {
 

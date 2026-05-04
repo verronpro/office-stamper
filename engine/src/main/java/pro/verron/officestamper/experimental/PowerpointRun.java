@@ -5,7 +5,7 @@ import org.docx4j.dml.CTRegularTextRun;
 /// A record that represents a run of text in a PowerPoint slide. It holds information
 /// about the run's indices and the underlying text content. The indices define the
 /// range of the text run within a global context, and the backing content is stored
-/// as a `CTRegularTextRun` instance from the supporting library.
+/// as a [CTRegularTextRun] instance from the supporting library.
 ///
 /// This class provides methods to determine if a text run is affected by a global range
 /// of indices and to replace specific substrings within its text.
@@ -13,7 +13,7 @@ import org.docx4j.dml.CTRegularTextRun;
 /// @param startIndex the start index of the run within the global context.
 /// @param endIndex   the end index of the run within the global context.
 /// @param indexInParent the index of the run within its parent paragraph.
-/// @param run the underlying `CTRegularTextRun` instance.
+/// @param run the underlying [CTRegularTextRun] instance.
 public record PowerpointRun(
         int startIndex,
         int endIndex,

@@ -12,7 +12,8 @@ import java.util.stream.StreamSupport;
 /// its initial state.
 ///
 /// This interface is useful in scenarios where an iteration process needs to be repeated or restarted without creating
-/// a new instance of the iterator. The `reset` method ensures that the iterator can be reused and revisits the elements
+/// a new instance of the iterator. The [#reset()] method ensures that the iterator can be reused and revisits the
+/// elements
 /// starting from the beginning.
 ///
 /// @param <T> the type of elements returned by this iterator

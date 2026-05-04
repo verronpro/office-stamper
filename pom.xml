@@ -87,7 +87,7 @@
                 </dependencies>
             </plugin>
             <plugin>
-                <groupId>com.github.s4u.plugins</groupId>
+                <groupId>org.simplify4u.plugins</groupId>
                 <artifactId>sitemapxml-maven-plugin</artifactId>
                 <version>2.0.0</version>
                 <executions>

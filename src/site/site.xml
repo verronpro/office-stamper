@@ -8,10 +8,10 @@
         <artifactId>maven-fluido-skin</artifactId>
         <version>2.1.0</version>
     </skin>
-      
+
     <body>
         <head>
-              <meta name="google-site-verification" content="ir83SET4KPDeYK1SVZx8kXOe_OJ6UGogSoF4BSx-mOY" />
+            <![CDATA[<meta name="google-site-verification" content="ir83SET4KPDeYK1SVZx8kXOe_OJ6UGogSoF4BSx-mOY" />]]>
         </head>
         <!-- Modules and Reports menus will aggregate content from all modules -->
         <menu ref="modules"/>

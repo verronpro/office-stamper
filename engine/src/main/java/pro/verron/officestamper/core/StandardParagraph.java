@@ -36,7 +36,7 @@ public class StandardParagraph
         this.p = p;
     }
 
-    /// Creates a new instance of `StandardParagraph` from the provided [DocxPart] and parent object.
+    /// Creates a new instance of [StandardParagraph] from the provided [DocxPart] and parent object.
     ///
     /// @param part the source DocxPart.
     /// @param parent the parent object.
@@ -198,7 +198,8 @@ public class StandardParagraph
         return parent(Tbl.class).map(StandardTable::new);
     }
 
-    /// Returns the string representation of the paragraph. This method delegates to the `asString` method to aggregate
+    /// Returns the string representation of the paragraph. This method delegates to the [#asString()] method to
+    /// aggregate
     /// the text content of all runs.
     ///
     /// @return a string containing the combined text content of the paragraph's runs.

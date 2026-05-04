@@ -16,15 +16,16 @@ public final class TextualDocxPart
     private final Part part;
     private final ContentAccessor contentAccessor;
 
-    /// Constructs a [TextualDocxPart] using the provided `document`. This constructor initializes the instance with the
-    /// main document part and content accessor derived from the provided `WordprocessingMLPackage`.
+    /// Constructs a [TextualDocxPart] using the provided [WordprocessingMLPackage]. This constructor initializes the
+    ///  instance with the
+    /// main document part and content accessor derived from the provided [WordprocessingMLPackage].
     ///
     /// @param document the [WordprocessingMLPackage] representing the document to be processed.
     public TextualDocxPart(WordprocessingMLPackage document) {
         this(document, document.getMainDocumentPart(), document.getMainDocumentPart());
     }
 
-    /// Constructs a [TextualDocxPart] using the specified `document`, `part`, and `contentAccessor`.
+    /// Constructs a [TextualDocxPart] using the specified [WordprocessingMLPackage], [Part], and [ContentAccessor].
     ///
     /// @param document the [WordprocessingMLPackage] representing the document to be processed.
     /// @param part the specific part of the document being processed.

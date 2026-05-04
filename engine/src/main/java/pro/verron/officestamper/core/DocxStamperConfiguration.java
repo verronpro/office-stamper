@@ -3,6 +3,7 @@ package pro.verron.officestamper.core;
 
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
@@ -47,7 +48,7 @@ public class DocxStamperConfiguration
     /// configurations, including:
     /// - Initializing collections for processors, resolvers, and functions.
     /// - Setting default values for expression handling and evaluation.
-    /// - Creating and configuring a default `SpelParserConfiguration`.
+    /// - Creating and configuring a default [SpelParserConfiguration].
     /// - Establishing resolvers and exception handling strategies.
     ///
     /// @param evaluationContextFactory the factory used to create [EvaluationContext] instances.
@@ -310,8 +311,8 @@ public class DocxStamperConfiguration
     /// Sets the parser configuration used for expression evaluation.
     ///
     /// Note that the provided parser configuration will be used for all expressions in the document, including
-    /// expressions in comments. If you use SpEL, construct a `SpelExpressionParser` (optionally with a `
-    /// SpelParserConfiguration`) and
+    /// expressions in comments. If you use SpEL, construct a [SpelExpressionParser] (optionally with a
+    ///  [SpelParserConfiguration]) and
     /// pass it here.
     ///
     /// @param parserConfiguration the parser to use.

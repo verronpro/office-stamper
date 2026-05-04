@@ -55,7 +55,7 @@ public final class OfficeStamperEvaluationContextFactory {
     }
 
     /// Returns a set view of the mappings contained in this map. Each entry in the set is a mapping between a
-    /// [Class<?>] key and its associated `CommentProcessor` value.
+    /// [Class<?>] key and its associated [CommentProcessor] value.
     ///
     /// @return a map representing the associations between [Class<?>] keys and their corresponding [CommentProcessor]
     ///         values in this map.

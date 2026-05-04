@@ -18,7 +18,7 @@ import static java.util.Arrays.asList;
 /// @param executor the executor responsible for executing the method.
 public record Invoker(String name, Invokers.Args args, MethodExecutor executor) {
 
-    /// Constructs an `Invoker` instance by extracting the method name, parameter types,
+    /// Constructs an [Invoker] instance by extracting the method name, parameter types,
     /// and creating a corresponding [ReflectionExecutor] for the provided object and method.
     ///
     /// @param obj    the object on which the method will be invoked.
@@ -27,7 +27,7 @@ public record Invoker(String name, Invokers.Args args, MethodExecutor executor) 
         this(method.getName(), asList(method.getParameterTypes()), new ReflectionExecutor(obj, method));
     }
 
-    /// Constructs an `Invoker` instance using the provided method name, argument types, and executor.
+    /// Constructs an [Invoker] instance using the provided method name, argument types, and executor.
     ///
     /// @param name     the name of the method to be invoked.
     /// @param args     the list of argument types required for the method invocation.

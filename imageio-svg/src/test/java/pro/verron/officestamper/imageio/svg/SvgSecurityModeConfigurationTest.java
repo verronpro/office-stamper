@@ -1,4 +1,4 @@
-package pro.verron.officestamper.test;
+package pro.verron.officestamper.imageio.svg;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,10 +10,10 @@ import pro.verron.officestamper.preset.Image;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static pro.verron.officestamper.imageio.svg.utils.ContextFactory.objectContextFactory;
+import static pro.verron.officestamper.imageio.svg.utils.ResourceUtils.getWordResource;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
-import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
 /// Black-box tests verifying SVG security mode behavior by stamping a document
 /// with an SVG payload that includes an internal DOCTYPE.

@@ -8,6 +8,7 @@ import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Resolvers;
 import pro.verron.officestamper.test.utils.ContextFactory;
 import pro.verron.officestamper.test.utils.ObjectContextFactory;
+import pro.verron.officestamper.test.utils.OfficeStamperTest;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;

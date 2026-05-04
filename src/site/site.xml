@@ -10,9 +10,6 @@
     </skin>
 
     <body>
-        <head>
-            <![CDATA[<meta name="google-site-verification" content="ir83SET4KPDeYK1SVZx8kXOe_OJ6UGogSoF4BSx-mOY" />]]>
-        </head>
         <!-- Modules and Reports menus will aggregate content from all modules -->
         <menu ref="modules"/>
         <menu name="Project Info">

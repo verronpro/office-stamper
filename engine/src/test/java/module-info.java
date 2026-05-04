@@ -4,11 +4,6 @@ module pro.verron.officestamper.test {
     requires org.objectweb.asm;
     uses javax.imageio.spi.ImageReaderSpi;
 
-    // Ensure ImageIO provider modules are resolved on the JPMS module-path during tests
-    requires pro.verron.officestamper.imageio.emf;
-    requires pro.verron.officestamper.imageio.wmf;
-    requires pro.verron.officestamper.imageio.svg;
-
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
 

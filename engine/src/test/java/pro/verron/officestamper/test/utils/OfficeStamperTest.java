@@ -1,4 +1,4 @@
-package pro.verron.officestamper.test;
+package pro.verron.officestamper.test.utils;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.OpcPackage;
@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.test.utils.ContextFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,7 +26,7 @@ public class OfficeStamperTest {
         return Stream.of(objectContextFactory(), mapContextFactory());
     }
 
-    void testStamper(
+    protected void testStamper(
             OfficeStamperConfiguration config,
             Object context,
             WordprocessingMLPackage template,

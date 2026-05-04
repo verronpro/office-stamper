@@ -27,24 +27,6 @@
         </dependency>
         <dependency>
             <groupId>pro.verron.office-stamper</groupId>
-            <artifactId>imageio-emf</artifactId>
-            <version>3.4-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>pro.verron.office-stamper</groupId>
-            <artifactId>imageio-wmf</artifactId>
-            <version>3.4-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>pro.verron.office-stamper</groupId>
-            <artifactId>imageio-svg</artifactId>
-            <version>3.4-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>pro.verron.office-stamper</groupId>
             <artifactId>asciidoc</artifactId>
             <version>3.4-SNAPSHOT</version>
             <scope>test</scope>

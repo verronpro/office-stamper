@@ -183,7 +183,7 @@ public interface OfficeStamperConfiguration {
 
     /// Gets the current SpEL security mode.
     ///
-    /// Defaults to [SecurityMode.RESTRICTED], which hardens the evaluation context to mitigate
+    /// Defaults to [SecurityMode#RESTRICTED], which hardens the evaluation context to mitigate
     /// risks such as type access, bean resolution, and constructor invocation.
     ///
     /// @return the current [SecurityMode] used for SpEL evaluation
@@ -191,8 +191,8 @@ public interface OfficeStamperConfiguration {
 
     /// Sets the SpEL security mode.
     ///
-    /// Use [SecurityMode.RESTRICTED] for untrusted templates (default).
-    /// Use [SecurityMode.PERMISSIVE] only for trusted inputs when you need full SpEL capabilities.
+    /// Use [SecurityMode#RESTRICTED] for untrusted templates (default).
+    /// Use [SecurityMode#PERMISSIVE] only for trusted inputs when you need full SpEL capabilities.
     ///
     /// @param mode the desired [SecurityMode]
     /// @return the updated [OfficeStamperConfiguration] object
@@ -200,7 +200,7 @@ public interface OfficeStamperConfiguration {
 
     /// Indicates whether SVG safe mode is enabled.
     ///
-    /// Defaults to [SecurityMode.RESTRICTED], which performs SVG parsing with hardened XML parser settings to
+    /// Defaults to [SecurityMode#RESTRICTED], which performs SVG parsing with hardened XML parser settings to
     /// mitigate XXE/DTD and related risks. When disabled, a more permissive parser is used.
     ///
     /// @return the current [SecurityMode] used for SVG parsing

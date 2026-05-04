@@ -10,8 +10,9 @@
     <version>3.4-SNAPSHOT</version>
     <description>
         Office-stamper is a Java library for stamping DOCX templates with data.
-        It allows you to create professional documents by merging data with pre-designed templates,
-        supporting various features like tables, images, and conditional content.
+        It allows you to create professional documents by merging data with
+        pre-designed templates, supporting various features like tables, images,
+        and conditional content.
     </description>
     <packaging>pom</packaging>
     <url>https://github.com/verronpro/office-stamper</url>
@@ -84,6 +85,18 @@
                         <version>3.2.0</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.github.s4u.plugins</groupId>
+                <artifactId>sitemapxml-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>gen</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -199,7 +212,8 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.5</version>
                     <configuration>
-                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                        <redirectTestOutputToFile>true
+                        </redirectTestOutputToFile>
                         <systemPropertyVariables>
                             <java.awt.headless>true</java.awt.headless>
                         </systemPropertyVariables>
@@ -405,7 +419,10 @@
 
     <scm>
         <url>https://github.com/verronpro/office-stamper</url>
-        <developerConnection>scm:git:https://github.com/verronpro/office-stamper.git</developerConnection>
-        <connection>scm:git:https://github.com/verronpro/office-stamper.git</connection>
+        <developerConnection>
+            scm:git:https://github.com/verronpro/office-stamper.git
+        </developerConnection>
+        <connection>scm:git:https://github.com/verronpro/office-stamper.git
+        </connection>
     </scm>
 </project>

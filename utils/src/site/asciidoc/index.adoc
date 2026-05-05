@@ -23,5 +23,5 @@ However, advanced users may pull it in for low-level document or iterator utilit
 
 == Links
 
-- Engine documentation: https://verronpro.github.io/office-stamper/engine/
-- Module site: https://verronpro.github.io/office-stamper/utils/
+- Engine documentation: https://office-stamper.verron.pro/engine/
+- Module site: https://office-stamper.verron.pro/utils/

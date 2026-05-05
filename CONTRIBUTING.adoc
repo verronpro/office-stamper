@@ -42,7 +42,7 @@ Please report unacceptable behavior to link:mailto:&#99;o&#110;&#x64;&#x75;&#x63
 
 ____
 
-If you want to ask a question, we assume that you have read the available https://verronpro.github.io/office-stamper/[Documentation].
+If you want to ask a question, we assume that you have read the available https://office-stamper.verron.pro/[Documentation].
 
 ____
 
@@ -77,7 +77,7 @@ Therefore, we ask you to investigate carefully, collect information and describe
 Please complete the following steps in advance to help us fix any potential bug as fast as possible.
 
 * Make sure that you are using the latest version.
-* Determine if your bug is really a bug and not an error on your side, e.g. using incompatible environment components/versions (Make sure that you have read the https://verronpro.github.io/office-stamper/[documentation].
+* Determine if your bug is really a bug and not an error on your side, e.g. using incompatible environment components/versions (Make sure that you have read the https://office-stamper.verron.pro/[documentation].
 If you are looking for support, you might want to check <<I Have a Question,this section>>).
 * To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the https://github.com/verronpro/office-stamperissues?q=label%3Abug[bug tracker].
 * Also make sure to search the internet (including Stack Overflow) to see if users outside the GitHub community have discussed the issue.
@@ -127,7 +127,7 @@ Following these guidelines will help maintainers and the community to understand
 ==== Before Submitting an Enhancement
 
 * Make sure that you are using the latest version.
-* Read the https://verronpro.github.io/office-stamper/[documentation] carefully and find out if the functionality is already covered, maybe by an individual configuration.
+* Read the https://office-stamper.verron.pro/[documentation] carefully and find out if the functionality is already covered, maybe by an individual configuration.
 * Perform a https://github.com/verronpro/office-stamper/issues[search] to see if the enhancement has already been suggested.
 If it has, add a comment to the existing issue instead of opening a new one.
 * Find out whether your idea fits with the scope and aims of the project.

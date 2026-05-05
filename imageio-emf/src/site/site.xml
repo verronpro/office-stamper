@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      name="office-stamper"
+      xmlns="http://maven.apache.org/SITE/2.0.0"
+      xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd">
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>2.1.0</version>
+    </skin>
+    <body>
+        <menu name="Parent">
+            <item name="Parent" href="https://office-stamper.verron.pro"/>
+        </menu>
+
+        <menu name="Module">
+            <item name="Overview" href="index.html"/>
+        </menu>
+
+        <!-- Modules and Reports menus will aggregate content from all modules -->
+        <menu ref="modules"/>
+        <menu name="Reports" ref="reports"/>
+    </body>
+
+    <edit>https://github.com/verronpro/office-stamper.git</edit>
+    <publishDate/>
+    <version/>
+</site>

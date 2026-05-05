@@ -37,5 +37,5 @@ class SvgDimensionsExample {
 
 == Links
 
-- Parent site: https://verronpro.github.io/office-stamper/
-- Module site: https://verronpro.github.io/office-stamper/imageio-svg/
+- Parent site: https://office-stamper.verron.pro/
+- Module site: https://office-stamper.verron.pro/imageio-svg/

@@ -130,7 +130,7 @@ Use permissive options only with fully trusted templates and assets.
 
 == Documentation
 
-Comprehensive documentation is available at link:{docs}[verronpro.github.io/office-stamper].
+Comprehensive documentation is available at https://office-stamper.verron.pro[office-stamper.verron.pro].
 
 * link:{docs}/introduction.html[Introduction]
 * link:{docs}/getting-started.html[Getting Started]
@@ -142,7 +142,7 @@ Comprehensive documentation is available at link:{docs}[verronpro.github.io/offi
 * link:{docs}/troubleshooting.html[Troubleshooting]
 * link:{docs}/release-notes.html[Release Notes]
 * link:{docs}/contributing.html[Contributing]
-* https://verronpro.github.io/office-stamper/cli/quickstart-windows.html[Quickstart (Windows)]
+* https://office-stamper.verron.pro/cli/quickstart-windows.html[Quickstart (Windows)]
 
 == Labeling conventions
 

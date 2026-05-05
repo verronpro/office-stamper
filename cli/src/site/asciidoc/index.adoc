@@ -276,5 +276,5 @@ Notes:
 == Links
 
 - Project homepage: https://github.com/verronpro/office-stamper
-- Engine documentation: https://verronpro.github.io/office-stamper/engine/
-- Module site: https://verronpro.github.io/office-stamper/cli/
+- Engine documentation: https://office-stamper.verron.pro/engine/
+- Module site: https://office-stamper.verron.pro/cli/

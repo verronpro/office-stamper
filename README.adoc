@@ -1,7 +1,7 @@
 // suppress inspection "AsciiDocLinkResolve" for whole file
 :proj: https://github.com/verronpro/office-stamper
 :repo: https://github.com/verronpro/office-stamper/blob/main
-:docs: https://verronpro.github.io/office-stamper/engine
+:docs: https://office-stamper.verron.pro
 
 = Office-stamper
 
@@ -102,7 +102,6 @@ You can also control modes via system properties:
 
 - `-Dofficestamper.spel.mode=restricted|permissive` (default: `restricted`)
 - `-Dofficestamper.svg.mode=restricted|permissive` (default: `restricted`)
-- Backward compatible: `-Dofficestamper.svg.safe=true|false` (default: `true`)
 
 Use permissive options only with fully trusted templates and assets.
 

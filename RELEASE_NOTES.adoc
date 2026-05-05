@@ -199,7 +199,7 @@ Do not hesitate to inform me if you encounter the issue.
 
 === Documentation
 
-* Massive rework of the documentation, now most of it is on the https://verronpro.github.io/office-stamper/[site]
+* Massive rework of the documentation, now most of it is on the https://office-stamper.verron.pro/[site]
 * Add a Style Guide, notably to improve AI assistants correctness
 * Improve the https://github.com/verronpro/office-stamper/issues/new/choose[bug report form] to include Docx editor used and reduce analysis time
 

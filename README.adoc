@@ -167,10 +167,10 @@ Example
 
 This repository is structured in several Maven/Java modules:
 
-* link:engine/src/site/asciidoc/index.adoc[Engine] – core templating engine and public API
-* link:utils/README.adoc[Utils] – low-level utilities shared by modules
-* link:asciidoc/README.adoc[AsciiDoc] – AsciiDoc to DOCX integration helpers
-* link:cli/README.adoc[CLI] – command line interface to stamp templates
+* https://office-stamper.verron.pro/engine[Engine] – core templating engine and public API
+* https://office-stamper.verron.pro/utils[Utils] – low-level utilities shared by modules
+* https://office-stamper.verron.pro/asciidoc[AsciiDoc] – AsciiDoc to DOCX integration helpers
+* https://office-stamper.verron.pro/cli[CLI] – command line interface to stamp templates
 
 == Latest Release
 

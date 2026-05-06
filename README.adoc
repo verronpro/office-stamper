@@ -28,27 +28,27 @@ You design a template using your preferred Word processor; and office-stamper wi
 
 [source,java]
 ----
-class Example {
-    static void main(String[] args) {
-        // an object to use as context for the expressions found in the template.
-        var context = new YourPojoContext(_, _ , _);
+void main() {
+    // an object to use as context for the expressions found in the template.
+    var context = new YourPojoContext(_, _ , _);
 
-        // create a stamper that handles streams
-        var stamper = OfficeStampers.docxStamper();
+    // create a stamper that handles streams
+    var stamper = OfficeStampers.docxStamper();
 
-        var templatePath = Paths.get("your/docx/template/file.docx");
-        var outputPath = Paths.get("your/desired/output/path.docx");
-        try(
-            var template = Files.newInputStream(templatePath);
-            var output = Files.newOutputStream(outputPath)
-        ) {
-            stamper.stamp(template, context, output);
-        }
+    var templatePath = Paths.get("your/docx/template/file.docx");
+    var outputPath = Paths.get("your/desired/output/path.docx");
+    try(
+        var template = Files.newInputStream(templatePath);
+        var output = Files.newOutputStream(outputPath)
+    ) {
+        stamper.stamp(template, context, output);
     }
 }
 ----
 
 If you already have a `WordprocessingMLPackage` (Docx4J document), you can use `docxPackageStamper` instead:
+
+_Want to understand the architecture behind this API? Read the https://verron.pro/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[expression pivot deep dive] and the https://verron.pro/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[v3 overhaul story] on the blog._
 
 [source,java]
 ----
@@ -236,6 +236,23 @@ If you want to run them yourself, clone the repository and run `mvn test`.
 To view the resulting .docx documents, you can export the stamped documents with the method `stamped.save(OutputStream)`
 
 If you want to have a look at the .docx templates used in the tests, have a look at the link:{repo}/test/sources[sources subfolder] in the test folder.
+
+== Who Uses This?
+
+Office-stamper is used in production for document automation in the energy sector in China, where strict schema compliance and security constraints are non-negotiable.
+If your team uses office-stamper, feel free to open an issue or PR to add yourself to this list.
+
+== Author
+
+Office-stamper is crafted and maintained by https://verron.pro[Joseph Verron] — IT Manager, CISO, and Caring Coder.
+Joseph writes about Java craftsmanship, docs-as-code, and secure document automation on his blog at https://verron.pro[verron.pro].
+Follow the stories behind the code:
+
+* https://verron.pro/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[The Expression Pivot — Harnessing Spring SpEL]
+* https://verron.pro/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[Predicting the Unpredictable — the v3 Overhaul]
+* https://verron.pro/2026/02/01/monthly-commit-feedback-loops-and-the-asciidoc-pivot.html[Feedback Loops and the AsciiDoc Pivot]
+* https://verron.pro/2026/01/01/monthly-commit-office-stamper-3-1-stabilizing-the-surface.html[Office-stamper 3.1 — Stabilizing the Surface]
+* https://verron.pro/2025/11/01/monthly-commit-engine-refactoring-the-road-to-v3.html[Engine Refactoring — the Road to v3]
 
 == Contributing
 

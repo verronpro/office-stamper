@@ -11,6 +11,9 @@
 
     <body>
         <!-- Modules and Reports menus will aggregate content from all modules -->
+        <menu name="Office-stamper">
+            <item name="Overview" href="index.html"/>
+        </menu>
         <menu ref="modules"/>
         <menu name="Project Info">
             <item name="Release Notes" href="release-notes.html"/>

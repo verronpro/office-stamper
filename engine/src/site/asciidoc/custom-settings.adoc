@@ -169,6 +169,9 @@ var configuration = OfficeStamperConfigurations.standard() .setSvgSecurityMode(S
 Or via system properties:
 
 - `-Dofficestamper.svg.mode=restricted|permissive` (default: `restricted`)
+
+[source,java]
+----
 import static pro.verron.officestamper.preset.EvaluationContextFactories.defaultFactory;
 import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 

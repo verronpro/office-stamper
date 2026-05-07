@@ -48,7 +48,7 @@ void main() {
 
 If you already have a `WordprocessingMLPackage` (Docx4J document), you can use `docxPackageStamper` instead:
 
-_Want to understand the architecture behind this API? Read the https://verron.pro/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[expression pivot deep dive] and the https://verron.pro/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[v3 overhaul story] on the blog._
+_Want to understand the architecture behind this API? Read the https://verron.pro/office-stamper/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[expression pivot deep dive] and the https://verron.pro/office-stamper/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[v3 overhaul story] on the blog._
 
 [source,java]
 ----

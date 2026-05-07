@@ -244,15 +244,15 @@ If your team uses office-stamper, feel free to open an issue or PR to add yourse
 
 == Author
 
-Office-stamper is crafted and maintained by https://verron.pro[Joseph Verron] — IT Manager, CISO, and Caring Coder.
+Office-stamper is crafted and maintained by https://verron.pro/about.html[Joseph Verron] — IT Manager, CISO, and Caring Coder.
 Joseph writes about Java craftsmanship, docs-as-code, and secure document automation on his blog at https://verron.pro[verron.pro].
 Follow the stories behind the code:
 
-* https://verron.pro/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[The Expression Pivot — Harnessing Spring SpEL]
-* https://verron.pro/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[Predicting the Unpredictable — the v3 Overhaul]
-* https://verron.pro/2026/02/01/monthly-commit-feedback-loops-and-the-asciidoc-pivot.html[Feedback Loops and the AsciiDoc Pivot]
-* https://verron.pro/2026/01/01/monthly-commit-office-stamper-3-1-stabilizing-the-surface.html[Office-stamper 3.1 — Stabilizing the Surface]
-* https://verron.pro/2025/11/01/monthly-commit-engine-refactoring-the-road-to-v3.html[Engine Refactoring — the Road to v3]
+* https://verron.pro/office-stamper/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[The Expression Pivot — Harnessing Spring SpEL]
+* https://verron.pro/office-stamper/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[Predicting the Unpredictable — the v3 Overhaul]
+* https://verron.pro/office-stamper/2026/02/01/monthly-commit-feedback-loops-and-the-asciidoc-pivot.html[Feedback Loops and the AsciiDoc Pivot]
+* https://verron.pro/office-stamper/2026/01/01/monthly-commit-office-stamper-3-1-stabilizing-the-surface.html[Office-stamper 3.1 — Stabilizing the Surface]
+* https://verron.pro/office-stamper/2025/11/01/monthly-commit-engine-refactoring-the-road-to-v3.html[Engine Refactoring — the Road to v3]
 
 == Contributing
 

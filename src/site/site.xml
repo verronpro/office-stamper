@@ -6,7 +6,7 @@
     <skin>
         <groupId>pro.verron</groupId>
         <artifactId>maven-skin</artifactId>
-        <version>1.0</version>
+        <version>1.0.1</version>
     </skin>
 
     <body>
@@ -35,6 +35,7 @@
 
     <custom>
         <logo>images/logo.png</logo>
+        <favicon>images/logo.png</favicon>
     </custom>
 
     <edit>https://github.com/verronpro/office-stamper.git</edit>

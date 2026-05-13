@@ -67,6 +67,12 @@
                     <generateSitemap>true</generateSitemap>
                     <generateProjectInfo>true</generateProjectInfo>
                     <generateReports>true</generateReports>
+                    <asciidoc>
+                        <attributes>
+                            <source-highlighter>coderay</source-highlighter>
+                            <coderay-css>style</coderay-css>
+                        </attributes>
+                    </asciidoc>
                 </configuration>
                 <dependencies>
                     <dependency>

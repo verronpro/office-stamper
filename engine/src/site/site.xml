@@ -22,6 +22,7 @@
             <item name="Overview" href="index.html"/>
             <item name="Introduction" href="introduction.html"/>
             <item name="Getting Started" href="getting-started.html"/>
+            <item name="How does it works" href="how-does-it-works.html"/>
         </menu>
         <menu name="User Guide">
             <!-- Documentation is currently authored in the engine module -->
@@ -32,6 +33,7 @@
             <item name="Advanced Features" href="advanced-features.html"/>
             <item name="Compatibility Matrix" href="compatibility.html"/>
             <item name="Troubleshooting" href="troubleshooting.html"/>
+            <item name="How-to Custom engine" href="how-to-custom.html"/>
         </menu>
         <!-- Modules and Reports menus will aggregate content from all modules -->
         <menu ref="modules"/>

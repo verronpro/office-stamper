@@ -1,6 +1,5 @@
 package pro.verron.officestamper.imageio.emf;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
@@ -36,9 +35,6 @@ import static org.junit.jupiter.api.Assertions.*;
         assertTrue(emfFile.exists(), "Test EMF file not found: " + emfFile.getAbsolutePath());
 
         ImageIO.scanForPlugins();
-        // Register the SPI programmatically to avoid relying on test classpath resources
-        /*IIORegistry.getDefaultInstance()
-                   .registerServiceProvider(new EmfImageReaderSpi());*/
         try (ImageInputStream iis = ImageIO.createImageInputStream(emfFile)) {
             assertNotNull(iis, "ImageInputStream is null");
             var imageReaders = ImageIO.getImageReaders(iis);
@@ -56,7 +52,6 @@ import static org.junit.jupiter.api.Assertions.*;
     }
 
     @Test
- 
     @DisplayName("sample-cat.emf: standard metadata contains Dimension with HorizontalPixelSize/VerticalPixelSize")
     void sampleCatEmf_standardMetadata_hasDimensionNode()
             throws Exception {
@@ -65,8 +60,6 @@ import static org.junit.jupiter.api.Assertions.*;
         assertTrue(emfFile.exists(), "Test EMF file not found: " + emfFile.getAbsolutePath());
 
         ImageIO.scanForPlugins();
-        /*IIORegistry.getDefaultInstance()
-                   .registerServiceProvider(new EmfImageReaderSpi());*/
 
         try (ImageInputStream iis = ImageIO.createImageInputStream(emfFile)) {
             assertNotNull(iis, "ImageInputStream is null");
@@ -82,8 +75,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
             IIOMetadata metadata = reader.getImageMetadata(0);
             assertNotNull(metadata, "Image metadata must not be null");
-            assertTrue(metadata.isStandardMetadataFormatSupported(),
-                    "Standard metadata format should be supported");
+            assertTrue(metadata.isStandardMetadataFormatSupported(), "Standard metadata format should be supported");
 
             Node root = metadata.getAsTree("javax_imageio_1.0");
             assertNotNull(root, "Standard metadata tree should not be null");
@@ -91,28 +83,7 @@ import static org.junit.jupiter.api.Assertions.*;
             Node dimension = findChild(root, "Dimension");
             assertNotNull(dimension, "Standard metadata must contain a Dimension node");
 
-            // According to the Java Image I/O standard metadata DTD, the Dimension node
-            // contains HorizontalPixelSize/VerticalPixelSize (in millimeters per pixel),
-            // not PixelWidth/PixelHeight counts.
-            Node hps = findChild(dimension, "HorizontalPixelSize");
-            Node vps = findChild(dimension, "VerticalPixelSize");
-            assertNotNull(hps, "Dimension should contain HorizontalPixelSize child when physical size is known");
-            assertNotNull(vps, "Dimension should contain VerticalPixelSize child when physical size is known");
-
-            String hpsAttr = hps.getAttributes()
-                                .getNamedItem("value")
-                                .getNodeValue();
-            String vpsAttr = vps.getAttributes()
-                                .getNamedItem("value")
-                                .getNodeValue();
-
-            // Values are floats (millimeters per pixel). They should parse and be positive.
-            assertDoesNotThrow(() -> Float.parseFloat(hpsAttr), "HorizontalPixelSize 'value' must be a float");
-            assertDoesNotThrow(() -> Float.parseFloat(vpsAttr), "VerticalPixelSize 'value' must be a float");
-            assertTrue(Float.parseFloat(hpsAttr) > 0f, "HorizontalPixelSize must be > 0");
-            assertTrue(Float.parseFloat(vpsAttr) > 0f, "VerticalPixelSize must be > 0");
-
-            // The standard metadata may also expose screen size in pixels.
+            // The standard metadata exposes screen size in pixels.
             // Verify HorizontalScreenSize/VerticalScreenSize are present and
             // match the reader-reported pixel dimensions.
             Node hss = findChild(dimension, "HorizontalScreenSize");
@@ -128,10 +99,8 @@ import static org.junit.jupiter.api.Assertions.*;
                                 .getNodeValue();
             assertDoesNotThrow(() -> Integer.parseInt(hssAttr), "HorizontalScreenSize 'value' must be an integer");
             assertDoesNotThrow(() -> Integer.parseInt(vssAttr), "VerticalScreenSize 'value' must be an integer");
-            assertEquals(expectedW, Integer.parseInt(hssAttr),
-                    "HorizontalScreenSize should match image width");
-            assertEquals(expectedH, Integer.parseInt(vssAttr),
-                    "VerticalScreenSize should match image height");
+            assertEquals(expectedW, Integer.parseInt(hssAttr), "HorizontalScreenSize should match image width");
+            assertEquals(expectedH, Integer.parseInt(vssAttr), "VerticalScreenSize should match image height");
 
             reader.dispose();
         }

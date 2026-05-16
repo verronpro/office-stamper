@@ -501,7 +501,7 @@ public final class DocxToAsciiDoc
                 }
                 cells.add(new AsciiDocModel.Cell(cellBlocks, ccnfStyle));
             }
-            Optional<String> cnfStyle = Optional.empty();
+            String cnfStyle = null;
             if (tr.getTrPr() != null && tr.getTrPr()
                                           .getCnfStyleOrDivIdOrGridBefore() != null) {
                 cnfStyle = tr.getTrPr()
@@ -511,7 +511,8 @@ public final class DocxToAsciiDoc
                              .filter(CTCnf.class::isInstance)
                              .map(CTCnf.class::cast)
                              .findFirst()
-                             .map(s -> "rowStyle=" + Long.parseLong(s.getVal(), 2));
+                             .map(s -> "rowStyle=" + Long.parseLong(s.getVal(), 2))
+                             .orElse(null);
 
             }
             rows.add(new AsciiDocModel.Row(cells, cnfStyle));

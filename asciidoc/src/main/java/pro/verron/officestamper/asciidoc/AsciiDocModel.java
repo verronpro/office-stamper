@@ -1,5 +1,7 @@
 package pro.verron.officestamper.asciidoc;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.*;
 
 import static java.util.Collections.emptyList;
@@ -243,15 +245,15 @@ public final class AsciiDocModel {
     /// Table row.
     ///
     /// @param cells table cells
-    public record Row(List<Cell> cells, Optional<String> style) {
+    public record Row(List<Cell> cells, @Nullable String style) {
         /// Constructor.
         ///
         /// @param cells table cells
         public Row(List<Cell> cells) {
-            this(cells, Optional.empty());
+            this(cells, null);
         }
 
-        public Row(List<Cell> cells, Optional<String> style) {
+        public Row(List<Cell> cells, @Nullable String style) {
             this.cells = List.copyOf(cells);
             this.style = style;
         }

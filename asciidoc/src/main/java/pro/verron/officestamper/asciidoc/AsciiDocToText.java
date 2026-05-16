@@ -103,7 +103,7 @@ public final class AsciiDocToText
         sb.append("\n");
         for (Row row : rows) {
             var style = row.style();
-            style.ifPresent(s -> sb.append("[%s]\n".formatted(s)));
+            if (style != null) sb.append("[%s]\n".formatted(style));
             for (Cell cell : row.cells()) {
                 var blockList = cell.blocks();
                 var size = blockList.size();

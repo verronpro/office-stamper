@@ -1,5 +1,7 @@
 package pro.verron.officestamper.preset;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.*;
 
 import static java.util.Collections.singletonList;
@@ -37,7 +39,7 @@ public class StampTable
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;

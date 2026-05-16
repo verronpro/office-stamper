@@ -23,7 +23,7 @@ public record CustomFunction(String name, List<Class<?>> parameterTypes, Functio
 
         /// Sets a function implementation that operates on a specific input type and produces a result.
         ///
-        /// @param function the function implementation to set; it takes an input of type `T` and returns a
+        /// @param function the function implementation to set; it takes an input of type [T] and returns a
         ///         result.
         ///
         /// @return the configuration object.

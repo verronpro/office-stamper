@@ -1,4 +1,4 @@
-/// The `pro.verron.officestamper.asciidoc` module.
+/// The [pro.verron.officestamper.asciidoc] module.
 ///
 /// This module provides utilities to turn AsciiDoc content into WordprocessingML (DOCX) fragments or documents using
 /// docx4j. It focuses on converting rich-text into objects consumable by
@@ -7,7 +7,7 @@
 ///
 /// Exports:
 ///
-///     - `pro.verron.officestamper.asciidoc` – public API for AsciiDoc to DOCX conversion.
+///     - [pro.verron.officestamper.asciidoc] – public API for AsciiDoc to DOCX conversion.
 ///
 ///
 module pro.verron.officestamper.asciidoc {

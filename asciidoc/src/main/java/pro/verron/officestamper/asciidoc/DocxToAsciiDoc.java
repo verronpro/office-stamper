@@ -40,13 +40,20 @@ import static pro.verron.officestamper.asciidoc.AsciiDocModel.of;
 /// as needed by tests.
 public final class DocxToAsciiDoc
         implements Function<WordprocessingMLPackage, AsciiDocModel> {
+    private static final String SVG_EXTENSION = "{96DAC541-7B7A-43D3-8B79-37D633B846F1}";
     private static final Logger log = LoggerFactory.getLogger(DocxToAsciiDoc.class);
+
     private final StyleDefinitionsPart styleDefinitionsPart;
     private final CommentRecorder commentRecorder;
     private final BlockRecorder blocks;
     private final WordprocessingMLPackage wordprocessingMLPackage;
     private final CommentsPart commentsPart;
 
+    /// Constructs a new DocxToAsciiDoc instance, initializing necessary components for converting a
+    /// WordprocessingMLPackage (Docx) document into AsciiDoc format. This constructor extracts and prepares
+    /// the main document part, style definitions part, comments part, and other required components for processing.
+    ///
+    /// @param pkg the WordprocessingMLPackage instance representing the Docx document to be converted
     public DocxToAsciiDoc(WordprocessingMLPackage pkg) {
         this.wordprocessingMLPackage = pkg;
         var mdp = wordprocessingMLPackage.getMainDocumentPart();
@@ -113,8 +120,7 @@ public final class DocxToAsciiDoc
         var embed = ofNullable(blip.getExtLst()).stream()
                                                 .map(CTOfficeArtExtensionList::getExt)
                                                 .flatMap(List::stream)
-                                                .filter(e -> Objects.equals(e.getUri(),
-                                                        "{96DAC541-7B7A-43D3-8B79-37D633B846F1}"))
+                                                .filter(e -> Objects.equals(e.getUri(), SVG_EXTENSION))
                                                 .map(e -> (JAXBElement<?>) e.getAny())
                                                 .map(jaxbElement -> (CTSVGBlip) jaxbElement.getValue())
                                                 .map(CTSVGBlip::getEmbed)
@@ -513,6 +519,7 @@ public final class DocxToAsciiDoc
         return new AsciiDocModel.Table(rows);
     }
 
+    @Override
     public AsciiDocModel apply(WordprocessingMLPackage pkg) {
         getHeaderParts(pkg).map(this::toHeaderBlock)
                            .flatMap(Optional::stream)
@@ -603,6 +610,15 @@ public final class DocxToAsciiDoc
         }
     }
 
+    /// Maintains and organizes a collection of comments while facilitating
+    /// the construction of structured output representations.
+    ///
+    /// Provides functionality to open and close comments using unique identifiers
+    /// and convert comments into macro representations suitable for downstream
+    /// processing.
+    ///
+    /// The class also ensures that comments are opened and closed in a well-formed
+    /// manner, enforcing constraints while maintaining the internal structure.
     public static class CommentRecorder {
         private final Deque<CommentBuilder> comments;
         private final List<BigInteger> ids;
@@ -616,19 +632,34 @@ public final class DocxToAsciiDoc
             map = new HashMap<>();
         }
 
+        /// Opens a new comment using the specified identifier and positional information.
+        /// The comment is constructed using a [CommentBuilder] and stored internally.
+        ///
+        /// @param id the unique identifier for the comment as a [BigInteger]
+        /// @param blockStart the starting block position for the comment as an integer
+        /// @param lineStart the starting line position for the comment as an integer
         public void open(BigInteger id, int blockStart, int lineStart) {
-            var commentBuilder = new CommentBuilder(id)
-                                                     .setBlockStart(blockStart)
-                                                     .setLineStart(lineStart);
-            comments.addLast(commentBuilder);
+            var builder = new CommentBuilder(id);
+            builder.setBlockStart(blockStart);
+            builder.setLineStart(lineStart);
+            comments.addLast(builder);
             ids.add(id);
         }
 
+        /// Closes a comment identified by the provided ID and assigns the ending block
+        /// and line positions for the comment being finalized. The comment is then
+        /// stored internally for further processing.
+        ///
+        /// @param id the unique identifier of the comment as a [BigInteger]
+        /// @param blockEnd the ending block position of the comment as an integer
+        /// @param lineEnd the ending line position of the comment as an integer
+        /// @throws IllegalStateException if the provided ID does not match the ID of
+        ///         the last opened comment
         public void close(BigInteger id, int blockEnd, int lineEnd) {
             var lastComment = comments.removeLast();
             var lastCommentId = lastComment.getId();
-            assertThat(lastCommentId.equals(id),
-                    "Closing comment %s but last comment open is %s".formatted(id, lastCommentId));
+            var msg = "Closing comment %s but last comment open is %s".formatted(id, lastCommentId);
+            assertThat(lastCommentId.equals(id), msg);
             lastComment.setBlockEnd(blockEnd);
             lastComment.setLineEnd(lineEnd);
             map.put(id, lastComment.createComment());
@@ -638,6 +669,12 @@ public final class DocxToAsciiDoc
             if (!bool) throw new IllegalStateException(msg);
         }
 
+        /// Retrieves a collection of all MacroBlock representations for the stored comment IDs.
+        ///
+        /// The method maps the list of IDs through a series of operations to construct
+        /// MacroBlock objects from the associated comments.
+        ///
+        /// @return a collection of MacroBlock objects corresponding to the stored comment IDs.
         public Collection<AsciiDocModel.MacroBlock> all() {
             return ids.stream()
                       .map(map::get)
@@ -667,7 +704,7 @@ public final class DocxToAsciiDoc
                                         .stream()
                                         .filter(c -> Objects.equals(c.getId(), id))
                                         .findFirst()
-                                        .map((Comments.Comment comment) -> str(comment))
+                                        .map(this::str)
                                         .orElseThrow();
             } catch (Docx4JException e) {
                 throw new RuntimeException(e);
@@ -681,6 +718,18 @@ public final class DocxToAsciiDoc
             return TextUtils.getText(first);
         }
 
+        /// Represents a comment with positional information, identified by a unique ID.
+        ///
+        /// This class is an immutable record storing metadata about a comment,
+        /// including its unique identifier, starting and ending block positions,
+        /// as well as starting and ending line positions.
+        ///
+        /// Fields:
+        /// - id: The unique identifier for the comment.
+        /// - blockStart: The starting block position of the comment.
+        /// - lineStart: The starting line position of the comment.
+        /// - blockEnd: The ending block position of the comment.
+        /// - lineEnd: The ending line position of the comment.
         public record Comment(BigInteger id, int blockStart, int lineStart, int blockEnd, int lineEnd) {}
     }
 

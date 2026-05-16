@@ -37,5 +37,5 @@ class EmfDimensionsExample {
 
 == Links
 
-- Parent site: https://verronpro.github.io/office-stamper/
-- Module site: https://verronpro.github.io/office-stamper/imageio-emf/
+- Parent site: https://office-stamper.verron.pro/
+- Module site: https://office-stamper.verron.pro/imageio-emf/

@@ -57,15 +57,14 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
     /// A custom processor interface that defines methods to handle specific actions during document processing.
     public interface ICustomProcessor {
 
-        /// This method is invoked to perform actions on a paragraph element if it holds a comment with the content
-        /// "`visitParagraph()`".
+        /// Invoked to perform actions on a paragraph if it holds a comment with the content "visitParagraph()".
         void visitParagraph();
     }
 
     /// CustomProcessor is a concrete implementation of the CommentProcessor abstract class and the ICustomProcessor
     /// interface. It is designed to process comments and associated content within a paragraph in a custom manner.
     ///
-    /// This class modifies the content of a paragraph when the `visitParagraph` method is invoked. Specifically, it
+    /// This class modifies the content of a paragraph when the [#visitParagraph()] method is invoked. Specifically, it
     /// clears the content of the paragraph and replaces it with the word "Visited".
     public static class CustomProcessor
             extends CommentProcessor

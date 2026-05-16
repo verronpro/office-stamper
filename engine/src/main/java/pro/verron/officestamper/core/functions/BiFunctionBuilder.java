@@ -21,13 +21,13 @@ public class BiFunctionBuilder<T, U>
     private final Class<T> class0;
     private final Class<U> class1;
 
-    /// Constructs a new `BiFunctionBuilder` instance, which enables the creation and registration of a bifunctional
+    /// Constructs a new [BiFunctionBuilder] instance, which enables the creation and registration of a bifunctional
     /// implementation with the specified source configuration.
     ///
     /// @param source the configuration instance where the custom function will be registered
     /// @param name the name given to the bifunctional custom function to identify it.
-    /// @param class0 the `Class` type that represents the type of the first input parameter.
-    /// @param class1 the `Class` type that represents the type of the second input parameter.
+    /// @param class0 the [Class] type that represents the type of the first input parameter.
+    /// @param class1 the [Class] type that represents the type of the second input parameter.
 
     public BiFunctionBuilder(DocxStamperConfiguration source, String name, Class<T> class0, Class<U> class1) {
         this.source = source;
@@ -42,8 +42,8 @@ public class BiFunctionBuilder<T, U>
     /// produces a result. This method enables the addition of a bifunctional logic to the associated configuration,
     /// which can be invoked later with the defined parameter and behavior.
     ///
-    /// @param implementation the BiFunction implementation to register, taking two input arguments types `T`
-    ///         and `U`, and producing a result.
+    /// @param implementation the BiFunction implementation to register, taking two input arguments types [T]
+    ///         and [U], and producing a result.
     @Override
     public OfficeStamperConfiguration withImplementation(BiFunction<T, U, ?> implementation) {
         Function<List<Object>, Object> function = args -> {

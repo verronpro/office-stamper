@@ -32,10 +32,10 @@ public class FunctionBuilder<T>
     }
 
     /// Sets the implementation for the custom function being built. The implementation defines the behavior of the
-    /// function for a specific input type and is wrapped in a `CustomFunction` instance that is added to the
+    /// function for a specific input type and is wrapped in a [CustomFunction] instance that is added to the
     /// configuration.
     ///
-    /// @param implementation a `Function` that takes an input of type `T` and produces a result
+    /// @param implementation a [Function] that takes an input of type [T] and produces a result
     @Override
     public OfficeStamperConfiguration withImplementation(Function<T, ?> implementation) {
         Function<List<Object>, Object> objectFunction = args -> {

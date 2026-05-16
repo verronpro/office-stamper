@@ -37,5 +37,5 @@ class WmfDimensionsExample {
 
 == Links
 
-- Parent site: https://verronpro.github.io/office-stamper/
-- Module site: https://verronpro.github.io/office-stamper/imageio-wmf/
+- Parent site: https://office-stamper.verron.pro/
+- Module site: https://office-stamper.verron.pro/imageio-wmf/

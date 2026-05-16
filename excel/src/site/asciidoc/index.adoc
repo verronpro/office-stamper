@@ -1,0 +1,30 @@
+= Office-stamper Excel Module
+
+Excel data source integration for Office-stamper.
+This module lets you use existing XLSX workbooks as read-only inputs when stamping other documents with the Office-stamper engine.
+It does not generate spreadsheets from templates.
+
+== Overview
+
+- Load workbooks from a `Path` or `InputStream` using `ExcelContext.from(...)`
+- Access sheets as a list via the `sheets` property
+- Access sheets by name at the root; each resolves to its default table (first row = headers) as a list of records
+- Access individual cells on a sheet using A1 notation via `get("A1")`
+- Expose named tables (when present) at the root by their table name
+
+== Maven coordinates
+
+[source,xml]
+----
+<dependency>
+  <groupId>pro.verron.office-stamper</groupId>
+  <artifactId>excel</artifactId>
+  <version><!-- use the latest released version --></version>
+</dependency>
+----
+
+== Links
+
+- Parent site: https://office-stamper.verron.pro/
+- Module site: https://office-stamper.verron.pro/excel/
+- Engine docs: https://office-stamper.verron.pro/engine/

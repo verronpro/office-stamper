@@ -1,14 +1,16 @@
 // suppress inspection "AsciiDocLinkResolve" for whole file
-:proj: https://github.com/verronpro/office-stamper
-:repo: https://github.com/verronpro/office-stamper/blob/main
-:docs: https://verronpro.github.io/office-stamper/engine
+:ghos: https://github.com/verronpro/office-stamper
+:main: {ghos}/blob/main
+:wrkf: {ghos}//actions/workflows
+:docs: https://office-stamper.verron.pro
+:blog: https://office-stamper.verron.pro
 
 = Office-stamper
 
-image:{proj}/actions/workflows/integrate-os.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-os.yml]
-image:{proj}/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link={proj}/actions/workflows/integrate-docx4j.yml]
-image:{proj}/actions/workflows/qodana.yml/badge.svg[Build Status,link={proj}/actions/workflows/qodana.yml]
-image:{proj}/actions/workflows/pages.yml/badge.svg[Build Status,link={proj}/actions/workflows/pages.yml]
+image:{wrkf}/integrate-os.yml/badge.svg[Build Status, link={wrkf}/integrate-os.yml]
+image:{wrkf}/integrate-docx4j.yml/badge.svg[Build Status, link={wrkf}/integrate-docx4j.yml]
+image:{wrkf}/qodana.yml/badge.svg[Build Status, link={wrkf}/qodana.yml]
+image:{wrkf}/pages.yml/badge.svg[Build Status, link={wrkf}/pages.yml]
 
 == Introduction
 
@@ -28,27 +30,27 @@ You design a template using your preferred Word processor; and office-stamper wi
 
 [source,java]
 ----
-class Example {
-    static void main(String[] args) {
-        // an object to use as context for the expressions found in the template.
-        var context = new YourPojoContext(_, _ , _);
+void main() {
+    // an object to use as context for the expressions found in the template.
+    var context = new YourPojoContext(_, _ , _);
 
-        // create a stamper that handles streams
-        var stamper = OfficeStampers.docxStamper();
+    // create a stamper that handles streams
+    var stamper = OfficeStampers.docxStamper();
 
-        var templatePath = Paths.get("your/docx/template/file.docx");
-        var outputPath = Paths.get("your/desired/output/path.docx");
-        try(
-            var template = Files.newInputStream(templatePath);
-            var output = Files.newOutputStream(outputPath)
-        ) {
-            stamper.stamp(template, context, output);
-        }
+    var templatePath = Paths.get("your/docx/template/file.docx");
+    var outputPath = Paths.get("your/desired/output/path.docx");
+    try(
+        var template = Files.newInputStream(templatePath);
+        var output = Files.newOutputStream(outputPath)
+    ) {
+        stamper.stamp(template, context, output);
     }
 }
 ----
 
 If you already have a `WordprocessingMLPackage` (Docx4J document), you can use `docxPackageStamper` instead:
+
+_Want to understand the architecture behind this API? Read the {blog}/office-stamper/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[expression pivot deep dive] and the {blog}/office-stamper/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[v3 overhaul story] on the blog._
 
 [source,java]
 ----
@@ -102,7 +104,6 @@ You can also control modes via system properties:
 
 - `-Dofficestamper.spel.mode=restricted|permissive` (default: `restricted`)
 - `-Dofficestamper.svg.mode=restricted|permissive` (default: `restricted`)
-- Backward compatible: `-Dofficestamper.svg.safe=true|false` (default: `true`)
 
 Use permissive options only with fully trusted templates and assets.
 
@@ -131,19 +132,19 @@ Use permissive options only with fully trusted templates and assets.
 
 == Documentation
 
-Comprehensive documentation is available at link:{docs}[verronpro.github.io/office-stamper].
+Comprehensive documentation is available at {wrkf}[{wrkf}].
 
-* link:{docs}/introduction.html[Introduction]
-* link:{docs}/getting-started.html[Getting Started]
-* link:{docs}/template-expressions.html[Template Expressions]
-* link:{docs}/comment-processors.html[Comment Processors]
-* link:{docs}/spel-functions.html[SpEL Functions]
-* link:{docs}/custom-settings.html[Custom Settings]
-* link:{docs}/advanced-features.html[Advanced Features]
-* link:{docs}/troubleshooting.html[Troubleshooting]
-* link:{docs}/release-notes.html[Release Notes]
-* link:{docs}/contributing.html[Contributing]
-* https://verronpro.github.io/office-stamper/cli/quickstart-windows.html[Quickstart (Windows)]
+* link:{docs}/engine/introduction.html[Introduction]
+* link:{docs}/engine/getting-started.html[Getting Started]
+* link:{docs}/engine/template-expressions.html[Template Expressions]
+* link:{docs}/engine/comment-processors.html[Comment Processors]
+* link:{docs}/engine/spel-functions.html[SpEL Functions]
+* link:{docs}/engine/custom-settings.html[Custom Settings]
+* link:{docs}/engine/advanced-features.html[Advanced Features]
+* link:{docs}/engine/troubleshooting.html[Troubleshooting]
+* link:{docs}/engine/release-notes.html[Release Notes]
+* link:{docs}/engine/contributing.html[Contributing]
+* link:{wrkf}/cli/quickstart-windows.html[Quickstart (Windows)]
 
 == Labeling conventions
 
@@ -168,14 +169,14 @@ Example
 
 This repository is structured in several Maven/Java modules:
 
-* link:engine/src/site/asciidoc/index.adoc[Engine] – core templating engine and public API
-* link:utils/README.adoc[Utils] – low-level utilities shared by modules
-* link:asciidoc/README.adoc[AsciiDoc] – AsciiDoc to DOCX integration helpers
-* link:cli/README.adoc[CLI] – command line interface to stamp templates
+* {docs}/engine[Engine] – core templating engine and public API
+* {docs}/utils[Utils] – low-level utilities shared by modules
+* {docs}/asciidoc[AsciiDoc] – AsciiDoc to DOCX integration helpers
+* {docs}/cli[CLI] – command line interface to stamp templates
 
 == Latest Release
 
-The latest release is v3.3. See the link:{docs}/release-notes.html[Release Notes] for details.
+The latest release is v3.3. See the link:{docs}/engine/release-notes.html[Release Notes] for details.
 
 === What's new in 3.3 (high level)
 
@@ -226,7 +227,7 @@ Breaking API highlights:
 Minor updates:
 
 * Spring dependencies bumped to 7.0.2
-* New docs: `engine/src/site/asciidoc/how-to-custom.adoc` and `HOW_DOES_IT_WORKS.adoc`
+* New docs: `{docs}/engine/how-to-custom.html` and `{blog}/engine/HOW_DOES_IT_WORKS.adoc`
 * Test matrix extended for Docx4J 11.5.7 and 11.5.8
 * New modules: `asciidoc`, `utils`
 
@@ -236,11 +237,28 @@ The source code contains a set of tests showing how to use the features.
 If you want to run them yourself, clone the repository and run `mvn test`.
 To view the resulting .docx documents, you can export the stamped documents with the method `stamped.save(OutputStream)`
 
-If you want to have a look at the .docx templates used in the tests, have a look at the link:{repo}/test/sources[sources subfolder] in the test folder.
+If you want to have a look at the .docx templates used in the tests, have a look at the link:{main}/test/sources[sources subfolder] in the test folder.
+
+== Who Uses This?
+
+Office-stamper is used in production for document automation in the energy sector in China, where strict schema compliance and security constraints are non-negotiable.
+If your team uses office-stamper, feel free to open an issue or PR to add yourself to this list.
+
+== Author
+
+Office-stamper is crafted and maintained by {blog}/about.html[About Joseph Verron] — IT Manager, CISO, and Caring Coder.
+Joseph writes about Java craftsmanship, docs-as-code, and secure document automation on his blog at {blog}[verron.pro].
+Follow the stories behind the code:
+
+* {blog}/office-stamper/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[The Expression Pivot — Harnessing Spring SpEL]
+* {blog}/office-stamper/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[Predicting the Unpredictable — the v3 Overhaul]
+* {blog}/office-stamper/2026/02/01/monthly-commit-feedback-loops-and-the-asciidoc-pivot.html[Feedback Loops and the AsciiDoc Pivot]
+* {blog}/office-stamper/2026/01/01/monthly-commit-office-stamper-3-1-stabilizing-the-surface.html[Office-stamper 3.1 — Stabilizing the Surface]
+* {blog}/office-stamper/2025/11/01/monthly-commit-engine-refactoring-the-road-to-v3.html[Engine Refactoring — the Road to v3]
 
 == Contributing
 
-Contributions are welcome! See the link:{docs}/contributing.html[Contributing Guide] for details on how to contribute to Office-stamper.
+Contributions are welcome! See the link:{docs}/engine/contributing.html[Contributing Guide] for details on how to contribute to Office-stamper.
 
 == License
 

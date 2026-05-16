@@ -7,7 +7,7 @@ import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 /// Provides utility methods for working with [Hook] instances in the context of a WordprocessingML-based document. The
-/// `Hooks` class contains static methods to create and manage [ResetableIterator] instances of hooks for a given
+/// [Hooks] class contains static methods to create and manage [ResetableIterator] instances of hooks for a given
 /// document part. These hooks allow the customization or extension of document processing behavior in a flexible and
 /// context-driven manner.
 public class Hooks {

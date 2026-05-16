@@ -145,7 +145,7 @@ public final class AsciiDocModel {
     /// is created.
     public record Sup(List<Inline> children)
             implements Inline {
-        /// Constructs a `Sup` instance, representing a superscript inline fragment in an AsciiDoc document.
+        /// Constructs a [Sup] instance, representing a superscript inline fragment in an AsciiDoc document.
         ///
         /// The Sup instance encapsulates a list of [Inline] child elements. The list is copied to ensure immutability,
         /// providing safety and preventing external modification after creation.
@@ -164,6 +164,15 @@ public final class AsciiDocModel {
         }
     }
 
+    /// Represents a subscript inline element within an AsciiDoc document model.
+    ///
+    /// This class implements the Inline interface and contains a list of child inlines.
+    /// It is used to represent text or elements that should appear as subscript.
+    ///
+    /// The content of this inline element is immutable, and the provided child elements
+    /// are deep-copied to preserve immutability.
+    ///
+    /// @param children the list of inline fragments contained within this subscript element
     public record Sub(List<Inline> children)
             implements Inline {
         public Sub(List<Inline> children) {
@@ -247,6 +256,10 @@ public final class AsciiDocModel {
             this.style = style;
         }
 
+        /// Creates a list containing a single [Row] instance, where the row itself contains a list of default [Cell]
+        ///  instances.
+        ///
+        /// @return an immutable list with one [Row], which wraps a list of predefined [Cell] objects
         public static List<Row> listOf() {
             return List.of(of(Cell.listOf()));
         }
@@ -276,6 +289,11 @@ public final class AsciiDocModel {
             return List.of(ofInlines(List.of(new Text("A"))), ofInlines(List.of(new Text("B"))));
         }
 
+        /// Creates a new [Cell] instance by wrapping a list of [Inline] elements
+        /// into a [Paragraph] and adding it to the cell's content blocks.
+        ///
+        /// @param inlines the list of [Inline] elements to be wrapped into a [Paragraph]
+        /// @return a [Cell] containing the specified [Inline] elements as a single [Paragraph]
         public static Cell ofInlines(List<Inline> inlines) {
             return new Cell(List.of(new Paragraph(inlines)));
         }
@@ -427,8 +445,8 @@ public final class AsciiDocModel {
     /// any visible content to the output document. It is typically used to store
     /// annotations or additional information within the block structure.
     ///
-    /// This class implements the `Block` interface, which mandates
-    /// implementing the `size` method. The size of a comment line
+    /// This class implements the [Block] interface, which mandates
+    /// implementing the [#size()] method. The size of a comment line
     /// is always zero, as it does not represent any visual or measurable content.
     ///
     /// @param comment the text of the comment line

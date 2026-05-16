@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 
-/// The `AsciiDocParser` class is a utility for parsing AsciiDoc-formatted text
+/// The [AsciiDocParser] class is a utility for parsing AsciiDoc-formatted text
 /// and transforming it into structured models. It provides both static and instance-based
 /// parsing capabilities and is designed to work with inline structures within the text.
 /// ## Superclasses
@@ -18,7 +18,7 @@ import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 /// ## Methods
 ///   - [#parse(String)]: A static method to parse an AsciiDoc string into an [AsciiDocModel].
 ///   - [#apply(String)]: An instance method implementing the [Function] interface for parsing an AsciiDoc string
-/// into an `AsciiDocModel`.
+/// into an [AsciiDocModel].
 ///
 /// ## Internal Behavior
 ///   - [#parseInlines(String)]: A private static helper method to parse inline elements from a given text input.
@@ -33,7 +33,7 @@ public final class AsciiDocParser
         return new AsciiDocParser().apply(asciidoc);
     }
 
-    /// Processes an AsciiDoc-formatted string and converts it into an `AsciiDocModel`
+    /// Processes an AsciiDoc-formatted string and converts it into an [AsciiDocModel]
     /// representation containing structured blocks such as paragraphs, headings,
     /// lists, tables, images, code blocks, and blockquotes.
     ///

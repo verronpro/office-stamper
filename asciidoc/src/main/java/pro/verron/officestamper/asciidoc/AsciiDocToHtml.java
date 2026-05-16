@@ -27,7 +27,7 @@ import static pro.verron.officestamper.asciidoc.AsciiDocModel.*;
 /// rendered with appropriate HTML tags.
 ///
 /// The class adheres to the functional programming paradigm by implementing the
-/// `apply` method to facilitate the mapping of AsciiDoc models to HTML.
+/// [#apply(AsciiDocModel)] method to facilitate the mapping of AsciiDoc models to HTML.
 ///
 /// This class is immutable and cannot be instantiated.
 public final class AsciiDocToHtml

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
 import static pro.verron.officestamper.utils.wml.WmlUtils.insertSmartTag;
 
-/// The [PlaceholderHooker] class is a pre-processor that prepares inline placeholders in a `WordprocessingML`
+/// The [PlaceholderHooker] class is a pre-processor that prepares inline placeholders in a [WordprocessingMLPackage]
 /// document. It searches for placeholders that match a given pattern and wraps them with a specified XML element to
 /// ensure proper processing by the OfficeStamper engine.
 ///

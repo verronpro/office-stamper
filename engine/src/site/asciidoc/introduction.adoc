@@ -26,7 +26,6 @@ Office-stamper is a library that enables you to:
 
 image:https://github.com/verronpro/office-stamper/actions/workflows/integrate-os.yml/badge.svg[Build Status,link=https://github.com/verronpro/office-stamper/actions/workflows/integrate-os.yml]
 image:https://github.com/verronpro/office-stamper/actions/workflows/integrate-docx4j.yml/badge.svg[Build Status,link=https://github.com/verronpro/office-stamper/actions/workflows/integrate-docx4j.yml]
-image:https://github.com/verronpro/office-stamper/actions/workflows/analyze.yml/badge.svg[Build Status,link=https://github.com/verronpro/office-stamper/actions/workflows/analyze.yml]
 image:https://github.com/verronpro/office-stamper/actions/workflows/pages.yml/badge.svg[Build Status,link=https://github.com/verronpro/office-stamper/actions/workflows/pages.yml]
 
 == History

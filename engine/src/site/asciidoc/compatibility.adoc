@@ -14,7 +14,6 @@ Newer JDKs in the same major line usually work, but when the bytecode target is 
 
 == Supported versions
 
-[cols="1,1,1,1,2"]
 |===
 | Office‑stamper | Java | Docx4J | Notes
 

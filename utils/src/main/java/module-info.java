@@ -1,4 +1,4 @@
-/// The `pro.verron.officestamper.utils` module provides low-level utilities shared by the OfficeStamper engine and
+/// The [pro.verron.officestamper.utils] module provides low-level utilities shared by the OfficeStamper engine and
 /// associated tools.
 ///
 /// This module contains various helper classes for working with WordprocessingML structures from docx4j, along with

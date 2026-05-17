@@ -15,7 +15,6 @@ import org.docx4j.openpackaging.parts.XmlPart;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.R;
-import org.jspecify.annotations.NonNull;
 import org.w3c.dom.Document;
 import pro.verron.officestamper.utils.UtilsException;
 import pro.verron.officestamper.utils.image.ImageRunOptions;
@@ -30,8 +29,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.newImgPart;
+import static pro.verron.officestamper.utils.UtilsException.supply;
 import static pro.verron.officestamper.utils.image.ImgUtils.detectFormat;
+import static pro.verron.officestamper.utils.image.ImgUtils.supportedType;
+import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.newImgPart;
 import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.setupRelationship;
 
 /// Utility class for working with Open Packaging documents. This class provides methods to load and export Word
@@ -70,7 +71,6 @@ public class OpenpackagingUtils {
         }
     }
 
-
     /// Loads a PowerPoint document from the provided input stream.
     ///
     /// @param is the input stream containing the PowerPoint document data
@@ -86,7 +86,6 @@ public class OpenpackagingUtils {
         }
     }
 
-
     /// Exports a PowerPoint document to the provided output stream.
     ///
     /// @param presentationMLPackage the PowerPoint document to export
@@ -101,73 +100,19 @@ public class OpenpackagingUtils {
         }
     }
 
-    /// Creates a new run containing an image from the given WordprocessingMLPackage and Part. This method processes the
-    /// input document to locate or create an image part, establishes the necessary relationships, and generates a run
-    /// element with the image embedded.
+    /// Creates a new run element containing an image, which is embedded in a [WordprocessingMLPackage] document.
     ///
-    /// @param document the WordprocessingMLPackage containing the document where the image will be added
-    /// @param part the source Part in the document package that relates to the image
-    ///
-    /// @return a new run object containing the embedded image
-    ///
-    /// @throws UtilsException if the creation of the image part or the run fails
-    public static R newImageRun(
-            WordprocessingMLPackage document,
-            Part part,
-            Supplier<byte[]> bytes,
-            ImageRunOptions imageRunOptions
-    ) {
-        try {
-            var documentModel = document.getDocumentModel();
-            var sections = documentModel.getSections();
-            var lastSection = sections.getLast();
-            var pageDimension = lastSection.getPageDimensions();
-            var imgPart = findOrCreate(document, part, bytes, imageRunOptions);
-            var relationship = imgPart.relationship();
-            var imgFormat = imgPart.format();
-            var dimension = imgFormat.dimension();
-            var format = imgFormat.name();
-            var scale = WmlFactory.computeScale(pageDimension,
-                    imageRunOptions.maxWidth() == null ? -1 : imageRunOptions.maxWidth(),
-                    dimension);
-            var inline = format.equals("svg")
-                    ? WmlFactory.newSVGInline(relationship,
-                    imageRunOptions.filenameHint(),
-                    imageRunOptions.altText(),
-                    scale)
-                    : WmlFactory.newImgInline(relationship,
-                            imageRunOptions.filenameHint(),
-                            imageRunOptions.altText(),
-                            scale);
-            var drawing = WmlFactory.newDrawing(inline);
-            return WmlFactory.newRun(drawing);
-        } catch (Exception e) {
-            throw new UtilsException("Failed to create an ImagePart", e);
-        }
-    }
-
-    private static @NonNull ImgPart findOrCreate(
-            WordprocessingMLPackage document,
-            Part part,
-            Supplier<byte[]> bytes,
-            ImageRunOptions imageRunOptions
-    ) {
-        if (!imageRunOptions.deduplicate()) return newImgPart(document, part, bytes.get());
-
-        var foundImagePart = findImgPart(document, part, bytes.get());
-        return foundImagePart.orElseGet(() -> newImgPart(document, part, bytes.get()));
-    }
-
-    public static Optional<ImgPart> findImgPart(OpcPackage opcPackage, Part sourcePart, byte[] bytes) {
-    /// Creates a new run containing an image from the given WordprocessingMLPackage and Part. This method processes the
-    /// input document to locate or create an image part, establishes the necessary relationships, and generates a run
-    /// element with the image embedded.
-    ///
-    /// @param document the WordprocessingMLPackage containing the document where the image will be added
-    ///
-    /// @return a new run object containing the embedded image
-    ///
-    /// @throws UtilsException if the creation of the image part or the run fails
+    /// @param openPackage       the open package of the Word document, providing access to the document model
+    ///                          and its sections; typically used to generate the appropriate relationships
+    ///                          and content.
+    /// @param bytes             a supplier of the byte array representing the image data to be embedded
+    ///                          in the document.
+    /// @param imageRunOptions   options for the image run, including alternate text, filename hints,
+    ///                          maximum width, and deduplication preferences.
+    /// @return a [R] (run) object representing the created image run, which can be added to the
+    ///         document content.
+    /// @throws UtilsException   if there is an error during the creation of the image part, such as
+    ///                          an invalid image format or issues with the document model.
     public static R newImageRun(
             OpenPackage<WordprocessingMLPackage> openPackage,
             Supplier<byte[]> bytes,
@@ -179,7 +124,7 @@ public class OpenpackagingUtils {
             var sections = documentModel.getSections();
             var lastSection = sections.getLast();
             var pageDimension = lastSection.getPageDimensions();
-            var imgPart = findOrCreate(openPackage, bytes);
+            var imgPart = findOrCreate(openPackage, bytes, imageRunOptions.deduplicate());
             var relationship = imgPart.relationship();
             var imgFormat = imgPart.format();
             var dimension = imgFormat.dimension();
@@ -205,10 +150,14 @@ public class OpenpackagingUtils {
 
     private static ImgPart findOrCreate(
             OpenPackage<?> openPackage,
-            Supplier<byte[]> imageBytesSupplier
+            Supplier<byte[]> bytes,
+            boolean deduplicate
     ) {
-        var foundImagePart = findImgPart(openPackage, imageBytesSupplier.get());
-        return foundImagePart.orElseGet(() -> newImgPart(openPackage, imageBytesSupplier.get()));
+        if (deduplicate) {
+            var foundImagePart = findImgPart(openPackage, bytes.get());
+            if (foundImagePart.isPresent()) return foundImagePart.get();
+        }
+        return newImgPart(openPackage, bytes.get());
     }
 
     /// Searches for an existing image part in the provided package that matches the given byte data.

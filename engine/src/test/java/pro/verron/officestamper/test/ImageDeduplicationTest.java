@@ -52,7 +52,7 @@ public class ImageDeduplicationTest {
                                        .count();
 
         // If deduplication, there should be only 2 image part even though we inserted 3 since 2 were the same image
-        assertEquals(2, imagePartCount, "There should be only 1 image part in the document");
+        assertEquals(2, imagePartCount, "There should be only 2 image part in the document");
     }
 
     @Test
@@ -88,6 +88,6 @@ public class ImageDeduplicationTest {
                                        .count();
 
         // If deduplication is deactivated, there should be 3 image part since we inserted 3
-        assertEquals(3, imagePartCount, "There should be only 1 image part in the document");
+        assertEquals(3, imagePartCount, "There should be exactly 3 image part in the document");
     }
 }

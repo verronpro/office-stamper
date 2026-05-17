@@ -1,25 +1,16 @@
 package pro.verron.officestamper.utils.openpackaging;
 
 import org.docx4j.openpackaging.contenttype.ContentTypeManager;
-import org.docx4j.openpackaging.contenttype.ContentTypes;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.exceptions.PartUnrecognisedException;
-import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.relationships.Relationship;
 import pro.verron.officestamper.utils.UtilsException;
-import pro.verron.officestamper.utils.image.ImgPart;
-import pro.verron.officestamper.utils.svg.SvgUtils;
 
 import java.io.ByteArrayInputStream;
-
-import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage.createImageName;
-import static pro.verron.officestamper.utils.image.ImgUtils.detectFormat;
-import static pro.verron.officestamper.utils.image.ImgUtils.supportedType;
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.*;
 
 /// Utility class for creating Open Packaging objects.
 ///
@@ -49,41 +40,20 @@ public class OpenpackagingFactory {
         }
     }
 
-    /// Creates a new [ImgPart] instance from the given [OpcPackage], source part, and image byte array. This method
-    /// detects the image format, validates its compatibility, and establishes the necessary relationships within the
-    /// package.
+    /// Creates an image part using the specified binary data, content type manager, MIME type, and part name.
     ///
-    /// @param bytes the byte array containing image data
+    /// This method generates an image part for use in Open Packaging workflows. It wraps checked exceptions such as
+    /// InvalidFormatException and PartUnrecognisedException in a runtime UtilsException for easier handling.
     ///
-    /// @return a new [ImgPart] containing the detected image format and its relationship
+    /// @param ctm the content type manager to use for part creation
+    /// @param bytes the binary data for the image
+    /// @param mimeType the MIME type of the image (e.g., "image/png")
+    /// @param partName the name of the part to be created
     ///
-    /// @throws UtilsException if byte array is empty, format cannot be detected, or image type is unsupported
-    public static ImgPart newImgPart(OpenPackage openPackage, byte[] bytes) {
-        if (bytes.length == 0) throw new UtilsException("Can't create image from empty byte array");
-
-        var optFormat = detectFormat(bytes);
-        var format = optFormat.orElseThrow(() -> new UtilsException("Could not detect a supported image type."));
-
-        var optMimeType = supportedType(format.name());
-        var mimeType = optMimeType.orElseThrow(() -> new UtilsException("Unsupported image type"));
-
-        ensureHasRelationshipPart(openPackage.part());
-        var relationshipId = createRelationshipId(openPackage.part());
-        var partName = createImageName(openPackage.document(), openPackage.part(), relationshipId, format.name());
-        var ctm = openPackage.document()
-                             .getContentTypeManager();
-
-        Part imgPart;
-        if (mimeType.equals(ContentTypes.IMAGE_SVG)) {
-            var document = SvgUtils.parseDocument(bytes);
-            imgPart = createSvgPart(document, ctm, partName);
-        }
-        else imgPart = createImagePart(bytes, ctm, mimeType, partName);
-        var relationship = setupRelationship(openPackage.part(), imgPart, relationshipId);
-        return new ImgPart(format, relationship);
-    }
-
-    private static Part createImagePart(byte[] bytes, ContentTypeManager ctm, String mimeType, String partName) {
+    /// @return the created image part
+    ///
+    /// @throws UtilsException if an error occurs while creating the part
+    public static Part createImagePart(ContentTypeManager ctm, byte[] bytes, String mimeType, String partName) {
         try {
             var imagePart = (BinaryPartAbstractImage) ctm.newPartForContentType(mimeType, partName, null);
             imagePart.setBinaryData(new ByteArrayInputStream(bytes));

@@ -208,32 +208,8 @@
                                     <goal>run</goal>
                                 </goals>
                             </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Produce numeric app.version from project.version for jpackage (no -SNAPSHOT allowed) -->
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.6.1</version>
-                        <executions>
-                            <execution>
-                                <id>parse-version-portable</id>
-                                <goals>
-                                    <goal>parse-version</goal>
-                                </goals>
-                                <phase>validate</phase>
-                                <configuration>
-                                    <propertyPrefix>parsedVersion</propertyPrefix>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Compose self-extracting EXE using 7-Zip SFX -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
+
+                            <!-- Compose self-extracting EXE using 7-Zip SFX -->
                             <execution>
                                 <id>make-portable-sfx</id>
                                 <phase>package</phase>
@@ -269,6 +245,24 @@
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Produce numeric app.version from project.version for jpackage (no -SNAPSHOT allowed) -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>parse-version-portable</id>
+                                <goals>
+                                    <goal>parse-version</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <propertyPrefix>parsedVersion</propertyPrefix>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

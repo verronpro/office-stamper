@@ -1,5 +1,8 @@
 package pro.verron.officestamper.preset;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.Part;
+import org.docx4j.wml.R;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 

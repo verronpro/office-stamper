@@ -8,32 +8,18 @@ import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.exceptions.PartUnrecognisedException;
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.DefaultXmlPart;
-import org.docx4j.openpackaging.parts.Part;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.XmlPart;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
-import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.R;
 import org.w3c.dom.Document;
 import pro.verron.officestamper.utils.UtilsException;
 import pro.verron.officestamper.utils.image.ImageRunOptions;
-import pro.verron.officestamper.utils.image.ImgPart;
 import pro.verron.officestamper.utils.svg.SvgUtils;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Supplier;
-
-import static pro.verron.officestamper.utils.UtilsException.supply;
-import static pro.verron.officestamper.utils.image.ImgUtils.detectFormat;
-import static pro.verron.officestamper.utils.image.ImgUtils.supportedType;
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.newImgPart;
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.setupRelationship;
 
 /// Utility class for working with Open Packaging documents. This class provides methods to load and export Word
 /// documents using DOCX4J
@@ -124,7 +110,7 @@ public class OpenpackagingUtils {
             var sections = documentModel.getSections();
             var lastSection = sections.getLast();
             var pageDimension = lastSection.getPageDimensions();
-            var imgPart = findOrCreate(openPackage, bytes, imageRunOptions.deduplicate());
+            var imgPart = openPackage.findOrCreateImgPart(bytes, imageRunOptions.deduplicate());
             var relationship = imgPart.relationship();
             var imgFormat = imgPart.format();
             var dimension = imgFormat.dimension();
@@ -148,91 +134,29 @@ public class OpenpackagingUtils {
         }
     }
 
-    private static ImgPart findOrCreate(
-            OpenPackage<?> openPackage,
-            Supplier<byte[]> bytes,
-            boolean deduplicate
-    ) {
-        if (deduplicate) {
-            var foundImagePart = findImgPart(openPackage, bytes.get());
-            if (foundImagePart.isPresent()) return foundImagePart.get();
-        }
-        return newImgPart(openPackage, bytes.get());
-    }
-
-    /// Searches for an existing image part in the provided package that matches the given byte data.
-    /// If a matching image part is found, an `ImgPart` object representing the image part and its
-    /// relationship is returned.
+    /// Extracts the SVG XML content from the provided byte array by parsing it into a document and
+    /// creating an SVG part using the specified ContentTypeManager.
     ///
-    /// @param openPackage the package containing the document where the image part might exist
-    /// @param bytes the byte array representing the image data to be matched
-    ///
-    /// @return an `Optional` containing the matching `ImgPart`, or `Optional.empty()`
-    ///         if no matching image part is found
-    ///
-    /// @throws UtilsException if the byte array is empty or the image format cannot be detected
-    public static Optional<ImgPart> findImgPart(OpenPackage<?> openPackage, byte[] bytes) {
-        if (bytes.length == 0) throw new UtilsException("Can't create image from empty byte array");
-
-        var format = detectFormat(bytes).orElseThrow(supply("Could not detect a supported image type."));
-        var mimeType = supportedType(format.name()).orElseThrow(supply("Unsupported image type: %s", format.name()));
-        ensureHasRelationshipPart(openPackage.part());
-        var relationshipId = createRelationshipId(openPackage.part());
-        var ctm = openPackage.document()
-                             .getContentTypeManager();
-        var isSvg = mimeType.equals(ContentTypes.IMAGE_SVG);
-        var subParts = openPackage.part()
-                                  .getPackage()
-                                  .getParts()
-                                  .getParts();
-        for (var subPart : subParts.values()) {
-            switch (subPart) {
-                case DefaultXmlPart xmlPart when isSvg -> {
-                    var existingXml = extractXml(xmlPart);
-                    var newXml = extractXml(bytes, ctm);
-                    if (Objects.equals(newXml, existingXml)) {
-                        var relationship = setupRelationship(openPackage.part(), xmlPart, relationshipId);
-                        return Optional.of(new ImgPart(format, relationship));
-                    }
-                }
-                case BinaryPartAbstractImage imagePart -> {
-                    if (Arrays.equals(imagePart.getBytes(), bytes)) {
-                        var relationship = setupRelationship(openPackage.part(), imagePart, relationshipId);
-                        return Optional.of(new ImgPart(format, relationship));
-                    }
-                }
-                case null, default -> { /* DO NOTHING */ }
-            }
-        }
-        return Optional.empty();
-    }
-
-    static void ensureHasRelationshipPart(Part sourcePart) {
-        if (sourcePart.getRelationshipsPart() == null) RelationshipsPart.createRelationshipsPartForPart(sourcePart);
-    }
-
-    static String createRelationshipId(Part sourcePart) {
-        var relationshipsPart = sourcePart.getRelationshipsPart();
-        return relationshipsPart.getNextId();
-    }
-
-    private static String extractXml(XmlPart xmlPart) {
-        String existingXml;
-        try {
-            existingXml = xmlPart.getXML();
-        } catch (Docx4JException e) {
-            throw new RuntimeException(e);
-        }
-        return existingXml;
-    }
-
-    private static String extractXml(byte[] bytes, ContentTypeManager ctm) {
+    /// @param bytes the byte array containing the SVG content to be parsed
+    /// @param ctm the content type manager used to manage the creation of the SVG part
+    /// @return the extracted XML content as a String
+    /// @throws RuntimeException if an error occurs during the processing or extraction of the XML content
+    public static String extractSvgXml(byte[] bytes, ContentTypeManager ctm) {
         var newDocument = SvgUtils.parseDocument(bytes);
-        var svgPart = createSvgPart(newDocument, ctm, "/temporary");
+        var svgPart = createSvgPart(ctm, newDocument, "/temporary");
         return extractXml(svgPart);
     }
 
-    static XmlPart createSvgPart(Document document, ContentTypeManager contentTypeManager, String partName) {
+    /// Creates a new SVG part with the specified document, content type manager, and part name.
+    ///
+    /// @param contentTypeManager the content type manager used to create the SVG part
+    /// @param document the XML document to associate with the new SVG part
+    /// @param partName the name to assign to the new SVG part
+    ///
+    /// @return the created SVG part
+    ///
+    /// @throws UtilsException if an error occurs during part creation or initialization
+    public static XmlPart createSvgPart(ContentTypeManager contentTypeManager, Document document, String partName) {
         XmlPart part;
         try {
             part = (XmlPart) contentTypeManager.newPartForContentType(ContentTypes.IMAGE_SVG, partName, null);
@@ -243,5 +167,20 @@ public class OpenpackagingUtils {
         part.setContentType(new ContentType(ContentTypes.IMAGE_SVG));
         part.setDocument(document);
         return part;
+    }
+
+    /// Extracts the XML content from the specified XmlPart.
+    ///
+    /// @param xmlPart the XmlPart from which to extract the XML content
+    /// @return the extracted XML content as a String
+    /// @throws RuntimeException if an error occurs while retrieving the XML content
+    public static String extractXml(XmlPart xmlPart) {
+        String existingXml;
+        try {
+            existingXml = xmlPart.getXML();
+        } catch (Docx4JException e) {
+            throw new RuntimeException(e);
+        }
+        return existingXml;
     }
 }

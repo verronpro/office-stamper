@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>Office-stamper</name>
-    <groupId>pro.verron.office-stamper</groupId>
+    <groupId>pro.verron</groupId>
     <artifactId>office-stamper</artifactId>
     <version>3.4-SNAPSHOT</version>
     <description>

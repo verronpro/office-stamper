@@ -4,13 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>pro.verron.office-stamper</groupId>
+        <groupId>pro.verron</groupId>
         <artifactId>office-stamper</artifactId>
         <version>3.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <name>Office-stamper ImageIO SVG</name>
+    <groupId>pro.verron.imageio</groupId>
     <artifactId>imageio-svg</artifactId>
     <packaging>jar</packaging>
     <description>

@@ -5,14 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>pro.verron.office-stamper</groupId>
+        <groupId>pro.verron</groupId>
         <artifactId>office-stamper</artifactId>
         <version>3.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <name>Office-stamper Excel</name>
-    <artifactId>excel</artifactId>
+    <groupId>pro.verron.excel</groupId>
+    <artifactId>excel-context</artifactId>
     <packaging>jar</packaging>
     <description>
         Excel context provider for Office-stamper. Exposes a lazy, query-driven context over .xlsx files

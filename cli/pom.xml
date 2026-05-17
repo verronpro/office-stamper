@@ -5,13 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>pro.verron.office-stamper</groupId>
+        <groupId>pro.verron</groupId>
         <artifactId>office-stamper</artifactId>
         <version>3.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <name>Office-stamper CLI</name>
+    <groupId>pro.verron.office-stamper</groupId>
     <artifactId>cli</artifactId>
     <packaging>jar</packaging>
     <description>
@@ -25,8 +26,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>pro.verron.office-stamper</groupId>
-            <artifactId>excel</artifactId>
+            <groupId>pro.verron.excel</groupId>
+            <artifactId>excel-context</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -275,5 +276,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

@@ -161,10 +161,7 @@ public final class ObjectContextFactory
             @SuppressWarnings("java:S117")
                 // The nameof the variable is directly used in the corresponding template.
                 // TODO: implement stamping of name regardless of case
-            NullishContext(
-                    String fullish_value, SubContext fullish,
-                    String nullish_value, SubContext nullish
-            ) {
+            NullishContext(String fullish_value, SubContext fullish, String nullish_value, SubContext nullish) {
                 this.fullish_value = fullish_value;
                 this.fullish = fullish;
                 this.nullish_value = nullish_value;
@@ -274,5 +271,11 @@ public final class ObjectContextFactory
     public Object sentence(String sentence) {
         record Sentence(String sentence) {}
         return new Sentence(sentence);
+    }
+
+    @Override
+    public Object date(Date date) {
+        record DateContext(Date date) {}
+        return new DateContext(date);
     }
 }

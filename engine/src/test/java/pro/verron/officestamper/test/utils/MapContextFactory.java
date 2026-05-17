@@ -256,4 +256,9 @@ public final class MapContextFactory
     public Object sentence(String sentence) {
         return Map.of("sentence", sentence);
     }
+
+    @Override
+    public Object date(Date date) {
+        return Map.of("date", date);
+    }
 }

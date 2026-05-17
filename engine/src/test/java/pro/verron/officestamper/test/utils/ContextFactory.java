@@ -3,6 +3,7 @@ package pro.verron.officestamper.test.utils;
 import pro.verron.officestamper.preset.Image;
 
 import java.time.temporal.Temporal;
+import java.util.Date;
 import java.util.List;
 
 /// Factory for creating test contexts.
@@ -144,4 +145,10 @@ public sealed interface ContextFactory
     ///
     /// @return sentence context
     Object sentence(String sentence);
+
+    /// Creates a legacy date context
+    ///
+    /// @param date the date to be used for creating the context
+    /// @return a date context based on the given date
+    Object date(Date date);
 }

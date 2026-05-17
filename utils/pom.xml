@@ -38,8 +38,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>pro.verron.office-stamper</groupId>
-            <artifactId>asciidoc</artifactId>
+            <groupId>pro.verron.asciidoc</groupId>
+            <artifactId>asciidoc-converter</artifactId>
             <version>3.4-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

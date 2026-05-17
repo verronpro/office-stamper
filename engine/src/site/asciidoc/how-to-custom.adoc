@@ -70,7 +70,7 @@ public class WatermarkProcessor extends CommentProcessor implements IWatermarkPr
             var t = new Text();
             t.setValue("[" + text + "] ");
             run.getContent().add(t);
-            content.getContent().add(0, run); // add at the beginning
+            content.getContent().addFirst(run);
         });
     }
 }
@@ -270,7 +270,7 @@ Register with `.addResolver(new PhoneNumberResolver())`.
 
 ==== B3. Return special content (inline image)
 
-The library already provides an image resolver (see `Resolvers.image()`), but you can map your own image wrapper to it.
+The library already provides an image resolver (see `Resolvers.image(true)`), but you can map your own image wrapper to it.
 
 Pattern:
 

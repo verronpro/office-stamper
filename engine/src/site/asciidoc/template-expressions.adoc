@@ -8,6 +8,7 @@ Office-stamper uses the Spring Expression Language (SpEL) for its template expre
 Expressions are enclosed in `${...}` delimiters.
 
 Examples:
+
 [source]
 ----
 ${person.name}
@@ -22,7 +23,8 @@ The result of the evaluation replaces the expression in the output document.
 
 === Context Object
 
-The context object is a Java object that contains the data you want to insert into your document. It can be:
+The context object is a Java object that contains the data you want to insert into your document.
+It can be:
 
 * A POJO (Plain Old Java Object) with getters
 * A Map with string keys
@@ -56,21 +58,22 @@ Resolvers apply in a certain order.
 
 [cols="1,2,2",options="header"]
 |===
-| Default Resolvers         | When the placeholder resolves to a | The replacement is
-| `Resolvers.image()`       | `pro.verron.officestamper.preset.Image` | an inline image
-| `Resolvers.legacyDate()`  | `java.util.Date`                   | A formatted Date string (default "dd.MM.yyyy")
-| `Resolvers.isoDate()`     | `java.time.LocalDate`              | A formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE)
-| `Resolvers.isoTime()`     | `java.time.LocalTime`              | A formatted Date string (default DateTimeFormatter.ISO_LOCAL_TIME)
-| `Resolvers.isoDateTime()` | `java.time.LocalDateTime`          | A formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-| `Resolvers.nullToEmpty()` | `null`                             | An empty string
-| `Resolvers.fallback()`    | `Object`                           | The result of the call to `String.valueOf()` method on the object
+| Default Resolvers         | When the placeholder resolves to a      | The replacement is
+| `Resolvers.image(true)`   | `pro.verron.officestamper.preset.Image` | an inline image (with deduplication)
+| `Resolvers.legacyDate()`  | `java.util.Date`                        | A formatted Date string (default "dd.MM.yyyy")
+| `Resolvers.isoDate()`     | `java.time.LocalDate`                   | A formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE)
+| `Resolvers.isoTime()`     | `java.time.LocalTime`                   | A formatted Date string (default DateTimeFormatter.ISO_LOCAL_TIME)
+| `Resolvers.isoDateTime()` | `java.time.LocalDateTime`               | A formatted Date string (default DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+| `Resolvers.nullToEmpty()` | `null`                                  | An empty string
+| `Resolvers.fallback()`    | `Object`                                | The result of the call to `String.valueOf()` method on the object
 |===
 
 If a placeholder fails to resolve successfully, Office-stamper skip it, and the placeholder in the document remains the same as its initial state in the template.
 
 == Custom Resolvers
 
-You can create your own resolvers to handle specific types or formatting requirements. See the link:custom-settings.html[Custom Settings] section for more information.
+You can create your own resolvers to handle specific types or formatting requirements.
+See the link:custom-settings.html[Custom Settings] section for more information.
 
 == Error Handling
 

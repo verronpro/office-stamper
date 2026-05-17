@@ -148,7 +148,7 @@ public class Resolvers {
     /// document. The image will be put as an inline into the surrounding paragraph of text.
     ///
     /// @return An instance of [ObjectResolver]
-    public static ObjectResolver image() {
-        return new ImageResolver();
+    public static ObjectResolver image(boolean deduplicate) {
+        return new ImageResolver(deduplicate);
     }
 }

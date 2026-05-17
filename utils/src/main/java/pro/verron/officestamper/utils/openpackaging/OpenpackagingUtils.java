@@ -15,6 +15,7 @@ import org.docx4j.openpackaging.parts.XmlPart;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.R;
+import org.jspecify.annotations.NonNull;
 import org.w3c.dom.Document;
 import pro.verron.officestamper.utils.UtilsException;
 import pro.verron.officestamper.utils.image.ImageRunOptions;
@@ -29,10 +30,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static pro.verron.officestamper.utils.UtilsException.supply;
-import static pro.verron.officestamper.utils.image.ImgUtils.detectFormat;
-import static pro.verron.officestamper.utils.image.ImgUtils.supportedType;
 import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.newImgPart;
+import static pro.verron.officestamper.utils.image.ImgUtils.detectFormat;
 import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.setupRelationship;
 
 /// Utility class for working with Open Packaging documents. This class provides methods to load and export Word
@@ -102,6 +101,64 @@ public class OpenpackagingUtils {
         }
     }
 
+    /// Creates a new run containing an image from the given WordprocessingMLPackage and Part. This method processes the
+    /// input document to locate or create an image part, establishes the necessary relationships, and generates a run
+    /// element with the image embedded.
+    ///
+    /// @param document the WordprocessingMLPackage containing the document where the image will be added
+    /// @param part the source Part in the document package that relates to the image
+    ///
+    /// @return a new run object containing the embedded image
+    ///
+    /// @throws UtilsException if the creation of the image part or the run fails
+    public static R newImageRun(
+            WordprocessingMLPackage document,
+            Part part,
+            Supplier<byte[]> bytes,
+            ImageRunOptions imageRunOptions
+    ) {
+        try {
+            var documentModel = document.getDocumentModel();
+            var sections = documentModel.getSections();
+            var lastSection = sections.getLast();
+            var pageDimension = lastSection.getPageDimensions();
+            var imgPart = findOrCreate(document, part, bytes, imageRunOptions);
+            var relationship = imgPart.relationship();
+            var imgFormat = imgPart.format();
+            var dimension = imgFormat.dimension();
+            var format = imgFormat.name();
+            var scale = WmlFactory.computeScale(pageDimension,
+                    imageRunOptions.maxWidth() == null ? -1 : imageRunOptions.maxWidth(),
+                    dimension);
+            var inline = format.equals("svg")
+                    ? WmlFactory.newSVGInline(relationship,
+                    imageRunOptions.filenameHint(),
+                    imageRunOptions.altText(),
+                    scale)
+                    : WmlFactory.newImgInline(relationship,
+                            imageRunOptions.filenameHint(),
+                            imageRunOptions.altText(),
+                            scale);
+            var drawing = WmlFactory.newDrawing(inline);
+            return WmlFactory.newRun(drawing);
+        } catch (Exception e) {
+            throw new UtilsException("Failed to create an ImagePart", e);
+        }
+    }
+
+    private static @NonNull ImgPart findOrCreate(
+            WordprocessingMLPackage document,
+            Part part,
+            Supplier<byte[]> bytes,
+            ImageRunOptions imageRunOptions
+    ) {
+        if (!imageRunOptions.deduplicate()) return newImgPart(document, part, bytes.get());
+
+        var foundImagePart = findImgPart(document, part, bytes.get());
+        return foundImagePart.orElseGet(() -> newImgPart(document, part, bytes.get()));
+    }
+
+    public static Optional<ImgPart> findImgPart(OpcPackage opcPackage, Part sourcePart, byte[] bytes) {
     /// Creates a new run containing an image from the given WordprocessingMLPackage and Part. This method processes the
     /// input document to locate or create an image part, establishes the necessary relationships, and generates a run
     /// element with the image embedded.
@@ -226,11 +283,7 @@ public class OpenpackagingUtils {
         return extractXml(svgPart);
     }
 
-    static XmlPart createSvgPart(
-            Document document,
-            ContentTypeManager contentTypeManager,
-            String partName
-    ) {
+    static XmlPart createSvgPart(Document document, ContentTypeManager contentTypeManager, String partName) {
         XmlPart part;
         try {
             part = (XmlPart) contentTypeManager.newPartForContentType(ContentTypes.IMAGE_SVG, partName, null);

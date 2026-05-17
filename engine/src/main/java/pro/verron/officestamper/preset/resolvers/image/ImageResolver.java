@@ -52,14 +52,15 @@ public class ImageResolver
         try {
             var document = part.document();
             var imagePart = part.part();
-            var openPackage = new OpenPackage<>(document, imagePart);
+            var openPackage = OpenPackage.getOrCreate(document, imagePart);
             var supplier = (Supplier<byte[]>) image::getBytes;
             var altText = image.getAltText();
             var filenameHint = image.getFilenameHint();
             var maxWidth = image.getMaxWidth()
                                 .orElse(null);
             var imageOptions = new ImageRunOptions(altText, filenameHint, maxWidth, deduplicate);
-            return new Insert(OpenpackagingUtils.newImageRun(openPackage, supplier, imageOptions));
+            var imageRun = OpenpackagingUtils.newImageRun(openPackage, supplier, imageOptions);
+            return new Insert(imageRun);
         } catch (Exception e) {
             throw new OfficeStamperException("Error while adding image to document!", e);
         }

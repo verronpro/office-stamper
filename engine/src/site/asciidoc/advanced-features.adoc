@@ -169,6 +169,26 @@ void main(){
 }
 ----
 
+=== Image Deduplication
+
+By default, Office-stamper attempts to deduplicate images.
+If you insert the same image multiple times (e.g., in a loop), the engine will detect it and reuse the existing image part in the DOCX file instead of creating a new one.
+This significantly reduces the size of the resulting document when many identical images are used.
+
+You can control this behavior when configuring the image resolver:
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standard();
+// Disable deduplication if needed
+configuration.setResolvers(List.of(
+    Resolvers.image(false),
+    // ... other resolvers
+));
+----
+
+The deduplication is based on the binary content of the image.
+
 == Performance Considerations
 
 For large documents or batch processing, consider the following:

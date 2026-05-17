@@ -1,8 +1,5 @@
 package pro.verron.officestamper.preset;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.Part;
-import org.docx4j.wml.R;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
@@ -83,7 +80,7 @@ public final class Image {
         this(inputStream, maxWidth, filenameHint, altText);
     }
 
-    public synchronized byte[] bytes() {
+    public synchronized byte[] getBytes() {
         if (bytes == null) try (InputStream source = this.source) {
             bytes = source.readAllBytes();
         } catch (IOException e) {

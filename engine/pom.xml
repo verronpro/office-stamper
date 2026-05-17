@@ -5,12 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>pro.verron.office-stamper</groupId>
+        <groupId>pro.verron</groupId>
         <artifactId>office-stamper</artifactId>
         <version>3.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <groupId>pro.verron.office-stamper</groupId>
     <name>Office-stamper engine</name>
     <artifactId>engine</artifactId>
 

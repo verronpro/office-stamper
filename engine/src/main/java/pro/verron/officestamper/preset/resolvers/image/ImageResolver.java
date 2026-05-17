@@ -23,6 +23,12 @@ import java.util.function.Supplier;
 public class ImageResolver
         implements ObjectResolver {
 
+    private final boolean deduplicate;
+
+    public ImageResolver(boolean deduplicate) {
+        this.deduplicate = deduplicate;
+    }
+
     @Override
     public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
         if (object instanceof Image image) return resolve(part, image);

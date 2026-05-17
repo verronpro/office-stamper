@@ -93,7 +93,7 @@ public class OfficeStamperConfigurations {
         configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::new);
         configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::new);
 
-        configuration.setResolvers(List.of(Resolvers.image(),
+        configuration.setResolvers(List.of(Resolvers.image(true),
                 Resolvers.legacyDate(),
                 Resolvers.isoDate(),
                 Resolvers.isoTime(),

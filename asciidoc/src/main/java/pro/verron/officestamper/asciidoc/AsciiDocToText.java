@@ -108,11 +108,9 @@ public final class AsciiDocToText
             case MacroBlock(String name, String id, List<String> list) ->
                     "%s::%s[%s]".formatted(name, id, String.join(", ", list));
             case Break _ -> "<<<";
-            case CommentLine(String comment) -> skipComments ? "" : ("// %s").formatted(comment);
+            case CommentLine(String comment) -> skipComments ? null : ("// %s").formatted(comment);
         };
-        if (string.isEmpty())
-            return "";
-        return string + "\n\n";
+        return string == null ? "" : string + "\n\n";
     }
 
     private String render(OpenBlock openBlock) {

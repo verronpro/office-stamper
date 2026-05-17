@@ -87,7 +87,7 @@ public final class AsciiDocCompiler {
     ///
     /// @return textual representation
     public static String toAsciidoc(WordprocessingMLPackage pkg) {
-        return toAsciidoc(pkg, true);
+        return toAsciidoc(pkg, false);
     }
 
     /// Converts the given WordprocessingMLPackage into its textual AsciiDoc representation.

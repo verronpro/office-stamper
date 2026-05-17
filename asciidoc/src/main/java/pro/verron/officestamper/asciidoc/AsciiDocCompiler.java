@@ -10,7 +10,6 @@ public final class AsciiDocCompiler {
     private static final AsciiDocToFx MODEL_TO_SCENE = new AsciiDocToFx();
     private static final AsciiDocParser ASCIIDOC_TO_MODEL = new AsciiDocParser();
     private static final AsciiDocToDocx MODEL_TO_DOCX = new AsciiDocToDocx();
-    private static final AsciiDocToText MODEL_TO_ASCIIDOC = new AsciiDocToText();
 
     private AsciiDocCompiler() {
         throw new IllegalStateException("Utility class");
@@ -88,8 +87,17 @@ public final class AsciiDocCompiler {
     ///
     /// @return textual representation
     public static String toAsciidoc(WordprocessingMLPackage pkg) {
+        return toAsciidoc(pkg, true);
+    }
+
+    /// Converts the given WordprocessingMLPackage into its textual AsciiDoc representation.
+    ///
+    /// @param pkg a Word document package
+    /// @param skipComments whether to omit comments from the output
+    /// @return the textual AsciiDoc representation of the Word document package
+    public static String toAsciidoc(WordprocessingMLPackage pkg, boolean skipComments) {
         var model = toModel(pkg);
-        return MODEL_TO_ASCIIDOC.apply(model);
+        return toAsciidoc(model, skipComments);
     }
 
     /// Parses a Word document into an [AsciiDocModel].
@@ -102,12 +110,20 @@ public final class AsciiDocCompiler {
         return compiler.apply(pkg);
     }
 
-    /// Compiles the parsed model to its textual AsciiDoc representation.
+    /// Converts the given AsciiDoc model into its textual AsciiDoc representation.
     ///
-    /// @param model parsed model
+    /// @param model the parsed AsciiDoc model to be converted
+    /// @param skipComments whether to omit comments from the output
+    /// @return the textual AsciiDoc representation of the model
+    public static String toAsciidoc(AsciiDocModel model, boolean skipComments) {
+        return new AsciiDocToText(skipComments).apply(model);
+    }
+
+    /// Converts the given AsciiDoc model into its textual AsciiDoc representation.
     ///
-    /// @return textual representation
+    /// @param model the parsed AsciiDoc model to be converted
+    /// @return the textual AsciiDoc representation of the model
     public static String toAsciidoc(AsciiDocModel model) {
-        return MODEL_TO_ASCIIDOC.apply(model);
+        return new AsciiDocToText(false).apply(model);
     }
 }

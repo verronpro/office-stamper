@@ -240,7 +240,7 @@ public final class DocxToAsciiDoc
                             var txbxContent = t.getTxbxContent();
                             var toAsciiDoc = new DocxToAsciiDoc(wordprocessingMLPackage);
                             var docModel = toAsciiDoc.apply(txbxContent);
-                            var compileToText = AsciiDocCompiler.toAsciidoc(docModel);
+                            var compileToText = AsciiDocCompiler.toAsciidoc(docModel, true);
                             var trimmed = compileToText.trim();
                             sb1.append(trimmed);
                         }

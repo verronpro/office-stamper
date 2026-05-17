@@ -1,5 +1,7 @@
 package pro.verron.officestamper.utils;
 
+import java.util.function.Supplier;
+
 /// Exception thrown when an error occurs in the utils module.
 public class UtilsException
         extends RuntimeException {
@@ -25,5 +27,9 @@ public class UtilsException
     /// @param t the cause of the exception
     public UtilsException(String message, Throwable t) {
         super(message, t);
+    }
+
+    public static Supplier<? extends RuntimeException> supply(String message, Object... args) {
+        return () -> new UtilsException(message.formatted(args));
     }
 }

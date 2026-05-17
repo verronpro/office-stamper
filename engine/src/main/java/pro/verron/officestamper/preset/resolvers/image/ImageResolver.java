@@ -7,6 +7,11 @@ import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;
+import pro.verron.officestamper.utils.image.ImageRunOptions;
+import pro.verron.officestamper.utils.openpackaging.OpenPackage;
+import pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils;
+
+import java.util.function.Supplier;
 
 /// This [ObjectResolver] allows context objects to return objects of type [Image]. An expression that resolves to an
 /// [Image] object will be replaced by an actual image in the resulting .docx document. The image will be put as an
@@ -39,7 +44,16 @@ public class ImageResolver
     /// @throws OfficeStamperException If an error occurs while adding the image to the document
     private Insert resolve(DocxPart part, Image image) {
         try {
-            return new Insert(image.newRun(part));
+            var document = part.document();
+            var imagePart = part.part();
+            var openPackage = new OpenPackage<>(document, imagePart);
+            var supplier = (Supplier<byte[]>) image::bytes;
+            var altText = image.getAltText();
+            var filenameHint = image.getFilenameHint();
+            var maxWidth = image.getMaxWidth()
+                                .orElse(null);
+            var imageOptions = new ImageRunOptions(altText, filenameHint, maxWidth);
+            return new Insert(OpenpackagingUtils.newImageRun(openPackage, supplier, imageOptions));
         } catch (Exception e) {
             throw new OfficeStamperException("Error while adding image to document!", e);
         }

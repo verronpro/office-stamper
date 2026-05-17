@@ -1,17 +1,14 @@
 package pro.verron.officestamper.preset;
 
-import org.docx4j.wml.R;
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.utils.wml.WmlFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.newImgPart;
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.findImgPart;
+import static java.util.Optional.ofNullable;
 
 /// This class describes an image, which will be inserted into a document.
 ///
@@ -83,42 +80,7 @@ public final class Image {
         this(inputStream, maxWidth, filenameHint, altText);
     }
 
-    /// Creates a new run with the provided image and associated metadata.
-    ///
-    /// TODO: adding the same image twice will put the image twice into the docx-zip file.
-    ///  We should make the second addition of the same image a reference instead.
-    ///
-    /// @param part The document part where the image will be inserted.
-    ///
-    /// @return The created run containing the image.
-    ///
-    /// @throws OfficeStamperException If there is an error creating the image part
-    public R newRun(DocxPart part) {
-        var mlPackage = part.document();
-        try {
-            var parts = part.part();
-            var document = part.document();
-            var documentModel = document.getDocumentModel();
-            var sections = documentModel.getSections();
-            var lastSection = sections.getLast();
-            var pageDimension = lastSection.getPageDimensions();
-            var imgPart = findImgPart(mlPackage, parts, bytes()).orElseGet(() -> newImgPart(mlPackage, parts, bytes()));
-            var relationship = imgPart.relationship();
-            var imgFormat = imgPart.format();
-            var dimension = imgFormat.dimension();
-            var format = imgFormat.name();
-            var scale = WmlFactory.computeScale(pageDimension, maxWidth == null ? -1 : maxWidth, dimension);
-            var inline = format.equals("svg")
-                    ? WmlFactory.newSVGInline(relationship, filenameHint, altText, scale)
-                    : WmlFactory.newImgInline(relationship, filenameHint, altText, scale);
-            var drawing = WmlFactory.newDrawing(inline);
-            return WmlFactory.newRun(drawing);
-        } catch (Exception e) {
-            throw new OfficeStamperException("Failed to create an ImagePart", e);
-        }
-    }
-
-    private synchronized byte[] bytes() {
+    public synchronized byte[] bytes() {
         if (bytes == null) try (InputStream source = this.source) {
             bytes = source.readAllBytes();
         } catch (IOException e) {
@@ -127,4 +89,15 @@ public final class Image {
         return bytes;
     }
 
+    public String getAltText() {
+        return altText;
+    }
+
+    public String getFilenameHint() {
+        return filenameHint;
+    }
+
+    public Optional<Integer> getMaxWidth() {
+        return ofNullable(maxWidth);
+    }
 }

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 public class ImgUtils {
     private static final Logger log = LoggerFactory.getLogger(ImgUtils.class);
 
@@ -37,7 +39,7 @@ public class ImgUtils {
 
     }
 
-    public static Optional<String> supportedContentType(String imageType) {
+    public static Optional<String> supportedType(String imageType) {
         var supportedImageTypes = new HashMap<String, String>();
         supportedImageTypes.put("emf", ContentTypes.IMAGE_EMF);
         supportedImageTypes.put("svg", ContentTypes.IMAGE_SVG);
@@ -47,6 +49,8 @@ public class ImgUtils {
         supportedImageTypes.put("jpeg", ContentTypes.IMAGE_JPEG);
         supportedImageTypes.put("gif", ContentTypes.IMAGE_GIF);
         supportedImageTypes.put("bmp", ContentTypes.IMAGE_BMP);
-        return Optional.ofNullable(supportedImageTypes.get(imageType.toLowerCase()));
+        var normalizedType = imageType.toLowerCase();
+        var mimeType = supportedImageTypes.get(normalizedType);
+        return ofNullable(mimeType);
     }
 }

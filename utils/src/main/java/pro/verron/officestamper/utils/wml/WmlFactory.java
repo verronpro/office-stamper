@@ -235,6 +235,13 @@ public class WmlFactory {
         }
     }
 
+    /// Computes a scaling factor for an image to fit within the writable width of a page.
+    ///
+    /// @param pageDimensions the dimensions of the page, including the writable width
+    /// @param maxWidth an optional maximum width in twips; if greater than zero, this
+    ///                 value will limit the writable width
+    /// @param dpx the dimensions of the image in pixels
+    /// @return a Scale object containing the width (cx) and height (cy) in EMUs
     public static Scale computeScale(PageDimensions pageDimensions, Integer maxWidth, Dimension2D dpx) {
         double writableWidthTwips = pageDimensions.getWritableWidthTwips();
         if (maxWidth > 0 && maxWidth < writableWidthTwips) writableWidthTwips = maxWidth;
@@ -454,6 +461,14 @@ public class WmlFactory {
         return sdtRun;
     }
 
+    /// Creates a new SVG inline object for use in a WordprocessingML document.
+    ///
+    /// @param relationship The relationship object containing the unique identifier of the resource to be embedded.
+    /// @param altText The alternative text for the SVG image, used for accessibility purposes.
+    /// @param filenameHint The suggested filename for the SVG image.
+    /// @param scale The scale dimensions (cx and cy) for the SVG image, defining its size in the document.
+    /// @return A new instance of `Inline` containing the SVG image data.
+    /// @throws JAXBException If there is an error during the marshalling or unmarshalling of XML.
     public static Inline newSVGInline(Relationship relationship, String altText, String filenameHint, Scale scale)
             throws JAXBException {
         String template = """
@@ -517,5 +532,11 @@ public class WmlFactory {
         return (Inline) jaxbElement.getValue();
     }
 
+    /// Represents a scale with two long values as its center coordinates.
+    /// The scale is defined by its x-coordinate (cx) and y-coordinate (cy).
+    /// This record class is immutable and encapsulates the coordinate data.
+    ///
+    /// @param cx The x-coordinate of the scale's center.
+    /// @param cy The y-coordinate of the scale's center.
     public record Scale(long cx, long cy) {}
 }

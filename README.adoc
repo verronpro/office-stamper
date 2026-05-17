@@ -23,6 +23,7 @@ You design a template using your preferred Word processor; and office-stamper wi
 * **Comment-based processing**: Add special instructions as comments in your Word documents
 * **Formatting preservation**: All formatting from the original template is preserved
 * **Custom functions**: Extend the templating capabilities with your own functions
+* **Image deduplication**: Automatically reuse identical images in the document to prevent file bloating
 * **Type-safe**: Strong typing for Java integration
 * **Flexible configuration**: Customize the behavior to suit your needs
 

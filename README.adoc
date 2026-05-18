@@ -3,7 +3,7 @@
 :main: {ghos}/blob/main
 :wrkf: {ghos}//actions/workflows
 :docs: https://office-stamper.verron.pro
-:blog: https://office-stamper.verron.pro
+:blog: https://verron.pro
 
 = Office-stamper
 
@@ -133,7 +133,7 @@ Use permissive options only with fully trusted templates and assets.
 
 == Documentation
 
-Comprehensive documentation is available at {wrkf}[{wrkf}].
+Comprehensive documentation is available at {docs}[{docs}].
 
 * link:{docs}/engine/introduction.html[Introduction]
 * link:{docs}/engine/getting-started.html[Getting Started]

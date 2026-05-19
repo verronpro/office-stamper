@@ -86,3 +86,9 @@ See the link:troubleshooting.html[Troubleshooting] section for more details.
 * Learn about link:comment-processors.html[Comment Processors] for advanced templating
 * Explore link:spel-functions.html[SpEL Functions] for additional feature
 * See link:custom-settings.html[Custom Settings] for configuration options
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:getting-started.html[Getting Started]
+* link:comment-processors.html[Comment Processors]

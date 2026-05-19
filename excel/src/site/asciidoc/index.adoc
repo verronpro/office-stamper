@@ -12,6 +12,12 @@ It does not generate spreadsheets from templates.
 - Access individual cells on a sheet using A1 notation via `get("A1")`
 - Expose named tables (when present) at the root by their table name
 
+== v3.4 Highlights
+
+- Improved support for large Excel files.
+- Better handling of cell types and date formats.
+- Integration as a first-class queryable context for SpEL.
+
 == Maven coordinates
 
 [source,xml]

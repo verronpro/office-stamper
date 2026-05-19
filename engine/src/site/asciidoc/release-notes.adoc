@@ -3,133 +3,582 @@
 :os: https://github.com/verronpro/office-stamper
 :proj: https://github.com/verronpro/office-stamper/releases/tag
 
-This page provides information about the latest releases of Office-stamper, including new features, bug fixes, and other changes.
+== {proj}/v3.4[v3.4]
 
-== Latest Release
+=== Major changes
 
-=== {proj}/v3.3.0[v3.3.0]
+* **Image API Refactor**: The `Image` class constructors now use `InputStream` for improved flexibility and memory efficiency.
+Internal byte caching and deduplication ensure that identical images are only stored once in the generated document.
+* **Dedicated ImageIO Service Providers**: New modules provide ImageIO service providers for EMF, WMF, and SVG formats, replacing the internal image handling of docx4j with a more robust and extensible system.
+* **Excel Module**: Introduced a dedicated module for an Excel file wrapper that acts as a queryable context for SpEL, allowing for data extraction from Excel files within templates.
 
-==== Image Processing
+=== New Features
 
-* **SVG Support**: Built-in support for inserting SVG images into documents.
-The `Image` class and engine now automatically detect SVG content and handle its insertion using a new `WmlFactory.newSVGDrawing` method.
+* **Asciidoc Docx-to-Text**: The asciidoc compiler can now output a textual representation of DOCX files (skipping section information), facilitating easier diffing in tests.
+* **Sitemap and Robots**: Added `sitemap.xml` and `robots.txt` to the documentation site for better SEO.
+* **New Logo**: Updated the Office-stamper logo.
 
-==== New Features
+=== Refactorings
 
-* **Smart Tag Attribute Validation**: New utility method `WmlUtils.hasTagAttribute` to check for attributes within DOCX smart tags.
+* **Security Settings**: Deprecated `EvaluationContextFactories` in favor of new security settings in `OfficeStamperConfigurations`.
+* **Module and GroupId Renaming**: Several modules and group IDs have been renamed for better consistency across the project.
+* **Custom Maven Skin**: Developed a custom maven-skin for the documentation site based on the verron.pro blog style.
 
-==== Cleanup & Refinement
+=== Tooling and Experiments
 
-* **Internal refactoring**: Simplified the `utils` module by removing legacy classes like `ByteUtils` and `DocxRenderer`.
+* **Native CLI**: Experiments with building a native CLI for Office-stamper using GraalVM.
+* **Documentation Domain**: The documentation website has moved to a new domain: link:https://office-stamper.verron.pro/[]
 
-==== Dependencies
+=== Dependencies
+
+* **Docx4j**: Updated to version 11.5.12.
+* **Maven Reporting**: Updated `maven-reporting-exec` to version 2.0.1.
+* **PITest**: Updated `pitest-maven` to version 1.24.0.
+
+== {proj}/v3.3[v3.3]
+
+=== Major changes
+
+* **SVG Support**: Office-stamper now supports inserting SVG images into documents.
+The `Image` class has been updated to automatically detect SVG content and handle its insertion using a new `WmlFactory.newSVGDrawing` method.
+
+=== New Features
+
+* **Smart Tag Attribute Validation**: A new utility method `WmlUtils.hasTagAttribute` allows for checking the existence and value of attributes within DOCX smart tags.
+
+=== Refactorings
+
+* **Internal Cleanup**: Removed `ByteUtils` and `DocxRenderer` from the `utils` module as part of an internal refactoring to streamline the codebase.
+
+=== Dependencies
 
 * **Spring**: Updated Spring Expression and Context to version 7.0.6.
 * **Jackson**: Updated Jackson monorepo to version 2.21.2.
-* **Tooling**: Updated PIT mutation testing to 1.23.0.
+* **Testing**: Updated PIT mutation testing to 1.23.0 and Mockito JUnit Jupiter to 5.23.0.
 
-== Previous Releases
+=== Quality and Tooling
 
-=== {proj}/v3.2.0[v3.2.0]
+* **Build System**: Added `maven-jxr-plugin` to the build process for generating cross-reference source documentation.
+* **JavaFX**: Updated to version 27-ea+10 for the CLI and testing.
 
-=== {proj}/v3.1.0[v3.1.0]
+== {proj}/v3.2[v3.2]
 
-==== API Consolidation
+=== Major changes
 
-* **Public API**: Moved `PlaceholderHooker`, `CommentHooker`, and `HookRemover` to the `pro.verron.officestamper.api` package for better accessibility and consistent extension points.
-* **Experimental Features**: All experimental stamper implementations are now located in the `pro.verron.officestamper.experimental` package.
+* **Expression API Refactor**: Replaced `ExpressionParser` with a new `Expression` abstraction.
+This improves the internal handling of expressions and allows for better support of different expression languages.
+* **Table and Row Manipulation**: Introduced new `Table` and `Table.Row` interfaces to the public API.
+Custom processors can now easily remove tables or rows, copy rows, and access parent table/row structures directly from a paragraph.
+* **Asciidoc Module Overhaul**: Significant enhancements to the AsciiDoc module, including support for nested tables, hyperlinks, headers, footers, and improved text extraction.
 
-==== Cleanup & Refinement
+=== New Features
 
-* **Internal streamlining**: Removed several internal utility classes (`SectionUtil`, `ParagraphCollector`, etc.) to simplify the engine's architecture.
-* **Logging**: Switched many verbose debug messages to trace level to reduce noise during normal development.
-* **Post-processing**: Replaced `cleanTags` with the more powerful `Postprocessors.removeTags(String)`.
+* **Comment Removal**: Added `CommentRemover` post-processor, allowing for the automatic removal of all comments from the document after processing.
+* **Configuration Presets**: Enhanced `OfficeStamperConfigurations` with `minimal()`, `standard()`, and `full()` presets to provide better out-of-the-box behavior for various use cases.
 
-=== {proj}/v3.0.0[v3.0.0]
+=== Dependencies
 
-==== Core Overhaul
+* **Docx4j**: Updated to version 11.5.11.
+* **Spring**: Updated Spring Expression and Context to version 7.0.5.
+* **Jackson**: Updated Jackson monorepo to version 2.21.1.
 
-* **Processing model overhaul**: The engine now iterates "hooks" (placeholders, inline processors, comments) strictly in document order.
-* **New Hook concept**: Each placeholder or comment is treated as a `Hook`.
-The iterator walks hooks one by one, allowing for more predictable results.
-* **Hierarchical Scopes**: `ContextTree` resolves placeholders along the current branch; unresolved values bubble up to parent scopes.
-* **Simplified Comment Processors**: Processors are created per hook and executed once, with a fresh `ProcessorContext`.
+=== Quality and Tooling
 
-==== API Changes
+* **Code Quality**: Integrated Qodana for continuous code quality analysis.
+* **Mutation Testing**: Added PIT mutation testing to ensure high test effectiveness.
+* **CI/CD**: Expanded the Docx4j testing matrix and updated GitHub Actions workflows.
 
-* **Moved API classes**: `PlaceholderHooker`, `CommentHooker`, and `HookRemover` are now public in the `pro.verron.officestamper.api` package.
-* **Renamed classes**: `ContextDependent` renamed to `Hook`.
-* **Standard configuration**: `OfficeStamperConfigurations.standard()` now includes recommended preprocessors and post-processors by default.
-* **Evaluation Context**: `EvaluationContextConfigurer` replaced by `EvaluationContextFactory`.
-* **Insert API**: Introduced a new `Insert` API for more flexible content insertion.
+== {proj}/v3.1[v3.1]
 
-==== Dependencies
+=== Major changes
 
-* Upgrade Java version to 25.
-* Spring dependencies bumped to 7.0.2 (when available, currently tracking latest).
+* **API Consolidation**: Continued streamlining of the public API by moving core interfaces like `PlaceholderHooker`, `CommentHooker`, and `HookRemover` to the `pro.verron.officestamper.api` package.
+* **Internal Cleanup**: Removed several internal utility classes and simplified the engine's internal structure for better maintainability.
+* **Experimental Features**: Moved experimental stamper implementations to a dedicated `pro.verron.officestamper.experimental` package to clearly distinguish them from the stable API.
 
-For information about previous releases, see the link:https://github.com/verronpro/office-stamper/blob/main/RELEASE_NOTES.adoc[full release notes] on GitHub.
+=== Breaking API Changes
 
-== Upgrading
+* **Package Moves**:
+** `PlaceholderHooker`, `CommentHooker`, and `HookRemover` moved to `pro.verron.officestamper.api`.
+** `ExperimentalStampers` moved to `pro.verron.officestamper.experimental`.
+* **Class Deletions**: Removed several internal classes that were previously exposed but intended for internal use only: `SectionUtil`, `RemoveTagsProcessor`, `TagsVisitor`, `ParagraphCollector`, `CRSCollector`, and `PrepareCommentProcessors`.
+* **Post-processing**: The `cleanTags` functionality has been replaced by `Postprocessors.removeTags(String)`.
 
-=== From v3.2.0 to v3.3.0
+=== Minor changes
 
-* **SVG Images**: You can now pass SVG content to the `Image` class; the engine will handle the conversion and insertion into the DOCX document automatically.
-* **Utility Changes**: If you were using `ByteUtils` or `DocxRenderer` from the `utils` module, you will need to find alternative implementations as these have been removed.
+* **Logging**: Refined logging levels across the engine; many verbose debug messages have been moved to trace level to reduce noise in standard debug logs.
+* **Iteration**: Enhanced `SlicingIterator` with more robust state tracking for document segments.
 
-=== From v3.1.0 to v3.2.0
+== {proj}/v3.0[v3.0]
 
-* **Table Manipulation**: Use the new `Table` and `Table.Row` interfaces for custom table-related logic.
-* **Configuration**: Use the new presets in `OfficeStamperConfigurations` for a quicker setup.
-* **Expression Parser**: If you were using a custom `ExpressionParser`, note that the configuration now uses `SpelParserConfiguration`.
+=== Major changes
 
-=== From v3.0.0 to v3.1.0
+* Processing model overhaul: the engine now iterates hooks in strict document order.
+The API around iteration has been adapted accordingly.
+Consult the root file `3.0_UPDATE.md` for details and migration notes.
+* Introduced the hook concept: a hook represents a concrete target point in the DOCX to process (e.g., placeholder smart-tags, inline processors, and comments) and is the unit the iterator walks through.
+* New hierarchical scopes with `ContextTree`.
+If a placeholder cannot resolve in the current scope, resolution walks up the branch (parent, then ancestors).
+Comment processors that create sub-scopes (e.g., repeaters) can control whether a hook evaluates in a nested branch or reuses the current one.
+* Placeholders are now resolved from smart-tags produced by preprocessors.
+Ensure the appropriate placeholder preprocessor is included in your `OfficeStamperConfiguration` (standard presets already do this).
+* Simplified lifecycle for comment processors: a processor instance is created for each encountered comment and executed once.
 
-* **Package Moves**: Update your imports for `PlaceholderHooker`, `CommentHooker`, and `HookRemover` to `pro.verron.officestamper.api`.
-* **Experimental API**: If you used `ExperimentalStampers`, it has moved to `pro.verron.officestamper.experimental`.
-* **Post-processing**: Replace any usage of `cleanTags` with `Postprocessors.removeTags(String)`.
-* **Internal Classes**: If you were using internal classes like `SectionUtil`, they have been removed.
-You will need to implement this logic yourself if needed.
+=== Breaking API Changes
 
-=== From v2.9.0 to v3.0.0
+* `AbstractCommentProcessor` was renamed and simplified into `CommentProcessor`.
+* Removed mutating setters on the `Comment` interface.
+* All previously `@Deprecated` API methods have been removed.
+* Introduced `@FunctionalInterface CommentProcessorFactory` to create a `CommentProcessor` from a `ProcessorContext`.
+* Removed `DocxDocument` from the public API; `DocxPart` covers previous use cases.
+* Replaced `EvaluationContextConfigurer` with `EvaluationContextFactory`.
+Provide a factory that creates a fresh `EvaluationContext` per hook.
+* Introduced `Insert` in the API, allowing resolvers to return content that spans multiple runs instead of a single run.
+* `OfficeStamper` now focuses on `OpcPackage` handling.
+Stream-based stamping is handled by the dedicated `StreamStamper` interface.
+* Expression parsing is configurable: you can supply your own `org.springframework.expression.ExpressionParser` (SpEL by default).
+* `ContextDependent` was renamed to `Hook`.
+* `ProcessorContext` now includes the `ContextTree` and `expression`.
+* `DocxStamper#stamp` now returns the stamped document.
 
-* **Java 25 required**: Ensure your project is running on Java 25 or higher.
-* **API Package**: If you were using `PlaceholderHooker`, `CommentHooker`, or `HookRemover` from internal packages, update your imports to `pro.verron.officestamper.api`.
-* **Hooks**: The engine now uses a "hook" based processing.
-If you have custom processors, they now receive a `ProcessorContext`.
-* **Standard Configuration**: `OfficeStamperConfigurations.standard()` now includes preprocessing by default.
-You may no longer need `standardWithPreprocessing()`.
+For a complete migration guide and code examples, see `3.0_UPDATE.md` and the contributor‑focused `HOW_DOES_IT_WORKS.adoc`.
 
-=== From v2.8.x to v2.9.0
+=== Minor changes
 
-* MAY (unlikely) BREAK some formatting after a replaceWordWith comment.
-* Update your dependencies to the latest versions.
+* Dependencies: upgraded Spring Expression/Context to 7.0.2 (from 6.2.12).
+* Documentation: added an in‑depth how‑to for building custom resolvers and comment processors at `engine/src/site/asciidoc/how-to-custom.adoc`.
+* Documentation: added a deeper architectural overview for contributors in `HOW_DOES_IT_WORKS.adoc`.
+* Tests: extended Docx4J test matrix to include 11.5.7 and 11.5.8.
+* Modules: added an `asciidoc` module to experiment with AsciiDoc ↔ DOCX conversion (useful for tests).
+* Modules: added a `utils` module exposing common utilities; some utilities may spin off into dedicated projects later.
 
-=== From v2.7.x to v2.8.0
+== {proj}/v2.9.0[v2.9.0]
 
-* No breaking changes.
-* Update your dependencies to the latest versions.
+=== Features
 
-=== From v2.6.x to v2.7.0
+* EXPERIMENTAL: CLI now implements a crude loading of csv, xml, json and property files.
 
-* If you were using `Paragraph#getComment()`, you'll need to update your code to handle a Collection instead of an Optional.
-* Update your dependencies to the latest versions.
+=== Bugfixes
 
-=== From v2.5.x to v2.6.x
+* MAY BREAK: Changed behavior of the processor `replaceWordWith(context)` to be able to handle several test run as notified by {gh}/jonath92[@jonath92] in {os}/issues/585[#585]
+** It may break the formatting of the following paragraphs if there was an empty run with formatting instruction inside the comment selection, but I have not been able to reproduce this theoretical issue with both Word, and WPS writer.
+Do not hesitate to inform me if you encounter the issue.
 
-* No breaking changes.
-* Update your dependencies to the latest versions.
+=== Dependencies
 
-=== From v2.4.x to v2.5.x
+* Upgrade Java version from 21 to 25
+* Bump `org.springframework:spring-expression` from `6.2.8` to `6.2.12`
+* Bump `org.springframework:spring-context` from `6.2.8` to `6.2.12`
 
-* No breaking changes.
-* Update your dependencies to the latest versions.
+=== Documentation
 
-== Reporting Issues
+* Updated all Javadoc to use Markdown style
+* Globally added a lot of Javadoc, to improve self-documentation and leverage AI capabilities.
+* Add documentation about preprocessors, allowing cleanup of documents before stamping
 
-If you encounter any issues with a release, report them on the link:https://github.com/verronpro/office-stamper/issues[GitHub Issues] page.
+* Added an .aiignore to improve the vibe coding experience
+* Add contributors details to generated documentation site
 
-== Next Steps
+=== Continuous Integration
 
-* Return to the link:index.html[Documentation Home]
-* See the link:contributing.html[Contributing] guide if you want to help improve Office-stamper
+* Updated deployment to Maven Central to follow OSSRH process changes.
+** Added dependency to plugin `org.sonatype.central:central-publishing-maven-plugin:0.9.0`
+
+* Bump `actions/checkout` from `v4` to `v5`
+* Bump `actions/setup-java` from `v4` to `v5`
+* Bump `github/codeql-action/analyze` from `v3` to `v4`
+* Bump `actions/upload-pages-artifact` from `v3` to `v4`
+
+* Bump `org.apache.maven.plugins:maven-compiler-plugin` from `3.14.0` to `3.14.1`
+* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.11.2` to `3.12.0`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.3` to `3.5.4`
+* Bump `org.apache.maven.plugins:maven-surefire-report-plugin` from `3.5.3` to `3.5.4`
+* Bump `org.jacoco:jacoco-maven-plugin` from `0.8.13` to `0.8.14`
+
+=== Tests
+
+* An improved stringification for paragraphs indentation data (ind elements) as notified by {gh}/jonath92[@jonath92] in {os}/issues/585[#585]
+* Added all recent `docx4j` version to test matrix (`11.5.0..11.5.6`)
+* Bump `org.pitest:pitest-maven` from `1.20.0` to `1.20.1`
+* Bump `org.junit.jupiter:junit-jupiter` from `5.13.3` to `6.0.0`
+
+=== Refactorings
+
+* Improved the comment deletion procedure, to make it less complex and do only one pass through all elements
+* Replace the `IndexedRun` concept by the `StandardRun` concept
+* MAY BREAK Removed 2 unused public methods from `DocxImageExtractor`
+
+== {proj}/v2.8.0[v2.8.0]
+
+=== Features
+
+* EXPERIMENTAL — Developing a Command Line Interface (CLI) for Office-stamper, enabling direct stamping with practical default settings, drawing inspiration from the provided examples.
+* Added Google Doc to the list of supported editors
+* Improved management of SdtRun as stampable elements of DOCX
+
+=== Bugfixes
+
+* Fixed management of comment made in Google Doc, as mentioned by {gh}/Jushar[@Jushar] in #534
+* Fixed management of instrText in TOC, as mentioned by {gh}/tiagobutzke[@tiagobutzke] in {os}/issues/539[#539]
+
+=== Dependencies
+
+* Bump `org.docx4j:docx4j-core` from `11.5.1` to `11.5.3`
+* Bump `org.docx4j:docx4j-JAXB-ReferenceImpl` from `11.5.1` to `11.5.3`
+
+* Bump `org.springframework:spring-expression` from `6.2.1` to `6.2.8`
+* Bump `org.springframework:spring-context` from `6.2.1` to `6.2.8`
+
+=== Documentation
+
+* Massive rework of the documentation, now most of it is on the https://office-stamper.verron.pro/[site]
+* Add a Style Guide, notably to improve AI assistants correctness
+* Improve the https://github.com/verronpro/office-stamper/issues/new/choose[bug report form] to include Docx editor used and reduce analysis time
+
+* Bump `org.apache.maven.skins:maven-fluido-skin` from `1.11.1` to `2.1.0`
+* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.1.1` to `3.2.0`
+* Added `org.asciidoctor:asciidoctor-parser-doxia-module` version `3.2.0`
+
+=== Continuous Integration
+
+* Add the sonarlint configuration, for contributors that would like to see the list of issues
+
+* Bump `org.apache.maven.plugins:maven-compiler-plugin` from `3.13.0` to `3.14.0`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.2` to `3.5.3`
+
+* Bump `org.junit.jupiter:junit-jupiter` from `5.11.4` to `5.13.3`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.2` to `3.5.3`
+
+* Bump `org.jacoco:jacoco-maven-plugin` from `0.8.12` to `0.8.13`
+
+* Bump `org.pitest:pitest-maven` from `1.17.3` to `1.20.0`
+* Bump `org.pitest:pitest-junit5-plugin` from `1.2.1` to `1.2.3`
+
+* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.7` to `3.2.8`
+
+* Bump `org.slf4j:slf4j-nop` from `2.0.16` to `2.0.17`
+* Bump `org.slf4j:slf4j-simple` from `2.0.16` to `2.0.17`
+
+=== Refactorings
+
+* Word 2 String now manage FldChar, instrText, and Hyperlink.
+
+== {proj}/releases/tag/v2.7.0[v2.7.0]
+
+=== Features
+
+* Add the `PostProcessor` concept to be able to add cleaners or summaries at stamping finish.
+* #68 Filled to `displayXXXIf` panoply with:
+** `displayParagraphIf(boolean)`, `displayParagraphIfPresent(object)` and `displayParagraphIfAbsent(object)`
+** `displayTableRowIf(boolean)`, `displayTableRowIfPresent(object)` and `displayTableRowIfAbsent(object)`
+** `displayTableIf(boolean)`, `displayTableIfPresent(object)` and `displayTableIfAbsent(object)`
+** `displayWordsIf(boolean)`, `displayWordsIfPresent(object)` and `displayWordsIfAbsent(object)`
+** `displayDocPartIf(boolean)`, `displayDocPartIfPresent(object)` and `displayDocPartIfAbsent(object)`
+* The two provided evaluation context configurer now include the classic Get Accessor and the Map Accessor, so the object used as context can be much more flexible.
+** ie. `$+{name}+` can now refer to an object `getName()` method or to a map `get("name")` value.
+
+=== Bugfixes
+
+* BREAKING - `Paragraph#getComment` now returns a Collection instead of an Optional, because one paragraph can have several comments.
+Fixes a bug when commenting several groups of runs by different comments in a single paragraph.
+* #69 Office-stamper is now aware of Footnotes and Endnotes, it only cleans orphaned notes with `standardWithPreprocessing` configuration for now, but probably going to run the stamping as well in future versions.
+* #510 All `repeatXXX` can now accept Iterable as input
+
+=== Dependencies
+
+* Bump `org.docx4j:docx4j-core` from `11.5.0` to `11.5.1`
+* Bump `org.docx4j:docx4j-JAXB-ReferenceImpl` from `11.5.0` to `11.5.1`
+
+* Bump `org.springframework:spring-expression` from `6.1.14` to `6.2.1`
+* Bump `org.springframework:spring-context` from `6.1.14` to `6.2.1`
+
+=== Continuous Integration
+
+* Bump `org.junit.jupiter:junit-jupiter` from `5.11.3` to `5.11.4`
+* Bump `org.pitest:pitest-maven` from `1.17.0` to `1.17.3`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.1` to `3.5.2`
+
+* Bump `org.apache.maven.plugins:maven-site-plugin` from `3.20.0` to `3.21.0`
+* Bump `org.apache.maven.plugins:maven-project-info-reports-plugin` from `3.7.0` to `3.8.0`
+* Bump `org.apache.maven.plugins:maven-surefire-report-plugin` from `3.5.1` to `3.5.2`
+* Bump `org.apache.maven.reporting:maven-reporting-exec` from `2.0.0-M14` to `2.0.0`
+* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.1.0` to `3.1.1`
+* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.1` to `3.11.2`
+
+* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.5` to `3.2.7`
+
+=== Refactorings
+
+* Removed the old `ObjectDeleter` utility class to use mostly `WmlUtils#remove` method instead.
+* All Lang info is removed with `standardWithPreprocessing` configuration now.
+
+=== Tests
+
+* Create the ObjectContextFactory, and the MapContextFactory to test all use cases with POJO Beans and Map equally.
+* Fix a bug in Locale when some test failed
+* Move processors-specific test outside the DefaultTest class
+* #114 added a test to trace this still unresolved issue.
+* Word 2 String now includes comments, endnotes and footnotes
+* String 2 Word now includes comments
+
+== {proj}/releases/tag/v2.6.0[v2.6.0]
+
+=== Features
+
+* It is now possible to add custom function to the Spel context in a simpler way.
+Try using `OfficeStamperConfiguration.addCustomFunction` methods.
+* Added the `pro.verron.officestamper.utils` package to provide useful and common elements for core, preset, test and users.
+* *Deprecated* the `Paragraph` wrapper now can provide a bit more advanced capability on inner `P`, don’t recommend calling `getP()` anymore.
+
+=== Dependencies
+
+* *MAY BREAK* Change java target from `17` to `21`
+* Bump `org.springframework:spring-expression` from `6.1.12` to `6.1.14`
+* Bump `org.springframework:spring-context` from `6.1.12` to `6.1.14`
+
+=== Continuous Integration
+
+* Removed dependabot analysis
+* Bump `org.apache.maven.plugins:maven-gpg-plugin` from `3.2.5` to `3.2.7`
+* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.0` to `3.10.1`
+* Bump `org.apache.maven.plugins:maven-surefire-plugin` from `3.5.0` to `3.5.1`
+* Bump `org.apache.maven.reporting:maven-surefire-report-plugin` from `3.5.0` to `3.5.1`
+* Bump `org.apache.maven.plugins:maven-site-plugin` from `3.20.0` to `3.21.0`
+* Bump `org.apache.maven.plugins:maven-project-info-reports-plugin` from `3.7.0` to `3.8.0`
+* Bump `org.apache.maven.plugins:maven-javadoc-plugin` from `3.10.0` to `3.10.1`
+* Bump `org.apache.maven.reporting:maven-reporting-exec` from `2.0.0-M14` to `2.0.0`
+* Bump `org.pitest:pitest-maven` from `1.16.3` to `1.17.0`
+* Bump `org.asciidoctor:asciidoctor-maven-plugin` from `3.0.0` to `3.1.0`
+* Bump `org.junit.jupiter:junit-jupiter` from `5.11.0` to `5.11.3`
+
+=== Refactorings
+
+* `CommentProcessor` was setup with a `P`, `R` and `Placeholder` now receives a `ProcessorContext` instead.
+* Cleanup of malformed comments has moved to a `PreProcessor` instead of done on the fly during processing.
+* Do a step toward treating Comment in the same way as Placeholder.
+* *Deprecated* `CommentProcessor` to now be setup with a `Paragraph` that wraps and provides features around the docx4j `P`.
+* *Deprecated* The `Image` preset object now deprecate `getMaxWidth` and `getImageBytes`.
+* *BREAK* Removed `DocxDocument.commentsPart` method.
+* *BREAK* `DocxPart.streamParagraphs` method now returns the `Paragraph` wrapper, instead of docx4j `P`.
+
+=== Tests
+
+* Improved test names,
+* Improved Word to string representation to better differentiate paragraph, run and cell styles.
+* Remove exotic characters from string representation of Word documents.
+* Section break and page break are more explicit in string representation of Word documents.
+
+== {proj}/releases/tag/v2.5.0[v2.5.0]
+
+=== Features
+
+* Add a way to set an ExceptionResolver to Office-stamper, with `OfficeStamperConfiguration#setExceptionResolver(ExceptionResolver)`
+and allows users to handle errors programmatically as was expressed in the old https://github.com/verronpro/office-stamper/issues/65[Issue #65]
+** Added an `ExceptionsResolvers` class providing default implementations
+** It deprecates `setFailOnUnresolvedExpression(boolean)`, `unresolvedExpressionsDefaultValue(String)`, `replaceUnresolvedExpressions(boolean)` and `leaveEmptyOnExpressionError(boolean)`.
+
+=== Dependencies
+
+* Bumped `org.docx4j:docx4j-core` from version 11.4.11 to 11.5.0
+* Bumped `org.springframework:spring-context` from version 6.1.11 to 6.1.12.
+
+=== Continuous Integration
+
+* Added Renovate settings to improve over dependabot
+* Follow best practices for maven-gpg-plugin
+* Removed GitHub .devcontainer settings
+* Bumped `actions/configure-pages` to v5
+* Bumped `org.pitest:pitest-maven` to 1.16.3
+* Bumped `org.apache.maven.plugins:maven-javadoc-plugin` to 3.10.0
+* Bumped `org.apache.maven.plugins:maven-gpg-plugin` to 3.2.5
+* Bumped `org.apache.maven.plugins:maven-site-plugin` to 3.20.0
+* Bumped `org.apache.maven.plugins:maven-project-info-reports-plugin` to 3.7.0
+* Bumped `org.junit.jupiter:junit-jupiter` to 5.11.0
+
+=== Refactorings
+
+* Improved some logs related to unresolved errors
+* Improved comments collections
+
+=== Tests
+
+* Tests can now differentiate tables with their asciidoc-like representation
+* Tests can now differentiate when paragraph style has the `cnfStyle` property set
+* Quite a few tests have been remodeled to decrease their verbosity
+* Added a regression test for https://github.com/verronpro/office-stamper/issues/64[Issue #64]
+
+== {proj}/v2.4.0[v2.4.0]
+
+=== Features
+
+* Office-stamper can now format all  `java.time` objects directly from standard configuration (issue #411), see `engine/src/test/java/pro/verron/officestamper/test/DateFormatTests.java`
+* Office-stamper can now resolve multiline placeholders (not multi paragraph, just with linebreaks)(issue #422)
+* Office-stamper proven can resolve custom function inside comments expressions (issue #56)
+* Office-stamper proven can resolve displayParagraphIf inside table with repeatTableRow (issue #52)
+
+=== Dependencies
+
+* Bumped `org.springframework:spring-expression` from version 6.1.11 to 6.1.12.
+
+=== Documentation
+
+* The release notes have been separated into their own file for better organization and easier access.
+* Deprecated Paragraph#replaceAll and Paragraph#contains from api package as it was a remnant of a core fix.
+
+=== Tests
+
+* Tests can now better differentiate types of breaks in word documents
+* Fixed a regression in tests about whitespaces manipulation
+
+== {proj}/v2.3.0[v2.3.0]
+
+=== Features
+
+* Office-stamper can now resolve images inside footers and headers (issue #53).
+** Added the `DocxPart` type to wrap the `docx4j.WordprocessingMLPackage` and specify a working subpart.
+** **Breaking Change:** Updated references to `WordprocessingMLPackage` by `DocxPart` in API.
+A default implementation is provided to support existing implementations, but upgrading to the latest version is recommended.
+** **Breaking Change:** The order of resolution has been modified.
+Please check if you had specific expectations in your custom implementations, though nothing should have broken.
+
+=== Dependencies
+
+* Bumped `org.springframework:spring-expression` and `org.springframework:spring-context` from version 6.1.10 to 6.1.11.
+
+=== Documentation
+
+* Added linebreak replacement feature mentioned in README.
+
+=== Tests
+
+* Added a test for the linebreak replacement feature inside tables.
+* Introduced the `makeResource` method that allows generating a Word document directly from textual representation.
+* Removed the `integration` subfolder in tests and moved its content to the main test folder.
+* Fixed a configuration error in log level settings for tests.
+
+== {proj}/v2.2.0[v2.2.0]
+
+=== Features
+
+* Office-stamper can now support forms control replacement from the proposal #286.
+
+=== Bugfixes
+
+* Fixed issues when computing DOCX run length, avoiding potential bugs.
+
+=== Dependencies
+
+* Bumped `org.springframework` from version 6.1.8 to 6.1.10.
+
+=== Continuous Integration
+
+* Added a new Maven extension for caching the build by @caring-coder in https://github.com/verronpro/office-stamper/pull/389.
+
+=== Tests
+
+* Stringification in tests now supports headers and footers.
+* Simplified templates.
+
+=== Refactorings
+
+* `StampTable` are now `Value` objects.
+
+== {proj}/v2.1.0[v2.1.0]
+
+=== Features
+
+* The raw stamper doesn’t carry any comment processors by default.
+
+=== Dependencies
+
+* Bumped `org.springframework:spring-expression` to version 6.1.8.
+
+=== Documentation
+
+* Updated README howto to document recent API changes.
+* Updated documentation to be more GitHub-friendly.
+
+=== Refactorings
+
+* Updated the mechanism to walk through a Word document.
+* Prepared to separate resolvers into two: the future 'engine resolver' (encapsulates template features) and 'context resolver' (encapsulates stamped data).
+* Updated exception management and messages.
+
+== {proj}/v2.0.0[v2.0.1]
+
+=== Bugfixes
+
+* Fixed dependency issue of v2.0.
+
+== {proj}/v2.0.0[v2.0.0]
+
+=== Refactorings
+
+* Removed legacy APIs.
+* Renamed `pro.verron:docx-stamper` to `pro.verron.office-stamper:engine`.
+* Implemented modularization.
+
+== {proj}/v1.6.9[v1.6.9]
+
+=== Bugfixes
+
+* Regression fix.
+
+== {proj}/v1.6.8[v1.6.8]
+
+=== Features
+
+* Introduced new APIs.
+
+=== Refactorings
+
+* Introduced new `experimental` namespace for beta features.
+* Moved toward modularization.
+
+== {proj}/v1.6.7[v1.6.7]
+
+=== Features
+
+* Introduced the `preset` namespace to hold default configurations of the engine.
+* The engine can now run without a default resolver; it will throw an exception when it needs to find a resolver in that case.
+
+=== Refactorings
+
+* `ObjectResolver` to replace `ITypeResolver`.
+* `null` stamping behavior is now managed by specific `ObjectResolver` implementations.
+
+== {proj}/vX.X.X[vX.X.X]
+
+=== Features
+
+* lorem ipsum
+
+=== Bugfixes
+
+* lorem ipsum
+
+=== Dependencies
+
+* lorem ipsum
+
+=== Documentation
+
+* lorem ipsum
+
+=== Continuous Integration
+
+* lorem ipsum
+
+=== Tests
+
+* lorem ipsum
+
+=== Refactorings
+
+* lorem ipsum
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:contributing.html[Contributing]
+* link:3.0-update.html[3.0 Update Guide]

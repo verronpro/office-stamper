@@ -1,0 +1,31 @@
+= Repetition
+
+The `repeatXXX` family of processors allows you to repeat content for each item in a collection.
+
+== Usage
+
+[source]
+----
+repeatParagraph(order.items)
+repeatTableRow(employees)
+repeatDocPart(chapters)
+----
+
+When using these processors, expressions within the repeated content are evaluated against each item in the collection.
+
+== Available Methods
+
+[cols=">1,4"]
+|===
+| Expression | Effect
+| `repeatParagraph(List<Object>)` | The paragraph is copied once for each object in the passed-in list.
+| `repeatTableRow(List<Object>)` | The surrounding table row is copied once for each object in the passed-in list.
+| `repeatDocPart(List<Object>)` | The commented text is copied once for each object in the passed-in list. Can be used instead of `repeatTableRow` and `repeatParagraph` if you want to repeat more than table rows and paragraphs.
+|===
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:display-if.html[Conditional Display]
+* link:replace-with.html[Word Replacement]
+* link:custom-processors.html[Custom Processors]

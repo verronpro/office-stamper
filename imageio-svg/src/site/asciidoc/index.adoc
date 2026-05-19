@@ -2,6 +2,12 @@
 
 Minimal Java ImageIO plugin to detect SVG files and read dimensions (width/height) without rendering.
 
+== v3.4 Highlights
+
+- Part of the new dedicated ImageIO service provider modules (EMF, WMF, SVG).
+- Replaces docx4j's internal image handling with a standard-compliant ImageIO approach.
+- Implements default ImageIO metadata format support.
+
 == Maven coordinates
 
 [source,xml]

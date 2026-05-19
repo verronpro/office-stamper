@@ -1,0 +1,107 @@
+= Advanced Configuration
+
+This page covers advanced ways to customize Office-stamper, including custom resolvers, functions, comment processors, and security settings.
+
+== Custom Resolvers
+
+You can expand the resolution capability by implementing custom `ObjectResolver` interfaces.
+This allows you to handle specific types or formatting requirements.
+
+[source,java]
+----
+// Create a custom resolver for a specific type
+var customResolver = new StringResolver(YourCustomType.class) {
+    @Override
+    public String resolve(YourCustomType object) {
+        return doYourStuffHere(); // Your implementation
+    }
+};
+
+// Add the resolver to the configuration
+var configuration = OfficeStamperConfigurations.standard()
+    .addResolver(customResolver);
+----
+
+== Custom Functions
+
+Office-stamper lets you add custom functions to the expression language.
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standard();
+
+// Add a function with no parameters
+configuration.addCustomFunction("today", () -> LocalDate.now());
+
+// Add a function with one parameter
+configuration.addCustomFunction("censor", String.class,
+    input -> input.replace("f-word", "f**k"));
+----
+
+You can also expose an entire interface:
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standard()
+    .exposeInterfaceToExpressionLanguage(StringFunctionProvider.class, new StringFunctionProviderImpl());
+----
+
+== Custom Comment Processors
+
+For additional flexibility, you can create your own comment processors.
+
+[source,java]
+----
+// Define an interface for your comment processor
+interface YourCommentProcessorInterface {
+    void yourComment(String parameter);
+}
+
+// Implement the comment processor
+class YourCommentProcessor extends CommentProcessor implements YourCommentProcessorInterface {
+    public YourCommentProcessor(ProcessorContext context) {
+        super(context);
+    }
+
+    @Override
+    public void yourComment(String parameter) {
+        // Implementation
+    }
+}
+
+// Register the comment processor
+var configuration = OfficeStamperConfigurations.standard()
+    .addCommentProcessor(YourCommentProcessorInterface.class, YourCommentProcessor::new);
+----
+
+== Security Settings
+
+Office-stamper provides security modes for SpEL evaluation and SVG parsing.
+
+=== SpEL Security Mode
+
+The default mode is `RESTRICTED`, which prevents unsafe features like type access (`T()`).
+
+[source,java]
+----
+import pro.verron.officestamper.api.SecurityMode;
+
+var configuration = OfficeStamperConfigurations.standard()
+    .setSpelSecurityMode(SecurityMode.PERMISSIVE);
+----
+
+=== SVG Security Mode
+
+SVG parsing uses a hardened XML parser by default.
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standard()
+    .setSvgSecurityMode(SecurityMode.PERMISSIVE);
+----
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:presets.html[Configuration Presets]
+* link:custom-processors.html[Custom Comment Processors]

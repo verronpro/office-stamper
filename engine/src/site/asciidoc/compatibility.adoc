@@ -69,3 +69,9 @@ Some versions produce non‑standard anchors for comments.
 * link:https://github.com/verronpro/office-stamper/issues[Issue tracker]: search for your editor/JDK/Docx4J combo.
 
 If your environment isn't listed, or you validated additional combinations, feel free to contribute updates to this page.
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:troubleshooting.html[Troubleshooting]
+* link:release-notes.html[Release Notes]

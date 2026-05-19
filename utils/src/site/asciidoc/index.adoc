@@ -8,6 +8,11 @@ These are primarily internal building blocks (iterators, XML helpers, etc.).
 You typically don’t need to depend on `utils` directly if you use the Engine or CLI.
 However, advanced users may pull it in for low-level document or iterator utilities.
 
+== Navigation
+
+* link:index.html[Back to Index]
+* link:https://office-stamper.verron.pro/engine/[Engine Documentation]
+
 == Maven coordinates
 
 [source,xml]

@@ -14,60 +14,10 @@ These comments act as directives for manipulating the template.
 
 Office-stamper comes with several built-in comment processors that handle common templating needs:
 
-[cols=">1,4"]
-|===
-| Expression in .docx comment           | Effect on the commented paragraph/paragraphs
-| `displayParagraphIf(boolean)`         | It is only displayed if condition resolves to `true`.
-| `displayTableRowIf(boolean)`          | The table row around it is only displayed if condition resolves to `true`.
-| `displayTableIf(boolean)`             | The surrounding table is only displayed if condition resolves to `true`.
-| `repeatParagraph(List<Object>)`       | It is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list.
-| `repeatTableRow(List<Object>)`        | The surrounding table row is copied once for each object in the passed-in list. Expressions found in the cells of the table row are evaluated against the object from the list.
-| `repeatDocPart(List<Object>)`         | The commented text is copied once for each object in the passed-in list. Expressions found in the copies are evaluated against the object from the list. Can be used instead of repeatTableRow and repeatParagraph if you want to repeat more than table rows and paragraphs.
-| `replaceWordWith(expression)`         | Replace the commented word with the value of the given expression. (obsolete, use replaceWith instead)
-| `replaceWith(expression)`         | Replace the commented word with the value of the given expression. (the selection cannot run over several paragraph)
-| `resolveTable(StampTable)`            | Replace a table (that must have one column and two rows) with the values given by the StampTable. The StampTable contains a list of headers for columns, and a 2-level list of rows containing values for each column.
-|===
-
-=== Conditional Display
-
-The `displayXXXIf` family of processors allows you to conditionally show or hide content based on a boolean expression:
-
-[source]
-----
-displayParagraphIf(customer.vip)
-displayTableRowIf(order.items.size() > 0)
-displayTableIf(report.hasData())
-----
-
-There are also convenience methods for checking if objects are present or absent:
-
-[source]
-----
-displayParagraphIfPresent(customer.address)
-displayTableRowIfAbsent(order.discounts)
-----
-
-=== Repetition
-
-The `repeatXXX` family of processors allows you to repeat content for each item in a collection:
-
-[source]
-----
-repeatParagraph(order.items)
-repeatTableRow(employees)
-repeatDocPart(chapters)
-----
-
-When using these processors, expressions within the repeated content are evaluated against each item in the collection.
-
-=== Word Replacement
-
-The `replaceWith` processor allows you to replace a specific word with the result of an expression:
-
-[source]
-----
-replaceWith(customer.name)
-----
+* link:display-if.html[Conditional Display (displayIf)]
+* link:repeat.html[Repetition (repeat)]
+* link:replace-with.html[Word Replacement (replaceWith)]
+* link:custom-processors.html[Custom Processors]
 
 === Table Resolution
 
@@ -99,10 +49,6 @@ Example:
 By default, an exception is thrown if a comment fails to process. However, successfully processed comments are wiped from the document.
 
 You can customize the error handling behavior. See the link:troubleshooting.html[Troubleshooting] section for more details.
-
-== Custom Comment Processors
-
-You can create your own comment processors to handle specific templating needs. See the link:custom-settings.html[Custom Settings] section for more information.
 
 == Next Steps
 

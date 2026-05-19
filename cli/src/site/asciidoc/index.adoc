@@ -273,6 +273,18 @@ Notes:
 - No WiX is required since we build an app-image (not an MSI installer).
 - The image version is normalized to numeric form for `jpackage` compatibility.
 
+== v3.4 Highlights
+
+- **GraalVM Native CLI (Experimental)**: Ongoing work to provide a truly native executable with near-instant startup using GraalVM.
+- **Improved Windows Integration**: Refined self-extracting portable EXE and installer profiles.
+- **Enhanced Logging**: Better structured JSON logging and report generation.
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:quickstart-windows.html[Quickstart (Windows)]
+* link:https://office-stamper.verron.pro/engine/[Engine Documentation]
+
 == Links
 
 - Project homepage: https://github.com/verronpro/office-stamper

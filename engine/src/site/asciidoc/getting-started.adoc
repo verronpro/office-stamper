@@ -106,3 +106,9 @@ ${company.name}
 * Learn more about link:template-expressions.html[Template Expressions]
 * Explore link:comment-processors.html[Comment Processors] for advanced templating
 * See link:custom-settings.html[Custom Settings] for configuration options
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:introduction.html[Introduction]
+* link:template-expressions.html[Template Expressions]

@@ -1,0 +1,26 @@
+= Word Replacement (replaceWith)
+
+The `replaceWith` processor allows you to replace a specific word or selection with the result of an expression.
+
+== Usage
+
+[source]
+----
+replaceWith(customer.name)
+----
+
+== Available Methods
+
+[cols=">1,4"]
+|===
+| Expression | Effect
+| `replaceWith(expression)` | Replace the commented word with the value of the given expression. The selection cannot run over several paragraphs.
+| `replaceWordWith(expression)` | *Obsolete*, use `replaceWith` instead.
+|===
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:display-if.html[Conditional Display]
+* link:repeat.html[Repetition]
+* link:custom-processors.html[Custom Processors]

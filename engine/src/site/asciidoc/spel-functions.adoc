@@ -91,3 +91,9 @@ var configuration = OfficeStamperConfigurations.standardWithPreprocessing()
 * Learn about link:custom-settings.html[Custom Settings] for adding your own functions
 * Explore link:advanced-features.html[Advanced Features] for more complex scenarios
 * See link:troubleshooting.html[Troubleshooting] for help with common issues
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:template-expressions.html[Template Expressions]
+* link:custom-settings.html[Custom Settings]

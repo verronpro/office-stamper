@@ -1,0 +1,20 @@
+= Custom Comment Processors
+
+You can create your own comment processors to handle specific templating needs.
+
+== How to Implement
+
+To create a custom comment processor, you need to:
+
+1. Define an interface that declares the methods you want to use in comments.
+2. Implement this interface in a class that extends `CommentProcessor`.
+3. Register your custom processor in the `OfficeStamperConfiguration`.
+
+See the link:advanced-configuration.html[Advanced Configuration] section for more details and code examples.
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:display-if.html[Conditional Display]
+* link:repeat.html[Repetition]
+* link:replace-with.html[Word Replacement]

@@ -203,3 +203,9 @@ For large documents or batch processing, consider the following:
 * See link:troubleshooting.html[Troubleshooting] for help with common issues
 * Explore the link:https://github.com/verronpro/office-stamper/tree/main/engine/src/test/java/pro/verron/officestamper/test[test directory] for examples of advanced usage
 * Check the link:release-notes.html[Release Notes] for information about the latest features
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:custom-settings.html[Custom Settings]
+* link:how-does-it-works.html[How it Works]

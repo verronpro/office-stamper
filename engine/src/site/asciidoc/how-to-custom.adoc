@@ -356,3 +356,9 @@ Template snippets:
 * Register resolvers: `DocxStamperConfiguration.addResolver(new MyResolver())`
 * Access context in processors: use `paragraph()`, `comment()`, and `context()` from the base `CommentProcessor`.
 * Stamping: `new DocxStamper(configuration).stamp(in, context, out)`
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:custom-settings.html[Custom Settings]
+* link:advanced-configuration.html[Advanced Configuration]

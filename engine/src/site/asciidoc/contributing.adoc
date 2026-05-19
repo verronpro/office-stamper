@@ -151,3 +151,8 @@ Thank you for contributing to Office-stamper!
 
 * Return to the link:index.html[Documentation Home]
 * Check out the link:https://github.com/verronpro/office-stamper/issues[GitHub Issues] to find something to work on.
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:release-notes.html[Release Notes]

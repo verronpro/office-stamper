@@ -1,0 +1,30 @@
+= Configuration Presets
+
+Office-stamper provides several configuration presets to help you get started quickly.
+These presets are available through the `OfficeStamperConfigurations` class.
+
+== Available Presets
+
+[cols="1,4"]
+|===
+| Preset | Description
+| `minimal()` | Sets up the base engine with placeholder preprocessors. Ideal for simple use cases.
+| `standard()` | Builds on `minimal()` by adding common comment processors (`repeat`, `displayIf`, `replaceWith`) and date/time formatting functions. This is the recommended starting point for most users.
+| `full()` | Further extends `standard()` with additional preprocessors for cleaning up language information and post-processors for cleaning up orphaned footnotes and endnotes.
+|===
+
+== Usage Example
+
+[source,java]
+----
+// Create a configuration with standard settings
+var configuration = OfficeStamperConfigurations.standard();
+
+// Create a stamper with the custom configuration
+var stamper = OfficeStampers.docxStamper(configuration);
+----
+
+== Navigation
+
+* link:index.html[Back to Index]
+* link:advanced-configuration.html[Advanced Configuration]

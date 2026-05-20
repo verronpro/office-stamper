@@ -32,7 +32,7 @@ jobs:
 
       - name: Remove SNAPSHOT from version
         run: |
-          mvn -B versions:set -DremoveSnapshot
+          mvn -B versions:set -DremoveSnapshot -DgenerateBackupPoms=false
           VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
 
@@ -42,7 +42,7 @@ jobs:
           git commit -m "chore: release ${{ env.RELEASE_VERSION }}"
           git tag -a "v${{ env.RELEASE_VERSION }}" -m "Release v${{ env.RELEASE_VERSION }}"
           git push origin "v${{ env.RELEASE_VERSION }}"
-          git push
+          git push origin HEAD:${{ github.ref_name }}
 
       - name: Publish to Maven Central
         run: mvn -B -ntp deploy -P gpg,!mut
@@ -53,7 +53,7 @@ jobs:
 
       - name: Bump to next minor SNAPSHOT
         run: |
-          mvn -B versions:set -DnextSnapshot=true -DnextSnapshotIndexToIncrement=1
+          mvn -B versions:set -DnextSnapshot=true -DnextSnapshotIndexToIncrement=1 -DgenerateBackupPoms=false
           NEXT_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
           echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
 
@@ -61,4 +61,4 @@ jobs:
         run: |
           git add .
           git commit -m "chore: bump to ${{ env.NEXT_VERSION }}"
-          git push
+          git push origin HEAD:${{ github.ref_name }}

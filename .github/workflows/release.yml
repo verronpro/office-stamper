@@ -42,7 +42,7 @@ jobs:
           git commit -m "chore: release ${{ env.RELEASE_VERSION }}"
           git tag -a "v${{ env.RELEASE_VERSION }}" -m "Release v${{ env.RELEASE_VERSION }}"
           git push origin "v${{ env.RELEASE_VERSION }}"
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin HEAD:main
 
       - name: Publish to Maven Central
         run: mvn -B -ntp deploy -P gpg,!mut
@@ -61,4 +61,4 @@ jobs:
         run: |
           git add .
           git commit -m "chore: bump to ${{ env.NEXT_VERSION }}"
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin HEAD:main

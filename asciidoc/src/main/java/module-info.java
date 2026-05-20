@@ -11,8 +11,8 @@
 ///
 ///
 module pro.verron.officestamper.asciidoc {
-    requires javafx.controls;
-    requires javafx.graphics;
+    requires transitive javafx.controls;
+    requires transitive javafx.graphics;
     requires org.docx4j.core;
     requires org.docx4j.openxml_objects;
     requires jakarta.xml.bind;

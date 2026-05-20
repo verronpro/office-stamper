@@ -240,4 +240,41 @@ class AsciiDocParserTest {
         assertEquals("path/to/img.png", image.url());
         assertEquals("Alt Text", image.altText());
     }
+
+    @Test
+    void parse_shouldParseAttributes() {
+        String asciidoc = """
+                :preview-theme: word
+                :preview-page-size: A4
+                :preview-margins: 25,25,25,25
+                
+                Content after attributes.""";
+        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
+        var attributes = result.getAttributes();
+        assertEquals("word", attributes.get("preview-theme"));
+        assertEquals("A4", attributes.get("preview-page-size"));
+        assertEquals("25,25,25,25", attributes.get("preview-margins"));
+
+        var blocks = result.getBlocks();
+        assertEquals(1, blocks.size());
+        assertEquals("Content after attributes.",
+                ((Paragraph) blocks.getFirst()).inlines()
+                                               .getFirst()
+                                               .text());
+    }
+
+    @Test
+    void parse_shouldParseMacroBlock() {
+        String asciidoc = "comment::[id=\"c1\", author=\"John Doe\", value=\"Some comment\"]";
+        AsciiDocModel result = AsciiDocParser.parse(asciidoc);
+        var blocks = result.getBlocks();
+        assertEquals(1, blocks.size());
+        var macro = assertInstanceOf(MacroBlock.class, blocks.getFirst());
+        assertEquals("comment", macro.name());
+        assertEquals("c1", macro.id());
+        assertTrue(macro.list()
+                        .contains("author=\"John Doe\""));
+        assertTrue(macro.list()
+                        .contains("value=\"Some comment\""));
+    }
 }

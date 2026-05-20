@@ -1,6 +1,7 @@
 package pro.verron.officestamper.asciidoc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -46,6 +47,31 @@ public final class AsciiDocParser
         if (asciidoc.isBlank()) return AsciiDocModel.of(new ArrayList<>());
 
         String[] lines = asciidoc.split("\r?\n");
+        Map<String, String> attributes = new HashMap<>();
+        int lineIndex = 0;
+        while (lineIndex < lines.length) {
+            String line = lines[lineIndex].trim();
+            if (line.startsWith(":") && line.contains(":")) {
+                int secondColon = line.indexOf(':', 1);
+                if (secondColon != -1) {
+                    String key = line.substring(1, secondColon);
+                    String value = line.substring(secondColon + 1)
+                                       .trim();
+                    attributes.put(key, value);
+                    lineIndex++;
+                }
+                else {
+                    break;
+                }
+            }
+            else if (line.isEmpty()) {
+                lineIndex++;
+            }
+            else {
+                break;
+            }
+        }
+
         StringBuilder currentParagraph = new StringBuilder();
         boolean inTable = false;
         boolean inBlockquote = false;
@@ -55,7 +81,8 @@ public final class AsciiDocParser
         StringBuilder currentBlockContent = new StringBuilder();
 
         var blocks = new ArrayList<Block>();
-        for (String line : lines) {
+        for (int i = lineIndex; i < lines.length; i++) {
+            String line = lines[i];
             String trimmed = line.trim();
 
             if (trimmed.equals("____")) {
@@ -137,6 +164,35 @@ public final class AsciiDocParser
                         blocks.add(new ImageBlock(url, altText));
                         continue;
                     }
+                }
+            }
+
+            if (trimmed.contains("::[")) {
+                int macroNameEnd = trimmed.indexOf("::[");
+                String macroName = trimmed.substring(0, macroNameEnd);
+                int endBracket = trimmed.indexOf(']', macroNameEnd + 3);
+                if (endBracket != -1) {
+                    if (!currentParagraph.isEmpty()) {
+                        blocks.add(new Paragraph(parseInlines(currentParagraph.toString()
+                                                                              .trim())));
+                        currentParagraph.setLength(0);
+                    }
+                    String content = trimmed.substring(macroNameEnd + 3, endBracket);
+                    // Simple attribute parser for id="value", key="value"
+                    List<String> attributesList = new ArrayList<>();
+                    String id = "";
+                    String[] parts = content.split(",\\s*");
+                    for (String part : parts) {
+                        if (part.startsWith("id=\"") || part.startsWith("id=")) {
+                            id = part.substring(part.indexOf('=') + 1)
+                                     .replace("\"", "");
+                        }
+                        else {
+                            attributesList.add(part.trim());
+                        }
+                    }
+                    blocks.add(new MacroBlock(macroName, id, attributesList));
+                    continue;
                 }
             }
 
@@ -253,7 +309,7 @@ public final class AsciiDocParser
                                                                   .trim())));
         }
 
-        return AsciiDocModel.of(blocks);
+        return AsciiDocModel.of(blocks, attributes);
     }
 
     private static List<Inline> parseInlines(String text) {

@@ -8,10 +8,13 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-java@v5
         with:
@@ -22,8 +25,40 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
 
-      - run: mvn -B -ntp deploy -P gpg,!mut
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Remove SNAPSHOT from version
+        run: |
+          mvn -B versions:set -DremoveSnapshot
+          VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Commit, tag and push release version
+        run: |
+          git add .
+          git commit -m "chore: release ${{ env.RELEASE_VERSION }}"
+          git tag -a "v${{ env.RELEASE_VERSION }}" -m "Release v${{ env.RELEASE_VERSION }}"
+          git push origin "v${{ env.RELEASE_VERSION }}"
+          git push
+
+      - name: Publish to Maven Central
+        run: mvn -B -ntp deploy -P gpg,!mut
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_NAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASS }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_SECRET_PASS }}
+
+      - name: Bump to next minor SNAPSHOT
+        run: |
+          mvn -B versions:set -DnextSnapshot=true -DnextSnapshotIndexToIncrement=1
+          NEXT_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+          echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
+
+      - name: Commit and push next SNAPSHOT
+        run: |
+          git add .
+          git commit -m "chore: bump to ${{ env.NEXT_VERSION }}"
+          git push

@@ -27,7 +27,7 @@ Internal byte caching and deduplication ensure that identical images are only st
 === Tooling and Experiments
 
 * **Native CLI**: Experiments with building a native CLI for Office-stamper using GraalVM.
-* **Documentation Domain**: The documentation website has moved to a new domain: link:https://office-stamper.verron.pro/[]
+* **Documentation Domain**: The documentation website has moved to a new domain: link:https://office-stamper.verron.pro/[office-stamper.verron.pro]
 
 === Dependencies
 
@@ -98,6 +98,7 @@ Custom processors can now easily remove tables or rows, copy rows, and access pa
 
 === Breaking API Changes
 
+* **Java Version**: Java 23+ is required; Maven release set to 25.
 * **Package Moves**:
 ** `PlaceholderHooker`, `CommentHooker`, and `HookRemover` moved to `pro.verron.officestamper.api`.
 ** `ExperimentalStampers` moved to `pro.verron.officestamper.experimental`.

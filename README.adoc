@@ -19,39 +19,30 @@ You design a template using your preferred Word processor; and office-stamper wi
 
 == Key Features
 
-* **Expression-based templating**: Use Spring Expression Language (SpEL) for powerful template expressions
-* **Comment-based processing**: Add special instructions as comments in your Word documents
-* **Formatting preservation**: All formatting from the original template is preserved
-* **Custom functions**: Extend the templating capabilities with your own functions
-* **Image deduplication**: Automatically reuse identical images in the document to prevent file bloating
-* **Type-safe**: Strong typing for Java integration
-* **Flexible configuration**: Customize the behavior to suit your needs
+* **Expression-based templating**: Use Spring Expression Language (SpEL) for powerful template expressions.
+* **Comment-based processing**: Add special instructions as comments in your Word documents.
+* **Formatting preservation**: All formatting from the original template is preserved.
+* **Custom functions**: Extend the templating capabilities with your own functions.
+* **Image deduplication**: Automatically reuse identical images in the document to prevent file bloating.
+* **Type-safe**: Strong typing for Java integration.
+* **Flexible configuration**: Customize the behavior to suit your needs.
 
 == Quick Start
 
 [source,java]
 ----
 void main() {
-    // an object to use as context for the expressions found in the template.
     var context = new YourPojoContext(_, _ , _);
-
-    // create a stamper that handles streams
     var stamper = OfficeStampers.docxStamper();
 
-    var templatePath = Paths.get("your/docx/template/file.docx");
-    var outputPath = Paths.get("your/desired/output/path.docx");
-    try(
-        var template = Files.newInputStream(templatePath);
-        var output = Files.newOutputStream(outputPath)
-    ) {
+    try(var template = Files.newInputStream(Paths.get("template.docx"));
+        var output = Files.newOutputStream(Paths.get("output.docx"))) {
         stamper.stamp(template, context, output);
     }
 }
 ----
 
-If you already have a `WordprocessingMLPackage` (Docx4J document), you can use `docxPackageStamper` instead:
-
-_Want to understand the architecture behind this API? Read the {blog}/office-stamper/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[expression pivot deep dive] and the {blog}/office-stamper/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[v3 overhaul story] on the blog._
+If you already have a `WordprocessingMLPackage` (Docx4J document), use `docxPackageStamper`:
 
 [source,java]
 ----
@@ -59,15 +50,17 @@ var stamper = OfficeStampers.docxPackageStamper(OfficeStamperConfigurations.stan
 WordprocessingMLPackage stamped = stamper.stamp(document, context);
 ----
 
+_Want to understand the architecture?
+Read the {blog}/office-stamper/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[v3 overhaul story] on the blog._
+
 == Configuration Presets
 
 Office-stamper provides three main configuration presets in `OfficeStamperConfigurations` to help you get started quickly:
 
-* `minimal()`: Sets up the base engine with placeholder preprocessors.
-Ideal for simple use cases.
-* `standard()`: Builds on `minimal()` by adding common comment processors (repeat, displayIf, replaceWith) and date/time formatting functions.
-This is the recommended starting point for most users.
-* `full()`: Further extends `standard()` with additional preprocessors for cleaning up language information and post-processors for cleaning up orphaned footnotes and endnotes.
+* `minimal()`: Base engine with placeholder preprocessors.
+* `standard()`: Recommended.
+Adds common comment processors (repeat, displayIf, replaceWith) and date/time formatting.
+* `full()`: Adds cleanup for language information and orphaned notes.
 
 You can create a configuration via one of these presets and then further customize it:
 
@@ -80,33 +73,25 @@ var configuration = OfficeStamperConfigurations.standard()
 == Security Modes
 
 Office-stamper is secure-by-default.
+SpEL evaluation runs in a restricted mode, and SVG parsing uses a hardened XML parser.
 
-- SpEL evaluation runs in a restricted mode that blocks risky features like type access (`T()`), bean resolution, constructor calls, and unrestricted static method invocation.
-- SVG parsing uses a hardened XML parser to mitigate XXE/DTD risks.
-
-You can opt into a permissive mode when working with trusted templates/inputs.
+You can opt into a permissive mode for trusted templates:
 
 [source,java]
 ----
 import pro.verron.officestamper.api.SecurityMode;
 
 void main(){
-    // SpEL security mode (default: RESTRICTED)
     var cfg = OfficeStamperConfigurations.standard()
-        .setSpelSecurityMode(SecurityMode.PERMISSIVE); // enable full SpEL capabilities for trusted templates
-
-    // SVG safe mode (default: enabled)
-    cfg.setSvgSecurityMode(SecurityMode.PERMISSIVE); // relax parser hardening for trusted SVG inputs
+        .setSpelSecurityMode(SecurityMode.PERMISSIVE)
+        .setSvgSecurityMode(SecurityMode.PERMISSIVE);
 }
-
 ----
 
-You can also control modes via system properties:
+Control modes via system properties:
 
-- `-Dofficestamper.spel.mode=restricted|permissive` (default: `restricted`)
-- `-Dofficestamper.svg.mode=restricted|permissive` (default: `restricted`)
-
-Use permissive options only with fully trusted templates and assets.
+* `-Dofficestamper.spel.mode=restricted|permissive`
+* `-Dofficestamper.svg.mode=restricted|permissive`
 
 == Maven Coordinates
 
@@ -115,19 +100,19 @@ Use permissive options only with fully trusted templates and assets.
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>engine</artifactId>
-    <version>3.3</version>
+    <version>3.4</version>
 </dependency>
 
 <!-- You also need to provide a dependency to Docx4J -->
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-core</artifactId>
-    <version>11.5.11</version>
+    <version>11.5.13</version>
 </dependency>
 <dependency>
     <groupId>org.docx4j</groupId>
     <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-    <version>11.5.11</version>
+    <version>11.5.13</version>
 </dependency>
 ----
 
@@ -135,110 +120,27 @@ Use permissive options only with fully trusted templates and assets.
 
 Comprehensive documentation is available at {docs}[{docs}].
 
-* link:{docs}/engine/introduction.html[Introduction]
-* link:{docs}/engine/getting-started.html[Getting Started]
-* link:{docs}/engine/template-expressions.html[Template Expressions]
-* link:{docs}/engine/comment-processors.html[Comment Processors]
-* link:{docs}/engine/spel-functions.html[SpEL Functions]
-* link:{docs}/engine/custom-settings.html[Custom Settings]
-* link:{docs}/engine/advanced-features.html[Advanced Features]
-* link:{docs}/engine/troubleshooting.html[Troubleshooting]
-* link:{docs}/engine/release-notes.html[Release Notes]
-* link:{docs}/engine/contributing.html[Contributing]
-* link:{wrkf}/cli/quickstart-windows.html[Quickstart (Windows)]
+== What's New
 
-== Labeling conventions
+For the latest changes and migration guides, please refer to:
 
-To keep the issue tracker consistent and easy to query, we use a small set of prefixed labels.
-
-Labels (apply as needed)
-
-* Exactly one type:* — e.g. `type: bug`, `type: feature`, `type: docs`, `type: test`, `type: refactor`, `type: performance`, `type: security`, `type: dependencies`, `type: research`, `type: epic`
-* One or more component:* — e.g. `component: engine`, `component: asciidoc`, `component: cli`, `component: imageio`, `component: excel`, `component: utils`
-* Optional tech:* — e.g. `tech: javafx`, `tech: docx4j`, `tech: graalvm`, `tech: junit`, `tech: qodana`
-* Optional format:* — e.g. `format: docx`, `format: pptx`, `format: odf`, `format: svg`, `format: emf`, `format: wmf`, `format: png`
-* Optional platform:* — `platform: windows`, `platform: linux`, `platform: macos`
-* Optional topic:* — for cross‑cutting themes (e.g. `topic: docx preview`, `topic: packaging`, `topic: observability`)
-* Status and priority — `status: needs triage`, `status: in progress`, `status: blocked`, `status: needs review`; `priority: P0-critical`, `priority: P1-high`, `priority: P2-normal`, `priority: P3-low`
-* Optional sizing — `size: XS|S|M|L|XL`
-
-Example
-
-* `type: feature`, `component: asciidoc`, `tech: javafx`, `topic: docx preview`, `format: png`, `status: in progress`, `priority: P2-normal`
+* link:{docs}/engine/release-notes.html[Release Notes] – detailed changelog for each version.
+* link:{docs}/engine/3.0-update.html[3.0 Update Guide] – rationale and migration guidance for the v3 overhaul.
 
 == Modules
 
-This repository is structured in several Maven/Java modules:
+This repository is structured into several modules:
 
 * {docs}/engine[Engine] – core templating engine and public API
-* {docs}/utils[Utils] – low-level utilities shared by modules
-* {docs}/asciidoc[AsciiDoc] – AsciiDoc to DOCX integration helpers
-* {docs}/cli[CLI] – command line interface to stamp templates
-
-== Latest Release
-
-The latest release is v3.3. See the link:{docs}/engine/release-notes.html[Release Notes] for details.
-
-=== What's new in 3.3 (high level)
-
-* **SVG Support**: Built-in support for inserting SVG images into documents.
-* **Smart Tag Attribute Validation**: New utility method to check attributes in DOCX smart tags.
-* **Internal Cleanup**: Simplified codebase by removing legacy utility classes.
-* **Updated Dependencies**: Latest Spring and Jackson versions for better security and performance.
-
-=== What's new in 3.2 (high level)
-
-* **Expression API Refactor**: Improved expression handling with the new `Expression` abstraction.
-* **Table and Row Manipulation**: New public APIs for easier document structure modification.
-* **Comment Removal**: Optional automatic cleanup of comments after processing.
-* **Asciidoc Enhancements**: Major improvements to Docx to Asciidoc conversion capabilities.
-* **Updated Dependencies**: Latest `docx4j` and Spring versions.
-
-=== What's new in 3.1 (high level)
-
-* **API Consolidation**: Continued streamlining of the public API by moving core interfaces like `PlaceholderHooker`, `CommentHooker`, and `HookRemover` to the `pro.verron.officestamper.api` package.
-* **Internal Cleanup**: Removed several internal utility classes and simplified the engine's internal structure for better maintainability.
-* **Experimental Features**: Moved experimental stamper implementations to a dedicated `pro.verron.officestamper.experimental` package to clearly distinguish them from the stable API.
-* **Logging**: Refined logging levels; many verbose debug messages moved to trace level.
-
-=== What's new in 3.0 (high level)
-
-* Processing model overhaul: the engine now iterates hooks (placeholders, inline processors, comments) strictly in document order.
-See `3.0_UPDATE.md` for the full rationale and migration guidance.
-* New hook concept: each placeholder/comment is treated as a hook — the iterator walks hooks one by one.
-* Hierarchical scopes: `ContextTree` resolve placeholders along the current branch; unresolved values bubble up to parent scopes.
-* Preprocessor-driven placeholders: include the placeholder preprocessor in your `OfficeStamperConfiguration` (already present in standard presets) to enable resolution.
-* Comment processor lifecycle simplified: processors are created per comment and executed once.
-* Postprocessors added: `Postprocessors.removeTags(String)` can remove all smart tags used by the engine after processing.
-
-Breaking API highlights:
-
-* `AbstractCommentProcessor` → `CommentProcessor`; introduce `CommentProcessorFactory`.
-* `ContextDependent` renamed to `Hook` (in `pro.verron.officestamper.api`).
-* Preprocessors moved: `PlaceholderHooker` and `CommentHooker` are now public in `pro.verron.officestamper.api`.
-* Postprocessors moved: `HookRemover` is now public in `pro.verron.officestamper.api`.
-* `EvaluationContextConfigurer` → `EvaluationContextFactory` (fresh context per hook).
-* `DocxDocument` removed in favor of `DocxPart`.
-* New `Insert` API for multi-run insertions; `PlaceholderReplacer` removed.
-* `OfficeStamper` handles `OpcPackage`; use `StreamStamper` for stream-to-stream.
-* Expression parser is pluggable (`ExpressionParser`), SpEL by default.
-* `DocxStamper#stamp` now returns the document.
-* Java 23+ required; Maven release set to 25.
-
-Minor updates:
-
-* Spring dependencies bumped to 7.0.2
-* New docs: `{docs}/engine/how-to-custom.html` and `{blog}/engine/HOW_DOES_IT_WORKS.adoc`
-* Test matrix extended for Docx4J 11.5.7 and 11.5.8
-* New modules: `asciidoc`, `utils`
+* {docs}/utils[Utils] – low-level utilities
+* {docs}/asciidoc[AsciiDoc] – AsciiDoc to DOCX integration
+* {docs}/cli[CLI] – command line interface
 
 == Sample Code
 
-The source code contains a set of tests showing how to use the features.
-If you want to run them yourself, clone the repository and run `mvn test`.
-To view the resulting .docx documents, you can export the stamped documents with the method `stamped.save(OutputStream)`
-
-If you want to have a look at the .docx templates used in the tests, have a look at the link:{main}/test/sources[sources subfolder] in the test folder.
+Check the source code for tests showing how to use the features.
+Run them with `mvn test`.
+Template .docx files used in tests are located in the link:{main}/test/sources[sources subfolder].
 
 == Who Uses This?
 
@@ -247,15 +149,8 @@ If your team uses office-stamper, feel free to open an issue or PR to add yourse
 
 == Author
 
-Office-stamper is crafted and maintained by {blog}/about.html[About Joseph Verron] — IT Manager, CISO, and Caring Coder.
-Joseph writes about Java craftsmanship, docs-as-code, and secure document automation on his blog at {blog}[verron.pro].
-Follow the stories behind the code:
-
-* {blog}/office-stamper/2026/03/01/monthly-topic-the-expression-pivot-harnessing-spring-spel.html[The Expression Pivot — Harnessing Spring SpEL]
-* {blog}/office-stamper/2025/12/15/monthly-topic-predicting-the-unpredictable-v3-overhaul.html[Predicting the Unpredictable — the v3 Overhaul]
-* {blog}/office-stamper/2026/02/01/monthly-commit-feedback-loops-and-the-asciidoc-pivot.html[Feedback Loops and the AsciiDoc Pivot]
-* {blog}/office-stamper/2026/01/01/monthly-commit-office-stamper-3-1-stabilizing-the-surface.html[Office-stamper 3.1 — Stabilizing the Surface]
-* {blog}/office-stamper/2025/11/01/monthly-commit-engine-refactoring-the-road-to-v3.html[Engine Refactoring — the Road to v3]
+Office-stamper is crafted and maintained by {blog}/about.html[Joseph Verron].
+Follow the stories behind the code on the {blog}[blog].
 
 == Contributing
 

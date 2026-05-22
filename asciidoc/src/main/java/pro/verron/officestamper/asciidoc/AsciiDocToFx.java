@@ -87,6 +87,13 @@ public final class AsciiDocToFx {
         return t;
     }
 
+    private static String extractValue(String attr) {
+        assert attr.contains("=") : "Attribute with value must contain '='";
+        var indexOf = attr.indexOf('=');
+        var valueSubstring = attr.substring(indexOf + 1);
+        return valueSubstring.replace("\"", "");
+    }
+
     /// Compiles the model into a simple scrollable Scene using a VBox of TextFlow nodes.
     ///
     /// Headings are rendered with larger font sizes; bold/italic are applied per inline fragment.
@@ -112,11 +119,10 @@ public final class AsciiDocToFx {
         commentsPanel.setPadding(new Insets(margin, 10, margin, 10));
         commentsPanel.setPrefWidth(200);
 
+        var commentsPanelChildren = commentsPanel.getChildren();
         for (Block block : model.getBlocks()) {
-            if (block instanceof MacroBlock mb && mb.name()
-                                                    .equals("comment")) {
-                commentsPanel.getChildren()
-                             .add(createCommentNode(mb));
+            if (block instanceof MacroBlock mb && "comment".equals(mb.name())) {
+                commentsPanelChildren.add(createCommentNode(mb));
                 continue;
             }
 
@@ -199,10 +205,9 @@ public final class AsciiDocToFx {
         }
 
         HBox docView = new HBox(pageContent);
-        if (!commentsPanel.getChildren()
-                          .isEmpty()) {
-            docView.getChildren()
-                   .add(commentsPanel);
+        if (!commentsPanelChildren.isEmpty()) {
+            var docViewChildren = docView.getChildren();
+            docViewChildren.add(commentsPanel);
         }
         docView.setAlignment(Pos.CENTER);
         docView.setPadding(new Insets(20));
@@ -211,19 +216,17 @@ public final class AsciiDocToFx {
         ScrollPane scroll = new ScrollPane(docView);
         scroll.setFitToWidth(true);
 
-        VBox layout = new VBox();
         // Simple Header
-        HBox header = new HBox(new Label("Office-stamper Preview - " + theme));
+        var headerLabel = new Label("Office-stamper Preview - " + theme);
+        headerLabel.setTextFill(Color.WHITE);
+        HBox header = new HBox(headerLabel);
         header.setPadding(new Insets(5, 10, 5, 10));
         header.setBackground(new Background(new BackgroundFill(WORD_BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-        ((Label) header.getChildren()
-                       .getFirst()).setTextFill(Color.WHITE);
 
-        layout.getChildren()
-              .addAll(header, scroll);
+        VBox layout = new VBox(header, scroll);
         VBox.setVgrow(scroll, Priority.ALWAYS);
 
-        return new Scene(layout, 900, 700);
+        return new Scene(layout);
     }
 
     private Node createCommentNode(MacroBlock mb) {
@@ -238,10 +241,8 @@ public final class AsciiDocToFx {
         String author = "";
         String value = "";
         for (String attr : mb.list()) {
-            if (attr.startsWith("author=")) author = attr.substring(attr.indexOf('=') + 1)
-                                                         .replace("\"", "");
-            if (attr.startsWith("value=")) value = attr.substring(attr.indexOf('=') + 1)
-                                                       .replace("\"", "");
+            if (attr.startsWith("author=")) author = extractValue(attr);
+            else if (attr.startsWith("value=")) value = extractValue(attr);
         }
 
         Label authorLabel = new Label(author.isEmpty() ? "Author" : author);
@@ -251,8 +252,8 @@ public final class AsciiDocToFx {
         commentText.setFont(Font.font("Calibri", 10));
         commentText.setWrappingWidth(180);
 
-        commentBox.getChildren()
-                  .addAll(authorLabel, commentText);
+        var commentBoxChildren = commentBox.getChildren();
+        commentBoxChildren.addAll(authorLabel, commentText);
         return commentBox;
     }
 }

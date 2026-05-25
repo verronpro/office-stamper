@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;

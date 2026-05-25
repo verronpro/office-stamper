@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.api.PlaceholderHooker;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 
 class PlaceholderPreprocessorTest {

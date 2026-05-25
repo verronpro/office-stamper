@@ -6,7 +6,8 @@
 module pro.verron.officestamper.cli {
     requires pro.verron.officestamper; // engine
     requires pro.verron.officestamper.excel; // excel context provider
-    requires pro.verron.officestamper.asciidoc;
+    requires pro.verron.officestamper.asciidoc.core;
+    requires pro.verron.officestamper.asciidoc.compiler;
 
     requires java.logging;
     requires java.xml;

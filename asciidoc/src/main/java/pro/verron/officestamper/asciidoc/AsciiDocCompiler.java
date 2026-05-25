@@ -6,6 +6,7 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -163,7 +164,23 @@ public final class AsciiDocCompiler {
     /// @param svg SVG source
     /// @param path path to save the image
     public static void saveSvgAsImage(String svg, Path path) {
+        saveSvgAsImage(svg, path, 96, Color.WHITE);
+    }
+
+    /// Saves the given SVG document as a PNG image file with specific DPI and background color.
+    ///
+    /// @param svg SVG source
+    /// @param path path to save the image
+    /// @param dpi dots per inch
+    /// @param background background color (null for transparent)
+    public static void saveSvgAsImage(String svg, Path path, int dpi, Color background) {
         var transcoder = new PNGTranscoder();
+        if (background != null) {
+            transcoder.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, background);
+        }
+        float mmPerInch = 25.4f;
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, mmPerInch / dpi);
+
         var input = new TranscoderInput(new StringReader(svg));
         try (OutputStream output = Files.newOutputStream(path)) {
             transcoder.transcode(input, new TranscoderOutput(output));

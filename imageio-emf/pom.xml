@@ -34,6 +34,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>pro.verron.asciidoc</groupId>
+            <artifactId>asciidoc-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>pro.verron.asciidoc</groupId>
+            <artifactId>asciidoc-compiler</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>

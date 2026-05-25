@@ -28,8 +28,12 @@
         </dependency>
         <dependency>
             <groupId>pro.verron.asciidoc</groupId>
-            <artifactId>asciidoc-converter</artifactId>
-            <version>4.0-SNAPSHOT</version>
+            <artifactId>asciidoc-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>pro.verron.asciidoc</groupId>
+            <artifactId>asciidoc-compiler</artifactId>
             <scope>test</scope>
         </dependency>
 

@@ -8,6 +8,8 @@ module pro.verron.officestamper.asciidoc.test {
     requires pro.verron.officestamper.asciidoc;
     requires org.junit.jupiter.params;
     requires org.docx4j.core;
+    requires org.asciidoctor.asciidoctorj;
+    requires org.asciidoctor.asciidoctorj.api;
     exports pro.verron.officestamper.asciidoc.test;
     opens pro.verron.officestamper.asciidoc.test;
 }

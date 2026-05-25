@@ -18,7 +18,13 @@ module pro.verron.officestamper.asciidoc {
     requires jakarta.xml.bind;
     requires org.jspecify;
     requires org.slf4j;
+    requires org.objectweb.asm;
+    requires org.asciidoctor.asciidoctorj;
+    requires org.asciidoctor.asciidoctorj.api;
 
     opens pro.verron.officestamper.asciidoc;
     exports pro.verron.officestamper.asciidoc;
+
+    provides org.asciidoctor.jruby.extension.spi.ExtensionRegistry
+            with pro.verron.officestamper.asciidoc.AsciiDocPreviewExtensionRegistry;
 }

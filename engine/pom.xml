@@ -91,11 +91,6 @@
             <version>1.4.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <profiles>

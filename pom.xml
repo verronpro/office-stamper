@@ -90,11 +90,6 @@
                         <artifactId>asciidoctor-parser-doxia-module</artifactId>
                         <version>3.2.0</version>
                     </dependency>
-                    <dependency>
-                        <groupId>pro.verron.asciidoc</groupId>
-                        <artifactId>asciidoc-converter</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>
@@ -277,6 +272,31 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-converters</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-docx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-compiler</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-preview</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>

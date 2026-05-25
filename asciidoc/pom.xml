@@ -11,56 +11,52 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <name>Office-stamper AsciiDoc Parser</name>
+    <name>Office-stamper AsciiDoc Parent</name>
     <groupId>pro.verron.asciidoc</groupId>
-    <artifactId>asciidoc-converter</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>asciidoc</artifactId>
+    <packaging>pom</packaging>
 
     <description>This module contains the asciidoc related utilities for the office-stamper project.</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.docx4j</groupId>
-            <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-transcoder</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-codec</artifactId>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jspecify</groupId>
-            <artifactId>jspecify</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctorj</artifactId>
-            <version>3.0.0</version>
-            <scope>provided</scope>
-        </dependency>
+    <modules>
+        <module>asciidoc-core</module>
+        <module>asciidoc-converters</module>
+        <module>asciidoc-docx</module>
+        <module>asciidoc-compiler</module>
+        <module>asciidoc-preview</module>
+    </modules>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-converters</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-docx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-compiler</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-preview</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>

@@ -1,25 +1,23 @@
 package pro.verron.officestamper.asciidoc;
 
-import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.jspecify.annotations.Nullable;
 
-import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static java.lang.Thread.currentThread;
 
 /// Facade utilities to parse AsciiDoc and compile it to different targets.
 public final class AsciiDocCompiler {
 
     private static final AsciiDocToHtml MODEL_TO_HTML = new AsciiDocToHtml();
-    private static final AsciiDocToFx MODEL_TO_SCENE = new AsciiDocToFx();
+    private static final AsciiDocToSvg MODEL_TO_SVG = new AsciiDocToSvg();
     private static final AsciiDocParser ASCIIDOC_TO_MODEL = new AsciiDocParser();
     private static final AsciiDocToDocx MODEL_TO_DOCX = new AsciiDocToDocx();
 
@@ -54,13 +52,13 @@ public final class AsciiDocCompiler {
         return ASCIIDOC_TO_MODEL.apply(asciidoc);
     }
 
-    /// Compiles the parsed model to a JavaFX Scene.
+    /// Compiles the parsed model to an SVG document.
     ///
     /// @param model parsed model
     ///
-    /// @return scene with rendered content
-    public static Scene toScene(AsciiDocModel model) {
-        return MODEL_TO_SCENE.apply(model);
+    /// @return SVG representation
+    public static String toSvg(AsciiDocModel model) {
+        return MODEL_TO_SVG.apply(model);
     }
 
     /// Compiles the AsciiDoc source text directly to HTML.
@@ -129,93 +127,50 @@ public final class AsciiDocCompiler {
         return new AsciiDocToText(false).apply(model);
     }
 
-    /// Compiles the AsciiDoc source text directly to a PNG image file.
+    /// Reads AsciiDoc source from an input stream and compiles it to SVG.
+    ///
+    /// @param input source stream
+    ///
+    /// @return SVG representation
+    public static String toSvg(InputStream input) {
+        try {
+            return toSvg(new String(input.readAllBytes()));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read AsciiDoc input stream", e);
+        }
+    }
+
+    /// Compiles the AsciiDoc source text directly to an SVG document.
+    ///
+    /// @param asciidoc source text
+    ///
+    /// @return SVG representation
+    public static String toSvg(String asciidoc) {
+        var model = ASCIIDOC_TO_MODEL.apply(asciidoc);
+        return MODEL_TO_SVG.apply(model);
+    }
+
+    /// Saves the AsciiDoc source text directly to a PNG image file.
     ///
     /// @param asciidoc source text
     /// @param path path to save the image
     public static void toImage(String asciidoc, Path path) {
-        toImage(toScene(asciidoc), path);
+        saveSvgAsImage(toSvg(asciidoc), path);
     }
 
-    /// Saves the given JavaFX Scene as a PNG image file.
+    /// Saves the given SVG document as a PNG image file.
     ///
-    /// @param scene JavaFX scene
+    /// @param svg SVG source
     /// @param path path to save the image
-    public static void toImage(Scene scene, Path path) {
-        if (Platform.isFxApplicationThread()) saveSnapshot(scene, path);
-        else saveSnapshotInFxApplicationThread(scene, path);
-    }
-
-    /// Compiles the AsciiDoc source text directly to a JavaFX Scene.
-    ///
-    /// @param asciidoc source text
-    ///
-    /// @return scene with rendered content
-    public static Scene toScene(String asciidoc) {
-        var model = ASCIIDOC_TO_MODEL.apply(asciidoc);
-        return MODEL_TO_SCENE.apply(model);
-    }
-
-    private static void saveSnapshot(Scene scene, Path path) {
-        try {
-            var image = scene.snapshot(null);
-            var bufferedImage = SwingFXUtils.fromFXImage(image, null);
-            ImageIO.write(bufferedImage, "png", path.toFile());
+    public static void saveSvgAsImage(String svg, Path path) {
+        var transcoder = new PNGTranscoder();
+        var input = new TranscoderInput(new StringReader(svg));
+        try (OutputStream output = Files.newOutputStream(path)) {
+            transcoder.transcode(input, new TranscoderOutput(output));
         } catch (IOException e) {
-            throw new RuntimeException("IO error while saving scene as image", e);
-        }
-    }
-
-    private static void saveSnapshotInFxApplicationThread(Scene scene, Path path) {
-        Runnable runnable = () -> saveSnapshot(scene, path);
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<@Nullable Throwable> error = new AtomicReference<@Nullable Throwable>();
-
-        Platform.runLater(() -> {
-            try {
-                runnable.run();
-            } catch (Throwable t) {
-                error.set(t);
-            } finally {
-                latch.countDown();
-            }
-        });
-        try {
-            latch.await();
-            if (error.get() != null) throw new RuntimeException("Failed to save scene as image", error.get());
-        } catch (InterruptedException e) {
-            currentThread().interrupt();
-            throw new RuntimeException("Interrupted while saving scene as image", e);
-        }
-    }
-
-    /// Compiles the AsciiDoc source text directly to a JavaFX Scene and displays it in a new Stage.
-    /// This method is primarily intended for debugging and manual verification.
-    /// It waits for the Stage to be closed before returning.
-    ///
-    /// @param asciidoc source text
-    public static void show(String asciidoc) {
-        show(toScene(asciidoc));
-    }
-
-    /// Displays the given JavaFX Scene in a new Stage.
-    /// This method is primarily intended for debugging and manual verification.
-    /// It waits for the Stage to be closed before returning.
-    ///
-    /// @param scene JavaFX scene to display
-    public static void show(Scene scene) {
-        var latch = new CountDownLatch(1);
-        Platform.runLater(() -> {
-            var stage = new Stage();
-            stage.setScene(scene);
-            stage.setTitle("Office-stamper Preview");
-            stage.setOnCloseRequest(e -> latch.countDown());
-            stage.show();
-        });
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            currentThread().interrupt();
+            throw new RuntimeException("IO error while writing PNG image", e);
+        } catch (TranscoderException e) {
+            throw new RuntimeException("Failed to transcode SVG image", e);
         }
     }
 }

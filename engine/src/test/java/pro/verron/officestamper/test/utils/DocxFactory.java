@@ -5,7 +5,7 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.asciidoc.AsciiDocCompiler;
+import pro.verron.officestamper.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 

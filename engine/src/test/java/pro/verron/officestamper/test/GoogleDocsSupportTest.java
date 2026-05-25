@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.asciidoc.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;

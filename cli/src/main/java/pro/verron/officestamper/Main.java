@@ -14,6 +14,8 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.asciidoc.AsciiDocCompiler;
+import pro.verron.officestamper.asciidoc.AsciiDocModel;
 import pro.verron.officestamper.excel.ExcelContext;
 import pro.verron.officestamper.experimental.ExperimentalStampers;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
@@ -39,36 +41,32 @@ import java.util.stream.Collectors;
 import static java.nio.file.Files.newOutputStream;
 
 /// Main class for the CLI.
-@Command(name = "officestamper", mixinStandardHelpOptions = true, description = "Office Stamper CLI tool")
+@Command(name = "officestamper",
+         mixinStandardHelpOptions = true,
+         description = "Office Stamper CLI tool",
+         subcommands = {Main.Preview.class})
 public class Main
         implements Runnable {
 
     private static final Logger logger = Utils.getLogger();
-
     // Flags: template (-t/--template) and data (-d/--data)
     @Option(names = {"-t", "--template"},
-            required = true,
             description = "Template file path (.docx|.pptx), or a keyword (diagnostic) for a packaged sample template")
     private String templatePath;
-
     @Option(names = {"-d", "--data"},
             required = false,
             description = "Data input: file (json|yaml|yml|properties|csv|xlsx|xml|html), a directory, or 'diagnostic'")
     private String dataPath;
-
     @Option(names = {"-o", "--output"},
             defaultValue = "output.docx",
             description = "Output file path")
     private String outputPath;
-
     @Option(names = {"--dry-run"},
             description = "Validate template + data and variables, but do not produce the output file")
     private boolean dryRun;
-
     @Option(names = {"--report"},
             description = "Optional JSON report file path with run metadata and validation results")
     private String reportPath;
-
     @Option(names = {"--log-format"},
             defaultValue = "human",
             description = "Logging format: 'human' (default) or 'json' (structured logs to stdout)")
@@ -573,6 +571,58 @@ public class Main
     private enum TemplateKind {
         WORD,
         POWERPOINT
+    }
+
+    @Command(name = "preview", description = "Generate a preview image from an AsciiDoc file")
+    public static class Preview
+            implements Runnable {
+        @Option(names = {"-i", "--input"}, required = true, description = "Input AsciiDoc file")
+        private Path input;
+
+        @Option(names = {"-o", "--output"}, defaultValue = "preview.png", description = "Output file (PNG or SVG)")
+        private Path output;
+
+        @Option(names = "--theme", defaultValue = "word", description = "Theme: word, gdocs, libre")
+        private String theme;
+
+        @Option(names = "--dpi", defaultValue = "96", description = "DPI for PNG output")
+        private int dpi;
+
+        @Option(names = "--format", description = "Output format: png, svg (auto-detected if omitted)")
+        private String format;
+
+        @Override
+        public void run() {
+            try {
+                String asciidoc = Files.readString(input);
+                var model = AsciiDocCompiler.toModel(asciidoc);
+
+                // Inject theme attribute into model
+                var attributes = new java.util.HashMap<>(model.getAttributes());
+                attributes.put("theme", theme);
+                model = AsciiDocModel.of(model.getBlocks(), attributes);
+
+                String formatToUse = format;
+                if (formatToUse == null) {
+                    String fileName = output.getFileName()
+                                            .toString()
+                                            .toLowerCase();
+                    if (fileName.endsWith(".svg")) formatToUse = "svg";
+                    else formatToUse = "png";
+                }
+
+                if ("svg".equalsIgnoreCase(formatToUse)) {
+                    String svg = AsciiDocCompiler.toSvg(model);
+                    Files.writeString(output, svg);
+                }
+                else {
+                    String svg = AsciiDocCompiler.toSvg(model);
+                    AsciiDocCompiler.saveSvgAsImage(svg, output, dpi, java.awt.Color.WHITE);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to generate preview", e);
+            }
+        }
     }
 
     private record Item(String name, Object context) {}

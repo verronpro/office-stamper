@@ -1,71 +1,54 @@
 package pro.verron.officestamper.asciidoc.test;
 
-import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.asciidoc.AsciiDocCompiler;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.CountDownLatch;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AsciiDocToFxTest {
 
-    @BeforeAll
-    static void initJavaFX()
-            throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        try {
-            Platform.startup(latch::countDown);
-        } catch (IllegalStateException e) {
-            // JavaFX already started
-            latch.countDown();
-        }
-        latch.await();
-    }
-
     @Test
-    void shouldRenderModelWithCommentToScene() {
+    void shouldRenderModelWithCommentToSvg() {
         String asciidoc = """
                 = Document
                 
                 Some text.
                 
-                comment::[start="0,0", end="0,1", id="c1", author="John Doe", value="A comment"]
+                comment::[start="1,0", id="c1", author="John Doe", value="A comment"]
                 """;
-        Scene scene = AsciiDocCompiler.toScene(asciidoc);
-        if (Boolean.getBoolean("office-stamper.test.show-preview")) AsciiDocCompiler.show(scene);
+        String svg = AsciiDocCompiler.toSvg(asciidoc);
 
-        assertNotNull(scene);
-        // The root is VBox,
-        // second child is ScrollPane, its content is HBox,
-        // its second child should be the comments panel VBox
-        var root = (VBox) scene.getRoot();
-        var rootChildren = root.getChildren();
-        var scroll = (ScrollPane) rootChildren.get(1);
-        var docView = (HBox) scroll.getContent();
-        var docViewChildren = docView.getChildren();
-        assertEquals(2, docViewChildren.size(), "Should have page content and comments panel");
+        assertNotNull(svg);
+        assertTrue(svg.contains("<svg"), "Rendered output should be SVG");
+        assertTrue(svg.contains("Document"), "SVG should include heading text");
+        assertTrue(svg.contains("Some text."), "SVG should include body text");
+        assertTrue(svg.contains("Word"), "SVG should simulate Word interface");
+        assertTrue(svg.contains("#2b579a"), "SVG should have Word blue color");
+        assertTrue(svg.contains("#fff2cc"), "Commented text should be highlighted");
+        assertTrue(svg.contains("John Doe"), "Comment author should be present");
+        assertTrue(svg.contains("A comment"), "Comment value should be present");
     }
 
     @Test
-    void shouldSaveSceneAsImage()
+    void shouldSaveSvgAsPng()
             throws Exception {
-        String asciidoc = "= Test";
-        Scene scene = AsciiDocCompiler.toScene(asciidoc);
+        String asciidoc = """
+                = Document
+                
+                Some text.
+                
+                comment::[start="1,0", id="c1", author="John Doe", value="A comment"]
+                """;
         Path path = Path.of("target/test-image.png");
         Files.deleteIfExists(path);
 
-        AsciiDocCompiler.toImage(scene, path);
+        AsciiDocCompiler.toImage(asciidoc, path);
 
-        assertTrue(Files.exists(path), "Image file should be created");
-        assertTrue(Files.size(path) > 0, "Image file should not be empty");
-        Files.deleteIfExists(path);
+        assertTrue(Files.exists(path), "PNG file should be created");
+        assertTrue(Files.size(path) > 0, "PNG file should not be empty");
     }
 }

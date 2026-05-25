@@ -434,7 +434,7 @@ public final class AsciiDocToSvg
                     .stripTrailing();
     }
 
-    private enum Theme {
+    public enum Theme {
         WORD,
         GDOCS,
         LIBRE

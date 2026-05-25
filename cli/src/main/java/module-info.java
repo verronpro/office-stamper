@@ -6,6 +6,7 @@
 module pro.verron.officestamper.cli {
     requires pro.verron.officestamper; // engine
     requires pro.verron.officestamper.excel; // excel context provider
+    requires pro.verron.officestamper.asciidoc;
 
     requires java.logging;
     requires java.xml;
@@ -20,6 +21,6 @@ module pro.verron.officestamper.cli {
     requires org.docx4j.openxml_objects;
     requires org.jspecify;
 
-    // Picocli uses reflection to populate fields on the command class
+    // Picocli uses reflection to populate fields in the command class
     opens pro.verron.officestamper to info.picocli;
 }

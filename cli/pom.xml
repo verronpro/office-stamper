@@ -26,6 +26,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>pro.verron.asciidoc</groupId>
+            <artifactId>asciidoc-converter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>pro.verron.excel</groupId>
             <artifactId>excel-context</artifactId>
             <version>${project.version}</version>

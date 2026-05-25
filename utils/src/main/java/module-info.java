@@ -13,11 +13,11 @@
 ///
 /// @since 3.0
 module pro.verron.officestamper.utils {
-    requires jakarta.xml.bind;
-    requires org.slf4j;
     requires org.docx4j.core;
+
+    requires jakarta.xml.bind;
     requires org.jspecify;
-    requires pro.verron.officestamper.asciidoc;
+    requires org.slf4j;
 
     exports pro.verron.officestamper.utils.iterator;
     exports pro.verron.officestamper.utils.function;

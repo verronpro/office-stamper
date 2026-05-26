@@ -47,7 +47,8 @@ public class DocxStamper
             var exceptionResolver = configuration.getExceptionResolver();
             var resolvers = configuration.getResolvers();
             var registry = new ObjectResolverRegistry(resolvers);
-            return new Engine(parserConfiguration, exceptionResolver, registry, processorContext);
+            var traceabilityReporter = configuration.getTraceabilityReporter();
+            return new Engine(parserConfiguration, exceptionResolver, registry, processorContext, traceabilityReporter);
         };
         this.preprocessors = new ArrayList<>(configuration.getPreprocessors());
         this.postprocessors = new ArrayList<>(configuration.getPostprocessors());

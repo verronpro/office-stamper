@@ -1,0 +1,254 @@
+{
+    "items": [
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3355,
+            "startColumn": 5,
+            "endLine": 3362,
+            "endColumn": 6,
+            "startOffset": 94007,
+            "endOffset": 94397,
+            "lineText": "    ||/**\n     * Create an instance of {@link JAXBElement }{@code <}{@link CTSettings }{@code >}}\n     * \n     */\n    @XmlElementDecl(namespace = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\", name = \"settings\")\n    public JAXBElement<CTSettings> createSettings(CTSettings value) {\n        return new JAXBElement<CTSettings>(_Settings_QNAME, CTSettings.class, null, value);\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.jdks\\temurin-25.0.3\\lib\\src.zip!\\jdk.jfr\\jdk\\jfr\\internal\\OldObjectSample.java",
+            "startLine": 94,
+            "startColumn": 5,
+            "endLine": 98,
+            "endColumn": 6,
+            "startOffset": 3859,
+            "endOffset": 4143,
+            "lineText": "    ||public static Map<String, String> createSettingsForSnapshot(PlatformRecording recording, Boolean pathToGcRoots) {\n        Map<String, String> settings = new HashMap<>(recording.getSettings());\n        updateSettingPathToGcRoots(settings, pathToGcRoots);\n        return settings;\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.jdks\\temurin-25.0.3\\lib\\src.zip!\\jdk.jfr\\jdk\\jfr\\internal\\SettingsManager.java",
+            "startLine": 176,
+            "startColumn": 5,
+            "endLine": 189,
+            "endColumn": 6,
+            "startOffset": 6476,
+            "endOffset": 7103,
+            "lineText": "    ||private Map<String, InternalSetting> createSettingsMap(List<Map<String,String>> activeSettings) {\n        Map<String, InternalSetting> map = LinkedHashMap.newLinkedHashMap(activeSettings.size());\n        for (Map<String, String> rec : activeSettings) {\n            for (InternalSetting internal : makeInternalSettings(rec)) {\n                InternalSetting is = map.get(internal.getSettingsId());\n                if (is == null) {\n                    map.put(internal.getSettingsId(), internal);\n                } else {\n                    is.add(internal);\n                }\n            }\n        }\n        return map;\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 559,
+            "startColumn": 5,
+            "endLine": 565,
+            "endColumn": 6,
+            "startOffset": 33187,
+            "endOffset": 33337,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings }\n     * \n     */\n    public CTSettings createCTSettings() {\n        return new CTSettings();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-core\\11.5.13\\docx4j-core-11.5.13-sources.jar!\\org\\docx4j\\Docx4J.java",
+            "startLine": 699,
+            "startColumn": 2,
+            "endLine": 704,
+            "endColumn": 3,
+            "startOffset": 25136,
+            "endOffset": 25300,
+            "lineText": "\t||/**\n\t *  Create the configuration object for conversions that are done via xsl-fo\n\t */\t\n\tpublic static FOSettings createFOSettings() {\n\t\treturn new FOSettings();\n\t}||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-core\\11.5.13\\docx4j-core-11.5.13-sources.jar!\\org\\docx4j\\Docx4J.java",
+            "startLine": 1001,
+            "startColumn": 2,
+            "endLine": 1006,
+            "endColumn": 3,
+            "startOffset": 35210,
+            "endOffset": 35363,
+            "lineText": "\t||/**\n\t *  Create the configuration object for conversions to html\n\t */\t\n\tpublic static HTMLSettings createHTMLSettings() {\n\t\treturn new HTMLSettings();\n\t}||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3364,
+            "startColumn": 5,
+            "endLine": 3371,
+            "endColumn": 6,
+            "startOffset": 94403,
+            "endOffset": 94817,
+            "lineText": "    ||/**\n     * Create an instance of {@link JAXBElement }{@code <}{@link CTWebSettings }{@code >}}\n     * \n     */\n    @XmlElementDecl(namespace = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\", name = \"webSettings\")\n    public JAXBElement<CTWebSettings> createWebSettings(CTWebSettings value) {\n        return new JAXBElement<CTWebSettings>(_WebSettings_QNAME, CTWebSettings.class, null, value);\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3287,
+            "startColumn": 5,
+            "endLine": 3293,
+            "endColumn": 6,
+            "startOffset": 91531,
+            "endOffset": 91740,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.AttachedSchema }\n     * \n     */\n    public CTSettings.AttachedSchema createCTSettingsAttachedSchema() {\n        return new CTSettings.AttachedSchema();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3263,
+            "startColumn": 5,
+            "endLine": 3269,
+            "endColumn": 6,
+            "startOffset": 90710,
+            "endOffset": 90951,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.BookFoldPrintingSheets }\n     * \n     */\n    public CTSettings.BookFoldPrintingSheets createCTSettingsBookFoldPrintingSheets() {\n        return new CTSettings.BookFoldPrintingSheets();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3247,
+            "startColumn": 5,
+            "endLine": 3253,
+            "endColumn": 6,
+            "startOffset": 90256,
+            "endOffset": 90477,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.ClickAndTypeStyle }\n     * \n     */\n    public CTSettings.ClickAndTypeStyle createCTSettingsClickAndTypeStyle() {\n        return new CTSettings.ClickAndTypeStyle();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3231,
+            "startColumn": 5,
+            "endLine": 3237,
+            "endColumn": 6,
+            "startOffset": 89798,
+            "endOffset": 90039,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.ConsecutiveHyphenLimit }\n     * \n     */\n    public CTSettings.ConsecutiveHyphenLimit createCTSettingsConsecutiveHyphenLimit() {\n        return new CTSettings.ConsecutiveHyphenLimit();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3303,
+            "startColumn": 5,
+            "endLine": 3309,
+            "endColumn": 6,
+            "startOffset": 91953,
+            "endOffset": 92158,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.DecimalSymbol }\n     * \n     */\n    public CTSettings.DecimalSymbol createCTSettingsDecimalSymbol() {\n        return new CTSettings.DecimalSymbol();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3255,
+            "startColumn": 5,
+            "endLine": 3261,
+            "endColumn": 6,
+            "startOffset": 90483,
+            "endOffset": 90704,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.DefaultTableStyle }\n     * \n     */\n    public CTSettings.DefaultTableStyle createCTSettingsDefaultTableStyle() {\n        return new CTSettings.DefaultTableStyle();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3271,
+            "startColumn": 5,
+            "endLine": 3277,
+            "endColumn": 6,
+            "startOffset": 90957,
+            "endOffset": 91242,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.DisplayHorizontalDrawingGridEvery }\n     * \n     */\n    public CTSettings.DisplayHorizontalDrawingGridEvery createCTSettingsDisplayHorizontalDrawingGridEvery() {\n        return new CTSettings.DisplayHorizontalDrawingGridEvery();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3279,
+            "startColumn": 5,
+            "endLine": 3285,
+            "endColumn": 6,
+            "startOffset": 91248,
+            "endOffset": 91525,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.DisplayVerticalDrawingGridEvery }\n     * \n     */\n    public CTSettings.DisplayVerticalDrawingGridEvery createCTSettingsDisplayVerticalDrawingGridEvery() {\n        return new CTSettings.DisplayVerticalDrawingGridEvery();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3295,
+            "startColumn": 5,
+            "endLine": 3301,
+            "endColumn": 6,
+            "startOffset": 91746,
+            "endOffset": 91947,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.ForceUpgrade }\n     * \n     */\n    public CTSettings.ForceUpgrade createCTSettingsForceUpgrade() {\n        return new CTSettings.ForceUpgrade();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3311,
+            "startColumn": 5,
+            "endLine": 3317,
+            "endColumn": 6,
+            "startOffset": 92164,
+            "endOffset": 92369,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.ListSeparator }\n     * \n     */\n    public CTSettings.ListSeparator createCTSettingsListSeparator() {\n        return new CTSettings.ListSeparator();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3239,
+            "startColumn": 5,
+            "endLine": 3245,
+            "endColumn": 6,
+            "startOffset": 90045,
+            "endOffset": 90250,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTSettings.SummaryLength }\n     * \n     */\n    public CTSettings.SummaryLength createCTSettingsSummaryLength() {\n        return new CTSettings.SummaryLength();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-core\\11.5.13\\docx4j-core-11.5.13-sources.jar!\\org\\docx4j\\openpackaging\\contenttype\\ContentTypeManager.java",
+            "startLine": 584,
+            "startColumn": 2,
+            "endLine": 587,
+            "endColumn": 3,
+            "startOffset": 25590,
+            "endOffset": 25748,
+            "lineText": "\t||public Part CreateDocumentSettingsPartObject(String partName)\n\t\t\tthrows InvalidFormatException {\n\t\treturn new DocumentSettingsPart(new PartName(partName));\n\t}||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-core\\11.5.13\\docx4j-core-11.5.13-sources.jar!\\org\\docx4j\\openpackaging\\contenttype\\ContentTypeManager.java",
+            "startLine": 589,
+            "startColumn": 2,
+            "endLine": 592,
+            "endColumn": 3,
+            "startOffset": 25751,
+            "endOffset": 25899,
+            "lineText": "\t||public Part CreateWebSettingsPartObject(String partName)\n\t\t\tthrows InvalidFormatException {\n\t\treturn new WebSettingsPart(new PartName(partName));\n\t}||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\com\\microsoft\\schemas\\office\\drawing\\x2014\\chartex\\ObjectFactory.java",
+            "startLine": 769,
+            "startColumn": 5,
+            "endLine": 775,
+            "endColumn": 6,
+            "startOffset": 18341,
+            "endOffset": 18511,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTPrintSettings }\n     * \n     */\n    public CTPrintSettings createCTPrintSettings() {\n        return new CTPrintSettings();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\dml\\chart\\ObjectFactory.java",
+            "startLine": 1131,
+            "startColumn": 5,
+            "endLine": 1137,
+            "endColumn": 6,
+            "startOffset": 23437,
+            "endOffset": 23607,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTPrintSettings }\n     * \n     */\n    public CTPrintSettings createCTPrintSettings() {\n        return new CTPrintSettings();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 551,
+            "startColumn": 5,
+            "endLine": 557,
+            "endColumn": 6,
+            "startOffset": 33019,
+            "endOffset": 33181,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTWebSettings }\n     * \n     */\n    public CTWebSettings createCTWebSettings() {\n        return new CTWebSettings();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3215,
+            "startColumn": 5,
+            "endLine": 3221,
+            "endColumn": 6,
+            "startOffset": 89372,
+            "endOffset": 89569,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTWebSettings.Encoding }\n     * \n     */\n    public CTWebSettings.Encoding createCTWebSettingsEncoding() {\n        return new CTWebSettings.Encoding();\n    }||"
+        },
+        {
+            "filePath": "..\\..\\..\\Users\\josep\\.m2\\repository\\org\\docx4j\\docx4j-openxml-objects\\11.5.13\\docx4j-openxml-objects-11.5.13-sources.jar!\\org\\docx4j\\wml\\ObjectFactory.java",
+            "startLine": 3223,
+            "startColumn": 5,
+            "endLine": 3229,
+            "endColumn": 6,
+            "startOffset": 89575,
+            "endOffset": 89792,
+            "lineText": "    ||/**\n     * Create an instance of {@link CTWebSettings.PixelsPerInch }\n     * \n     */\n    public CTWebSettings.PixelsPerInch createCTWebSettingsPixelsPerInch() {\n        return new CTWebSettings.PixelsPerInch();\n    }||"
+        }
+    ]
+}

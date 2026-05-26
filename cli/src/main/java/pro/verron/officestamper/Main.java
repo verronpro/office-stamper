@@ -30,11 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.nio.file.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -82,6 +79,14 @@ public class Main
             description = "Key to use for joining Excel sheets (used with JOIN strategy)")
     private String excelJoinKey;
 
+    @Option(names = {"--bind-env"},
+            description = "Expose environment variables in the SpEL context as 'env'")
+    private boolean bindEnv;
+
+    @Option(names = {"--watch"},
+            description = "Watch template and data files for changes and re-run stamping automatically")
+    private boolean watch;
+
     /// Default constructor.
     public Main() {
     }
@@ -120,6 +125,11 @@ public class Main
 
     @Override
     public void run() {
+        if (watch) runWatch();
+        else runOnce();
+    }
+
+    private void runOnce() {
         // Normalize log format
         var lf = logFormat == null
                 ? "human"
@@ -156,17 +166,18 @@ public class Main
                     idx++;
                     emit("INFO", "Processing item", Map.of("index", idx, "name", item.name, "total", items.size()), lf);
                     try (var templateStream = extractTemplateNew(templatePath)) {
+                        var context = wrapContext(item.context);
                         if (dryRun) {
                             var configuration = OfficeStamperConfigurations.standard()
                                                                            .setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
                             switch (ext) {
                                 case WORD -> {
                                     var stamper = OfficeStampers.docxStamper(configuration);
-                                    stamper.stamp(templateStream, item.context, OutputStream.nullOutputStream());
+                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
                                 }
                                 case POWERPOINT -> {
                                     var stamper = ExperimentalStampers.pptxStamper();
-                                    stamper.stamp(templateStream, item.context, OutputStream.nullOutputStream());
+                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
                                 }
                             }
                             results.add(new RunResult(item.name, "ok", null, null));
@@ -177,11 +188,11 @@ public class Main
                                 switch (ext) {
                                     case WORD -> {
                                         var stamper = OfficeStampers.docxStamper();
-                                        stamper.stamp(templateStream, item.context, os);
+                                        stamper.stamp(templateStream, context, os);
                                     }
                                     case POWERPOINT -> {
                                         var stamper = ExperimentalStampers.pptxStamper();
-                                        stamper.stamp(templateStream, item.context, os);
+                                        stamper.stamp(templateStream, context, os);
                                     }
                                 }
                             }
@@ -206,7 +217,7 @@ public class Main
             }
 
             // Single context path
-            final var context = extractContextNew(dataPath);
+            final var context = wrapContext(extractContextNew(dataPath));
             try (var templateStream = extractTemplateNew(templatePath)) {
                 if (dryRun) {
                     // Validate: fail on unresolved placeholders but do not write any file
@@ -579,6 +590,93 @@ public class Main
             System.out.println(json);
         } catch (Exception ignored) {
             System.out.println("{\"level\":\"error\",\"msg\":\"failed to emit json log\"}");
+        }
+    }
+
+    private String getLogFormat() {
+        return logFormat == null ? "human" : logFormat.trim()
+                                                      .toLowerCase();
+    }
+
+    private Object wrapContext(Object context) {
+        if (!bindEnv) return context;
+        var wrapper = new LinkedHashMap<String, Object>();
+        wrapper.put("env", System.getenv());
+        if (context instanceof Map<?, ?> map) {
+            for (var entry : map.entrySet()) {
+                wrapper.put(String.valueOf(entry.getKey()), entry.getValue());
+            }
+        }
+        else {
+            wrapper.put("data", context);
+        }
+        return wrapper;
+    }
+
+    private void runWatch() {
+        var lf = getLogFormat();
+        emit("INFO", "Watch mode enabled", null, lf);
+        try {
+            runOnce();
+        } catch (Exception e) {
+            emit("ERROR", "Initial run failed", Map.of("error", String.valueOf(e.getMessage())), lf);
+        }
+
+        try (var watchService = FileSystems.getDefault()
+                                           .newWatchService()) {
+            var templateFile = "diagnostic".equals(templatePath) ? null : Path.of(templatePath)
+                                                                              .toAbsolutePath();
+            var dataFile = (dataPath == null || "diagnostic".equals(dataPath)) ? null : Path.of(dataPath)
+                                                                                           .toAbsolutePath();
+
+            var pathsToWatch = new HashSet<Path>();
+            if (templateFile != null) pathsToWatch.add(templateFile);
+            if (dataFile != null) pathsToWatch.add(dataFile);
+
+            var keys = new HashMap<WatchKey, Path>();
+            for (var p : pathsToWatch) {
+                var dir = Files.isDirectory(p) ? p : p.getParent();
+                if (dir != null && Files.exists(dir)) {
+                    var key = dir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                    keys.put(key, dir);
+                }
+            }
+
+            while (true) {
+                var key = watchService.take();
+                var dir = keys.get(key);
+                for (var event : key.pollEvents()) {
+                    if (event.kind() == StandardWatchEventKinds.OVERFLOW) continue;
+                    var context = (Path) event.context();
+                    var resolved = dir.resolve(context);
+
+                    var relevant = false;
+                    for (var p : pathsToWatch) {
+                        if (resolved.equals(p) || (Files.isDirectory(p) && resolved.startsWith(p))) {
+                            relevant = true;
+                            break;
+                        }
+                    }
+
+                    if (relevant) {
+                        emit("INFO",
+                                "Change detected, re-stamping...",
+                                Map.of("file", resolved.toString()),
+                                lf);
+                        try {
+                            runOnce();
+                        } catch (Exception e) {
+                            emit("ERROR",
+                                    "Re-stamping failed",
+                                    Map.of("error", String.valueOf(e.getMessage())),
+                                    lf);
+                        }
+                    }
+                }
+                if (!key.reset()) break;
+            }
+        } catch (Exception e) {
+            emit("ERROR", "Watch mode failed", Map.of("error", String.valueOf(e.getMessage())), lf);
         }
     }
 

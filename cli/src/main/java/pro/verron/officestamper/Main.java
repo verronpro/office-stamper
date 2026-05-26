@@ -17,6 +17,7 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
 import pro.verron.officestamper.excel.ExcelContext;
+import pro.verron.officestamper.excel.ExcelMergeStrategy;
 import pro.verron.officestamper.experimental.ExperimentalStampers;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.OfficeStampers;
@@ -71,6 +72,15 @@ public class Main
             defaultValue = "human",
             description = "Logging format: 'human' (default) or 'json' (structured logs to stdout)")
     private String logFormat;
+
+    @Option(names = {"--excel-merge-strategy"},
+            defaultValue = "MAP",
+            description = "Excel merge strategy: MAP (default, each sheet is a key) or JOIN (inner join sheets)")
+    private ExcelMergeStrategy excelMergeStrategy;
+
+    @Option(names = {"--excel-join-key"},
+            description = "Key to use for joining Excel sheets (used with JOIN strategy)")
+    private String excelJoinKey;
 
     /// Default constructor.
     public Main() {
@@ -470,8 +480,12 @@ public class Main
     }
 
     private Object processExcel(Path path) {
-        try {
-            return ExcelContext.from(Files.newInputStream(path));
+        try (var is = Files.newInputStream(path)) {
+            var ctx = ExcelContext.from(is);
+            if (excelMergeStrategy == ExcelMergeStrategy.JOIN) {
+                return ctx.joinAllSheets(excelJoinKey);
+            }
+            return ctx;
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }

@@ -37,7 +37,14 @@ public final class ExcelContext
     private final Map<String, Object> rootCache = new TreeMap<>();
     private List<SheetContext> sheetsCache;
 
-    /// Creates a context backed by a SpreadsheetMLPackage.
+    /// Create a new context from a SpreadsheetMLPackage.
+    ///
+    /// @param spreadsheet SpreadsheetMLPackage to use
+    /// @return a new [ExcelContext] instance
+    public static ExcelContext from(SpreadsheetMLPackage spreadsheet) {
+        return new ExcelContext(spreadsheet);
+    }
+
     private ExcelContext(SpreadsheetMLPackage spreadsheet) {
         this.spreadsheet = spreadsheet;
     }
@@ -69,6 +76,66 @@ public final class ExcelContext
         } catch (Docx4JException e) {
             throw new ExcelException(e);
         }
+    }
+
+    /// Merges all sheets in the workbook into a single list of records using an inner join.
+    ///
+    /// @param joinKey the column name to join on. If null or empty, the first column of the first sheet is used.
+    /// @return a list of joined records
+    List<Map<String, String>> joinAllSheets(String joinKey) {
+        var sheets = enumerateSheets();
+        if (sheets.isEmpty()) return Collections.emptyList();
+
+        List<Map<String, String>> result = null;
+        for (var sc : sheets) {
+            var table = defaultTable(sc.worksheetPart());
+            if (result == null) {
+                result = new ArrayList<>(table);
+                if (joinKey == null || joinKey.isBlank()) {
+                    if (!result.isEmpty() && !result.getFirst()
+                                                   .isEmpty()) {
+                        joinKey = result.getFirst()
+                                        .keySet()
+                                        .iterator()
+                                        .next();
+                    }
+                }
+            }
+            else {
+                result = innerJoin(result, table, joinKey);
+            }
+        }
+        return result != null ? result : Collections.emptyList();
+    }
+
+    static List<Map<String, String>> innerJoin(
+            List<Map<String, String>> left,
+            List<Map<String, String>> right,
+            String joinKey
+    ) {
+        if (joinKey == null || joinKey.isBlank()) return Collections.emptyList();
+
+        var rightById = new HashMap<String, List<Map<String, String>>>();
+        for (var row : right) {
+            var val = row.get(joinKey);
+            if (val != null) {
+                rightById.computeIfAbsent(val, _ -> new ArrayList<>())
+                         .add(row);
+            }
+        }
+
+        var joined = new ArrayList<Map<String, String>>();
+        for (var leftRow : left) {
+            var val = leftRow.get(joinKey);
+            if (val != null && rightById.containsKey(val)) {
+                for (var rightRow : rightById.get(val)) {
+                    var newRow = new LinkedHashMap<>(leftRow);
+                    newRow.putAll(rightRow);
+                    joined.add(newRow);
+                }
+            }
+        }
+        return joined;
     }
 
     @Override

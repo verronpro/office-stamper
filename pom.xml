@@ -298,6 +298,11 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>pro.verron.office-stamper</groupId>
+                <artifactId>utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>6.1.0</version>

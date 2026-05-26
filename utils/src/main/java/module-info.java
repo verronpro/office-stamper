@@ -18,6 +18,7 @@ module pro.verron.officestamper.utils {
     requires jakarta.xml.bind;
     requires org.jspecify;
     requires org.slf4j;
+    requires java.desktop;
 
     exports pro.verron.officestamper.utils.iterator;
     exports pro.verron.officestamper.utils.function;
@@ -27,4 +28,5 @@ module pro.verron.officestamper.utils {
     exports pro.verron.officestamper.utils.sml;
     exports pro.verron.officestamper.utils.svg;
     exports pro.verron.officestamper.utils.image;
+    exports pro.verron.officestamper.utils.test;
 }

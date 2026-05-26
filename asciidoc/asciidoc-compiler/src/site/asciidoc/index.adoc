@@ -1,0 +1,24 @@
+= Office-stamper AsciiDoc Compiler
+
+The `asciidoc-compiler` module provides the high-level API for generating previews and compiling AsciiDoc templates.
+It coordinates the core parser, format converters, and image exporters.
+
+== Unified API
+
+The `AsciiDocCompiler` class simplifies complex workflows into single method calls:
+- Parsing raw text or reading from files.
+- Selecting themes and formatting options.
+- Exporting to SVG or high-resolution PNG.
+
+== PNG Exporting
+
+Leveraging Apache Batik, this module can render generated SVGs into rasterized PNG images.
+Key capabilities:
+- **Configurable DPI**: Generate sharp images for high-resolution displays or print.
+- **Background Control**: Choose between solid white backgrounds or transparent layers.
+- **Resource Management**: Properly handles temporary files and image transcoding.
+
+== Integration Role
+
+This module serves as the primary entry point for the CLI and the AsciidoctorJ extension.
+It abstracts away the details of individual converters and low-level parsing logic.

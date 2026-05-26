@@ -1,0 +1,24 @@
+= Office-stamper AsciiDoc DOCX
+
+The `asciidoc-docx` module is the bridge between the lightweight AsciiDoc format and the heavy Microsoft Word XML format.
+It uses Docx4j to perform high-fidelity conversions that preserve formatting like bold, italic, and monospace across both formats.
+
+== Main Features
+
+=== Bidirectional Conversion
+
+Unlike other converters that are one-way, `asciidoc-docx` supports:
+- **AsciiDoc to DOCX**: Used when stamping comments into a Word document.
+- **DOCX to AsciiDoc**: Used when extracting template instructions from a Word document.
+
+=== Docx4j Integration
+
+This module isolates the dependency on Docx4j, which is a large and complex library.
+By keeping it in its own module, other parts of the system that only need basic AsciiDoc parsing or HTML conversion can remain lightweight.
+
+== Mapping Details
+
+The converter maps AsciiDoc styles to Word's OpenXML elements:
+- `*bold*` → `<w:b/>`
+- `_italic_` → `<w:i/>`
+- ``monospace`` → `<w:rFonts w:ascii="Courier New"/>` (or configured monospace font) - `Line break` → `<w:br/>`

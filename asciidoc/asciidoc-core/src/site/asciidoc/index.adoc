@@ -1,0 +1,23 @@
+= Office-stamper AsciiDoc Core
+
+The `asciidoc-core` module is the foundation for all AsciiDoc processing in Office-stamper.
+It contains the core data structures and the initial parser that breaks down AsciiDoc text into manageable components.
+
+== Core Components
+
+=== AsciiDocModel
+
+A domain model representing the parsed content.
+It distinguishes between regular text parts and specific comment blocks that might contain metadata or formatting instructions.
+
+=== AsciiDocParser
+
+A robust parser that identifies:
+- Bold, italic, and monospace spans.
+- Comment blocks (used for processor instructions).
+- Line breaks and paragraph separators.
+
+== Dependency Minimalization
+
+This module is designed to be extremely lightweight.
+It does not depend on heavy libraries like AsciidoctorJ, Batik, or Docx4j, making it suitable for inclusion in the core engine without bloating the dependency graph.

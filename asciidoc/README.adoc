@@ -1,0 +1,33 @@
+= Office-stamper AsciiDoc Modules
+
+This directory contains the AsciiDoc related modules for the Office-stamper project.
+It has been modularized to follow the Single Responsibility Principle and to isolate heavy dependencies.
+
+== Modules
+
+* link:asciidoc-core/README.adoc[asciidoc-core]: Core data model and basic text parsing.
+* link:asciidoc-converters/README.adoc[asciidoc-converters]: Lightweight converters to HTML, SVG, and Text.
+* link:asciidoc-docx/README.adoc[asciidoc-docx]: Bidirectional conversion between AsciiDoc and DOCX.
+* link:asciidoc-compiler/README.adoc[asciidoc-compiler]: High-level facade and image export utilities.
+* link:asciidoc-preview/README.adoc[asciidoc-preview]: AsciidoctorJ extension for embedding previews.
+
+== Architecture
+
+[mermaid]
+----
+graph TD
+    subgraph AsciiDoc Parent
+        core[asciidoc-core]
+        conv[asciidoc-converters]
+        docx[asciidoc-docx]
+        comp[asciidoc-compiler]
+        ext[asciidoc-preview]
+    end
+
+    conv --> core
+    docx --> core
+    comp --> core
+    comp --> conv
+    comp --> docx
+    ext --> comp
+----

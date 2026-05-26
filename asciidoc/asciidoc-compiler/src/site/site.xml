@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      name="asciidoc-compiler"
+      xmlns="http://maven.apache.org/SITE/2.0.0"
+      xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd">
+    <skin>
+        <groupId>pro.verron</groupId>
+        <artifactId>maven-skin</artifactId>
+    </skin>
+    <body>
+        <links>
+            <item name="Blog" href="https://verron.pro/"/>
+            <item name="GitHub" href="https://github.com/verronpro/office-stamper"/>
+        </links>
+
+        <menu name="Parent">
+            <item name="Parent" href="https://office-stamper.verron.pro"/>
+        </menu>
+
+        <menu name="Module">
+            <item name="Overview" href="index.html"/>
+        </menu>
+
+        <menu ref="modules"/>
+        <menu name="Reports" ref="reports"/>
+    </body>
+
+    <edit>https://github.com/verronpro/office-stamper.git</edit>
+    <publishDate/>
+    <version/>
+</site>

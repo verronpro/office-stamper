@@ -1,0 +1,21 @@
+= Office-stamper AsciiDoc Core
+
+The `asciidoc-core` module provides the foundational data model and parsing logic for AsciiDoc integration in Office-stamper.
+
+== Features
+
+* `AsciiDocModel`: A structured representation of AsciiDoc content (comments, parts).
+* `AsciiDocParser`: A regex-based parser for extracting model components from raw text.
+* Lightweight and dependency-free (only JSpecify for nullability annotations).
+
+== Usage
+
+[source,java]
+----
+AsciiDocParser parser = new AsciiDocParser();
+AsciiDocModel model = parser.parse("Some *bold* text");
+----
+
+== Module name
+
+`pro.verron.officestamper.asciidoc.core`

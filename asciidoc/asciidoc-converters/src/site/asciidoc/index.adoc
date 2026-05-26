@@ -1,0 +1,29 @@
+= Office-stamper AsciiDoc Converters
+
+The `asciidoc-converters` module contains multiple output engines that transform the internal `AsciiDocModel` into specialized formats.
+
+== Available Converters
+
+=== HTML Converter
+
+Transforms the model into simple, semantic HTML.
+It focuses on text formatting (bold, italic, monospace) and structure.
+
+=== Text Converter
+
+A plain text extractor that removes all formatting and returns the raw content of the AsciiDoc source.
+
+=== SVG Converter
+
+A specialized converter that generates SVG representations of AsciiDoc content.
+Unique features:
+- **Editor Themes**: Can simulate the look and feel of different word processors (MS Word, Google Docs, LibreOffice).
+- **UI Chrome**: Renders simulated editor toolbars and rulers around the text.
+- **Visual Accuracy**: Uses specific color palettes and layouts matching the target editor.
+
+== Theming support
+
+The SVG converter supports the following themes:
+- `WORD`: Classic Microsoft Word blue/white interface.
+- `GDOCS`: Clean Google Docs interface.
+- `LIBRE`: LibreOffice Writer interface.

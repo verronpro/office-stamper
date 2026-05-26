@@ -1,0 +1,27 @@
+= Office-stamper AsciiDoc DOCX
+
+The `asciidoc-docx` module provides bidirectional integration between AsciiDoc and Microsoft Word (DOCX) formats.
+
+== Features
+
+* `AsciiDocToDocx`: Converts AsciiDoc model to Docx4j `R` (Run) objects.
+* `DocxToAsciiDoc`: Converts Docx4j `R` objects or full documents back to AsciiDoc text.
+* Handles complex formatting mapping between the two formats.
+
+== Dependencies
+
+* `asciidoc-core`
+* `docx4j-JAXB-ReferenceImpl`
+
+== Usage
+
+[source,java]
+----
+AsciiDocModel model = ...;
+AsciiDocToDocx converter = new AsciiDocToDocx();
+List<Object> runs = converter.convert(model);
+----
+
+== Module name
+
+`pro.verron.officestamper.asciidoc.docx`

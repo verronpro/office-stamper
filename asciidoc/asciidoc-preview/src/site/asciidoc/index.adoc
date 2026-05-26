@@ -1,0 +1,43 @@
+= Office-stamper AsciiDoc Preview Extension
+
+The `asciidoc-preview` module is a powerful extension for the Asciidoctor ecosystem.
+It allows documentation authors to show exactly how their AsciiDoc templates will appear when rendered as office document comments.
+
+== The `preview::[]` Macro
+
+This block macro can be used in any AsciiDoc document (such as those processed by `maven-site-plugin` or `asciidoctor-maven-plugin`).
+
+=== Syntax
+
+[source,asciidoc]
+----
+preview::path/to/template.adoc[theme=word, format=png, dpi=300]
+----
+
+=== Attributes
+
+[cols="1,3"]
+|===
+|Attribute |Description
+
+|`theme`
+|The editor skin to use (`word`, `gdocs`, `libre`). Defaults to `word`.
+
+|`format`
+|The image format (`png` or `svg`). Defaults to `png`.
+
+|`dpi`
+|The resolution for PNG export. Defaults to `96`.
+|===
+
+== How it Works
+
+1. The extension locates the referenced `.adoc` file.
+2. It uses `AsciiDocCompiler` to render the content into the requested format and theme.
+3. It saves the resulting image to the project's build directory (`target/generated-previews`).
+4. It generates an `<img>` tag (or object tag for SVG) to embed the image in the final HTML.
+
+== Caching Logic
+
+To ensure fast build times, the extension computes a hash of the source file and the requested parameters.
+If a matching image already exists in the cache and the source hasn't changed, the rendering step is skipped.

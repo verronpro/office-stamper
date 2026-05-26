@@ -1,0 +1,26 @@
+= Office-stamper AsciiDoc Compiler
+
+The `asciidoc-compiler` module provides a high-level facade for all AsciiDoc operations and includes PNG export utilities using Batik.
+
+== Features
+
+* `AsciiDocCompiler`: A unified API for converting AsciiDoc source directly to SVG or PNG.
+* Integrated PNG exporting with support for DPI and background options.
+* Facade pattern over core, converters, and docx modules.
+
+== Dependencies
+
+* `asciidoc-core`, `asciidoc-converters`, `asciidoc-docx`
+* `batik-transcoder`, `batik-codec`
+
+== Usage
+
+[source,java]
+----
+AsciiDocCompiler compiler = new AsciiDocCompiler();
+Path pngPath = compiler.compileToPng("source.adoc", "output.png", 300, Theme.WORD);
+----
+
+== Module name
+
+`pro.verron.officestamper.asciidoc.compiler`

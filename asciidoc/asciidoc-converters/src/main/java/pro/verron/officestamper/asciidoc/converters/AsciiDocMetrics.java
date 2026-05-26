@@ -8,12 +8,10 @@ import java.util.List;
 /// Utility class for text measurement and wrapping in AsciiDoc previews.
 final class AsciiDocMetrics {
 
-    private static final Graphics2D GRAPHICS;
-
-    static {
+    private static final ThreadLocal<Graphics2D> GRAPHICS = ThreadLocal.withInitial(() -> {
         BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-        GRAPHICS = image.createGraphics();
-    }
+        return image.createGraphics();
+    });
 
     private AsciiDocMetrics() {
         throw new UnsupportedOperationException("Utility class");
@@ -29,7 +27,8 @@ final class AsciiDocMetrics {
     static List<String> wrapText(String text, Font font, int maxWidth) {
         if (text == null || text.isEmpty()) return List.of("");
 
-        FontMetrics metrics = GRAPHICS.getFontMetrics(font);
+        FontMetrics metrics = GRAPHICS.get()
+                                      .getFontMetrics(font);
         List<String> lines = new ArrayList<>();
         String[] words = text.split("\\s+");
         StringBuilder currentLine = new StringBuilder();

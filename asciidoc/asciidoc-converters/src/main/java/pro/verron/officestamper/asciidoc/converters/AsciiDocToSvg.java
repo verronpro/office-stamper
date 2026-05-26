@@ -276,6 +276,11 @@ public final class AsciiDocToSvg
                 + "text-anchor=\"middle\">%s - Word</text>\n",
                 title));
 
+        // Top bar icons
+        AsciiDocIcon.appendIcon(svg, "save", 10, 7, 16, "white");
+        AsciiDocIcon.appendIcon(svg, "undo", 35, 7, 16, "white");
+        AsciiDocIcon.appendIcon(svg, "redo", 60, 7, 16, "white");
+
         // Ribbon area
         svg.append(String.format("<rect x=\"0\" y=\"30\" width=\"100%%\" height=\"%d\" fill=\"#f3f2f1\"/>\n",
                 BANNER_HEIGHT - 30));
@@ -285,18 +290,21 @@ public final class AsciiDocToSvg
                 BANNER_HEIGHT));
 
         // Simple ribbon icons simulation
-        svg.append("<text x=\"20\" y=\"60\" font-family=\"Segoe UI, Arial\" font-size=\"11\" fill=\"#333\">File  Home  "
+        svg.append("<text x=\"20\" y=\"55\" font-family=\"Segoe UI, Arial\" font-size=\"11\" fill=\"#333\">File  Home  "
                    + "Insert  Layout  References  Review  View</text>\n");
-        svg.append("<rect x=\"20\" y=\"70\" width=\"40\" height=\"20\" fill=\"#2b579a\" rx=\"2\"/>\n");
-        svg.append("<text x=\"25\" y=\"84\" font-family=\"Segoe UI, Arial\" font-size=\"10\" "
-                   + "fill=\"white\">Paste</text>\n");
+
+        AsciiDocIcon.appendIcon(svg, "bold", 20, 70, 16, "#333");
+        AsciiDocIcon.appendIcon(svg, "italic", 45, 70, 16, "#333");
+        AsciiDocIcon.appendIcon(svg, "image", 70, 70, 16, "#333");
+        AsciiDocIcon.appendIcon(svg, "table", 95, 70, 16, "#333");
+        AsciiDocIcon.appendIcon(svg, "link", 120, 70, 16, "#333");
     }
 
     private void renderGoogleDocsBanner(StringBuilder svg, String title) {
         // Top bar
         svg.append("<rect x=\"0\" y=\"0\" width=\"100%\" height=\"60\" fill=\"white\"/>\n");
         svg.append("<circle cx=\"30\" cy=\"30\" r=\"15\" fill=\"#4285f4\"/>\n");
-        svg.append("<rect x=\"22\" y=\"22\" width=\"16\" height=\"16\" fill=\"white\" rx=\"2\"/>\n");
+        AsciiDocIcon.appendIcon(svg, "table", 22, 22, 16, "white");
 
         svg.append(String.format("<text x=\"60\" y=\"25\" font-family=\"Product Sans, Arial\" font-size=\"18\" "
                                  + "fill=\"#3c4043\">%s</text>\n", title));
@@ -304,9 +312,17 @@ public final class AsciiDocToSvg
                    + "Insert  Format  Tools  Extensions  Help</text>\n");
 
         // Toolbar
-        svg.append(String.format("<rect x=\"0\" y=\"60\" width=\"100%%\" height=\"%d\" fill=\"#edf2fa\" rx=\"20\"/>\n",
-                BANNER_HEIGHT - 60));
+        svg.append(String.format("<rect x=\"0\" y=\"65\" width=\"100%%\" height=\"%d\" fill=\"#edf2fa\" rx=\"15\"/>\n",
+                BANNER_HEIGHT - 70));
         svg.append("<line x1=\"0\" y1=\"100\" x2=\"100%\" y2=\"100\" stroke=\"#ccc\"/>\n");
+
+        AsciiDocIcon.appendIcon(svg, "undo", 20, 72, 16, "#5f6368");
+        AsciiDocIcon.appendIcon(svg, "redo", 45, 72, 16, "#5f6368");
+        AsciiDocIcon.appendIcon(svg, "print", 70, 72, 16, "#5f6368");
+        AsciiDocIcon.appendIcon(svg, "bold", 110, 72, 16, "#5f6368");
+        AsciiDocIcon.appendIcon(svg, "italic", 135, 72, 16, "#5f6368");
+        AsciiDocIcon.appendIcon(svg, "link", 160, 72, 16, "#5f6368");
+        AsciiDocIcon.appendIcon(svg, "chat-left-text", 185, 72, 16, "#5f6368");
     }
 
     private void renderLibreOfficeBanner(StringBuilder svg, String title) {
@@ -327,6 +343,13 @@ public final class AsciiDocToSvg
                 BANNER_HEIGHT - 55));
         svg.append("<line x1=\"0\" y1=\"55\" x2=\"100%\" y2=\"55\" stroke=\"#ccc\"/>\n");
         svg.append("<line x1=\"0\" y1=\"100\" x2=\"100%\" y2=\"100\" stroke=\"#ccc\"/>\n");
+
+        AsciiDocIcon.appendIcon(svg, "save", 10, 65, 20, "#333");
+        AsciiDocIcon.appendIcon(svg, "print", 40, 65, 20, "#333");
+        AsciiDocIcon.appendIcon(svg, "undo", 70, 65, 20, "#333");
+        AsciiDocIcon.appendIcon(svg, "redo", 100, 65, 20, "#333");
+        AsciiDocIcon.appendIcon(svg, "bold", 150, 65, 20, "#333");
+        AsciiDocIcon.appendIcon(svg, "italic", 180, 65, 20, "#333");
     }
 
     private void renderComments(

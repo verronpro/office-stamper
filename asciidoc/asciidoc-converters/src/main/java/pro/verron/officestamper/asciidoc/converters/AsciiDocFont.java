@@ -1,22 +1,27 @@
 package pro.verron.officestamper.asciidoc.converters;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.Map;
 
 /// Utility class for font management in AsciiDoc previews.
 final class AsciiDocFont {
 
-    private static final Map<AsciiDocToSvg.Theme, String> THEME_FONTS = Map.of(
-            AsciiDocToSvg.Theme.WORD, "Calibri, 'Carlito', 'Arial', sans-serif",
-            AsciiDocToSvg.Theme.GDOCS, "Arial, 'Arimo', sans-serif",
-            AsciiDocToSvg.Theme.LIBRE, "'Liberation Serif', 'Tinos', 'Times New Roman', serif"
-    );
+    private static final Map<AsciiDocToSvg.Theme, String> THEME_FONTS = Map.of(AsciiDocToSvg.Theme.WORD,
+            "Calibri, 'Carlito', 'Arial', sans-serif",
+            AsciiDocToSvg.Theme.GDOCS,
+            "Arial, 'Arimo', sans-serif",
+            AsciiDocToSvg.Theme.LIBRE,
+            "'Liberation Serif', 'Tinos', 'Times New Roman', serif");
 
-    private static final Map<AsciiDocToSvg.Theme, String> AWT_FALLBACKS = Map.of(
-            AsciiDocToSvg.Theme.WORD, Font.SANS_SERIF,
-            AsciiDocToSvg.Theme.GDOCS, Font.SANS_SERIF,
-            AsciiDocToSvg.Theme.LIBRE, Font.SERIF
-    );
+    private static final Map<AsciiDocToSvg.Theme, String> AWT_FALLBACKS = Map.of(AsciiDocToSvg.Theme.WORD,
+            Font.SANS_SERIF,
+            AsciiDocToSvg.Theme.GDOCS,
+            Font.SANS_SERIF,
+            AsciiDocToSvg.Theme.LIBRE,
+            Font.SERIF);
+
+    private static final Map<String, Font> FONT_CACHE = new HashMap<>();
 
     private AsciiDocFont() {
         throw new UnsupportedOperationException("Utility class");
@@ -39,6 +44,11 @@ final class AsciiDocFont {
     ///
     /// @return AWT Font
     static Font getAwtFont(AsciiDocToSvg.Theme theme, int fontSize, int weight) {
+        String key = String.format("%s-%d-%d", theme, fontSize, weight);
+        return FONT_CACHE.computeIfAbsent(key, k -> createFont(theme, fontSize, weight));
+    }
+
+    private static Font createFont(AsciiDocToSvg.Theme theme, int fontSize, int weight) {
         String primaryFont = switch (theme) {
             case WORD -> "Calibri";
             case GDOCS -> "Arial";

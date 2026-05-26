@@ -37,7 +37,43 @@ preview::path/to/template.adoc[theme=word, format=png, dpi=300]
 3. It saves the resulting image to the project's build directory (`target/generated-previews`).
 4. It generates an `<img>` tag (or object tag for SVG) to embed the image in the final HTML.
 
-== Caching Logic
+== Documenting Comments and Placeholders
 
-To ensure fast build times, the extension computes a hash of the source file and the requested parameters.
-If a matching image already exists in the cache and the source hasn't changed, the rendering step is skipped.
+The preview engine is designed to show how placeholders and comments look in the target editor.
+
+=== Placeholders
+
+Standard AsciiDoc syntax for bold, italic, and source blocks can be used to simulate editor content.
+Placeholders like `{{name}}` are rendered as regular text.
+
+=== Comments
+
+To simulate editor comments, use the `comment::[]` block macro.
+
+[source,asciidoc]
+----
+comment::[id="c1", author="John Doe", value="This is a comment.", start="1,0"]
+----
+
+* `id`: A unique identifier for the comment.
+* `author`: The name of the comment author.
+* `value`: The content of the comment.
+* `start`: The position of the block to which the comment is attached (block index, inline offset - currently only block index is used).
+
+The comment will be rendered in a side panel with a dashed connector line to the corresponding content block.
+
+== Example Scene
+
+Here is an example of a complete preview scene:
+
+[source,asciidoc]
+----
+= Document Title
+
+This is a paragraph with a {{placeholder}}.
+
+comment::[id="c1", author="Jane Smith", value="Please replace this placeholder with the actual name.", start="1,0"]
+
+* First item
+* Second item
+----

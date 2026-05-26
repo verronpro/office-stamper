@@ -82,7 +82,7 @@ public final class ExcelContext
     ///
     /// @param joinKey the column name to join on. If null or empty, the first column of the first sheet is used.
     /// @return a list of joined records
-    List<Map<String, String>> joinAllSheets(String joinKey) {
+    public List<Map<String, String>> joinAllSheets(String joinKey) {
         var sheets = enumerateSheets();
         if (sheets.isEmpty()) return Collections.emptyList();
 

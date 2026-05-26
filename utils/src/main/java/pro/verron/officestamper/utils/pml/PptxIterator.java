@@ -102,9 +102,11 @@ public class PptxIterator
                 iteratorQueue.add(content.iterator());
             }
             case Shape shape -> {
-                var content = shape.getTxBody()
-                                   .getP();
-                iteratorQueue.add(content.iterator());
+                if (shape.getTxBody() != null) {
+                    var content = shape.getTxBody()
+                                       .getP();
+                    iteratorQueue.add(content.iterator());
+                }
             }
             default -> log.debug("Unknown type: {}", result.getClass());
         }

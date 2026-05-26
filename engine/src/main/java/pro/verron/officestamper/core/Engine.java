@@ -6,12 +6,10 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ExceptionResolver;
-import pro.verron.officestamper.api.Insert;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.*;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /// The core engine of OfficeStamper, responsible for processing expressions.
 public class Engine {
@@ -23,6 +21,7 @@ public class Engine {
     private final String expression;
     private final DocxPart docxPart;
     private final SpelExpressionParser expressionParser;
+    private final TraceabilityReporter traceabilityReporter;
 
     /// Constructs an Engine.
     ///
@@ -30,11 +29,13 @@ public class Engine {
     /// @param exceptionResolver the exception resolver.
     /// @param objectResolverRegistry the object resolver registry.
     /// @param processorContext the processor context.
+    /// @param traceabilityReporter the traceability reporter.
     public Engine(
             SpelParserConfiguration parserConfiguration,
             ExceptionResolver exceptionResolver,
             ObjectResolverRegistry objectResolverRegistry,
-            ProcessorContext processorContext
+            ProcessorContext processorContext,
+            TraceabilityReporter traceabilityReporter
     ) {
         this.parserConfiguration = parserConfiguration;
         this.expressionParser = new SpelExpressionParser(parserConfiguration);
@@ -42,6 +43,7 @@ public class Engine {
         this.objectResolverRegistry = objectResolverRegistry;
         this.expression = processorContext.expression();
         this.docxPart = processorContext.part();
+        this.traceabilityReporter = traceabilityReporter;
     }
 
     /// Processes the provided evaluation context against the expression defined in the processor context.
@@ -69,8 +71,10 @@ public class Engine {
 
         var expressionState = buildExpressionState(evaluationContext);
         try {
-            spelNode.getValue(expressionState);
+            var value = spelNode.getValue(expressionState);
             log.debug("Processed '{}' successfully.", expression);
+            var contextBranch = (ContextBranch) Objects.requireNonNull(evaluationContext.getRootObject().getValue());
+            traceabilityReporter.onResolution(expression, value, contextBranch.stream().collect(Collectors.toList()));
         } catch (SpelEvaluationException e) {
             var msgTemplate = "Expression %s could not be processed against context '%s'";
             var message = msgTemplate.formatted(expression, evaluationContext);
@@ -121,6 +125,8 @@ public class Engine {
         try {
             javaResolution = spelNode.getValue(expressionState);
             log.debug("Resolved '{}' successfully.", expression);
+            var contextBranch = (ContextBranch) Objects.requireNonNull(evaluationContext.getRootObject().getValue());
+            traceabilityReporter.onResolution(expression, javaResolution, contextBranch.stream().collect(Collectors.toList()));
         } catch (SpelEvaluationException e) {
             var msgTemplate = "Expression %s could not be resolved against context '%s'";
             var message = msgTemplate.formatted(expression, evaluationContext);

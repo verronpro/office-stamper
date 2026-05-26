@@ -40,6 +40,7 @@ public class DocxStamperConfiguration
     private ExceptionResolver exceptionResolver;
     private SecurityMode svgSecurityMode = SecurityMode.RESTRICTED;
     private SecurityMode spelSecurityMode = SecurityMode.RESTRICTED;
+    private TraceabilityReporter traceabilityReporter = TraceabilityReporter.noop();
 
     /// Constructs a new instance of the [DocxStamperConfiguration] class and initializes its default configuration
     /// settings.
@@ -368,6 +369,17 @@ public class DocxStamperConfiguration
     @Override
     public DocxStamperConfiguration setSvgSecurityMode(SecurityMode mode) {
         this.svgSecurityMode = mode;
+        return this;
+    }
+
+    @Override
+    public TraceabilityReporter getTraceabilityReporter() {
+        return traceabilityReporter;
+    }
+
+    @Override
+    public OfficeStamperConfiguration setTraceabilityReporter(TraceabilityReporter traceabilityReporter) {
+        this.traceabilityReporter = traceabilityReporter;
         return this;
     }
 }

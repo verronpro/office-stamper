@@ -16,6 +16,7 @@ import picocli.CommandLine.Option;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
+import pro.verron.officestamper.core.TraceabilityReport;
 import pro.verron.officestamper.excel.ExcelContext;
 import pro.verron.officestamper.excel.ExcelMergeStrategy;
 import pro.verron.officestamper.experimental.ExperimentalStampers;
@@ -39,10 +40,10 @@ import java.util.stream.Collectors;
 import static java.nio.file.Files.newOutputStream;
 
 /// Main class for the CLI.
-@Command(name = "officestamper",
-         mixinStandardHelpOptions = true,
-         description = "Office Stamper CLI tool",
-         subcommands = {Main.Preview.class})
+    @Command(name = "officestamper",
+             mixinStandardHelpOptions = true,
+             description = "Office Stamper CLI tool",
+             subcommands = {Main.Preview.class, Main.ReportView.class})
 public class Main
         implements Runnable {
 
@@ -87,6 +88,10 @@ public class Main
             description = "Watch template and data files for changes and re-run stamping automatically")
     private boolean watch;
 
+    @Option(names = {"--traceability-report"},
+            description = "Optional JSON traceability report file path with every placeholder resolution")
+    private String traceabilityReportPath;
+
     /// Default constructor.
     public Main() {
     }
@@ -130,6 +135,7 @@ public class Main
     }
 
     private void runOnce() {
+        var traceabilityReport = new TraceabilityReport();
         // Normalize log format
         var lf = logFormat == null
                 ? "human"
@@ -167,9 +173,10 @@ public class Main
                     emit("INFO", "Processing item", Map.of("index", idx, "name", item.name, "total", items.size()), lf);
                     try (var templateStream = extractTemplateNew(templatePath)) {
                         var context = wrapContext(item.context);
+                        var configuration = OfficeStamperConfigurations.standard();
+                        if (traceabilityReportPath != null) configuration.setTraceabilityReporter(traceabilityReport);
                         if (dryRun) {
-                            var configuration = OfficeStamperConfigurations.standard()
-                                                                           .setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
+                            configuration.setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
                             switch (ext) {
                                 case WORD -> {
                                     var stamper = OfficeStampers.docxStamper(configuration);
@@ -187,7 +194,7 @@ public class Main
                             try (var os = createOutputStream(out)) {
                                 switch (ext) {
                                     case WORD -> {
-                                        var stamper = OfficeStampers.docxStamper();
+                                        var stamper = OfficeStampers.docxStamper(configuration);
                                         stamper.stamp(templateStream, context, os);
                                     }
                                     case POWERPOINT -> {
@@ -219,10 +226,11 @@ public class Main
             // Single context path
             final var context = wrapContext(extractContextNew(dataPath));
             try (var templateStream = extractTemplateNew(templatePath)) {
+                var configuration = OfficeStamperConfigurations.standard();
+                if (traceabilityReportPath != null) configuration.setTraceabilityReporter(traceabilityReport);
                 if (dryRun) {
                     // Validate: fail on unresolved placeholders but do not write any file
-                    var configuration = OfficeStamperConfigurations.standard()
-                                                                   .setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
+                    configuration.setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
                     switch (ext) {
                         case WORD -> {
                             var stamper = OfficeStampers.docxStamper(configuration);
@@ -235,6 +243,8 @@ public class Main
                     }
                     emit("INFO", "Validation successful (dry-run)", null, lf);
                     writeReport("ok", null);
+                    if (traceabilityReportPath != null) writeTraceabilityReport(traceabilityReport,
+                            Path.of(traceabilityReportPath));
                     return;
                 }
 
@@ -242,11 +252,11 @@ public class Main
                 try (var outputStream = createOutputStream(Path.of(outputPath))) {
                     switch (ext) {
                         case WORD -> {
-                            var stamper = OfficeStampers.docxStamper();
+                            var stamper = OfficeStampers.docxStamper(configuration);
                             stamper.stamp(templateStream, context, outputStream);
                         }
                         case POWERPOINT -> {
-                            var stamper = ExperimentalStampers.pptxStamper();
+                            var stamper = ExperimentalStampers.pptxStamper(); // no config variant exposed for PPTX yet
                             stamper.stamp(templateStream, context, outputStream);
                         }
                     }
@@ -255,6 +265,8 @@ public class Main
 
             emit("INFO", "Stamping completed", Map.of("output", outputPath), lf);
             writeReport("ok", null);
+            if (traceabilityReportPath != null) writeTraceabilityReport(traceabilityReport,
+                    Path.of(traceabilityReportPath));
         } catch (Exception e) {
             emit("ERROR",
                     e.getMessage(),
@@ -530,6 +542,78 @@ public class Main
         } catch (Exception e) {
             // Best-effort: do not fail the run because report writing failed
             logger.log(Level.WARNING, "Failed to write report: " + e.getMessage(), e);
+        }
+    }
+
+    private void writeTraceabilityReport(TraceabilityReport report, Path path) {
+        try {
+            var mapper = new ObjectMapper();
+            try (var os = createOutputStream(path)) {
+                mapper.writerWithDefaultPrettyPrinter()
+                      .writeValue(os, report.getResolutions());
+            }
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Could not write traceability report", e);
+        }
+    }
+
+    @Command(name = "report-view",
+             description = "Generate an HTML viewer for a traceability report")
+    public static class ReportView
+            implements Runnable {
+        @Option(names = {"-i", "--input"},
+                required = true,
+                description = "JSON traceability report")
+        private Path input;
+        @Option(names = {"-o", "--output"},
+                defaultValue = "traceability.html",
+                description = "Output HTML file")
+        private Path output;
+
+        @Override
+        public void run() {
+            try {
+                var mapper = new ObjectMapper();
+                List<TraceabilityReport.Resolution> resolutions = mapper.readValue(input.toFile(),
+                        new TypeReference<>() {});
+                var html = generateHtml(resolutions);
+                Files.writeString(output, html);
+            } catch (IOException e) {
+                throw new OfficeStamperException(e);
+            }
+        }
+
+        private String generateHtml(List<TraceabilityReport.Resolution> resolutions) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<html><head><title>Traceability Report</title><style>");
+            sb.append("table { border-collapse: collapse; width: 100%; font-family: sans-serif; }");
+            sb.append("th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }");
+            sb.append("th { background-color: #4CAF50; color: white; }");
+            sb.append("tr:nth-child(even) { background-color: #f9f9f9; }");
+            sb.append("tr:hover { background-color: #f1f1f1; }");
+            sb.append("ul { margin: 0; padding-left: 20px; }");
+            sb.append("</style></head><body>");
+            sb.append("<h1>Office Stamper Traceability Report</h1>");
+            sb.append("<table><tr><th>Expression</th><th>Resolved Value</th><th>Nesting Context</th></tr>");
+            for (var res : resolutions) {
+                sb.append("<tr>");
+                sb.append("<td><code>")
+                  .append(res.expression())
+                  .append("</code></td>");
+                sb.append("<td>")
+                  .append(String.valueOf(res.value()))
+                  .append("</td>");
+                sb.append("<td><ul>");
+                for (var ctx : res.contextStack()) {
+                    sb.append("<li>")
+                      .append(String.valueOf(ctx))
+                      .append("</li>");
+                }
+                sb.append("</ul></td>");
+                sb.append("</tr>");
+            }
+            sb.append("</table></body></html>");
+            return sb.toString();
         }
     }
 

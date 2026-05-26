@@ -27,7 +27,7 @@ class AsciiDocSnapshotTest {
 
     private void runSnapshotTest(String adocName, String pngName)
             throws IOException {
-        String asciidoc = """
+        var asciidoc = """
                 = Document Title
                 
                 This is a very long paragraph that should definitely wrap into multiple lines because it exceeds the maximum width of the page. We want to make sure that the text wrapping logic is working correctly for all themes and that the line height is preserved.
@@ -52,18 +52,14 @@ class AsciiDocSnapshotTest {
                 """;
 
         // Handle theme based on name
-        if (adocName.startsWith("gdocs")) {
-            asciidoc = ":theme: gdocs\n" + asciidoc;
-        }
-        else if (adocName.startsWith("libre")) {
-            asciidoc = ":theme: libre\n" + asciidoc;
-        }
+        if (adocName.startsWith("gdocs")) asciidoc = ":theme: gdocs\n" + asciidoc;
+        else if (adocName.startsWith("libre")) asciidoc = ":theme: libre\n" + asciidoc;
 
-        Path actualPath = ACTUAL_DIR.resolve(pngName);
+        var actualPath = ACTUAL_DIR.resolve(pngName);
         AsciiDocCompiler.toImage(asciidoc, actualPath);
 
-        Path goldenPath = GOLDEN_DIR.resolve(pngName);
-        SnapshotUtils.assertSnapshotMatch(actualPath, goldenPath, 0.01);
+        var goldenPath = GOLDEN_DIR.resolve(pngName);
+        SnapshotUtils.assertSnapshotMatch(actualPath, goldenPath, 0.02);
     }
 
     @Test

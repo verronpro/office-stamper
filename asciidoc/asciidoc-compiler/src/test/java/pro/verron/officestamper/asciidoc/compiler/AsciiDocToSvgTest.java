@@ -12,14 +12,14 @@ class AsciiDocToSvgTest {
 
     @Test
     void shouldRenderModelWithCommentToSvg() {
-        String asciidoc = """
+        var asciidoc = """
                 = Document
                 
                 Some text.
                 
                 comment::[start="1,0", id="c1", author="John Doe", value="A comment"]
                 """;
-        String svg = AsciiDocCompiler.toSvg(asciidoc);
+        var svg = AsciiDocCompiler.toSvg(asciidoc);
 
         assertNotNull(svg);
         assertTrue(svg.contains("<svg"), "Rendered output should be SVG");
@@ -34,7 +34,7 @@ class AsciiDocToSvgTest {
 
     @Test
     void shouldRenderGoogleDocsTheme() {
-        String asciidoc = """
+        var asciidoc = """
                 :theme: gdocs
                 = GDocs Doc
                 
@@ -42,7 +42,7 @@ class AsciiDocToSvgTest {
                 
                 comment::[start="1,0", id="c1", author="Jane Smith", value="GDocs comment"]
                 """;
-        String svg = AsciiDocCompiler.toSvg(asciidoc);
+        var svg = AsciiDocCompiler.toSvg(asciidoc);
 
         assertNotNull(svg);
         assertTrue(svg.contains("GDocs Doc"));
@@ -53,7 +53,7 @@ class AsciiDocToSvgTest {
 
     @Test
     void shouldRenderLibreOfficeTheme() {
-        String asciidoc = """
+        var asciidoc = """
                 :theme: libre
                 = Libre Doc
                 
@@ -61,7 +61,7 @@ class AsciiDocToSvgTest {
                 
                 comment::[start="1,0", id="c1", author="Libre User", value="Libre comment"]
                 """;
-        String svg = AsciiDocCompiler.toSvg(asciidoc);
+        var svg = AsciiDocCompiler.toSvg(asciidoc);
 
         assertNotNull(svg);
         assertTrue(svg.contains("Libre Doc"));
@@ -73,14 +73,14 @@ class AsciiDocToSvgTest {
     @Test
     void shouldSaveSvgAsPng()
             throws Exception {
-        String asciidoc = """
+        var asciidoc = """
                 = Document
                 
                 Some text.
                 
                 comment::[start="1,0", id="c1", author="John Doe", value="A comment"]
                 """;
-        Path path = Path.of("target/test-image.png");
+        var path = Path.of("target/test-image.png");
         Files.deleteIfExists(path);
 
         AsciiDocCompiler.toImage(asciidoc, path);

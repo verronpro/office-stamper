@@ -1,0 +1,34 @@
+= Snapshot Testing for AsciiDoc Previews
+
+The `asciidoc-compiler` module uses snapshot testing to ensure the visual consistency of generated previews.
+Snapshots are compared against "golden" images stored in the repository.
+
+== How it Works
+
+1. **Test Execution**: When `AsciiDocSnapshotTest` runs, it generates PNG images from sample AsciiDoc files.
+2. **Comparison**: The generated images are compared pixel-by-pixel with the golden images in `src/test/resources/golden`.
+3. **Tolerance**: A small tolerance (e.g., 1%) is allowed to account for minor rendering differences across platforms.
+4. **Failure**: If the difference exceeds the tolerance, the test fails.
+
+== Updating Snapshots
+
+If you intentionally change the rendering logic (e.g., changing a theme's color or layout), the snapshots will fail.
+To update them:
+
+1. **Delete the old golden images**: Remove the files in `src/test/resources/golden/` that you want to update.
+2. **Run the tests**: Re-run `AsciiDocSnapshotTest`.
+Since the golden images are missing, the test utility will automatically create new ones from the current output.
+3. **Verify the new images**: Manually inspect the newly created golden images to ensure they look as expected.
+4. **Commit**: Commit the updated golden images to the repository.
+
+== Golden Images Location
+
+Golden images are stored in:
+`asciidoc/asciidoc-compiler/src/test/resources/golden/`
+
+== Cross-Platform Consistency
+
+To minimize differences between operating systems:
+- We use a defined font fallback strategy.
+- We recommend installing specific fonts on CI and developer machines (see `font-requirements.adoc`).
+- The comparison utility uses a tolerance threshold.

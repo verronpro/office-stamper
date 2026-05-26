@@ -1,0 +1,38 @@
+= Font Requirements for AsciiDoc Previews
+
+To ensure consistent rendering of SVG and PNG previews across different platforms, the following fonts (or their open-source alternatives) should be installed on the system where the rendering takes place.
+
+== Theme-Specific Fonts
+
+|===
+| Theme | Primary Font | Open-Source Alternative | Fallback
+
+| Microsoft Word
+| Calibri
+| Carlito, Arimo
+| Arial, sans-serif
+
+| Google Docs
+| Arial
+| Arimo
+| sans-serif
+
+| LibreOffice
+| Liberation Serif
+| Tinos
+| Times New Roman, serif
+|===
+
+== Recommendations
+
+For optimal results, we recommend installing the following font packages on Linux systems:
+
+* **Debian/Ubuntu**: `sudo apt-get install fonts-croscore fonts-crosextra-carlito fonts-crosextra-caladea fonts-liberation`
+* **Fedora**: `sudo dnf install google-croscore-fonts google-crosextra-carlito-fonts google-crosextra-caladea-fonts liberation-fonts`
+
+On **Windows** and **macOS**, the standard system fonts (Calibri, Arial, Times New Roman) are usually sufficient.
+
+== Technical Implementation
+
+The SVG renderer uses the `font-family` attribute with a prioritized list of these fonts.
+When rendering to PNG via Apache Batik, the system's available fonts are used for text measurement and rasterization.

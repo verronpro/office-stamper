@@ -135,60 +135,79 @@ public final class AsciiDocToSvg
     private int renderBlock(StringBuilder body, Block block, int x, int y, boolean highlight, Theme theme) {
         int contentStartIdx = body.length();
         int nextY = y;
+        int maxWidth = PAGE_WIDTH - 2 * PAGE_PADDING;
         switch (block) {
             case Heading(_, int level, List<Inline> inlines) -> {
                 int fontSize = Math.max(18, 34 - (level * 3));
-                nextY = appendTextLine(body, renderInlines(inlines), x, y + fontSize, fontSize, 700, theme);
+                nextY = appendWrappedText(body,
+                        renderInlines(inlines),
+                        x,
+                        y + fontSize,
+                        fontSize,
+                        700,
+                        theme,
+                        maxWidth);
                 nextY += 10;
             }
             case Paragraph(_, List<Inline> inlines) -> {
-                nextY = appendTextLine(body, renderInlines(inlines), x, y + BODY_FONT_SIZE, BODY_FONT_SIZE, 400, theme);
+                nextY = appendWrappedText(body,
+                        renderInlines(inlines),
+                        x,
+                        y + BODY_FONT_SIZE,
+                        BODY_FONT_SIZE,
+                        400,
+                        theme,
+                        maxWidth);
                 nextY += 8;
             }
             case UnorderedList(List<ListItem> items) -> {
                 for (ListItem item : items) {
-                    nextY = appendTextLine(body,
+                    nextY = appendWrappedText(body,
                             "• " + renderInlines(item.inlines()),
                             x,
                             nextY + BODY_FONT_SIZE,
                             BODY_FONT_SIZE,
                             400,
-                            theme);
+                            theme,
+                            maxWidth);
                 }
                 nextY += 6;
             }
             case OrderedList(List<ListItem> items) -> {
                 int index = 1;
                 for (ListItem item : items) {
-                    nextY = appendTextLine(body,
+                    nextY = appendWrappedText(body,
                             index + ". " + renderInlines(item.inlines()),
                             x,
                             nextY + BODY_FONT_SIZE,
                             BODY_FONT_SIZE,
                             400,
-                            theme);
+                            theme,
+                            maxWidth);
                     index++;
                 }
                 nextY += 6;
             }
             case Blockquote(List<Inline> inlines) -> {
                 nextY += 8;
-                body.append("<line x1=\"")
-                    .append(x)
-                    .append("\" y1=\"")
-                    .append(nextY)
-                    .append("\" x2=\"")
-                    .append(x)
-                    .append("\" y2=\"")
-                    .append(nextY + LINE_HEIGHT)
-                    .append("\" stroke=\"#888\" stroke-width=\"3\"/>\n");
-                nextY = appendTextLine(body,
+                int startY = nextY;
+                nextY = appendWrappedText(body,
                         renderInlines(inlines),
                         x + 10,
                         nextY + BODY_FONT_SIZE,
                         BODY_FONT_SIZE,
                         400,
-                        theme);
+                        theme,
+                        maxWidth - 10);
+                body.append("<line x1=\"")
+                    .append(x)
+                    .append("\" y1=\"")
+                    .append(startY)
+                    .append("\" x2=\"")
+                    .append(x)
+                    .append("\" y2=\"")
+                    .append(nextY - 4)
+                    .append("\" stroke=\"#888\" stroke-width=\"3\"/>\n");
             }
             case CodeBlock(String language, String content) -> {
                 nextY += 8;
@@ -326,33 +345,49 @@ public final class AsciiDocToSvg
             List<CommentInfo> comments = blockToComments.get(pos.index);
             if (comments != null) {
                 for (CommentInfo c : comments) {
+                    int commentPadding = 10;
+                    int textWidth = COMMENT_WIDTH - 2 * commentPadding;
+                    java.awt.Font authorFont = AsciiDocFont.getAwtFont(theme, 11, 700);
+                    java.awt.Font valueFont = AsciiDocFont.getAwtFont(theme, 11, 400);
+                    List<String> valueLines = AsciiDocMetrics.wrapText(c.value, valueFont, textWidth);
+
+                    int rectHeight = 30 + (valueLines.size() * 15);
+
                     svg.append(String.format(
-                            "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"60\" fill=\"#f9f9f9\" stroke=\"%s\" "
+                            "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" fill=\"#f9f9f9\" stroke=\"%s\" "
                             + "stroke-width=\"1\" rx=\"4\"/>\n",
                             COMMENTS_LEFT,
                             commentY,
                             COMMENT_WIDTH,
+                            rectHeight,
                             strokeColor));
                     if (theme == Theme.GDOCS) {
                         svg.append(String.format("<circle cx=\"%d\" cy=\"%d\" r=\"5\" fill=\"#4285f4\"/>\n",
                                 COMMENTS_LEFT + 15,
                                 commentY + 20));
                     }
-                    svg.append(String.format("<text x=\"%d\" y=\"%d\" font-family=\"Segoe UI, Arial\" font-size=\"11\" "
+                    svg.append(String.format("<text x=\"%d\" y=\"%d\" font-family=\"%s\" font-size=\"11\" "
                                              + "font-weight=\"bold\" fill=\"#333\">%s</text>\n",
                             COMMENTS_LEFT + (theme == Theme.GDOCS ? 25 : 10),
                             commentY + 20,
+                            AsciiDocFont.getFontFamily(theme),
                             escape(c.author)));
-                    svg.append(String.format("<text x=\"%d\" y=\"%d\" font-family=\"Segoe UI, Arial\" font-size=\"11\" "
-                                             + "fill=\"#666\">%s</text>\n",
-                            COMMENTS_LEFT + 10,
-                            commentY + 40,
-                            escape(c.value)));
+
+                    int lineY = commentY + 35;
+                    for (String line : valueLines) {
+                        svg.append(String.format("<text x=\"%d\" y=\"%d\" font-family=\"%s\" font-size=\"11\" "
+                                                 + "fill=\"#666\">%s</text>\n",
+                                COMMENTS_LEFT + 10,
+                                lineY,
+                                AsciiDocFont.getFontFamily(theme),
+                                escape(line)));
+                        lineY += 15;
+                    }
 
                     int startX = PAGE_LEFT + PAGE_WIDTH;
                     int startY = (pos.startY + pos.endY) / 2;
                     int endX = COMMENTS_LEFT;
-                    int endY = commentY + 30;
+                    int endY = commentY + (rectHeight / 2);
                     svg.append(String.format(
                             "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke=\"%s\" stroke-width=\"1\" "
                             + "stroke-dasharray=\"4\"/>\n",
@@ -362,7 +397,7 @@ public final class AsciiDocToSvg
                             endY,
                             strokeColor));
 
-                    commentY += 80;
+                    commentY += rectHeight + 10;
                 }
             }
         }
@@ -381,11 +416,7 @@ public final class AsciiDocToSvg
     }
 
     private int appendTextLine(StringBuilder body, String line, int x, int y, int fontSize, int weight, Theme theme) {
-        String fontFamily = switch (theme) {
-            case WORD -> "Calibri, Arial, sans-serif";
-            case GDOCS -> "Arial, sans-serif";
-            case LIBRE -> "Liberation Serif, Times New Roman, serif";
-        };
+        String fontFamily = AsciiDocFont.getFontFamily(theme);
         body.append("<text x=\"")
             .append(x)
             .append("\" y=\"")
@@ -400,6 +431,25 @@ public final class AsciiDocToSvg
             .append(escape(line))
             .append("</text>\n");
         return y + LINE_HEIGHT;
+    }
+
+    private int appendWrappedText(
+            StringBuilder body,
+            String text,
+            int x,
+            int y,
+            int fontSize,
+            int weight,
+            Theme theme,
+            int maxWidth
+    ) {
+        java.awt.Font font = AsciiDocFont.getAwtFont(theme, fontSize, weight);
+        List<String> lines = AsciiDocMetrics.wrapText(text, font, maxWidth);
+        int currentY = y;
+        for (String line : lines) {
+            currentY = appendTextLine(body, line, x, currentY, fontSize, weight, theme);
+        }
+        return currentY;
     }
 
     private String renderInlines(List<Inline> inlines) {

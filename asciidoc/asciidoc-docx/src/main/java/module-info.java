@@ -7,4 +7,5 @@ module pro.verron.officestamper.asciidoc.docx {
     requires jakarta.xml.bind;
     requires org.jspecify;
     exports pro.verron.officestamper.asciidoc.docx;
+    opens pro.verron.officestamper.asciidoc.docx;
 }

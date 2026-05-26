@@ -214,4 +214,15 @@ public interface OfficeStamperConfiguration {
     /// @param mode the desired [SecurityMode]
     /// @return the updated [OfficeStamperConfiguration] object
     OfficeStamperConfiguration setSvgSecurityMode(SecurityMode mode);
+
+    /// Retrieves the traceability reporter for tracking placeholder resolution.
+    ///
+    /// @return the [TraceabilityReporter] instance.
+    TraceabilityReporter getTraceabilityReporter();
+
+    /// Sets the traceability reporter for tracking placeholder resolution.
+    ///
+    /// @param traceabilityReporter the [TraceabilityReporter] instance to set.
+    /// @return the updated [OfficeStamperConfiguration] object.
+    OfficeStamperConfiguration setTraceabilityReporter(TraceabilityReporter traceabilityReporter);
 }

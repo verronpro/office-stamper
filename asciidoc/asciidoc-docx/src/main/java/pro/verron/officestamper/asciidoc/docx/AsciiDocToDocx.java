@@ -3,11 +3,17 @@ package pro.verron.officestamper.asciidoc.docx;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.PartName;
+import org.docx4j.openpackaging.parts.WordprocessingML.DocumentSettingsPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
+import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.*;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -16,6 +22,9 @@ import static pro.verron.officestamper.asciidoc.core.AsciiDocModel.*;
 /// Renders [AsciiDocModel] into a [WordprocessingMLPackage] using docx4j.
 public final class AsciiDocToDocx
         implements Function<AsciiDocModel, WordprocessingMLPackage> {
+
+    private int headerCount = 1;
+    private int footerCount = 1;
 
     private static P createHeading(ObjectFactory factory, Heading heading) {
         P p = factory.createP();
@@ -97,7 +106,11 @@ public final class AsciiDocToDocx
             case ImageBlock ib -> content.add(createImageBlock(factory, ib));
             case Break _ -> throw new java.lang.UnsupportedOperationException("Breaks are not supported");
             case CommentLine _ -> throw new UnsupportedOperationException("Comments are not supported");
-            case OpenBlock _ -> throw new UnsupportedOperationException("Open blocks are not supported");
+            case OpenBlock ob -> {
+                for (Block subBlock : ob.content()) {
+                    addBlock(factory, content, subBlock);
+                }
+            }
             case MacroBlock macroBlock -> throw new UnsupportedOperationException("Macro blocks are not supported");
         }
     }
@@ -279,23 +292,131 @@ public final class AsciiDocToDocx
     /// @param model parsed AsciiDoc model
     ///
     /// @return package containing the rendered document
+    @Override
     public WordprocessingMLPackage apply(AsciiDocModel model) {
+        headerCount = 1;
+        footerCount = 1;
         try {
             var pkg = WordprocessingMLPackage.createPackage();
             var factory = Context.getWmlObjectFactory();
-            pkg.getMainDocumentPart()
-               .getContent()
-               .clear();
+            var mainContent = pkg.getMainDocumentPart()
+                                 .getContent();
+            mainContent.clear();
 
             for (Block block : model.getBlocks()) {
-                addBlock(factory,
-                        pkg.getMainDocumentPart()
-                           .getContent(),
-                        block);
+                if (block instanceof OpenBlock ob && isHeaderOrFooter(ob)) {
+                    processHeaderOrFooter(pkg, factory, ob);
+                }
+                else {
+                    addBlock(factory, mainContent, block);
+                }
             }
             return pkg;
         } catch (Docx4JException e) {
             throw new IllegalStateException("Unable to create WordprocessingMLPackage", e);
+        }
+    }
+
+    private static boolean isHeaderOrFooter(OpenBlock ob) {
+        return ob.header()
+                 .stream()
+                 .anyMatch(h -> h.startsWith("header") || h.startsWith("footer"));
+    }
+
+    private void processHeaderOrFooter(
+            WordprocessingMLPackage pkg,
+            ObjectFactory factory,
+            OpenBlock ob
+    ) {
+        String role = ob.header()
+                        .get(0);
+        try {
+            if (role.startsWith("header")) {
+                HeaderPart hp = new HeaderPart(new PartName("/word/header" + (headerCount++) + ".xml"));
+                hp.setJaxbElement(factory.createHdr());
+                for (Block subBlock : ob.content()) {
+                    addBlock(factory, hp.getContent(), subBlock);
+                }
+                Relationship rel = pkg.getMainDocumentPart()
+                                      .addTargetPart(hp);
+                addReference(pkg, factory, rel.getId(), role, true);
+            }
+            else if (role.startsWith("footer")) {
+                FooterPart fp = new FooterPart(new PartName("/word/footer" + (footerCount++) + ".xml"));
+                fp.setJaxbElement(factory.createFtr());
+                for (Block subBlock : ob.content()) {
+                    addBlock(factory, fp.getContent(), subBlock);
+                }
+                Relationship rel = pkg.getMainDocumentPart()
+                                      .addTargetPart(fp);
+                addReference(pkg, factory, rel.getId(), role, false);
+            }
+        } catch (Docx4JException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void addReference(
+            WordprocessingMLPackage pkg,
+            ObjectFactory factory,
+            String relId,
+            String role,
+            boolean isHeader
+    ) {
+        SectPr sectPr = pkg.getMainDocumentPart()
+                           .getJaxbElement()
+                           .getBody()
+                           .getSectPr();
+        if (sectPr == null) {
+            sectPr = factory.createSectPr();
+            pkg.getMainDocumentPart()
+               .getJaxbElement()
+               .getBody()
+               .setSectPr(sectPr);
+        }
+
+        HdrFtrRef type = switch (role) {
+            case "header-even", "footer-even" -> {
+                enableEvenOddHeaders(pkg, factory);
+                yield HdrFtrRef.EVEN;
+            }
+            case "header-first", "footer-first" -> {
+                sectPr.setTitlePg(new BooleanDefaultTrue());
+                yield HdrFtrRef.FIRST;
+            }
+            default -> HdrFtrRef.DEFAULT;
+        };
+
+        if (isHeader) {
+            HeaderReference ref = factory.createHeaderReference();
+            ref.setId(relId);
+            ref.setType(type);
+            sectPr.getEGHdrFtrReferences()
+                  .add(ref);
+        }
+        else {
+            FooterReference ref = factory.createFooterReference();
+            ref.setId(relId);
+            ref.setType(type);
+            sectPr.getEGHdrFtrReferences()
+                  .add(ref);
+        }
+    }
+
+    private static void enableEvenOddHeaders(WordprocessingMLPackage pkg, ObjectFactory factory) {
+        try {
+            DocumentSettingsPart dsp = pkg.getMainDocumentPart()
+                                          .getDocumentSettingsPart();
+            if (dsp == null) {
+                dsp = new DocumentSettingsPart();
+                pkg.getMainDocumentPart()
+                   .addTargetPart(dsp);
+                dsp.setJaxbElement(factory.createCTSettings());
+            }
+            dsp.getContents()
+               .setEvenAndOddHeaders(new BooleanDefaultTrue());
+        } catch (Docx4JException e) {
+            throw new RuntimeException(e);
         }
     }
 }

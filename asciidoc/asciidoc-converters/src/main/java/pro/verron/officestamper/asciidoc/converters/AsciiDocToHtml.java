@@ -5,8 +5,8 @@ import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
 import static pro.verron.officestamper.asciidoc.core.AsciiDocModel.*;
 
 /// The AsciiDocToHtml class is responsible for rendering an AsciiDoc representation
@@ -47,23 +47,23 @@ public final class AsciiDocToHtml
             case UnorderedList(List<ListItem> items) -> {
                 return "<ul>\n" + items.stream()
                                        .map(item -> "  <li>" + renderInlines(item.inlines()) + "</li>\n")
-                                       .collect(Collectors.joining()) + "</ul>\n";
+                                       .collect(joining()) + "</ul>\n";
             }
             case OrderedList(List<ListItem> items) -> {
                 return "<ol>\n" + items.stream()
                                        .map(item -> "  <li>" + renderInlines(item.inlines()) + "</li>\n")
-                                       .collect(Collectors.joining()) + "</ol>\n";
+                                       .collect(joining()) + "</ol>\n";
             }
             case Table(List<Row> rows) -> {
-                StringBuilder sb = new StringBuilder("<table>\n");
-                for (Row row : rows) {
+                var sb = new StringBuilder("<table>\n");
+                for (var row : rows) {
                     sb.append("  <tr>\n");
-                    for (Cell cell : row.cells()) {
+                    for (var cell : row.cells()) {
                         sb.append("    <td>")
                           .append(cell.blocks()
                                       .stream()
                                       .map(AsciiDocToHtml::renderBlock)
-                                      .collect(Collectors.joining()))
+                                      .collect(joining()))
                           .append("</td>\n");
                     }
                     sb.append("  </tr>\n");
@@ -86,18 +86,18 @@ public final class AsciiDocToHtml
     }
 
     private static String renderInlines(List<Inline> inlines) {
-        StringBuilder sb = new StringBuilder();
-        for (Inline inline : inlines) {
+        var sb = new StringBuilder();
+        for (var inline : inlines) {
             switch (inline) {
-                case Text(String text1) -> sb.append(text1);
-                case Bold(List<Inline> children1) -> sb.append("<b>")
-                                                       .append(renderInlines(children1))
-                                                       .append("</b>");
+                case Text(String str) -> sb.append(str);
+                case Bold(List<Inline> children) -> sb.append("<b>")
+                                                      .append(renderInlines(children))
+                                                      .append("</b>");
                 case Italic(List<Inline> children) -> sb.append("<i>")
                                                         .append(renderInlines(children))
                                                         .append("</i>");
                 case Tab _ -> sb.append("&nbsp;&nbsp;&nbsp;&nbsp;");
-                case Link(String url1, String text) -> sb.append(String.format("<a href=\"%s\">%s</a>", url1, text));
+                case Link(String url, String str) -> sb.append(String.format("<a href=\"%s\">%s</a>", url, str));
                 case InlineImage(String url, Map<String, String> map) ->
                         sb.append(String.format("<img src=\"%s\" alt=\"%s\">", url, map.get("title")));
                 default -> { /* DO NOTHING */ }
@@ -111,12 +111,18 @@ public final class AsciiDocToHtml
     /// @param model the AsciiDocModel containing the blocks to be processed.
     /// @return the resulting HTML document as a string.
     public String apply(AsciiDocModel model) {
-        StringBuilder html = new StringBuilder();
-        html.append("<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n");
-        for (Block block : model.getBlocks()) {
-            html.append(renderBlock(block));
-        }
-        html.append("</body>\n</html>");
+        var html = new StringBuilder("""
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <meta charset="UTF-8">
+                  </head>
+                  <body>
+                """);
+        for (var block : model.getBlocks()) html.append(renderBlock(block));
+        html.append("""
+                  </body>
+                </html>""");
         return html.toString();
     }
 }

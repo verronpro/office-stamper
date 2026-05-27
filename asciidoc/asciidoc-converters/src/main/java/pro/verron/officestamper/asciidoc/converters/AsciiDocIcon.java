@@ -2,6 +2,9 @@ package pro.verron.officestamper.asciidoc.converters;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 /// Provides SVG paths for icons used in simulated editor interfaces.
 /// Icons are sourced from Bootstrap Icons (MIT License).
@@ -52,29 +55,19 @@ final class AsciiDocIcon {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    /// Appends an icon to the SVG builder.
+    /// find an icon to the SVG representation
     ///
-    /// @param svg SVG builder
     /// @param name icon name
     /// @param x x coordinate
     /// @param y y coordinate
     /// @param size icon size (width and height)
     /// @param color icon color
-    static void appendIcon(StringBuilder svg, String name, int x, int y, int size, String color) {
-        String path = getPath(name);
-        if (path == null) return;
-
-        svg.append(String.format(Locale.ROOT, "<g transform=\"translate(%d, %d) scale(%f)\">\n", x, y, size / 16.0));
-        svg.append(String.format(Locale.ROOT, "<path d=\"%s\" fill=\"%s\"/>\n", path, color));
-        svg.append("</g>\n");
+    static Optional<String> findIcon(String name, int x, int y, int size, String color) {
+        return ofNullable(PATHS.get(name)).map(path -> String.format(Locale.ROOT, """
+                <g transform="translate(%d, %d) scale(%f)">
+                <path d="%s" fill="%s"/>
+                </g>
+                """, x, y, size / 16.0, path, color));
     }
 
-    /// Returns the SVG path for the given icon name.
-    ///
-    /// @param name icon name
-    ///
-    /// @return SVG path
-    static String getPath(String name) {
-        return PATHS.get(name);
-    }
 }

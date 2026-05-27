@@ -9,7 +9,7 @@ import java.util.List;
 final class AsciiDocMetrics {
 
     private static final ThreadLocal<Graphics2D> GRAPHICS = ThreadLocal.withInitial(() -> {
-        BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        var image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         return image.createGraphics();
     });
 
@@ -27,14 +27,14 @@ final class AsciiDocMetrics {
     static List<String> wrapText(String text, Font font, int maxWidth) {
         if (text == null || text.isEmpty()) return List.of("");
 
-        FontMetrics metrics = GRAPHICS.get()
-                                      .getFontMetrics(font);
-        List<String> lines = new ArrayList<>();
-        String[] words = text.split("\\s+");
-        StringBuilder currentLine = new StringBuilder();
+        var graphics2D = GRAPHICS.get();
+        var metrics = graphics2D.getFontMetrics(font);
+        var lines = new ArrayList<String>();
+        var words = text.split("\\s+");
+        var currentLine = new StringBuilder();
 
-        for (String word : words) {
-            String testLine = currentLine.isEmpty() ? word : currentLine + " " + word;
+        for (var word : words) {
+            var testLine = currentLine.isEmpty() ? word : currentLine + " " + word;
             if (metrics.stringWidth(testLine) <= maxWidth) {
                 if (!currentLine.isEmpty()) currentLine.append(" ");
                 currentLine.append(word);

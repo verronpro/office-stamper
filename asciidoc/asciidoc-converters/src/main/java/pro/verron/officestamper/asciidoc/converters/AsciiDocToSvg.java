@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static pro.verron.officestamper.asciidoc.converters.AsciiDocIcon.findIcon;
 import static pro.verron.officestamper.asciidoc.core.AsciiDocModel.*;
 
 /// Renderer converting an [AsciiDocModel] into an SVG document simulating various editor interfaces.
@@ -27,26 +28,23 @@ public final class AsciiDocToSvg
 
     @Override
     public String apply(AsciiDocModel model) {
-        Theme theme = Theme.valueOf(model.getAttributes()
-                                         .getOrDefault("theme", "word")
-                                         .toUpperCase());
-        List<CommentInfo> comments = extractComments(model);
-        Map<Integer, List<CommentInfo>> blockToComments = mapCommentsToBlocks(comments);
+        var attributes = model.getAttributes();
+        var themeStr = attributes.getOrDefault("theme", "word");
+        var theme = Theme.valueOf(themeStr.toUpperCase());
 
-        StringBuilder svgContent = new StringBuilder();
-        int pageY = BANNER_HEIGHT + PAGE_MARGIN_TOP;
-        int currentY = pageY + PAGE_PADDING;
+        var comments = extractComments(model);
+        var blockToComments = mapCommentsToBlocks(comments);
 
-        List<BlockPosition> blockPositions = new ArrayList<>();
+        var svgContent = new StringBuilder();
+        var pageY = BANNER_HEIGHT + PAGE_MARGIN_TOP;
+        var currentY = pageY + PAGE_PADDING;
 
-        for (int i = 0;
-             i < model.getBlocks()
-                      .size();
-             i++) {
-            Block block = model.getBlocks()
-                               .get(i);
-            if (block instanceof MacroBlock m && m.name()
-                                                  .equals("comment")) continue;
+        var blockPositions = new ArrayList<BlockPosition>();
+
+        var modelBlocks = model.getBlocks();
+        for (int i = 0; i < modelBlocks.size(); i++) {
+            var block = modelBlocks.get(i);
+            if (block instanceof MacroBlock m && "comment".equals(m.name())) continue;
 
             int startY = currentY;
             boolean isCommented = blockToComments.containsKey(i);
@@ -55,9 +53,9 @@ public final class AsciiDocToSvg
             blockPositions.add(new BlockPosition(i, startY, currentY - 8));
         }
 
-        int pageHeight = Math.max(800, currentY - pageY + PAGE_PADDING);
+        var pageHeight = Math.max(800, currentY - pageY + PAGE_PADDING);
 
-        StringBuilder fullSvg = new StringBuilder();
+        var fullSvg = new StringBuilder();
         fullSvg.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         fullSvg.append(String.format(
                 "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"%d\" height=\"%d\" viewBox=\"0 0 %d %d\">\n",
@@ -66,18 +64,11 @@ public final class AsciiDocToSvg
                 VIEWPORT_WIDTH,
                 pageY + pageHeight + 50));
 
-        // Background
-        String bgColor = switch (theme) {
-            case WORD -> "#e6e6e6";
-            case GDOCS -> "#f8f9fa";
-            case LIBRE -> "#dfdfdf";
-        };
         fullSvg.append(String.format("<rect x=\"0\" y=\"0\" width=\"100%%\" height=\"100%%\" fill=\"%s\"/>\n",
-                bgColor));
+                theme.getBgColor()));
 
         // Editor Banner
-        String title = model.getAttributes()
-                            .getOrDefault("title", "Document.docx");
+        var title = attributes.getOrDefault("title", "Document.docx");
         switch (theme) {
             case WORD -> renderWordBanner(fullSvg, title);
             case GDOCS -> renderGoogleDocsBanner(fullSvg, title);
@@ -111,34 +102,34 @@ public final class AsciiDocToSvg
     }
 
     private List<CommentInfo> extractComments(AsciiDocModel model) {
-        List<CommentInfo> comments = new ArrayList<>();
-        for (Block block : model.getBlocks()) {
+        var comments = new ArrayList<CommentInfo>();
+        for (var block : model.getBlocks()) {
             if (block instanceof MacroBlock(String name, String id, List<String> list) && name.equals("comment")) {
-                String start = "";
-                String author = "Author";
-                String value = "";
-                for (String attr : list) {
-                    String trimmed = attr.trim();
-                    if (trimmed.startsWith("start=")) start = trimmed.substring(6)
-                                                                     .replace("\"", "");
-                    else if (trimmed.startsWith("author=")) author = trimmed.substring(7)
-                                                                            .replace("\"", "");
-                    else if (trimmed.startsWith("value=")) value = trimmed.substring(6)
-                                                                          .replace("\"", "");
+                var attributeMap = new HashMap<String, String>();
+                for (var attr : list) {
+                    var trimmed = attr.trim();
+                    var keyValueSeparator = "=";
+                    if (!trimmed.contains(keyValueSeparator)) continue;
+                    var split = trimmed.split(keyValueSeparator);
+                    attributeMap.put(split[0], split[1].replace("\"", ""));
                 }
-                comments.add(new CommentInfo(id, start, author, value));
+                var commentInfo = new CommentInfo(id,
+                        attributeMap.getOrDefault("start", ""),
+                        attributeMap.getOrDefault("author", ""),
+                        attributeMap.getOrDefault("value", ""));
+                comments.add(commentInfo);
             }
         }
         return comments;
     }
 
     private int renderBlock(StringBuilder body, Block block, int x, int y, boolean highlight, Theme theme) {
-        int contentStartIdx = body.length();
-        int nextY = y;
-        int maxWidth = PAGE_WIDTH - 2 * PAGE_PADDING;
+        var contentStartIdx = body.length();
+        var nextY = y;
+        var maxWidth = PAGE_WIDTH - 2 * PAGE_PADDING;
         switch (block) {
             case Heading(_, int level, List<Inline> inlines) -> {
-                int fontSize = Math.max(18, 34 - (level * 3));
+                var fontSize = Math.max(18, 34 - (level * 3));
                 nextY = appendWrappedText(body,
                         renderInlines(inlines),
                         x,
@@ -239,7 +230,7 @@ public final class AsciiDocToSvg
                     .append(nextY)
                     .append("\" width=\"320\" height=\"120\" fill=\"#f0f0f0\" stroke=\"#c0c0c0\" rx=\"4\"/>\n");
                 nextY = appendTextLine(body,
-                        "[image] " + (altText == null ? "" : altText) + " (" + url + ")",
+                        "[image] " + altText + " (" + url + ")",
                         x + 8,
                         nextY + 30,
                         12,
@@ -251,11 +242,7 @@ public final class AsciiDocToSvg
         }
 
         if (highlight) {
-            String highlightColor = switch (theme) {
-                case WORD -> "#fff2cc";
-                case GDOCS -> "#c2e7ff";
-                case LIBRE -> "#ffff00";
-            };
+            var highlightColor = theme.getHighlightColor();
             String highlightRect = String.format("<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" fill=\"%s\"/>\n",
                     x - 5,
                     y - 2,
@@ -277,9 +264,9 @@ public final class AsciiDocToSvg
                 title));
 
         // Top bar icons
-        AsciiDocIcon.appendIcon(svg, "save", 10, 7, 16, "white");
-        AsciiDocIcon.appendIcon(svg, "undo", 35, 7, 16, "white");
-        AsciiDocIcon.appendIcon(svg, "redo", 60, 7, 16, "white");
+        findIcon("save", 10, 7, 16, "white").ifPresent(svg::append);
+        findIcon("undo", 35, 7, 16, "white").ifPresent(svg::append);
+        findIcon("redo", 60, 7, 16, "white").ifPresent(svg::append);
 
         // Ribbon area
         svg.append(String.format("<rect x=\"0\" y=\"30\" width=\"100%%\" height=\"%d\" fill=\"#f3f2f1\"/>\n",
@@ -293,18 +280,18 @@ public final class AsciiDocToSvg
         svg.append("<text x=\"20\" y=\"55\" font-family=\"Segoe UI, Arial\" font-size=\"11\" fill=\"#333\">File  Home  "
                    + "Insert  Layout  References  Review  View</text>\n");
 
-        AsciiDocIcon.appendIcon(svg, "bold", 20, 70, 16, "#333");
-        AsciiDocIcon.appendIcon(svg, "italic", 45, 70, 16, "#333");
-        AsciiDocIcon.appendIcon(svg, "image", 70, 70, 16, "#333");
-        AsciiDocIcon.appendIcon(svg, "table", 95, 70, 16, "#333");
-        AsciiDocIcon.appendIcon(svg, "link", 120, 70, 16, "#333");
+        findIcon("bold", 20, 70, 16, "#333").ifPresent(svg::append);
+        findIcon("italic", 45, 70, 16, "#333").ifPresent(svg::append);
+        findIcon("image", 70, 70, 16, "#333").ifPresent(svg::append);
+        findIcon("table", 95, 70, 16, "#333").ifPresent(svg::append);
+        findIcon("link", 120, 70, 16, "#333").ifPresent(svg::append);
     }
 
     private void renderGoogleDocsBanner(StringBuilder svg, String title) {
         // Top bar
         svg.append("<rect x=\"0\" y=\"0\" width=\"100%\" height=\"60\" fill=\"white\"/>\n");
         svg.append("<circle cx=\"30\" cy=\"30\" r=\"15\" fill=\"#4285f4\"/>\n");
-        AsciiDocIcon.appendIcon(svg, "table", 22, 22, 16, "white");
+        findIcon("table", 22, 22, 16, "white").ifPresent(svg::append);
 
         svg.append(String.format("<text x=\"60\" y=\"25\" font-family=\"Product Sans, Arial\" font-size=\"18\" "
                                  + "fill=\"#3c4043\">%s</text>\n", title));
@@ -316,13 +303,13 @@ public final class AsciiDocToSvg
                 BANNER_HEIGHT - 70));
         svg.append("<line x1=\"0\" y1=\"100\" x2=\"100%\" y2=\"100\" stroke=\"#ccc\"/>\n");
 
-        AsciiDocIcon.appendIcon(svg, "undo", 20, 72, 16, "#5f6368");
-        AsciiDocIcon.appendIcon(svg, "redo", 45, 72, 16, "#5f6368");
-        AsciiDocIcon.appendIcon(svg, "print", 70, 72, 16, "#5f6368");
-        AsciiDocIcon.appendIcon(svg, "bold", 110, 72, 16, "#5f6368");
-        AsciiDocIcon.appendIcon(svg, "italic", 135, 72, 16, "#5f6368");
-        AsciiDocIcon.appendIcon(svg, "link", 160, 72, 16, "#5f6368");
-        AsciiDocIcon.appendIcon(svg, "chat-left-text", 185, 72, 16, "#5f6368");
+        findIcon("undo", 20, 72, 16, "#5f6368").ifPresent(svg::append);
+        findIcon("redo", 45, 72, 16, "#5f6368").ifPresent(svg::append);
+        findIcon("print", 70, 72, 16, "#5f6368").ifPresent(svg::append);
+        findIcon("bold", 110, 72, 16, "#5f6368").ifPresent(svg::append);
+        findIcon("italic", 135, 72, 16, "#5f6368").ifPresent(svg::append);
+        findIcon("link", 160, 72, 16, "#5f6368").ifPresent(svg::append);
+        findIcon("chat-left-text", 185, 72, 16, "#5f6368").ifPresent(svg::append);
     }
 
     private void renderLibreOfficeBanner(StringBuilder svg, String title) {
@@ -344,12 +331,12 @@ public final class AsciiDocToSvg
         svg.append("<line x1=\"0\" y1=\"55\" x2=\"100%\" y2=\"55\" stroke=\"#ccc\"/>\n");
         svg.append("<line x1=\"0\" y1=\"100\" x2=\"100%\" y2=\"100\" stroke=\"#ccc\"/>\n");
 
-        AsciiDocIcon.appendIcon(svg, "save", 10, 65, 20, "#333");
-        AsciiDocIcon.appendIcon(svg, "print", 40, 65, 20, "#333");
-        AsciiDocIcon.appendIcon(svg, "undo", 70, 65, 20, "#333");
-        AsciiDocIcon.appendIcon(svg, "redo", 100, 65, 20, "#333");
-        AsciiDocIcon.appendIcon(svg, "bold", 150, 65, 20, "#333");
-        AsciiDocIcon.appendIcon(svg, "italic", 180, 65, 20, "#333");
+        findIcon("save", 10, 65, 20, "#333").ifPresent(svg::append);
+        findIcon("print", 40, 65, 20, "#333").ifPresent(svg::append);
+        findIcon("undo", 70, 65, 20, "#333").ifPresent(svg::append);
+        findIcon("redo", 100, 65, 20, "#333").ifPresent(svg::append);
+        findIcon("bold", 150, 65, 20, "#333").ifPresent(svg::append);
+        findIcon("italic", 180, 65, 20, "#333").ifPresent(svg::append);
     }
 
     private void renderComments(
@@ -393,7 +380,7 @@ public final class AsciiDocToSvg
                                              + "font-weight=\"bold\" fill=\"#333\">%s</text>\n",
                             COMMENTS_LEFT + (theme == Theme.GDOCS ? 25 : 10),
                             commentY + 20,
-                            AsciiDocFont.getFontFamily(theme),
+                            theme.getFontFamily(),
                             escape(c.author)));
 
                     int lineY = commentY + 35;
@@ -402,7 +389,7 @@ public final class AsciiDocToSvg
                                                  + "fill=\"#666\">%s</text>\n",
                                 COMMENTS_LEFT + 10,
                                 lineY,
-                                AsciiDocFont.getFontFamily(theme),
+                                theme.getFontFamily(),
                                 escape(line)));
                         lineY += 15;
                     }
@@ -439,7 +426,7 @@ public final class AsciiDocToSvg
     }
 
     private int appendTextLine(StringBuilder body, String line, int x, int y, int fontSize, int weight, Theme theme) {
-        String fontFamily = AsciiDocFont.getFontFamily(theme);
+        String fontFamily = theme.getFontFamily();
         body.append("<text x=\"")
             .append(x)
             .append("\" y=\"")
@@ -476,15 +463,15 @@ public final class AsciiDocToSvg
     }
 
     private String renderInlines(List<Inline> inlines) {
-        StringBuilder text = new StringBuilder();
-        for (Inline inline : inlines) {
+        var text = new StringBuilder();
+        for (var inline : inlines) {
             switch (inline) {
                 case Text(String value) -> text.append(value);
                 case Bold(List<Inline> children) -> text.append(renderInlines(children));
                 case Italic(List<Inline> children) -> text.append(renderInlines(children));
-                case Link(String url, String label) -> text.append(label == null || label.isBlank() ? url : label);
+                case Link(String url, String label) -> text.append(label.isBlank() ? url : label);
                 case InlineImage(String url, Map<String, String> attributes) -> {
-                    String title = attributes.getOrDefault("title", "image");
+                    var title = attributes.getOrDefault("title", "image");
                     text.append('[')
                         .append(title)
                         .append(": ")
@@ -507,12 +494,6 @@ public final class AsciiDocToSvg
                     .replace("'", "&apos;")
                     .replaceAll("\\p{Cntrl}", "")
                     .stripTrailing();
-    }
-
-    public enum Theme {
-        WORD,
-        GDOCS,
-        LIBRE
     }
 
     private record CommentInfo(String id, String start, String author, String value) {}

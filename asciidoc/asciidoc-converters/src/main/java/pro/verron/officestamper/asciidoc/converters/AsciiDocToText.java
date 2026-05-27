@@ -32,7 +32,7 @@ public final class AsciiDocToText
 
     private static String renderInlines(List<Inline> inlines) {
         var sb = new StringBuilder();
-        for (Inline inline : inlines) {
+        for (var inline : inlines) {
             sb.append(switch (inline) {
                 case Text(String text) -> text;
                 case Bold(List<Inline> children) -> "*%s*".formatted(renderInlines(children));
@@ -55,15 +55,25 @@ public final class AsciiDocToText
     }
 
     private static String renderImageBlock(String url, String altText) {
-        return "image::" + url + "[" + altText + "]";
+        return "image::%s[%s]".formatted(url, altText);
     }
 
     private static String renderCodeBlock(String language, String content) {
-        return (language.isEmpty() ? "" : "[source," + language + "]\n") + "----\n" + content + "\n----";
+        return language.isEmpty() ? """
+                ----
+                %s
+                ----""".formatted(content) : """
+                [source,%s]
+                ----
+                %s
+                ----""".formatted(language, content);
     }
 
     private static String renderBlockquote(List<Inline> inlines) {
-        return "____\n" + renderInlines(inlines) + "\n____";
+        return """
+                ____
+                %s
+                ____""".formatted(renderInlines(inlines));
     }
 
     private static String renderList(List<ListItem> items1, String x) {
@@ -73,27 +83,24 @@ public final class AsciiDocToText
     }
 
     private static String renderHeading(int level, List<Inline> inlines) {
-        return "=".repeat(level) + " " + renderInlines(inlines);
+        return "%s %s".formatted("=".repeat(level), renderInlines(inlines));
     }
 
     private static String renderHeader(List<String> header) {
-        if (header.isEmpty()) return "";
-        return "[%s]\n".formatted(String.join(", ", header));
+        return header.isEmpty() ? "" : "[%s]\n".formatted(String.join(", ", header));
     }
 
     private String renderCellContent(Cell cell, boolean isAsciidoc, int level) {
         var blockList = cell.blocks();
         if (!isAsciidoc) {
             if (blockList.isEmpty()) return "";
-            Paragraph p = (Paragraph) blockList.getFirst();
+            var p = (Paragraph) blockList.getFirst();
             return renderInlines(p.inlines());
         }
-        else {
-            return blockList.stream()
-                            .map(block -> renderBlock(block, level))
-                            .collect(Collectors.joining())
-                            .trim();
-        }
+        else return blockList.stream()
+                             .map(block -> renderBlock(block, level))
+                             .collect(Collectors.joining())
+                             .trim();
     }
 
     private String renderBlock(Block block, int tableLevel) {

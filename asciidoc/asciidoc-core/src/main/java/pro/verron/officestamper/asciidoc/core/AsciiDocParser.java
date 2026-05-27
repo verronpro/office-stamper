@@ -2,10 +2,7 @@ package pro.verron.officestamper.asciidoc.core;
 
 import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 /// The [AsciiDocParser] class is a utility for parsing AsciiDoc-formatted text
@@ -70,7 +67,6 @@ public final class AsciiDocParser
         var inTable = false;
         var inBlockquote = false;
         var inCodeBlock = false;
-        var currentLanguage = "";
         var currentTableRows = new ArrayList<Row>();
         var currentBlockContent = new StringBuilder();
         var nextBlockHeader = new ArrayList<String>();
@@ -86,7 +82,8 @@ public final class AsciiDocParser
             var trimmed = line.trim();
 
             if (trimmed.startsWith("[") && trimmed.endsWith("]") && !inCodeBlock && !inBlockquote && !inTable) {
-                nextBlockHeader.add(trimmed.substring(1, trimmed.length() - 1));
+                nextBlockHeader.addAll(Arrays.asList(trimmed.substring(1, trimmed.length() - 1)
+                                                            .split(",")));
                 continue;
             }
 
@@ -140,22 +137,13 @@ public final class AsciiDocParser
                 continue;
             }
 
-            if (trimmed.startsWith("[source")) {
-                int commaIndex = trimmed.indexOf(',');
-                if (commaIndex != -1) {
-                    int bracketIndex = trimmed.indexOf(']');
-                    currentLanguage = trimmed.substring(commaIndex + 1, bracketIndex);
-                    currentLanguage = currentLanguage.trim();
-                }
-                continue;
-            }
-
             if (trimmed.equals("----")) {
                 if (inCodeBlock) {
                     var currentBlockContentString = currentBlockContent.toString();
-                    currentContainer.add(new CodeBlock(currentLanguage, currentBlockContentString.trim()));
+                    var language = (nextBlockHeader.size() > 1) ? nextBlockHeader.get(1) : "";
+                    currentContainer.add(new CodeBlock(language, currentBlockContentString.trim()));
                     currentBlockContent.setLength(0);
-                    currentLanguage = "";
+                    nextBlockHeader.clear();
                     inCodeBlock = false;
                 }
                 else {

@@ -1,5 +1,7 @@
-package pro.verron.officestamper.core;
+package pro.verron.officestamper;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.TraceabilityReporter;
 
 import java.util.ArrayList;
@@ -8,18 +10,12 @@ import java.util.List;
 /// A concrete implementation of TraceabilityReporter that collects all resolution events.
 ///
 /// @since 4.0
-public final class TraceabilityReport implements TraceabilityReporter {
+public final class TraceabilityReport
+        implements TraceabilityReporter {
     private final List<Resolution> resolutions = new ArrayList<>();
 
-    /// Represents a single placeholder resolution event.
-    ///
-    /// @param expression the SpEL expression.
-    /// @param value the resolved value.
-    /// @param contextStack the nesting context at the time of resolution.
-    public record Resolution(String expression, Object value, List<Object> contextStack) {}
-
     @Override
-    public void onResolution(String expression, Object value, List<Object> contextStack) {
+    public void onResolution(@NonNull String expression, @Nullable Object value, @NonNull List<Object> contextStack) {
         resolutions.add(new Resolution(expression, value, contextStack));
     }
 
@@ -29,4 +25,7 @@ public final class TraceabilityReport implements TraceabilityReporter {
     public List<Resolution> getResolutions() {
         return List.copyOf(resolutions);
     }
+
+    /// Represents a single placeholder resolution event.
+    public record Resolution(String expression, Object value, List<Object> contextStack) {}
 }

@@ -14,17 +14,18 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Traceability Report Tests")
-class TraceabilityTest {
+@DisplayName("Traceability Report Tests") class TraceabilityTest {
 
-    @TempDir
-    Path tempDir;
+    @TempDir Path tempDir;
 
     @Test
     @DisplayName("Should generate JSON traceability report")
-    void testTraceabilityReport() throws IOException {
+    void testTraceabilityReport()
+            throws IOException {
         Path dataFile = tempDir.resolve("data.json");
-        Files.writeString(dataFile, "{\"name\": \"Alice\", \"age\": 30}");
+        Files.writeString(dataFile,
+                "{\"reportUser\": \"Alice\", \"reportDate\": \"28/05/2026\", \"environment\": []," + " \"properties\":"
+                + " [], \"preferences\": []" + "}");
 
         Path reportFile = tempDir.resolve("traceability.json");
         Path outputFile = tempDir.resolve("output.docx");
@@ -32,27 +33,34 @@ class TraceabilityTest {
         Main main = new Main();
         picocli.CommandLine cli = new CommandLine(main);
 
-        int exitCode = cli.execute(
-                "--template", "diagnostic",
-                "--data", dataFile.toString(),
-                "--output", outputFile.toString(),
-                "--traceability-report", reportFile.toString(),
-                "--dry-run"
-        );
+        int exitCode = cli.execute("--template",
+                "diagnostic",
+                "--data",
+                dataFile.toString(),
+                "--output",
+                outputFile.toString(),
+                "--traceability-report",
+                reportFile.toString(),
+                "--dry-run");
 
         assertEquals(0, exitCode, "CLI should exit successfully");
         assertTrue(Files.exists(reportFile), "Traceability report should be created");
 
         ObjectMapper mapper = new ObjectMapper();
-        List<TraceabilityReport.Resolution> resolutions = mapper.readValue(reportFile.toFile(), new TypeReference<>() {});
+        List<TraceabilityReport.Resolution> resolutions = mapper.readValue(reportFile.toFile(),
+                new TypeReference<>() {});
 
         assertFalse(resolutions.isEmpty(), "Report should contain resolutions");
-        assertTrue(resolutions.stream().anyMatch(r -> r.expression().contains("name")), "Report should contain 'name' resolution");
+        assertTrue(resolutions.stream()
+                              .anyMatch(r -> r.expression()
+                                              .contains("reportUser")),
+                "Report should contain 'reportUser' resolution");
     }
 
     @Test
     @DisplayName("Should generate HTML viewer from JSON report")
-    void testReportView() throws IOException {
+    void testReportView()
+            throws IOException {
         Path reportFile = tempDir.resolve("traceability.json");
         Files.writeString(reportFile, """
                 [
@@ -69,11 +77,7 @@ class TraceabilityTest {
         Main main = new Main();
         picocli.CommandLine cli = new CommandLine(main);
 
-        int exitCode = cli.execute(
-                "report-view",
-                "--input", reportFile.toString(),
-                "--output", htmlFile.toString()
-        );
+        int exitCode = cli.execute("report-view", "--input", reportFile.toString(), "--output", htmlFile.toString());
 
         assertEquals(0, exitCode, "CLI should exit successfully");
         assertTrue(Files.exists(htmlFile), "HTML viewer should be created");

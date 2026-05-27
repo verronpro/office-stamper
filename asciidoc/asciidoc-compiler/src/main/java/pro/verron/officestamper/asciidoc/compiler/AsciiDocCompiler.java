@@ -181,16 +181,17 @@ public final class AsciiDocCompiler {
     /// @param dpi dots per inch
     /// @param background background color (null for transparent)
     public static void saveSvgAsImage(String svg, Path path, int dpi, Color background) {
+        final var mmPerInch = 25.4f;
+
         var transcoder = new PNGTranscoder();
-        if (background != null) {
-            transcoder.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, background);
-        }
-        float mmPerInch = 25.4f;
+        if (background != null) transcoder.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, background);
         transcoder.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, mmPerInch / dpi);
 
-        var input = new TranscoderInput(new StringReader(svg));
+        var input = new StringReader(svg);
+        var transcoderInput = new TranscoderInput(input);
         try (OutputStream output = Files.newOutputStream(path)) {
-            transcoder.transcode(input, new TranscoderOutput(output));
+            var transcoderOutput = new TranscoderOutput(output);
+            transcoder.transcode(transcoderInput, transcoderOutput);
         } catch (IOException e) {
             throw new RuntimeException("IO error while writing PNG image", e);
         } catch (TranscoderException e) {

@@ -6,15 +6,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine;
-import pro.verron.officestamper.core.TraceabilityReport;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Traceability Report Tests")
 class TraceabilityTest {
@@ -42,7 +40,7 @@ class TraceabilityTest {
                 "--dry-run"
         );
 
-        assertTrue(exitCode == 0, "CLI should exit successfully");
+        assertEquals(0, exitCode, "CLI should exit successfully");
         assertTrue(Files.exists(reportFile), "Traceability report should be created");
 
         ObjectMapper mapper = new ObjectMapper();
@@ -77,7 +75,7 @@ class TraceabilityTest {
                 "--output", htmlFile.toString()
         );
 
-        assertTrue(exitCode == 0, "CLI should exit successfully");
+        assertEquals(0, exitCode, "CLI should exit successfully");
         assertTrue(Files.exists(htmlFile), "HTML viewer should be created");
 
         String htmlContent = Files.readString(htmlFile);

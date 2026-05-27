@@ -4,8 +4,8 @@
 /// Properties, XML/HTML, JSON, XLSX) directly from the terminal. This module depends on the core engine module
 /// [pro.verron.officestamper] and bundles parsing utilities (Jackson, OpenCSV).
 module pro.verron.officestamper.cli {
-    requires pro.verron.officestamper; // engine
-    requires pro.verron.officestamper.excel; // excel context provider
+    requires pro.verron.officestamper;
+    requires pro.verron.officestamper.excel;
     requires pro.verron.officestamper.asciidoc.core;
     requires pro.verron.officestamper.asciidoc.compiler;
 
@@ -24,4 +24,5 @@ module pro.verron.officestamper.cli {
 
     // Picocli uses reflection to populate fields in the command class
     opens pro.verron.officestamper to info.picocli;
+    exports pro.verron.officestamper to com.fasterxml.jackson.databind;
 }

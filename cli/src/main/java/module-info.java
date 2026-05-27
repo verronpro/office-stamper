@@ -9,7 +9,7 @@ module pro.verron.officestamper.cli {
     requires pro.verron.officestamper.asciidoc.core;
     requires pro.verron.officestamper.asciidoc.compiler;
 
-    requires java.logging;
+    requires org.slf4j;
     requires java.xml;
     requires java.prefs;
 

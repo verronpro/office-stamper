@@ -7,5 +7,6 @@ module pro.verron.officestamper.asciidoc.compiler {
     requires org.apache.xmlgraphics.batik.codec;
     requires java.desktop;
     requires org.docx4j.core;
+
     exports pro.verron.officestamper.asciidoc.compiler;
 }

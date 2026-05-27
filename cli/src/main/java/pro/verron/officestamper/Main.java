@@ -5,6 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,7 +19,6 @@ import picocli.CommandLine.Option;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
-import pro.verron.officestamper.core.TraceabilityReport;
 import pro.verron.officestamper.excel.ExcelContext;
 import pro.verron.officestamper.excel.ExcelMergeStrategy;
 import pro.verron.officestamper.experimental.ExperimentalStampers;
@@ -33,8 +35,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.nio.file.Files.newOutputStream;
@@ -432,98 +432,189 @@ import static java.nio.file.Files.newOutputStream;
         throw new OfficeStamperException("Unsupported template type (expected .docx or .pptx): " + input);
     }
 
-    private void writeReport(String status, String errorMessage) {
-        if (reportPath == null || reportPath.isBlank()) return;
-        var report = new LinkedHashMap<String, Object>();
-        report.put("status", status);
-        report.put("template", templatePath);
-        report.put("data", dataPath == null ? "<none>" : dataPath);
-        report.put("output", outputPath);
-        report.put("dryRun", dryRun);
-        report.put("timestamp",
-                java.time.OffsetDateTime.now()
-                                        .toString());
-        if (errorMessage != null) report.put("error", errorMessage);
-        try {
-            var mapper = new ObjectMapper();
-            try (var os = createOutputStream(Path.of(reportPath))) {
-                mapper.writeValue(os, report);
-            }
-        } catch (Exception e) {
-            // Best-effort: do not fail the run because report writing failed
-            logger.log(Level.WARNING, "Failed to write report: " + e.getMessage(), e);
-        }
+    private String getLogFormat() {
+        return logFormat == null
+                ? "human"
+                : logFormat.trim()
+                           .toLowerCase();
     }
 
-    private void writeTraceabilityReport(TraceabilityReport report, Path path) {
+    private void runOnce() {
+        var traceabilityReport = new TraceabilityReport();
+        // Normalize log format
+        var lf = logFormat == null
+                ? "human"
+                : logFormat.trim()
+                           .toLowerCase();
+
+        // Basic CLI validation according to new flags
+        if (templatePath == null || templatePath.isBlank()) {
+            emit("ERROR", "Missing required --template path", null, lf);
+            throw new CommandLine.ParameterException(new CommandLine(this), "--template is required");
+        }
+        if ((dataPath == null || dataPath.isBlank()) && !"diagnostic".equals(templatePath)) {
+            emit("ERROR", "Missing required --data when not using diagnostic template", null, lf);
+            throw new CommandLine.ParameterException(new CommandLine(this),
+                    "--data is required when template != diagnostic");
+        }
+
+        emit("INFO",
+                "Start",
+                Map.of("template",
+                        templatePath,
+                        "data",
+                        dataPath == null ? "<none>" : dataPath,
+                        "output",
+                        outputPath,
+                        "dryRun",
+                        dryRun),
+                lf);
+
         try {
-            var mapper = new ObjectMapper();
-            try (var os = createOutputStream(path)) {
-                mapper.writerWithDefaultPrettyPrinter()
-                      .writeValue(os, report.getResolutions());
-            }
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Could not write traceability report", e);
-        }
-    }
-
-    @Command(name = "report-view",
-             description = "Generate an HTML viewer for a traceability report")
-    public static class ReportView
-            implements Runnable {
-        @Option(names = {"-i", "--input"},
-                required = true,
-                description = "JSON traceability report")
-        private Path input;
-        @Option(names = {"-o", "--output"},
-                defaultValue = "traceability.html",
-                description = "Output HTML file")
-        private Path output;
-
-        @Override
-        public void run() {
-            try {
-                var mapper = new ObjectMapper();
-                List<TraceabilityReport.Resolution> resolutions = mapper.readValue(input.toFile(),
-                        new TypeReference<>() {});
-                var html = generateHtml(resolutions);
-                Files.writeString(output, html);
-            } catch (IOException e) {
-                throw new OfficeStamperException(e);
-            }
-        }
-
-        private String generateHtml(List<TraceabilityReport.Resolution> resolutions) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html><head><title>Traceability Report</title><style>");
-            sb.append("table { border-collapse: collapse; width: 100%; font-family: sans-serif; }");
-            sb.append("th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }");
-            sb.append("th { background-color: #4CAF50; color: white; }");
-            sb.append("tr:nth-child(even) { background-color: #f9f9f9; }");
-            sb.append("tr:hover { background-color: #f1f1f1; }");
-            sb.append("ul { margin: 0; padding-left: 20px; }");
-            sb.append("</style></head><body>");
-            sb.append("<h1>Office Stamper Traceability Report</h1>");
-            sb.append("<table><tr><th>Expression</th><th>Resolved Value</th><th>Nesting Context</th></tr>");
-            for (var res : resolutions) {
-                sb.append("<tr>");
-                sb.append("<td><code>")
-                  .append(res.expression())
-                  .append("</code></td>");
-                sb.append("<td>")
-                  .append(String.valueOf(res.value()))
-                  .append("</td>");
-                sb.append("<td><ul>");
-                for (var ctx : res.contextStack()) {
-                    sb.append("<li>")
-                      .append(String.valueOf(ctx))
-                      .append("</li>");
+            var ext = templateKind(templatePath);
+            // Folder semantics: each top-level file is its own context and yields one output;
+            // each top-level subfolder merges its files (recursively) into a bigger context and yields one output.
+            if (dataPath != null && !dataPath.isBlank() && Files.isDirectory(Path.of(dataPath))) {
+                var items = buildItemsFromDataDirectory(Path.of(dataPath));
+                var results = new java.util.ArrayList<RunResult>(items.size());
+                int idx = 0;
+                for (var item : items) {
+                    idx++;
+                    emit("INFO", "Processing item", Map.of("index", idx, "name", item.name, "total", items.size()), lf);
+                    try (var templateStream = extractTemplateNew(templatePath)) {
+                        var context = wrapContext(item.context);
+                        var configuration = OfficeStamperConfigurations.standard();
+                        if (traceabilityReportPath != null) configuration.setTraceabilityReporter(traceabilityReport);
+                        if (dryRun) {
+                            configuration.setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
+                            switch (ext) {
+                                case WORD -> {
+                                    var stamper = OfficeStampers.docxStamper(configuration);
+                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
+                                }
+                                case POWERPOINT -> {
+                                    var stamper = ExperimentalStampers.pptxStamper();
+                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
+                                }
+                            }
+                            results.add(new RunResult(item.name, "ok", null, null));
+                        }
+                        else {
+                            var out = computeOutputPath(outputPath, item.name, ext);
+                            try (var os = createOutputStream(out)) {
+                                switch (ext) {
+                                    case WORD -> {
+                                        var stamper = OfficeStampers.docxStamper(configuration);
+                                        stamper.stamp(templateStream, context, os);
+                                    }
+                                    case POWERPOINT -> {
+                                        var stamper = ExperimentalStampers.pptxStamper();
+                                        stamper.stamp(templateStream, context, os);
+                                    }
+                                }
+                            }
+                            results.add(new RunResult(item.name, "ok", out.toString(), null));
+                        }
+                    } catch (Exception ex) {
+                        emit("ERROR", "Item failed", Map.of("name", item.name, "error", ex.getMessage()), lf);
+                        results.add(new RunResult(item.name, "error", null, ex.getMessage()));
+                        // Continue with next item; overall exit code should be non-zero if any failed
+                    }
                 }
-                sb.append("</ul></td>");
-                sb.append("</tr>");
+                var anyError = results.stream()
+                                      .anyMatch(r -> "error".equals(r.status));
+                if (dryRun) emit("INFO",
+                        "Validation completed (dry-run)",
+                        Map.of("items", results.size(), "errors", anyError),
+                        lf);
+                else emit("INFO", "Stamping completed", Map.of("items", results.size(), "errors", anyError), lf);
+                writeReport(results);
+                if (anyError) throw new OfficeStamperException("One or more items failed");
+                return;
             }
-            sb.append("</table></body></html>");
-            return sb.toString();
+
+            // Single context path
+            final var context = wrapContext(extractContextNew(dataPath));
+            try (var templateStream = extractTemplateNew(templatePath)) {
+                var configuration = OfficeStamperConfigurations.standard();
+                if (traceabilityReportPath != null) configuration.setTraceabilityReporter(traceabilityReport);
+                if (dryRun) {
+                    // Validate: fail on unresolved placeholders but do not write any file
+                    configuration.setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
+                    switch (ext) {
+                        case WORD -> {
+                            var stamper = OfficeStampers.docxStamper(configuration);
+                            stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
+                        }
+                        case POWERPOINT -> {
+                            var stamper = ExperimentalStampers.pptxStamper(); // no config variant exposed for PPTX yet
+                            stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
+                        }
+                    }
+                    emit("INFO", "Validation successful (dry-run)", null, lf);
+                    writeReport("ok", null);
+                    if (traceabilityReportPath != null)
+                        writeTraceabilityReport(traceabilityReport, Path.of(traceabilityReportPath));
+                    return;
+                }
+
+                // Real stamping (single file)
+                try (var outputStream = createOutputStream(Path.of(outputPath))) {
+                    switch (ext) {
+                        case WORD -> {
+                            var stamper = OfficeStampers.docxStamper(configuration);
+                            stamper.stamp(templateStream, context, outputStream);
+                        }
+                        case POWERPOINT -> {
+                            var stamper = ExperimentalStampers.pptxStamper(); // no config variant exposed for PPTX yet
+                            stamper.stamp(templateStream, context, outputStream);
+                        }
+                    }
+                }
+            }
+
+            emit("INFO", "Stamping completed", Map.of("output", outputPath), lf);
+            writeReport("ok", null);
+            if (traceabilityReportPath != null)
+                writeTraceabilityReport(traceabilityReport, Path.of(traceabilityReportPath));
+        } catch (Exception e) {
+            emit("ERROR",
+                    e.getMessage(),
+                    Map.of("exception",
+                            e.getClass()
+                             .getSimpleName()),
+                    lf);
+            writeReport("error", e.getMessage());
+            // Re-throw to ensure non-zero exit code from picocli
+            throw (e instanceof RuntimeException re) ? re : new OfficeStamperException(e);
+        }
+    }
+
+    // Minimal structured logging when --log-format=json
+    private void emit(String level, String message, Map<String, Object> fields, String lf) {
+        if (!"json".equals(lf)) {
+            // Human logs via java.util.logging
+            var lvl = switch (level) {
+                case "ERROR" -> Level.ERROR;
+                case "WARN" -> Level.WARN;
+                default -> Level.INFO;
+            };
+            logger.atLevel(lvl)
+                  .log(fields == null || fields.isEmpty() ? message : message + " | " + fields);
+            return;
+        }
+        try {
+            var map = new LinkedHashMap<String, Object>();
+            map.put("ts",
+                    java.time.OffsetDateTime.now()
+                                            .toString());
+            map.put("level", level.toLowerCase());
+            map.put("msg", message);
+            if (fields != null && !fields.isEmpty()) map.put("fields", fields);
+            var json = new ObjectMapper().writeValueAsString(map);
+            System.out.println(json);
+        } catch (Exception ignored) {
+            System.out.println("{\"level\":\"error\",\"msg\":\"failed to emit json log\"}");
         }
     }
 
@@ -555,7 +646,9 @@ import static java.nio.file.Files.newOutputStream;
                 mapper.writeValue(os, report);
             }
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Failed to write report: " + e.getMessage(), e);
+            logger.atWarn()
+                  .setCause(e)
+                  .log("Failed to write report: {}", e.getMessage());
         }
     }
 
@@ -599,9 +692,7 @@ import static java.nio.file.Files.newOutputStream;
         return wrapper;
     }
 
-    private void runWatch() {
-        var lf = getLogFormat();
-        emit("INFO", "Watch mode enabled", null, lf);
+    private void writeTraceabilityReport(TraceabilityReport report, Path path) {
         try {
             var mapper = new ObjectMapper();
             try (var os = createOutputStream(path)) {

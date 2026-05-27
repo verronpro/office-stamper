@@ -23,9 +23,8 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.asciidoc.converters.AsciiDocToText;
-import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
-import pro.verron.officestamper.asciidoc.core.Comment;
-import pro.verron.officestamper.asciidoc.core.CommentBuilder;
+import pro.verron.officestamper.asciidoc.core.*;
+import pro.verron.officestamper.asciidoc.core.Text;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -99,7 +98,7 @@ public final class DocxToAsciiDoc
         return set.stream();
     }
 
-    private static Optional<AsciiDocModel.InlineImage> extractGraphic(Graphic graphic) {
+    private static Optional<ImageInline> extractGraphic(Graphic graphic) {
         if (graphic.getGraphicData() == null) return Optional.empty();
         for (Object o : graphic.getGraphicData()
                                .getAny()) {
@@ -113,7 +112,7 @@ public final class DocxToAsciiDoc
         return Optional.empty();
     }
 
-    private static AsciiDocModel.InlineImage getInlineImage(Pic pic) {
+    private static ImageInline getInlineImage(Pic pic) {
         var blipFill = pic.getBlipFill();
         var blip = blipFill.getBlip();
         var ctShapeProperties = pic.getSpPr();
@@ -132,35 +131,50 @@ public final class DocxToAsciiDoc
                                                 .orElse(blip.getEmbed());
 
         var map = Map.of("cx", String.valueOf(cx), "cy", String.valueOf(cy));
-        return new AsciiDocModel.InlineImage(embed, map);
+        return new ImageInline(embed, map);
     }
 
     private static Object unwrap(Object o) {
         return (o instanceof JAXBElement<?> j) ? j.getValue() : o;
     }
 
-    private static Function<List<AsciiDocModel.Inline>, List<AsciiDocModel.Inline>> getWrapper(STVerticalAlignRun valign) {
+    private static Function<List<pro.verron.officestamper.asciidoc.core.Inline>,
+            List<pro.verron.officestamper.asciidoc.core.Inline>> getWrapper(
+            STVerticalAlignRun valign
+    ) {
         return switch (valign) {
             case BASELINE -> i -> i;
-            case SUPERSCRIPT -> i -> List.of(new AsciiDocModel.Sup(i));
-            case SUBSCRIPT -> i -> List.of(new AsciiDocModel.Sub(i));
+            case SUPERSCRIPT -> i -> List.of(new Sup(i));
+            case SUBSCRIPT -> i -> List.of(new Sub(i));
         };
     }
 
-    private static Function<List<AsciiDocModel.Inline>, List<AsciiDocModel.Inline>> boldwrapper(BooleanDefaultTrue w) {
-        return is -> List.of(new AsciiDocModel.Bold(is));
+    private static Function<List<pro.verron.officestamper.asciidoc.core.Inline>,
+            List<pro.verron.officestamper.asciidoc.core.Inline>> boldwrapper(
+            BooleanDefaultTrue w
+    ) {
+        return is -> List.of(new Bold(is));
     }
 
-    private static Function<List<AsciiDocModel.Inline>, List<AsciiDocModel.Inline>> italicwrapper(BooleanDefaultTrue booleanDefaultTrue) {
-        return is -> List.of(new AsciiDocModel.Italic(is));
+    private static Function<List<pro.verron.officestamper.asciidoc.core.Inline>,
+            List<pro.verron.officestamper.asciidoc.core.Inline>> italicwrapper(
+            BooleanDefaultTrue booleanDefaultTrue
+    ) {
+        return is -> List.of(new Italic(is));
     }
 
-    private static Function<List<AsciiDocModel.Inline>, List<AsciiDocModel.Inline>> styledwrapper(String s) {
-        return is -> List.of(new AsciiDocModel.Styled(s, is));
+    private static Function<List<pro.verron.officestamper.asciidoc.core.Inline>,
+            List<pro.verron.officestamper.asciidoc.core.Inline>> styledwrapper(
+            String s
+    ) {
+        return is -> List.of(new Styled(s, is));
     }
 
-    private List<AsciiDocModel.Inline> toInlines(ContentAccessor accessor, BreakRecorder breakRecorder) {
-        var inlines = new ArrayList<AsciiDocModel.Inline>();
+    private List<pro.verron.officestamper.asciidoc.core.Inline> toInlines(
+            ContentAccessor accessor,
+            BreakRecorder breakRecorder
+    ) {
+        var inlines = new ArrayList<pro.verron.officestamper.asciidoc.core.Inline>();
         for (Object o : accessor.getContent()) {
             Object val = unwrap(o);
             switch (val) {
@@ -181,9 +195,9 @@ public final class DocxToAsciiDoc
                                                  .map(s -> "tag=" + s)
                                                  .ifPresent(list::add);
                     list.add(toInlines(sdtRun.getSdtContent()).stream()
-                                                              .map(AsciiDocModel.Inline::text)
+                                                              .map(pro.verron.officestamper.asciidoc.core.Inline::text)
                                                               .collect(Collectors.joining()));
-                    inlines.add(new AsciiDocModel.InlineMacro("form", id, list));
+                    inlines.add(new MacroInline("form", id, list));
                 }
                 case CTSmartTagRun tag -> {
                     var list = new ArrayList<String>();
@@ -193,9 +207,9 @@ public final class DocxToAsciiDoc
                                                    .map(CTSmartTagPr::getAttr)
                                                    .flatMap(Collection::stream)
                                                    .forEach(a -> list.add("%s=%s".formatted(a.getName(), a.getVal())));
-                    inlines.add(new AsciiDocModel.InlineMacro("tag", "", list));
+                    inlines.add(new MacroInline("tag", "", list));
                     inlines.addAll(toInlines(tag));
-                    inlines.add(new AsciiDocModel.InlineMacro("tag", "", List.of("end")));
+                    inlines.add(new MacroInline("tag", "", List.of("end")));
                 }
                 case P.Hyperlink hyperlink -> inlines.addAll(toInlines(hyperlink));
                 default -> log.debug("Unexpected inline: {}", val);
@@ -204,26 +218,29 @@ public final class DocxToAsciiDoc
         return List.copyOf(inlines);
     }
 
-    private List<AsciiDocModel.Inline> getInlines(R r, BreakRecorder breakRecorder) {
+    private List<pro.verron.officestamper.asciidoc.core.Inline> getInlines(R r, BreakRecorder breakRecorder) {
         var runInlines = extractInlines(r, breakRecorder);
-        List<AsciiDocModel.Inline> styled = runInlines;
+        List<pro.verron.officestamper.asciidoc.core.Inline> styled = runInlines;
         if (!runInlines.isEmpty()) styled = significantPr(r.getRPr()).apply(runInlines);
         return styled;
     }
 
-    private List<AsciiDocModel.Inline> toInlines(ContentAccessor accessor) {
+    private List<pro.verron.officestamper.asciidoc.core.Inline> toInlines(ContentAccessor accessor) {
         return toInlines(accessor, new BreakRecorder());
     }
 
-    private List<AsciiDocModel.Inline> extractInlines(ContentAccessor r, BreakRecorder brecorder) {
-        var inlines = new ArrayList<AsciiDocModel.Inline>();
+    private List<pro.verron.officestamper.asciidoc.core.Inline> extractInlines(
+            ContentAccessor r,
+            BreakRecorder brecorder
+    ) {
+        var inlines = new ArrayList<pro.verron.officestamper.asciidoc.core.Inline>();
         var content = r.getContent();
         var iterator = content.iterator();
         var sb = new StringBuilder();
         while (iterator.hasNext()) {
             var rc = unwrap(iterator.next());
             switch (rc) {
-                case Text t -> sb.append(t.getValue());
+                case org.docx4j.wml.Text t -> sb.append(t.getValue());
                 case Br br when br.getType() == null -> sb.append(" +\n");
                 case Br br when br.getType() == STBrType.TEXT_WRAPPING -> sb.append(" +\n");
                 case Br br when br.getType() == STBrType.COLUMN -> brecorder.set();
@@ -234,7 +251,7 @@ public final class DocxToAsciiDoc
                 case CommentRangeEnd cre -> commentRecorder.close(cre.getId(), blocks.size(), inlines.size());
                 case Pict pict -> {
                     if (!sb.isEmpty()) {
-                        inlines.add(new AsciiDocModel.Text(sb.toString()));
+                        inlines.add(new Text(sb.toString()));
                         sb = new StringBuilder();
                     }
                     StringBuilder sb1 = new StringBuilder();
@@ -253,7 +270,7 @@ public final class DocxToAsciiDoc
                 }
                 case Drawing drawing -> {
                     if (!sb.isEmpty()) {
-                        inlines.add(new AsciiDocModel.Text(sb.toString()));
+                        inlines.add(new Text(sb.toString()));
                         sb = new StringBuilder();
                     }
                     for (Object dO : drawing.getAnchorOrInline()) {
@@ -269,7 +286,7 @@ public final class DocxToAsciiDoc
             }
         }
         if (!sb.isEmpty()) {
-            inlines.add(new AsciiDocModel.Text(sb.toString()));
+            inlines.add(new Text(sb.toString()));
         }
         return inlines;
     }
@@ -279,10 +296,14 @@ public final class DocxToAsciiDoc
         return of(blocks.blocks);
     }
 
-    private Function<List<AsciiDocModel.Inline>, List<AsciiDocModel.Inline>> significantPr(@Nullable RPr rPr) {
+    private Function<List<pro.verron.officestamper.asciidoc.core.Inline>,
+            List<pro.verron.officestamper.asciidoc.core.Inline>> significantPr(
+            @Nullable RPr rPr
+    ) {
         if (rPr == null) return Function.identity();
 
-        List<Function<List<AsciiDocModel.Inline>, List<AsciiDocModel.Inline>>> wrappers = new ArrayList<>();
+        List<Function<List<pro.verron.officestamper.asciidoc.core.Inline>,
+                List<pro.verron.officestamper.asciidoc.core.Inline>>> wrappers = new ArrayList<>();
         ofNullable(rPr.getVertAlign()).map(CTVerticalAlignRun::getVal)
                                       .map(DocxToAsciiDoc::getWrapper)
                                       .ifPresent(wrappers::add);
@@ -328,20 +349,20 @@ public final class DocxToAsciiDoc
 
                     ofNullable(p.getPPr()).map(PPr::getRPr)
                                           .flatMap(this::stringified)
-                                          .ifPresent(pr -> blocks.add(new AsciiDocModel.CommentLine(pr)));
+                                          .ifPresent(pr -> blocks.add(new CommentBlock(pr)));
 
                     var style = style(p).stream()
                                         .toList();
 
                     if (headerLevel.isPresent())
-                        blocks.add(new AsciiDocModel.Heading(style, headerLevel.get(), toInlines(p, breakRecorder)));
-                    else blocks.add(new AsciiDocModel.Paragraph(style, toInlines(p, breakRecorder)));
+                        blocks.add(new Heading(style, headerLevel.get(), toInlines(p, breakRecorder)));
+                    else blocks.add(new Paragraph(style, toInlines(p, breakRecorder)));
 
                     ofNullable(p.getPPr()).map(PPr::getSectPr)
                                           .flatMap(this::stringified)
-                                          .ifPresent(s -> blocks.add(new AsciiDocModel.CommentLine(s)));
+                                          .ifPresent(s -> blocks.add(new CommentBlock(s)));
 
-                    if (breakRecorder.isSet()) blocks.add(new AsciiDocModel.Break());
+                    if (breakRecorder.isSet()) blocks.add(new Break());
                 }
                 case Tbl tbl -> blocks.add(toTableBlock(tbl));
                 case SdtBlock sdtBlock -> blocks.add(toSdtBlock(sdtBlock));
@@ -350,7 +371,7 @@ public final class DocxToAsciiDoc
         }
     }
 
-    private AsciiDocModel.Block toSdtBlock(SdtBlock sdtBlock) {
+    private Block toSdtBlock(SdtBlock sdtBlock) {
         var form = "form";
         var id = ofNullable(sdtBlock.getSdtPr()).map(SdtPr::getId)
                                                 .map(Id::getVal)
@@ -365,7 +386,7 @@ public final class DocxToAsciiDoc
         var toAsciiDoc = new DocxToAsciiDoc(wordprocessingMLPackage);
         var docModel = toAsciiDoc.apply(() -> sdtBlock.getSdtContent()
                                                       .getContent());
-        return new AsciiDocModel.OpenBlock(header, docModel.getBlocks());
+        return new OpenBlock(header, docModel.getBlocks());
     }
 
     private Optional<String> stringified(ParaRPr paraRPr) {
@@ -484,26 +505,27 @@ public final class DocxToAsciiDoc
         return Optional.empty();
     }
 
-    private AsciiDocModel.Table toTableBlock(Tbl tbl) {
-        List<AsciiDocModel.Row> rows = new ArrayList<>();
+    private Table toTableBlock(Tbl tbl) {
+        List<Row> rows = new ArrayList<>();
         for (Object trO : tbl.getContent()) {
             Object trV = unwrap(trO);
             if (!(trV instanceof Tr tr)) continue;
-            List<AsciiDocModel.Cell> cells = new ArrayList<>();
+            List<Cell> cells = new ArrayList<>();
             for (Object tcO : tr.getContent()) {
                 Object tcV = unwrap(tcO);
                 if (!(tcV instanceof Tc tc)) continue;
                 var toAsciiDoc = new DocxToAsciiDoc(wordprocessingMLPackage);
-                List<AsciiDocModel.Block> cellBlocks = toAsciiDoc.apply(tc)
-                                                                 .getBlocks();
-                Optional<String> ccnfStyle = Optional.empty();
+                List<Block> cellBlocks = toAsciiDoc.apply(tc)
+                                                   .getBlocks();
+                String ccnfStyle = null;
                 if (tc.getTcPr() != null && tc.getTcPr()
                                               .getCnfStyle() != null) {
-                    ccnfStyle = ofNullable(tc.getTcPr()).map(TcPrInner::getCnfStyle)
-                                                        .map(s -> "style=" + Long.parseLong(s.getVal(), 2));
+                    ccnfStyle = "style=" + Long.parseLong(tc.getTcPr()
+                                                            .getCnfStyle()
+                                                            .getVal(), 2);
 
                 }
-                cells.add(new AsciiDocModel.Cell(cellBlocks, ccnfStyle));
+                cells.add(new Cell(cellBlocks, ccnfStyle));
             }
             String cnfStyle = null;
             if (tr.getTrPr() != null && tr.getTrPr()
@@ -519,9 +541,9 @@ public final class DocxToAsciiDoc
                              .orElse(null);
 
             }
-            rows.add(new AsciiDocModel.Row(cells, cnfStyle));
+            rows.add(new Row(cells, cnfStyle));
         }
-        return new AsciiDocModel.Table(rows);
+        return new Table(rows);
     }
 
     @Override
@@ -541,7 +563,7 @@ public final class DocxToAsciiDoc
             var body = contents.getBody();
             readBlocks(body);
             if (body.getSectPr() instanceof SectPr sectPr)
-                stringified(sectPr).ifPresent(s -> blocks.add(new AsciiDocModel.CommentLine(s)));
+                stringified(sectPr).ifPresent(s -> blocks.add(new CommentBlock(s)));
         }
 
         try {
@@ -563,33 +585,33 @@ public final class DocxToAsciiDoc
         getFooterParts(pkg).map(this::toFooterBlock)
                            .flatMap(Optional::stream)
                            .forEach(blocks::add);
-        var list = new ArrayList<AsciiDocModel.Block>();
+        var list = new ArrayList<Block>();
         list.addAll(commentRecorder.all());
         list.addAll(blocks.all());
         return of(list);
     }
 
-    private Optional<AsciiDocModel.Block> toFooterBlock(FooterPart footerPart) {
+    private Optional<Block> toFooterBlock(FooterPart footerPart) {
         var toAsciiDoc = new DocxToAsciiDoc(wordprocessingMLPackage);
         var extractedBlocks = toAsciiDoc.apply(footerPart)
                                         .getBlocks();
         return extractedBlocks.isEmpty()
                 ? Optional.empty()
-                : Optional.of(new AsciiDocModel.OpenBlock(List.of("footer"), extractedBlocks));
+                : Optional.of(new OpenBlock(List.of("footer"), extractedBlocks));
 
     }
 
-    private Optional<AsciiDocModel.Block> toHeaderBlock(HeaderPart headerPart) {
+    private Optional<Block> toHeaderBlock(HeaderPart headerPart) {
         var toAsciiDoc = new DocxToAsciiDoc(wordprocessingMLPackage);
         var extractedBlocks = toAsciiDoc.apply(headerPart)
                                         .getBlocks();
         return extractedBlocks.isEmpty()
                 ? Optional.empty()
-                : Optional.of(new AsciiDocModel.OpenBlock(List.of("header"), extractedBlocks));
+                : Optional.of(new OpenBlock(List.of("header"), extractedBlocks));
     }
 
-    private Optional<AsciiDocModel.Block> toNoteBlock(String role, List<CTFtnEdn> notes) {
-        var content = new ArrayList<AsciiDocModel.Block>();
+    private Optional<Block> toNoteBlock(String role, List<CTFtnEdn> notes) {
+        var content = new ArrayList<Block>();
         for (CTFtnEdn note : notes) {
             var noteType = note.getType();
             if (noteType != null && List.of(STFtnEdn.SEPARATOR, STFtnEdn.CONTINUATION_SEPARATOR)
@@ -597,10 +619,10 @@ public final class DocxToAsciiDoc
             var toAsciiDoc = new DocxToAsciiDoc(wordprocessingMLPackage);
             var extractedBlocks = toAsciiDoc.apply(note::getContent)
                                             .getBlocks();
-            content.add(new AsciiDocModel.Paragraph(List.of(new AsciiDocModel.Text("%s::".formatted(note.getId())))));
+            content.add(new Paragraph(List.of(new Text("%s::".formatted(note.getId())))));
             content.addAll(extractedBlocks);
         }
-        return content.isEmpty() ? Optional.empty() : Optional.of(new AsciiDocModel.OpenBlock(List.of(role), content));
+        return content.isEmpty() ? Optional.empty() : Optional.of(new OpenBlock(List.of(role), content));
     }
 
     private static class BreakRecorder {
@@ -680,14 +702,14 @@ public final class DocxToAsciiDoc
         /// MacroBlock objects from the associated comments.
         ///
         /// @return a collection of MacroBlock objects corresponding to the stored comment IDs.
-        public Collection<AsciiDocModel.MacroBlock> all() {
+        public Collection<MacroBlock> all() {
             return ids.stream()
                       .map(map::get)
                       .map(this::asBlock)
                       .toList();
         }
 
-        private AsciiDocModel.MacroBlock asBlock(Comment comment) {
+        private MacroBlock asBlock(Comment comment) {
             var id = comment.id();
             var idStr = String.valueOf(id);
             var blockStart = comment.blockStart();
@@ -699,7 +721,7 @@ public final class DocxToAsciiDoc
             var endProp = "end=\"%d,%d\"".formatted(blockEnd, lineEnd);
             var valueProp = "value=\"%s\"".formatted(commentMessage);
             var list = List.of(startProp, endProp, valueProp);
-            return new AsciiDocModel.MacroBlock("comment", idStr, list);
+            return new MacroBlock("comment", idStr, list);
         }
 
         private String extractComment(BigInteger id) {
@@ -726,19 +748,19 @@ public final class DocxToAsciiDoc
     }
 
     private static class BlockRecorder {
-        private final List<AsciiDocModel.Block> blocks = new ArrayList<>();
+        private final List<Block> blocks = new ArrayList<>();
         private int size = 0;
 
         public int size() {
             return size;
         }
 
-        public void add(AsciiDocModel.Block block) {
+        public void add(Block block) {
             blocks.add(block);
             size += block.size();
         }
 
-        public List<AsciiDocModel.Block> all() {
+        public List<Block> all() {
             return blocks;
         }
     }

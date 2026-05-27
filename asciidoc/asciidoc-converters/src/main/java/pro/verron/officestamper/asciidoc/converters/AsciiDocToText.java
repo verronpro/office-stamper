@@ -1,13 +1,11 @@
 package pro.verron.officestamper.asciidoc.converters;
 
-import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
+import pro.verron.officestamper.asciidoc.core.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static pro.verron.officestamper.asciidoc.core.AsciiDocModel.*;
 
 /// The AsciiDocToText class is a utility for converting an [AsciiDocModel]
 /// to a plain text representation. This class implements the [Function]
@@ -41,13 +39,13 @@ public final class AsciiDocToText
                 case Sub(List<Inline> children) -> "~%s~".formatted(renderInlines(children));
                 case Tab _ -> sb.append("\t");
                 case Link(String url, String text) -> "%s[%s]".formatted(url, text);
-                case InlineImage(String path, Map<String, String> map) -> "image:%s[%s]".formatted(path,
+                case ImageInline(String path, Map<String, String> map) -> "image:%s[%s]".formatted(path,
                         map.entrySet()
                            .stream()
                            .map(e -> e.getKey() + "=" + e.getValue())
                            .collect(Collectors.joining(", ")));
                 case Styled(String role, List<Inline> children) -> "[%s]#%s#".formatted(role, renderInlines(children));
-                case InlineMacro(String name, String id, List<String> list) ->
+                case MacroInline(String name, String id, List<String> list) ->
                         "%s:%s[%s]".formatted(name, id, String.join(", ", list));
             });
         }
@@ -110,14 +108,14 @@ public final class AsciiDocToText
             case UnorderedList(List<ListItem> items1) -> renderList(items1, "* ");
             case OrderedList(List<ListItem> items) -> renderList(items, ". ");
             case Table(List<Row> rows) -> renderTable(rows, tableLevel);
-            case Blockquote(List<Inline> inlines) -> renderBlockquote(inlines);
+            case QuoteBlock(List<Inline> inlines) -> renderBlockquote(inlines);
             case CodeBlock(String language, String content) -> renderCodeBlock(language, content);
             case ImageBlock(String url, String altText) -> renderImageBlock(url, altText);
             case OpenBlock openBlock -> render(openBlock);
             case MacroBlock(String name, String id, List<String> list) ->
                     "%s::%s[%s]".formatted(name, id, String.join(", ", list));
             case Break _ -> "<<<";
-            case CommentLine(String comment) -> skipComments ? null : ("// %s").formatted(comment);
+            case CommentBlock(String comment) -> skipComments ? null : ("// %s").formatted(comment);
         };
         return string == null ? "" : string + "\n\n";
     }

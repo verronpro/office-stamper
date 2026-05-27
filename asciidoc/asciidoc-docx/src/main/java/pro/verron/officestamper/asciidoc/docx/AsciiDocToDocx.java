@@ -10,14 +10,12 @@ import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.*;
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
+import pro.verron.officestamper.asciidoc.core.*;
+import pro.verron.officestamper.asciidoc.core.Text;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-
-import static pro.verron.officestamper.asciidoc.core.AsciiDocModel.*;
 
 /// Renders [AsciiDocModel] into a [WordprocessingMLPackage] using docx4j.
 public final class AsciiDocToDocx
@@ -101,11 +99,11 @@ public final class AsciiDocToDocx
                     content.add(createListItem(factory, item, (i++) + ". "));
                 }
             }
-            case Blockquote b -> content.add(createBlockquote(factory, b));
+            case QuoteBlock b -> content.add(createBlockquote(factory, b));
             case CodeBlock cb -> content.add(createCodeBlock(factory, cb));
             case ImageBlock ib -> content.add(createImageBlock(factory, ib));
             case Break _ -> throw new java.lang.UnsupportedOperationException("Breaks are not supported");
-            case CommentLine _ -> throw new UnsupportedOperationException("Comments are not supported");
+            case CommentBlock _ -> throw new UnsupportedOperationException("Comments are not supported");
             case OpenBlock ob -> {
                 for (Block subBlock : ob.content()) {
                     addBlock(factory, content, subBlock);
@@ -128,14 +126,14 @@ public final class AsciiDocToDocx
         return p;
     }
 
-    private static P createBlockquote(ObjectFactory factory, Blockquote blockquote) {
+    private static P createBlockquote(ObjectFactory factory, QuoteBlock quoteBlock) {
         P p = factory.createP();
         PPr ppr = factory.createPPr();
         PPrBase.Ind ind = factory.createPPrBaseInd();
         ind.setLeft(BigInteger.valueOf(720)); // 0.5 inch
         ppr.setInd(ind);
         p.setPPr(ppr);
-        addInlines(factory, p, blockquote.inlines(), null);
+        addInlines(factory, p, quoteBlock.inlines(), null);
         return p;
     }
 
@@ -181,7 +179,7 @@ public final class AsciiDocToDocx
 
     private static void emitInline(ObjectFactory factory, P p, Inline inline, @Nullable RPr base) {
         switch (inline) {
-            case AsciiDocModel.Text(String text) -> {
+            case Text(String text) -> {
                 RPr rpr = base != null ? deepCopy(factory, base) : factory.createRPr();
                 String[] lines = text.split("\n", -1);
                 for (int i = 0; i < lines.length; i++) {
@@ -252,7 +250,7 @@ public final class AsciiDocToDocx
              .add(r);
         }
 
-        if (inline instanceof InlineImage ii) {
+        if (inline instanceof ImageInline ii) {
             R r = factory.createR();
             org.docx4j.wml.Text t = factory.createText();
             t.setValue("[Image: " + ii.path() + "]");
@@ -287,73 +285,10 @@ public final class AsciiDocToDocx
         return c;
     }
 
-    /// Creates a new WordprocessingMLPackage and fills it with content from the model.
-    ///
-    /// @param model parsed AsciiDoc model
-    ///
-    /// @return package containing the rendered document
-    @Override
-    public WordprocessingMLPackage apply(AsciiDocModel model) {
-        headerCount = 1;
-        footerCount = 1;
-        try {
-            var pkg = WordprocessingMLPackage.createPackage();
-            var factory = Context.getWmlObjectFactory();
-            var mainContent = pkg.getMainDocumentPart()
-                                 .getContent();
-            mainContent.clear();
-
-            for (Block block : model.getBlocks()) {
-                if (block instanceof OpenBlock ob && isHeaderOrFooter(ob)) {
-                    processHeaderOrFooter(pkg, factory, ob);
-                }
-                else {
-                    addBlock(factory, mainContent, block);
-                }
-            }
-            return pkg;
-        } catch (Docx4JException e) {
-            throw new IllegalStateException("Unable to create WordprocessingMLPackage", e);
-        }
-    }
-
     private static boolean isHeaderOrFooter(OpenBlock ob) {
         return ob.header()
                  .stream()
                  .anyMatch(h -> h.startsWith("header") || h.startsWith("footer"));
-    }
-
-    private void processHeaderOrFooter(
-            WordprocessingMLPackage pkg,
-            ObjectFactory factory,
-            OpenBlock ob
-    ) {
-        String role = ob.header()
-                        .get(0);
-        try {
-            if (role.startsWith("header")) {
-                HeaderPart hp = new HeaderPart(new PartName("/word/header" + (headerCount++) + ".xml"));
-                hp.setJaxbElement(factory.createHdr());
-                for (Block subBlock : ob.content()) {
-                    addBlock(factory, hp.getContent(), subBlock);
-                }
-                Relationship rel = pkg.getMainDocumentPart()
-                                      .addTargetPart(hp);
-                addReference(pkg, factory, rel.getId(), role, true);
-            }
-            else if (role.startsWith("footer")) {
-                FooterPart fp = new FooterPart(new PartName("/word/footer" + (footerCount++) + ".xml"));
-                fp.setJaxbElement(factory.createFtr());
-                for (Block subBlock : ob.content()) {
-                    addBlock(factory, fp.getContent(), subBlock);
-                }
-                Relationship rel = pkg.getMainDocumentPart()
-                                      .addTargetPart(fp);
-                addReference(pkg, factory, rel.getId(), role, false);
-            }
-        } catch (Docx4JException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static void addReference(
@@ -415,6 +350,69 @@ public final class AsciiDocToDocx
             }
             dsp.getContents()
                .setEvenAndOddHeaders(new BooleanDefaultTrue());
+        } catch (Docx4JException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /// Creates a new WordprocessingMLPackage and fills it with content from the model.
+    ///
+    /// @param model parsed AsciiDoc model
+    ///
+    /// @return package containing the rendered document
+    @Override
+    public WordprocessingMLPackage apply(AsciiDocModel model) {
+        headerCount = 1;
+        footerCount = 1;
+        try {
+            var pkg = WordprocessingMLPackage.createPackage();
+            var factory = Context.getWmlObjectFactory();
+            var mainContent = pkg.getMainDocumentPart()
+                                 .getContent();
+            mainContent.clear();
+
+            for (Block block : model.getBlocks()) {
+                if (block instanceof OpenBlock ob && isHeaderOrFooter(ob)) {
+                    processHeaderOrFooter(pkg, factory, ob);
+                }
+                else {
+                    addBlock(factory, mainContent, block);
+                }
+            }
+            return pkg;
+        } catch (Docx4JException e) {
+            throw new IllegalStateException("Unable to create WordprocessingMLPackage", e);
+        }
+    }
+
+    private void processHeaderOrFooter(
+            WordprocessingMLPackage pkg,
+            ObjectFactory factory,
+            OpenBlock ob
+    ) {
+        String role = ob.header()
+                        .get(0);
+        try {
+            if (role.startsWith("header")) {
+                HeaderPart hp = new HeaderPart(new PartName("/word/header" + (headerCount++) + ".xml"));
+                hp.setJaxbElement(factory.createHdr());
+                for (Block subBlock : ob.content()) {
+                    addBlock(factory, hp.getContent(), subBlock);
+                }
+                Relationship rel = pkg.getMainDocumentPart()
+                                      .addTargetPart(hp);
+                addReference(pkg, factory, rel.getId(), role, true);
+            }
+            else if (role.startsWith("footer")) {
+                FooterPart fp = new FooterPart(new PartName("/word/footer" + (footerCount++) + ".xml"));
+                fp.setJaxbElement(factory.createFtr());
+                for (Block subBlock : ob.content()) {
+                    addBlock(factory, fp.getContent(), subBlock);
+                }
+                Relationship rel = pkg.getMainDocumentPart()
+                                      .addTargetPart(fp);
+                addReference(pkg, factory, rel.getId(), role, false);
+            }
         } catch (Docx4JException e) {
             throw new RuntimeException(e);
         }

@@ -1,13 +1,12 @@
 package pro.verron.officestamper.asciidoc.converters;
 
-import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
+import pro.verron.officestamper.asciidoc.core.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.asciidoc.core.AsciiDocModel.*;
 
 /// The AsciiDocToHtml class is responsible for rendering an AsciiDoc representation
 /// into its corresponding HTML output. It implements the [Function] interface,
@@ -71,7 +70,7 @@ public final class AsciiDocToHtml
                 sb.append("</table>\n");
                 return sb.toString();
             }
-            case Blockquote(List<Inline> inlines) -> {
+            case QuoteBlock(List<Inline> inlines) -> {
                 return "<blockquote>" + renderInlines(inlines) + "</blockquote>\n";
             }
             case CodeBlock(String language, String content) -> {
@@ -98,7 +97,7 @@ public final class AsciiDocToHtml
                                                         .append("</i>");
                 case Tab _ -> sb.append("&nbsp;&nbsp;&nbsp;&nbsp;");
                 case Link(String url, String str) -> sb.append(String.format("<a href=\"%s\">%s</a>", url, str));
-                case InlineImage(String url, Map<String, String> map) ->
+                case ImageInline(String url, Map<String, String> map) ->
                         sb.append(String.format("<img src=\"%s\" alt=\"%s\">", url, map.get("title")));
                 default -> { /* DO NOTHING */ }
             }

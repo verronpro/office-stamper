@@ -1,6 +1,6 @@
 package pro.verron.officestamper.asciidoc.converters;
 
-import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
+import pro.verron.officestamper.asciidoc.core.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static pro.verron.officestamper.asciidoc.converters.AsciiDocIcon.findIcon;
-import static pro.verron.officestamper.asciidoc.core.AsciiDocModel.*;
 
 /// Renderer converting an [AsciiDocModel] into an SVG document simulating various editor interfaces.
 public final class AsciiDocToSvg
@@ -179,7 +178,7 @@ public final class AsciiDocToSvg
                 }
                 nextY += 6;
             }
-            case Blockquote(List<Inline> inlines) -> {
+            case QuoteBlock(List<Inline> inlines) -> {
                 nextY += 8;
                 int startY = nextY;
                 nextY = appendWrappedText(body,
@@ -470,7 +469,7 @@ public final class AsciiDocToSvg
                 case Bold(List<Inline> children) -> text.append(renderInlines(children));
                 case Italic(List<Inline> children) -> text.append(renderInlines(children));
                 case Link(String url, String label) -> text.append(label.isBlank() ? url : label);
-                case InlineImage(String url, Map<String, String> attributes) -> {
+                case ImageInline(String url, Map<String, String> attributes) -> {
                     var title = attributes.getOrDefault("title", "image");
                     text.append('[')
                         .append(title)

@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static pro.verron.officestamper.asciidoc.core.AsciiDocModel.*;
 
 class AsciiDocParserTest {
 
@@ -205,7 +204,7 @@ class AsciiDocParserTest {
         AsciiDocModel result = AsciiDocParser.parse(asciidoc);
         var blocks = result.getBlocks();
         assertEquals(1, blocks.size());
-        var quote = assertInstanceOf(Blockquote.class, blocks.getFirst());
+        var quote = assertInstanceOf(QuoteBlock.class, blocks.getFirst());
         assertEquals("This is a quote.",
                 quote.inlines()
                      .getFirst()

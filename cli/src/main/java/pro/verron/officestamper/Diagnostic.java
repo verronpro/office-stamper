@@ -1,13 +1,14 @@
 package pro.verron.officestamper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -16,7 +17,7 @@ import static java.util.stream.Collectors.toMap;
 /// Diagnostic class for collecting system information.
 public final class Diagnostic {
 
-    private static final Logger logger = Utils.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(Diagnostic.class);
     private final LocalDate date;
     private final String user;
     private final Map<String, String> userPreferences;
@@ -72,7 +73,9 @@ public final class Diagnostic {
         try {
             return Arrays.asList(preferenceRoot.keys());
         } catch (BackingStoreException e) {
-            logger.log(Level.WARNING, "Failed to list the preference keys", e);
+            logger.atWarn()
+                  .setCause(e)
+                  .log("Failed to list the preference keys");
             return List.of("failed-to-list-preference-keys");
         }
     }

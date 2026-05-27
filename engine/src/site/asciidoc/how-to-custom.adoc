@@ -274,7 +274,7 @@ The library already provides an image resolver (see `Resolvers.image(true)`), bu
 
 Pattern:
 
-- Define a type `InlineImage` holding content bytes and metadata.
+- Define a type `ImageInline` holding content bytes and metadata.
 - Create an `ObjectResolver` or `StringResolver<InlineImage>` that returns the library's `Image` type (if you reuse the built‑in resolver pipeline) or register your own earlier in the chain.
 
 Guidance:

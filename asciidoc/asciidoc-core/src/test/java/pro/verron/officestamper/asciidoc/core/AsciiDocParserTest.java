@@ -7,7 +7,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AsciiDocParserTest {
+
+/// Test suite for the `AsciiDocParser` class, which ensures the correct
+/// parsing of AsciiDoc input into an `AsciiDocModel`.
+/// This test class includes parameterized and unit tests to validate that the
+/// parser correctly handles various types of AsciiDoc constructs such as:
+///
+///   - Empty input or whitespace
+///   - Paragraphs
+public class AsciiDocParserTest {
 
     @EmptySource
     @ValueSource(strings = {"   "})

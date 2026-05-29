@@ -8,7 +8,14 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AsciiDocToSvgTest {
+/// This class contains unit tests for rendering AsciiDoc content to SVG and PNG formats,
+/// while applying various themes and verifying the output.
+///
+/// The tests ensure that different styling, themes, and content attributes from AsciiDoc
+/// are correctly rendered into SVG or PNG using the \`AsciiDocCompiler\` utility. Each test
+/// verifies the presence of expected elements in the rendered output and validates specific
+/// styling or content attributes.
+public class AsciiDocToSvgTest {
 
     @Test
     void shouldRenderModelWithCommentToSvg() {

@@ -9,9 +9,7 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 /// strings.
 ///
 /// @param <T> the type of the object to resolve
-///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.7
 public abstract class StringResolver<T>
         implements ObjectResolver {
@@ -30,7 +28,6 @@ public abstract class StringResolver<T>
     /// @param part the WordprocessingMLPackage document
     /// @param expression the expression string
     /// @param object the object to be resolved
-    ///
     /// @return the newly created run with the resolved string as content
     @Override
     public final Insert resolve(DocxPart part, String expression, @Nullable Object object) {
@@ -41,7 +38,6 @@ public abstract class StringResolver<T>
     /// Determines if the given object can be resolved by the StringResolver.
     ///
     /// @param object the object to be resolved
-    ///
     /// @return true if the object can be resolved, false otherwise
     @Override
     public final boolean canResolve(@Nullable Object object) {
@@ -51,7 +47,6 @@ public abstract class StringResolver<T>
     /// Resolves an object to a string.
     ///
     /// @param object the object to be resolved
-    ///
     /// @return the string representation of the object
     protected abstract String resolve(T object);
 }

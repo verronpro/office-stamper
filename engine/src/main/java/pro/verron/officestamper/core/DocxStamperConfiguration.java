@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
-/// @version ${version}
 /// @since 1.0.3
 public class DocxStamperConfiguration
         implements OfficeStamperConfiguration {
@@ -121,7 +120,6 @@ public class DocxStamperConfiguration
     /// expressions in comments and text.
     ///
     /// @param evaluationContextFactory the factory to use.
-    ///
     /// @return the configuration object for chaining.
     @Override
     public DocxStamperConfiguration setEvaluationContextFactory(EvaluationContextFactory evaluationContextFactory) {
@@ -171,7 +169,6 @@ public class DocxStamperConfiguration
     ///  If a fallback resolver is desired, it should be placed last in the list.
     ///
     /// @param resolvers The list of [ObjectResolver] to be set.
-    ///
     /// @return the configuration object for chaining.
     @Override
     public DocxStamperConfiguration setResolvers(List<ObjectResolver> resolvers) {
@@ -185,7 +182,6 @@ public class DocxStamperConfiguration
     ///  Resolvers are used to resolve objects during the stamping process.
     ///
     /// @param resolver The resolver to be added.
-    ///
     /// @return The modified [DocxStamperConfiguration] object, with the resolver added to the beginning of the resolver
     ///         list.
     @Override
@@ -205,7 +201,6 @@ public class DocxStamperConfiguration
     /// Configures the exception resolver for the [DocxStamperConfiguration].
     ///
     /// @param exceptionResolver the [ExceptionResolver] to handle exceptions during processing
-    ///
     /// @return the current instance of [DocxStamperConfiguration]
     @Override
     public DocxStamperConfiguration setExceptionResolver(ExceptionResolver exceptionResolver) {
@@ -245,7 +240,6 @@ public class DocxStamperConfiguration
     /// @param name the name of the custom function
     /// @param class0 the class type of the custom function
     /// @param <T> the type of the input parameter
-    ///
     /// @return an instance of [NeedsFunctionImpl] configured with the custom function
     @Override
     public <T> NeedsFunctionImpl<T> addCustomFunction(String name, Class<T> class0) {
@@ -259,7 +253,6 @@ public class DocxStamperConfiguration
     /// @param class1 the class type of the second input parameter of the custom function.
     /// @param <T> the type of the first input parameter
     /// @param <U> the type of the second input parameter
-    ///
     /// @return an instance of [NeedsBiFunctionImpl] for further configuration or usage of the custom function.
     @Override
     public <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1) {
@@ -276,7 +269,6 @@ public class DocxStamperConfiguration
     /// @param <T> the type of the first argument
     /// @param <U> the type of the second argument
     /// @param <V> the type of the third argument
-    ///
     /// @return an instance of [NeedsTriFunctionImpl] indicating the custom function implementation and usage context.
     @Override
     public <T, U, V> NeedsTriFunctionImpl<T, U, V> addCustomFunction(
@@ -317,7 +309,6 @@ public class DocxStamperConfiguration
     /// pass it here.
     ///
     /// @param parserConfiguration the parser to use.
-    ///
     /// @return the configuration object for chaining.
     @Override
     public DocxStamperConfiguration setParserConfiguration(SpelParserConfiguration parserConfiguration) {
@@ -364,7 +355,6 @@ public class DocxStamperConfiguration
     /// and need permissive behavior.
     ///
     /// @param mode the SVG security mode to set
-    ///
     /// @return the current instance of [DocxStamperConfiguration]
     @Override
     public DocxStamperConfiguration setSvgSecurityMode(SecurityMode mode) {

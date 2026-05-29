@@ -26,7 +26,6 @@ public class PowerpointCollector<T>
     /// @param <T>      the type of instances to collect
     /// @param template the PowerPoint presentation template
     /// @param aClass   the type of instances to collect
-    ///
     /// @return a list of instances of the specified class
     public static <T> List<T> collect(
             Object template,

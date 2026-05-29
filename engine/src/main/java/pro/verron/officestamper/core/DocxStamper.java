@@ -18,7 +18,6 @@ import static org.docx4j.openpackaging.parts.relationships.Namespaces.HEADER;
 ///
 /// @author Tom Hombergs
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.0.0
 public class DocxStamper
         implements OfficeStamper<WordprocessingMLPackage> {
@@ -74,7 +73,6 @@ public class DocxStamper
     ///
     /// @param document the .docx template to stamp
     /// @param contextRoot the context object to use for stamping
-    ///
     /// @return the stamped document
     @Override
     public WordprocessingMLPackage stamp(WordprocessingMLPackage document, Object contextRoot) {

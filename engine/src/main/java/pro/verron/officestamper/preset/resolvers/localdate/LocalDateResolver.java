@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 /// Resolves [LocalDate] objects by formatting them with a [DateTimeFormatter].
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.4
 public final class LocalDateResolver
         extends StringResolver<LocalDate> {

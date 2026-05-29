@@ -70,7 +70,6 @@ public class Invokers
     /// Creates an [Invoker] for a custom function.
     ///
     /// @param cf the custom function.
-    ///
     /// @return the invoker.
     public static Invoker ofCustomFunction(CustomFunction cf) {
         var cfName = cf.name();
@@ -141,7 +140,6 @@ public class Invokers
         /// Additionally, the [Any] class serves as a wildcard, making any type compatible.
         ///
         /// @param searchedTypes the list of classes to validate against the source types.
-        ///
         /// @return true if all the searched classes are compatible with the source types; false otherwise.
         @SuppressWarnings("rawtypes")
         public boolean validate(List<Class> searchedTypes) {
@@ -173,7 +171,6 @@ public class Invokers
         /// @param context the evaluation context in which the method is executed.
         /// @param target the target object on which the method is invoked, if applicable.
         /// @param arguments the arguments to be passed to the method during execution.
-        ///
         /// @return the result of the method execution encapsulated in a TypedValue.
         @Override
         public TypedValue execute(EvaluationContext context, Object target, @Nullable Object... arguments) {

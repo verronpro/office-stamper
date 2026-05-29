@@ -36,7 +36,6 @@ public final class AsciiDocCompiler {
     /// Compiles the AsciiDoc source text directly to a WordprocessingMLPackage.
     ///
     /// @param asciidoc source text
-    ///
     /// @return package with rendered content
     public static WordprocessingMLPackage toDocx(String asciidoc) {
         return toDocx(toModel(asciidoc));
@@ -45,7 +44,6 @@ public final class AsciiDocCompiler {
     /// Compiles the parsed model to a WordprocessingMLPackage.
     ///
     /// @param model parsed model
-    ///
     /// @return package with rendered content
     public static WordprocessingMLPackage toDocx(AsciiDocModel model) {
         return MODEL_TO_DOCX.apply(model);
@@ -54,7 +52,6 @@ public final class AsciiDocCompiler {
     /// Parses AsciiDoc source text into an [AsciiDocModel].
     ///
     /// @param asciidoc source text
-    ///
     /// @return parsed model
     public static AsciiDocModel toModel(String asciidoc) {
         return ASCIIDOC_TO_MODEL.apply(asciidoc);
@@ -63,7 +60,6 @@ public final class AsciiDocCompiler {
     /// Compiles the parsed model to an SVG document.
     ///
     /// @param model parsed model
-    ///
     /// @return SVG representation
     public static String toSvg(AsciiDocModel model) {
         return MODEL_TO_SVG.apply(model);
@@ -72,7 +68,6 @@ public final class AsciiDocCompiler {
     /// Compiles the AsciiDoc source text directly to HTML.
     ///
     /// @param asciidoc source text
-    ///
     /// @return HTML representation
     public static String toHtml(String asciidoc) {
         var model = ASCIIDOC_TO_MODEL.apply(asciidoc);
@@ -82,7 +77,6 @@ public final class AsciiDocCompiler {
     /// Compiles the parsed model to HTML.
     ///
     /// @param model parsed model
-    ///
     /// @return HTML representation
     public static String toHtml(AsciiDocModel model) {
         return MODEL_TO_HTML.apply(model);
@@ -92,7 +86,6 @@ public final class AsciiDocCompiler {
     /// legacy Stringifier output to preserve expectations.
     ///
     /// @param pkg a Word document package
-    ///
     /// @return textual representation
     public static String toAsciidoc(WordprocessingMLPackage pkg) {
         return toAsciidoc(pkg, false);
@@ -111,7 +104,6 @@ public final class AsciiDocCompiler {
     /// Parses a Word document into an [AsciiDocModel].
     ///
     /// @param pkg a Word document package
-    ///
     /// @return parsed model
     public static AsciiDocModel toModel(WordprocessingMLPackage pkg) {
         var compiler = new DocxToAsciiDoc(pkg);
@@ -138,7 +130,6 @@ public final class AsciiDocCompiler {
     /// Reads AsciiDoc source from an input stream and compiles it to SVG.
     ///
     /// @param input source stream
-    ///
     /// @return SVG representation
     public static String toSvg(InputStream input) {
         try {
@@ -151,7 +142,6 @@ public final class AsciiDocCompiler {
     /// Compiles the AsciiDoc source text directly to an SVG document.
     ///
     /// @param asciidoc source text
-    ///
     /// @return SVG representation
     public static String toSvg(String asciidoc) {
         var model = ASCIIDOC_TO_MODEL.apply(asciidoc);

@@ -358,7 +358,6 @@ public final class AsciiDocToDocx
     /// Creates a new WordprocessingMLPackage and fills it with content from the model.
     ///
     /// @param model parsed AsciiDoc model
-    ///
     /// @return package containing the rendered document
     @Override
     public WordprocessingMLPackage apply(AsciiDocModel model) {

@@ -27,7 +27,6 @@ public class ExcelCollector<T>
     /// @param <T>    the type of objects to collect
     /// @param object the Excel file or object to collect from
     /// @param type   the class representing the type of objects to collect
-    ///
     /// @return a List containing the collected objects
     public static <T> List<T> collect(
             Object object,

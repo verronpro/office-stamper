@@ -8,7 +8,6 @@ import org.springframework.expression.TypedValue;
 /// Simple property accessor for testing.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.6
 public class SimpleGetter implements PropertyAccessor {
 

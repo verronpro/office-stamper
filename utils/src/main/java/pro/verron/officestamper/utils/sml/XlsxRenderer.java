@@ -18,7 +18,6 @@ public class XlsxRenderer {
     /// Excel file.
     ///
     /// @param spreadsheet the Excel file represented as a [SpreadsheetMLPackage]
-    ///
     /// @return a string representation of the cell content within the Excel spreadsheet
     public static String xlsxToString(SpreadsheetMLPackage spreadsheet) {
         var formatter = new DataFormatter();

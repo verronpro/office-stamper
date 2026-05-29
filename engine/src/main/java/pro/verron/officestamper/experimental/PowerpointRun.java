@@ -24,7 +24,6 @@ public record PowerpointRun(
     ///
     /// @param globalStartIndex the start index of the global range.
     /// @param globalEndIndex   the end index of the global range.
-    ///
     /// @return `true` if the range touches the start or end index of the run, `false` otherwise.
     public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
         return ((startIndex >= globalStartIndex) && (startIndex <= globalEndIndex))

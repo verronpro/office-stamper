@@ -205,7 +205,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         /// Converts the given string to uppercase.
         ///
         /// @param string the string to be converted to uppercase
-        ///
         /// @return the uppercase representation of the given string
         String toUppercase(String string);
     }

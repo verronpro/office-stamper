@@ -18,7 +18,6 @@ public interface DocxHook
     ///
     /// @param contentAccessor the content accessor to search for hooks.
     /// @param part the document part.
-    ///
     /// @return an iterator over the found hooks.
     static ResetableIterator<DocxHook> ofHooks(ContentAccessor contentAccessor, DocxPart part) {
         return new DocxIterator(contentAccessor).filter(DocxHook::isPotentialHook)
@@ -28,7 +27,6 @@ public interface DocxHook
     /// Checks if the given object is a potential hook.
     ///
     /// @param o the object to check.
-    ///
     /// @return `true` if it is a potential hook.
     static boolean isPotentialHook(Object o) {
         return o instanceof CTSmartTagRun tag && isTagElement(tag, "officestamper");
@@ -38,7 +36,6 @@ public interface DocxHook
     ///
     /// @param part the document part.
     /// @param o the object to convert.
-    ///
     /// @return the hook.
     static DocxHook asHook(DocxPart part, Object o) {
         return switch (o) {
@@ -53,7 +50,6 @@ public interface DocxHook
     /// @param tag the tag to check.
     /// @param type the expected type value.
     /// @param typeKey the attribute name for the type.
-    ///
     /// @return `true` if the tag matches the type.
     static boolean isType(CTSmartTagRun tag, String type, String typeKey) {
         return tag.getSmartTagPr()
@@ -66,7 +62,6 @@ public interface DocxHook
     ///
     /// @param part the document part.
     /// @param tag the tag.
-    ///
     /// @return the comment hook.
     static DocxHook newCommentHook(DocxPart part, CTSmartTagRun tag) {
         var tagContent = tag.getContent();

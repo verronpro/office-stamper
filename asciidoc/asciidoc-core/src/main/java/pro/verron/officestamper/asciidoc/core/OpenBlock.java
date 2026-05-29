@@ -12,7 +12,6 @@ import java.util.List;
 ///
 /// @param header  a list of strings representing metadata or informational content about the OpenBlock.
 /// @param content a list of [Block] elements comprising the actual blocks grouped by this OpenBlock.
-///
 /// @see Block
 public record OpenBlock(List<String> header, List<Block> content)
         implements Block {

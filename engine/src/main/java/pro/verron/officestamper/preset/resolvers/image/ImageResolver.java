@@ -18,7 +18,6 @@ import java.util.function.Supplier;
 /// inline into the surrounding paragraph of text.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.7
 public class ImageResolver
         implements ObjectResolver {
@@ -44,9 +43,7 @@ public class ImageResolver
     /// Resolves an image and adds it to a [WordprocessingMLPackage] document.
     ///
     /// @param image The image to be resolved and added
-    ///
     /// @return The run containing the added image
-    ///
     /// @throws OfficeStamperException If an error occurs while adding the image to the document
     private Insert resolve(DocxPart part, Image image) {
         try {

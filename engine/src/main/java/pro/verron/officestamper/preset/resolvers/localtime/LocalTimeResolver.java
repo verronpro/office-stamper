@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 /// constructor.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.4
 public final class LocalTimeResolver
         extends StringResolver<LocalTime> {

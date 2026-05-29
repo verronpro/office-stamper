@@ -22,7 +22,6 @@ final class AsciiDocMetrics {
     /// @param text text to wrap
     /// @param font font used for measurement
     /// @param maxWidth maximum width in pixels
-    ///
     /// @return list of wrapped lines
     static List<String> wrapText(String text, Font font, int maxWidth) {
         if (text == null || text.isEmpty()) return List.of("");

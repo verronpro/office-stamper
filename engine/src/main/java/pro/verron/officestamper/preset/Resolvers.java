@@ -20,7 +20,6 @@ import java.util.Date;
 /// This class provides static methods to create different types of [ObjectResolver].
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.7
 public class Resolvers {
 
@@ -33,7 +32,6 @@ public class Resolvers {
     /// Will call the [Object#toString()] method on every type of objects.
     ///
     /// @param linebreakPlaceholder The placeholder to use for linebreaks.
-    ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver fallback(String linebreakPlaceholder) {
         return new ToStringResolver(linebreakPlaceholder);
@@ -50,7 +48,6 @@ public class Resolvers {
     /// value.
     ///
     /// @param value The default value for null objects.
-    ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver nullToDefault(String value) {
         return new Null2DefaultResolver(value);
@@ -66,7 +63,6 @@ public class Resolvers {
     /// Returns an instance of [ObjectResolver] that resolves `null` values by not replacing their expression.
     ///
     /// @param placeholderTemplate The placeholder to use for null objects.
-    ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver nullToPlaceholder(String placeholderTemplate) {
         return new Null2PlaceholderResolver(placeholderTemplate);
@@ -100,7 +96,6 @@ public class Resolvers {
     /// [DateTimeFormatter] pattern.
     ///
     /// @param formatter the [DateTimeFormatter] pattern to use
-    ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver isoTime(DateTimeFormatter formatter) {
         return new LocalTimeResolver(formatter);
@@ -110,7 +105,6 @@ public class Resolvers {
     /// [DateTimeFormatter] pattern.
     ///
     /// @param formatter the [DateTimeFormatter] pattern to use
-    ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver isoDate(DateTimeFormatter formatter) {
         return new LocalDateResolver(formatter);
@@ -120,7 +114,6 @@ public class Resolvers {
     /// given [DateTimeFormatter] pattern.
     ///
     /// @param formatter the [DateTimeFormatter] pattern to use
-    ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver isoDateTime(DateTimeFormatter formatter) {
         return new LocalDateTimeResolver(formatter);
@@ -138,7 +131,6 @@ public class Resolvers {
     /// [DateTimeFormatter] pattern.
     ///
     /// @param formatter the [DateTimeFormatter] pattern to use
-    ///
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver legacyDate(DateTimeFormatter formatter) {
         return new DateResolver(formatter);

@@ -17,7 +17,6 @@ final class AsciiDocFont {
     /// @param theme target editor theme
     /// @param fontSize font size
     /// @param weight font weight (e.g. 400, 700)
-    ///
     /// @return AWT Font
     static Font getAwtFont(Theme theme, int fontSize, int weight) {
         var key = String.format("%s-%d-%d", theme, fontSize, weight);

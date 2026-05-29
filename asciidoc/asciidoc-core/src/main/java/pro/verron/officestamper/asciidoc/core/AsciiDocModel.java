@@ -19,7 +19,6 @@ public final class AsciiDocModel {
     /// Creates a new [AsciiDocModel] from the provided blocks.
     ///
     /// @param blocks ordered content blocks
-    ///
     /// @return immutable AsciiDocModel
     public static AsciiDocModel of(List<Block> blocks) {
         return of(blocks, Map.of());
@@ -29,7 +28,6 @@ public final class AsciiDocModel {
     ///
     /// @param blocks ordered content blocks
     /// @param attributes document attributes
-    ///
     /// @return immutable AsciiDocModel
     public static AsciiDocModel of(List<Block> blocks, Map<String, String> attributes) {
         Objects.requireNonNull(blocks, "blocks");

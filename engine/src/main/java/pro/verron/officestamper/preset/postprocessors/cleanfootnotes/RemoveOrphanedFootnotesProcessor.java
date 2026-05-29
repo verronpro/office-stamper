@@ -21,7 +21,6 @@ import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
 /// in the document content. It only processes normal footnotes, ignoring special footnote types like endnotes.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 public class RemoveOrphanedFootnotesProcessor
         implements PostProcessor {
     @Override

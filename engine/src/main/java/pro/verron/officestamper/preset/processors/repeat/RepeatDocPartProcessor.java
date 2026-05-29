@@ -11,7 +11,6 @@ import pro.verron.officestamper.preset.CommentProcessorFactory;
 ///
 /// @author Joseph Verron
 /// @author Youssouf Naciri
-/// @version ${version}
 /// @since 1.3.0
 public class RepeatDocPartProcessor
         extends RepeatProcessor

@@ -9,7 +9,6 @@ import static java.util.Collections.singletonList;
 /// Represents a table with several columns, a header line, and several lines of content
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.2
 public class StampTable
         extends AbstractSequentialList<List<String>> {

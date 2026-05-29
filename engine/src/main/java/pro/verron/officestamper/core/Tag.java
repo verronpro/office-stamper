@@ -23,10 +23,8 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
 
     /// Creates a new Tag instance using the provided DocxPart and CTSmartTagRun.
     ///
-    /// @param docxPart the DocxPart instance representing the part of the document associated with the new
-    ///         Tag.
+    /// @param docxPart the DocxPart instance representing the part of the document associated with the new Tag.
     /// @param tag the CTSmartTagRun representing the smart tag element in the document.
-    ///
     /// @return a new Tag instance initialized with the given DocxPart and CTSmartTagRun.
     public static Tag of(DocxPart docxPart, CTSmartTagRun tag) {
         return new Tag(docxPart, tag);

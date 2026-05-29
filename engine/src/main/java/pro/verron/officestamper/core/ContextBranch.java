@@ -34,7 +34,6 @@ public class ContextBranch
     /// Adds a new branch with the given object.
     ///
     /// @param object the object to add to the branch.
-    ///
     /// @return the key of the added branch.
     public String addBranch(Object object) {
         var newBranch = new ArrayList<>(branch);

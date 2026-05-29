@@ -13,7 +13,6 @@ import static java.util.Collections.emptyList;
 ///
 /// @author Joseph Verron
 /// @author DallanMC
-/// @version ${version}
 /// @since 1.4.7
 public class DocumentUtil {
 
@@ -27,9 +26,7 @@ public class DocumentUtil {
     ///
     /// @param o1 the first object
     /// @param o2 the second object
-    ///
     /// @return the smallest common parent of the two objects
-    ///
     /// @throws OfficeStamperException if there is an error finding the common parent
     public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
         if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
@@ -42,7 +39,6 @@ public class DocumentUtil {
     ///
     /// @param searchTarget the element to search for
     /// @param searchTree the content tree to search in
-    ///
     /// @return true if the element is found, false otherwise
     public static boolean depthElementSearch(Object searchTarget, Object searchTree) {
         var element = XmlUtils.unwrap(searchTree);

@@ -10,7 +10,6 @@ import pro.verron.officestamper.preset.CommentProcessorFactory;
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
-/// @version ${version}
 /// @since 1.0.0
 public class RepeatRowProcessor
         extends CommentProcessor

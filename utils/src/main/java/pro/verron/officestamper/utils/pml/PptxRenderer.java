@@ -23,7 +23,6 @@ public class PptxRenderer {
     /// presentation and formatting them as strings.
     ///
     /// @param presentation the PowerPoint presentation represented as a [PresentationMLPackage].
-    ///
     /// @return a string representation of the text content within the PowerPoint presentation.
     public static String pptxToString(PresentationMLPackage presentation) {
         return new PptxIterator(presentation).filter(CTTextParagraph.class::isInstance)

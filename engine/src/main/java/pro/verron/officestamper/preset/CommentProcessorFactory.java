@@ -6,7 +6,6 @@ import pro.verron.officestamper.api.OfficeStamperException;
 /// Factory class to create the correct comment processor for a given comment.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.4
 public class CommentProcessorFactory {
 
@@ -18,7 +17,6 @@ public class CommentProcessorFactory {
     /// document.
     ///
     /// @author Joseph Verron
-    /// @version ${version}
     /// @since 1.6.2
     public interface ITableResolver {
         /// Resolves the given table by manipulating the given table in the template.
@@ -31,7 +29,6 @@ public class CommentProcessorFactory {
     ///
     /// @author Joseph Verron
     /// @author Tom Hombergs
-    /// @version ${version}
     /// @since 1.0.8
     public interface IReplaceWithProcessor {
         /// Replaces content with the specified expression.Works only in a single paragraph.
@@ -45,7 +42,6 @@ public class CommentProcessorFactory {
     ///
     /// @author Joseph Verron
     /// @author Romain Lamarche
-    /// @version ${version}
     /// @since 1.0.0
     public interface IParagraphRepeatProcessor {
         /// Mark a paragraph to be copied once for each element in the passed-in iterable. Within each copy, the
@@ -70,7 +66,6 @@ public class CommentProcessorFactory {
     ///
     /// @author Joseph Verron
     /// @author Artem Medvedev
-    /// @version ${version}
     /// @since 1.0.0
     public interface IRepeatDocPartProcessor {
         /// Mark a document part to be copied once for each element in the passed-in iterable. Within each copy, the
@@ -85,7 +80,6 @@ public class CommentProcessorFactory {
     ///
     /// @author Joseph Verron
     /// @author Tom Hombergs
-    /// @version ${version}
     /// @since 1.0.0
     public interface IRepeatRowProcessor {
         /// Mark a table row to be copied once for each element in the passed-in iterable. Within each copy, the
@@ -99,7 +93,6 @@ public class CommentProcessorFactory {
     ///
     /// @author Joseph Verron
     /// @author Tom Hombergs
-    /// @version ${version}
     /// @since 1.0.0
     public interface IDisplayIfProcessor {
 

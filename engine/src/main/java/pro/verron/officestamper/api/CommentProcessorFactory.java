@@ -10,7 +10,6 @@ package pro.verron.officestamper.api;
     /// Creates a new [CommentProcessor] instance.
     ///
     /// @param processorContext the context in which the processor will operate
-    ///
     /// @return a configured [CommentProcessor] instance
     CommentProcessor create(ProcessorContext processorContext);
 }

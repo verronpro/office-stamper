@@ -22,7 +22,6 @@ public sealed interface ContextFactory
     /// Creates a units context.
     ///
     /// @param images images
-    ///
     /// @return units context
     Object units(Image... images);
 
@@ -54,7 +53,6 @@ public sealed interface ContextFactory
     /// Creates a roles context.
     ///
     /// @param input roles
-    ///
     /// @return roles context
     Object roles(String... input);
 
@@ -71,14 +69,12 @@ public sealed interface ContextFactory
     /// Creates an image context.
     ///
     /// @param image image
-    ///
     /// @return image context
     Object image(Image image);
 
     /// Creates a date context.
     ///
     /// @param date date
-    ///
     /// @return date context
     Object date(Temporal date);
 
@@ -91,14 +87,12 @@ public sealed interface ContextFactory
     ///
     /// @param headers headers
     /// @param records records
-    ///
     /// @return character table context
     Object characterTable(List<String> headers, List<List<String>> records);
 
     /// Creates a names context.
     ///
     /// @param names names
-    ///
     /// @return names context
     Object names(String... names);
 
@@ -107,14 +101,12 @@ public sealed interface ContextFactory
     /// @param clazz class
     /// @param names names
     /// @param <T> iterable type
-    ///
     /// @return names context
     <T extends Iterable<?>> Object names(Class<T> clazz, String... names);
 
     /// Creates a name context.
     ///
     /// @param name name
-    ///
     /// @return name context
     Object name(String name);
 
@@ -127,7 +119,6 @@ public sealed interface ContextFactory
     ///
     /// @param firstName first name
     /// @param secondName second name
-    ///
     /// @return section name context
     Object sectionName(String firstName, String secondName);
 
@@ -135,14 +126,12 @@ public sealed interface ContextFactory
     ///
     /// @param name name
     /// @param image image
-    ///
     /// @return imaged name context
     Object imagedName(String name, Image image);
 
     /// Creates a sentence context.
     ///
     /// @param sentence sentence
-    ///
     /// @return sentence context
     Object sentence(String sentence);
 

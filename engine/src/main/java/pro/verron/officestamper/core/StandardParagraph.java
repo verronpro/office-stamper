@@ -40,7 +40,6 @@ public class StandardParagraph
     ///
     /// @param part the source DocxPart.
     /// @param parent the parent object.
-    ///
     /// @return a new StandardParagraph instance.
     public static StandardParagraph from(DocxPart part, Object parent) {
         return switch (parent) {
@@ -56,7 +55,6 @@ public class StandardParagraph
     ///
     /// @param source the source DocxPart containing the paragraph.
     /// @param paragraph the P object representing the structure and content of the paragraph.
-    ///
     /// @return a new instance of StandardParagraph constructed based on the provided source and paragraph.
     public static StandardParagraph from(DocxPart source, P paragraph) {
         return new StandardParagraph(source, paragraph, (ArrayListWml<Object>) paragraph.getContent());
@@ -66,7 +64,6 @@ public class StandardParagraph
     ///
     /// @param source the source DocxPart containing the paragraph content.
     /// @param paragraph the CTSdtContentRun object representing the content of the paragraph.
-    ///
     /// @return a new instance of StandardParagraph constructed based on the provided DocxPart and paragraph.
     public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
         var parent = (SdtRun) paragraph.getParent();
@@ -79,7 +76,6 @@ public class StandardParagraph
     ///
     /// @param toRemove the list of paragraph elements to be removed.
     /// @param toAdd the list of paragraph elements to be added.
-    ///
     /// @throws OfficeStamperException if the current paragraph object is not found in its siblings.
     @Override
     public void replace(List<P> toRemove, List<P> toAdd) {
@@ -172,7 +168,6 @@ public class StandardParagraph
     ///
     /// @param aClass the class type of the parent to search for
     /// @param <T> the generic type of the parent
-    ///
     /// @return an Optional containing the parent of the specified type if found, or an empty Optional if no parent of
     ///         the given type exists
     @Override

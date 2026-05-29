@@ -23,7 +23,6 @@ public class ResourceUtils {
     /// Retrieves an image from the specified resource path.
     ///
     /// @param path the path of the resource
-    ///
     /// @return an image for the specified resource
     public static Image getImage(Path path) {
         return getImage(path, null);
@@ -33,7 +32,6 @@ public class ResourceUtils {
     ///
     /// @param path the path of the resource
     /// @param size the size of the image
-    ///
     /// @return an image for the specified resource
     public static Image getImage(Path path, @Nullable Integer size) {
         return new Image(getResource(path), size);
@@ -42,7 +40,6 @@ public class ResourceUtils {
     /// Retrieves an InputStream for the specified resource path.
     ///
     /// @param path the path of the resource
-    ///
     /// @return an InputStream for the specified resource
     public static InputStream getResource(Path path) {
         try {
@@ -57,7 +54,6 @@ public class ResourceUtils {
     /// Retrieves a WordprocessingMLPackage from the specified resource path.
     ///
     /// @param path the path of the resource
-    ///
     /// @return a WordprocessingMLPackage for the specified resource
     public static WordprocessingMLPackage getWordResource(String path) {
         return getWordResource(Path.of(path));
@@ -66,7 +62,6 @@ public class ResourceUtils {
     /// Retrieves a WordprocessingMLPackage from the specified resource path.
     ///
     /// @param path the path of the resource
-    ///
     /// @return a WordprocessingMLPackage for the specified resource
     public static WordprocessingMLPackage getWordResource(Path path) {
         var templateStream = getResource(path);

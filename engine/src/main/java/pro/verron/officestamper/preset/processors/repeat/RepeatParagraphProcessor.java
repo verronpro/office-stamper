@@ -8,7 +8,6 @@ import pro.verron.officestamper.preset.CommentProcessorFactory;
 ///
 /// @author Joseph Verron
 /// @author Youssouf Naciri
-/// @version ${version}
 /// @since 1.2.2
 public class RepeatParagraphProcessor
         extends RepeatProcessor

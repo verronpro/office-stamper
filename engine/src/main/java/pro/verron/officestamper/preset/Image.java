@@ -14,7 +14,6 @@ import static java.util.Optional.ofNullable;
 ///
 /// @author Joseph Verron
 /// @author Romster
-/// @version ${version}
 /// @since 1.0.0
 public final class Image {
     private final InputStream source;
@@ -26,7 +25,6 @@ public final class Image {
     /// Constructor for Image.
     ///
     /// @param source - content of the image as InputStream
-    ///
     /// @throws IOException if any.
     public Image(InputStream source)
             throws IOException {

@@ -33,7 +33,6 @@ import static org.docx4j.XmlUtils.unwrap;
 /// providing a flat iteration interface over all contained objects.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 3.0
 public class XlsxIterator
         implements ResetableIterator<Object> {
@@ -48,7 +47,6 @@ public class XlsxIterator
     /// Constructs a new XlsxIterator for iterating through the elements of a SpreadsheetML package.
     ///
     /// @param spreadsheet the SpreadsheetMLPackage to iterate through
-    ///
     /// @throws UtilsException if there's an error accessing the workbook contents
     public XlsxIterator(SpreadsheetMLPackage spreadsheet) {
         this.spreadsheet = spreadsheet;

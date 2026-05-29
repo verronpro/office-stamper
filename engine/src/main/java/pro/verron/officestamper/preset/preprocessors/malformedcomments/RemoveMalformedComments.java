@@ -33,7 +33,6 @@ import static java.util.stream.Collectors.toSet;
 /// malformed comment references, range starts, and range ends.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 public class RemoveMalformedComments
         implements PreProcessor {
     private static final Logger log = LoggerFactory.getLogger(RemoveMalformedComments.class);

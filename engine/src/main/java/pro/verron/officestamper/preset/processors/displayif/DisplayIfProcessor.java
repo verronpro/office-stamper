@@ -16,7 +16,6 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
-/// @version ${version}
 /// @since 1.0.0
 public class DisplayIfProcessor
         extends CommentProcessor

@@ -2,12 +2,10 @@ package pro.verron.officestamper.imageio.wmf.utils;
 
 import pro.verron.officestamper.preset.Image;
 
-/// ContextFactory class.
+/// Factory for creating object-based contexts.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.5
-/// Factory for creating object-based contexts.
 public final class ObjectContextFactory
         implements ContextFactory {
 

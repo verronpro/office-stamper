@@ -18,14 +18,12 @@ public sealed interface ContextFactory
     /// Creates an image context.
     ///
     /// @param image image
-    ///
     /// @return image context
     Object image(Image image);
 
     /// Creates a name context.
     ///
     /// @param name name
-    ///
     /// @return name context
     Object name(String name);
 }

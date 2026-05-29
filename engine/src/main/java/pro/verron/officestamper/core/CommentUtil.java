@@ -24,7 +24,6 @@ import static java.util.stream.Collectors.toMap;
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
-/// @version ${version}
 /// @since 1.0.0
 public class CommentUtil {
     private static final PartName WORD_COMMENTS_PART_NAME;
@@ -65,7 +64,6 @@ public class CommentUtil {
     /// Retrieves the CommentsPart from the given Parts object.
     ///
     /// @param parts the Parts object containing the various parts of the document.
-    ///
     /// @return an Optional containing the CommentsPart if found, or an empty Optional if not found.
     public static Optional<CommentsPart> getCommentsPart(Parts parts) {
         return Optional.ofNullable((CommentsPart) parts.get(WORD_COMMENTS_PART_NAME));
@@ -74,9 +72,7 @@ public class CommentUtil {
     /// Extracts the contents of a given [CommentsPart].
     ///
     /// @param commentsPart the [CommentsPart] from which content will be extracted
-    ///
     /// @return the [Comments] instance containing the content of the provided comments part
-    ///
     /// @throws OfficeStamperException if an error occurs while retrieving the content
     public static Comments extractContent(CommentsPart commentsPart) {
         try {
@@ -125,7 +121,6 @@ public class CommentUtil {
     /// @param crs the comment range start.
     /// @param document the document.
     /// @param contentAccessor the content accessor.
-    ///
     /// @return the comment.
     public static Comment comment(
             DocxPart docxPart,

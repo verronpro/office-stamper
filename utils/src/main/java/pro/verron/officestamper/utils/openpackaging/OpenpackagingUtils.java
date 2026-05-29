@@ -31,9 +31,7 @@ public class OpenpackagingUtils {
     /// Loads a Word document from the provided input stream.
     ///
     /// @param is the input stream containing the Word document data
-    ///
     /// @return a WordprocessingMLPackage representing the loaded document
-    ///
     /// @throws UtilsException if there is an error loading the document
     public static WordprocessingMLPackage loadWord(InputStream is) {
         try {
@@ -47,7 +45,6 @@ public class OpenpackagingUtils {
     ///
     /// @param wordprocessingMLPackage the Word document to export
     /// @param os the output stream to write the document to
-    ///
     /// @throws UtilsException if there is an error exporting the document
     public static void exportWord(WordprocessingMLPackage wordprocessingMLPackage, OutputStream os) {
         try {
@@ -60,9 +57,7 @@ public class OpenpackagingUtils {
     /// Loads a PowerPoint document from the provided input stream.
     ///
     /// @param is the input stream containing the PowerPoint document data
-    ///
     /// @return a PresentationMLPackage representing the loaded document
-    ///
     /// @throws UtilsException if there is an error loading the document
     public static PresentationMLPackage loadPowerPoint(InputStream is) {
         try {
@@ -76,7 +71,6 @@ public class OpenpackagingUtils {
     ///
     /// @param presentationMLPackage the PowerPoint document to export
     /// @param os the output stream to write the document to
-    ///
     /// @throws UtilsException if there is an error exporting the document
     public static void exportPowerPoint(PresentationMLPackage presentationMLPackage, OutputStream os) {
         try {
@@ -152,9 +146,7 @@ public class OpenpackagingUtils {
     /// @param contentTypeManager the content type manager used to create the SVG part
     /// @param document the XML document to associate with the new SVG part
     /// @param partName the name to assign to the new SVG part
-    ///
     /// @return the created SVG part
-    ///
     /// @throws UtilsException if an error occurs during part creation or initialization
     public static XmlPart createSvgPart(ContentTypeManager contentTypeManager, Document document, String partName) {
         XmlPart part;

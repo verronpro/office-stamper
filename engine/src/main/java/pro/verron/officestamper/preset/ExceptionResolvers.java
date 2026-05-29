@@ -45,7 +45,6 @@ public class ExceptionResolvers {
     /// and the stack trace if tracing is enabled.
     ///
     /// @param value The default value to be returned if an exception occurs.
-    ///
     /// @return An instance of [ExceptionResolver] that returns a default value.
     public static ExceptionResolver defaulting(String value) {
         return new DefaultingResolver(value, logger.isTraceEnabled());

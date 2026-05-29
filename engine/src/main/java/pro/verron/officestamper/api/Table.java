@@ -14,7 +14,6 @@ public interface Table {
     /// Returns the index of the given row within the table.
     ///
     /// @param row the row to find the index of
-    ///
     /// @return the index of the row, or -1 if not found
     int indexOf(Row row);
 

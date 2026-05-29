@@ -11,7 +11,6 @@ import java.util.Date;
 /// This [ObjectResolver] creates a formatted date [String] for expressions that return a [Date] object.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.7
 public final class DateResolver
         extends StringResolver<Date> {

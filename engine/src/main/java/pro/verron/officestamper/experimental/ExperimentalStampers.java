@@ -22,7 +22,6 @@ public class ExperimentalStampers {
     /// the result to an OutputStream.
     ///
     /// @return a new OfficeStamper instance for Excel templates
-    ///
     /// @since 3.0
     public static OfficeStamper<SpreadsheetMLPackage> xlsxPackageStamper() {
         return new ExcelStamper();
@@ -33,7 +32,6 @@ public class ExperimentalStampers {
     /// and writing the result to an OutputStream.
     ///
     /// @return a new StreamStamper instance for PowerPoint presentations
-    ///
     /// @since 1.6.8
     public static StreamStamper<PresentationMLPackage> pptxStamper() {
         return new StreamStamper<>(OpenpackagingUtils::loadPowerPoint,
@@ -45,7 +43,6 @@ public class ExperimentalStampers {
     /// and writing the result to an OutputStream.
     ///
     /// @return a new OfficeStamper instance for PowerPoint presentations
-    ///
     /// @since 3.0
     public static OfficeStamper<PresentationMLPackage> pptxPackageStamper() {
         return new PowerpointStamper();

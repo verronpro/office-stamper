@@ -26,7 +26,6 @@ public class ContextRoot
     /// Finds a branch by its key.
     ///
     /// @param key the key of the branch.
-    ///
     /// @return the branch, or `null` if not found.
     public ContextBranch find(String key) {
         return branches.get(key);

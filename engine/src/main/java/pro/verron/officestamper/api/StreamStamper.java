@@ -12,9 +12,7 @@ import java.util.function.Function;
 /// with streams.
 ///
 /// @param <T> The type of the template that can be stamped. This type must extend [OpcPackage].
-///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.4
 public class StreamStamper<T extends OpcPackage> {
 
@@ -50,7 +48,6 @@ public class StreamStamper<T extends OpcPackage> {
     /// @param inputStream template to stamp
     /// @param context context to use for stamping
     /// @param outputStream output stream to write the result to
-    ///
     /// @throws OfficeStamperException if the stamping fails for any reason
     public void stamp(InputStream inputStream, Object context, OutputStream outputStream)
             throws OfficeStamperException {

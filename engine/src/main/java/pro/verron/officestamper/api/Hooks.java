@@ -21,7 +21,6 @@ public class Hooks {
     /// the given document part.
     ///
     /// @param contentAccessor the content accessor providing access to the document's content
-    ///
     /// @return a [ResetableIterator] of Hook instances for the specified document part
     public static ResetableIterator<Hook> ofHooks(ContentAccessor contentAccessor) {
         return new DocxIterator(contentAccessor).filter(Hooks::isHook)

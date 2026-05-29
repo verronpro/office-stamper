@@ -21,7 +21,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
 /// @author Jenei Attila
 /// @author Joseph Verrron
-/// @version ${version}
 /// @since 1.6.6
 class ProcessorRepeatDocPart_BadPlaceholderTest {
     static Stream<Arguments> factories() {

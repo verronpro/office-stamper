@@ -20,7 +20,6 @@ public record PlaceholderFinder(
     /// Finds expressions in a given text based on a specified pattern and matcher.
     ///
     /// @param text the text to search for expressions
-    ///
     /// @return a list of found expressions
     public List<Placeholder> find(String text) {
         if (text.isEmpty()) return emptyList();

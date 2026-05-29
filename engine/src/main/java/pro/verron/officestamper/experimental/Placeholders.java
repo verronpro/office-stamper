@@ -47,27 +47,21 @@ public class Placeholders {
     /// Finds variable expressions in a given paragraph.
     ///
     /// @param paragraph the paragraph in which to search for variable expressions
-    ///
     /// @return a list of found variable expressions as [Placeholder] objects
     public static List<Placeholder> findVariables(Paragraph paragraph) {
         return findVariables(paragraph.asString());
     }
 
     /// Finds variable expressions in a given text.
-    ///
     /// @param text the text to search for variable expressions
-    ///
     /// @return a list of found variable expressions as [StandardPlaceholder] objects
     public static List<Placeholder> findVariables(String text) {
         return VAR_FINDER.find(text);
     }
 
     /// Finds processors expressions in a given text.
-    ///
     /// @param text the text to search for processor expressions
-    ///
-    /// @return a list of found processor expressions as [StandardPlaceholder]
-    /// objects
+    /// @return a list of found processor expressions as [StandardPlaceholder] objects
     public static List<Placeholder> findProcessors(String text) {
         return PROC_FINDER.find(text);
     }
@@ -75,7 +69,6 @@ public class Placeholders {
     /// Creates a new raw placeholder with the given text.
     ///
     /// @param text the text to be used as the content of the placeholder
-    ///
     /// @return a new raw placeholder
     public static Placeholder raw(String text) {
         return new StandardPlaceholder(RAW_MATCHER, text);

@@ -20,7 +20,6 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
-/// @version ${version}
 /// @since 1.0.2
 public class StandardComment
         implements Comment {
@@ -62,7 +61,6 @@ public class StandardComment
     /// @param parent the [ContentAccessor] representing the parent content of the comment range
     /// @param expression the [String] content to be included in the comment
     /// @param id the unique [BigInteger] identifier for the comment
-    ///
     /// @return a [StandardComment] instance initialized with the specified parameters
     public static StandardComment create(DocxPart document, ContentAccessor parent, String expression, BigInteger id) {
         var start = newCommentRangeStart(id, parent);

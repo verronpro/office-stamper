@@ -6,9 +6,7 @@ import org.docx4j.openpackaging.packages.OpcPackage;
 /// document.
 ///
 /// @param <T> The type of the template that can be stamped.
-///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.4
 public interface OfficeStamper<T extends OpcPackage> {
 
@@ -16,7 +14,6 @@ public interface OfficeStamper<T extends OpcPackage> {
     ///
     /// @param template The template to stamp.
     /// @param context The context to use for stamping.
-    ///
     /// @return The resulting document after stamping.
     T stamp(T template, Object context);
 }

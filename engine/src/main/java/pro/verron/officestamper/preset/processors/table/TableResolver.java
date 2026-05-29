@@ -20,7 +20,6 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 /// TableResolver class.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.2
 public class TableResolver
         extends CommentProcessor

@@ -48,7 +48,6 @@ public class DocxIterator
     ///
     /// @param aClass the class type to filter and cast elements to
     /// @param <T> the type of elements to select
-    ///
     /// @return a new [ResetableIterator] containing only elements of the specified class type
     public <T> ResetableIterator<T> selectClass(Class<T> aClass) {
         return filter(aClass::isInstance).map(aClass::cast);

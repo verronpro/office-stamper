@@ -41,7 +41,6 @@ public class Postprocessors {
     /// to clean up temporary or unwanted markup that may have been used during the stamping process.
     ///
     /// @param element the name of the XML element to be removed from the document
-    ///
     /// @return a [PostProcessor] instance that performs the removal of specified tags
     public static PostProcessor removeTags(String element) {
         return new HookRemover(element);

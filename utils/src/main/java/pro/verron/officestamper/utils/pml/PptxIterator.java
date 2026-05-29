@@ -39,7 +39,6 @@ public class PptxIterator
     /// Constructs a new PptxIterator for the given presentation package.
     ///
     /// @param presentation the PowerPoint presentation package to iterate through
-    ///
     /// @throws UtilsException if there is an error accessing the presentation structure
     public PptxIterator(PresentationMLPackage presentation) {
         try {

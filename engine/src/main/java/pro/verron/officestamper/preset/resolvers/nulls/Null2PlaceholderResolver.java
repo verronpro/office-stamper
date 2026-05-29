@@ -20,7 +20,7 @@ public class Null2PlaceholderResolver
     /// Constructs a new [Null2PlaceholderResolver] with the specified placeholder template.
     ///
     /// @param template the template string to be used for formatting placeholders, where the expression will be
-    ///         inserted using [String#format()]
+    ///         inserted using [String#format(String, Object...)]
     public Null2PlaceholderResolver(String template) {
         this.placeholderTemplate = template;
     }

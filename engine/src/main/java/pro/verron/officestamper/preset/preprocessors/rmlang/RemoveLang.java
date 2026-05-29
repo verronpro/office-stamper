@@ -12,7 +12,6 @@ import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
 /// paragraph properties (`w:pPr`) throughout the document.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 public class RemoveLang
         implements PreProcessor {
 

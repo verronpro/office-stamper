@@ -26,7 +26,6 @@ public class DocxFactory {
     /// Creates a WordprocessingMLPackage from an AsciiDoc string.
     ///
     /// @param asciidoc AsciiDoc string
-    ///
     /// @return WordprocessingMLPackage
     public static WordprocessingMLPackage makeWordResource(String asciidoc) {
         // Extract comment macros and strip them from the AsciiDoc before compilation

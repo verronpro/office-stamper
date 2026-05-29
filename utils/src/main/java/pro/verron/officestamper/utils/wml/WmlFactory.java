@@ -35,7 +35,6 @@ public class WmlFactory {
     ///
     /// @param id The ID to assign to the comment.
     /// @param value The string value to be included in the comment.
-    ///
     /// @return A new [Comment] object containing the provided value.
     public static Comment newComment(BigInteger id, String value) {
         var comment = new Comment();
@@ -48,7 +47,6 @@ public class WmlFactory {
     /// Creates a new paragraph containing the provided string value.
     ///
     /// @param value The string value to be added to the new paragraph.
-    ///
     /// @return A new [P] containing the provided string value.
     public static P newParagraph(String value) {
         return newParagraph(newRun(value));
@@ -57,7 +55,6 @@ public class WmlFactory {
     /// Creates a new paragraph containing the provided run.
     ///
     /// @param run The [R] object (run) to be included in the new paragraph.
-    ///
     /// @return A new [P] containing the provided run.
     public static P newParagraph(R run) {
         return newParagraph(List.of(run));
@@ -66,7 +63,6 @@ public class WmlFactory {
     /// Creates a new run containing the provided string value.
     ///
     /// @param value The string value to be included in the new run.
-    ///
     /// @return A new [R] containing the provided string value.
     public static R newRun(String value) {
         return newRun(newText(value));
@@ -76,7 +72,6 @@ public class WmlFactory {
     ///
     /// @param values A list of objects to be added to the new paragraph. These objects populate the content of
     ///         the paragraph.
-    ///
     /// @return A new [P] containing the provided values.
     public static P newParagraph(List<?> values) {
         var paragraph = new P();
@@ -88,16 +83,13 @@ public class WmlFactory {
     /// Creates a new run containing a single text object.
     ///
     /// @param value The [Text] object to be included in the new run.
-    ///
     /// @return A new [R] encapsulating the provided text object.
     public static R newRun(Text value) {
         return newRun(List.of(value));
     }
 
     /// Creates a new [Text] object with the specified value, preserving spaces.
-    ///
     /// @param value The string value to be set in the new [Text] object.
-    ///
     /// @return A new [Text] object containing the provided value with space preserved.
     public static Text newText(String value) {
         var text = new Text();
@@ -110,7 +102,6 @@ public class WmlFactory {
     ///
     /// @param values A list of objects to be added to the new run. Objects are filtered based on a predefined
     ///         criteria to determine if they are worth keeping.
-    ///
     /// @return A new [R] containing the filtered values.
     public static R newRun(List<Object> values) {
         var run = new R();
@@ -134,7 +125,6 @@ public class WmlFactory {
     /// Creates a new [Body] object containing the provided elements.
     ///
     /// @param elements A list of objects to be added to the new [Body].
-    ///
     /// @return A new [Body] containing the provided elements.
     public static Body newBody(List<Object> elements) {
         Body body = new Body();
@@ -146,7 +136,6 @@ public class WmlFactory {
     /// Creates a new paragraph containing the provided text values.
     ///
     /// @param texts The array of string values to be included in the new paragraph.
-    ///
     /// @return A new [P] containing the provided text values.
     public static P newParagraph(String... texts) {
         return newParagraph(Arrays.stream(texts)
@@ -164,7 +153,6 @@ public class WmlFactory {
     /// Creates a new [Comments] object and populates it with a list of [Comment] objects.
     ///
     /// @param list A list of [Comment] objects to be added to the new [Comments] object.
-    ///
     /// @return A new [Comments] object containing the provided [Comment] objects.
     public static Comments newComments(List<Comment> list) {
         Comments comments = new Comments();
@@ -263,7 +251,6 @@ public class WmlFactory {
     /// Creates a new run containing a single drawing.
     ///
     /// @param value The [Drawing] object to be included in the new run.
-    ///
     /// @return A new [R] encapsulating the provided drawing.
     public static R newRun(Drawing value) {
         return newRun(List.of(value));
@@ -272,7 +259,6 @@ public class WmlFactory {
     /// Creates a new [Drawing] object containing the provided [Inline] object.
     ///
     /// @param inline The [Inline] object to be contained within the new [Drawing].
-    ///
     /// @return A new [Drawing] object encapsulating the provided inline object.
     public static Drawing newDrawing(Inline inline) {
         var drawing = new Drawing();
@@ -285,7 +271,6 @@ public class WmlFactory {
     ///
     /// @param id The unique identifier for the [CommentRangeStart] object.
     /// @param parent The parent element ([P]) to which this [CommentRangeStart] belongs.
-    ///
     /// @return A new [CommentRangeStart] object with the specified ID and parent.
     public static CommentRangeStart newCommentRangeStart(BigInteger id, ContentAccessor parent) {
         var commentRangeStart = new CommentRangeStart();
@@ -298,7 +283,6 @@ public class WmlFactory {
     ///
     /// @param id The unique identifier for the [CommentRangeEnd] object.
     /// @param parent The parent element ([P]) to which this [CommentRangeEnd] belongs.
-    ///
     /// @return A new [CommentRangeEnd] object with the specified ID and parent.
     public static CommentRangeEnd newCommentRangeEnd(BigInteger id, ContentAccessor parent) {
         var commentRangeEnd = new CommentRangeEnd();
@@ -311,7 +295,6 @@ public class WmlFactory {
     ///
     /// @param id The unique identifier for the [R.CommentReference].
     /// @param parent The parent element ([P]) to which this [R.CommentReference] belongs.
-    ///
     /// @return A new [R.CommentReference] object with the specified ID and parent.
     public static R.CommentReference newCommentReference(BigInteger id, ContentAccessor parent) {
         var commentReference = new R.CommentReference();
@@ -390,8 +373,6 @@ public class WmlFactory {
     ///
     /// @param element The element name for the smart tag.
     /// @param attribute The [CTAttr] to add to the smart tag properties.
-    /// @param object The [Object] to include in the smart tag content.
-    ///
     /// @return A new [CTSmartTagRun] object configured with the specified parameters.
     public static CTSmartTagRun newSmartTag(String element, CTAttr attribute, Object... object) {
         var smartTag = new CTSmartTagRun();
@@ -412,7 +393,6 @@ public class WmlFactory {
     ///
     /// @param name The name of the attribute.
     /// @param value The value of the attribute.
-    ///
     /// @return A new [CTAttr] object with the specified name and value.
     public static CTAttr newCtAttr(String name, String value) {
         var ctAttr = new CTAttr();
@@ -424,7 +404,6 @@ public class WmlFactory {
     /// Creates a new [Pict] object containing the provided inner object.
     ///
     /// @param innerObj The object to be included in the new pict element.
-    ///
     /// @return A new [Pict] object containing the provided inner object.
     public static Object newPict(Object innerObj) {
         var pict = new Pict();
@@ -436,7 +415,6 @@ public class WmlFactory {
     /// Creates a new [SdtBlock] object containing the provided inner object.
     ///
     /// @param innerObj The object to be included in the new structured document tag block.
-    ///
     /// @return A new [SdtBlock] object containing the provided inner object.
     public static SdtBlock newSdtBlock(Object innerObj) {
         var block = new SdtContentBlock();
@@ -450,7 +428,6 @@ public class WmlFactory {
     /// Creates a new [SdtRun] object containing the provided inner object.
     ///
     /// @param innerObj The object to be included in the new structured document tag run.
-    ///
     /// @return A new [SdtRun] object containing the provided inner object.
     public static SdtRun newSdtRun(Object innerObj) {
         var sdtContentRun = new CTSdtContentRun();

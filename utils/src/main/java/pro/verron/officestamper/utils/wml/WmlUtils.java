@@ -54,7 +54,6 @@ public final class WmlUtils {
     /// @param clazz the [Class] type to match for the parent
     /// @param depth the maximum amount levels to traverse up the parent hierarchy
     /// @param <T> the type of the parent class to search for
-    ///
     /// @return an [Optional] containing the first parent matching the specified class, or an empty [Optional] if no
     ///         match found.
     public static <T> Optional<T> getFirstParentWithClass(Child child, Class<T> clazz, int depth) {
@@ -72,7 +71,6 @@ public final class WmlUtils {
     /// Extracts a list of comment elements from the specified [WordprocessingMLPackage] document.
     ///
     /// @param document the [WordprocessingMLPackage] document from which to extract comment elements
-    ///
     /// @return a list of [Child] objects representing the extracted comment elements
     public static List<Child> extractCommentElements(WordprocessingMLPackage document) {
         var commentFinder = new CommentFinder();
@@ -84,7 +82,6 @@ public final class WmlUtils {
     ///
     /// @param document the [WordprocessingMLPackage] document to search for the comment
     /// @param id the ID of the comment to find
-    ///
     /// @return an [Optional] containing the [Comment] if found, or an empty [Optional] if not found.
     public static Optional<Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
         var name = OpenpackagingFactory.newPartName("/word/comments.xml");
@@ -118,7 +115,6 @@ public final class WmlUtils {
     /// the cell is empty after removal, an empty paragraph is added to the cell.
     ///
     /// @param child the [Child] element to be removed
-    ///
     /// @throws UtilsException if the parent of the child element is of an unexpected type
     public static void remove(Child child) {
         switch (child.getParent()) {
@@ -262,7 +258,6 @@ public final class WmlUtils {
     /// @param expression the expression to replace with the smart tag
     /// @param start the start index of the expression
     /// @param end the end index of the expression
-    ///
     /// @return a list of [Object] representing the updated content
     public static List<Object> insertSmartTag(String element, P paragraph, String expression, int start, int end) {
         var run = newRun(expression);
@@ -276,7 +271,6 @@ public final class WmlUtils {
     /// @param contentAccessor the [ContentAccessor] to search in
     /// @param start the start index of the range
     /// @param end the end index of the range
-    ///
     /// @return an [Optional] containing the [RPr] if found, or an empty [Optional] if not found
     public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
         var iterator = new DocxIterator(contentAccessor).selectClass(R.class);
@@ -297,7 +291,6 @@ public final class WmlUtils {
     /// @param insert the list of objects to insert
     /// @param startIndex the start index of the range to replace
     /// @param endIndex the end index of the range to replace
-    ///
     /// @return a list of [Object] representing the updated content
     public static List<Object> replace(
             ContentAccessor contentAccessor,
@@ -357,7 +350,6 @@ public final class WmlUtils {
     ///
     /// @param text the initial text of the [R].
     /// @param rPr the [RPr] to apply to the run
-    ///
     /// @return the newly created [R].
     public static R create(String text, RPr rPr) {
         R newStartRun = newRun(text);
@@ -397,7 +389,6 @@ public final class WmlUtils {
     ///
     /// @param text the initial text of the [R].
     /// @param paragraphPr the [PPr] to apply to the run
-    ///
     /// @return the newly created [R].
     public static R create(String text, PPr paragraphPr) {
         R run = newRun(text);
@@ -436,7 +427,6 @@ public final class WmlUtils {
     /// @param expression the expression to replace
     /// @param insert the list of objects to insert
     /// @param onRPr a consumer to handle [RPr] properties
-    ///
     /// @return a list of [Object] representing the updated content
     public static List<Object> replaceExpressionWithRun(
             ContentAccessor contentAccessor,
@@ -456,7 +446,6 @@ public final class WmlUtils {
     ///
     /// @param tag the [CTSmartTagRun] object to be evaluated
     /// @param expectedElement the expected element to compare against
-    ///
     /// @return true if the actual element of the given tag matches the expected element, false otherwise
     public static boolean isTagElement(CTSmartTagRun tag, String expectedElement) {
         var actualElement = tag.getElement();
@@ -495,7 +484,6 @@ public final class WmlUtils {
     ///
     /// @param attributeKey the key for the new attribute
     /// @param attributeValue the value for the new attribute
-    ///
     /// @return a CTAttr object representing the new attribute
     public static CTAttr newAttribute(String attributeKey, String attributeValue) {
         return newCtAttr(attributeKey, attributeValue);
@@ -612,7 +600,6 @@ public final class WmlUtils {
         /// Initializes a list of [StandardRun] objects based on the given iterator of [R] objects.
         ///
         /// @param iterator the iterator of [R] objects to be processed into [StandardRun] instances
-        ///
         /// @return a list of [StandardRun] objects created from the given iterator
         public static List<StandardRun> wrap(Iterator<R> iterator) {
             var index = 0;
@@ -652,7 +639,6 @@ public final class WmlUtils {
         ///
         /// @param globalStartIndex the global start index of the range.
         /// @param globalEndIndex the global end index of the range.
-        ///
         /// @return `true` if the current run is touched by the specified range; `false` otherwise.
         public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
             return startsInRange(globalStartIndex, globalEndIndex) || endsInRange(globalStartIndex, globalEndIndex)
@@ -716,7 +702,6 @@ public final class WmlUtils {
         /// multiple aggregated runs)
         ///
         /// @param globalIndex the global index to convert.
-        ///
         /// @return the local index corresponding to the given global index.
         private int localize(int globalIndex) {
             if (globalIndex < startIndex) return 0;

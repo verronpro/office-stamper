@@ -22,9 +22,8 @@ public class SvgUtils {
         /* This utility class should not be instantiated */
     }
 
-    /// @return whether SVG parsing safe mode is enabled.
-    ///
     /// When enabled (default), the parser is hardened against XXE/DTD and related attacks.
+    /// @return whether SVG parsing safe mode is enabled.
     public static boolean isRestrictedMode() {
         return restrictedMode;
     }

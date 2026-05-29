@@ -35,7 +35,6 @@ public interface ResetableIterator<T>
     /// included in the iteration.
     ///
     /// @param predicate a [Predicate] used to determine which elements to include in the filtered iterator
-    ///
     /// @return a new [ResetableIterator] instance that provides only the elements matching the predicate
     default ResetableIterator<T> filter(Predicate<T> predicate) {
         return new FilteringIterator<>(this, predicate);
@@ -50,7 +49,6 @@ public interface ResetableIterator<T>
     ///
     /// @param start the starting element of the slice (inclusive)
     /// @param end the ending element of the slice (inclusive)
-    ///
     /// @return a new [ResetableIterator] instance that provides the sliced elements
     default ResetableIterator<T> slice(T start, T end) {
         return new SlicingIterator<>(this, start, end);
@@ -63,7 +61,6 @@ public interface ResetableIterator<T>
     ///
     /// @param function a [Function] used to transform each element
     /// @param <U> the type of elements returned by the function and the resulting iterator
-    ///
     /// @return a new [ResetableIterator] instance that provides the transformed elements
     default <U> ResetableIterator<U> map(Function<T, U> function) {
         return new MappingIterator<>(this, function);
@@ -78,7 +75,6 @@ public interface ResetableIterator<T>
     ///
     /// @param collector the [Collector] used to accumulate elements into a result container
     /// @param <R> the type of the result container
-    ///
     /// @return the result of the collection operation
     default <R> R collect(Collector<? super T, ?, R> collector) {
         var spliterator = Spliterators.spliteratorUnknownSize(this, Spliterator.ORDERED);

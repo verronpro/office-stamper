@@ -56,7 +56,6 @@ public class Engine {
     /// the exceptionResolver and logs an error.
     ///
     /// @param evaluationContext the evaluation context for processing the expression.
-    ///
     /// @return true if the processing was successful, otherwise false
     public boolean process(EvaluationContext evaluationContext) {
         SpelNode spelNode;
@@ -108,7 +107,6 @@ public class Engine {
     /// Combines the processor context's part and expression with various resolvers to achieve the resolution.
     ///
     /// @param evaluationContext the evaluation context for processing the expression.
-    ///
     /// @return an [Insert] object representing the resolved result of the expression within the context.
     public Insert resolve(EvaluationContext evaluationContext) {
         SpelNode spelNode;

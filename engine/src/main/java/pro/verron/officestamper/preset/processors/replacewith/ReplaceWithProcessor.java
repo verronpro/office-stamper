@@ -14,7 +14,6 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
-/// @version ${version}
 /// @since 1.0.7
 public class ReplaceWithProcessor
         extends CommentProcessor
@@ -31,7 +30,6 @@ public class ReplaceWithProcessor
     /// Replaces the content between the start and end of the comment with the given expression.
     ///
     /// @param expression The expression to replace the content with. Must not be null.
-    ///
     /// @throws OfficeStamperException if the expression is null, or if the comment range start or end is null.
     @Override
     public void replaceWith(@Nullable String expression) {

@@ -75,7 +75,6 @@ public final class OpenPackage<T extends OpcPackage> {
     ///
     /// @param bytes a supplier providing the byte array containing image data
     /// @param deduplicate a boolean flag indicating whether to deduplicate by checking for an existing image part
-    ///
     /// @return the found or newly created `ImgPart` containing the detected image format and its relationship
     public ImgPart findOrCreateImgPart(Supplier<byte[]> bytes, boolean deduplicate) {
         if (deduplicate) {

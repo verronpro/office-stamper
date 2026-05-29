@@ -11,7 +11,6 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 /// resolve null objects by not replacing their expression.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.7
 public class Null2PlaceholderResolver
         implements ObjectResolver {

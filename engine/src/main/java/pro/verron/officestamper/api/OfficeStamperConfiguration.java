@@ -18,7 +18,6 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param interfaceClass the interface class to be exposed
     /// @param implementation the implementation object of the interface
-    ///
     /// @return the updated [OfficeStamperConfiguration] object
     OfficeStamperConfiguration exposeInterfaceToExpressionLanguage(Class<?> interfaceClass, Object implementation);
 
@@ -29,7 +28,6 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param interfaceClass the interface class associated with the comment processor
     /// @param commentProcessorFactory a factory that creates a [CommentProcessor] object
-    ///
     /// @return the updated [OfficeStamperConfiguration] object
     OfficeStamperConfiguration addCommentProcessor(
             Class<?> interfaceClass,
@@ -85,14 +83,12 @@ public interface OfficeStamperConfiguration {
     /// Sets the list of object resolvers for the OfficeStamper configuration.
     ///
     /// @param resolvers the list of object resolvers to be set
-    ///
     /// @return the updated OfficeStamperConfiguration instance
     OfficeStamperConfiguration setResolvers(List<ObjectResolver> resolvers);
 
     /// Adds an ObjectResolver to the OfficeStamperConfiguration.
     ///
     /// @param resolver The ObjectResolver to add to the configuration.
-    ///
     /// @return The updated OfficeStamperConfiguration.
     OfficeStamperConfiguration addResolver(ObjectResolver resolver);
 
@@ -105,7 +101,6 @@ public interface OfficeStamperConfiguration {
     /// exceptions will be handled during the processing of office documents.
     ///
     /// @param exceptionResolver the ExceptionResolver instance to set
-    ///
     /// @return the current instance of OfficeStamperConfiguration for method chaining
     OfficeStamperConfiguration setExceptionResolver(ExceptionResolver exceptionResolver);
 
@@ -126,7 +121,6 @@ public interface OfficeStamperConfiguration {
     /// @param <T> The type associated with the custom function.
     /// @param name The name of the custom function to be added.
     /// @param class0 The class type of the custom function.
-    ///
     /// @return An instance of NeedsFunctionImpl parameterized with the type of the custom function.
     <T> NeedsFunctionImpl<T> addCustomFunction(String name, Class<T> class0);
 
@@ -137,7 +131,6 @@ public interface OfficeStamperConfiguration {
     /// @param class1 the class type for the second parameter of the bi-function
     /// @param <T> the type of the first parameter
     /// @param <U> the type of the second parameter
-    ///
     /// @return an instance of NeedsBiFunctionImpl parameterized with the provided types
     <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1);
 
@@ -150,7 +143,6 @@ public interface OfficeStamperConfiguration {
     /// @param <T> the type of the first parameter
     /// @param <U> the type of the second parameter
     /// @param <V> the type of the third parameter
-    ///
     /// @return an instance of NeedsTriFunctionImpl for the provided parameter types
     <T, U, V> NeedsTriFunctionImpl<T, U, V> addCustomFunction(
             String name,
@@ -177,7 +169,6 @@ public interface OfficeStamperConfiguration {
     /// Sets the parser configuration to be used by the office stamper.
     ///
     /// @param parserConfiguration the [SpelParserConfiguration] instance to set.
-    ///
     /// @return the updated [OfficeStamperConfiguration] object.
     OfficeStamperConfiguration setParserConfiguration(SpelParserConfiguration parserConfiguration);
 

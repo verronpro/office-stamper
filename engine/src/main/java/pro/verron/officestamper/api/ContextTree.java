@@ -9,7 +9,6 @@ public interface ContextTree {
     /// current branch as its parent.
     ///
     /// @param subContext the object to be added as a new branch in the context tree
-    ///
     /// @return a unique identifier (key) for the newly created branch
     String addBranch(Object subContext);
 }

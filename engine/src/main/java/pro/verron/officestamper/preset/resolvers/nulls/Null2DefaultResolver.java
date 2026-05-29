@@ -12,7 +12,6 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 /// that resolves null objects by creating a run with a default text value.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.7
 public record Null2DefaultResolver(String defaultValue)
         implements ObjectResolver {

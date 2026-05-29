@@ -14,7 +14,6 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 /// string representation using the [Object#toString()] method and creating a new run with the resolved content.
 ///
 /// @author Joseph Verron
-/// @version ${version}
 /// @since 1.6.7
 public class ToStringResolver
         implements ObjectResolver {

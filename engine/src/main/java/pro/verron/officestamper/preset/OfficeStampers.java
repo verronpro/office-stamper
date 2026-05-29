@@ -23,7 +23,6 @@ public class OfficeStampers {
     /// configuration.
     ///
     /// @return a [StreamStamper] instance for stamping [WordprocessingMLPackage] documents
-    ///
     /// @see OfficeStamperConfigurations#full()
     public static StreamStamper<WordprocessingMLPackage> docxStamper() {
         return docxStamper(OfficeStamperConfigurations.full());
@@ -36,7 +35,6 @@ public class OfficeStampers {
     ///
     /// @param configuration an instance of [OfficeStamperConfiguration] that defines the behavior and
     ///         preprocessing steps of the stamper
-    ///
     /// @return a [StreamStamper] of [WordprocessingMLPackage] configured to process DOCX documents
     public static StreamStamper<WordprocessingMLPackage> docxStamper(OfficeStamperConfiguration configuration) {
         var stamper = docxPackageStamper(configuration);

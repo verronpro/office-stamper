@@ -28,9 +28,7 @@ public class OpenpackagingFactory {
     /// [UtilsException].
     ///
     /// @param partName the string representation of the part name
-    ///
     /// @return a new PartName instance
-    ///
     /// @throws UtilsException if the part name string is invalid
     public static PartName newPartName(String partName) {
         try {
@@ -49,9 +47,7 @@ public class OpenpackagingFactory {
     /// @param bytes the binary data for the image
     /// @param mimeType the MIME type of the image (e.g., "image/png")
     /// @param partName the name of the part to be created
-    ///
     /// @return the created image part
-    ///
     /// @throws UtilsException if an error occurs while creating the part
     public static Part createImagePart(ContentTypeManager ctm, byte[] bytes, String mimeType, String partName) {
         try {

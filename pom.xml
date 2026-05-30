@@ -33,7 +33,6 @@
         <module>engine</module>
         <module>excel</module>
         <module>cli</module>
-        <module>asciidoc</module>
         <module>utils</module>
         <module>imageio-emf</module>
         <module>imageio-wmf</module>

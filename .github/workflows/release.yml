@@ -53,7 +53,7 @@ jobs:
 
       - name: Bump to next minor SNAPSHOT
         run: |
-          mvn -B versions:set -DnextSnapshot=true -DnextSnapshotIndexToIncrement=1 -DgenerateBackupPoms=false
+          mvn -B versions:set -DnextSnapshot=true -DnextSnapshotIndexToIncrement=2 -DgenerateBackupPoms=false
           NEXT_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
           echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
 

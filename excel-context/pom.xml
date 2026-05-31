@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <name>Office-stamper Excel</name>
+    <name>Office-stamper Excel Context</name>
     <groupId>pro.verron.excel</groupId>
     <artifactId>excel-context</artifactId>
     <packaging>jar</packaging>

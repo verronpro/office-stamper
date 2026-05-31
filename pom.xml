@@ -16,6 +16,7 @@
     </description>
     <packaging>pom</packaging>
     <url>https://office-stamper.verron.pro</url>
+    <inceptionYear>2022</inceptionYear>
 
     <organization>
         <name>Verron.pro</name>

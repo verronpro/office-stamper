@@ -1,0 +1,38 @@
+// suppress inspection "AsciiDocLinkResolve" for whole file
+:ghos: https://github.com/verronpro/office-stamper
+:docs: https://office-stamper.verron.pro/excel-context
+:blog: https://verron.pro
+
+= Office-stamper Excel Context
+
+The `excel-context` module allows using Excel (.xlsx) files as data sources for Office-stamper.
+It parses Excel sheets and rows to provide a context object that can be used by the engine for stamping templates.
+
+== Key Features
+
+* **Excel Integration**: Use familiar spreadsheet software to manage your template data.
+* **Flexible Mapping**: Maps sheets and rows to data structures compatible with SpEL.
+* **Simple API**: Easy to load data and pass it to the `engine`.
+
+== Maven Coordinates
+
+[source,xml]
+----
+<dependency>
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>excel-context</artifactId>
+    <version>${project.version}</version>
+</dependency>
+----
+
+== Documentation
+
+For more information, visit the {docs}[Official Documentation].
+
+== Author
+
+Joseph Verron - {blog}/about.html[About Me]
+
+== License
+
+MIT License

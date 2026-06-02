@@ -1,0 +1,54 @@
+// suppress inspection "AsciiDocLinkResolve" for whole file
+:ghos: https://github.com/verronpro/office-stamper
+:docs: https://office-stamper.verron.pro/engine
+:blog: https://verron.pro
+
+= Office-stamper Engine
+
+The `engine` module is the heart of Office-stamper.
+It provides the core templating logic, SpEL evaluation, and the public API for stamping DOCX documents.
+
+== Key Features
+
+* **Core Stamping Logic**: High-performance DOCX processing using Docx4J.
+* **SpEL Integration**: Powerful expression evaluation for dynamic content.
+* **Comment Processors**: Extensible system for processing Word comments as instructions.
+* **Security**: Secure-by-default SpEL evaluation and XML parsing.
+* **API**: Clean and easy-to-use Java API.
+
+== Quick Start
+
+[source,java]
+----
+var context = new YourContext(...);
+var stamper = OfficeStampers.docxStamper();
+stamper.stamp(templateStream, context, outputStream);
+----
+
+== Maven Coordinates
+
+[source,xml]
+----
+<dependency>
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>engine</artifactId>
+    <version>${project.version}</version>
+</dependency>
+----
+
+== Documentation
+
+For detailed documentation on how to use the engine, see the {docs}[Official Documentation].
+
+* link:{docs}/introduction.html[Introduction]
+* link:{docs}/getting-started.html[Getting Started]
+* link:{docs}/template-expressions.html[Template Expressions]
+* link:{docs}/comment-processors.html[Comment Processors]
+
+== Author
+
+Joseph Verron - {blog}/about.html[About Me]
+
+== License
+
+MIT License

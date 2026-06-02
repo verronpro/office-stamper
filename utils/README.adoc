@@ -1,39 +1,39 @@
-= Office-stamper Utils Module
+// suppress inspection "AsciiDocLinkResolve" for whole file
+:ghos: https://github.com/verronpro/office-stamper
+:docs: https://office-stamper.verron.pro/utils
+:blog: https://verron.pro
 
-The `utils` module contains low-level utilities shared by the Office‑stamper engine and tools.
-It provides helpers for WordprocessingML (docx4j) manipulation, iterator utilities, and small functional/bit helpers.
+= Office-stamper Utils
 
-== Key Packages
+The `utils` module contains low-level utilities shared by the Office-stamper engine and tools.
+It provides helpers for WordprocessingML (Docx4J) manipulation, iterator utilities, and functional helpers.
 
-* `pro.verron.officestamper.utils.wml` – factories and helpers for WML/docx4j
-* `pro.verron.officestamper.utils.iterator` – iterator utilities
-* `pro.verron.officestamper.utils.function` – functional helpers
-* `pro.verron.officestamper.utils.bit` – bit/byte helpers
+== Key Features
 
-== Iterator Utilities
-
-The `utils` module provides specialized iterator implementations for WordprocessingML manipulation.
-
-* `SlicingIterator`: An iterator that allows for robust segmenting and "slicing" of document content during processing.
-It provides mechanisms for state tracking and efficient iteration over document parts.
+* **WML Helpers**: Factories and utilities for working with WordprocessingML and Docx4J.
+* **Iterator Utilities**: Specialized iterators like `SlicingIterator` for robust document segmenting.
+* **Functional Helpers**: Common functional interfaces and utility methods.
+* **Bit/Byte Helpers**: Low-level utilities for data manipulation.
 
 == Maven Coordinates
 
 [source,xml]
 ----
 <dependency>
-  <groupId>pro.verron.office-stamper</groupId>
-  <artifactId>utils</artifactId>
-  <version>${office-stamper.version}</version>
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>utils</artifactId>
+    <version>${project.version}</version>
 </dependency>
 ----
 
-== Module name
+== Documentation
 
-`pro.verron.officestamper.utils`
+For more information, visit the {docs}[Official Documentation].
 
-== See also
+== Author
 
-* link:../engine/src/site/asciidoc/index.adoc[Engine Documentation]
-* link:../cli/README.adoc[CLI]
-* link:../asciidoc/README.adoc[AsciiDoc]
+Joseph Verron - {blog}/about.html[About Me]
+
+== License
+
+MIT License

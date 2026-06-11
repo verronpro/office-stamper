@@ -23,21 +23,26 @@ import static pro.verron.officestamper.utils.image.ImgUtils.supportedType;
 import static pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory.setupRelationship;
 import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.createSvgPart;
 
-/// Represents an open package that holds a reference to an [OpcPackage] document and
-/// a specific part of the package. This class provides utility methods to work with the
+/// Represents an open package that holds a reference to an [OpcPackage]
+/// document and
+/// a specific part of the package. This class provides utility methods to work
+/// with the
 /// package, such as searching for image parts.
 ///
 /// @param <T> the type of the [OpcPackage] being managed
 public final class OpenPackage<T extends OpcPackage> {
-    private static final Map<OpcPackage, Map<Part, OpenPackage>> pool = new ConcurrentHashMap<>();
+    private static final Map<OpcPackage, Map<Part, OpenPackage>> pool =
+            new ConcurrentHashMap<>();
     private final Map<Integer, Part> imgParts = new ConcurrentHashMap<>();
     private final T document;
     private final Part part;
 
-    /// Constructs a new instance of OpenPackage with the specified document and part.
+    /// Constructs a new instance of OpenPackage with the specified document and
+    /// part.
     ///
     /// @param document the document object associated with this package
-    /// @param part the [Part] object representing a specific part of the document
+    /// @param part     the [Part] object representing a specific part of the
+    ///  document
     public OpenPackage(T document, Part part) {
         this.document = document;
         this.part = part;
@@ -64,19 +69,38 @@ public final class OpenPackage<T extends OpcPackage> {
         }
     }
 
-    public static <T extends OpcPackage> OpenPackage<T> getOrCreate(T document, Part part) {
-        //noinspection unchecked because the pool system ensure typing is respected.
+    /// Returns an existing [OpenPackage] for the given document and part, or
+    /// creates a new one if none exists.
+    ///
+    /// @param document the [OpcPackage] document
+    /// @param part     the [Part] within the document
+    /// @param <T>      the type of the [OpcPackage]
+    ///
+    /// @return an [OpenPackage] for the specified document and part
+    public static <T extends OpcPackage> OpenPackage<T> getOrCreate(
+            T document,
+            Part part
+    ) {
+        //noinspection unchecked because the pool system ensure types respect
         return pool.computeIfAbsent(document, d -> new ConcurrentHashMap<>())
                    .computeIfAbsent(part, p -> new OpenPackage<>(document, p));
     }
 
-    /// Finds an existing image part in the package that matches the given byte data, or creates a new one
-    /// if no matching part is found or deduplication is disabled.
+    /// Finds an existing image part in the package that matches the given byte
+    /// data, or creates a new one if no matching part is found or deduplication
+    /// is disabled.
     ///
-    /// @param bytes a supplier providing the byte array containing image data
-    /// @param deduplicate a boolean flag indicating whether to deduplicate by checking for an existing image part
-    /// @return the found or newly created `ImgPart` containing the detected image format and its relationship
-    public ImgPart findOrCreateImgPart(Supplier<byte[]> bytes, boolean deduplicate) {
+    /// @param bytes       a supplier providing the byte array containing
+    /// image data
+    /// @param deduplicate a boolean flag indicating whether to deduplicate by
+    /// checking for an existing image part
+    ///
+    /// @return the found or newly created `ImgPart` containing the detected
+    /// image format and its relationship
+    public ImgPart findOrCreateImgPart(
+            Supplier<byte[]> bytes,
+            boolean deduplicate
+    ) {
         if (deduplicate) {
             var foundImagePart = findImgPart(bytes.get());
             if (foundImagePart.isPresent()) return foundImagePart.get();
@@ -85,9 +109,13 @@ public final class OpenPackage<T extends OpcPackage> {
     }
 
     private Optional<ImgPart> findImgPart(byte[] bytes) {
-        if (bytes.length == 0) throw new UtilsException("Can't create image from empty byte array");
-        var format = detectFormat(bytes).orElseThrow(supply("Could not detect a supported image type."));
-        var mimeType = supportedType(format.name()).orElseThrow(supply("Unsupported image type: %s", format.name()));
+        if (bytes.length == 0) throw new UtilsException(
+                "Can't create image from empty byte " + "array");
+        var format = detectFormat(bytes).orElseThrow(supply(
+                "Could not detect a supported image type" + "."));
+        var mimeType = supportedType(format.name()).orElseThrow(supply(
+                "Unsupported image type:%s",
+                format.name()));
         ensureHasRelationshipPart();
         var relationshipId = createRelationshipId();
         var ctm = document().getContentTypeManager();
@@ -97,7 +125,9 @@ public final class OpenPackage<T extends OpcPackage> {
             var svgXmlHashcode = svgXml.hashCode();
             if (imgParts.containsKey(svgXmlHashcode)) {
                 var targetPart = imgParts.get(svgXmlHashcode);
-                var relationship = setupRelationship(part, targetPart, relationshipId);
+                var relationship = setupRelationship(part,
+                        targetPart,
+                        relationshipId);
                 return Optional.of(new ImgPart(format, relationship));
             }
         }
@@ -105,7 +135,9 @@ public final class OpenPackage<T extends OpcPackage> {
             var bytesHashcode = Arrays.hashCode(bytes);
             if (imgParts.containsKey(bytesHashcode)) {
                 var targetPart = imgParts.get(bytesHashcode);
-                var relationship = setupRelationship(part, targetPart, relationshipId);
+                var relationship = setupRelationship(part,
+                        targetPart,
+                        relationshipId);
                 return Optional.of(new ImgPart(format, relationship));
             }
         }
@@ -113,17 +145,23 @@ public final class OpenPackage<T extends OpcPackage> {
     }
 
     private ImgPart newImgPart(byte[] bytes) {
-        if (bytes.length == 0) throw new UtilsException("Can't create image from empty byte array");
+        if (bytes.length == 0) throw new UtilsException(
+                "Can't create image from empty byte " + "array");
 
         var optFormat = detectFormat(bytes);
-        var format = optFormat.orElseThrow(() -> new UtilsException("Could not detect a supported image type."));
+        var format = optFormat.orElseThrow(() -> new UtilsException(
+                "Could not detect a supported image type."));
 
         var optMimeType = supportedType(format.name());
-        var mimeType = optMimeType.orElseThrow(() -> new UtilsException("Unsupported image type"));
+        var mimeType = optMimeType.orElseThrow(() -> new UtilsException(
+                "Unsupported image type"));
 
         ensureHasRelationshipPart();
         var relationshipId = createRelationshipId();
-        var partName = createImageName(document(), part, relationshipId, format.name());
+        var partName = createImageName(document(),
+                part,
+                relationshipId,
+                format.name());
         var ctm = document().getContentTypeManager();
 
         Part imgPart;
@@ -133,7 +171,10 @@ public final class OpenPackage<T extends OpcPackage> {
             hash(imgPart);
         }
         else {
-            imgPart = OpenpackagingFactory.createImagePart(ctm, bytes, mimeType, partName);
+            imgPart = OpenpackagingFactory.createImagePart(ctm,
+                    bytes,
+                    mimeType,
+                    partName);
             hash(imgPart);
         }
 
@@ -142,7 +183,8 @@ public final class OpenPackage<T extends OpcPackage> {
     }
 
     private void ensureHasRelationshipPart() {
-        if (part.getRelationshipsPart() == null) RelationshipsPart.createRelationshipsPartForPart(part);
+        if (part.getRelationshipsPart() == null)
+            RelationshipsPart.createRelationshipsPartForPart(part);
     }
 
     private String createRelationshipId() {

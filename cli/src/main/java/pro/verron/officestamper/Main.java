@@ -709,9 +709,14 @@ import static java.nio.file.Files.newOutputStream;
         POWERPOINT
     }
 
+    /// Subcommand that generates an HTML viewer for a traceability report.
     @Command(name = "report-view", description = "Generate an HTML viewer for a traceability report")
     public static class ReportView
             implements Runnable {
+
+        /// Default constructor.
+        public ReportView() {}
+
         @Option(names = {"-i", "--input"},
                 required = true,
                 description = "JSON traceability report") private Path input;
@@ -766,9 +771,13 @@ import static java.nio.file.Files.newOutputStream;
         }
     }
 
+    /// Subcommand that generates a preview image from an AsciiDoc file.
     @Command(name = "preview", description = "Generate a preview image from an AsciiDoc file")
     public static class Preview
             implements Runnable {
+
+        /// Default constructor.
+        public Preview() {}
         @Option(names = {"-i", "--input"}, required = true, description = "Input AsciiDoc file") private Path input;
 
         @Option(names = {"-o", "--output"},

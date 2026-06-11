@@ -21,9 +21,10 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toCollection;
 
-/// Utility class for creating and configuring various WordML (WML) elements. Provides static methods to generate
-/// paragraphs, runs, comments, text, and other WML structures. This is intended for handling Office Open XML documents
-/// programmatically.
+/// Utility class for creating and configuring various WordML (WML) elements.
+/// Provides static methods to generate paragraphs, runs, comments, text, and
+///  other WML structures. This is intended for handling Office Open XML
+/// documents programmatically.
 public class WmlFactory {
     private static final Random RANDOM = new Random();
 
@@ -33,8 +34,9 @@ public class WmlFactory {
 
     /// Creates a new comment with the provided value.
     ///
-    /// @param id The ID to assign to the comment.
+    /// @param id    The ID to assign to the comment.
     /// @param value The string value to be included in the comment.
+    ///
     /// @return A new [Comment] object containing the provided value.
     public static Comment newComment(BigInteger id, String value) {
         var comment = new Comment();
@@ -47,6 +49,7 @@ public class WmlFactory {
     /// Creates a new paragraph containing the provided string value.
     ///
     /// @param value The string value to be added to the new paragraph.
+    ///
     /// @return A new [P] containing the provided string value.
     public static P newParagraph(String value) {
         return newParagraph(newRun(value));
@@ -55,6 +58,7 @@ public class WmlFactory {
     /// Creates a new paragraph containing the provided run.
     ///
     /// @param run The [R] object (run) to be included in the new paragraph.
+    ///
     /// @return A new [P] containing the provided run.
     public static P newParagraph(R run) {
         return newParagraph(List.of(run));
@@ -63,6 +67,7 @@ public class WmlFactory {
     /// Creates a new run containing the provided string value.
     ///
     /// @param value The string value to be included in the new run.
+    ///
     /// @return A new [R] containing the provided string value.
     public static R newRun(String value) {
         return newRun(newText(value));
@@ -70,8 +75,9 @@ public class WmlFactory {
 
     /// Creates a new paragraph containing the provided list of values.
     ///
-    /// @param values A list of objects to be added to the new paragraph. These objects populate the content of
-    ///         the paragraph.
+    /// @param values A list of objects to be added to the new paragraph. These
+    /// objects populate the content of the paragraph.
+    ///
     /// @return A new [P] containing the provided values.
     public static P newParagraph(List<?> values) {
         var paragraph = new P();
@@ -83,14 +89,18 @@ public class WmlFactory {
     /// Creates a new run containing a single text object.
     ///
     /// @param value The [Text] object to be included in the new run.
+    ///
     /// @return A new [R] encapsulating the provided text object.
     public static R newRun(Text value) {
         return newRun(List.of(value));
     }
 
     /// Creates a new [Text] object with the specified value, preserving spaces.
+    ///
     /// @param value The string value to be set in the new [Text] object.
-    /// @return A new [Text] object containing the provided value with space preserved.
+    ///
+    /// @return A new [Text] object containing the provided value with space
+    /// preserved.
     public static Text newText(String value) {
         var text = new Text();
         text.setValue(value);
@@ -100,8 +110,10 @@ public class WmlFactory {
 
     /// Creates a new run containing the provided values deemed worth keeping.
     ///
-    /// @param values A list of objects to be added to the new run. Objects are filtered based on a predefined
-    ///         criteria to determine if they are worth keeping.
+    /// @param values A list of objects to be added to the new run. Objects are
+    /// filtered based on a predefined criteria to determine if they are
+    /// worth keeping.
+    ///
     /// @return A new [R] containing the filtered values.
     public static R newRun(List<Object> values) {
         var run = new R();
@@ -125,6 +137,7 @@ public class WmlFactory {
     /// Creates a new [Body] object containing the provided elements.
     ///
     /// @param elements A list of objects to be added to the new [Body].
+    ///
     /// @return A new [Body] containing the provided elements.
     public static Body newBody(List<Object> elements) {
         Body body = new Body();
@@ -135,7 +148,9 @@ public class WmlFactory {
 
     /// Creates a new paragraph containing the provided text values.
     ///
-    /// @param texts The array of string values to be included in the new paragraph.
+    /// @param texts The array of string values to be included in the new
+    /// paragraph.
+    ///
     /// @return A new [P] containing the provided text values.
     public static P newParagraph(String... texts) {
         return newParagraph(Arrays.stream(texts)
@@ -150,10 +165,14 @@ public class WmlFactory {
         return new PPr();
     }
 
-    /// Creates a new [Comments] object and populates it with a list of [Comment] objects.
+    /// Creates a new [Comments] object and populates it with a list of
+    /// [Comment] objects.
     ///
-    /// @param list A list of [Comment] objects to be added to the new [Comments] object.
-    /// @return A new [Comments] object containing the provided [Comment] objects.
+    /// @param list A list of [Comment] objects to be added to the new
+    ///  [Comments] object.
+    ///
+    /// @return A new [Comments] object containing the provided [Comment]
+    ///  objects.
     public static Comments newComments(List<Comment> list) {
         Comments comments = new Comments();
         List<Comment> commentList = comments.getComment();
@@ -161,17 +180,32 @@ public class WmlFactory {
         return comments;
     }
 
-    /// Creates a new Inline object representing an image with the specified parameters, properly formatted for use
-    /// in Word documents. The image is defined using WordprocessingML and associated relationships.
+    /// Creates a new Inline object representing an image with the specified
+    /// parameters, properly formatted for use in Word documents. The image
+    /// is defined using WordprocessingML and associated relationships.
     ///
-    /// @param relationship The relationship object that provides the relationship ID for the image.
-    /// @param filenameHint A hint for the file name of the image, used to set display names in the document.
-    /// @param altText The alternate text for the image, used for accessibility purposes.
-    /// @param scale The scale object that defines the dimensions (cx, cy) of the image in EMUs (English Metric Units).
-    /// @return An Inline object that represents the formatted image element to be embedded in the document.
-    /// @throws UtilsException If any error occurs during the creation of the Inline object.
-    public static Inline newImgInline(Relationship relationship, String filenameHint, String altText, Scale scale) {
-        // creating random ids assuming unicity, id must not be too large otherwise Word cannot open the document
+    /// @param relationship The relationship object that provides the
+    /// relationship ID for the image.
+    /// @param filenameHint A hint for the file name of the image, used to set
+    /// display names in the document.
+    /// @param altText      The alternate text for the image, used for
+    /// accessibility purposes.
+    /// @param scale        The scale object that defines the dimensions (cx,
+    /// cy) of the image in EMUs (English Metric Units).
+    ///
+    /// @return An Inline object that represents the formatted image element to
+    /// be embedded in the document.
+    ///
+    /// @throws UtilsException If any error occurs during the creation of the
+    ///  Inline object.
+    public static Inline newImgInline(
+            Relationship relationship,
+            String filenameHint,
+            String altText,
+            Scale scale
+    ) {
+        // creating random ids assuming unicity, id must not be too large
+        // otherwise Word cannot open the document
         var id1 = RANDOM.nextLong(100_000L);
         var id2 = RANDOM.nextInt(100_000);
         try {
@@ -216,30 +250,43 @@ public class WmlFactory {
             mappings.put("rEmbedId", relationship.getId());
             mappings.put("id1", Long.toString(id1));
             mappings.put("id2", Integer.toString(id2));
-            var jaxbElement = (JAXBElement<?>) XmlUtils.unmarshallFromTemplate(ml, mappings);
+            var jaxbElement = (JAXBElement<?>) XmlUtils.unmarshallFromTemplate(
+                    ml,
+                    mappings);
             return (Inline) jaxbElement.getValue();
         } catch (Exception e) {
             throw new UtilsException(e);
         }
     }
 
-    /// Computes a scaling factor for an image to fit within the writable width of a page.
+    /// Computes a scaling factor for an image to fit within the writable width
+    /// of a page.
     ///
-    /// @param pageDimensions the dimensions of the page, including the writable width
-    /// @param maxWidth an optional maximum width in twips; if greater than zero, this
-    ///                 value will limit the writable width
-    /// @param dpx the dimensions of the image in pixels
+    /// @param pageDimensions the dimensions of the page, including the
+    /// writable width
+    /// @param maxWidth       an optional maximum width in twips; if greater
+    /// than zero, this value will limit the writable width
+    /// @param dpx            the dimensions of the image in pixels
+    ///
     /// @return a Scale object containing the width (cx) and height (cy) in EMUs
-    public static Scale computeScale(PageDimensions pageDimensions, Integer maxWidth, Dimension2D dpx) {
+    public static Scale computeScale(
+            PageDimensions pageDimensions,
+            Integer maxWidth,
+            Dimension2D dpx
+    ) {
         double writableWidthTwips = pageDimensions.getWritableWidthTwips();
-        if (maxWidth > 0 && maxWidth < writableWidthTwips) writableWidthTwips = maxWidth;
-        double imageWidthTwips = UnitsOfMeasurement.pxToTwipDouble(dpx.getWidth());
-        double imageHeightTwips = UnitsOfMeasurement.pxToTwipDouble(dpx.getHeight());
+        if (maxWidth > 0 && maxWidth < writableWidthTwips)
+            writableWidthTwips = maxWidth;
+        double imageWidthTwips =
+                UnitsOfMeasurement.pxToTwipDouble(dpx.getWidth());
+        double imageHeightTwips =
+                UnitsOfMeasurement.pxToTwipDouble(dpx.getHeight());
         long cx;
         long cy;
         if (imageWidthTwips > writableWidthTwips) {
             cx = UnitsOfMeasurement.twipToEMU(writableWidthTwips);
-            cy = UnitsOfMeasurement.twipToEMU(imageHeightTwips * writableWidthTwips / imageWidthTwips);
+            cy = UnitsOfMeasurement.twipToEMU(
+                    imageHeightTwips * writableWidthTwips / imageWidthTwips);
         }
         else {
             cx = UnitsOfMeasurement.twipToEMU(imageWidthTwips);
@@ -251,6 +298,7 @@ public class WmlFactory {
     /// Creates a new run containing a single drawing.
     ///
     /// @param value The [Drawing] object to be included in the new run.
+    ///
     /// @return A new [R] encapsulating the provided drawing.
     public static R newRun(Drawing value) {
         return newRun(List.of(value));
@@ -258,7 +306,9 @@ public class WmlFactory {
 
     /// Creates a new [Drawing] object containing the provided [Inline] object.
     ///
-    /// @param inline The [Inline] object to be contained within the new [Drawing].
+    /// @param inline The [Inline] object to be contained within the new
+    ///  [Drawing].
+    ///
     /// @return A new [Drawing] object encapsulating the provided inline object.
     public static Drawing newDrawing(Inline inline) {
         var drawing = new Drawing();
@@ -267,12 +317,19 @@ public class WmlFactory {
         return drawing;
     }
 
-    /// Creates a new [CommentRangeStart] object with the specified ID and parent.
+    /// Creates a new [CommentRangeStart] object with the specified ID and
+    /// parent.
     ///
-    /// @param id The unique identifier for the [CommentRangeStart] object.
-    /// @param parent The parent element ([P]) to which this [CommentRangeStart] belongs.
-    /// @return A new [CommentRangeStart] object with the specified ID and parent.
-    public static CommentRangeStart newCommentRangeStart(BigInteger id, ContentAccessor parent) {
+    /// @param id     The unique identifier for the [CommentRangeStart] object.
+    /// @param parent The parent element ([P]) to which this
+    ///  [CommentRangeStart] belongs.
+    ///
+    /// @return A new [CommentRangeStart] object with the specified ID and
+    /// parent.
+    public static CommentRangeStart newCommentRangeStart(
+            BigInteger id,
+            ContentAccessor parent
+    ) {
         var commentRangeStart = new CommentRangeStart();
         commentRangeStart.setId(id);
         commentRangeStart.setParent(parent);
@@ -281,22 +338,34 @@ public class WmlFactory {
 
     /// Creates a new [CommentRangeEnd] object with the specified ID and parent.
     ///
-    /// @param id The unique identifier for the [CommentRangeEnd] object.
-    /// @param parent The parent element ([P]) to which this [CommentRangeEnd] belongs.
+    /// @param id     The unique identifier for the [CommentRangeEnd] object.
+    /// @param parent The parent element ([P]) to which this
+    ///  [CommentRangeEnd] belongs.
+    ///
     /// @return A new [CommentRangeEnd] object with the specified ID and parent.
-    public static CommentRangeEnd newCommentRangeEnd(BigInteger id, ContentAccessor parent) {
+    public static CommentRangeEnd newCommentRangeEnd(
+            BigInteger id,
+            ContentAccessor parent
+    ) {
         var commentRangeEnd = new CommentRangeEnd();
         commentRangeEnd.setId(id);
         commentRangeEnd.setParent(parent);
         return commentRangeEnd;
     }
 
-    /// Creates a new [R.CommentReference] object with the specified ID and parent.
+    /// Creates a new [R.CommentReference] object with the specified ID and
+    /// parent.
     ///
-    /// @param id The unique identifier for the [R.CommentReference].
-    /// @param parent The parent element ([P]) to which this [R.CommentReference] belongs.
-    /// @return A new [R.CommentReference] object with the specified ID and parent.
-    public static R.CommentReference newCommentReference(BigInteger id, ContentAccessor parent) {
+    /// @param id     The unique identifier for the [R.CommentReference].
+    /// @param parent The parent element ([P]) to which this
+    ///  [R.CommentReference] belongs.
+    ///
+    /// @return A new [R.CommentReference] object with the specified ID and
+    /// parent.
+    public static R.CommentReference newCommentReference(
+            BigInteger id,
+            ContentAccessor parent
+    ) {
         var commentReference = new R.CommentReference();
         commentReference.setId(id);
         commentReference.setParent(parent);
@@ -324,8 +393,8 @@ public class WmlFactory {
         return new Tr();
     }
 
-    /// Creates a new [WordprocessingMLPackage] object initialized with a main document part, and an empty comments
-    /// part.
+    /// Creates a new [WordprocessingMLPackage] object initialized with a main
+    /// document part, and an empty comments part.
     ///
     /// @return A new instance of [WordprocessingMLPackage].
     public static WordprocessingMLPackage newWord() {
@@ -342,9 +411,10 @@ public class WmlFactory {
         }
     }
 
-    /// Creates a new [CommentsPart] object. This method attempts to create a new instance of [CommentsPart]. If an
-    /// [InvalidFormatException] occurs during the creation process, it wraps the exception in an [UtilsException] and
-    /// throws it.
+    /// Creates a new [CommentsPart] object. This method attempts to create a
+    /// new instance of [CommentsPart]. If an [InvalidFormatException] occurs
+    ///  during the creation process, it wraps the exception in an
+    ///  [UtilsException] and throws it.
     ///
     /// @return A new instance of [CommentsPart].
     public static CommentsPart newCommentsPart() {
@@ -361,7 +431,8 @@ public class WmlFactory {
 
     /// Creates a new [Br] (break) object with text wrapping enabled.
     ///
-    /// @return A new [Br] object with text wrapping type and no clear attribute set.
+    /// @return A new [Br] object with text wrapping type and no clear
+    /// attribute set.
     public static Br newBr() {
         var br = new Br();
         br.setType(STBrType.TEXT_WRAPPING);
@@ -369,12 +440,20 @@ public class WmlFactory {
         return br;
     }
 
-    /// Creates a new smart tag run with the specified element, run and attribute.
+    /// Creates a new smart tag run with the specified element, run and
+    /// attribute.
     ///
-    /// @param element The element name for the smart tag.
+    /// @param element   The element name for the smart tag.
     /// @param attribute The [CTAttr] to add to the smart tag properties.
-    /// @return A new [CTSmartTagRun] object configured with the specified parameters.
-    public static CTSmartTagRun newSmartTag(String element, CTAttr attribute, Object... object) {
+    /// @param object    The content objects to add to the smart tag.
+    ///
+    /// @return A new [CTSmartTagRun] object configured with the specified
+    /// parameters.
+    public static CTSmartTagRun newSmartTag(
+            String element,
+            CTAttr attribute,
+            Object... object
+    ) {
         var smartTag = new CTSmartTagRun();
         smartTag.setElement(element);
 
@@ -391,8 +470,9 @@ public class WmlFactory {
 
     /// Creates a new [CTAttr] object with the specified name and value.
     ///
-    /// @param name The name of the attribute.
+    /// @param name  The name of the attribute.
     /// @param value The value of the attribute.
+    ///
     /// @return A new [CTAttr] object with the specified name and value.
     public static CTAttr newCtAttr(String name, String value) {
         var ctAttr = new CTAttr();
@@ -404,6 +484,7 @@ public class WmlFactory {
     /// Creates a new [Pict] object containing the provided inner object.
     ///
     /// @param innerObj The object to be included in the new pict element.
+    ///
     /// @return A new [Pict] object containing the provided inner object.
     public static Object newPict(Object innerObj) {
         var pict = new Pict();
@@ -414,7 +495,9 @@ public class WmlFactory {
 
     /// Creates a new [SdtBlock] object containing the provided inner object.
     ///
-    /// @param innerObj The object to be included in the new structured document tag block.
+    /// @param innerObj The object to be included in the new structured
+    /// document tag block.
+    ///
     /// @return A new [SdtBlock] object containing the provided inner object.
     public static SdtBlock newSdtBlock(Object innerObj) {
         var block = new SdtContentBlock();
@@ -427,7 +510,9 @@ public class WmlFactory {
 
     /// Creates a new [SdtRun] object containing the provided inner object.
     ///
-    /// @param innerObj The object to be included in the new structured document tag run.
+    /// @param innerObj The object to be included in the new structured
+    /// document tag run.
+    ///
     /// @return A new [SdtRun] object containing the provided inner object.
     public static SdtRun newSdtRun(Object innerObj) {
         var sdtContentRun = new CTSdtContentRun();
@@ -440,13 +525,24 @@ public class WmlFactory {
 
     /// Creates a new SVG inline object for use in a WordprocessingML document.
     ///
-    /// @param relationship The relationship object containing the unique identifier of the resource to be embedded.
-    /// @param altText The alternative text for the SVG image, used for accessibility purposes.
+    /// @param relationship The relationship object containing the unique
+    /// identifier of the resource to be embedded.
+    /// @param altText      The alternative text for the SVG image, used for
+    /// accessibility purposes.
     /// @param filenameHint The suggested filename for the SVG image.
-    /// @param scale The scale dimensions (cx and cy) for the SVG image, defining its size in the document.
+    /// @param scale        The scale dimensions (cx and cy) for the SVG image,
+    /// defining its size in the document.
+    ///
     /// @return A new instance of `Inline` containing the SVG image data.
-    /// @throws JAXBException If there is an error during the marshalling or unmarshalling of XML.
-    public static Inline newSVGInline(Relationship relationship, String altText, String filenameHint, Scale scale)
+    ///
+    /// @throws JAXBException If there is an error during the marshalling or
+    /// unmarshalling of XML.
+    public static Inline newSVGInline(
+            Relationship relationship,
+            String altText,
+            String filenameHint,
+            Scale scale
+    )
             throws JAXBException {
         String template = """
                 <wp:inline distB="0" distL="0" distR="0" distT="0"
@@ -505,7 +601,9 @@ public class WmlFactory {
         mappings.put("altText", altText);
         mappings.put("relId", relationship.getId());
 
-        var jaxbElement = (JAXBElement<?>) XmlUtils.unmarshallFromTemplate(template, mappings);
+        var jaxbElement = (JAXBElement<?>) XmlUtils.unmarshallFromTemplate(
+                template,
+                mappings);
         return (Inline) jaxbElement.getValue();
     }
 

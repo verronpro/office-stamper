@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /// A concrete implementation of TraceabilityReporter that collects all resolution events.
-///
-/// @since 4.0
 public final class TraceabilityReport
         implements TraceabilityReporter {
+
+    /// Default constructor.
+    public TraceabilityReport() {}
     private final List<Resolution> resolutions = new ArrayList<>();
 
     @Override
@@ -27,5 +28,9 @@ public final class TraceabilityReport
     }
 
     /// Represents a single placeholder resolution event.
+    ///
+    /// @param expression   the placeholder expression that was resolved
+    /// @param value        the resolved value of the expression
+    /// @param contextStack the nesting context stack at the time of resolution
     public record Resolution(String expression, Object value, List<Object> contextStack) {}
 }

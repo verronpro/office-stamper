@@ -25,6 +25,7 @@ public final class Image {
     /// Constructor for Image.
     ///
     /// @param source - content of the image as InputStream
+    ///
     /// @throws IOException if any.
     public Image(InputStream source)
             throws IOException {
@@ -33,7 +34,7 @@ public final class Image {
 
     /// Constructor for Image.
     ///
-    /// @param source content of the image as InputStream
+    /// @param source   content of the image as InputStream
     /// @param maxWidth max width of the image in twip
     public Image(InputStream source, @Nullable Integer maxWidth) {
         this(source, maxWidth, "dummyFileName", "dummyAltText");
@@ -41,11 +42,16 @@ public final class Image {
 
     /// Constructor for Image.
     ///
-    /// @param source content of the image as InputStream
-    /// @param maxWidth max width of the image in twip
+    /// @param source       content of the image as InputStream
+    /// @param maxWidth     max width of the image in twip
     /// @param filenameHint filename hint for the image.
-    /// @param altText alternative text for the image.
-    public Image(InputStream source, @Nullable Integer maxWidth, String filenameHint, String altText) {
+    /// @param altText      alternative text for the image.
+    public Image(
+            InputStream source,
+            @Nullable Integer maxWidth,
+            String filenameHint,
+            String altText
+    ) {
         this.source = source;
         this.maxWidth = maxWidth;
         this.filenameHint = filenameHint;
@@ -69,32 +75,58 @@ public final class Image {
 
     /// Constructor for Image.
     ///
-    /// @param imageBytes content of the image as an array of the bytes
-    /// @param maxWidth max width of the image in twip
+    /// @param imageBytes   content of the image as an array of the bytes
+    /// @param maxWidth     max width of the image in twip
     /// @param filenameHint filename hint for the image.
-    /// @param altText alternative text for the image.
-    public Image(byte[] imageBytes, @Nullable Integer maxWidth, String filenameHint, String altText) {
+    /// @param altText      alternative text for the image.
+    public Image(
+            byte[] imageBytes,
+            @Nullable Integer maxWidth,
+            String filenameHint,
+            String altText
+    ) {
         var inputStream = new ByteArrayInputStream(imageBytes);
         this(inputStream, maxWidth, filenameHint, altText);
     }
 
+    /// Returns the byte content of the image.
+    ///
+    /// The bytes are lazily cached from the source [InputStream] on first
+    /// access. Subsequent calls return the cached bytes without re-reading the
+    /// stream.
+    ///
+    /// @return the byte content of the image
+    ///
+    /// @throws OfficeStamperException if the image bytes cannot be read from
+    ///  the source stream
     public synchronized byte[] getBytes() {
         if (bytes == null) try (InputStream source = this.source) {
             bytes = source.readAllBytes();
         } catch (IOException e) {
-            throw new OfficeStamperException("Failed to cache the image bytes", e);
+            throw new OfficeStamperException("Failed to cache the image bytes",
+                    e);
         }
         return bytes;
     }
 
+    /// Returns the alternative text for the image.
+    ///
+    /// @return the alternative text
     public String getAltText() {
         return altText;
     }
 
+    /// Returns the filename hint for the image.
+    ///
+    /// @return the filename hint
     public String getFilenameHint() {
         return filenameHint;
     }
 
+    /// Returns the maximum width of the image in twip, if specified.
+    ///
+    /// @return an [Optional] containing the maximum width in twip, or empty if
+    /// not specified
     public Optional<Integer> getMaxWidth() {
         return ofNullable(maxWidth);
     }

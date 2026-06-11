@@ -1,4 +1,7 @@
-/// Test module for Office-stamper engine.
+/// Test suite for the OfficeStamper engine module.
+///
+/// Contains integration tests, architecture tests, and shared test utilities
+/// for validating the [pro.verron.officestamper/] module.
 module pro.verron.officestamper.test {
     requires pro.verron.officestamper;
     requires org.objectweb.asm;

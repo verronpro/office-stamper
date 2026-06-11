@@ -1,4 +1,5 @@
-/// Provides builders for creating and registering custom functions in the configuration.
+/// Builders for creating and registering custom SpEL functions in the stamper
+/// configuration.
 ///
 /// Ensures non-null values by default.
 @NullMarked

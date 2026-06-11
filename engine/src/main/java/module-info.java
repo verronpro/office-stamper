@@ -1,24 +1,19 @@
-/// The module descriptor for the `pro.verron.officestamper` module.
+/// The core template-stamping engine for OfficeStamper.
 ///
-/// This module provides functionalities related to office document manipulation and stamping, leveraging libraries like
-/// docx4j and Spring Framework.
+/// This module provides the main DOCX stamping functionality, processing Spring
+/// Expression Language (SpEL) expressions embedded in Word templates and
+/// replacing them with values from a context object. It supports
+/// comment-based directives for conditional display, repetition, and content
+/// replacement, along with a configurable pipeline of pre-processors,
+/// comment processors, resolvers, and post-processors.
 ///
-/// Requirements:
-/// - Requires `spring.core` and `spring.expression` for using Spring Framework functionalities.
-/// - Requires `org.docx4j.core` transitively for handling office document processing.
-/// - Optionally requires `org.apache.commons.io`, `org.slf4j`, and `jakarta.xml.bind` as static dependencies.
-/// - Requires `org.jetbrains.annotations` for annotation support.
-/// - Requires `org.docx4j.openxml_objects` for OpenXML document handling.
-///
-/// Module Exports:
-/// - Exports `pro.verron.officestamper.api` for public API access.
-/// - Exports `pro.verron.officestamper.preset` for predefined document processing utilities.
-/// - Exports `pro.verron.officestamper.experimental` and `pro.verron.officestamper.preset.preprocessors.placeholders`
-/// to `pro.verron.officestamper.test` for experimental features and testing purposes.
-///
-/// Opens:
-/// - Opens `pro.verron.officestamper.api` and `pro.verron.officestamper.preset` for reflective access.
-/// - Opens `pro.verron.officestamper.experimental` specifically to `pro.verron.officestamper.test`.
+/// ## Exported Packages
+/// - [pro.verron.officestamper.api] - Core API interfaces and types for
+/// document stamping
+/// - [pro.verron.officestamper.preset] - Pre-configured stampers,
+/// configurations, and ready-made processors and resolvers
+/// - [pro.verron.officestamper.experimental] - Experimental stampers for PPTX
+/// and XLSX formats
 module pro.verron.officestamper {
     requires spring.core;
     requires spring.expression;

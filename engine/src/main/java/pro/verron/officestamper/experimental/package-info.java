@@ -1,9 +1,10 @@
-/// This package contains experimental implementations of the OfficeStamper API.
+/// Experimental stampers for additional office formats.
 ///
-/// These classes, such as [pro.verron.officestamper.experimental.ExcelStamper] and
-/// [pro.verron.officestamper.experimental.PptxPart], are still in development
-/// and may be subject to significant changes in future versions. They provide
-/// support for additional office formats like Excel and PowerPoint.
+/// Contains early-stage implementations such as
+/// [ExcelStamper][pro.verron.officestamper.experimental.ExcelStamper] and
+/// [PowerpointStamper][pro.verron.officestamper.experimental.PowerpointStamper]
+/// for XLSX and PPTX templates. These classes are still in development and may
+/// change significantly in future versions.
 ///
 /// Ensures non-null values by default.
 @NullMarked

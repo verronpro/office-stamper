@@ -1,17 +1,25 @@
-/// The [pro.verron.officestamper.utils] module provides low-level utilities shared by the OfficeStamper engine and
-/// associated tools.
+/// Low-level utility classes shared across the OfficeStamper modules.
 ///
-/// This module contains various helper classes for working with WordprocessingML structures from docx4j, along with
-/// general-purpose utilities for bits, bytes, functions, and iterators that are used by higher-level modules.
+/// This module provides helper classes for working with WordprocessingML (WML),
+/// PresentationML (PML), and SpreadsheetML (SML) structures from docx4j,
+/// Open Packaging Format utilities, SVG and image handling, along with
+/// general-purpose utilities for functional programming and iteration.
+///
 /// ## Exported Packages
-///
-///     - [pro.verron.officestamper.utils.wml] - Utilities and factories for working with WordprocessingML (WML) and
-/// DOCX documents
-///     - [pro.verron.officestamper.utils.openpackaging] - Utilities for working with Open Packaging Format
-///     - [pro.verron.officestamper.utils.function] - Functional programming helpers and utilities
-///     - [pro.verron.officestamper.utils.iterator] - Iterator implementations and utilities
-///
-/// @since 3.0
+/// - [pro.verron.officestamper.utils.wml] - Utilities and factories for
+/// WordprocessingML and DOCX documents
+/// - [pro.verron.officestamper.utils.openpackaging] - Utilities for the Open
+/// Packaging Format
+/// - [pro.verron.officestamper.utils.function] - Functional programming
+/// helpers
+/// - [pro.verron.officestamper.utils.iterator] - Iterator implementations and
+/// utilities
+/// - [pro.verron.officestamper.utils.pml] - Utilities for PresentationML and
+/// PPTX documents
+/// - [pro.verron.officestamper.utils.sml] - Utilities for SpreadsheetML and
+/// XLSX documents
+/// - [pro.verron.officestamper.utils.svg] - SVG processing utilities
+/// - [pro.verron.officestamper.utils.image] - Image handling utilities
 module pro.verron.officestamper.utils {
     requires org.docx4j.core;
 

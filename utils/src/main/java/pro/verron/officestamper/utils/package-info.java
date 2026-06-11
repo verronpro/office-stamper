@@ -1,4 +1,4 @@
-/// Utilities used by OfficeStamper.
+/// Low-level utility classes shared across the OfficeStamper modules.
 ///
 /// Ensures non-null values by default.
 @NullMarked

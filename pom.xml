@@ -303,7 +303,7 @@
             <dependency>
                 <groupId>pro.verron.asciidoc</groupId>
                 <artifactId>asciidoc-preview</artifactId>
-                <version>3.5</version>
+                <version>3.7</version>
             </dependency>
             <dependency>
                 <groupId>pro.verron.imageio</groupId>

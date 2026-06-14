@@ -12,11 +12,14 @@ import java.util.regex.Pattern;
 import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
 import static pro.verron.officestamper.utils.wml.WmlUtils.insertSmartTag;
 
-/// The [PlaceholderHooker] class is a pre-processor that prepares inline placeholders in a [WordprocessingMLPackage]
-/// document. It searches for placeholders that match a given pattern and wraps them with a specified XML element to
+/// The [PlaceholderHooker] class is a pre-processor that prepares inline
+/// placeholders in a [WordprocessingMLPackage]
+/// document. It searches for placeholders that match a given pattern and wraps
+/// them with a specified XML element to
 /// ensure proper processing by the OfficeStamper engine.
 ///
-/// This pre-processor is typically used to identify and mark inline expressions within paragraphs, making them
+/// This pre-processor is typically used to identify and mark inline expressions
+/// within paragraphs, making them
 /// recognizable for subsequent processing steps.
 public class PlaceholderHooker
         implements PreProcessor {
@@ -25,25 +28,33 @@ public class PlaceholderHooker
     private final String element;
 
 
-    /// Constructs a new [PlaceholderHooker] instance with the specified regular expression and XML element
+    /// Constructs a new [PlaceholderHooker] instance with the specified regular
+    /// expression and XML element
     /// name.
     ///
-    /// @param regex the regular expression pattern used to identify inline placeholders in the document. This
-    ///         pattern should contain at least two capturing groups where the second group represents the actual
+    /// @param regex   the regular expression pattern used to identify inline
+    /// placeholders in the document. This
+    ///         pattern should contain at least two capturing groups where the
+    /// second group represents the actual
     ///         placeholder content.
-    /// @param element the name of the XML element to wrap around identified placeholders. This element will be
+    /// @param element the name of the XML element to wrap around identified
+    /// placeholders. This element will be
     ///         used to mark the placeholders for further processing.
     public PlaceholderHooker(String regex, String element) {
         this(Pattern.compile(regex, Pattern.DOTALL), element);
     }
 
 
-    /// Constructs a new [PlaceholderHooker] instance with the specified pattern and XML element name.
+    /// Constructs a new [PlaceholderHooker] instance with the specified pattern
+    /// and XML element name.
     ///
-    /// @param pattern the compiled regular expression pattern used to identify inline placeholders in the
-    ///         document. This pattern should contain at least two capturing groups where the second group represents
+    /// @param pattern the compiled regular expression pattern used to identify
+    /// inline placeholders in the
+    ///         document. This pattern should contain at least two capturing
+    /// groups where the second group represents
     ///         the actual placeholder content.
-    /// @param element the name of the XML element to wrap around identified placeholders. This element will be
+    /// @param element the name of the XML element to wrap around identified
+    /// placeholders. This element will be
     ///         used to mark the placeholders for further processing.
     public PlaceholderHooker(Pattern pattern, String element) {
         this.pattern = pattern;
@@ -62,7 +73,11 @@ public class PlaceholderHooker
                 var start = matcher.start(1);
                 var end = matcher.end(1);
                 var placeholder = matcher.group(2);
-                var newContent = insertSmartTag(element, paragraph, placeholder, start, end);
+                var newContent = insertSmartTag(element,
+                        paragraph,
+                        placeholder,
+                        start,
+                        end);
                 var content = paragraph.getContent();
                 content.clear();
                 content.addAll(newContent);
@@ -72,10 +87,13 @@ public class PlaceholderHooker
         }
     }
 
-    /// A [TraversalUtilVisitor] implementation that collects paragraphs matching a given pattern.
+    /// A [TraversalUtilVisitor] implementation that collects paragraphs
+    /// matching a given pattern.
     ///
-    /// This class is used to traverse a document and collect all paragraph elements ([P]) that match a specified
-    /// regular expression pattern. The collected paragraphs can be retrieved using the [#paragraphs()] method.
+    /// This class is used to traverse a document and collect all paragraph
+    /// elements ([P]) that match a specified
+    /// regular expression pattern. The collected paragraphs can be retrieved
+    /// using the [#paragraphs()] method.
     public static class ParagraphCollector
             extends TraversalUtilVisitor<P> {
 
@@ -85,7 +103,8 @@ public class PlaceholderHooker
 
         /// Constructs a new [ParagraphCollector] with the specified pattern.
         ///
-        /// @param pattern the regular expression pattern to match against paragraphs
+        /// @param pattern the regular expression pattern to match against
+        /// paragraphs
         public ParagraphCollector(Pattern pattern) {
             this.pattern = pattern;
         }
@@ -101,7 +120,8 @@ public class PlaceholderHooker
 
         /// Returns the list of collected paragraphs that matched the pattern.
         ///
-        /// @return an unmodifiable list of paragraphs matching the specified pattern
+        /// @return an unmodifiable list of paragraphs matching the specified
+        ///  pattern
         public List<P> paragraphs() {
             return results;
         }

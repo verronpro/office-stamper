@@ -36,7 +36,8 @@ import static java.util.stream.Collectors.joining;
 import static org.docx4j.XmlUtils.unwrap;
 import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
-/// Utility class with methods to help in the interaction with [WordprocessingMLPackage] documents and their elements,
+/// Utility class with methods to help in the interaction with
+/// [WordprocessingMLPackage] documents and their elements,
 /// such as comments, parents, and child elements.
 public final class WmlUtils {
 
@@ -47,43 +48,64 @@ public final class WmlUtils {
         throw new UtilsException("Utility class shouldn't be instantiated");
     }
 
-    /// Attempts to find the first parent of a given child element that is an instance of the specified class within the
+    /// Attempts to find the first parent of a given child element that is an
+    /// instance of the specified class within the
     /// defined search depth.
     ///
-    /// @param child the [Child] element from which the search for a parent begins.
+    /// @param child the [Child] element from which the search for a parent
+    /// begins.
     /// @param clazz the [Class] type to match for the parent
-    /// @param depth the maximum amount levels to traverse up the parent hierarchy
-    /// @param <T> the type of the parent class to search for
-    /// @return an [Optional] containing the first parent matching the specified class, or an empty [Optional] if no
+    /// @param depth the maximum amount levels to traverse up the parent
+    /// hierarchy
+    /// @param <T>   the type of the parent class to search for
+    ///
+    /// @return an [Optional] containing the first parent matching the specified
+    /// class, or an empty [Optional] if no
     ///         match found.
-    public static <T> Optional<T> getFirstParentWithClass(Child child, Class<T> clazz, int depth) {
+    public static <T> Optional<T> getFirstParentWithClass(
+            Child child,
+            Class<T> clazz,
+            int depth
+    ) {
         var parent = child.getParent();
         var currentDepth = 0;
         while (currentDepth <= depth) {
             currentDepth++;
             if (parent == null) return empty();
-            if (clazz.isInstance(parent)) return Optional.of(clazz.cast(parent));
+            if (clazz.isInstance(parent))
+                return Optional.of(clazz.cast(parent));
             if (parent instanceof Child next) parent = next.getParent();
         }
         return empty();
     }
 
-    /// Extracts a list of comment elements from the specified [WordprocessingMLPackage] document.
+    /// Extracts a list of comment elements from the specified
+    /// [WordprocessingMLPackage] document.
     ///
-    /// @param document the [WordprocessingMLPackage] document from which to extract comment elements
-    /// @return a list of [Child] objects representing the extracted comment elements
+    /// @param document the [WordprocessingMLPackage] document from which to
+    /// extract comment elements
+    ///
+    /// @return a list of [Child] objects representing the extracted comment
+    /// elements
     public static List<Child> extractCommentElements(WordprocessingMLPackage document) {
         var commentFinder = new CommentFinder();
         TraversalUtil.visit(document, true, commentFinder);
         return commentFinder.getCommentElements();
     }
 
-    /// Finds a comment with the given ID in the specified [WordprocessingMLPackage] document.
+    /// Finds a comment with the given ID in the specified
+    /// [WordprocessingMLPackage] document.
     ///
-    /// @param document the [WordprocessingMLPackage] document to search for the comment
-    /// @param id the ID of the comment to find
-    /// @return an [Optional] containing the [Comment] if found, or an empty [Optional] if not found.
-    public static Optional<Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
+    /// @param document the [WordprocessingMLPackage] document to search for
+    /// the comment
+    /// @param id       the ID of the comment to find
+    ///
+    /// @return an [Optional] containing the [Comment] if found, or an empty
+    /// [Optional] if not found.
+    public static Optional<Comment> findComment(
+            WordprocessingMLPackage document,
+            BigInteger id
+    ) {
         var name = OpenpackagingFactory.newPartName("/word/comments.xml");
         var parts = document.getParts();
         var wordComments = (CommentsPart) parts.get(name);
@@ -110,19 +132,25 @@ public final class WmlUtils {
     }
 
 
-    /// Removes the specified child element from its parent container. Depending on the type of the parent element, the
-    /// removal process is delegated to the appropriate helper method. If the child is contained within a table cell and
-    /// the cell is empty after removal, an empty paragraph is added to the cell.
+    /// Removes the specified child element from its parent container. Depending
+    /// on the type of the parent element, the
+    /// removal process is delegated to the appropriate helper method. If the
+    /// child is contained within a table cell and
+    /// the cell is empty after removal, an empty paragraph is added to the
+    /// cell.
     ///
     /// @param child the [Child] element to be removed
-    /// @throws UtilsException if the parent of the child element is of an unexpected type
+    ///
+    /// @throws UtilsException if the parent of the child element is of an
+    /// unexpected type
     public static void remove(Child child) {
         switch (child.getParent()) {
             case ContentAccessor parent -> remove(parent, child);
             case CTFootnotes parent -> remove(parent, child);
             case CTEndnotes parent -> remove(parent, child);
             case SdtRun parent -> remove(parent, child);
-            default -> throw new UtilsException("Unexpected value: " + child.getParent());
+            default -> throw new UtilsException(
+                    "Unexpected value: " + child.getParent());
         }
         if (child.getParent() instanceof Tc cell) ensureValidity(cell);
     }
@@ -156,11 +184,14 @@ public final class WmlUtils {
               .remove(child);
     }
 
-    /// Utility method to ensure the validity of a table cell by adding an empty paragraph if necessary.
+    /// Utility method to ensure the validity of a table cell by adding an empty
+    /// paragraph if necessary.
     ///
     /// @param cell the [Tc] to be checked and updated.
     public static void ensureValidity(Tc cell) {
-        if (!containsAnElementOfAnyClasses(cell.getContent(), P.class, Tbl.class)) {
+        if (!containsAnElementOfAnyClasses(cell.getContent(),
+                P.class,
+                Tbl.class)) {
             addEmptyParagraph(cell);
         }
     }
@@ -171,9 +202,13 @@ public final class WmlUtils {
         return Objects.equals(o1, o2);
     }
 
-    private static boolean containsAnElementOfAnyClasses(Collection<Object> collection, Class<?>... classes) {
+    private static boolean containsAnElementOfAnyClasses(
+            Collection<Object> collection,
+            Class<?>... classes
+    ) {
         return collection.stream()
-                         .anyMatch(element -> isAnElementOfAnyClasses(element, classes));
+                         .anyMatch(element -> isAnElementOfAnyClasses(element,
+                                 classes));
     }
 
     private static void addEmptyParagraph(Tc cell) {
@@ -182,7 +217,10 @@ public final class WmlUtils {
         cellContent.add(emptyParagraph);
     }
 
-    private static boolean isAnElementOfAnyClasses(Object element, Class<?>... classes) {
+    private static boolean isAnElementOfAnyClasses(
+            Object element,
+            Class<?>... classes
+    ) {
         for (var clazz : classes) {
             if (clazz.isInstance(unwrapJAXBElement(element))) return true;
         }
@@ -190,17 +228,25 @@ public final class WmlUtils {
     }
 
     private static Object unwrapJAXBElement(Object element) {
-        return element instanceof JAXBElement<?> jaxbElement ? jaxbElement.getValue() : element;
+        return element instanceof JAXBElement<?> jaxbElement
+                ? jaxbElement.getValue()
+                : element;
     }
 
-    /// Extracts textual content from a given object, handling various object types, such as runs, text elements, and
-    /// other specific constructs. The method accounts for different cases, such as run breaks, hyphens, and other
-    /// document-specific constructs, and converts them into corresponding string representations.
+    /// Extracts textual content from a given object, handling various object
+    /// types, such as runs, text elements, and
+    /// other specific constructs. The method accounts for different cases, such
+    /// as run breaks, hyphens, and other
+    /// document-specific constructs, and converts them into corresponding
+    /// string representations.
     ///
-    /// @param content the object from which text content is to be extracted. This could be of various types
-    ///         such as [R], [JAXBElement], [Text] or specific document elements.
+    /// @param content the object from which text content is to be extracted.
+    /// This could be of various types
+    ///         such as [R], [JAXBElement], [Text] or specific document
+    /// elements.
     ///
-    /// @return a string representation of the extracted textual content. If the object's type is not handled, an empty
+    /// @return a string representation of the extracted textual content. If the
+    /// object's type is not handled, an empty
     ///         string is returned.
     public static String asString(Object content) {
         return switch (content) {
@@ -208,10 +254,12 @@ public final class WmlUtils {
             case R run -> asString(run.getContent());
             case JAXBElement<?> jaxbElement when jaxbElement.getName()
                                                             .getLocalPart()
-                                                            .equals("instrText") -> "<instrText>";
+                                                            .equals("instrText") ->
+                    "<instrText>";
             case JAXBElement<?> jaxbElement when !jaxbElement.getName()
                                                              .getLocalPart()
-                                                             .equals("instrText") -> asString(jaxbElement.getValue());
+                                                             .equals("instrText") ->
+                    asString(jaxbElement.getValue());
             case Text text -> asString(text);
             case R.Tab _ -> "\t";
             case R.Cr _ -> "\n";
@@ -222,18 +270,22 @@ public final class WmlUtils {
 
             case R.NoBreakHyphen _ -> "‑";
             case R.SoftHyphen _ -> "\u00AD";
-            case R.LastRenderedPageBreak _, R.AnnotationRef _, R.CommentReference _, Drawing _ -> "";
+            case R.LastRenderedPageBreak _, R.AnnotationRef _,
+                 R.CommentReference _, Drawing _ -> "";
             case FldChar _ -> "<fldchar>";
             case CTFtnEdnRef ref -> "<ref(%s)>".formatted(ref.getId());
-            case R.Sym sym -> "<sym(%s, %s)>".formatted(sym.getFont(), sym.getChar());
+            case R.Sym sym ->
+                    "<sym(%s, %s)>".formatted(sym.getFont(), sym.getChar());
             case List<?> list -> list.stream()
                                      .map(WmlUtils::asString)
                                      .collect(joining());
             case ProofErr _, CTShadow _ -> "";
             case SdtRun sdtRun -> asString(sdtRun.getSdtContent());
-            case ContentAccessor contentAccessor -> asString(contentAccessor.getContent());
-            case Pict pict -> asString(pict.getAnyAndAny());
-            case VmlShapeElements vmlShapeElements -> asString(vmlShapeElements.getEGShapeElements());
+            case ContentAccessor contentAccessor ->
+                    asString(contentAccessor.getContent());
+            case Pict pict -> "<pict(%s)>".formatted(pict.getAnchorId());
+            case VmlShapeElements vmlShapeElements ->
+                    asString(vmlShapeElements.getEGShapeElements());
             case CTTextbox textbox -> asString(textbox.getTxbxContent());
             case CommentRangeStart _, CommentRangeEnd _ -> "";
             default -> {
@@ -245,23 +297,34 @@ public final class WmlUtils {
 
     private static String asString(Text text) {
         // According to specs, the 'space' value can be empty or 'preserve'.
-        // In the first case, we are supposed to ignore spaces around the 'text' value.
+        // In the first case, we are supposed to ignore spaces around the
+        // 'text' value.
         var value = text.getValue();
         var space = text.getSpace();
         return Objects.equals(space, PRESERVE) ? value : value.trim();
     }
 
-    /// Inserts a smart tag with the specified element type into the given paragraph at the position of the expression.
+    /// Inserts a smart tag with the specified element type into the given
+    /// paragraph at the position of the expression.
     ///
-    /// @param element the element type for the smart tag
-    /// @param paragraph the [P] paragraph to insert the smart tag into
+    /// @param element    the element type for the smart tag
+    /// @param paragraph  the [P] paragraph to insert the smart tag into
     /// @param expression the expression to replace with the smart tag
-    /// @param start the start index of the expression
-    /// @param end the end index of the expression
+    /// @param start      the start index of the expression
+    /// @param end        the end index of the expression
+    ///
     /// @return a list of [Object] representing the updated content
-    public static List<Object> insertSmartTag(String element, P paragraph, String expression, int start, int end) {
+    public static List<Object> insertSmartTag(
+            String element,
+            P paragraph,
+            String expression,
+            int start,
+            int end
+    ) {
         var run = newRun(expression);
-        var smartTag = newSmartTag("officestamper", newCtAttr("type", element), run);
+        var smartTag = newSmartTag("officestamper",
+                newCtAttr("type", element),
+                run);
         findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
         return replace(paragraph, List.of(smartTag), start, end);
     }
@@ -269,10 +332,16 @@ public final class WmlUtils {
     /// Finds the first affected run properties within the specified range.
     ///
     /// @param contentAccessor the [ContentAccessor] to search in
-    /// @param start the start index of the range
-    /// @param end the end index of the range
-    /// @return an [Optional] containing the [RPr] if found, or an empty [Optional] if not found
-    public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
+    /// @param start           the start index of the range
+    /// @param end             the end index of the range
+    ///
+    /// @return an [Optional] containing the [RPr] if found, or an empty
+    /// [Optional] if not found
+    public static Optional<RPr> findFirstAffectedRunPr(
+            ContentAccessor contentAccessor,
+            int start,
+            int end
+    ) {
         var iterator = new DocxIterator(contentAccessor).selectClass(R.class);
         var runs = StandardRun.wrap(iterator);
 
@@ -285,12 +354,14 @@ public final class WmlUtils {
         return ofNullable(firstRunPr);
     }
 
-    /// Replaces content within the specified range with the provided insert objects.
+    /// Replaces content within the specified range with the provided insert
+    /// objects.
     ///
     /// @param contentAccessor the [ContentAccessor] in which to replace content
-    /// @param insert the list of objects to insert
-    /// @param startIndex the start index of the range to replace
-    /// @param endIndex the end index of the range to replace
+    /// @param insert          the list of objects to insert
+    /// @param startIndex      the start index of the range to replace
+    /// @param endIndex        the end index of the range to replace
+    ///
     /// @return a list of [Object] representing the updated content
     public static List<Object> replace(
             ContentAccessor contentAccessor,
@@ -301,7 +372,8 @@ public final class WmlUtils {
         var iterator = new DocxIterator(contentAccessor).selectClass(R.class);
         var runs = StandardRun.wrap(iterator);
         var affectedRuns = runs.stream()
-                               .filter(run -> run.isTouchedByRange(startIndex, endIndex))
+                               .filter(run -> run.isTouchedByRange(startIndex,
+                                       endIndex))
                                .toList();
 
         var firstRun = affectedRuns.getFirst();
@@ -311,10 +383,13 @@ public final class WmlUtils {
 
         boolean singleRun = affectedRuns.size() == 1;
         if (singleRun) {
-            boolean expressionSpansCompleteRun = endIndex - startIndex == firstRun.length();
-            boolean expressionAtStartOfRun = startIndex == firstRun.startIndex();
+            boolean expressionSpansCompleteRun =
+                    endIndex - startIndex == firstRun.length();
+            boolean expressionAtStartOfRun =
+                    startIndex == firstRun.startIndex();
             boolean expressionAtEndOfRun = endIndex == firstRun.endIndex();
-            boolean expressionWithinRun = startIndex > firstRun.startIndex() && endIndex <= firstRun.endIndex();
+            boolean expressionWithinRun = startIndex > firstRun.startIndex()
+                                          && endIndex <= firstRun.endIndex();
 
             if (expressionSpansCompleteRun) {
                 firstRun.replace(startIndex, endIndex, "");
@@ -331,15 +406,22 @@ public final class WmlUtils {
             else if (expressionWithinRun) {
                 var originalRun = firstRun.run();
                 var originalRPr = originalRun.getRPr();
-                var newStartRun = create(firstRun.left(startIndex), originalRPr);
+                var newStartRun = create(firstRun.left(startIndex),
+                        originalRPr);
                 var newEndRun = create(firstRun.right(endIndex), originalRPr);
                 firstSiblings.remove(firstIndex);
-                firstSiblings.addAll(firstIndex, wrap(newStartRun, insert, newEndRun));
+                firstSiblings.addAll(firstIndex,
+                        wrap(newStartRun, insert, newEndRun));
             }
         }
         else {
             StandardRun lastRun = affectedRuns.getLast();
-            removeExpression(firstSiblings, firstRun, startIndex, endIndex, lastRun, affectedRuns);
+            removeExpression(firstSiblings,
+                    firstRun,
+                    startIndex,
+                    endIndex,
+                    lastRun,
+                    affectedRuns);
             // add replacement run between first and last run
             firstSiblings.addAll(firstIndex + 1, insert);
         }
@@ -349,7 +431,8 @@ public final class WmlUtils {
     /// Creates a new run with the specified text, and the specified run style.
     ///
     /// @param text the initial text of the [R].
-    /// @param rPr the [RPr] to apply to the run
+    /// @param rPr  the [RPr] to apply to the run
+    ///
     /// @return the newly created [R].
     public static R create(String text, RPr rPr) {
         R newStartRun = newRun(text);
@@ -357,7 +440,11 @@ public final class WmlUtils {
         return newStartRun;
     }
 
-    private static Collection<?> wrap(R prefix, Collection<?> elements, R suffix) {
+    private static Collection<?> wrap(
+            R prefix,
+            Collection<?> elements,
+            R suffix
+    ) {
         var merge = new ArrayList<>();
         merge.add(prefix);
         merge.addAll(elements);
@@ -377,7 +464,8 @@ public final class WmlUtils {
         firstRun.replace(matchStartIndex, matchEndIndex, "");
         // remove all runs between first and last
         for (StandardRun run : affectedRuns) {
-            if (!Objects.equals(run, firstRun) && !Objects.equals(run, lastRun)) {
+            if (!Objects.equals(run, firstRun) && !Objects.equals(run,
+                    lastRun)) {
                 contents.remove(run.run());
             }
         }
@@ -385,10 +473,12 @@ public final class WmlUtils {
         lastRun.replace(matchStartIndex, matchEndIndex, "");
     }
 
-    /// Creates a new run with the specified text and inherits the style of the parent paragraph.
+    /// Creates a new run with the specified text and inherits the style of the
+    /// parent paragraph.
     ///
-    /// @param text the initial text of the [R].
+    /// @param text        the initial text of the [R].
     /// @param paragraphPr the [PPr] to apply to the run
+    ///
     /// @return the newly created [R].
     public static R create(String text, PPr paragraphPr) {
         R run = newRun(text);
@@ -396,9 +486,10 @@ public final class WmlUtils {
         return run;
     }
 
-    /// Applies the style of the given paragraph to the given content object (if the content object is a [R]).
+    /// Applies the style of the given paragraph to the given content object (if
+    /// the content object is a [R]).
     ///
-    /// @param run the [R] to which the style should be applied.
+    /// @param run         the [R] to which the style should be applied.
     /// @param paragraphPr the [PPr] containing the style to apply
     public static void applyParagraphStyle(R run, @Nullable PPr paragraphPr) {
         if (paragraphPr == null) return;
@@ -411,7 +502,7 @@ public final class WmlUtils {
 
     /// Sets the text of the given run to the given value.
     ///
-    /// @param run the [R] whose text to change.
+    /// @param run  the [R] whose text to change.
     /// @param text the text to set.
     public static void setText(R run, String text) {
         run.getContent()
@@ -421,12 +512,15 @@ public final class WmlUtils {
            .add(textObj);
     }
 
-    /// Replaces all occurrences of the specified expression with the provided run objects.
+    /// Replaces all occurrences of the specified expression with the provided
+    /// run objects.
     ///
-    /// @param contentAccessor the [ContentAccessor] in which to replace the expression
-    /// @param expression the expression to replace
-    /// @param insert the list of objects to insert
-    /// @param onRPr a consumer to handle [RPr] properties
+    /// @param contentAccessor the [ContentAccessor] in which to replace the
+    /// expression
+    /// @param expression      the expression to replace
+    /// @param insert          the list of objects to insert
+    /// @param onRPr           a consumer to handle [RPr] properties
+    ///
     /// @return a list of [Object] representing the updated content
     public static List<Object> replaceExpressionWithRun(
             ContentAccessor contentAccessor,
@@ -436,30 +530,46 @@ public final class WmlUtils {
     ) {
         var text = asString(contentAccessor);
         int matchStartIndex = text.indexOf(expression);
-        if (matchStartIndex == -1) /*nothing to replace*/ return contentAccessor.getContent();
+        if (matchStartIndex == -1) /*nothing to replace*/
+            return contentAccessor.getContent();
         int matchEndIndex = matchStartIndex + expression.length();
-        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(onRPr);
+        findFirstAffectedRunPr(contentAccessor,
+                matchStartIndex,
+                matchEndIndex).ifPresent(onRPr);
         return replace(contentAccessor, insert, matchStartIndex, matchEndIndex);
     }
 
-    /// Checks if the given [CTSmartTagRun] contains an element that matches the expected element.
+    /// Checks if the given [CTSmartTagRun] contains an element that matches the
+    /// expected element.
     ///
-    /// @param tag the [CTSmartTagRun] object to be evaluated
+    /// @param tag             the [CTSmartTagRun] object to be evaluated
     /// @param expectedElement the expected element to compare against
-    /// @return true if the actual element of the given tag matches the expected element, false otherwise
-    public static boolean isTagElement(CTSmartTagRun tag, String expectedElement) {
+    ///
+    /// @return true if the actual element of the given tag matches the expected
+    /// element, false otherwise
+    public static boolean isTagElement(
+            CTSmartTagRun tag,
+            String expectedElement
+    ) {
         var actualElement = tag.getElement();
         return Objects.equals(expectedElement, actualElement);
     }
 
-    /// Sets or updates an attribute for the specified smart tag. This method ensures that the provided attribute
-    /// key-value pair is added to the smart tag's attribute list. If the attribute already exists, its value is
-    /// updated. If the smart tag or its attribute metadata is null, they are initialized.
+    /// Sets or updates an attribute for the specified smart tag. This method
+    /// ensures that the provided attribute
+    /// key-value pair is added to the smart tag's attribute list. If the
+    /// attribute already exists, its value is
+    /// updated. If the smart tag or its attribute metadata is null, they are
+    /// initialized.
     ///
-    /// @param smartTag the smart tag object to modify
-    /// @param attributeKey the key of the attribute to set or update
+    /// @param smartTag       the smart tag object to modify
+    /// @param attributeKey   the key of the attribute to set or update
     /// @param attributeValue the value to assign to the specified attribute key
-    public static void setTagAttribute(CTSmartTagRun smartTag, String attributeKey, String attributeValue) {
+    public static void setTagAttribute(
+            CTSmartTagRun smartTag,
+            String attributeKey,
+            String attributeValue
+    ) {
         var smartTagPr = smartTag.getSmartTagPr();
         if (smartTagPr == null) {
             smartTagPr = new CTSmartTagPr();
@@ -482,34 +592,53 @@ public final class WmlUtils {
 
     /// Creates a new attribute object with the specified key and value.
     ///
-    /// @param attributeKey the key for the new attribute
+    /// @param attributeKey   the key for the new attribute
     /// @param attributeValue the value for the new attribute
+    ///
     /// @return a CTAttr object representing the new attribute
-    public static CTAttr newAttribute(String attributeKey, String attributeValue) {
+    public static CTAttr newAttribute(
+            String attributeKey,
+            String attributeValue
+    ) {
         return newCtAttr(attributeKey, attributeValue);
     }
 
-    /// Deletes all elements associated with the specified comment from the provided list of items.
+    /// Deletes all elements associated with the specified comment from the
+    /// provided list of items.
     ///
     /// @param commentId the ID of the comment to be deleted
-    /// @param items the list of items from which elements associated with the comment will be deleted
-    public static void deleteCommentFromElements(BigInteger commentId, List<Object> items) {
+    /// @param items     the list of items from which elements associated with
+    /// the comment will be deleted
+    public static void deleteCommentFromElements(
+            BigInteger commentId,
+            List<Object> items
+    ) {
         record DeletableItems(List<Object> container, List<Object> items) {
-            static List<DeletableItems> findAll(List<Object> items, BigInteger commentId) {
-                Predicate<BigInteger> predicate = bi -> Objects.equals(bi, commentId);
+            static List<DeletableItems> findAll(
+                    List<Object> items,
+                    BigInteger commentId
+            ) {
+                Predicate<BigInteger> predicate = bi -> Objects.equals(bi,
+                        commentId);
                 List<DeletableItems> elementsToRemove = new ArrayList<>();
                 items.forEach(item -> {
                     Object unwrapped = unwrap(item);
-                    // Recursively finds deletable items associated with comment ID
+                    // Recursively finds deletable items associated with
+                    // comment ID
                     elementsToRemove.addAll(switch (unwrapped) {
                         case CTSmartTagRun str when str.getContent()
                                                        .stream()
-                                                       .anyMatch(i -> i instanceof CommentRangeStart crs
-                                                                      && predicate.test(crs.getId())) ->
+                                                       .anyMatch(i ->
+                                                               i instanceof CommentRangeStart crs
+                                                               && predicate.test(
+                                                                       crs.getId())) ->
                                 from(items, item);
-                        case CommentRangeStart crs when predicate.test(crs.getId()) -> from(items, item);
-                        case CommentRangeEnd cre when predicate.test(cre.getId()) -> from(items, item);
-                        case R.CommentReference rcr when predicate.test(rcr.getId()) -> from(items, item);
+                        case CommentRangeStart crs when predicate.test(crs.getId()) ->
+                                from(items, item);
+                        case CommentRangeEnd cre when predicate.test(cre.getId()) ->
+                                from(items, item);
+                        case R.CommentReference rcr when predicate.test(rcr.getId()) ->
+                                from(items, item);
                         case ContentAccessor ca -> findAll(ca, commentId);
                         case SdtRun sdtRun -> findAll(sdtRun, commentId);
                         default -> emptyList();
@@ -518,32 +647,49 @@ public final class WmlUtils {
                 return elementsToRemove;
             }
 
-            private static Collection<DeletableItems> findAll(SdtRun sdtRun, BigInteger commentId) {
+            private static Collection<DeletableItems> findAll(
+                    SdtRun sdtRun,
+                    BigInteger commentId
+            ) {
                 return findAll(sdtRun.getSdtContent(), commentId);
             }
 
-            private static Collection<DeletableItems> findAll(ContentAccessor ca, BigInteger commentId) {
+            private static Collection<DeletableItems> findAll(
+                    ContentAccessor ca,
+                    BigInteger commentId
+            ) {
                 return findAll(ca.getContent(), commentId);
             }
 
-            private static List<DeletableItems> from(List<Object> items, Object item) {
-                return Collections.singletonList(new DeletableItems(items, List.of(item)));
+            private static List<DeletableItems> from(
+                    List<Object> items,
+                    Object item
+            ) {
+                return Collections.singletonList(new DeletableItems(items,
+                        List.of(item)));
             }
         }
         DeletableItems.findAll(items, commentId)
                       .forEach(p -> p.container.removeAll(p.items));
     }
 
-    /// Visits the document's main content, header, footer, footnotes, and endnotes using the specified visitor.
+    /// Visits the document's main content, header, footer, footnotes, and
+    /// endnotes using the specified visitor.
     ///
-    /// @param document the WordprocessingMLPackage representing the document to be visited
-    /// @param visitor the TraversalUtilVisitor to be applied to each relevant part of the document
-    public static void visitDocument(WordprocessingMLPackage document, TraversalUtilVisitor<?> visitor) {
+    /// @param document the WordprocessingMLPackage representing the document
+    ///  to be visited
+    /// @param visitor  the TraversalUtilVisitor to be applied to each relevant
+    /// part of the document
+    public static void visitDocument(
+            WordprocessingMLPackage document,
+            TraversalUtilVisitor<?> visitor
+    ) {
         var mainDocumentPart = document.getMainDocumentPart();
         TraversalUtil.visit(mainDocumentPart, visitor);
         WmlUtils.streamHeaderFooterPart(document)
                 .forEach(f -> TraversalUtil.visit(f, visitor));
-        WmlUtils.visitPartIfExists(visitor, mainDocumentPart.getFootnotesPart());
+        WmlUtils.visitPartIfExists(visitor,
+                mainDocumentPart.getFootnotesPart());
         WmlUtils.visitPartIfExists(visitor, mainDocumentPart.getEndNotesPart());
     }
 
@@ -555,12 +701,17 @@ public final class WmlUtils {
                        .flatMap(WmlUtils::extractHeaderFooterParts);
     }
 
-    private static void visitPartIfExists(TraversalUtilVisitor<?> visitor, @Nullable JaxbXmlPart<?> part) {
+    private static void visitPartIfExists(
+            TraversalUtilVisitor<?> visitor,
+            @Nullable JaxbXmlPart<?> part
+    ) {
         ofNullable(part).map(WmlUtils::extractContent)
                         .ifPresent(c -> TraversalUtil.visit(c, visitor));
     }
 
-    private static Stream<JaxbXmlPart<?>> extractHeaderFooterParts(HeaderFooterPolicy hfp) {
+    private static Stream<JaxbXmlPart<?>> extractHeaderFooterParts(
+            HeaderFooterPolicy hfp
+    ) {
         Stream.Builder<JaxbXmlPart<?>> builder = Stream.builder();
         ofNullable(hfp.getFirstHeader()).ifPresent(builder::add);
         ofNullable(hfp.getDefaultHeader()).ifPresent(builder::add);
@@ -579,28 +730,41 @@ public final class WmlUtils {
         }
     }
 
-    /// Checks if the provided smart tag contains an attribute with the specified key and value.
+    /// Checks if the provided smart tag contains an attribute with the
+    /// specified key and value.
     ///
-    /// @param tag the smart tag to search for the attribute
+    /// @param tag     the smart tag to search for the attribute
     /// @param attrKey the key of the attribute to search for
     /// @param attrVal the value of the attribute to match
-    /// @return true if the smart tag contains an attribute with the specified key and value, false otherwise
-    public static boolean hasTagAttribute(CTSmartTagRun tag, String attrKey, String attrVal) {
+    ///
+    /// @return true if the smart tag contains an attribute with the specified
+    /// key and value, false otherwise
+    public static boolean hasTagAttribute(
+            CTSmartTagRun tag,
+            String attrKey,
+            String attrVal
+    ) {
         var smartTagPr = tag.getSmartTagPr();
         var smartTagPrAttr = smartTagPr.getAttr();
         for (CTAttr ctAttr : smartTagPrAttr)
-            if (Objects.equals(ctAttr.getName(), attrKey)) return Objects.equals(ctAttr.getVal(), attrVal);
+            if (Objects.equals(ctAttr.getName(), attrKey))
+                return Objects.equals(ctAttr.getVal(), attrVal);
         return false;
     }
 
-    /// @param startIndex the start index of the run relative to the containing paragraph.
-    /// @param run the [R] run itself.
+    /// @param startIndex the start index of the run relative to the
+    /// containing paragraph.
+    /// @param run        the [R] run itself.
     private record StandardRun(int startIndex, R run) {
 
-        /// Initializes a list of [StandardRun] objects based on the given iterator of [R] objects.
+        /// Initializes a list of [StandardRun] objects based on the given
+        /// iterator of [R] objects.
         ///
-        /// @param iterator the iterator of [R] objects to be processed into [StandardRun] instances
-        /// @return a list of [StandardRun] objects created from the given iterator
+        /// @param iterator the iterator of [R] objects to be processed into
+        /// [StandardRun] instances
+        ///
+        /// @return a list of [StandardRun] objects created from the given
+        /// iterator
         public static List<StandardRun> wrap(Iterator<R> iterator) {
             var index = 0;
             var runList = new ArrayList<StandardRun>();
@@ -634,74 +798,109 @@ public final class WmlUtils {
             return run.getRPr();
         }
 
-        /// Determines whether the current run is affected by the specified range of global start and end indices. A run
-        /// is considered "touched" if any part of it overlaps with the given range.
+        /// Determines whether the current run is affected by the specified
+        /// range of global start and end indices. A run
+        /// is considered "touched" if any part of it overlaps with the given
+        /// range.
         ///
         /// @param globalStartIndex the global start index of the range.
-        /// @param globalEndIndex the global end index of the range.
-        /// @return `true` if the current run is touched by the specified range; `false` otherwise.
-        public boolean isTouchedByRange(int globalStartIndex, int globalEndIndex) {
-            return startsInRange(globalStartIndex, globalEndIndex) || endsInRange(globalStartIndex, globalEndIndex)
+        /// @param globalEndIndex   the global end index of the range.
+        ///
+        /// @return `true` if the current run is touched by the specified range;
+        /// `false` otherwise.
+        public boolean isTouchedByRange(
+                int globalStartIndex,
+                int globalEndIndex
+        ) {
+            return startsInRange(globalStartIndex, globalEndIndex)
+                   || endsInRange(globalStartIndex, globalEndIndex)
                    || englobesRange(globalStartIndex, globalEndIndex);
         }
 
-        private boolean startsInRange(int globalStartIndex, int globalEndIndex) {
-            return globalStartIndex < startIndex && startIndex <= globalEndIndex;
+        private boolean startsInRange(
+                int globalStartIndex,
+                int globalEndIndex
+        ) {
+            return globalStartIndex < startIndex
+                   && startIndex <= globalEndIndex;
         }
 
         private boolean endsInRange(int globalStartIndex, int globalEndIndex) {
-            return globalStartIndex < endIndex() && endIndex() <= globalEndIndex;
+            return globalStartIndex < endIndex()
+                   && endIndex() <= globalEndIndex;
         }
 
-        private boolean englobesRange(int globalStartIndex, int globalEndIndex) {
-            return startIndex <= globalStartIndex && globalEndIndex <= endIndex();
+        private boolean englobesRange(
+                int globalStartIndex,
+                int globalEndIndex
+        ) {
+            return startIndex <= globalStartIndex
+                   && globalEndIndex <= endIndex();
         }
 
-        /// Calculates the end index of the current run based on its start index and length.
+        /// Calculates the end index of the current run based on its start index
+        /// and length.
         ///
         /// @return the end index of the run.
         public int endIndex() {
             return startIndex + length();
         }
 
-        /// Replaces the substring starting at the given index with the given replacement string.
+        /// Replaces the substring starting at the given index with the given
+        /// replacement string.
         ///
-        /// @param globalStartIndex the global index at which to start the replacement.
-        /// @param globalEndIndex the global index at which to end the replacement.
-        /// @param replacement the string to replace the substring at the specified global index.
-        public void replace(int globalStartIndex, int globalEndIndex, String replacement) {
-            var text = left(globalStartIndex) + replacement + right(globalEndIndex);
+        /// @param globalStartIndex the global index at which to start the
+        /// replacement.
+        /// @param globalEndIndex   the global index at which to end the
+        /// replacement.
+        /// @param replacement      the string to replace the substring at
+        /// the specified global index.
+        public void replace(
+                int globalStartIndex,
+                int globalEndIndex,
+                String replacement
+        ) {
+            var text = left(globalStartIndex) + replacement + right(
+                    globalEndIndex);
             setText(run, text);
         }
 
-        /// Extracts a substring of the run's text, starting from the beginning and extending up to the localized index
+        /// Extracts a substring of the run's text, starting from the beginning
+        /// and extending up to the localized index
         /// of the specified global end index.
         ///
-        /// @param globalEndIndex the global end index used to determine the cutoff point for the extracted
+        /// @param globalEndIndex the global end index used to determine the
+        /// cutoff point for the extracted
         ///         substring.
         ///
-        /// @return a substring of the run's text, starting at the beginning and ending at the specified localized
+        /// @return a substring of the run's text, starting at the beginning and
+        /// ending at the specified localized
         ///         index.
         public String left(int globalEndIndex) {
             return getText().substring(0, localize(globalEndIndex));
         }
 
-        /// Extracts a substring of the run's text, starting from the localized index of the specified global start
+        /// Extracts a substring of the run's text, starting from the localized
+        /// index of the specified global start
         /// index to the end of the run's text.
         ///
-        /// @param globalStartIndex the global index specifying the starting point for the substring in the
+        /// @param globalStartIndex the global index specifying the starting
+        /// point for the substring in the
         ///         run's text.
         ///
-        /// @return a substring of the run's text starting from the localized index corresponding to the provided global
+        /// @return a substring of the run's text starting from the localized
+        /// index corresponding to the provided global
         ///         start index.
         public String right(int globalStartIndex) {
             return getText().substring(localize(globalStartIndex));
         }
 
-        /// Converts a global index to a local index within the context of this run. (meaning the index relative to
+        /// Converts a global index to a local index within the context of this
+        /// run. (meaning the index relative to
         /// multiple aggregated runs)
         ///
         /// @param globalIndex the global index to convert.
+        ///
         /// @return the local index corresponding to the given global index.
         private int localize(int globalIndex) {
             if (globalIndex < startIndex) return 0;
@@ -711,7 +910,8 @@ public final class WmlUtils {
 
         /// Gets the start index of this run.
         ///
-        /// @return the start index of the run relative to the containing paragraph.
+        /// @return the start index of the run relative to the containing
+        /// paragraph.
         @Override
         public int startIndex() {return startIndex;}
 

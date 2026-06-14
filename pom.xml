@@ -40,6 +40,7 @@
     <properties>
         <docx4j.version>11.5.14</docx4j.version>
         <javafx.version>27-ea+16</javafx.version>
+        <asciidoc.version>3.8-SNAPSHOT</asciidoc.version>
 
         <maven.compiler.release>25</maven.compiler.release>
         <maven.compiler.source>25</maven.compiler.source>
@@ -283,27 +284,27 @@
             <dependency>
                 <groupId>pro.verron.asciidoc</groupId>
                 <artifactId>asciidoc-core</artifactId>
-                <version>3.7</version>
+                <version>${asciidoc.version}</version>
             </dependency>
             <dependency>
                 <groupId>pro.verron.asciidoc</groupId>
                 <artifactId>asciidoc-converters</artifactId>
-                <version>3.7</version>
+                <version>${asciidoc.version}</version>
             </dependency>
             <dependency>
                 <groupId>pro.verron.asciidoc</groupId>
                 <artifactId>asciidoc-docx</artifactId>
-                <version>3.7</version>
+                <version>${asciidoc.version}</version>
             </dependency>
             <dependency>
                 <groupId>pro.verron.asciidoc</groupId>
                 <artifactId>asciidoc-compiler</artifactId>
-                <version>3.7</version>
+                <version>${asciidoc.version}</version>
             </dependency>
             <dependency>
                 <groupId>pro.verron.asciidoc</groupId>
                 <artifactId>asciidoc-preview</artifactId>
-                <version>3.7</version>
+                <version>${asciidoc.version}</version>
             </dependency>
             <dependency>
                 <groupId>pro.verron.imageio</groupId>

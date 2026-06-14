@@ -8,8 +8,8 @@
 module pro.verron.officestamper.cli {
     requires pro.verron.officestamper;
     requires pro.verron.officestamper.excel;
-    requires pro.verron.officestamper.asciidoc.core;
-    requires pro.verron.officestamper.asciidoc.compiler;
+    requires pro.verron.asciidoc.core;
+    requires pro.verron.asciidoc.compiler;
 
     requires org.slf4j;
     requires java.xml;

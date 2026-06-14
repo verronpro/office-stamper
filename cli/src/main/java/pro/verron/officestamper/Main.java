@@ -16,9 +16,9 @@ import org.xml.sax.SAXException;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import pro.verron.asciidoc.compiler.AsciiDocCompiler;
+import pro.verron.asciidoc.core.AsciiDocModel;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.asciidoc.compiler.AsciiDocCompiler;
-import pro.verron.officestamper.asciidoc.core.AsciiDocModel;
 import pro.verron.officestamper.excel.ExcelContext;
 import pro.verron.officestamper.excel.ExcelMergeStrategy;
 import pro.verron.officestamper.experimental.ExperimentalStampers;
@@ -29,21 +29,26 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.nio.file.Files.newOutputStream;
+import static java.nio.file.Files.writeString;
+import static pro.verron.asciidoc.compiler.AsciiDocCompiler.saveSvgAsImage;
 
 /// Main class for the CLI.
 @Command(name = "officestamper",
          mixinStandardHelpOptions = true,
          description = "Office Stamper CLI tool",
-         subcommands = {Main.Preview.class, Main.ReportView.class}) public class Main
+         subcommands = {Main.Preview.class, Main.ReportView.class})
+public class Main
         implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -53,8 +58,8 @@ import static java.nio.file.Files.newOutputStream;
                           + "template") private String templatePath;
     @Option(names = {"-d", "--data"},
             required = false,
-            description = "Data input: file (json|yaml|yml|properties|csv|xlsx|xml|html), a directory, or "
-                          + "'diagnostic'") private String dataPath;
+            description =
+                    "Data input: file (json|yaml|yml|properties|csv|xlsx|xml|html), a directory, or 'diagnostic'") private String dataPath;
     @Option(names = {"-o", "--output"},
             defaultValue = "output.docx",
             description = "Output file path") private String outputPath;
@@ -105,8 +110,10 @@ import static java.nio.file.Files.newOutputStream;
         var n = p.getFileName()
                  .toString()
                  .toLowerCase();
-        return n.endsWith(".csv") || n.endsWith(".properties") || n.endsWith(".html") || n.endsWith(".xml")
-               || n.endsWith(".json") || n.endsWith(".yaml") || n.endsWith(".yml") || n.endsWith(".xlsx");
+        return n.endsWith(".csv") || n.endsWith(".properties") || n.endsWith(
+                ".html") || n.endsWith(".xml") || n.endsWith(".json")
+               || n.endsWith(".yaml") || n.endsWith(".yml") || n.endsWith(
+                ".xlsx");
     }
 
     private static String baseName(Path f) {
@@ -130,9 +137,12 @@ import static java.nio.file.Files.newOutputStream;
                                   var n = p.getFileName()
                                            .toString()
                                            .toLowerCase();
-                                  return n.endsWith(".csv") || n.endsWith(".properties") || n.endsWith(".html")
-                                         || n.endsWith(".xml") || n.endsWith(".json") || n.endsWith(".yaml")
-                                         || n.endsWith(".yml") || n.endsWith(".xlsx");
+                                  return n.endsWith(".csv") || n.endsWith(
+                                          ".properties") || n.endsWith(".html")
+                                         || n.endsWith(".xml") || n.endsWith(
+                                          ".json") || n.endsWith(".yaml")
+                                         || n.endsWith(".yml") || n.endsWith(
+                                          ".xlsx");
                               })
                               .sorted()
                               .toList();
@@ -152,7 +162,8 @@ import static java.nio.file.Files.newOutputStream;
 
     private Object extractContextNew(String model) {
         if (model == null || model.isBlank()) {
-            // allowed only when templatePath == diagnostic; caller validated earlier
+            // allowed only when templatePath == diagnostic; caller validated
+            // earlier
             return Diagnostic.context();
         }
         if ("diagnostic".equals(model)) return Diagnostic.context();
@@ -187,7 +198,8 @@ import static java.nio.file.Files.newOutputStream;
                 }
                 else if (Files.isDirectory(entry)) {
                     items.add(new Item(entry.getFileName()
-                                            .toString(), contextualiseDirectoryRecursive(entry)));
+                                            .toString(),
+                            contextualiseDirectoryRecursive(entry)));
                 }
             }
             return java.util.List.copyOf(items);
@@ -212,7 +224,11 @@ import static java.nio.file.Files.newOutputStream;
         }
     }
 
-    private Path computeOutputPath(String output, String itemName, TemplateKind ext) {
+    private Path computeOutputPath(
+            String output,
+            String itemName,
+            TemplateKind ext
+    ) {
         var desiredExt = (ext == TemplateKind.WORD) ? ".docx" : ".pptx";
         var out = Path.of(output);
         // If output is an existing directory, place <itemName><ext> inside it
@@ -245,9 +261,11 @@ import static java.nio.file.Files.newOutputStream;
                        .toLowerCase();
         if (name.endsWith(".csv")) return processCsv(path);
         if (name.endsWith(".properties")) return processProperties(path);
-        if (name.endsWith(".html") || name.endsWith(".xml")) return processXmlOrHtml(path);
+        if (name.endsWith(".html") || name.endsWith(".xml"))
+            return processXmlOrHtml(path);
         if (name.endsWith(".json")) return processJson(path);
-        if (name.endsWith(".yaml") || name.endsWith(".yml")) return processYaml(path);
+        if (name.endsWith(".yaml") || name.endsWith(".yml"))
+            return processYaml(path);
         if (name.endsWith(".xlsx")) return processExcel(path);
         throw new OfficeStamperException("Unsupported file type: " + path);
     }
@@ -258,7 +276,10 @@ import static java.nio.file.Files.newOutputStream;
         try {
             runOnce();
         } catch (Exception e) {
-            emit("ERROR", "Initial run failed", Map.of("error", String.valueOf(e.getMessage())), lf);
+            emit("ERROR",
+                    "Initial run failed",
+                    Map.of("error", String.valueOf(e.getMessage())),
+                    lf);
         }
 
         try (
@@ -282,7 +303,8 @@ import static java.nio.file.Files.newOutputStream;
             for (var p : pathsToWatch) {
                 var dir = Files.isDirectory(p) ? p : p.getParent();
                 if (dir != null && Files.exists(dir)) {
-                    var key = dir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                    var key = dir.register(watchService,
+                            StandardWatchEventKinds.ENTRY_MODIFY);
                     keys.put(key, dir);
                 }
             }
@@ -291,37 +313,53 @@ import static java.nio.file.Files.newOutputStream;
                 var key = watchService.take();
                 var dir = keys.get(key);
                 for (var event : key.pollEvents()) {
-                    if (event.kind() == StandardWatchEventKinds.OVERFLOW) continue;
+                    if (event.kind() == StandardWatchEventKinds.OVERFLOW)
+                        continue;
                     var context = (Path) event.context();
                     var resolved = dir.resolve(context);
 
                     var relevant = false;
                     for (var p : pathsToWatch) {
-                        if (resolved.equals(p) || (Files.isDirectory(p) && resolved.startsWith(p))) {
+                        if (resolved.equals(p) || (Files.isDirectory(p)
+                                                   && resolved.startsWith(p))) {
                             relevant = true;
                             break;
                         }
                     }
 
                     if (relevant) {
-                        emit("INFO", "Change detected, re-stamping...", Map.of("file", resolved.toString()), lf);
+                        emit("INFO",
+                                "Change detected, re-stamping...",
+                                Map.of("file", resolved.toString()),
+                                lf);
                         try {
                             runOnce();
                         } catch (Exception e) {
-                            emit("ERROR", "Re-stamping failed", Map.of("error", String.valueOf(e.getMessage())), lf);
+                            emit("ERROR",
+                                    "Re-stamping failed",
+                                    Map.of("error",
+                                            String.valueOf(e.getMessage())),
+                                    lf);
                         }
                     }
                 }
                 if (!key.reset()) break;
             }
         } catch (Exception e) {
-            emit("ERROR", "Watch mode failed", Map.of("error", String.valueOf(e.getMessage())), lf);
+            emit("ERROR",
+                    "Watch mode failed",
+                    Map.of("error", String.valueOf(e.getMessage())),
+                    lf);
         }
     }
 
     /// Return a list of objects with the csv properties
     private Object processCsv(Path path) {
-        try (var reader = new CSVReader(new InputStreamReader(Files.newInputStream(path)))) {
+        try (
+                var reader =
+                        new CSVReader(new InputStreamReader(Files.newInputStream(
+                                path)))
+        ) {
             String[] headers = reader.readNext();
             return reader.readAll()
                          .stream()
@@ -344,7 +382,8 @@ import static java.nio.file.Files.newOutputStream;
             properties.load(inputStream);
             return new LinkedHashMap<>(properties.entrySet()
                                                  .stream()
-                                                 .collect(Collectors.toMap(e -> String.valueOf(e.getKey()),
+                                                 .collect(Collectors.toMap(e -> String.valueOf(
+                                                                 e.getKey()),
                                                          e -> String.valueOf(e.getValue()),
                                                          (a, b) -> b,
                                                          LinkedHashMap::new)));
@@ -355,7 +394,8 @@ import static java.nio.file.Files.newOutputStream;
 
     private Object processXmlOrHtml(Path path) {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             factory.setExpandEntityReferences(false);
 
@@ -376,7 +416,8 @@ import static java.nio.file.Files.newOutputStream;
             if (node instanceof Element childElement) {
                 String name = childElement.getTagName();
                 if (childElement.hasChildNodes() && childElement.getFirstChild()
-                                                                .getNodeType() != Node.TEXT_NODE) {
+                                                                .getNodeType()
+                                                    != Node.TEXT_NODE) {
                     result.put(name, processNode(childElement));
                 }
                 else {
@@ -390,7 +431,8 @@ import static java.nio.file.Files.newOutputStream;
     private Object processJson(Path path) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            TypeReference<LinkedHashMap<String, Object>> typeRef = new TypeReference<>() {};
+            TypeReference<LinkedHashMap<String, Object>> typeRef =
+                    new TypeReference<>() {};
             return mapper.readValue(Files.newInputStream(path), typeRef);
         } catch (IOException e) {
             throw new OfficeStamperException(e);
@@ -399,14 +441,20 @@ import static java.nio.file.Files.newOutputStream;
 
     private Object processYaml(Path path) {
         try {
-            // Lazy YAML support using Jackson if available on classpath; else, provide a clear error.
-            var mapperClass = Class.forName("com.fasterxml.jackson.dataformat.yaml.YAMLFactory");
-            var mapper = new ObjectMapper((com.fasterxml.jackson.core.JsonFactory) mapperClass.getDeclaredConstructor()
-                                                                                              .newInstance());
-            TypeReference<LinkedHashMap<String, Object>> typeRef = new TypeReference<>() {};
+            // Lazy YAML support using Jackson if available on classpath;
+            // else, provide a clear error.
+            var mapperClass = Class.forName(
+                    "com.fasterxml.jackson.dataformat.yaml.YAMLFactory");
+            var mapper =
+                    new ObjectMapper((com.fasterxml.jackson.core.JsonFactory) mapperClass.getDeclaredConstructor()
+                                                                                         .newInstance());
+            TypeReference<LinkedHashMap<String, Object>> typeRef =
+                    new TypeReference<>() {};
             return mapper.readValue(Files.newInputStream(path), typeRef);
         } catch (ClassNotFoundException e) {
-            throw new OfficeStamperException("YAML support requires 'jackson-dataformat-yaml' on the classpath");
+            throw new OfficeStamperException(
+                    "YAML support requires 'jackson-dataformat-yaml' on the "
+                    + "classpath");
         } catch (Exception e) {
             throw new OfficeStamperException(e);
         }
@@ -429,7 +477,9 @@ import static java.nio.file.Files.newOutputStream;
         var lower = input.toLowerCase();
         if (lower.endsWith(".docx")) return TemplateKind.WORD;
         if (lower.endsWith(".pptx")) return TemplateKind.POWERPOINT;
-        throw new OfficeStamperException("Unsupported template type (expected .docx or .pptx): " + input);
+        throw new OfficeStamperException(
+                "Unsupported template type (expected .docx or .pptx): "
+                + input);
     }
 
     private String getLogFormat() {
@@ -450,10 +500,16 @@ import static java.nio.file.Files.newOutputStream;
         // Basic CLI validation according to new flags
         if (templatePath == null || templatePath.isBlank()) {
             emit("ERROR", "Missing required --template path", null, lf);
-            throw new CommandLine.ParameterException(new CommandLine(this), "--template is required");
+            throw new CommandLine.ParameterException(new CommandLine(this),
+                    "--template is required");
         }
-        if ((dataPath == null || dataPath.isBlank()) && !"diagnostic".equals(templatePath)) {
-            emit("ERROR", "Missing required --data when not using diagnostic template", null, lf);
+        if ((dataPath == null || dataPath.isBlank()) && !"diagnostic".equals(
+                templatePath)) {
+            emit("ERROR",
+                    "Missing required --data when not using diagnostic "
+                    + "template",
+                    null,
+                    lf);
             throw new CommandLine.ParameterException(new CommandLine(this),
                     "--data is required when template != diagnostic");
         }
@@ -472,53 +528,101 @@ import static java.nio.file.Files.newOutputStream;
 
         try {
             var ext = templateKind(templatePath);
-            // Folder semantics: each top-level file is its own context and yields one output;
-            // each top-level subfolder merges its files (recursively) into a bigger context and yields one output.
-            if (dataPath != null && !dataPath.isBlank() && Files.isDirectory(Path.of(dataPath))) {
+            // Folder semantics: each top-level file is its own context and
+            // yields one output;
+            // each top-level subfolder merges its files (recursively) into a
+            // bigger context and yields one output.
+            if (dataPath != null && !dataPath.isBlank() && Files.isDirectory(
+                    Path.of(dataPath))) {
                 var items = buildItemsFromDataDirectory(Path.of(dataPath));
                 var results = new java.util.ArrayList<RunResult>(items.size());
                 int idx = 0;
                 for (var item : items) {
                     idx++;
-                    emit("INFO", "Processing item", Map.of("index", idx, "name", item.name, "total", items.size()), lf);
-                    try (var templateStream = extractTemplateNew(templatePath)) {
+                    emit("INFO",
+                            "Processing item",
+                            Map.of("index",
+                                    idx,
+                                    "name",
+                                    item.name,
+                                    "total",
+                                    items.size()),
+                            lf);
+                    try (
+                            var templateStream =
+                                    extractTemplateNew(templatePath)
+                    ) {
                         var context = wrapContext(item.context);
-                        var configuration = OfficeStamperConfigurations.standard();
-                        if (traceabilityReportPath != null) configuration.setTraceabilityReporter(traceabilityReport);
+                        var configuration =
+                                OfficeStamperConfigurations.standard();
+                        if (traceabilityReportPath != null)
+                            configuration.setTraceabilityReporter(
+                                    traceabilityReport);
                         if (dryRun) {
                             configuration.setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
                             switch (ext) {
                                 case WORD -> {
-                                    var stamper = OfficeStampers.docxStamper(configuration);
-                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
+                                    var stamper = OfficeStampers.docxStamper(
+                                            configuration);
+                                    stamper.stamp(templateStream,
+                                            context,
+                                            OutputStream.nullOutputStream());
                                 }
                                 case POWERPOINT -> {
-                                    var stamper = ExperimentalStampers.pptxStamper();
-                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
+                                    var stamper =
+                                            ExperimentalStampers.pptxStamper();
+                                    stamper.stamp(templateStream,
+                                            context,
+                                            OutputStream.nullOutputStream());
                                 }
                             }
-                            results.add(new RunResult(item.name, "ok", null, null));
+                            results.add(new RunResult(item.name,
+                                    "ok",
+                                    null,
+                                    null));
                         }
                         else {
-                            var out = computeOutputPath(outputPath, item.name, ext);
+                            var out = computeOutputPath(outputPath,
+                                    item.name,
+                                    ext);
                             try (var os = createOutputStream(out)) {
                                 switch (ext) {
                                     case WORD -> {
-                                        var stamper = OfficeStampers.docxStamper(configuration);
-                                        stamper.stamp(templateStream, context, os);
+                                        var stamper =
+                                                OfficeStampers.docxStamper(
+                                                        configuration);
+                                        stamper.stamp(templateStream,
+                                                context,
+                                                os);
                                     }
                                     case POWERPOINT -> {
-                                        var stamper = ExperimentalStampers.pptxStamper();
-                                        stamper.stamp(templateStream, context, os);
+                                        var stamper =
+                                                ExperimentalStampers.pptxStamper();
+                                        stamper.stamp(templateStream,
+                                                context,
+                                                os);
                                     }
                                 }
                             }
-                            results.add(new RunResult(item.name, "ok", out.toString(), null));
+                            results.add(new RunResult(item.name,
+                                    "ok",
+                                    out.toString(),
+                                    null));
                         }
                     } catch (Exception ex) {
-                        emit("ERROR", "Item failed", Map.of("name", item.name, "error", ex.getMessage()), lf);
-                        results.add(new RunResult(item.name, "error", null, ex.getMessage()));
-                        // Continue with next item; overall exit code should be non-zero if any failed
+                        emit("ERROR",
+                                "Item failed",
+                                Map.of("name",
+                                        item.name,
+                                        "error",
+                                        ex.getMessage()),
+                                lf);
+                        results.add(new RunResult(item.name,
+                                "error",
+                                null,
+                                ex.getMessage()));
+                        // Continue with next item; overall exit code should
+                        // be non-zero if any failed
                     }
                 }
                 var anyError = results.stream()
@@ -527,9 +631,13 @@ import static java.nio.file.Files.newOutputStream;
                         "Validation completed (dry-run)",
                         Map.of("items", results.size(), "errors", anyError),
                         lf);
-                else emit("INFO", "Stamping completed", Map.of("items", results.size(), "errors", anyError), lf);
+                else emit("INFO",
+                        "Stamping completed",
+                        Map.of("items", results.size(), "errors", anyError),
+                        lf);
                 writeReport(results);
-                if (anyError) throw new OfficeStamperException("One or more items failed");
+                if (anyError) throw new OfficeStamperException(
+                        "One or more items " + "failed");
                 return;
             }
 
@@ -537,46 +645,66 @@ import static java.nio.file.Files.newOutputStream;
             final var context = wrapContext(extractContextNew(dataPath));
             try (var templateStream = extractTemplateNew(templatePath)) {
                 var configuration = OfficeStamperConfigurations.standard();
-                if (traceabilityReportPath != null) configuration.setTraceabilityReporter(traceabilityReport);
+                if (traceabilityReportPath != null)
+                    configuration.setTraceabilityReporter(traceabilityReport);
                 if (dryRun) {
-                    // Validate: fail on unresolved placeholders but do not write any file
+                    // Validate: fail on unresolved placeholders but do not
+                    // write any file
                     configuration.setExceptionResolver(pro.verron.officestamper.preset.ExceptionResolvers.throwing());
                     switch (ext) {
                         case WORD -> {
-                            var stamper = OfficeStampers.docxStamper(configuration);
-                            stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
+                            var stamper = OfficeStampers.docxStamper(
+                                    configuration);
+                            stamper.stamp(templateStream,
+                                    context,
+                                    OutputStream.nullOutputStream());
                         }
                         case POWERPOINT -> {
                             var stamper = ExperimentalStampers.pptxStamper(); // no config variant exposed for PPTX yet
-                            stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
+                            stamper.stamp(templateStream,
+                                    context,
+                                    OutputStream.nullOutputStream());
                         }
                     }
                     emit("INFO", "Validation successful (dry-run)", null, lf);
                     writeReport("ok", null);
-                    if (traceabilityReportPath != null)
-                        writeTraceabilityReport(traceabilityReport, Path.of(traceabilityReportPath));
+                    if (traceabilityReportPath != null) writeTraceabilityReport(
+                            traceabilityReport,
+                            Path.of(traceabilityReportPath));
                     return;
                 }
 
                 // Real stamping (single file)
-                try (var outputStream = createOutputStream(Path.of(outputPath))) {
+                try (
+                        var outputStream =
+                                createOutputStream(Path.of(outputPath))
+                ) {
                     switch (ext) {
                         case WORD -> {
-                            var stamper = OfficeStampers.docxStamper(configuration);
-                            stamper.stamp(templateStream, context, outputStream);
+                            var stamper = OfficeStampers.docxStamper(
+                                    configuration);
+                            stamper.stamp(templateStream,
+                                    context,
+                                    outputStream);
                         }
                         case POWERPOINT -> {
                             var stamper = ExperimentalStampers.pptxStamper(); // no config variant exposed for PPTX yet
-                            stamper.stamp(templateStream, context, outputStream);
+                            stamper.stamp(templateStream,
+                                    context,
+                                    outputStream);
                         }
                     }
                 }
             }
 
-            emit("INFO", "Stamping completed", Map.of("output", outputPath), lf);
+            emit("INFO",
+                    "Stamping completed",
+                    Map.of("output", outputPath),
+                    lf);
             writeReport("ok", null);
-            if (traceabilityReportPath != null)
-                writeTraceabilityReport(traceabilityReport, Path.of(traceabilityReportPath));
+            if (traceabilityReportPath != null) writeTraceabilityReport(
+                    traceabilityReport,
+                    Path.of(traceabilityReportPath));
         } catch (Exception e) {
             emit("ERROR",
                     e.getMessage(),
@@ -586,12 +714,19 @@ import static java.nio.file.Files.newOutputStream;
                     lf);
             writeReport("error", e.getMessage());
             // Re-throw to ensure non-zero exit code from picocli
-            throw (e instanceof RuntimeException re) ? re : new OfficeStamperException(e);
+            throw (e instanceof RuntimeException re)
+                    ? re
+                    : new OfficeStamperException(e);
         }
     }
 
     // Minimal structured logging when --log-format=json
-    private void emit(String level, String message, Map<String, Object> fields, String lf) {
+    private void emit(
+            String level,
+            String message,
+            Map<String, Object> fields,
+            String lf
+    ) {
         if (!"json".equals(lf)) {
             // Human logs via java.util.logging
             var lvl = switch (level) {
@@ -600,7 +735,9 @@ import static java.nio.file.Files.newOutputStream;
                 default -> Level.INFO;
             };
             logger.atLevel(lvl)
-                  .log(fields == null || fields.isEmpty() ? message : message + " | " + fields);
+                  .log(fields == null || fields.isEmpty()
+                          ? message
+                          : message + " | " + fields);
             return;
         }
         try {
@@ -614,7 +751,9 @@ import static java.nio.file.Files.newOutputStream;
             var json = new ObjectMapper().writeValueAsString(map);
             System.out.println(json);
         } catch (Exception ignored) {
-            System.out.println("{\"level\":\"error\",\"msg\":\"failed to emit json log\"}");
+            System.out.println(
+                    "{\"level\":\"error\",\"msg\":\"failed to emit json "
+                    + "log\"}");
         }
     }
 
@@ -710,12 +849,10 @@ import static java.nio.file.Files.newOutputStream;
     }
 
     /// Subcommand that generates an HTML viewer for a traceability report.
-    @Command(name = "report-view", description = "Generate an HTML viewer for a traceability report")
+    @Command(name = "report-view",
+             description = "Generate an HTML viewer for a traceability report")
     public static class ReportView
             implements Runnable {
-
-        /// Default constructor.
-        public ReportView() {}
 
         @Option(names = {"-i", "--input"},
                 required = true,
@@ -724,14 +861,19 @@ import static java.nio.file.Files.newOutputStream;
                 defaultValue = "traceability.html",
                 description = "Output HTML file") private Path output;
 
+        /// Default constructor.
+        public ReportView() {}
+
         @Override
         public void run() {
             try {
                 var mapper = new ObjectMapper();
-                List<TraceabilityReport.Resolution> resolutions = mapper.readValue(input.toFile(),
-                        new TypeReference<>() {});
+                List<TraceabilityReport.Resolution> resolutions =
+                        mapper.readValue(
+                                input.toFile(),
+                                new TypeReference<>() {});
                 var html = generateHtml(resolutions);
-                Files.writeString(output, html);
+                writeString(output, html);
             } catch (IOException e) {
                 throw new OfficeStamperException(e);
             }
@@ -740,15 +882,18 @@ import static java.nio.file.Files.newOutputStream;
         private String generateHtml(List<TraceabilityReport.Resolution> resolutions) {
             StringBuilder sb = new StringBuilder();
             sb.append("<html><head><title>Traceability Report</title><style>");
-            sb.append("table { border-collapse: collapse; width: 100%; font-family: sans-serif; }");
-            sb.append("th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }");
+            sb.append("table { border-collapse: collapse; width: 100%; "
+                      + "font-family: sans-serif; }");
+            sb.append("th, td { border: 1px solid #ddd; padding: 8px; "
+                      + "text-align: left; vertical-align: top; }");
             sb.append("th { background-color: #4CAF50; color: white; }");
             sb.append("tr:nth-child(even) { background-color: #f9f9f9; }");
             sb.append("tr:hover { background-color: #f1f1f1; }");
             sb.append("ul { margin: 0; padding-left: 20px; }");
             sb.append("</style></head><body>");
             sb.append("<h1>Office Stamper Traceability Report</h1>");
-            sb.append("<table><tr><th>Expression</th><th>Resolved Value</th><th>Nesting Context</th></tr>");
+            sb.append("<table><tr><th>Expression</th><th>Resolved "
+                      + "Value</th><th>Nesting Context</th></tr>");
             for (var res : resolutions) {
                 sb.append("<tr>");
                 sb.append("<td><code>")
@@ -772,26 +917,29 @@ import static java.nio.file.Files.newOutputStream;
     }
 
     /// Subcommand that generates a preview image from an AsciiDoc file.
-    @Command(name = "preview", description = "Generate a preview image from an AsciiDoc file")
+    @Command(name = "preview",
+             description = "Generate a preview image from an AsciiDoc file")
     public static class Preview
             implements Runnable {
 
-        /// Default constructor.
-        public Preview() {}
-        @Option(names = {"-i", "--input"}, required = true, description = "Input AsciiDoc file") private Path input;
-
+        @Option(names = {"-i", "--input"},
+                required = true,
+                description = "Input AsciiDoc file") private Path input;
         @Option(names = {"-o", "--output"},
                 defaultValue = "preview.png",
                 description = "Output file (PNG or SVG)") private Path output;
-
         @Option(names = "--theme",
                 defaultValue = "word",
                 description = "Theme: word, gdocs, libre") private String theme;
-
-        @Option(names = "--dpi", defaultValue = "96", description = "DPI for PNG output") private int dpi;
-
+        @Option(names = "--dpi",
+                defaultValue = "96",
+                description = "DPI for PNG output") private int dpi;
         @Option(names = "--format",
-                description = "Output format: png, svg (auto-detected if omitted)") private String format;
+                description = "Output format: png, svg (auto-detected if "
+                              + "omitted)") private String format;
+
+        /// Default constructor.
+        public Preview() {}
 
         @Override
         public void run() {
@@ -802,25 +950,21 @@ import static java.nio.file.Files.newOutputStream;
                 // Inject theme attribute into model
                 var attributes = new java.util.HashMap<>(model.getAttributes());
                 attributes.put("theme", theme);
-                model = AsciiDocModel.of(model.getBlocks(), attributes);
+                model = AsciiDocModel.of(attributes, model.getBlocks());
 
-                String formatToUse = format;
-                if (formatToUse == null) {
-                    String fileName = output.getFileName()
-                                            .toString()
-                                            .toLowerCase();
-                    if (fileName.endsWith(".svg")) formatToUse = "svg";
-                    else formatToUse = "png";
+                String formatToUse;
+                if (format != null) formatToUse = format;
+                else formatToUse = output.endsWith(".svg") ? "svg" : "png";
+
+                var svg = AsciiDocCompiler.toSvg(model);
+
+                switch (formatToUse) {
+                    case "svg" -> writeString(output, svg);
+                    case "png" -> saveSvgAsImage(svg, output, dpi, Color.WHITE);
+                    default -> throw new IllegalArgumentException(
+                            "Unsupported format: " + formatToUse);
                 }
 
-                if ("svg".equalsIgnoreCase(formatToUse)) {
-                    String svg = AsciiDocCompiler.toSvg(model);
-                    Files.writeString(output, svg);
-                }
-                else {
-                    String svg = AsciiDocCompiler.toSvg(model);
-                    AsciiDocCompiler.saveSvgAsImage(svg, output, dpi, java.awt.Color.WHITE);
-                }
             } catch (IOException e) {
                 throw new RuntimeException("Failed to generate preview", e);
             }
@@ -830,8 +974,11 @@ import static java.nio.file.Files.newOutputStream;
     private record Item(String name, Object context) {}
 
     /**
-     * @param status  ok | error
-     * @param output  nullable
-     * @param error  nullable */
-    private record RunResult(String name, String status, String output, String error) {}
+     * @param status ok | error
+     * @param output nullable
+     * @param error  nullable
+     */
+    private record RunResult(
+            String name, String status, String output, String error
+    ) {}
 }

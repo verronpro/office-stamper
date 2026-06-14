@@ -21,8 +21,8 @@ module pro.verron.officestamper.test {
     requires jakarta.xml.bind;
     requires com.tngtech.archunit.junit5.api;
     requires com.tngtech.archunit;
-    requires pro.verron.officestamper.asciidoc.core;
-    requires pro.verron.officestamper.asciidoc.compiler;
+    requires pro.verron.asciidoc.core;
+    requires pro.verron.asciidoc.compiler;
     requires pro.verron.officestamper.utils;
 
     opens pro.verron.officestamper.test;

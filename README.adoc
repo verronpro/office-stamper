@@ -15,6 +15,7 @@ image:{wrkf}/pages.yml/badge.svg[Build Status, link={wrkf}/pages.yml]
 == Introduction
 
 Office-stamper is a Java template engine that allows for dynamic creation of DOCX documents at runtime.
+It requires Java 17+ (Maven release set to 25).
 You design a template using your preferred Word processor; and office-stamper will generate documents based on that template.
 
 == Key Features
@@ -100,7 +101,7 @@ Control modes via system properties:
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>engine</artifactId>
-    <version>3.4</version>
+    <version>3.5</version>
 </dependency>
 
 <!-- You also need to provide a dependency to Docx4J -->
@@ -125,7 +126,7 @@ Comprehensive documentation is available at {docs}[{docs}].
 For the latest changes and migration guides, please refer to:
 
 * link:{docs}/engine/release-notes.html[Release Notes] – detailed changelog for each version.
-* link:{docs}/engine/3.0-update.html[3.0 Update Guide] – rationale and migration guidance for the v3 overhaul.
+* link:{docs}/engine/3-update.html[3.x Update Guide] – rationale and migration guidance for the v3 overhaul.
 
 == Modules
 

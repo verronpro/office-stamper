@@ -3,6 +3,23 @@
 :os: https://github.com/verronpro/office-stamper
 :proj: https://github.com/verronpro/office-stamper/releases/tag
 
+== {proj}/v3.5[v3.5]
+
+=== New Features
+
+* **AlternateContent Support**: The engine now correctly handles `AlternateContent` elements, ensuring that placeholders and comments within these blocks are processed.
+* **PowerPoint Image Stamping**: `PowerpointStamper` now supports filling shapes with images when a placeholder resolves to an `Image` object.
+* **CLI Watch Mode**: Added a `--watch` flag to the CLI for automatic re-stamping on file changes.
+* **Traceability Reporting**: Introduced `TraceabilityReporter` and CLI options to generate detailed JSON and HTML reports of placeholder resolutions.
+* **Multi-tab Excel Context**: The CLI can now load Excel files with multiple tabs and treat them as independent or joined tables.
+* **AsciiDoc Previews**: Integrated with `pro.verron.asciidoc` to provide previews of AsciiDoc content as images (SVG/PNG) within documents.
+
+=== Improvements and Fixes
+
+* **Documentation**: Rearranged documentation for better Maven site and GitHub visibility.
+* **CI/CD**: Fixed the GitHub release workflow.
+* **Modularization**: Extracted `imageio` and `asciidoc` modules into separate repositories.
+
 == {proj}/v3.4[v3.4]
 
 === Major changes
@@ -98,7 +115,7 @@ Custom processors can now easily remove tables or rows, copy rows, and access pa
 
 === Breaking API Changes
 
-* **Java Version**: Java 23+ is required; Maven release set to 25.
+* **Java Version**: Java 17+ is required; Maven release set to 25.
 * **Package Moves**:
 ** `PlaceholderHooker`, `CommentHooker`, and `HookRemover` moved to `pro.verron.officestamper.api`.
 ** `ExperimentalStampers` moved to `pro.verron.officestamper.experimental`.
@@ -582,4 +599,3 @@ Please check if you had specific expectations in your custom implementations, th
 
 * link:index.html[Back to Index]
 * link:contributing.html[Contributing]
-* link:3.0-update.html[3.0 Update Guide]

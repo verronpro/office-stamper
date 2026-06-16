@@ -35,7 +35,7 @@ This project is active and continues to evolve with new capabilities.
 
 == Next Steps
 
-* Check out the link:getting-started.html[Getting Started] guide to begin using Office-stamper
+* Check out the link:getting-started.html[Getting Started] guide to begin using Office-stamper.
 * Explore the link:template-expressions.html[Template Expressions] documentation to learn about the expression syntax.
 * See the link:comment-processors.html[Comment Processors] section to understand how to use comments for advanced templating.
 

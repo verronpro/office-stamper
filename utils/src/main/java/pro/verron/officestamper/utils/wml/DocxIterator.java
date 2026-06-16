@@ -1,11 +1,15 @@
 package pro.verron.officestamper.utils.wml;
 
+import org.docx4j.com.microsoft.schemas.office.word.x2010.wordprocessingShape.CTTextboxInfo;
+import org.docx4j.com.microsoft.schemas.office.word.x2010.wordprocessingShape.CTWordprocessingShape;
+import org.docx4j.dml.Graphic;
+import org.docx4j.dml.GraphicData;
+import org.docx4j.dml.wordprocessingDrawing.Anchor;
+import org.docx4j.dml.wordprocessingDrawing.Inline;
+import org.docx4j.mce.AlternateContent;
 import org.docx4j.vml.CTTextbox;
 import org.docx4j.vml.VmlShapeElements;
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.Pict;
-import org.docx4j.wml.SdtBlock;
-import org.docx4j.wml.SdtRun;
+import org.docx4j.wml.*;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 
@@ -75,6 +79,7 @@ public class DocxIterator
         return next != null;
     }
 
+
     @Override
     public Object next() {
         if (next == null)
@@ -110,6 +115,45 @@ public class DocxIterator
                 var content = tb.getTxbxContent();
                 var contentContent = content.getContent();
                 iteratorQueue.add(contentContent.iterator());
+            }
+            case AlternateContent ac -> {
+                var choiceList = ac.getChoice();
+                iteratorQueue.add(choiceList.iterator());
+                var fallback = ac.getFallback();
+                var fallbackContent = fallback.getAny();
+                iteratorQueue.add(fallbackContent.iterator());
+            }
+            case AlternateContent.Choice c -> {
+                var content = c.getAny();
+                iteratorQueue.add(content.iterator());
+            }
+            case Drawing d -> {
+                var content = d.getAnchorOrInline();
+                iteratorQueue.add(content.iterator());
+            }
+            case Anchor a -> {
+                var content = List.of(a.getGraphic());
+                iteratorQueue.add(content.iterator());
+            }
+            case Graphic g -> {
+                var content = List.of(g.getGraphicData());
+                iteratorQueue.add(content.iterator());
+            }
+            case GraphicData gd -> {
+                var content = gd.getAny();
+                iteratorQueue.add(content.iterator());
+            }
+            case CTWordprocessingShape ws -> {
+                var content = List.of(ws.getTxbx());
+                iteratorQueue.add(content.iterator());
+            }
+            case CTTextboxInfo ti -> {
+                var content = List.of(ti.getTxbxContent());
+                iteratorQueue.add(content.iterator());
+            }
+            case Inline i -> {
+                var content = List.of(i.getGraphic());
+                iteratorQueue.add(content.iterator());
             }
             default -> { /* DO NOTHING */ }
         }

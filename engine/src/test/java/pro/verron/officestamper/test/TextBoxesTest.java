@@ -57,4 +57,65 @@ class TextBoxesTest
         testStamper(config, context, template, expected);
     }
 
+    @DisplayName("Placeholders in modern text boxes should be replaced")
+    @MethodSource("factories")
+    @ParameterizedTest
+    void placeholders_in_modern_textboxes(ContextFactory factory) {
+        var context = factory.name("Bart Simpson");
+        var template = getWordResource(
+                "ExpressionReplacementInTextBoxesTest.Modern.docx");
+        var config = standard().setExceptionResolver(passing());
+        String expected = """
+                == Expression Replacement in TextBoxes
+                
+                alternateContent:1[]This should resolve to a name:\s
+                
+                alternateContent:2[]This should not resolve:\s
+                
+                // section {docGrid={linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
+                [alternateContent, anchor=1]
+                --
+                choice wps
+                	drawing
+                		anchor
+                			graphic
+                				wordprocessingshape
+                					textbox
+                						Bart Simpson
+                
+                fallback
+                	pict
+                		roundrect
+                			shadow
+                			textbox
+                				Bart Simpson
+                
+                --
+                
+                
+                [alternateContent, anchor=2]
+                --
+                choice wps
+                	drawing
+                		anchor
+                			graphic
+                				wordprocessingshape
+                					textbox
+                						${foo}
+                
+                fallback
+                	pict
+                		roundrect
+                			shadow
+                			textbox
+                				${foo}
+                
+                --
+                
+                
+                """;
+        testStamper(config, context, template, expected);
+    }
+
 }

@@ -3,6 +3,7 @@ package pro.verron.officestamper.utils.wml;
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.TraversalUtil;
 import org.docx4j.finders.CommentFinder;
+import org.docx4j.mce.AlternateContent;
 import org.docx4j.model.structure.HeaderFooterPolicy;
 import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.model.styles.StyleUtil;
@@ -288,6 +289,10 @@ public final class WmlUtils {
                     asString(vmlShapeElements.getEGShapeElements());
             case CTTextbox textbox -> asString(textbox.getTxbxContent());
             case CommentRangeStart _, CommentRangeEnd _ -> "";
+            case AlternateContent ac -> {
+                var choices = ac.getChoice();
+                yield "<alternateContent(%d)>".formatted(choices.size() + 1);
+            }
             default -> {
                 log.debug("Unhandled object type: {}", content.getClass());
                 yield "";

@@ -40,7 +40,7 @@
     <properties>
         <docx4j.version>11.5.14</docx4j.version>
         <javafx.version>27-ea+16</javafx.version>
-        <asciidoc.version>3.8-SNAPSHOT</asciidoc.version>
+        <asciidoc.version>3.8</asciidoc.version>
 
         <maven.compiler.release>25</maven.compiler.release>
         <maven.compiler.source>25</maven.compiler.source>
@@ -186,7 +186,6 @@
                         <generateSitemap>true</generateSitemap>
                         <generateProjectInfo>true</generateProjectInfo>
                         <generateReports>true</generateReports>
-
                         <asciidoc>
                             <attributes>
                                 <source-highlighter>coderay</source-highlighter>

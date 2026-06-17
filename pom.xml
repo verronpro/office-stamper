@@ -240,7 +240,7 @@
                 <plugin>
                     <groupId>org.pitest</groupId>
                     <artifactId>pitest-maven</artifactId>
-                    <version>1.25.4</version>
+                    <version>1.25.5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.simplify4u.plugins</groupId>
@@ -394,7 +394,7 @@
             <dependency>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.25.4</version>
+                <version>1.25.5</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

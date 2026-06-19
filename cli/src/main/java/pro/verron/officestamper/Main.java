@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 import static java.nio.file.Files.newOutputStream;
 import static java.nio.file.Files.writeString;
+import static java.time.OffsetDateTime.now;
 import static pro.verron.asciidoc.compiler.AsciiDocCompiler.saveSvgAsImage;
 
 /// Main class for the CLI.
@@ -54,38 +55,48 @@ public class Main
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     // Flags: template (-t/--template) and data (-d/--data)
     @Option(names = {"-t", "--template"},
-            description = "Template file path (.docx|.pptx), or a keyword (diagnostic) for a packaged sample "
+            description = "Template file path (.docx|.pptx), or a keyword "
+                          + "(diagnostic) for a packaged sample "
                           + "template") private String templatePath;
     @Option(names = {"-d", "--data"},
             required = false,
             description =
-                    "Data input: file (json|yaml|yml|properties|csv|xlsx|xml|html), a directory, or 'diagnostic'") private String dataPath;
+                    "Data input: file (json|yaml|yml|properties|csv|xlsx|xml"
+                    + "|html), a directory, or 'diagnostic'") private String dataPath;
     @Option(names = {"-o", "--output"},
             defaultValue = "output.docx",
             description = "Output file path") private String outputPath;
     @Option(names = {"--dry-run"},
-            description = "Validate template + data and variables, but do not produce the output file") private boolean dryRun;
-    @Option(names = {"--report"},
-            description = "Optional JSON report file path with run metadata and validation results") private String reportPath;
+            description = "Validate template + data and variables, but do not"
+                          + " produce the output file") private boolean dryRun;
+    @Option(names = {"--run-report"},
+            description = "Optional JSON report file path with run metadata "
+                          + "and validation results") private String reportPath;
     @Option(names = {"--log-format"},
             defaultValue = "human",
-            description = "Logging format: 'human' (default) or 'json' (structured logs to stdout)") private String logFormat;
+            description = "Logging format: 'human' (default) or 'json' "
+                          + "(structured logs to stdout)") private String logFormat;
 
     @Option(names = {"--excel-merge-strategy"},
             defaultValue = "MAP",
-            description = "Excel merge strategy: MAP (default, each sheet is a key) or JOIN (inner join sheets)") private ExcelMergeStrategy excelMergeStrategy;
+            description = "Excel merge strategy: MAP (default, each sheet is "
+                          + "a key) or JOIN (inner join sheets)") private ExcelMergeStrategy excelMergeStrategy;
 
     @Option(names = {"--excel-join-key"},
-            description = "Key to use for joining Excel sheets (used with JOIN strategy)") private String excelJoinKey;
+            description = "Key to use for joining Excel sheets (used with "
+                          + "JOIN strategy)") private String excelJoinKey;
 
     @Option(names = {"--bind-env"},
-            description = "Expose environment variables in the SpEL context as 'env'") private boolean bindEnv;
+            description = "Expose environment variables in the SpEL context "
+                          + "as 'env'") private boolean bindEnv;
 
     @Option(names = {"--watch"},
-            description = "Watch template and data files for changes and re-run stamping automatically") private boolean watch;
+            description = "Watch template and data files for changes and "
+                          + "re-run stamping automatically") private boolean watch;
 
-    @Option(names = {"--traceability-report"},
-            description = "Optional JSON traceability report file path with every placeholder resolution") private String traceabilityReportPath;
+    @Option(names = {"--report", "--traceability-report"},
+            description = "Optional JSON traceability report file path with "
+                          + "every placeholder resolution") private String traceabilityReportPath;
 
     /// Default constructor.
     public Main() {
@@ -742,9 +753,7 @@ public class Main
         }
         try {
             var map = new LinkedHashMap<String, Object>();
-            map.put("ts",
-                    java.time.OffsetDateTime.now()
-                                            .toString());
+            map.put("ts", now().toString());
             map.put("level", level.toLowerCase());
             map.put("msg", message);
             if (fields != null && !fields.isEmpty()) map.put("fields", fields);
@@ -766,9 +775,7 @@ public class Main
         report.put("template", templatePath);
         report.put("data", dataPath);
         report.put("dryRun", dryRun);
-        report.put("timestamp",
-                java.time.OffsetDateTime.now()
-                                        .toString());
+        report.put("timestamp", now().toString());
         var items = new java.util.ArrayList<Map<String, Object>>();
         for (var r : results) {
             var it = new LinkedHashMap<String, Object>();
@@ -799,9 +806,7 @@ public class Main
         report.put("data", dataPath == null ? "<none>" : dataPath);
         report.put("output", outputPath);
         report.put("dryRun", dryRun);
-        report.put("timestamp",
-                java.time.OffsetDateTime.now()
-                                        .toString());
+        report.put("timestamp", now().toString());
         if (errorMessage != null) report.put("error", errorMessage);
         try {
             var mapper = new ObjectMapper();
@@ -835,8 +840,13 @@ public class Main
         try {
             var mapper = new ObjectMapper();
             try (var os = createOutputStream(path)) {
+                var map = new LinkedHashMap<String, Object>();
+                map.put("template", templatePath);
+                map.put("data", dataPath);
+                map.put("timestamp", now().toString());
+                map.put("resolutions", report.getResolutions());
                 mapper.writerWithDefaultPrettyPrinter()
-                      .writeValue(os, report.getResolutions());
+                      .writeValue(os, map);
             }
         } catch (IOException e) {
             logger.warn("Could not write traceability report", e);
@@ -868,9 +878,19 @@ public class Main
         public void run() {
             try {
                 var mapper = new ObjectMapper();
+                var root = mapper.readTree(input.toFile());
+                var resolutionsNode = root.get("resolutions");
+                if (resolutionsNode == null) {
+                    // Fallback for old format or if it was just a list
+                    resolutionsNode = root.isArray() ? root : null;
+                }
+
+                if (resolutionsNode == null) throw new OfficeStamperException(
+                        "Could not find resolutions in report");
+
                 List<TraceabilityReport.Resolution> resolutions =
-                        mapper.readValue(
-                                input.toFile(),
+                        mapper.convertValue(
+                                resolutionsNode,
                                 new TypeReference<>() {});
                 var html = generateHtml(resolutions);
                 writeString(output, html);

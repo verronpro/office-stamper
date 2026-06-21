@@ -16,16 +16,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pro.verron.officestamper.experimental.ExperimentalStampers.pptxPackageStamper;
 import static pro.verron.officestamper.utils.pml.PptxRenderer.pptxToString;
 
-@DisplayName("PPTX Image Stamping Test")
-class PptxImageTest {
+@DisplayName("PPTX Image Stamping Test") class PptxImageTest {
 
     @Test
     @DisplayName("Should replace placeholder with image fill in PPTX")
-    void testImageStamping() throws java.io.IOException {
+    void testImageStamping()
+            throws java.io.IOException {
         var stamper = pptxPackageStamper();
-        var template = ResourceUtils.getPowerPointResource(Path.of("powerpoint-base.pptx"));
+        var template = ResourceUtils.getPowerPointResource(Path.of(
+                "powerpoint-base.pptx"));
 
-        var imagePath = Path.of("..", "test", "sources", "sample-monalisa-20x20.png").normalize();
+        var imagePath = Path.of("..",
+                                    "src",
+                                    "test",
+                                    "resources",
+                                    "sample-monalisa-20x20.png")
+                            .normalize();
         var image = new Image(java.nio.file.Files.readAllBytes(imagePath));
 
         record Context(Image name) {}
@@ -35,16 +41,21 @@ class PptxImageTest {
 
         // 1. Check that the placeholder text is gone
         var actualText = pptxToString(stamped);
-        assertFalse(actualText.contains("${name}"), "Placeholder should be gone");
-        assertFalse(actualText.contains("Bart"), "Placeholder should not be replaced by string");
+        assertFalse(actualText.contains("${name}"),
+                "Placeholder should be gone");
+        assertFalse(actualText.contains("Bart"),
+                "Placeholder should not be replaced by string");
 
         // 2. Check that at least one shape has a blipFill
         List<Shape> shapes = PowerpointCollector.collect(stamped, Shape.class);
         boolean foundImageFill = false;
         for (Shape shape : shapes) {
-            if (shape.getSpPr() != null && shape.getSpPr().getBlipFill() != null) {
-                CTBlipFillProperties blipFill = shape.getSpPr().getBlipFill();
-                if (blipFill.getBlip() != null && blipFill.getBlip().getEmbed() != null) {
+            if (shape.getSpPr() != null && shape.getSpPr()
+                                                .getBlipFill() != null) {
+                CTBlipFillProperties blipFill = shape.getSpPr()
+                                                     .getBlipFill();
+                if (blipFill.getBlip() != null && blipFill.getBlip()
+                                                          .getEmbed() != null) {
                     foundImageFill = true;
                     break;
                 }

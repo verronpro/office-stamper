@@ -15,24 +15,26 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("ExcelContext Named Tables Tests")
-class ExcelNamedTableTest {
+@DisplayName("ExcelContext Named Tables Tests") class ExcelNamedTableTest {
 
     @Test
     @DisplayName("Should expose named table at root as list of records")
     void testNamedTableExposedAtRoot()
             throws Exception {
-        // Arrange: load the shared sample and attach a named table over its header row (A1:B1)
+        // Arrange: load the shared sample and attach a named table over its
+        // header row (A1:B1)
         var bytes = createSampleWithNamedTable();
 
         // Act: build context from in-memory stream
         var ctx = ExcelContext.from(new ByteArrayInputStream(bytes));
 
-        // Assert root access by table name (expect empty list since the table covers only headers)
+        // Assert root access by table name (expect empty list since the
+        // table covers only headers)
         @SuppressWarnings("unchecked")
         var sampleTable = (List<Map<String, String>>) ctx.get("SampleTable");
         assertNotNull(sampleTable, "Named table should be available at root");
-        assertTrue(sampleTable.isEmpty(), "Table over header row only should yield an empty list");
+        assertTrue(sampleTable.isEmpty(),
+                "Table over header row only should yield an empty list");
 
         // Sanity checks: A1 value and sheets listing still work
         var sheets = (List<?>) ctx.get("sheets");
@@ -46,9 +48,15 @@ class ExcelNamedTableTest {
     private static byte[] createSampleWithNamedTable()
             throws Exception {
         // Load existing sample workbook (known-good formatting of cell strings)
-        var samplePath = java.nio.file.Path.of("..", "test", "sources", "excel-base.xlsx")
+        var samplePath = java.nio.file.Path.of("..",
+                                     "src",
+                                     "test",
+                                     "resources",
+                                     "excel-base.xlsx")
                                            .normalize();
-        SpreadsheetMLPackage pkg = SpreadsheetMLPackage.load(java.nio.file.Files.newInputStream(samplePath));
+        SpreadsheetMLPackage pkg =
+                SpreadsheetMLPackage.load(java.nio.file.Files.newInputStream(
+                        samplePath));
 
         // Resolve first worksheet part
         var wbPart = pkg.getWorkbookPart();
@@ -69,15 +77,17 @@ class ExcelNamedTableTest {
 
         CTTableColumns tcs = new CTTableColumns();
         tcs.setCount(2L);
-        // Column names don't matter for the extraction since the range is header-only; set placeholders
+        // Column names don't matter for the extraction since the range is
+        // header-only; set placeholders
         tcs.getTableColumn()
            .add(newTableColumn(1L, "Col1"));
         tcs.getTableColumn()
            .add(newTableColumn(2L, "Col2"));
         table.setTableColumns(tcs);
 
-        var tablePart = new org.docx4j.openpackaging.parts.SpreadsheetML.TablePart(new PartName("/xl/tables/table1"
-                                                                                                + ".xml"));
+        var tablePart =
+                new org.docx4j.openpackaging.parts.SpreadsheetML.TablePart(
+                        new PartName("/xl/tables/table1" + ".xml"));
         tablePart.setContents(table);
         var rel = wsPart.addTargetPart(tablePart);
 

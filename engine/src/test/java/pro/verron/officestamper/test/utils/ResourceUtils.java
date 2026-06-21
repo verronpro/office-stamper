@@ -45,7 +45,7 @@ public class ResourceUtils {
     /// @return an InputStream for the specified resource
     public static InputStream getResource(Path path) {
         try {
-            var testRoot = Path.of("..", "test", "sources");
+            var testRoot = Path.of("..", "src", "test", "resources");
             var resolve = testRoot.resolve(path);
             return Files.newInputStream(resolve);
         } catch (IOException e) {

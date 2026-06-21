@@ -67,6 +67,7 @@ import static java.util.stream.Collectors.toMap;
             description = "Validate template + data and variables, but do not"
                           + " produce the output file") private boolean dryRun;
     @Option(names = {"--run-report"},
+            defaultValue = "run-report.json",
             description = "Optional JSON report file path with run metadata "
                           + "and validation results") private String reportPath;
     @Option(names = {"--log-format"},
@@ -91,6 +92,7 @@ import static java.util.stream.Collectors.toMap;
                           + "re-run stamping automatically") private boolean watch;
 
     @Option(names = {"--report", "--traceability-report"},
+            defaultValue = "trace-report.json",
             description = "Optional JSON traceability report file path with "
                           + "every placeholder resolution") private String traceabilityReportPath;
 

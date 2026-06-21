@@ -18,13 +18,15 @@ module pro.verron.officestamper.cli {
     requires info.picocli;
     requires com.opencsv;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.datatype.jsr310;
     requires com.fasterxml.jackson.core;
 
     requires org.docx4j.core;
     requires org.docx4j.openxml_objects;
     requires org.jspecify;
 
-    // Picocli uses reflection to populate fields in the command class
-    opens pro.verron.officestamper to info.picocli;
+    // Picocli and Jackson uses reflection class
+    opens pro.verron.officestamper to info.picocli,
+            com.fasterxml.jackson.databind;
     exports pro.verron.officestamper to com.fasterxml.jackson.databind;
 }

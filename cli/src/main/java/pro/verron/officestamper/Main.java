@@ -48,8 +48,7 @@ import static pro.verron.asciidoc.compiler.AsciiDocCompiler.saveSvgAsImage;
 @Command(name = "officestamper",
          mixinStandardHelpOptions = true,
          description = "Office Stamper CLI tool",
-         subcommands = {Main.Preview.class, Main.ReportView.class})
-public class Main
+         subcommands = {Preview.class, ReportView.class}) public class Main
         implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -856,139 +855,6 @@ public class Main
     private enum TemplateKind {
         WORD,
         POWERPOINT
-    }
-
-    /// Subcommand that generates an HTML viewer for a traceability report.
-    @Command(name = "report-view",
-             description = "Generate an HTML viewer for a traceability report")
-    public static class ReportView
-            implements Runnable {
-
-        @Option(names = {"-i", "--input"},
-                required = true,
-                description = "JSON traceability report") private Path input;
-        @Option(names = {"-o", "--output"},
-                defaultValue = "traceability.html",
-                description = "Output HTML file") private Path output;
-
-        /// Default constructor.
-        public ReportView() {}
-
-        @Override
-        public void run() {
-            try {
-                var mapper = new ObjectMapper();
-                var root = mapper.readTree(input.toFile());
-                var resolutionsNode = root.get("resolutions");
-                if (resolutionsNode == null) {
-                    // Fallback for old format or if it was just a list
-                    resolutionsNode = root.isArray() ? root : null;
-                }
-
-                if (resolutionsNode == null) throw new OfficeStamperException(
-                        "Could not find resolutions in report");
-
-                List<TraceabilityReport.Resolution> resolutions =
-                        mapper.convertValue(
-                                resolutionsNode,
-                                new TypeReference<>() {});
-                var html = generateHtml(resolutions);
-                writeString(output, html);
-            } catch (IOException e) {
-                throw new OfficeStamperException(e);
-            }
-        }
-
-        private String generateHtml(List<TraceabilityReport.Resolution> resolutions) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html><head><title>Traceability Report</title><style>");
-            sb.append("table { border-collapse: collapse; width: 100%; "
-                      + "font-family: sans-serif; }");
-            sb.append("th, td { border: 1px solid #ddd; padding: 8px; "
-                      + "text-align: left; vertical-align: top; }");
-            sb.append("th { background-color: #4CAF50; color: white; }");
-            sb.append("tr:nth-child(even) { background-color: #f9f9f9; }");
-            sb.append("tr:hover { background-color: #f1f1f1; }");
-            sb.append("ul { margin: 0; padding-left: 20px; }");
-            sb.append("</style></head><body>");
-            sb.append("<h1>Office Stamper Traceability Report</h1>");
-            sb.append("<table><tr><th>Expression</th><th>Resolved "
-                      + "Value</th><th>Nesting Context</th></tr>");
-            for (var res : resolutions) {
-                sb.append("<tr>");
-                sb.append("<td><code>")
-                  .append(res.expression())
-                  .append("</code></td>");
-                sb.append("<td>")
-                  .append(res.value())
-                  .append("</td>");
-                sb.append("<td><ul>");
-                for (var ctx : res.contextStack()) {
-                    sb.append("<li>")
-                      .append(ctx)
-                      .append("</li>");
-                }
-                sb.append("</ul></td>");
-                sb.append("</tr>");
-            }
-            sb.append("</table></body></html>");
-            return sb.toString();
-        }
-    }
-
-    /// Subcommand that generates a preview image from an AsciiDoc file.
-    @Command(name = "preview",
-             description = "Generate a preview image from an AsciiDoc file")
-    public static class Preview
-            implements Runnable {
-
-        @Option(names = {"-i", "--input"},
-                required = true,
-                description = "Input AsciiDoc file") private Path input;
-        @Option(names = {"-o", "--output"},
-                defaultValue = "preview.png",
-                description = "Output file (PNG or SVG)") private Path output;
-        @Option(names = "--theme",
-                defaultValue = "word",
-                description = "Theme: word, gdocs, libre") private String theme;
-        @Option(names = "--dpi",
-                defaultValue = "96",
-                description = "DPI for PNG output") private int dpi;
-        @Option(names = "--format",
-                description = "Output format: png, svg (auto-detected if "
-                              + "omitted)") private String format;
-
-        /// Default constructor.
-        public Preview() {}
-
-        @Override
-        public void run() {
-            try {
-                String asciidoc = Files.readString(input);
-                var model = AsciiDocCompiler.toModel(asciidoc);
-
-                // Inject theme attribute into model
-                var attributes = new java.util.HashMap<>(model.getAttributes());
-                attributes.put("theme", theme);
-                model = AsciiDocModel.of(attributes, model.getBlocks());
-
-                String formatToUse;
-                if (format != null) formatToUse = format;
-                else formatToUse = output.endsWith(".svg") ? "svg" : "png";
-
-                var svg = AsciiDocCompiler.toSvg(model);
-
-                switch (formatToUse) {
-                    case "svg" -> writeString(output, svg);
-                    case "png" -> saveSvgAsImage(svg, output, dpi, Color.WHITE);
-                    default -> throw new IllegalArgumentException(
-                            "Unsupported format: " + formatToUse);
-                }
-
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to generate preview", e);
-            }
-        }
     }
 
     private record Item(String name, Object context) {}

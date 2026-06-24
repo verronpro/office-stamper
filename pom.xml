@@ -42,11 +42,12 @@
         <javafx.version>27-ea+16</javafx.version>
         <asciidoc.version>3.8</asciidoc.version>
 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.report.outputEncoding>UTF-8</project.report.outputEncoding>
+
         <maven.compiler.release>25</maven.compiler.release>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.report.outputEncoding>UTF-8</project.report.outputEncoding>
     </properties>
 
     <build>

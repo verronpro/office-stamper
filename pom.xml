@@ -18,18 +18,6 @@
     <url>https://office-stamper.verron.pro</url>
     <inceptionYear>2022</inceptionYear>
 
-    <organization>
-        <name>Verron.pro</name>
-        <url>https://verron.pro</url>
-    </organization>
-
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>LICENSE</url>
-        </license>
-    </licenses>
-
     <modules>
         <module>engine</module>
         <module>excel-context</module>
@@ -471,6 +459,18 @@
             <url>https://office-stamper.verron.pro</url>
         </site>
     </distributionManagement>
+
+    <organization>
+        <name>Verron.pro</name>
+        <url>https://verron.pro</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>LICENSE</url>
+        </license>
+    </licenses>
 
     <developers>
         <developer>

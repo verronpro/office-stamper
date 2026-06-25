@@ -13,24 +13,20 @@ import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Resolvers;
 import pro.verron.officestamper.test.utils.ContextFactory;
 import pro.verron.officestamper.test.utils.DocxFactory;
+import pro.verron.officestamper.test.utils.OfficeStamperTest;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.ArgumentSet;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
-@DisplayName("Default Features") class DefaultTests {
+@DisplayName("Default Features")
+class DefaultTests extends OfficeStamperTest {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
 
@@ -53,85 +49,63 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         });
     }
 
-    private static Stream<ContextFactory> factories() {
-        return Stream.of(objectContextFactory(), mapContextFactory());
-    }
-
     private static ArgumentSet ternary(ContextFactory factory) {
-        return argumentSet("Ternary operator expressions should be evaluated correctly",
-                standard(),
-                factory.name("Homer"),
-                getWordResource(Path.of("TernaryOperatorTest.docx")),
-                """
-                        Expression Replacement with ternary operator
-                        
-                        This paragraph is untouched.
-                        
-                        Some replacement before the ternary operator: Homer.
-                        
-                        Homer <-- this should read "Homer".
-                        
-                         <-- this should be empty.
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
+        return argumentSet("Ternary operator expressions should be evaluated correctly", standard(), factory.name("Homer"), getWordResource(Path.of("TernaryOperatorTest.docx")), """
+                Expression Replacement with ternary operator
+                
+                This paragraph is untouched.
+                
+                Some replacement before the ternary operator: Homer.
+                
+                Homer <-- this should read "Homer".
+                
+                 <-- this should be empty.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
+                """);
     }
 
     private static ArgumentSet replaceWordWithIntegrationTest(ContextFactory factory) {
-        return argumentSet("Replace Word With Integration Test",
-                full(),
-                factory.name("Simpsons"),
-                getWordResource(Path.of("ProcessorReplaceWith.docx")),
-                """
-                        == ReplaceWith Integration
-                        
-                        This variable name should be resolved to the value Simpsons.
-                        
-                        |===
-                        |This variable name should be resolved to the value Simpsons.
-                        |===
-                        
-                        
-                        
-                        
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
+        return argumentSet("Replace Word With Integration Test", full(), factory.name("Simpsons"), getWordResource(Path.of("ProcessorReplaceWith.docx")), """
+                == ReplaceWith Integration
+                
+                This variable name should be resolved to the value Simpsons.
+                
+                |===
+                |This variable name should be resolved to the value Simpsons.
+                |===
+                
+                
+                
+                
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
+                """);
     }
 
     private static ArgumentSet replaceNullExpressionTest(ContextFactory factory) {
-        return argumentSet("Do not replace 'null' values - keep placeholder",
-                standard().addResolver(Resolvers.nullToPlaceholder()),
-                factory.name(null),
-                getWordResource(Path.of("ReplaceNullExpressionTest.docx")),
-                """
-                        I am ${name}.
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
-                        
-                        """);
+        return argumentSet("Do not replace 'null' values - keep placeholder", standard().addResolver(Resolvers.nullToPlaceholder()), factory.name(null), getWordResource(Path.of("ReplaceNullExpressionTest.docx")), """
+                I am ${name}.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
+                
+                """);
     }
 
 
     private static ArgumentSet replaceNullExpressionTest2(ContextFactory factory) {
-        return argumentSet("Do replace 'null' values with empty string",
-                standard().addResolver(Resolvers.nullToEmpty()),
-                factory.name(null),
-                getWordResource(Path.of("ReplaceNullExpressionTest.docx")),
-                """
-                        I am .
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
-                        
-                        """);
+        return argumentSet("Do replace 'null' values with empty string", standard().addResolver(Resolvers.nullToEmpty()), factory.name(null), getWordResource(Path.of("ReplaceNullExpressionTest.docx")), """
+                I am .
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
+                
+                """);
     }
 
 
-    private static ArgumentSet customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(
-            ContextFactory factory
-    ) {
+    private static ArgumentSet customEvaluationContextConfigurerTest_customEvaluationContextConfigurerIsHonored(ContextFactory factory) {
 
         var name = "Custom EvaluationContext Configurer Test - Custom EvaluationContext Configurer Is Honored";
         return argumentSet(name, standard().setEvaluationContextFactory(evalContext -> {
@@ -157,222 +131,186 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
     }
 
     private static ArgumentSet expressionReplacementInGlobalParagraphsTest(ContextFactory factory) {
-        return argumentSet("Expression replacement in global paragraphs",
-                standard().setExceptionResolver(ExceptionResolvers.passing()),
-                factory.name("Homer Simpson"),
-                DocxFactory.makeWordResource("""
-                        Expression Replacement in global paragraphs
-                        This paragraph is untouched.
-                        In this paragraph, the variable name should be resolved to the value ${name}.
-                        In this paragraph, the variable foo should not be resolved: ${foo}."""),
-                """
-                        Expression Replacement in global paragraphs +
-                        This paragraph is untouched. +
-                        In this paragraph, the variable name should be resolved to the value Homer Simpson. +
-                        In this paragraph, the variable foo should not be resolved: ${foo}.
-                        
-                        // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                        
-                        """);
+        return argumentSet("Expression replacement in global paragraphs", standard().setExceptionResolver(ExceptionResolvers.passing()), factory.name("Homer Simpson"), DocxFactory.makeWordResource("""
+                Expression Replacement in global paragraphs
+                This paragraph is untouched.
+                In this paragraph, the variable name should be resolved to the value ${name}.
+                In this paragraph, the variable foo should not be resolved: ${foo}."""), """
+                Expression Replacement in global paragraphs +
+                This paragraph is untouched. +
+                In this paragraph, the variable name should be resolved to the value Homer Simpson. +
+                In this paragraph, the variable foo should not be resolved: ${foo}.
+                
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
+                """);
     }
 
     private static ArgumentSet expressionReplacementInTablesTest(ContextFactory factory) {
-        return argumentSet("Expression replacement in tables",
-                standard().setExceptionResolver(ExceptionResolvers.passing()),
-                factory.name("Bart Simpson"),
-                getWordResource(Path.of("ExpressionReplacementInTablesTest.docx")),
-                """
-                        == Expression Replacement in Tables
-                        
-                        |===
-                        |This should resolve to a name:
-                        |Bart Simpson
-                        |This should not resolve:
-                        |${foo}
-                        a|Nested Table:
-                        
-                        !===
-                        !This should resolve to a name:
-                        !Bart Simpson
-                        !This should not resolve:
-                        !${foo}
-                        !===
-                        |===
-                        
-                        
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
+        return argumentSet("Expression replacement in tables", standard().setExceptionResolver(ExceptionResolvers.passing()), factory.name("Bart Simpson"), getWordResource(Path.of("ExpressionReplacementInTablesTest.docx")), """
+                == Expression Replacement in Tables
+                
+                |===
+                |This should resolve to a name:
+                |Bart Simpson
+                |This should not resolve:
+                |${foo}
+                a|Nested Table:
+                
+                !===
+                !This should resolve to a name:
+                !Bart Simpson
+                !This should not resolve:
+                !${foo}
+                !===
+                |===
+                
+                
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
+                """);
     }
 
     private static ArgumentSet expressionReplacementWithFormattingTest(ContextFactory factory) {
-        return argumentSet("Expression replacement with formatting should keep original formatting",
-                standard(),
-                factory.name("Homer Simpson"),
-                getWordResource(Path.of("ExpressionReplacementWithFormattingTest.docx")),
-                """
-                        == Expression Replacement with text format
-                        
-                        The text format should be kept intact when an expression is replaced.
-                        
-                        It should be bold: *Homer Simpson*.
-                        
-                        It should be italic: _Homer Simpson_.
-                        
-                        It should be superscript: ^Homer Simpson^.
-                        
-                        It should be subscript: ~Homer Simpson~.
-                        
-                        It should be striked: [strike]#Homer Simpson#.
-                        
-                        It should be underlined: [u_single]#Homer Simpson#.
-                        
-                        It should be doubly underlined: [u_double]#Homer Simpson#.
-                        
-                        It should be thickly underlined: [u_thick]#Homer Simpson#.
-                        
-                        It should be dot underlined: [u_dotted]#Homer Simpson#.
-                        
-                        It should be dash underlined: [u_dash]#Homer Simpson#.
-                        
-                        It should be dot and dash underlined: [u_dotDash]#Homer Simpson#.
-                        
-                        It should be dot, dot and dash underlined: [u_dotDotDash]#Homer Simpson#.
-                        
-                        It should be highlighted yellow: [highlight_yellow]#Homer Simpson#.
-                        
-                        It should be white over darkblue: [color_FFFFFF]#[highlight_darkBlue]#Homer Simpson##.
-                        
-                        It should be with header formatting: [rStyle_TitreCar]#Homer Simpson#.
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
+        return argumentSet("Expression replacement with formatting should keep original formatting", standard(), factory.name("Homer Simpson"), getWordResource(Path.of("ExpressionReplacementWithFormattingTest.docx")), """
+                == Expression Replacement with text format
+                
+                The text format should be kept intact when an expression is replaced.
+                
+                It should be bold: *Homer Simpson*.
+                
+                It should be italic: _Homer Simpson_.
+                
+                It should be superscript: ^Homer Simpson^.
+                
+                It should be subscript: ~Homer Simpson~.
+                
+                It should be striked: [strike]#Homer Simpson#.
+                
+                It should be underlined: [u_single]#Homer Simpson#.
+                
+                It should be doubly underlined: [u_double]#Homer Simpson#.
+                
+                It should be thickly underlined: [u_thick]#Homer Simpson#.
+                
+                It should be dot underlined: [u_dotted]#Homer Simpson#.
+                
+                It should be dash underlined: [u_dash]#Homer Simpson#.
+                
+                It should be dot and dash underlined: [u_dotDash]#Homer Simpson#.
+                
+                It should be dot, dot and dash underlined: [u_dotDotDash]#Homer Simpson#.
+                
+                It should be highlighted yellow: [highlight_yellow]#Homer Simpson#.
+                
+                It should be white over darkblue: [color_FFFFFF]#[highlight_darkBlue]#Homer Simpson##.
+                
+                It should be with header formatting: [rStyle_TitreCar]#Homer Simpson#.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
+                """);
     }
 
     private static ArgumentSet expressionWithSurroundingSpacesTest(ContextFactory factory) {
-        return argumentSet("Expression with surrounding spaces should manage spaces correctly",
-                standard(),
-                factory.spacy(),
-                getWordResource(Path.of("ExpressionWithSurroundingSpacesTest.docx")),
-                """
-                        == Expression Replacement when expression has leading and/or trailing spaces
-                        
-                        When an expression within a paragraph is resolved, the spaces between the replacement and the surrounding text should be as expected. The following paragraphs should all look the same.
-                        
-                        Before Expression After.
-                        
-                        Before Expression After.
-                        
-                        Before Expression After.
-                        
-                        Before Expression After.
-                        
-                        Before Expression After.
-                        
-                        Before Expression After.
-                        
-                        Before Expression After.
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
+        return argumentSet("Expression with surrounding spaces should manage spaces correctly", standard(), factory.spacy(), getWordResource(Path.of("ExpressionWithSurroundingSpacesTest.docx")), """
+                == Expression Replacement when expression has leading and/or trailing spaces
+                
+                When an expression within a paragraph is resolved, the spaces between the replacement and the surrounding text should be as expected. The following paragraphs should all look the same.
+                
+                Before Expression After.
+                
+                Before Expression After.
+                
+                Before Expression After.
+                
+                Before Expression After.
+                
+                Before Expression After.
+                
+                Before Expression After.
+                
+                Before Expression After.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
+                """);
     }
 
     private static ArgumentSet expressionReplacementWithCommentTest(ContextFactory factory) {
-        return argumentSet("Expression Replacement With Comments Test",
-                full().setExceptionResolver(ExceptionResolvers.passing()),
-                factory.name("Homer Simpson"),
-                getWordResource(Path.of("ExpressionReplacementWithCommentsTest.docx")),
-                """
-                        == Expression Replacement with comments
-                        
-                        This paragraph is untouched.
-                        
-                        In this paragraph, the variable name should be resolved to the value Homer Simpson.
-                        
-                        In this paragraph, the variable foo should not be resolved: unresolvedValueWithComment.
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
-                        """);
+        return argumentSet("Expression Replacement With Comments Test", full().setExceptionResolver(ExceptionResolvers.passing()), factory.name("Homer Simpson"), getWordResource(Path.of("ExpressionReplacementWithCommentsTest.docx")), """
+                == Expression Replacement with comments
+                
+                This paragraph is untouched.
+                
+                In this paragraph, the variable name should be resolved to the value Homer Simpson.
+                
+                In this paragraph, the variable foo should not be resolved: unresolvedValueWithComment.
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
+                
+                """);
     }
 
     private static ArgumentSet leaveEmptyOnExpressionErrorTest(ContextFactory factory) {
-        return argumentSet("Leave Empty On Expression Error Test",
-                standard().setExceptionResolver(ExceptionResolvers.defaulting()),
-                factory.name("Homer Simpson"),
-                getWordResource(Path.of("LeaveEmptyOnExpressionErrorTest.docx")),
-                """
-                        Leave me empty .
-                        
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
-                        
-                        """);
+        return argumentSet("Leave Empty On Expression Error Test", standard().setExceptionResolver(ExceptionResolvers.defaulting()), factory.name("Homer Simpson"), getWordResource(Path.of("LeaveEmptyOnExpressionErrorTest.docx")), """
+                Leave me empty .
+                
+                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
+                
+                """);
     }
 
     private static ArgumentSet lineBreakReplacementTest(ContextFactory factory) {
-        return argumentSet("Line Break Replacement Test",
-                standard(Resolvers.fallback("#")),
-                factory.sentence("whatever # split in # three lines"),
-                DocxFactory.makeWordResource("""
-                        This paragraph should not be # split.
-                        This paragraph should have a split input: ${sentence}.
-                        """),
-                """
-                        This paragraph should not be # split. +
-                        This paragraph should have a split input: whatever  +
-                         split in  +
-                         three lines.
-                        
-                        // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                        
-                        """);
+        return argumentSet("Line Break Replacement Test", standard(Resolvers.fallback("#")), factory.sentence("whatever # split in # three lines"), DocxFactory.makeWordResource("""
+                This paragraph should not be # split.
+                This paragraph should have a split input: ${sentence}.
+                """), """
+                This paragraph should not be # split. +
+                This paragraph should have a split input: whatever  +
+                 split in  +
+                 three lines.
+                
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+                
+                """);
     }
 
-    private static ArgumentSet mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(
-            ContextFactory factory
-    ) {
-        return argumentSet("Map Accessor and Reflective Property Accessor should resolve map and property placeholders",
-                standard().addResolver(Resolvers.nullToDefault("N/C"))
-                          .setExceptionResolver(ExceptionResolvers.defaulting("N/C")),
-                factory.mapAndReflectiveContext(),
-                getWordResource(Path.of("MapAccessorAndReflectivePropertyAccessorTest.docx")),
-                """
-                        Flat string : Flat string has been resolved
-                        
-                        
-                        
-                        |===
-                        |Values
-                        a|first value
-                        a|second value
-                        |===
-                        
-                        
-                        
-                        
-                        
-                        Paragraph start
-                        
-                        first value
-                        
-                        Paragraph end
-                        
-                        Paragraph start
-                        
-                        second value
-                        
-                        Paragraph end
-                        
-                        
-                        
-                        // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
-                        
-                        """);
+    private static ArgumentSet mapAccessorAndReflectivePropertyAccessorTest_shouldResolveMapAndPropertyPlaceholders(ContextFactory factory) {
+        return argumentSet("Map Accessor and Reflective Property Accessor should resolve map and property placeholders", standard().addResolver(Resolvers.nullToDefault("N/C")).setExceptionResolver(ExceptionResolvers.defaulting("N/C")), factory.mapAndReflectiveContext(), getWordResource(Path.of("MapAccessorAndReflectivePropertyAccessorTest.docx")), """
+                Flat string : Flat string has been resolved
+                
+                
+                
+                |===
+                |Values
+                a|first value
+                a|second value
+                |===
+                
+                
+                
+                
+                
+                Paragraph start
+                
+                first value
+                
+                Paragraph end
+                
+                Paragraph start
+                
+                second value
+                
+                Paragraph end
+                
+                
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
+                
+                """);
     }
-
 
     private static ArgumentSet controls(ContextFactory factory) {
         return argumentSet("Form controls should be replaced as well",
@@ -417,20 +355,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
     @MethodSource("tests")
     @DisplayName("Core Features")
     @ParameterizedTest(name = "Core Features: {argumentSetName}")
-    void features(OfficeStamperConfiguration config, Object context, WordprocessingMLPackage template, String expected)
-            throws IOException, Docx4JException {
-        var stamper = docxPackageStamper(config);
-        var wordprocessingMLPackage = stamper.stamp(template, context);
-        writeOutputFile(wordprocessingMLPackage);
-        var actual = toAsciidoc(wordprocessingMLPackage);
-        assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
-    }
-
-    private static void writeOutputFile(WordprocessingMLPackage wordprocessingMLPackage)
-            throws IOException, Docx4JException {
-        if (!Boolean.parseBoolean(System.getProperty("keepOutputFile"))) return;
-        var tempFile = Files.createTempFile("stamper", ".docx");
-        log.info("Write to {}", tempFile.toString());
-        wordprocessingMLPackage.save(tempFile.toFile());
+    void features(OfficeStamperConfiguration config, Object context, WordprocessingMLPackage template, String expected) throws IOException, Docx4JException {
+        testStamper(config, context, template, expected);
     }
 }

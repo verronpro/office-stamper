@@ -86,7 +86,7 @@
                                     <artifactItem>
                                         <groupId>pro.verron</groupId>
                                         <artifactId>maven-skin</artifactId>
-                                        <version>1.0.10</version>
+                                        <version>1.0.11</version>
                                         <outputDirectory>${project.build.directory}/unpacked-css</outputDirectory>
                                         <includes>**/*.css</includes>
                                     </artifactItem>

@@ -159,8 +159,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.6</version>
                     <configuration>
-                        <redirectTestOutputToFile>true
-                        </redirectTestOutputToFile>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <systemPropertyVariables>
                             <java.awt.headless>true</java.awt.headless>
                         </systemPropertyVariables>
@@ -384,6 +383,12 @@
                 <artifactId>pitest-maven</artifactId>
                 <version>1.25.5</version>
             </dependency>
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
+                <scope>compile</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -487,11 +492,7 @@
 
     <scm>
         <url>https://github.com/verronpro/office-stamper</url>
-        <developerConnection>
-            scm:git:https://github.com/verronpro/office-stamper.git
-        </developerConnection>
-        <connection>
-            scm:git:https://github.com/verronpro/office-stamper.git
-        </connection>
+        <developerConnection>scm:git:https://github.com/verronpro/office-stamper.git</developerConnection>
+        <connection>scm:git:https://github.com/verronpro/office-stamper.git</connection>
     </scm>
 </project>

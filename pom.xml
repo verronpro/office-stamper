@@ -28,7 +28,7 @@
     <properties>
         <docx4j.version>11.5.14</docx4j.version>
         <javafx.version>27-ea+16</javafx.version>
-        <asciidoc.version>3.8</asciidoc.version>
+        <asciidoc.version>3.9</asciidoc.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.report.outputEncoding>UTF-8</project.report.outputEncoding>

@@ -1,21 +1,17 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Resolvers;
 import pro.verron.officestamper.test.utils.ContextFactory;
 import pro.verron.officestamper.test.utils.DocxFactory;
-import pro.verron.officestamper.test.utils.OfficeStamperTest;
+import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -26,7 +22,7 @@ import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standa
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
 @DisplayName("Default Features")
-class DefaultTests extends OfficeStamperTest {
+class DefaultTests extends OfficeStamperTestBase {
 
     private static Stream<ArgumentSet> tests() {
         return factories().mapMulti((factory, pipe) -> {

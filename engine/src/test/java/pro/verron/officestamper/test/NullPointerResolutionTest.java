@@ -8,7 +8,7 @@ import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Resolvers;
 import pro.verron.officestamper.test.utils.ContextFactory;
 import pro.verron.officestamper.test.utils.ObjectContextFactory;
-import pro.verron.officestamper.test.utils.OfficeStamperTest;
+import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
@@ -18,7 +18,7 @@ import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 
 /// @author Joseph Verron
 class NullPointerResolutionTest
-        extends OfficeStamperTest {
+        extends OfficeStamperTestBase {
 
     @MethodSource("factories")
     @ParameterizedTest(name = "Null Pointer Resolution with Default SpEL Configuration")

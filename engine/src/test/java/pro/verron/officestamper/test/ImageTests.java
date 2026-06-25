@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.test.utils.ContextFactory;
-import pro.verron.officestamper.test.utils.OfficeStamperTest;
+import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 
 import java.nio.file.Path;
 
@@ -13,7 +13,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getImage;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
 @DisplayName("Image-related Features") class ImageTests
-        extends OfficeStamperTest {
+        extends OfficeStamperTestBase {
 
     @MethodSource("factories")
     @ParameterizedTest(name = "Gif Image Replacement in global paragraphs with max width")

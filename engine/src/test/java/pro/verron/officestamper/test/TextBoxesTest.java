@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.test.utils.ContextFactory;
-import pro.verron.officestamper.test.utils.OfficeStamperTest;
+import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 
 import static pro.verron.officestamper.preset.ExceptionResolvers.passing;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
@@ -14,7 +14,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 /// @author Joseph Verron
 /// @author Thomas Oster
 class TextBoxesTest
-        extends OfficeStamperTest {
+        extends OfficeStamperTestBase {
 
     @DisplayName("Placeholders in text boxes should be replaced")
     @MethodSource("factories")

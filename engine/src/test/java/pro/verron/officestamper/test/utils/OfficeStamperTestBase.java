@@ -19,8 +19,8 @@ import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 
-public class OfficeStamperTest {
-    private static final Logger log = LoggerFactory.getLogger(OfficeStamperTest.class);
+public class OfficeStamperTestBase {
+    private static final Logger log = LoggerFactory.getLogger(OfficeStamperTestBase.class);
 
     protected static Stream<ContextFactory> factories() {
         return Stream.of(objectContextFactory(), mapContextFactory());
@@ -34,7 +34,7 @@ public class OfficeStamperTest {
     ) {
         var stamper = docxPackageStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        OfficeStamperTest.writeOutputFile(wordprocessingMLPackage);
+        OfficeStamperTestBase.writeOutputFile(wordprocessingMLPackage);
         var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
     }

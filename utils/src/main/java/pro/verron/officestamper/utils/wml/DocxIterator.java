@@ -27,8 +27,7 @@ import static org.docx4j.XmlUtils.unwrap;
 /// This class implements the [ResetableIterator] interface, allowing for the
 /// iteration to be reset to its initial
 /// state, ensuring reusability of the same iterator instance.
-public class DocxIterator
-        implements ResetableIterator<Object> {
+public class DocxIterator implements ResetableIterator<Object> {
 
     private final Supplier<Iterator<Object>> supplier;
     private Queue<Iterator<?>> iteratorQueue;
@@ -52,9 +51,7 @@ public class DocxIterator
         var startingIterator = supplier.get();
         this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
         this.iteratorQueue.add(startingIterator);
-        this.next = startingIterator.hasNext()
-                ? unwrap(startingIterator.next())
-                : null;
+        this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
     }
 
     /// Selects and casts elements of the specified class type from the
@@ -62,7 +59,6 @@ public class DocxIterator
     ///
     /// @param aClass the class type to filter and cast elements to
     /// @param <T>    the type of elements to select
-    ///
     /// @return a new [ResetableIterator] containing only elements of the
     /// specified class type
     public <T> ResetableIterator<T> selectClass(Class<T> aClass) {
@@ -82,8 +78,7 @@ public class DocxIterator
 
     @Override
     public Object next() {
-        if (next == null)
-            throw new NoSuchElementException("No more elements to iterate");
+        if (next == null) throw new NoSuchElementException("No more elements to iterate");
 
         var result = next;
 
@@ -155,7 +150,13 @@ public class DocxIterator
                 var content = List.of(i.getGraphic());
                 iteratorQueue.add(content.iterator());
             }
-            default -> { /* DO NOTHING */ }
+            case CTSdtCell c -> {
+                var sdtContent = c.getSdtContent();
+                var content = sdtContent.getContent();
+                iteratorQueue.add(content.iterator());
+            }
+            case Text _, ProofErr _ -> { /*DO NOTHING*/ }
+            default -> { /*DO NOTHING*/ }
         }
         while (!iteratorQueue.isEmpty() && next == null) {
             var nextIterator = iteratorQueue.poll();

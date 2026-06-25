@@ -28,8 +28,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 @DisplayName("Default Features")
 class DefaultTests extends OfficeStamperTest {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultTests.class);
-
     private static Stream<ArgumentSet> tests() {
         return factories().mapMulti((factory, pipe) -> {
             pipe.accept(ternary(factory));
@@ -313,49 +311,73 @@ class DefaultTests extends OfficeStamperTest {
     }
 
     private static ArgumentSet controls(ContextFactory factory) {
-        return argumentSet("Form controls should be replaced as well",
-                standard(),
-                factory.name("Homer"),
-                getWordResource(Path.of("form-controls.docx")),
-                """
-                        == Expression Replacement in Form Controls
-                        
-                        [form, id=8a282f9]
-                        --
-                        Rich text control line Homer
-                        
-                        --
-                        
-                        
-                        Rich text control inlined form:df261932[Homer]
-                        
-                        [form, id=fe2b2bd9]
-                        --
-                        Raw text control line Homer
-                        
-                        --
-                        
-                        
-                        Raw text control inlined form:50007206[Homer]
-                        
-                        [form, id=a90c90aa]
-                        --
-                        Homer
-                        
-                        --
-                        
-                        
-                        
-                        
-                        // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
-                        
-                        """);
+        return argumentSet("Form controls should be replaced as well", standard(), factory.name("Homer"), getWordResource(Path.of("form-controls.docx")), """
+                == Expression Replacement in Form Controls
+                
+                [form, id=8a282f9]
+                --
+                Rich text control line Homer
+                
+                --
+                
+                
+                Rich text control inlined form:df261932[Homer]
+                
+                [form, id=fe2b2bd9]
+                --
+                Raw text control line Homer
+                
+                --
+                
+                
+                Raw text control inlined form:50007206[Homer]
+                
+                [form, id=a90c90aa]
+                --
+                Homer
+                
+                --
+                
+                
+                In a table:
+                
+                |===
+                |Homer
+                |===
+                
+                
+                
+                In another table:
+                
+                |===
+                |Raw text control inlined form:c6202292[Homer]
+                |===
+                
+                
+                
+                In another table:
+                
+                |===
+                a|[form, id=61b817b8]
+                --
+                Raw text control line Homer
+                
+                --
+                |===
+                
+                
+                
+                
+                
+                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                
+                """);
     }
 
     @MethodSource("tests")
     @DisplayName("Core Features")
     @ParameterizedTest(name = "Core Features: {argumentSetName}")
-    void features(OfficeStamperConfiguration config, Object context, WordprocessingMLPackage template, String expected) throws IOException, Docx4JException {
+    void features(OfficeStamperConfiguration config, Object context, WordprocessingMLPackage template, String expected) {
         testStamper(config, context, template, expected);
     }
 }

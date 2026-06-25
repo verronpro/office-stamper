@@ -45,56 +45,36 @@ import static java.time.OffsetDateTime.now;
 import static java.util.stream.Collectors.toMap;
 
 /// Main class for the CLI.
-@Command(name = "officestamper",
-         mixinStandardHelpOptions = true,
-         description = "Office Stamper CLI tool",
-         subcommands = {Preview.class, ReportView.class}) public class Main
-        implements Runnable {
+@Command(name = "officestamper", mixinStandardHelpOptions = true, description = "Office Stamper CLI tool", subcommands = {Preview.class, ReportView.class})
+public class Main implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    @Option(names = {"-t", "--template"},
-            defaultValue = "diagnostic",
-            description = "Template file path (.docx|.pptx), or a keyword "
-                          + "(diagnostic) for a packaged sample template") private String templatePath;
-    @Option(names = {"-d", "--data"},
-            defaultValue = "diagnostic",
-            description = "Data input: file (json|yaml|yml|properties|csv"
-                          + "|xlsx|xml|html), a directory, or 'diagnostic'") private String dataPath;
-    @Option(names = {"-o", "--output"},
-            defaultValue = "output.docx",
-            description = "Output file path") private String outputPath;
-    @Option(names = {"--dry-run"},
-            description = "Validate template + data and variables, but do not"
-                          + " produce the output file") private boolean dryRun;
-    @Option(names = {"--run-report"},
-            defaultValue = "run-report.json",
-            description = "Optional JSON report file path with run metadata "
-                          + "and validation results") private String reportPath;
-    @Option(names = {"--log-format"},
-            defaultValue = "human",
-            description = "Logging format: 'human' (default) or 'json' "
-                          + "(structured logs to stdout)") private String logFormat;
+    @Option(names = {"-t", "--template"}, defaultValue = "diagnostic", description = "Template file path (.docx|.pptx), or a keyword " + "(diagnostic) for a packaged sample template")
+    private String templatePath;
+    @Option(names = {"-d", "--data"}, defaultValue = "diagnostic", description = "Data input: file (json|yaml|yml|properties|csv" + "|xlsx|xml|html), a directory, or 'diagnostic'")
+    private String dataPath;
+    @Option(names = {"-o", "--output"}, defaultValue = "output.docx", description = "Output file path")
+    private String outputPath;
+    @Option(names = {"--dry-run"}, description = "Validate template + data and variables, but do not" + " produce the output file")
+    private boolean dryRun;
+    @Option(names = {"--run-report"}, defaultValue = "run-report.json", description = "Optional JSON report file path with run metadata " + "and validation results")
+    private String reportPath;
+    @Option(names = {"--log-format"}, defaultValue = "human", description = "Logging format: 'human' (default) or 'json' " + "(structured logs to stdout)")
+    private String logFormat;
 
-    @Option(names = {"--excel-merge-strategy"},
-            defaultValue = "MAP",
-            description = "Excel merge strategy: MAP (default, each sheet is "
-                          + "a key) or JOIN (inner join sheets)") private ExcelMergeStrategy excelMergeStrategy;
-    @Option(names = {"--excel-join-key"},
-            description = "Key to use for joining Excel sheets (used with "
-                          + "JOIN strategy)") private String excelJoinKey;
+    @Option(names = {"--excel-merge-strategy"}, defaultValue = "MAP", description = "Excel merge strategy: MAP (default, each sheet is " + "a key) or JOIN (inner join sheets)")
+    private ExcelMergeStrategy excelMergeStrategy;
+    @Option(names = {"--excel-join-key"}, description = "Key to use for joining Excel sheets (used with " + "JOIN strategy)")
+    private String excelJoinKey;
 
-    @Option(names = {"--bind-env"},
-            description = "Expose environment variables in the SpEL context "
-                          + "as 'env'") private boolean bindEnv;
+    @Option(names = {"--bind-env"}, description = "Expose environment variables in the SpEL context " + "as 'env'")
+    private boolean bindEnv;
 
-    @Option(names = {"--watch"},
-            description = "Watch template and data files for changes and "
-                          + "re-run stamping automatically") private boolean watch;
+    @Option(names = {"--watch"}, description = "Watch template and data files for changes and " + "re-run stamping automatically")
+    private boolean watch;
 
-    @Option(names = {"--report", "--traceability-report"},
-            defaultValue = "trace-report.json",
-            description = "Optional JSON traceability report file path with "
-                          + "every placeholder resolution") private String traceabilityReportPath;
+    @Option(names = {"--report", "--traceability-report"}, defaultValue = "trace-report.json", description = "Optional JSON traceability report file path with " + "every placeholder resolution")
+    private String traceabilityReportPath;
 
     /// Default constructor.
     public Main() {
@@ -118,13 +98,13 @@ import static java.util.stream.Collectors.toMap;
     private static boolean isSupportedDataFile(Path p) {
         var extension = extension(p.getFileName());
         return extension.equals("csv") || //
-               extension.equals("properties") || //
-               extension.equals("html") || //
-               extension.equals("xml") || //
-               extension.equals("json") || //
-               extension.equals("yaml") || //
-               extension.equals("yml") || //
-               extension.equals("xlsx");
+                extension.equals("properties") || //
+                extension.equals("html") || //
+                extension.equals("xml") || //
+                extension.equals("json") || //
+                extension.equals("yaml") || //
+                extension.equals("yml") || //
+                extension.equals("xlsx");
     }
 
     private static String baseName(Path f) {
@@ -143,16 +123,8 @@ import static java.util.stream.Collectors.toMap;
         return base;
     }
 
-    private static Map<String, String> mapRowToHeaders(
-            String[] row,
-            String[] headers
-    ) {
-        return IntStream.range(0, headers.length)
-                        .boxed()
-                        .collect(toMap(i -> headers[i],
-                                i -> row[i],
-                                (_, b) -> b,
-                                LinkedHashMap::new));
+    private static Map<String, String> mapRowToHeaders(String[] row, String[] headers) {
+        return IntStream.range(0, headers.length).boxed().collect(toMap(i -> headers[i], i -> row[i], (_, b) -> b, LinkedHashMap::new));
     }
 
     @Override
@@ -163,12 +135,7 @@ import static java.util.stream.Collectors.toMap;
 
     private Map<String, Object> contextualiseDirectory(Path dir) {
         try (var stream = Files.list(dir)) {
-            return stream.filter(Files::isRegularFile)
-                         .filter(Main::isSupportedDataFile)
-                         .collect(toMap(Main::baseName,
-                                 this::contextualise,
-                                 (_, b) -> b,
-                                 TreeMap::new));
+            return stream.filter(Files::isRegularFile).filter(Main::isSupportedDataFile).collect(toMap(Main::baseName, this::contextualise, (_, b) -> b, TreeMap::new));
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }
@@ -177,9 +144,7 @@ import static java.util.stream.Collectors.toMap;
     private Object extractContextNew(String model) {
         if ("diagnostic".equals(model)) return Diagnostic.context();
         var path = Path.of(model);
-        return Files.isDirectory(path)
-                ? contextualiseDirectory(path)
-                : contextualise(path);
+        return Files.isDirectory(path) ? contextualiseDirectory(path) : contextualise(path);
     }
 
     private InputStream extractTemplateNew(String template) {
@@ -199,16 +164,13 @@ import static java.util.stream.Collectors.toMap;
 
     private java.util.List<Item> buildItemsFromDataDirectory(Path dir) {
         try (var stream = Files.list(dir)) {
-            var entries = stream.sorted()
-                                .toList();
+            var entries = stream.sorted().toList();
             var items = new ArrayList<Item>();
             for (var entry : entries) {
                 if (Files.isRegularFile(entry) && isSupportedDataFile(entry)) {
                     items.add(new Item(baseName(entry), contextualise(entry)));
-                }
-                else if (Files.isDirectory(entry)) {
-                    items.add(new Item(baseName(entry),
-                            contextualiseDirectoryRecursive(entry)));
+                } else if (Files.isDirectory(entry)) {
+                    items.add(new Item(baseName(entry), contextualiseDirectoryRecursive(entry)));
                 }
             }
             return List.copyOf(items);
@@ -219,32 +181,20 @@ import static java.util.stream.Collectors.toMap;
 
     private Map<String, Object> contextualiseDirectoryRecursive(Path dir) {
         try (var stream = Files.walk(dir)) {
-            return stream.filter(Files::isRegularFile)
-                         .filter(Main::isSupportedDataFile)
-                         .collect(toMap(Main::baseName,
-                                 this::contextualise,
-                                 (_, b) -> b,
-                                 TreeMap::new));
+            return stream.filter(Files::isRegularFile).filter(Main::isSupportedDataFile).collect(toMap(Main::baseName, this::contextualise, (_, b) -> b, TreeMap::new));
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }
     }
 
-    private Path computeOutputPath(
-            String output,
-            String itemName,
-            TemplateKind ext
-    ) {
+    private Path computeOutputPath(String output, String itemName, TemplateKind ext) {
         var desiredExt = (ext == TemplateKind.WORD) ? ".docx" : ".pptx";
         var out = Path.of(output);
         // If output is an existing directory, place <itemName><ext> inside it
         if (Files.exists(out) && Files.isDirectory(out)) {
             return out.resolve(itemName + desiredExt);
         }
-        var fn = out.getFileName() == null
-                ? output
-                : out.getFileName()
-                     .toString();
+        var fn = out.getFileName() == null ? output : out.getFileName().toString();
         var dot = fn.lastIndexOf('.');
         if (dot > 0) {
             var base = fn.substring(0, dot);
@@ -252,8 +202,7 @@ import static java.util.stream.Collectors.toMap;
             var newName = base + "-" + itemName + desiredExt;
             var parent = out.getParent();
             return parent == null ? Path.of(newName) : parent.resolve(newName);
-        }
-        else {
+        } else {
             // Treat as directory path (may or may not exist)
             return out.resolve(itemName + desiredExt);
         }
@@ -268,8 +217,7 @@ import static java.util.stream.Collectors.toMap;
             case "json" -> processJson(path);
             case "yaml", "yml" -> processYaml(path);
             case "xlsx" -> processExcel(path);
-            default -> throw new OfficeStamperException(
-                    "Unsupported file type: " + path);
+            default -> throw new OfficeStamperException("Unsupported file type: " + path);
         };
     }
 
@@ -283,18 +231,9 @@ import static java.util.stream.Collectors.toMap;
             emit("ERROR", "Initial run failed", error, lf);
         }
 
-        try (
-                var watchService = FileSystems.getDefault()
-                                              .newWatchService()
-        ) {
-            var templateFile = "diagnostic".equals(templatePath)
-                    ? null
-                    : Path.of(templatePath)
-                          .toAbsolutePath();
-            var dataFile = "diagnostic".equals(dataPath)
-                    ? null
-                    : Path.of(dataPath)
-                          .toAbsolutePath();
+        try (var watchService = FileSystems.getDefault().newWatchService()) {
+            var templateFile = "diagnostic".equals(templatePath) ? null : Path.of(templatePath).toAbsolutePath();
+            var dataFile = "diagnostic".equals(dataPath) ? null : Path.of(dataPath).toAbsolutePath();
 
             var pathsToWatch = new HashSet<Path>();
             if (templateFile != null) pathsToWatch.add(templateFile);
@@ -319,8 +258,7 @@ import static java.util.stream.Collectors.toMap;
 
                     var relevant = false;
                     for (var p : pathsToWatch) {
-                        if (resolved.equals(p) || (Files.isDirectory(p)
-                                                   && resolved.startsWith(p))) {
+                        if (resolved.equals(p) || (Files.isDirectory(p) && resolved.startsWith(p))) {
                             relevant = true;
                             break;
                         }
@@ -328,10 +266,7 @@ import static java.util.stream.Collectors.toMap;
 
                     if (relevant) {
                         var change = Map.of("file", resolved.toString());
-                        emit("INFO",
-                                "Change detected, re-stamping...",
-                                change,
-                                lf);
+                        emit("INFO", "Change detected, re-stamping...", change, lf);
                         try {
                             runOnce();
                         } catch (Exception e) {
@@ -343,6 +278,8 @@ import static java.util.stream.Collectors.toMap;
                 }
                 if (!key.reset()) break;
             }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } catch (Exception e) {
             var errorMessage = String.valueOf(e.getMessage());
             var error = Map.of("error", errorMessage);
@@ -352,16 +289,9 @@ import static java.util.stream.Collectors.toMap;
 
     /// Return a list of objects with the csv properties
     private Object processCsv(Path path) {
-        try (
-                var inputStream = Files.newInputStream(path);
-                var streamReader = new InputStreamReader(inputStream);
-                var reader = new CSVReader(streamReader);
-        ) {
+        try (var inputStream = Files.newInputStream(path); var streamReader = new InputStreamReader(inputStream); var reader = new CSVReader(streamReader);) {
             var headers = reader.readNext();
-            return reader.readAll()
-                         .stream()
-                         .map(row -> mapRowToHeaders(row, headers))
-                         .toList();
+            return reader.readAll().stream().map(row -> mapRowToHeaders(row, headers)).toList();
         } catch (IOException | CsvException e) {
             throw new OfficeStamperException(e);
         }
@@ -371,12 +301,7 @@ import static java.util.stream.Collectors.toMap;
         var properties = new Properties();
         try (var inputStream = Files.newInputStream(path)) {
             properties.load(inputStream);
-            return properties.entrySet()
-                             .stream()
-                             .collect(toMap(e -> String.valueOf(e.getKey()),
-                                     e -> String.valueOf(e.getValue()),
-                                     (a, b) -> b,
-                                     LinkedHashMap::new));
+            return properties.entrySet().stream().collect(toMap(e -> String.valueOf(e.getKey()), e -> String.valueOf(e.getValue()), (a, b) -> b, LinkedHashMap::new));
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }
@@ -406,13 +331,11 @@ import static java.util.stream.Collectors.toMap;
                 var name = childElement.getTagName();
                 if (!childElement.hasChildNodes()) {
                     result.put(name, childElement.getTextContent());
-                }
-                else {
+                } else {
                     var firstChild = childElement.getFirstChild();
                     if (firstChild.getNodeType() == Node.TEXT_NODE) {
                         result.put(name, childElement.getTextContent());
-                    }
-                    else {
+                    } else {
                         result.put(name, processNode(childElement));
                     }
                 }
@@ -424,7 +347,8 @@ import static java.util.stream.Collectors.toMap;
     private Object processJson(Path path) {
         try {
             var mapper = SerializationUtils.newMapper();
-            var typeRef = new TypeReference<LinkedHashMap<String, Object>>() {};
+            var typeRef = new TypeReference<LinkedHashMap<String, Object>>() {
+            };
             return mapper.readValue(Files.newInputStream(path), typeRef);
         } catch (IOException e) {
             throw new OfficeStamperException(e);
@@ -440,11 +364,11 @@ import static java.util.stream.Collectors.toMap;
             var declaredConstructor = mapperClass.getDeclaredConstructor();
             var jsonFactory = (JsonFactory) declaredConstructor.newInstance();
             var mapper = new ObjectMapper(jsonFactory);
-            var typeRef = new TypeReference<LinkedHashMap<String, Object>>() {};
+            var typeRef = new TypeReference<LinkedHashMap<String, Object>>() {
+            };
             return mapper.readValue(Files.newInputStream(path), typeRef);
         } catch (ClassNotFoundException e) {
-            var msg = "YAML support requires 'jackson-dataformat-yaml' on the"
-                      + " classpath";
+            var msg = "YAML support requires 'jackson-dataformat-yaml' on the" + " classpath";
             throw new OfficeStamperException(msg);
         } catch (Exception e) {
             throw new OfficeStamperException(e);
@@ -473,43 +397,24 @@ import static java.util.stream.Collectors.toMap;
     }
 
     private String getLogFormat() {
-        return logFormat.trim()
-                        .toLowerCase();
+        return logFormat.trim().toLowerCase();
     }
 
     private void runOnce() {
-        var traceabilityReport = new TraceabilityReport(now(),
-                templatePath,
-                dataPath);
+        var traceabilityReport = new TraceabilityReport(now(), templatePath, dataPath);
         // Normalize log format
         var lf = getLogFormat();
 
         if (templatePath.isBlank()) {
             emit("ERROR", "Missing required --template path", null, lf);
-            throw new CommandLine.ParameterException(new CommandLine(this),
-                    "--template is required");
+            throw new CommandLine.ParameterException(new CommandLine(this), "--template is required");
         }
         if (dataPath.isBlank() && !"diagnostic".equals(templatePath)) {
-            emit("ERROR",
-                    "Missing required --data when not using diagnostic "
-                    + "template",
-                    null,
-                    lf);
-            throw new CommandLine.ParameterException(new CommandLine(this),
-                    "--data is required when template != diagnostic");
+            emit("ERROR", "Missing required --data when not using diagnostic " + "template", null, lf);
+            throw new CommandLine.ParameterException(new CommandLine(this), "--data is required when template != diagnostic");
         }
 
-        emit("INFO",
-                "Start",
-                Map.of("template",
-                        templatePath,
-                        "data",
-                        dataPath,
-                        "output",
-                        outputPath,
-                        "dryRun",
-                        dryRun),
-                lf);
+        emit("INFO", "Start", Map.of("template", templatePath, "data", dataPath, "output", outputPath, "dryRun", dryRun), lf);
 
         try {
             var ext = templateKind(templatePath);
@@ -523,104 +428,53 @@ import static java.util.stream.Collectors.toMap;
                 int idx = 0;
                 for (var item : items) {
                     idx++;
-                    emit("INFO",
-                            "Processing item",
-                            Map.of("index",
-                                    idx,
-                                    "name",
-                                    item.name,
-                                    "total",
-                                    items.size()),
-                            lf);
-                    try (
-                            var templateStream =
-                                    extractTemplateNew(templatePath)
-                    ) {
+                    emit("INFO", "Processing item", Map.of("index", idx, "name", item.name, "total", items.size()), lf);
+                    try (var templateStream = extractTemplateNew(templatePath)) {
                         var context = wrapContext(item.context);
-                        var configuration =
-                                OfficeStamperConfigurations.standard();
+                        var configuration = OfficeStamperConfigurations.standard();
                         configuration.setTraceabilityReporter(traceabilityReport);
                         if (dryRun) {
-                            configuration.setExceptionResolver(
-                                    ExceptionResolvers.throwing());
+                            configuration.setExceptionResolver(ExceptionResolvers.throwing());
                             switch (ext) {
                                 case WORD -> {
-                                    var stamper = OfficeStampers.docxStamper(
-                                            configuration);
-                                    stamper.stamp(templateStream,
-                                            context,
-                                            OutputStream.nullOutputStream());
+                                    var stamper = OfficeStampers.docxStamper(configuration);
+                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
                                 }
                                 case POWERPOINT -> {
-                                    var stamper =
-                                            ExperimentalStampers.pptxStamper();
-                                    stamper.stamp(templateStream,
-                                            context,
-                                            OutputStream.nullOutputStream());
+                                    var stamper = ExperimentalStampers.pptxStamper();
+                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
                                 }
                             }
-                            results.add(new RunResult(item.name,
-                                    "ok",
-                                    null,
-                                    null));
-                        }
-                        else {
-                            var out = computeOutputPath(outputPath,
-                                    item.name,
-                                    ext);
+                            results.add(new RunResult(item.name, "ok", null, null));
+                        } else {
+                            var out = computeOutputPath(outputPath, item.name, ext);
                             try (var os = createOutputStream(out)) {
                                 switch (ext) {
                                     case WORD -> {
-                                        var stamper =
-                                                OfficeStampers.docxStamper(
-                                                configuration);
-                                        stamper.stamp(templateStream,
-                                                context,
-                                                os);
+                                        var stamper = OfficeStampers.docxStamper(configuration);
+                                        stamper.stamp(templateStream, context, os);
                                     }
                                     case POWERPOINT -> {
-                                        var stamper =
-                                                ExperimentalStampers.pptxStamper();
-                                        stamper.stamp(templateStream,
-                                                context,
-                                                os);
+                                        var stamper = ExperimentalStampers.pptxStamper();
+                                        stamper.stamp(templateStream, context, os);
                                     }
                                 }
                             }
-                            results.add(new RunResult(item.name,
-                                    "ok",
-                                    out.toString(),
-                                    null));
+                            results.add(new RunResult(item.name, "ok", out.toString(), null));
                         }
                     } catch (Exception ex) {
-                        emit("ERROR",
-                                "Item failed",
-                                Map.of("name",
-                                        item.name,
-                                        "error",
-                                        ex.getMessage()),
-                                lf);
-                        results.add(new RunResult(item.name,
-                                "error",
-                                null,
-                                ex.getMessage()));
+                        emit("ERROR", "Item failed", Map.of("name", item.name, "error", ex.getMessage()), lf);
+                        results.add(new RunResult(item.name, "error", null, ex.getMessage()));
                         // Continue with next item; overall exit code should
                         // be non-zero if any failed
                     }
                 }
-                var anyError = results.stream()
-                                      .anyMatch(r -> "error".equals(r.status));
-                if (dryRun) emit("INFO",
-                        "Validation completed (dry-run)",
-                        Map.of("items", results.size(), "errors", anyError),
-                        lf);
-                else emit("INFO",
-                        "Stamping completed",
-                        Map.of("items", results.size(), "errors", anyError),
-                        lf);
+                var anyError = results.stream().anyMatch(r -> "error".equals(r.status));
+                if (dryRun)
+                    emit("INFO", "Validation completed (dry-run)", Map.of("items", results.size(), "errors", anyError), lf);
+                else emit("INFO", "Stamping completed", Map.of("items", results.size(), "errors", anyError), lf);
                 writeReport(results);
-                if (anyError) throw new OfficeStamperException(
-                        "One or more items " + "failed");
+                if (anyError) throw new OfficeStamperException("One or more items " + "failed");
                 return;
             }
 
@@ -635,78 +489,48 @@ import static java.util.stream.Collectors.toMap;
                     configuration.setExceptionResolver(ExceptionResolvers.throwing());
                     switch (ext) {
                         case WORD -> {
-                            var stamper = OfficeStampers.docxStamper(
-                                    configuration);
-                            stamper.stamp(templateStream,
-                                    context,
-                                    OutputStream.nullOutputStream());
+                            var stamper = OfficeStampers.docxStamper(configuration);
+                            stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
                         }
                         case POWERPOINT -> {
                             var stamper = ExperimentalStampers.pptxStamper(); // no config variant exposed for PPTX yet
-                            stamper.stamp(templateStream,
-                                    context,
-                                    OutputStream.nullOutputStream());
+                            stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
                         }
                     }
                     emit("INFO", "Validation successful (dry-run)", null, lf);
                     writeReport("ok", null);
-                    writeTraceabilityReport(traceabilityReport,
-                            Path.of(traceabilityReportPath));
+                    writeTraceabilityReport(traceabilityReport, Path.of(traceabilityReportPath));
                     return;
                 }
 
                 // Real stamping (single file)
-                try (
-                        var outputStream =
-                                createOutputStream(Path.of(outputPath))
-                ) {
+                try (var outputStream = createOutputStream(Path.of(outputPath))) {
                     switch (ext) {
                         case WORD -> {
-                            var stamper = OfficeStampers.docxStamper(
-                                    configuration);
-                            stamper.stamp(templateStream,
-                                    context,
-                                    outputStream);
+                            var stamper = OfficeStampers.docxStamper(configuration);
+                            stamper.stamp(templateStream, context, outputStream);
                         }
                         case POWERPOINT -> {
                             var stamper = ExperimentalStampers.pptxStamper(); // no config variant exposed for PPTX yet
-                            stamper.stamp(templateStream,
-                                    context,
-                                    outputStream);
+                            stamper.stamp(templateStream, context, outputStream);
                         }
                     }
                 }
             }
 
-            emit("INFO",
-                    "Stamping completed",
-                    Map.of("output", outputPath),
-                    lf);
+            emit("INFO", "Stamping completed", Map.of("output", outputPath), lf);
             writeReport("ok", null);
-            writeTraceabilityReport(traceabilityReport,
-                    Path.of(traceabilityReportPath));
+            writeTraceabilityReport(traceabilityReport, Path.of(traceabilityReportPath));
         } catch (Exception e) {
-            emit("ERROR",
-                    e.getMessage(),
-                    Map.of("exception",
-                            e.getClass()
-                             .getSimpleName()),
-                    lf);
+            emit("ERROR", e.getMessage(), Map.of("exception", e.getClass().getSimpleName()), lf);
             writeReport("error", e.getMessage());
             // Re-throw to ensure non-zero exit code from picocli
-            throw (e instanceof RuntimeException re)
-                    ? re
-                    : new OfficeStamperException(e);
+            throw (e instanceof RuntimeException re) ? re : new OfficeStamperException(e);
         }
     }
 
     // Minimal structured logging when --log-format=json
-    private void emit(
-            String level,
-            String message,
-            @Nullable Map<String, ?> fields,
-            String lf
-    ) {
+    private void emit(String level, String message, @Nullable Map<String, ?> fields, String lf) {
         if (!"json".equals(lf)) {
             // Human logs via java.util.logging
             var lvl = switch (level) {
@@ -714,10 +538,7 @@ import static java.util.stream.Collectors.toMap;
                 case "WARN" -> Level.WARN;
                 default -> Level.INFO;
             };
-            logger.atLevel(lvl)
-                  .log(fields == null || fields.isEmpty()
-                          ? message
-                          : message + " | " + fields);
+            logger.atLevel(lvl).log(fields == null || fields.isEmpty() ? message : message + " | " + fields);
             return;
         }
         try {
@@ -729,17 +550,14 @@ import static java.util.stream.Collectors.toMap;
             var json = new ObjectMapper().writeValueAsString(map);
             System.out.println(json);
         } catch (Exception ignored) {
-            System.out.println(
-                    "{\"level\":\"error\",\"msg\":\"failed to emit json "
-                    + "log\"}");
+            System.out.println("{\"level\":\"error\",\"msg\":\"failed to emit json " + "log\"}");
         }
     }
 
     private void writeReport(java.util.List<RunResult> results) {
         if (reportPath.isBlank()) return;
         var report = new LinkedHashMap<String, Object>();
-        var anyError = results.stream()
-                              .anyMatch(r -> "error".equals(r.status));
+        var anyError = results.stream().anyMatch(r -> "error".equals(r.status));
         report.put("status", anyError ? "error" : "ok");
         report.put("template", templatePath);
         report.put("data", dataPath);
@@ -761,9 +579,7 @@ import static java.util.stream.Collectors.toMap;
                 mapper.writeValue(os, report);
             }
         } catch (Exception e) {
-            logger.atWarn()
-                  .setCause(e)
-                  .log("Failed to write report: {}", e.getMessage());
+            logger.atWarn().setCause(e).log("Failed to write report: {}", e.getMessage());
         }
     }
 
@@ -784,9 +600,7 @@ import static java.util.stream.Collectors.toMap;
             }
         } catch (Exception e) {
             // Best-effort: do not fail the run because report writing failed
-            logger.atWarn()
-                  .setCause(e)
-                  .log("Failed to write report: {}", e.getMessage());
+            logger.atWarn().setCause(e).log("Failed to write report: {}", e.getMessage());
         }
     }
 
@@ -798,8 +612,7 @@ import static java.util.stream.Collectors.toMap;
             for (var entry : map.entrySet()) {
                 wrapper.put(String.valueOf(entry.getKey()), entry.getValue());
             }
-        }
-        else {
+        } else {
             wrapper.put("data", context);
         }
         return wrapper;
@@ -818,21 +631,17 @@ import static java.util.stream.Collectors.toMap;
     }
 
     private enum TemplateKind {
-        WORD,
-        POWERPOINT
+        WORD, POWERPOINT
     }
 
-    private record Item(String name, Object context) {}
+    private record Item(String name, Object context) {
+    }
 
     /**
      * @param status ok | error
      * @param output nullable
      * @param error  nullable
      */
-    private record RunResult(
-            String name,
-            String status,
-            @Nullable String output,
-            @Nullable String error
-    ) {}
+    private record RunResult(String name, String status, @Nullable String output, @Nullable String error) {
+    }
 }

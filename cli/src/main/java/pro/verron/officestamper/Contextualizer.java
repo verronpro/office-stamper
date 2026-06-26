@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toMap;
@@ -36,7 +37,7 @@ public class Contextualizer {
             case "html", "xml" -> processXmlOrHtml(path);
             case "json" -> processJson(path);
             case "yaml", "yml" -> processYaml(path);
-            case "xlsx" -> processExcel(path,excelMergeStrategy, excelJoinKey);
+            case "xlsx" -> processExcel(path, excelMergeStrategy, excelJoinKey);
             default -> throw new OfficeStamperException("Unsupported file type: " + path);
         };
     }
@@ -155,5 +156,18 @@ public class Contextualizer {
 
     static Map<String, String> mapRowToHeaders(String[] row, String[] headers) {
         return IntStream.range(0, headers.length).boxed().collect(toMap(i -> headers[i], i -> row[i], (_, b) -> b, LinkedHashMap::new));
+    }
+
+    static Object contextualize(String model, ExcelMergeStrategy mergeStrategy, String joinKey) {
+        var path = Path.of(model);
+        return Files.isDirectory(path) ? contextualiseDirectory(path, mergeStrategy, joinKey) : contextualise(path, mergeStrategy, joinKey);
+    }
+
+    private static Map<String, Object> contextualiseDirectory(Path dir, ExcelMergeStrategy mergeStrategy, String joinKey) {
+        try (var stream = Files.list(dir)) {
+            return stream.filter(Files::isRegularFile).filter(Contextualizer::isSupportedDataFile).collect(toMap(PathUtils::baseName, path -> contextualise(path, mergeStrategy, joinKey), (_, b) -> b, TreeMap::new));
+        } catch (IOException e) {
+            throw new OfficeStamperException(e);
+        }
     }
 }

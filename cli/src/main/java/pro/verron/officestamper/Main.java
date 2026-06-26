@@ -79,14 +79,6 @@ public class Main implements Runnable {
         }
     }
 
-    private static String baseName(Path f) {
-        var fileName = f.getFileName();
-        var base = fileName.toString();
-        var idx = base.lastIndexOf('.');
-        if (idx > 0) base = base.substring(0, idx);
-        return base;
-    }
-
     static String extension(Path f) {
         var fileName = f.getFileName();
         var base = fileName.toString();
@@ -124,18 +116,12 @@ public class Main implements Runnable {
         else runOnce();
     }
 
-    private Map<String, Object> contextualiseDirectory(Path dir) {
-        try (var stream = Files.list(dir)) {
-            return stream.filter(Files::isRegularFile).filter(Contextualizer::isSupportedDataFile).collect(toMap(Main::baseName, path -> Contextualizer.contextualise(path, excelMergeStrategy, excelJoinKey), (_, b) -> b, TreeMap::new));
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
     private Object extractContextNew(String model) {
-        if ("diagnostic".equals(model)) return Diagnostic.context();
-        var path = Path.of(model);
-        return Files.isDirectory(path) ? contextualiseDirectory(path) : Contextualizer.contextualise(path, excelMergeStrategy, excelJoinKey);
+        if ("diagnostic".equals(model)) {
+            return Diagnostic.context();
+        } else {
+            return Contextualizer.contextualize(model, excelMergeStrategy, excelJoinKey);
+        }
     }
 
     private InputStream extractTemplateNew(String template) {
@@ -149,9 +135,9 @@ public class Main implements Runnable {
             var items = new ArrayList<Item>();
             for (var entry : entries) {
                 if (Files.isRegularFile(entry) && Contextualizer.isSupportedDataFile(entry)) {
-                    items.add(new Item(baseName(entry), Contextualizer.contextualise(entry, excelMergeStrategy, excelJoinKey)));
+                    items.add(new Item(PathUtils.baseName(entry), Contextualizer.contextualise(entry, excelMergeStrategy, excelJoinKey)));
                 } else if (Files.isDirectory(entry)) {
-                    items.add(new Item(baseName(entry), contextualiseDirectoryRecursive(entry)));
+                    items.add(new Item(PathUtils.baseName(entry), contextualiseDirectoryRecursive(entry)));
                 }
             }
             return List.copyOf(items);
@@ -162,7 +148,7 @@ public class Main implements Runnable {
 
     private Map<String, Object> contextualiseDirectoryRecursive(Path dir) {
         try (var stream = Files.walk(dir)) {
-            return stream.filter(Files::isRegularFile).filter(Contextualizer::isSupportedDataFile).collect(toMap(Main::baseName, path -> Contextualizer.contextualise(path, excelMergeStrategy, excelJoinKey), (_, b) -> b, TreeMap::new));
+            return stream.filter(Files::isRegularFile).filter(Contextualizer::isSupportedDataFile).collect(toMap(PathUtils::baseName, path -> Contextualizer.contextualise(path, excelMergeStrategy, excelJoinKey), (_, b) -> b, TreeMap::new));
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }

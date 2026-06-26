@@ -427,30 +427,30 @@ public class Main implements Runnable {
                 int idx = 0;
                 for (var item : items) {
                     idx++;
-                    emit("INFO", "Processing item", Map.of("index", idx, "name", item.name, "total", items.size()), lf);
+                    emit("INFO", "Processing item", Map.of("index", idx, "name", item.name(), "total", items.size()), lf);
                     try (var templateStream = extractTemplateNew(templatePath)) {
-                        var context = wrapContext(item.context);
+                        var context = wrapContext(item.context());
                         var configuration = OfficeStamperConfigurations.standard();
                         configuration.setTraceabilityReporter(traceabilityReport);
                         if (dryRun) {
                             configuration.setExceptionResolver(ExceptionResolvers.throwing());
                             ext.stamp(templateStream, context, configuration, OutputStream.nullOutputStream());
-                            results.add(new RunResult(item.name, "ok", null, null));
+                            results.add(new RunResult(item.name(), "ok", null, null));
                         } else {
-                            var out = computeOutputPath(outputPath, item.name, ext);
+                            var out = computeOutputPath(outputPath, item.name(), ext);
                             try (var os = createOutputStream(out)) {
                                 ext.stamp(templateStream, context, configuration, os);
                             }
-                            results.add(new RunResult(item.name, "ok", out.toString(), null));
+                            results.add(new RunResult(item.name(), "ok", out.toString(), null));
                         }
                     } catch (Exception ex) {
-                        emit("ERROR", "Item failed", Map.of("name", item.name, "error", ex.getMessage()), lf);
-                        results.add(new RunResult(item.name, "error", null, ex.getMessage()));
+                        emit("ERROR", "Item failed", Map.of("name", item.name(), "error", ex.getMessage()), lf);
+                        results.add(new RunResult(item.name(), "error", null, ex.getMessage()));
                         // Continue with next item; overall exit code should
                         // be non-zero if any failed
                     }
                 }
-                var anyError = results.stream().anyMatch(r -> "error".equals(r.status));
+                var anyError = results.stream().anyMatch(r -> "error".equals(r.status()));
                 if (dryRun)
                     emit("INFO", "Validation completed (dry-run)", Map.of("items", results.size(), "errors", anyError), lf);
                 else emit("INFO", "Stamping completed", Map.of("items", results.size(), "errors", anyError), lf);
@@ -520,7 +520,7 @@ public class Main implements Runnable {
     private void writeReport(List<RunResult> results) {
         if (reportPath.isBlank()) return;
         var report = new LinkedHashMap<String, Object>();
-        var anyError = results.stream().anyMatch(r -> "error".equals(r.status));
+        var anyError = results.stream().anyMatch(r -> "error".equals(r.status()));
         report.put("status", anyError ? "error" : "ok");
         report.put("template", templatePath);
         report.put("data", dataPath);
@@ -529,10 +529,10 @@ public class Main implements Runnable {
         var items = new ArrayList<Map<String, Object>>();
         for (var r : results) {
             var it = new LinkedHashMap<String, Object>();
-            it.put("name", r.name);
-            it.put("status", r.status);
-            if (r.output != null) it.put("output", r.output);
-            if (r.error != null) it.put("error", r.error);
+            it.put("name", r.name());
+            it.put("status", r.status());
+            if (r.output() != null) it.put("output", r.output());
+            if (r.error() != null) it.put("error", r.error());
             items.add(it);
         }
         report.put("items", items);
@@ -591,16 +591,5 @@ public class Main implements Runnable {
         } catch (IOException e) {
             logger.warn("Could not write traceability report", e);
         }
-    }
-
-    private record Item(String name, Object context) {
-    }
-
-    /**
-     * @param status ok | error
-     * @param output nullable
-     * @param error  nullable
-     */
-    private record RunResult(String name, String status, @Nullable String output, @Nullable String error) {
     }
 }

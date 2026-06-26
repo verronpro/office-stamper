@@ -40,6 +40,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import static java.time.OffsetDateTime.now;
 import static java.util.stream.Collectors.toMap;
+import static pro.verron.officestamper.TemplateKind.WORD;
 
 /// Main class for the CLI.
 @Command(name = "officestamper", mixinStandardHelpOptions = true, description = "Office Stamper CLI tool", subcommands = {Preview.class, ReportView.class})
@@ -198,7 +199,7 @@ public class Main implements Runnable {
     }
 
     private Path computeOutputPath(String output, String itemName, TemplateKind ext) {
-        var desiredExt = (ext == TemplateKind.WORD) ? ".docx" : ".pptx";
+        var desiredExt = (ext == WORD) ? ".docx" : ".pptx";
         var out = Path.of(output);
         // If output is an existing directory, place <itemName><ext> inside it
         if (Files.exists(out) && Files.isDirectory(out)) {
@@ -397,15 +398,6 @@ public class Main implements Runnable {
         }
     }
 
-    private TemplateKind templateKind(String input) {
-        if ("diagnostic".equals(input)) return TemplateKind.WORD;
-        var lower = input.toLowerCase();
-        if (lower.endsWith(".docx")) return TemplateKind.WORD;
-        if (lower.endsWith(".pptx")) return TemplateKind.POWERPOINT;
-        var msg = "Unsupported template type (expected .docx or .pptx): %s";
-        throw new OfficeStamperException(msg.formatted(input));
-    }
-
     private Emitter getLogFormat() {
         var logFormatValue = logFormat.trim().toLowerCase();
         return switch (logFormatValue) {
@@ -431,7 +423,7 @@ public class Main implements Runnable {
         lf.emit("INFO", "Start", Map.of("template", templatePath, "data", dataPath, "output", outputPath, "dryRun", dryRun));
 
         try {
-            var ext = templateKind(templatePath);
+            var ext = "diagnostic".equals(templatePath) ? WORD : TemplateKind.templateKind(templatePath);
             // Folder semantics: each top-level file is its own context and
             // yields one output;
             // each top-level subfolder merges its files (recursively) into a

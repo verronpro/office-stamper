@@ -163,7 +163,7 @@ public class Main implements Runnable {
         }
     }
 
-    private java.util.List<Item> buildItemsFromDataDirectory(Path dir) {
+    private List<Item> buildItemsFromDataDirectory(Path dir) {
         try (var stream = Files.list(dir)) {
             var entries = stream.sorted().toList();
             var items = new ArrayList<Item>();
@@ -519,7 +519,7 @@ public class Main implements Runnable {
         }
     }
 
-    private void writeReport(java.util.List<RunResult> results) {
+    private void writeReport(List<RunResult> results) {
         if (reportPath.isBlank()) return;
         var report = new LinkedHashMap<String, Object>();
         var anyError = results.stream().anyMatch(r -> "error".equals(r.status));
@@ -528,7 +528,7 @@ public class Main implements Runnable {
         report.put("data", dataPath);
         report.put("dryRun", dryRun);
         report.put("timestamp", now().toString());
-        var items = new java.util.ArrayList<Map<String, Object>>();
+        var items = new ArrayList<Map<String, Object>>();
         for (var r : results) {
             var it = new LinkedHashMap<String, Object>();
             it.put("name", r.name);

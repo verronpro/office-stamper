@@ -10,4 +10,8 @@ public class PathUtils {
         if (idx > 0) base = base.substring(0, idx);
         return base;
     }
+
+    static int depthCompare(Path p1, Path p2) {
+        return p2.getNameCount() - p1.getNameCount();
+    }
 }

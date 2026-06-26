@@ -116,19 +116,6 @@ public class Main implements Runnable {
         else runOnce();
     }
 
-    private Object extractContextNew(String model) {
-        if ("diagnostic".equals(model)) {
-            return Diagnostic.context();
-        } else {
-            return Contextualizer.contextualize(model, excelMergeStrategy, excelJoinKey);
-        }
-    }
-
-    private InputStream extractTemplateNew(String template) {
-        if ("diagnostic".equals(template)) return Diagnostic.template();
-        return streamFile(Path.of(template));
-    }
-
     private List<Item> buildItemsFromDataDirectory(Path dir) {
         try (var stream = Files.list(dir)) {
             var entries = stream.sorted().toList();
@@ -278,21 +265,21 @@ public class Main implements Runnable {
                 for (var item : items) {
                     idx++;
                     lf.emit("INFO", "Processing item", Map.of("index", idx, "name", item.name(), "total", items.size()));
-                    try (var templateStream = extractTemplateNew(templatePath)) {
+
+                    var outputFilePath = computeOutputPath(outputPath, item.name(), ext);
+                    try (var templateStream = "diagnostic".equals(templatePath) ? Diagnostic.template() : streamFile(Path.of(templatePath)); var out = dryRun ? OutputStream.nullOutputStream() : createOutputStream(outputFilePath)) {
                         var context = wrapContext(item.context());
                         var configuration = OfficeStamperConfigurations.standard();
                         configuration.setTraceabilityReporter(traceabilityReport);
                         if (dryRun) {
                             configuration.setExceptionResolver(ExceptionResolvers.throwing());
-                            ext.stamp(templateStream, context, configuration, OutputStream.nullOutputStream());
+                            ext.stamp(templateStream, context, configuration, out);
                             results.add(new RunResult(item.name(), "ok", null, null));
                         } else {
-                            var out = computeOutputPath(outputPath, item.name(), ext);
-                            try (var os = createOutputStream(out)) {
-                                ext.stamp(templateStream, context, configuration, os);
-                            }
-                            results.add(new RunResult(item.name(), "ok", out.toString(), null));
+                            ext.stamp(templateStream, context, configuration, out);
+                            results.add(new RunResult(item.name(), "ok", outputFilePath.toString(), null));
                         }
+
                     } catch (Exception ex) {
                         lf.emit("ERROR", "Item failed", Map.of("name", item.name(), "error", ex.getMessage()));
                         results.add(new RunResult(item.name(), "error", null, ex.getMessage()));
@@ -310,8 +297,20 @@ public class Main implements Runnable {
             }
 
             // Single context path
-            final var context = wrapContext(extractContextNew(dataPath));
-            try (var templateStream = extractTemplateNew(templatePath)) {
+            Object result;
+            if ("diagnostic".equals(dataPath)) {
+                result = Diagnostic.context();
+            } else {
+                result = Contextualizer.contextualize(excelMergeStrategy, excelJoinKey, Path.of(dataPath));
+            }
+            final var context = wrapContext(result);
+            InputStream result1;
+            if ("diagnostic".equals(templatePath)) {
+                result1 = Diagnostic.template();
+            } else {
+                result1 = streamFile(Path.of(templatePath));
+            }
+            try (var templateStream = result1) {
                 var configuration = OfficeStamperConfigurations.standard();
                 configuration.setTraceabilityReporter(traceabilityReport);
                 if (dryRun) {

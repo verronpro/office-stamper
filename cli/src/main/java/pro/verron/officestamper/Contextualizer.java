@@ -158,12 +158,11 @@ public class Contextualizer {
         return IntStream.range(0, headers.length).boxed().collect(toMap(i -> headers[i], i -> row[i], (_, b) -> b, LinkedHashMap::new));
     }
 
-    static Object contextualize(String model, ExcelMergeStrategy mergeStrategy, String joinKey) {
-        var path = Path.of(model);
+    static Object contextualize(ExcelMergeStrategy mergeStrategy, String joinKey, Path path) {
         return Files.isDirectory(path) ? contextualiseDirectory(path, mergeStrategy, joinKey) : contextualise(path, mergeStrategy, joinKey);
     }
 
-    private static Map<String, Object> contextualiseDirectory(Path dir, ExcelMergeStrategy mergeStrategy, String joinKey) {
+    static Map<String, Object> contextualiseDirectory(Path dir, ExcelMergeStrategy mergeStrategy, String joinKey) {
         try (var stream = Files.list(dir)) {
             return stream.filter(Files::isRegularFile).filter(Contextualizer::isSupportedDataFile).collect(toMap(PathUtils::baseName, path -> contextualise(path, mergeStrategy, joinKey), (_, b) -> b, TreeMap::new));
         } catch (IOException e) {

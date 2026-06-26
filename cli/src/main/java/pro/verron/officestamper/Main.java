@@ -41,7 +41,6 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import static java.time.OffsetDateTime.now;
 import static java.util.stream.Collectors.toMap;
-import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 
 /// Main class for the CLI.
 @Command(name = "officestamper", mixinStandardHelpOptions = true, description = "Office Stamper CLI tool", subcommands = {Preview.class, ReportView.class})
@@ -151,7 +150,7 @@ public class Main implements Runnable {
         return streamFile(Path.of(template));
     }
 
-    private OutputStream createOutputStream(Path path) {
+    private static OutputStream createOutputStream(Path path) {
         try {
             var parent = path.getParent();
             if (parent != null) Files.createDirectories(parent);
@@ -454,7 +453,7 @@ public class Main implements Runnable {
                 if (dryRun)
                     emit("INFO", "Validation completed (dry-run)", Map.of("items", results.size(), "errors", anyError), lf);
                 else emit("INFO", "Stamping completed", Map.of("items", results.size(), "errors", anyError), lf);
-                writeReport(results);
+                if (!reportPath.isBlank()) writeReport(createResultReport(results), Path.of(reportPath));
                 if (anyError) throw new OfficeStamperException("One or more items " + "failed");
                 return;
             }
@@ -470,8 +469,9 @@ public class Main implements Runnable {
                     configuration.setExceptionResolver(ExceptionResolvers.throwing());
                     ext.stamp(templateStream, context, configuration, OutputStream.nullOutputStream());
                     emit("INFO", "Validation successful (dry-run)", null, lf);
-                    writeReport("ok", null);
-                    writeTraceabilityReport(traceabilityReport, Path.of(traceabilityReportPath));
+                    Object reportData = createStatusReport("ok", null);
+                    if (!reportPath.isBlank()) writeReport(reportData, Path.of(reportPath));
+                    writeReport(traceabilityReport, Path.of(traceabilityReportPath));
                     return;
                 }
 
@@ -482,11 +482,13 @@ public class Main implements Runnable {
             }
 
             emit("INFO", "Stamping completed", Map.of("output", outputPath), lf);
-            writeReport("ok", null);
-            writeTraceabilityReport(traceabilityReport, Path.of(traceabilityReportPath));
+            Object reportData = createStatusReport("ok", null);
+            if (!reportPath.isBlank()) writeReport(reportData, Path.of(reportPath));
+            writeReport(traceabilityReport, Path.of(traceabilityReportPath));
         } catch (Exception e) {
             emit("ERROR", e.getMessage(), Map.of("exception", e.getClass().getSimpleName()), lf);
-            writeReport("error", e.getMessage());
+            Object reportData = createStatusReport("error", e.getMessage());
+            if (!reportPath.isBlank()) writeReport(reportData, Path.of(reportPath));
             // Re-throw to ensure non-zero exit code from picocli
             throw (e instanceof RuntimeException re) ? re : new OfficeStamperException(e);
         }
@@ -517,8 +519,7 @@ public class Main implements Runnable {
         }
     }
 
-    private void writeReport(List<RunResult> results) {
-        if (reportPath.isBlank()) return;
+    private Object createResultReport(List<RunResult> results) {
         var report = new LinkedHashMap<String, Object>();
         var anyError = results.stream().anyMatch(r -> "error".equals(r.status()));
         report.put("status", anyError ? "error" : "ok");
@@ -536,18 +537,23 @@ public class Main implements Runnable {
             items.add(it);
         }
         report.put("items", items);
+        return report;
+    }
+
+    private static void writeReport(Object reportData, Path path) {
         try {
             var mapper = SerializationUtils.newMapper();
-            try (var os = createOutputStream(Path.of(reportPath))) {
-                mapper.writeValue(os, report);
+            var writer = mapper.writerWithDefaultPrettyPrinter();
+            try (var os = Main.createOutputStream(path)) {
+                writer.writeValue(os, reportData);
             }
         } catch (Exception e) {
+            // Best-effort: do not fail the run because report writing failed
             logger.atWarn().setCause(e).log("Failed to write report: {}", e.getMessage());
         }
     }
 
-    private void writeReport(String status, @Nullable String errorMessage) {
-        if (reportPath.isBlank()) return;
+    private Object createStatusReport(String status, @Nullable String errorMessage) {
         var report = new LinkedHashMap<String, Object>();
         report.put("status", status);
         report.put("template", templatePath);
@@ -556,15 +562,7 @@ public class Main implements Runnable {
         report.put("dryRun", dryRun);
         report.put("timestamp", now().toString());
         if (errorMessage != null) report.put("error", errorMessage);
-        try {
-            var mapper = SerializationUtils.newMapper();
-            try (var os = createOutputStream(Path.of(reportPath))) {
-                mapper.writeValue(os, report);
-            }
-        } catch (Exception e) {
-            // Best-effort: do not fail the run because report writing failed
-            logger.atWarn().setCause(e).log("Failed to write report: {}", e.getMessage());
-        }
+        return report;
     }
 
     private Object wrapContext(Object context) {
@@ -579,17 +577,5 @@ public class Main implements Runnable {
             wrapper.put("data", context);
         }
         return wrapper;
-    }
-
-    private void writeTraceabilityReport(TraceabilityReport report, Path path) {
-        try {
-            var mapper = SerializationUtils.newMapper();
-            try (var os = createOutputStream(path)) {
-                var objectWriter = mapper.writerWithDefaultPrettyPrinter();
-                objectWriter.writeValue(os, report);
-            }
-        } catch (IOException e) {
-            logger.warn("Could not write traceability report", e);
-        }
     }
 }

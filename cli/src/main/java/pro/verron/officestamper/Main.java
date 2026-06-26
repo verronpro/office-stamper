@@ -16,7 +16,6 @@ import org.xml.sax.SAXException;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.excel.ExcelContext;
 import pro.verron.officestamper.excel.ExcelMergeStrategy;
@@ -42,7 +41,6 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import static java.time.OffsetDateTime.now;
 import static java.util.stream.Collectors.toMap;
-import static pro.verron.officestamper.experimental.ExperimentalStampers.pptxStamper;
 import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 
 /// Main class for the CLI.
@@ -593,22 +591,6 @@ public class Main implements Runnable {
         } catch (IOException e) {
             logger.warn("Could not write traceability report", e);
         }
-    }
-
-    private enum TemplateKind {
-        WORD {
-            @Override
-            void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os) {
-                docxStamper(configuration).stamp(templateStream, context, os);
-            }
-        }, POWERPOINT {
-            @Override
-            void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os) {
-                pptxStamper().stamp(templateStream, context, os);
-            }
-        };
-
-        abstract void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os);
     }
 
     private record Item(String name, Object context) {

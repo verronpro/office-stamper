@@ -18,12 +18,12 @@ class MainContextDirectoryTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // Arrange: temp directory with one json and one properties file
         dir = Files.createTempDirectory("os_cli_ctx_");
     }
 
     @Test
     void contextualiseDirectory_mergesSupportedFilesByBasename() throws IOException {
+        // Arrange: temp directory with one json and one properties file
         Files.writeString(dir.resolve("a.json"), "{\n  \"x\": 1, \"y\": \"z\"\n}", StandardCharsets.UTF_8);
         Files.writeString(dir.resolve("b.properties"), "k=v\n", StandardCharsets.UTF_8);
 

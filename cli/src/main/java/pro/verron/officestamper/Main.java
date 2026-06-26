@@ -297,20 +297,8 @@ public class Main implements Runnable {
             }
 
             // Single context path
-            Object result;
-            if ("diagnostic".equals(dataPath)) {
-                result = Diagnostic.context();
-            } else {
-                result = Contextualizer.contextualize(excelMergeStrategy, excelJoinKey, Path.of(dataPath));
-            }
-            final var context = wrapContext(result);
-            InputStream result1;
-            if ("diagnostic".equals(templatePath)) {
-                result1 = Diagnostic.template();
-            } else {
-                result1 = streamFile(Path.of(templatePath));
-            }
-            try (var templateStream = result1) {
+            final var context = wrapContext("diagnostic".equals(dataPath) ? Diagnostic.context() : Contextualizer.contextualize(excelMergeStrategy, excelJoinKey, Path.of(dataPath)));
+            try (var templateStream = "diagnostic".equals(templatePath) ? Diagnostic.template() : streamFile(Path.of(templatePath))) {
                 var configuration = OfficeStamperConfigurations.standard();
                 configuration.setTraceabilityReporter(traceabilityReport);
                 if (dryRun) {

@@ -16,13 +16,12 @@ import org.xml.sax.SAXException;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.excel.ExcelContext;
 import pro.verron.officestamper.excel.ExcelMergeStrategy;
-import pro.verron.officestamper.experimental.ExperimentalStampers;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
-import pro.verron.officestamper.preset.OfficeStampers;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +42,8 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import static java.time.OffsetDateTime.now;
 import static java.util.stream.Collectors.toMap;
+import static pro.verron.officestamper.experimental.ExperimentalStampers.pptxStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 
 /// Main class for the CLI.
 @Command(name = "officestamper", mixinStandardHelpOptions = true, description = "Office Stamper CLI tool", subcommands = {Preview.class, ReportView.class})
@@ -435,30 +436,12 @@ public class Main implements Runnable {
                         configuration.setTraceabilityReporter(traceabilityReport);
                         if (dryRun) {
                             configuration.setExceptionResolver(ExceptionResolvers.throwing());
-                            switch (ext) {
-                                case WORD -> {
-                                    var stamper = OfficeStampers.docxStamper(configuration);
-                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
-                                }
-                                case POWERPOINT -> {
-                                    var stamper = ExperimentalStampers.pptxStamper();
-                                    stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
-                                }
-                            }
+                            ext.stamp(templateStream, context, configuration, OutputStream.nullOutputStream());
                             results.add(new RunResult(item.name, "ok", null, null));
                         } else {
                             var out = computeOutputPath(outputPath, item.name, ext);
                             try (var os = createOutputStream(out)) {
-                                switch (ext) {
-                                    case WORD -> {
-                                        var stamper = OfficeStampers.docxStamper(configuration);
-                                        stamper.stamp(templateStream, context, os);
-                                    }
-                                    case POWERPOINT -> {
-                                        var stamper = ExperimentalStampers.pptxStamper();
-                                        stamper.stamp(templateStream, context, os);
-                                    }
-                                }
+                                ext.stamp(templateStream, context, configuration, os);
                             }
                             results.add(new RunResult(item.name, "ok", out.toString(), null));
                         }
@@ -487,16 +470,7 @@ public class Main implements Runnable {
                     // Validate: fail on unresolved placeholders but do not
                     // write any file
                     configuration.setExceptionResolver(ExceptionResolvers.throwing());
-                    switch (ext) {
-                        case WORD -> {
-                            var stamper = OfficeStampers.docxStamper(configuration);
-                            stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
-                        }
-                        case POWERPOINT -> {
-                            var stamper = ExperimentalStampers.pptxStamper(); // no config variant exposed for PPTX yet
-                            stamper.stamp(templateStream, context, OutputStream.nullOutputStream());
-                        }
-                    }
+                    ext.stamp(templateStream, context, configuration, OutputStream.nullOutputStream());
                     emit("INFO", "Validation successful (dry-run)", null, lf);
                     writeReport("ok", null);
                     writeTraceabilityReport(traceabilityReport, Path.of(traceabilityReportPath));
@@ -505,16 +479,7 @@ public class Main implements Runnable {
 
                 // Real stamping (single file)
                 try (var outputStream = createOutputStream(Path.of(outputPath))) {
-                    switch (ext) {
-                        case WORD -> {
-                            var stamper = OfficeStampers.docxStamper(configuration);
-                            stamper.stamp(templateStream, context, outputStream);
-                        }
-                        case POWERPOINT -> {
-                            var stamper = ExperimentalStampers.pptxStamper(); // no config variant exposed for PPTX yet
-                            stamper.stamp(templateStream, context, outputStream);
-                        }
-                    }
+                    ext.stamp(templateStream, context, configuration, outputStream);
                 }
             }
 
@@ -631,7 +596,19 @@ public class Main implements Runnable {
     }
 
     private enum TemplateKind {
-        WORD, POWERPOINT
+        WORD {
+            @Override
+            void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os) {
+                docxStamper(configuration).stamp(templateStream, context, os);
+            }
+        }, POWERPOINT {
+            @Override
+            void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os) {
+                pptxStamper().stamp(templateStream, context, os);
+            }
+        };
+
+        abstract void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os);
     }
 
     private record Item(String name, Object context) {

@@ -9,7 +9,6 @@ import com.opencsv.exceptions.CsvException;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.event.Level;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -125,6 +124,29 @@ public class Main implements Runnable {
         return IntStream.range(0, headers.length).boxed().collect(toMap(i -> headers[i], i -> row[i], (_, b) -> b, LinkedHashMap::new));
     }
 
+    private static OutputStream createOutputStream(Path path) {
+        try {
+            var parent = path.getParent();
+            if (parent != null) Files.createDirectories(parent);
+            return newOutputStream(path);
+        } catch (IOException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    private static void writeReport(Object reportData, Path path) {
+        try {
+            var mapper = SerializationUtils.newMapper();
+            var writer = mapper.writerWithDefaultPrettyPrinter();
+            try (var os = Main.createOutputStream(path)) {
+                writer.writeValue(os, reportData);
+            }
+        } catch (Exception e) {
+            // Best-effort: do not fail the run because report writing failed
+            logger.atWarn().setCause(e).log("Failed to write report: {}", e.getMessage());
+        }
+    }
+
     @Override
     public void run() {
         if (watch) runWatch();
@@ -148,16 +170,6 @@ public class Main implements Runnable {
     private InputStream extractTemplateNew(String template) {
         if ("diagnostic".equals(template)) return Diagnostic.template();
         return streamFile(Path.of(template));
-    }
-
-    private static OutputStream createOutputStream(Path path) {
-        try {
-            var parent = path.getParent();
-            if (parent != null) Files.createDirectories(parent);
-            return newOutputStream(path);
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
     }
 
     private List<Item> buildItemsFromDataDirectory(Path dir) {
@@ -221,12 +233,12 @@ public class Main implements Runnable {
 
     private void runWatch() {
         var lf = getLogFormat();
-        emit("INFO", "Watch mode enabled", null, lf);
+        lf.emit("INFO", "Watch mode enabled", null);
         try {
             runOnce();
         } catch (Exception e) {
             var error = Map.of("error", String.valueOf(e.getMessage()));
-            emit("ERROR", "Initial run failed", error, lf);
+            lf.emit("ERROR", "Initial run failed", error);
         }
 
         try (var watchService = FileSystems.getDefault().newWatchService()) {
@@ -264,13 +276,13 @@ public class Main implements Runnable {
 
                     if (relevant) {
                         var change = Map.of("file", resolved.toString());
-                        emit("INFO", "Change detected, re-stamping...", change, lf);
+                        lf.emit("INFO", "Change detected, re-stamping...", change);
                         try {
                             runOnce();
                         } catch (Exception e) {
                             var errorMessage = String.valueOf(e.getMessage());
                             var error = Map.of("error", errorMessage);
-                            emit("ERROR", "Re-stamping failed", error, lf);
+                            lf.emit("ERROR", "Re-stamping failed", error);
                         }
                     }
                 }
@@ -281,7 +293,7 @@ public class Main implements Runnable {
         } catch (Exception e) {
             var errorMessage = String.valueOf(e.getMessage());
             var error = Map.of("error", errorMessage);
-            emit("ERROR", "Watch mode failed", error, lf);
+            lf.emit("ERROR", "Watch mode failed", error);
         }
     }
 
@@ -394,8 +406,12 @@ public class Main implements Runnable {
         throw new OfficeStamperException(msg.formatted(input));
     }
 
-    private String getLogFormat() {
-        return logFormat.trim().toLowerCase();
+    private Emitter getLogFormat() {
+        var logFormatValue = logFormat.trim().toLowerCase();
+        return switch (logFormatValue) {
+            case "json" -> new JsonEmitter();
+            default -> new LogEmitter();
+        };
     }
 
     private void runOnce() {
@@ -404,15 +420,15 @@ public class Main implements Runnable {
         var lf = getLogFormat();
 
         if (templatePath.isBlank()) {
-            emit("ERROR", "Missing required --template path", null, lf);
+            lf.emit("ERROR", "Missing required --template path", null);
             throw new CommandLine.ParameterException(new CommandLine(this), "--template is required");
         }
         if (dataPath.isBlank() && !"diagnostic".equals(templatePath)) {
-            emit("ERROR", "Missing required --data when not using diagnostic " + "template", null, lf);
+            lf.emit("ERROR", "Missing required --data when not using diagnostic " + "template", null);
             throw new CommandLine.ParameterException(new CommandLine(this), "--data is required when template != diagnostic");
         }
 
-        emit("INFO", "Start", Map.of("template", templatePath, "data", dataPath, "output", outputPath, "dryRun", dryRun), lf);
+        lf.emit("INFO", "Start", Map.of("template", templatePath, "data", dataPath, "output", outputPath, "dryRun", dryRun));
 
         try {
             var ext = templateKind(templatePath);
@@ -426,7 +442,7 @@ public class Main implements Runnable {
                 int idx = 0;
                 for (var item : items) {
                     idx++;
-                    emit("INFO", "Processing item", Map.of("index", idx, "name", item.name(), "total", items.size()), lf);
+                    lf.emit("INFO", "Processing item", Map.of("index", idx, "name", item.name(), "total", items.size()));
                     try (var templateStream = extractTemplateNew(templatePath)) {
                         var context = wrapContext(item.context());
                         var configuration = OfficeStamperConfigurations.standard();
@@ -443,7 +459,7 @@ public class Main implements Runnable {
                             results.add(new RunResult(item.name(), "ok", out.toString(), null));
                         }
                     } catch (Exception ex) {
-                        emit("ERROR", "Item failed", Map.of("name", item.name(), "error", ex.getMessage()), lf);
+                        lf.emit("ERROR", "Item failed", Map.of("name", item.name(), "error", ex.getMessage()));
                         results.add(new RunResult(item.name(), "error", null, ex.getMessage()));
                         // Continue with next item; overall exit code should
                         // be non-zero if any failed
@@ -451,8 +467,8 @@ public class Main implements Runnable {
                 }
                 var anyError = results.stream().anyMatch(r -> "error".equals(r.status()));
                 if (dryRun)
-                    emit("INFO", "Validation completed (dry-run)", Map.of("items", results.size(), "errors", anyError), lf);
-                else emit("INFO", "Stamping completed", Map.of("items", results.size(), "errors", anyError), lf);
+                    lf.emit("INFO", "Validation completed (dry-run)", Map.of("items", results.size(), "errors", anyError));
+                else lf.emit("INFO", "Stamping completed", Map.of("items", results.size(), "errors", anyError));
                 if (!reportPath.isBlank()) writeReport(createResultReport(results), Path.of(reportPath));
                 if (anyError) throw new OfficeStamperException("One or more items " + "failed");
                 return;
@@ -468,7 +484,7 @@ public class Main implements Runnable {
                     // write any file
                     configuration.setExceptionResolver(ExceptionResolvers.throwing());
                     ext.stamp(templateStream, context, configuration, OutputStream.nullOutputStream());
-                    emit("INFO", "Validation successful (dry-run)", null, lf);
+                    lf.emit("INFO", "Validation successful (dry-run)", null);
                     Object reportData = createStatusReport("ok", null);
                     if (!reportPath.isBlank()) writeReport(reportData, Path.of(reportPath));
                     writeReport(traceabilityReport, Path.of(traceabilityReportPath));
@@ -481,41 +497,16 @@ public class Main implements Runnable {
                 }
             }
 
-            emit("INFO", "Stamping completed", Map.of("output", outputPath), lf);
+            lf.emit("INFO", "Stamping completed", Map.of("output", outputPath));
             Object reportData = createStatusReport("ok", null);
             if (!reportPath.isBlank()) writeReport(reportData, Path.of(reportPath));
             writeReport(traceabilityReport, Path.of(traceabilityReportPath));
         } catch (Exception e) {
-            emit("ERROR", e.getMessage(), Map.of("exception", e.getClass().getSimpleName()), lf);
+            lf.emit("ERROR", e.getMessage(), Map.of("exception", e.getClass().getSimpleName()));
             Object reportData = createStatusReport("error", e.getMessage());
             if (!reportPath.isBlank()) writeReport(reportData, Path.of(reportPath));
             // Re-throw to ensure non-zero exit code from picocli
             throw (e instanceof RuntimeException re) ? re : new OfficeStamperException(e);
-        }
-    }
-
-    // Minimal structured logging when --log-format=json
-    private void emit(String level, String message, @Nullable Map<String, ?> fields, String lf) {
-        if (!"json".equals(lf)) {
-            // Human logs via java.util.logging
-            var lvl = switch (level) {
-                case "ERROR" -> Level.ERROR;
-                case "WARN" -> Level.WARN;
-                default -> Level.INFO;
-            };
-            logger.atLevel(lvl).log(fields == null || fields.isEmpty() ? message : message + " | " + fields);
-            return;
-        }
-        try {
-            var map = new LinkedHashMap<String, Object>();
-            map.put("ts", now().toString());
-            map.put("level", level.toLowerCase());
-            map.put("msg", message);
-            if (fields != null && !fields.isEmpty()) map.put("fields", fields);
-            var json = new ObjectMapper().writeValueAsString(map);
-            System.out.println(json);
-        } catch (Exception ignored) {
-            System.out.println("{\"level\":\"error\",\"msg\":\"failed to emit json " + "log\"}");
         }
     }
 
@@ -538,19 +529,6 @@ public class Main implements Runnable {
         }
         report.put("items", items);
         return report;
-    }
-
-    private static void writeReport(Object reportData, Path path) {
-        try {
-            var mapper = SerializationUtils.newMapper();
-            var writer = mapper.writerWithDefaultPrettyPrinter();
-            try (var os = Main.createOutputStream(path)) {
-                writer.writeValue(os, reportData);
-            }
-        } catch (Exception e) {
-            // Best-effort: do not fail the run because report writing failed
-            logger.atWarn().setCause(e).log("Failed to write report: {}", e.getMessage());
-        }
     }
 
     private Object createStatusReport(String status, @Nullable String errorMessage) {

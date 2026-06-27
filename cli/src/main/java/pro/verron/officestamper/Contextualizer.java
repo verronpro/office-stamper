@@ -19,14 +19,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toMap;
-import static pro.verron.officestamper.Main.extension;
+import static pro.verron.officestamper.PathUtils.baseName;
+import static pro.verron.officestamper.PathUtils.extension;
 
 public class Contextualizer {
     static Object contextualise(Path path, ExcelMergeStrategy excelMergeStrategy, String excelJoinKey) {
@@ -168,5 +166,29 @@ public class Contextualizer {
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }
+    }
+
+    static Map<String, Object> contextualiseDirectoryRecursive(Path dir, ExcelMergeStrategy mergeStrategy, String joinKey) {
+        try (var stream = Files.walk(dir)) {
+            return stream.filter(Files::isRegularFile).filter(Contextualizer::isSupportedDataFile).collect(toMap(PathUtils::baseName, path -> contextualise(path, mergeStrategy, joinKey), (_, b) -> b, TreeMap::new));
+        } catch (IOException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    static List<Item> contextualizeDir(Path dir, ExcelMergeStrategy mergeStrategy, String joinKey) {
+        try (var stream = Files.list(dir)) {
+            return stream.sorted().map(entry -> contextualize(entry, mergeStrategy, joinKey)).toList();
+        } catch (IOException e) {
+            throw new OfficeStamperException(e);
+        }
+    }
+
+    private static Item contextualize(Path entry, ExcelMergeStrategy mergeStrategy, String joinKey) {
+        if (Files.isRegularFile(entry) && isSupportedDataFile(entry)) {
+            return new Item(baseName(entry), contextualise(entry, mergeStrategy, joinKey));
+        } else if (Files.isDirectory(entry)) {
+            return new Item(baseName(entry), contextualiseDirectoryRecursive(entry, mergeStrategy, joinKey));
+        } else throw new RuntimeException("Invalid entry: " + entry);
     }
 }

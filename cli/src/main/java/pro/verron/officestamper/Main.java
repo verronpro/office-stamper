@@ -1,6 +1,7 @@
 package pro.verron.officestamper;
 
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +13,6 @@ import pro.verron.officestamper.excel.ExcelMergeStrategy;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -21,11 +20,9 @@ import java.nio.file.Path;
 import java.nio.file.WatchKey;
 import java.util.*;
 
-import static java.nio.file.Files.newOutputStream;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import static java.time.OffsetDateTime.now;
-import static java.util.stream.Collectors.toMap;
 import static pro.verron.officestamper.TemplateKind.WORD;
 
 /// Main class for the CLI.
@@ -71,37 +68,11 @@ public class Main implements Runnable {
         System.exit(exitCode);
     }
 
-    private static InputStream streamFile(Path path) {
-        try {
-            return Files.newInputStream(path);
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
-    static String extension(Path f) {
-        var fileName = f.getFileName();
-        var base = fileName.toString();
-        var idx = base.lastIndexOf('.');
-        if (idx > 0) base = base.substring(idx + 1);
-        return base;
-    }
-
-    private static OutputStream createOutputStream(Path path) {
-        try {
-            var parent = path.getParent();
-            if (parent != null) Files.createDirectories(parent);
-            return newOutputStream(path);
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
     private static void writeReport(Object reportData, Path path) {
         try {
             var mapper = SerializationUtils.newMapper();
             var writer = mapper.writerWithDefaultPrettyPrinter();
-            try (var os = Main.createOutputStream(path)) {
+            try (var os = PathUtils.createOutputStream(path)) {
                 writer.writeValue(os, reportData);
             }
         } catch (Exception e) {
@@ -110,56 +81,23 @@ public class Main implements Runnable {
         }
     }
 
+    private static @NonNull LinkedHashMap<String, Object> addEnv(Object context) {
+        var wrapper = new LinkedHashMap<String, Object>();
+        wrapper.put("env", System.getenv());
+        if (context instanceof Map<?, ?> map) {
+            for (var entry : map.entrySet()) {
+                wrapper.put(String.valueOf(entry.getKey()), entry.getValue());
+            }
+        } else {
+            wrapper.put("data", context);
+        }
+        return wrapper;
+    }
+
     @Override
     public void run() {
         if (watch) runWatch();
         else runOnce();
-    }
-
-    private List<Item> buildItemsFromDataDirectory(Path dir) {
-        try (var stream = Files.list(dir)) {
-            var entries = stream.sorted().toList();
-            var items = new ArrayList<Item>();
-            for (var entry : entries) {
-                if (Files.isRegularFile(entry) && Contextualizer.isSupportedDataFile(entry)) {
-                    items.add(new Item(PathUtils.baseName(entry), Contextualizer.contextualise(entry, excelMergeStrategy, excelJoinKey)));
-                } else if (Files.isDirectory(entry)) {
-                    items.add(new Item(PathUtils.baseName(entry), contextualiseDirectoryRecursive(entry)));
-                }
-            }
-            return List.copyOf(items);
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
-    private Map<String, Object> contextualiseDirectoryRecursive(Path dir) {
-        try (var stream = Files.walk(dir)) {
-            return stream.filter(Files::isRegularFile).filter(Contextualizer::isSupportedDataFile).collect(toMap(PathUtils::baseName, path -> Contextualizer.contextualise(path, excelMergeStrategy, excelJoinKey), (_, b) -> b, TreeMap::new));
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
-    }
-
-    private Path computeOutputPath(String output, String itemName, TemplateKind ext) {
-        var desiredExt = (ext == WORD) ? ".docx" : ".pptx";
-        var out = Path.of(output);
-        // If output is an existing directory, place <itemName><ext> inside it
-        if (Files.exists(out) && Files.isDirectory(out)) {
-            return out.resolve(itemName + desiredExt);
-        }
-        var fn = out.getFileName() == null ? output : out.getFileName().toString();
-        var dot = fn.lastIndexOf('.');
-        if (dot > 0) {
-            var base = fn.substring(0, dot);
-            // Normalize to template extension
-            var newName = base + "-" + itemName + desiredExt;
-            var parent = out.getParent();
-            return parent == null ? Path.of(newName) : parent.resolve(newName);
-        } else {
-            // Treat as directory path (may or may not exist)
-            return out.resolve(itemName + desiredExt);
-        }
     }
 
     private void runWatch() {
@@ -259,16 +197,16 @@ public class Main implements Runnable {
             // each top-level subfolder merges its files (recursively) into a
             // bigger context and yields one output.
             if (!dataPath.isBlank() && Files.isDirectory(Path.of(dataPath))) {
-                var items = buildItemsFromDataDirectory(Path.of(dataPath));
+                var items = Contextualizer.contextualizeDir(Path.of(dataPath), this.excelMergeStrategy, this.excelJoinKey);
                 var results = new ArrayList<RunResult>(items.size());
                 int idx = 0;
                 for (var item : items) {
                     idx++;
                     lf.emit("INFO", "Processing item", Map.of("index", idx, "name", item.name(), "total", items.size()));
 
-                    var outputFilePath = computeOutputPath(outputPath, item.name(), ext);
-                    try (var templateStream = "diagnostic".equals(templatePath) ? Diagnostic.template() : streamFile(Path.of(templatePath)); var out = dryRun ? OutputStream.nullOutputStream() : createOutputStream(outputFilePath)) {
-                        var context = wrapContext(item.context());
+                    var outputFilePath = PathUtils.computeOutputPath(outputPath, item.name(), (ext == WORD) ? ".docx" : ".pptx");
+                    try (var templateStream = "diagnostic".equals(templatePath) ? Diagnostic.template() : PathUtils.streamFile(Path.of(templatePath)); var out = dryRun ? OutputStream.nullOutputStream() : PathUtils.createOutputStream(outputFilePath)) {
+                        var context = wrapContext(item.context(), bindEnv);
                         var configuration = OfficeStamperConfigurations.standard();
                         configuration.setTraceabilityReporter(traceabilityReport);
                         if (dryRun) {
@@ -297,8 +235,8 @@ public class Main implements Runnable {
             }
 
             // Single context path
-            final var context = wrapContext("diagnostic".equals(dataPath) ? Diagnostic.context() : Contextualizer.contextualize(excelMergeStrategy, excelJoinKey, Path.of(dataPath)));
-            try (var templateStream = "diagnostic".equals(templatePath) ? Diagnostic.template() : streamFile(Path.of(templatePath))) {
+            final var context = wrapContext("diagnostic".equals(dataPath) ? Diagnostic.context() : Contextualizer.contextualize(excelMergeStrategy, excelJoinKey, Path.of(dataPath)), bindEnv);
+            try (var templateStream = "diagnostic".equals(templatePath) ? Diagnostic.template() : PathUtils.streamFile(Path.of(templatePath))) {
                 var configuration = OfficeStamperConfigurations.standard();
                 configuration.setTraceabilityReporter(traceabilityReport);
                 if (dryRun) {
@@ -314,7 +252,7 @@ public class Main implements Runnable {
                 }
 
                 // Real stamping (single file)
-                try (var outputStream = createOutputStream(Path.of(outputPath))) {
+                try (var outputStream = PathUtils.createOutputStream(Path.of(outputPath))) {
                     ext.stamp(templateStream, context, configuration, outputStream);
                 }
             }
@@ -365,17 +303,7 @@ public class Main implements Runnable {
         return report;
     }
 
-    private Object wrapContext(Object context) {
-        if (!bindEnv) return context;
-        var wrapper = new LinkedHashMap<String, Object>();
-        wrapper.put("env", System.getenv());
-        if (context instanceof Map<?, ?> map) {
-            for (var entry : map.entrySet()) {
-                wrapper.put(String.valueOf(entry.getKey()), entry.getValue());
-            }
-        } else {
-            wrapper.put("data", context);
-        }
-        return wrapper;
+    private Object wrapContext(Object context, boolean addEnv) {
+        return addEnv ? addEnv(context) : context;
     }
 }

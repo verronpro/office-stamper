@@ -1,7 +1,6 @@
 package pro.verron.officestamper;
 
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,17 +80,21 @@ public class Main implements Runnable {
         }
     }
 
-    private static @NonNull LinkedHashMap<String, Object> addEnv(Object context) {
-        var wrapper = new LinkedHashMap<String, Object>();
-        wrapper.put("env", System.getenv());
+    private static Object addEnv(Object context) {
         if (context instanceof Map<?, ?> map) {
+            var wrapper = new LinkedHashMap<String, Object>();
+            wrapper.put("env", System.getenv());
             for (var entry : map.entrySet()) {
                 wrapper.put(String.valueOf(entry.getKey()), entry.getValue());
             }
+            return wrapper;
         } else {
+            var wrapper = new LinkedHashMap<String, Object>();
+            wrapper.put("env", System.getenv());
             wrapper.put("data", context);
+            return wrapper;
         }
-        return wrapper;
+
     }
 
     @Override

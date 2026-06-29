@@ -2,6 +2,7 @@ package pro.verron.officestamper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
 
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -15,7 +16,8 @@ import java.util.prefs.Preferences;
 import static java.util.stream.Collectors.toMap;
 
 /// Diagnostic class for collecting system information.
-public final class Diagnostic {
+@Command(name = "diagnostic")
+public final class Diagnostic implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(Diagnostic.class);
     private final LocalDate date;
@@ -25,22 +27,10 @@ public final class Diagnostic {
     private final Map<String, String> environmentVariables;
 
     private Diagnostic() {
-        this(
-                LocalDate.now(),
-                System.getenv("USERNAME"),
-                extractUserPreferences(),
-                extractJvmProperties(),
-                extractEnvironmentVariables()
-        );
+        this(LocalDate.now(), System.getenv("USERNAME"), extractUserPreferences(), extractJvmProperties(), extractEnvironmentVariables());
     }
 
-    private Diagnostic(
-            LocalDate date,
-            String user,
-            Map<String, String> userPreferences,
-            Map<String, String> jvmProperties,
-            Map<String, String> environmentVariables
-    ) {
+    private Diagnostic(LocalDate date, String user, Map<String, String> userPreferences, Map<String, String> jvmProperties, Map<String, String> environmentVariables) {
         this.date = date;
         this.user = user;
         this.userPreferences = userPreferences;
@@ -51,16 +41,14 @@ public final class Diagnostic {
     private static Map<String, String> extractUserPreferences() {
         var preferenceRoot = Preferences.userRoot();
         var preferenceKeys = extractPreferenceKeys(preferenceRoot);
-        var entries = preferenceKeys.stream()
-                                    .collect(toMap(key -> key, k -> preferenceRoot.get(k, "<null>")));
+        var entries = preferenceKeys.stream().collect(toMap(key -> key, k -> preferenceRoot.get(k, "<null>")));
         return Map.copyOf(entries);
     }
 
     private static Map<String, String> extractJvmProperties() {
         var properties = System.getProperties();
         var propertyNames = properties.stringPropertyNames();
-        var entries = propertyNames.stream()
-                                   .collect(toMap(k -> k, properties::getProperty));
+        var entries = propertyNames.stream().collect(toMap(k -> k, properties::getProperty));
         return Map.copyOf(entries);
     }
 
@@ -73,9 +61,7 @@ public final class Diagnostic {
         try {
             return Arrays.asList(preferenceRoot.keys());
         } catch (BackingStoreException e) {
-            logger.atWarn()
-                  .setCause(e)
-                  .log("Failed to list the preference keys");
+            logger.atWarn().setCause(e).log("Failed to list the preference keys");
             return List.of("failed-to-list-preference-keys");
         }
     }
@@ -89,27 +75,34 @@ public final class Diagnostic {
         var map = new TreeMap<String, Object>();
         map.put("reportDate", diagnosticMaker.date());
         map.put("reportUser", diagnosticMaker.user());
-        map.put("environment",
-                diagnosticMaker.environmentVariables()
-                               .entrySet());
-        map.put("properties",
-                diagnosticMaker.jvmProperties()
-                               .entrySet());
-        map.put("preferences",
-                diagnosticMaker.userPreferences()
-                               .entrySet());
+        map.put("environment", diagnosticMaker.environmentVariables().entrySet());
+        map.put("properties", diagnosticMaker.jvmProperties().entrySet());
+        map.put("preferences", diagnosticMaker.userPreferences().entrySet());
         return map;
+    }
+
+    static Object context(LocalDate date, String user, Map<String, String> userPreferences, Map<String, String> jvmProperties, Map<String, String> environmentVariables) {
+        return context(new Diagnostic(date, user, userPreferences, jvmProperties, environmentVariables));
+    }
+
+    static InputStream template() {
+        logger.info("Load the internally packaged 'Diagnostic.docx' template resource");
+        return Utils.streamResource("Diagnostic.docx");
     }
 
     /// Returns the diagnostic date.
     ///
     /// @return the date
-    public LocalDate date() {return date;}
+    public LocalDate date() {
+        return date;
+    }
 
     /// Returns the diagnostic user.
     ///
     /// @return the user
-    public String user() {return user;}
+    public String user() {
+        return user;
+    }
 
     private Map<String, String> environmentVariables() {
         return environmentVariables;
@@ -123,18 +116,8 @@ public final class Diagnostic {
         return userPreferences;
     }
 
-    static Object context(
-            LocalDate date,
-            String user,
-            Map<String, String> userPreferences,
-            Map<String, String> jvmProperties,
-            Map<String, String> environmentVariables
-    ) {
-        return context(new Diagnostic(date, user, userPreferences, jvmProperties, environmentVariables));
-    }
+    @Override
+    public void run() {
 
-    static InputStream template() {
-        logger.info("Load the internally packaged 'Diagnostic.docx' template resource");
-        return Utils.streamResource("Diagnostic.docx");
     }
 }

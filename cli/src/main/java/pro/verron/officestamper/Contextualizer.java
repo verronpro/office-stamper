@@ -27,7 +27,7 @@ import static pro.verron.officestamper.PathUtils.baseName;
 import static pro.verron.officestamper.PathUtils.extension;
 
 public class Contextualizer {
-    static Object contextualise(Path path, ExcelMergeStrategy excelMergeStrategy, String excelJoinKey) {
+    static Object contextualise(Path path, ExcelStrategy excelStrategy) {
         var extension = extension(path);
         return switch (extension) {
             case "csv" -> processCsv(path);
@@ -35,7 +35,7 @@ public class Contextualizer {
             case "html", "xml" -> processXmlOrHtml(path);
             case "json" -> processJson(path);
             case "yaml", "yml" -> processYaml(path);
-            case "xlsx" -> processExcel(path, excelMergeStrategy, excelJoinKey);
+            case "xlsx" -> processExcel(path, excelStrategy);
             default -> throw new OfficeStamperException("Unsupported file type: " + path);
         };
     }
@@ -66,7 +66,9 @@ public class Contextualizer {
         var properties = new Properties();
         try (var inputStream = Files.newInputStream(path)) {
             properties.load(inputStream);
-            return properties.entrySet().stream().collect(toMap(e -> String.valueOf(e.getKey()), e -> String.valueOf(e.getValue()), (a, b) -> b, LinkedHashMap::new));
+            return properties.entrySet()
+                    .stream()
+                    .collect(toMap(e -> String.valueOf(e.getKey()), e -> String.valueOf(e.getValue()), (a, b) -> b, LinkedHashMap::new));
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }
@@ -140,11 +142,11 @@ public class Contextualizer {
         }
     }
 
-    static Object processExcel(Path path, ExcelMergeStrategy excelMergeStrategy, String excelJoinKey) {
+    static Object processExcel(Path path, ExcelStrategy excelStrategy) {
         try (var is = Files.newInputStream(path)) {
             var ctx = ExcelContext.from(is);
-            if (excelMergeStrategy == ExcelMergeStrategy.JOIN) {
-                return ctx.joinAllSheets(excelJoinKey);
+            if (ExcelMergeStrategy.JOIN == excelStrategy.getMergeStrategy()) {
+                return ctx.joinAllSheets(excelStrategy.getJoinKey());
             }
             return ctx;
         } catch (IOException e) {
@@ -153,42 +155,48 @@ public class Contextualizer {
     }
 
     static Map<String, String> mapRowToHeaders(String[] row, String[] headers) {
-        return IntStream.range(0, headers.length).boxed().collect(toMap(i -> headers[i], i -> row[i], (_, b) -> b, LinkedHashMap::new));
+        return IntStream.range(0, headers.length)
+                .boxed()
+                .collect(toMap(i -> headers[i], i -> row[i], (_, b) -> b, LinkedHashMap::new));
     }
 
-    static Object contextualize(ExcelMergeStrategy mergeStrategy, String joinKey, Path path) {
-        return Files.isDirectory(path) ? contextualiseDirectory(path, mergeStrategy, joinKey) : contextualise(path, mergeStrategy, joinKey);
+    static Object contextualize(ExcelStrategy excelStrategy, Path path) {
+        return Files.isDirectory(path) ? contextualiseDirectory(path, excelStrategy) : contextualise(path, excelStrategy);
     }
 
-    static Map<String, Object> contextualiseDirectory(Path dir, ExcelMergeStrategy mergeStrategy, String joinKey) {
+    static Map<String, Object> contextualiseDirectory(Path dir, ExcelStrategy excelStrategy) {
         try (var stream = Files.list(dir)) {
-            return stream.filter(Files::isRegularFile).filter(Contextualizer::isSupportedDataFile).collect(toMap(PathUtils::baseName, path -> contextualise(path, mergeStrategy, joinKey), (_, b) -> b, TreeMap::new));
+            return stream.filter(Files::isRegularFile)
+                    .filter(Contextualizer::isSupportedDataFile)
+                    .collect(toMap(PathUtils::baseName, path -> contextualise(path, excelStrategy), (_, b) -> b, TreeMap::new));
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }
     }
 
-    static Map<String, Object> contextualiseDirectoryRecursive(Path dir, ExcelMergeStrategy mergeStrategy, String joinKey) {
+    static Map<String, Object> contextualiseDirectoryRecursive(Path dir, ExcelStrategy excelStrategy) {
         try (var stream = Files.walk(dir)) {
-            return stream.filter(Files::isRegularFile).filter(Contextualizer::isSupportedDataFile).collect(toMap(PathUtils::baseName, path -> contextualise(path, mergeStrategy, joinKey), (_, b) -> b, TreeMap::new));
+            return stream.filter(Files::isRegularFile)
+                    .filter(Contextualizer::isSupportedDataFile)
+                    .collect(toMap(PathUtils::baseName, path -> contextualise(path, excelStrategy), (_, b) -> b, TreeMap::new));
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }
     }
 
-    static List<Item> contextualizeDir(Path dir, ExcelMergeStrategy mergeStrategy, String joinKey) {
+    static List<Item> contextualizeDir(Path dir, ExcelStrategy excelStrategy) {
         try (var stream = Files.list(dir)) {
-            return stream.sorted().map(entry -> contextualize(entry, mergeStrategy, joinKey)).toList();
+            return stream.sorted().map(entry -> contextualize(entry, excelStrategy)).toList();
         } catch (IOException e) {
             throw new OfficeStamperException(e);
         }
     }
 
-    private static Item contextualize(Path entry, ExcelMergeStrategy mergeStrategy, String joinKey) {
+    private static Item contextualize(Path entry, ExcelStrategy excelStrategy) {
         if (Files.isRegularFile(entry) && isSupportedDataFile(entry)) {
-            return new Item(baseName(entry), contextualise(entry, mergeStrategy, joinKey));
+            return new Item(baseName(entry), contextualise(entry, excelStrategy));
         } else if (Files.isDirectory(entry)) {
-            return new Item(baseName(entry), contextualiseDirectoryRecursive(entry, mergeStrategy, joinKey));
+            return new Item(baseName(entry), contextualiseDirectoryRecursive(entry, excelStrategy));
         } else throw new RuntimeException("Invalid entry: " + entry);
     }
 }

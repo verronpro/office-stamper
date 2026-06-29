@@ -27,8 +27,10 @@ class MainContextDirectoryTest {
         Files.writeString(dir.resolve("a.json"), "{\n  \"x\": 1, \"y\": \"z\"\n}", StandardCharsets.UTF_8);
         Files.writeString(dir.resolve("b.properties"), "k=v\n", StandardCharsets.UTF_8);
 
+        var excelStrategy = new ExcelStrategy(ExcelMergeStrategy.MAP, null);
+
         // Act
-        Map<String, Object> ctx = Contextualizer.contextualiseDirectory(dir, ExcelMergeStrategy.MAP, "null");
+        Map<String, Object> ctx = Contextualizer.contextualiseDirectory(dir, excelStrategy);
 
         // Assert
         assertNotNull(ctx);

@@ -1,10 +1,13 @@
 package pro.verron.officestamper;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -13,27 +16,42 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class MainCommandTest {
 
-    @Test
-    void shouldBindEnvVariables(@TempDir Path tempDir) throws Exception {
+    static String templatePath;
+    static String dataPath;
+
+    @BeforeAll
+    static void setup(@TempDir Path tempDir) throws Docx4JException, IOException {
         // Create a template with ${env['PATH']} (or any other env var that should exist)
-        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        pkg.getMainDocumentPart().addParagraphOfText("Path: ${env['PATH']}");
-        Path template = tempDir.resolve("template.docx");
-        pkg.save(template.toFile());
+        var template = createTemplate(tempDir.resolve("template.docx"), "Path: ${env['PATH']}");
+        templatePath = template.toString();
 
-        Path data = tempDir.resolve("data.json");
-        Files.writeString(data, "{}");
+        var data = tempDir.resolve("data.json");
+        var emptyJson = "{}";
+        Files.writeString(data, emptyJson);
+        var dataPath = data.toString();
+    }
 
-        // Should fail without --bind-env in dry-run because env is missing
-        Main main1 = new Main();
-        CommandLine cmd1 = new CommandLine(main1);
-        int exitCode1 = cmd1.execute("-t", template.toString(), "-d", data.toString(), "--dry-run");
-        assertNotEquals(0, exitCode1, "Should fail when env is not bound");
+    private static Path createTemplate(Path path, String paragraph) throws Docx4JException {
+        var pkg = WordprocessingMLPackage.createPackage();
+        var mainDocumentPart = pkg.getMainDocumentPart();
+        mainDocumentPart.addParagraphOfText(paragraph);
+        pkg.save(path.toFile());
+        return path;
+    }
 
-        // Should succeed with --bind-env
-        Main main2 = new Main();
-        CommandLine cmd2 = new CommandLine(main2);
-        int exitCode2 = cmd2.execute("-t", template.toString(), "-d", data.toString(), "--dry-run", "--bind-env");
-        assertEquals(0, exitCode2, "Should succeed when env is bound");
+    @Test
+    void shouldFailWhenNeedingEnv() {
+        var main = new Main();
+        var cmd = new CommandLine(main);
+        int exitCode = cmd.execute("stamp", "-t", templatePath, "-d", dataPath, "--dry-run");
+        assertNotEquals(0, exitCode, "Should fail when env is not bound");
+    }
+
+    @Test
+    void shouldBindEnvVariables(@TempDir Path tempDir) {
+        Main main = new Main();
+        CommandLine cmd = new CommandLine(main);
+        int exitCode = cmd.execute("stamp", "-t", templatePath, "-d", dataPath, "--dry-run", "--bind-env");
+        assertEquals(0, exitCode, "Should succeed when env is bound");
     }
 }

@@ -129,9 +129,11 @@ public class StandardParagraph
             throw new OfficeStamperException(msg.formatted(end, this));
         }
         var expression = extractExpression(start, end);
-        var newContents = WmlUtils.replaceExpressionWithRun(() -> p, expression, insert.elements(), insert::setRPr);
-        content.clear();
-        content.addAll(newContents);
+        WmlUtils.replaceExpressionWithRun(() -> p.subList(fromIndex, toIndex),
+                expression,
+                insert.elements(),
+                insert::setRPr
+        );
     }
 
     private String extractExpression(Object from, Object to) {

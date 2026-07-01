@@ -242,6 +242,8 @@ class DefaultTests extends OfficeStamperTestBase {
                 
                 In this paragraph, the variable foo should not be resolved: unresolvedValueWithComment.
                 
+                In this paragraph, we test that _only_ the text in the comment (but not other occurrences of the same text) is replaced (also, the format – red, bold – should be retained): name [color_FF0000]#*Homer Simpson*#
+                
                 // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """);

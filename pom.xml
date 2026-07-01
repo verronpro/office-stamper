@@ -26,7 +26,7 @@
     </modules>
 
     <properties>
-        <docx4j.version>11.5.14</docx4j.version>
+        <docx4j.version>17.0.0</docx4j.version>
         <asciidoc.version>3.9</asciidoc.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -21,8 +21,7 @@ import static pro.verron.officestamper.utils.wml.WmlUtils.insertSmartTag;
 /// This pre-processor is typically used to identify and mark inline expressions
 /// within paragraphs, making them
 /// recognizable for subsequent processing steps.
-public class PlaceholderHooker
-        implements PreProcessor {
+public class PlaceholderHooker implements PreProcessor {
 
     private final Pattern pattern;
     private final String element;
@@ -73,14 +72,7 @@ public class PlaceholderHooker
                 var start = matcher.start(1);
                 var end = matcher.end(1);
                 var placeholder = matcher.group(2);
-                var newContent = insertSmartTag(element,
-                        paragraph,
-                        placeholder,
-                        start,
-                        end);
-                var content = paragraph.getContent();
-                content.clear();
-                content.addAll(newContent);
+                insertSmartTag(element, paragraph, placeholder, start, end);
                 string = asString(paragraph);
                 matcher = pattern.matcher(string);
             }
@@ -94,8 +86,7 @@ public class PlaceholderHooker
     /// elements ([P]) that match a specified
     /// regular expression pattern. The collected paragraphs can be retrieved
     /// using the [#paragraphs()] method.
-    public static class ParagraphCollector
-            extends TraversalUtilVisitor<P> {
+    public static class ParagraphCollector extends TraversalUtilVisitor<P> {
 
         private final Pattern pattern;
         private final List<P> results = new ArrayList<>();

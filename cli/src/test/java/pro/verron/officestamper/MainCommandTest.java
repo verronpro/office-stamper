@@ -28,7 +28,7 @@ class MainCommandTest {
         var data = tempDir.resolve("data.json");
         var emptyJson = "{}";
         Files.writeString(data, emptyJson);
-        var dataPath = data.toString();
+        dataPath = data.toString();
     }
 
     private static Path createTemplate(Path path, String paragraph) throws Docx4JException {
@@ -48,7 +48,7 @@ class MainCommandTest {
     }
 
     @Test
-    void shouldBindEnvVariables(@TempDir Path tempDir) {
+    void shouldBindEnvVariables() {
         Main main = new Main();
         CommandLine cmd = new CommandLine(main);
         int exitCode = cmd.execute("stamp", "-t", templatePath, "-d", dataPath, "--dry-run", "--bind-env");

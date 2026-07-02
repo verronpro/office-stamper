@@ -19,14 +19,14 @@ module pro.verron.officestamper {
     requires spring.expression;
     uses javax.imageio.spi.ImageReaderSpi;
 
-    requires transitive org.docx4j.core;
-
     requires static org.apache.commons.io;
     requires static org.slf4j;
     requires static jakarta.xml.bind;
-    requires org.docx4j.openxml_objects;
+    requires org.docx4j.generated_objects;
     requires org.jspecify;
     requires pro.verron.officestamper.utils;
+    requires org.docx4j.core;
+    requires org.jvnet.jaxb.plugins.runtime;
 
     opens pro.verron.officestamper.api;
     exports pro.verron.officestamper.api;

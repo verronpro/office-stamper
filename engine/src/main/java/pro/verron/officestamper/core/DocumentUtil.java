@@ -2,7 +2,7 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.XmlUtils;
 import org.docx4j.wml.*;
-import org.jvnet.jaxb2_commons.ppp.Child;
+import org.jvnet.jaxb.lang.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperException;

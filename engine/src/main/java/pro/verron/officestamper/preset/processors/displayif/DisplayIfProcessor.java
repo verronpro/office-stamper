@@ -2,7 +2,7 @@ package pro.verron.officestamper.preset.processors.displayif;
 
 
 import org.jspecify.annotations.Nullable;
-import org.jvnet.jaxb2_commons.ppp.Child;
+import org.jvnet.jaxb.lang.Child;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
@@ -17,9 +17,7 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 /// @author Joseph Verron
 /// @author Tom Hombergs
 /// @since 1.0.0
-public class DisplayIfProcessor
-        extends CommentProcessor
-        implements CommentProcessorFactory.IDisplayIfProcessor {
+public class DisplayIfProcessor extends CommentProcessor implements CommentProcessorFactory.IDisplayIfProcessor {
 
 
     /// Creates a new [DisplayIfProcessor].
@@ -37,8 +35,7 @@ public class DisplayIfProcessor
     @Override
     public void displayParagraphIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        context().paragraph()
-                 .remove();
+        context().paragraph().remove();
     }
 
     @Override
@@ -49,9 +46,7 @@ public class DisplayIfProcessor
     @Override
     public void displayTableRowIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        context().tableRow()
-                 .orElseThrow(throwing("Paragraph is not within a row!"))
-                 .remove();
+        context().tableRow().orElseThrow(throwing("Paragraph is not within a row!")).remove();
     }
 
     @Override
@@ -67,9 +62,7 @@ public class DisplayIfProcessor
     @Override
     public void displayTableIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        context().table()
-                 .orElseThrow(throwing("Paragraph is not within a table!"))
-                 .remove();
+        context().table().orElseThrow(throwing("Paragraph is not within a table!")).remove();
     }
 
     @Override
@@ -107,9 +100,7 @@ public class DisplayIfProcessor
     @Override
     public void displayDocPartIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        comment().getParent()
-                 .getContent()
-                 .removeAll(comment().getElements());
+        comment().getParent().getContent().removeAll(comment().getElements());
     }
 
     @Override

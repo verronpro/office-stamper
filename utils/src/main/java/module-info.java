@@ -27,6 +27,7 @@ module pro.verron.officestamper.utils {
     requires org.jspecify;
     requires org.slf4j;
     requires java.desktop;
+    requires org.jvnet.jaxb.plugins.runtime;
 
     exports pro.verron.officestamper.utils.iterator;
     exports pro.verron.officestamper.utils.function;

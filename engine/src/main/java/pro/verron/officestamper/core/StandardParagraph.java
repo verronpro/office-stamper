@@ -1,7 +1,8 @@
 package pro.verron.officestamper.core;
 
+import org.docx4j.list.ArrayListDocx4j;
 import org.docx4j.wml.*;
-import org.jvnet.jaxb2_commons.ppp.Child;
+import org.jvnet.jaxb.lang.Child;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlUtils;
@@ -22,14 +23,14 @@ public class StandardParagraph implements Paragraph {
 
     private final DocxPart part;
     private final ContentAccessor contents;
-    private final ArrayListWml<Object> p;
+    private final ArrayListDocx4j<Object> p;
 
     /// Constructs a new instance of the StandardParagraph class.
     ///
     /// @param part             the source DocxPart that contains the paragraph content.
     /// @param paragraphContent the list of objects representing the paragraph content.
     /// @param p                the P object representing the paragraph's structure.
-    private StandardParagraph(DocxPart part, ContentAccessor paragraphContent, ArrayListWml<Object> p) {
+    private StandardParagraph(DocxPart part, ContentAccessor paragraphContent, ArrayListDocx4j<Object> p) {
         this.part = part;
         this.contents = paragraphContent;
         this.p = p;
@@ -56,7 +57,7 @@ public class StandardParagraph implements Paragraph {
     /// @param paragraph the P object representing the structure and content of the paragraph.
     /// @return a new instance of StandardParagraph constructed based on the provided source and paragraph.
     public static StandardParagraph from(DocxPart source, P paragraph) {
-        return new StandardParagraph(source, paragraph, (ArrayListWml<Object>) paragraph.getContent());
+        return new StandardParagraph(source, paragraph, (ArrayListDocx4j<Object>) paragraph.getContent());
     }
 
     /// Creates a new instance of StandardParagraph from the provided DocxPart and CTSdtContentRun objects.
@@ -67,7 +68,7 @@ public class StandardParagraph implements Paragraph {
     public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
         var parent = (SdtRun) paragraph.getParent();
         var parentParent = (P) parent.getParent();
-        return new StandardParagraph(source, paragraph, (ArrayListWml<Object>) parentParent.getContent());
+        return new StandardParagraph(source, paragraph, (ArrayListDocx4j<Object>) parentParent.getContent());
     }
 
     /// Replaces a set of paragraph elements with new ones within the current paragraph's siblings. Ensures that the

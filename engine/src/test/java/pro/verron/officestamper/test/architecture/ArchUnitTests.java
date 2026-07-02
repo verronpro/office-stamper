@@ -23,7 +23,7 @@ public class ArchUnitTests {
                                                                          "java..",
                                                                          "org.docx4j..",
                                                                          "org.jspecify..",
-                                                                         "org.jvnet.jaxb2_commons..",
+                                                                         "org.jvnet.jaxb.lang..",
                                                                          "jakarta.xml.bind..",
                                                                          "org.slf4j..",
                                                                          "org.springframework..")
@@ -41,7 +41,7 @@ public class ArchUnitTests {
                                                                        "java..",
                                                                        "org.docx4j..",
                                                                        "org.jspecify..",
-                                                                       "org.jvnet.jaxb2_commons..",
+                                                                       "org.jvnet.jaxb.lang..",
                                                                        "jakarta.xml.bind..",
                                                                        "org.slf4j..",
                                                                        "org.springframework..");

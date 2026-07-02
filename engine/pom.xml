@@ -89,6 +89,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-generated-objects</artifactId>
+            <version>${docx4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
             <version>1.4.2</version>

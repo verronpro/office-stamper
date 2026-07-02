@@ -27,7 +27,7 @@
 
     <properties>
         <docx4j.version>17.0.2</docx4j.version>
-        <asciidoc.version>3.9</asciidoc.version>
+        <asciidoc.version>3.10-SNAPSHOT</asciidoc.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.report.outputEncoding>UTF-8</project.report.outputEncoding>
@@ -317,6 +317,16 @@
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+                <version>${docx4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.docx4j</groupId>
+                <artifactId>docx4j-generated-objects</artifactId>
+                <version>${docx4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.docx4j</groupId>
+                <artifactId>docx4j-core</artifactId>
                 <version>${docx4j.version}</version>
             </dependency>
             <dependency>

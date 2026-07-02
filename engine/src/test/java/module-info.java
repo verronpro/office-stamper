@@ -14,7 +14,6 @@ module pro.verron.officestamper.test {
     requires spring.context;
     requires spring.expression;
 
-    requires org.docx4j.openxml_objects;
     requires org.docx4j.core;
 
     requires org.slf4j;

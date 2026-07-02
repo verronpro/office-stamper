@@ -24,7 +24,10 @@
         <dependency>
             <groupId>org.docx4j</groupId>
             <artifactId>docx4j-core</artifactId>
-            <version>${docx4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-generated-objects</artifactId>
         </dependency>
         <dependency>
             <groupId>org.docx4j</groupId>

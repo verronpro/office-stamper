@@ -22,8 +22,8 @@ module pro.verron.officestamper.cli {
     requires com.fasterxml.jackson.core;
 
     requires org.docx4j.core;
-    requires org.docx4j.openxml_objects;
     requires org.jspecify;
+    requires org.docx4j.generated_objects;
 
     // Picocli and Jackson uses reflection class
     opens pro.verron.officestamper to info.picocli,

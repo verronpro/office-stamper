@@ -29,6 +29,8 @@ module pro.verron.officestamper.test {
     exports pro.verron.officestamper.test;
     exports pro.verron.officestamper.test.utils;
     opens pro.verron.officestamper.test.utils;
+    opens pro.verron.officestamper.test.imageio;
+    exports pro.verron.officestamper.test.imageio;
     exports pro.verron.officestamper.test.architecture;
     opens pro.verron.officestamper.test.architecture;
 }

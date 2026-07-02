@@ -44,7 +44,7 @@ public class OpenpackagingUtils {
     /// Exports a Word document to the provided output stream.
     ///
     /// @param wordprocessingMLPackage the Word document to export
-    /// @param os the output stream to write the document to
+    /// @param os                      the output stream to write the document to
     /// @throws UtilsException if there is an error exporting the document
     public static void exportWord(WordprocessingMLPackage wordprocessingMLPackage, OutputStream os) {
         try {
@@ -70,7 +70,7 @@ public class OpenpackagingUtils {
     /// Exports a PowerPoint document to the provided output stream.
     ///
     /// @param presentationMLPackage the PowerPoint document to export
-    /// @param os the output stream to write the document to
+    /// @param os                    the output stream to write the document to
     /// @throws UtilsException if there is an error exporting the document
     public static void exportPowerPoint(PresentationMLPackage presentationMLPackage, OutputStream os) {
         try {
@@ -82,22 +82,18 @@ public class OpenpackagingUtils {
 
     /// Creates a new run element containing an image, which is embedded in a [WordprocessingMLPackage] document.
     ///
-    /// @param openPackage       the open package of the Word document, providing access to the document model
+    /// @param openPackage     the open package of the Word document, providing access to the document model
     ///                          and its sections; typically used to generate the appropriate relationships
     ///                          and content.
-    /// @param bytes             a supplier of the byte array representing the image data to be embedded
+    /// @param bytes           a supplier of the byte array representing the image data to be embedded
     ///                          in the document.
-    /// @param imageRunOptions   options for the image run, including alternate text, filename hints,
+    /// @param imageRunOptions options for the image run, including alternate text, filename hints,
     ///                          maximum width, and deduplication preferences.
     /// @return a [R] (run) object representing the created image run, which can be added to the
     ///         document content.
-    /// @throws UtilsException   if there is an error during the creation of the image part, such as
+    /// @throws UtilsException if there is an error during the creation of the image part, such as
     ///                          an invalid image format or issues with the document model.
-    public static R newImageRun(
-            OpenPackage<WordprocessingMLPackage> openPackage,
-            Supplier<byte[]> bytes,
-            ImageRunOptions imageRunOptions
-    ) {
+    public static R newImageRun(OpenPackage<WordprocessingMLPackage> openPackage, Supplier<byte[]> bytes, ImageRunOptions imageRunOptions) {
         try {
             var document = openPackage.document();
             var documentModel = document.getDocumentModel();
@@ -109,18 +105,13 @@ public class OpenpackagingUtils {
             var imgFormat = imgPart.format();
             var dimension = imgFormat.dimension();
             var format = imgFormat.name();
-            var scale = WmlFactory.computeScale(pageDimension,
-                    imageRunOptions.maxWidth() == null ? -1 : imageRunOptions.maxWidth(),
-                    dimension);
-            var inline = format.equals("svg")
-                    ? WmlFactory.newSVGInline(relationship,
-                    imageRunOptions.filenameHint(),
-                    imageRunOptions.altText(),
-                    scale)
-                    : WmlFactory.newImgInline(relationship,
-                            imageRunOptions.filenameHint(),
-                            imageRunOptions.altText(),
-                            scale);
+            var maxWidth = imageRunOptions.maxWidth() == null ? -1 : imageRunOptions.maxWidth();
+            var scale = WmlFactory.computeScale(pageDimension, maxWidth, dimension);
+            var altText = imageRunOptions.altText();
+            var filenameHint = imageRunOptions.filenameHint();
+            var inline = format.equals("svg") ? //
+                    WmlFactory.newSVGInline(relationship, altText, filenameHint, scale) : //
+                    WmlFactory.newImgInline(relationship, altText, filenameHint, scale);
             var drawing = WmlFactory.newDrawing(inline);
             return WmlFactory.newRun(drawing);
         } catch (Exception e) {
@@ -132,7 +123,7 @@ public class OpenpackagingUtils {
     /// creating an SVG part using the specified ContentTypeManager.
     ///
     /// @param bytes the byte array containing the SVG content to be parsed
-    /// @param ctm the content type manager used to manage the creation of the SVG part
+    /// @param ctm   the content type manager used to manage the creation of the SVG part
     /// @return the extracted XML content as a String
     /// @throws RuntimeException if an error occurs during the processing or extraction of the XML content
     public static String extractSvgXml(byte[] bytes, ContentTypeManager ctm) {
@@ -144,8 +135,8 @@ public class OpenpackagingUtils {
     /// Creates a new SVG part with the specified document, content type manager, and part name.
     ///
     /// @param contentTypeManager the content type manager used to create the SVG part
-    /// @param document the XML document to associate with the new SVG part
-    /// @param partName the name to assign to the new SVG part
+    /// @param document           the XML document to associate with the new SVG part
+    /// @param partName           the name to assign to the new SVG part
     /// @return the created SVG part
     /// @throws UtilsException if an error occurs during part creation or initialization
     public static XmlPart createSvgPart(ContentTypeManager contentTypeManager, Document document, String partName) {

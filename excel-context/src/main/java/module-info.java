@@ -14,6 +14,5 @@
 module pro.verron.officestamper.excel {
     requires org.docx4j.core;
     requires org.jspecify;
-
     exports pro.verron.officestamper.excel;
 }

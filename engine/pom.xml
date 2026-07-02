@@ -99,6 +99,21 @@
             <version>1.4.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>pro.verron.imageio</groupId>
+            <artifactId>imageio-emf</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>pro.verron.imageio</groupId>
+            <artifactId>imageio-svg</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>pro.verron.imageio</groupId>
+            <artifactId>imageio-wmf</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <profiles>

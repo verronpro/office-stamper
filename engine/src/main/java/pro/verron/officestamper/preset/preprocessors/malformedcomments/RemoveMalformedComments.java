@@ -62,7 +62,8 @@ public class RemoveMalformedComments
                     if (!lastClosedCommentId.equals(lastOpenedCommentId)) {
                         log.debug("Comment {} is closing just after comment {} starts.",
                                 lastClosedCommentId,
-                                lastOpenedCommentId);
+                                lastOpenedCommentId
+                        );
                         throw new OfficeStamperException("Cannot figure which comment contains the other !");
                     }
                 }
@@ -82,13 +83,13 @@ public class RemoveMalformedComments
 
         var mainDocumentPart = document.getMainDocumentPart();
         var writtenCommentsId = Optional.ofNullable(mainDocumentPart.getCommentsPart())
-                                        .map(RemoveMalformedComments::tryGetCommentsPart)
-                                        .map(Comments::getComment)
-                                        .orElse(emptyList())
-                                        .stream()
-                                        .filter(c -> !isEmpty(c))
-                                        .map(CTMarkup::getId)
-                                        .collect(toSet());
+                .map(RemoveMalformedComments::tryGetCommentsPart)
+                .map(Comments::getComment)
+                .orElse(emptyList())
+                .stream()
+                .filter(c -> !isEmpty(c))
+                .map(CTMarkup::getId)
+                .collect(toSet());
 
         commentIds.removeAll(writtenCommentsId);
 
@@ -104,7 +105,7 @@ public class RemoveMalformedComments
         creVisitor.run();
     }
 
-    private static Comments tryGetCommentsPart(CommentsPart commentsPart) {
+        private static Comments tryGetCommentsPart(CommentsPart commentsPart) {
         try {
             return commentsPart.getContents();
         } catch (Docx4JException e) {

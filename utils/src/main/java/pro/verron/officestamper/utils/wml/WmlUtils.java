@@ -427,8 +427,7 @@ public final class WmlUtils {
     public static void replaceExpressionWithRun(ContentAccessor contentAccessor, String expression, List<Object> insert, Consumer<RPr> onRPr) {
         var text = asString(contentAccessor);
         int matchStartIndex = text.indexOf(expression);
-        if (matchStartIndex == -1) return; /*nothing to replace*/
-
+        if (matchStartIndex == -1) return;/*nothing to replace*/
         int matchEndIndex = matchStartIndex + expression.length();
         findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(onRPr);
         replace(contentAccessor, insert, matchStartIndex, matchEndIndex);

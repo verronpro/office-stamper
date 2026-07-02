@@ -91,7 +91,7 @@ public final class ExcelContext
             var table = defaultTable(sc.worksheetPart());
             if (result == null) {
                 result = new ArrayList<>(table);
-                if (joinKey == null || joinKey.isBlank()) {
+                if (joinKey.isBlank()) {
                     if (!result.isEmpty() && !result.getFirst()
                                                    .isEmpty()) {
                         joinKey = result.getFirst()

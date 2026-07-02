@@ -3,7 +3,7 @@
 /// Contains integration tests, architecture tests, and shared test utilities
 /// for validating the [pro.verron.officestamper/] module.
 module pro.verron.officestamper.test {
-    requires pro.verron.officestamper;
+    requires transitive pro.verron.officestamper;
     requires org.objectweb.asm;
     uses javax.imageio.spi.ImageReaderSpi;
 

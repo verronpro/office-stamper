@@ -12,9 +12,11 @@ import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
 import pro.verron.officestamper.utils.wml.WmlFactory;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
 /// TableResolver class.
@@ -43,6 +45,7 @@ public class TableResolver
             List<Object> tableParentContent = ((ContentAccessor) tbl.getParent()).getContent();
             tableParentContent.remove(tbl);
         }
+        WmlUtils.deleteCommentFromElements(comment().getId(), context().contentIterator().collect(toList()));
     }
 
     private void replaceTableInplace(Tbl wordTable, StampTable stampedTable) {

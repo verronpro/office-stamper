@@ -73,7 +73,7 @@ public class Engine {
             var value = spelNode.getValue(expressionState);
             log.debug("Processed '{}' successfully.", expression);
             var contextBranch = (ContextBranch) Objects.requireNonNull(evaluationContext.getRootObject().getValue());
-            traceabilityReporter.onResolution(expression, value, contextBranch.stream().collect(Collectors.toList()));
+            traceabilityReporter.onResolution(expression, value, new ArrayList<>(contextBranch));
         } catch (SpelEvaluationException e) {
             var msgTemplate = "Expression %s could not be processed against context '%s'";
             var message = msgTemplate.formatted(expression, evaluationContext);

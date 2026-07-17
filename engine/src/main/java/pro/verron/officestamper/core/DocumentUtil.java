@@ -46,10 +46,12 @@ public class DocumentUtil {
 
         var contentContent = switch (element) {
             case ContentAccessor accessor -> accessor.getContent();
-            case SdtRun sdtRun -> sdtRun.getSdtContent()
-                                        .getContent();
+            case SdtRun sdtRun -> {
+                var sdtContent = sdtRun.getSdtContent();
+                yield sdtContent.getContent();
+            }
             case ProofErr _, Text _, R.CommentReference _, CommentRangeEnd _, CommentRangeStart _, Br _,
-                 R.LastRenderedPageBreak _, CTBookmark _ -> emptyList();
+                 R.LastRenderedPageBreak _, CTBookmark _, CTMarkupRange _ -> emptyList();
             default -> {
                 log.warn("Element {} not recognized", element);
                 yield emptyList();

@@ -6,8 +6,7 @@ import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 /// A hook that processes comments in a document.
-public class CommentHook
-        implements DocxHook {
+public class CommentHook implements DocxHook {
     private final DocxPart part;
     private final Tag tag;
     private final Comment comment;
@@ -19,11 +18,7 @@ public class CommentHook
     }
 
     @Override
-    public boolean run(
-            EngineFactory engineFactory,
-            ContextRoot contextRoot,
-            OfficeStamperEvaluationContextFactory evaluationContextFactory
-    ) {
+    public boolean run(EngineFactory engineFactory, ContextRoot contextRoot, OfficeStamperEvaluationContextFactory evaluationContextFactory) {
         if (WmlUtils.hasTagAttribute(tag.tag(), "status", "executed")) return false;
         var paragraph = tag.getParagraph();
         var expression = comment.expression();

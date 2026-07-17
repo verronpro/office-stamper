@@ -239,7 +239,7 @@ public final class WmlUtils {
             case CTFtnEdnRef ref -> "<ref(%s)>".formatted(ref.getId());
             case R.Sym sym -> "<sym(%s, %s)>".formatted(sym.getFont(), sym.getChar());
             case List<?> list -> list.stream().map(WmlUtils::asString).collect(joining());
-            case ProofErr _, CTShadow _ -> "";
+            case ProofErr _, CTShadow _, CTBookmark _, CTMarkupRange _ -> "";
             case SdtRun sdtRun -> asString(sdtRun.getSdtContent());
             case ContentAccessor contentAccessor -> asString(contentAccessor.getContent());
             case Pict pict -> "<pict(%s)>".formatted(pict.getAnchorId());

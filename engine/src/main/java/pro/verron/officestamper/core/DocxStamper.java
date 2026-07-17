@@ -93,8 +93,8 @@ public class DocxStamper
 
         var relationshipsPart = mainDocumentPart.getRelationshipsPart();
         for (var relationship : relationshipsPart.getRelationshipsByType(HEADER)) {
-            Part part1 = relationshipsPart.getPart(relationship);
-            TextualDocxPart textualDocxPart = new TextualDocxPart(document, part1, (ContentAccessor) part1);
+            Part part = relationshipsPart.getPart(relationship);
+            TextualDocxPart textualDocxPart = new TextualDocxPart(document, part, (ContentAccessor) part);
             process(textualDocxPart, contextRoot);
         }
 

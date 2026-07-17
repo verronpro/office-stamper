@@ -38,7 +38,7 @@ public class DocumentUtil {
     /// Recursively searches for an element in a content tree.
     ///
     /// @param searchTarget the element to search for
-    /// @param searchTree the content tree to search in
+    /// @param searchTree   the content tree to search in
     /// @return true if the element is found, false otherwise
     public static boolean depthElementSearch(Object searchTarget, Object searchTree) {
         var element = XmlUtils.unwrap(searchTree);
@@ -58,8 +58,7 @@ public class DocumentUtil {
             }
         };
 
-        return contentContent.stream()
-                             .anyMatch(obj -> depthElementSearch(searchTarget, obj));
+        return contentContent.stream().anyMatch(obj -> depthElementSearch(searchTarget, obj));
     }
 
     private static ContentAccessor findInsertableParent(Object searchFrom) {
@@ -70,7 +69,6 @@ public class DocumentUtil {
             default -> throw new OfficeStamperException("Unexpected parent " + searchFrom.getClass());
         };
     }
-
 
 
 }

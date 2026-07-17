@@ -1,5 +1,7 @@
 package pro.verron.officestamper.api;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 
 /// Interface for reporting placeholder resolution events for traceability.
@@ -18,5 +20,5 @@ public interface TraceabilityReporter {
     /// @param expression the SpEL expression that was resolved.
     /// @param resolution the result of the resolution.
     /// @param contextStack the current context stack (nesting context).
-    void onResolution(String expression, Object resolution, List<Object> contextStack);
+    void onResolution(String expression, @Nullable Object resolution, List<Object> contextStack);
 }

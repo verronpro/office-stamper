@@ -28,6 +28,7 @@
     <properties>
         <docx4j.version>17.0.2</docx4j.version>
         <asciidoc.version>3.10-SNAPSHOT</asciidoc.version>
+        <imageio.version>3.5-SNAPSHOT</imageio.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.report.outputEncoding>UTF-8</project.report.outputEncoding>
@@ -295,17 +296,17 @@
             <dependency>
                 <groupId>pro.verron.imageio</groupId>
                 <artifactId>imageio-svg</artifactId>
-                <version>3.4</version>
+                <version>${imageio.version}</version>
             </dependency>
             <dependency>
                 <groupId>pro.verron.imageio</groupId>
                 <artifactId>imageio-wmf</artifactId>
-                <version>3.4</version>
+                <version>${imageio.version}</version>
             </dependency>
             <dependency>
                 <groupId>pro.verron.imageio</groupId>
                 <artifactId>imageio-emf</artifactId>
-                <version>3.4</version>
+                <version>${imageio.version}</version>
             </dependency>
 
             <dependency>

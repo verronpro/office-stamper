@@ -14,8 +14,8 @@ import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
 class GoogleDocsSupportTest {
-    @DisplayName("Google Docs support integration test (conditional + repeated paragraphs)")
     @Test
+    @DisplayName("Google Docs support integration test (conditional + repeated paragraphs)")
     void conditionalRepeatedParagraphs_createdByGoogleDocs() {
         var template = getWordResource(Path.of("ConditionalDisplayOfParagraphsGoogleDocs.docx"));
         var expected = """
@@ -23,17 +23,17 @@ class GoogleDocsSupportTest {
                 
                 
                 
-                form:[tag=goog_rdk_0, ]This block is shown
+                This block is shown
                 
                 List items:
                 
                 // runPr {u=NONE}
                 
-                form:[tag=goog_rdk_2, ]item 1
+                item 1
                 
                 // runPr {u=NONE}
                 
-                form:[tag=goog_rdk_2, ]item 2
+                item 2
                 
                 // section {pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, orient=portrait, w=11906}}
                 
@@ -41,12 +41,13 @@ class GoogleDocsSupportTest {
 
         var config = standard();
         var stamper = docxPackageStamper(config);
-        var wordprocessingMLPackage = stamper.stamp(template, new Object() {
+        var context = new Object() {
             @SuppressWarnings("unused")
             public final boolean showBlock = true;
             @SuppressWarnings("unused")
             public final List<String> items = Arrays.asList("item 1", "item 2");
-        });
+        };
+        var wordprocessingMLPackage = stamper.stamp(template, context);
         var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected, actual);
     }

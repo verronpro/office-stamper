@@ -2,8 +2,7 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.utils.TraversalUtilVisitor;
-import org.docx4j.wml.CTSmartTagRun;
-import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +16,16 @@ import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
 ///
 /// This is particularly useful for removing the `officestamper` smart tags used during the stamping process to leave a
 /// clean document.
-public final class HookRemover
-        implements PostProcessor {
+public final class HookRemover implements PostProcessor {
     private final String element;
 
 
     /// Constructs a new [HookRemover] with the specified element name.
     ///
     /// @param element the name of the element to be removed from the document
-    public HookRemover(String element) {this.element = element;}
+    public HookRemover(String element) {
+        this.element = element;
+    }
 
     @Override
     public void process(WordprocessingMLPackage document) {
@@ -37,16 +37,36 @@ public final class HookRemover
             var siblings = parent.getContent();
             var index = siblings.indexOf(tag);
             siblings.remove(tag);
-            siblings.addAll(index, tag.getContent());
+            var smartTagPr = tag.getSmartTagPr();
+            var smartTagPrAttr = smartTagPr.getAttr();
+            var optionalSdtruntag = smartTagPrAttr.stream()
+                    .filter(attr -> attr.getName().equals("sdtruntag"))
+                    .findFirst();
+            if (!tag.getContent().isEmpty() && optionalSdtruntag.isPresent()) {
+                var sdtRunTag = optionalSdtruntag.get();
+                var sdtRun = new SdtRun();
+                var tag1 = new Tag();
+                tag1.setVal(sdtRunTag.getVal());
+                var sdtPr = new SdtPr();
+                sdtPr.setTag(tag1);
+                sdtRun.setSdtPr(sdtPr);
+                var ctSdtContentRun = new CTSdtContentRun();
+                ctSdtContentRun.getContent().add(tag.getContent());
+                sdtRun.setSdtContent(ctSdtContentRun);
+                siblings.add(index, sdtRun);
+            } else {
+                siblings.addAll(index, tag.getContent());
+            }
         }
     }
 
-    static class TagsVisitor
-            extends TraversalUtilVisitor<CTSmartTagRun> {
+    static class TagsVisitor extends TraversalUtilVisitor<CTSmartTagRun> {
         private final String element;
         private final List<CTSmartTagRun> results = new ArrayList<>();
 
-        TagsVisitor(String element) {this.element = element;}
+        TagsVisitor(String element) {
+            this.element = element;
+        }
 
         @Override
         public void apply(CTSmartTagRun tag) {

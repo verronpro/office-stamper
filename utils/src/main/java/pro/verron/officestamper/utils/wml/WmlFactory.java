@@ -416,11 +416,7 @@ public class WmlFactory {
     ///
     /// @return A new [CTSmartTagRun] object configured with the specified
     /// parameters.
-    public static CTSmartTagRun newSmartTag(
-            String element,
-            CTAttr attribute,
-            Object... object
-    ) {
+    public static CTSmartTagRun newSmartTag(String element, List<CTAttr> attributes, Object... object) {
         var smartTag = new CTSmartTagRun();
         smartTag.setElement(element);
 
@@ -428,7 +424,7 @@ public class WmlFactory {
         smartTag.setSmartTagPr(smartTagPr);
 
         var smartTagPrAttr = smartTagPr.getAttr();
-        smartTagPrAttr.add(attribute);
+        smartTagPrAttr.addAll(attributes);
 
         var smartTagContent = smartTag.getContent();
         smartTagContent.addAll(asList(object));

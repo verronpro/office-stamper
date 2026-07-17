@@ -64,8 +64,9 @@ public class StandardComment
     /// @return a [StandardComment] instance initialized with the specified parameters
     public static StandardComment create(DocxPart document, ContentAccessor parent, String expression, BigInteger id) {
         var start = newCommentRangeStart(id, parent);
+        var attributes = List.of(newCtAttr("type", "processor"));
         return new StandardComment(document,
-                newSmartTag("officestamper", newCtAttr("type", "processor"), start),
+                newSmartTag("officestamper", attributes, start),
                 start,
                 newCommentRangeEnd(id, parent),
                 newComment(id, expression),

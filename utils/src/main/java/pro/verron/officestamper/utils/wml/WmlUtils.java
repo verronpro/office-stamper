@@ -276,7 +276,7 @@ public final class WmlUtils {
     /// @param end        the end index of the expression
     public static void insertSmartTag(String element, P paragraph, String expression, int start, int end) {
         var run = newRun(expression);
-        var smartTag = newSmartTag("officestamper", newCtAttr("type", element), run);
+        var smartTag = newSmartTag("officestamper", List.of(newCtAttr("type", element)), run);
         findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
         replace(paragraph, List.of(smartTag), start, end);
     }

@@ -11,6 +11,7 @@ import org.docx4j.vml.CTTextbox;
 import org.docx4j.vml.VmlShapeElements;
 import org.docx4j.wml.*;
 import org.jspecify.annotations.Nullable;
+import pro.verron.officestamper.utils.UtilsException;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 
 import java.util.*;

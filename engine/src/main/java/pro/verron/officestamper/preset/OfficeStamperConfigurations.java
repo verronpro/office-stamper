@@ -194,9 +194,7 @@ public class OfficeStamperConfigurations {
         }
         // Honor system property: officestamper.svg.mode = restricted|permissive (default: restricted)
         var svgModeProp = System.getProperty("officestamper.svg.mode");
-        configuration.setSvgSecurityMode(svgModeProp != null && svgModeProp.equalsIgnoreCase("permissive")
-                ? SecurityMode.PERMISSIVE
-                : SecurityMode.RESTRICTED);
+        configuration.setSvgSecurityMode(svgModeProp != null && svgModeProp.equalsIgnoreCase("permissive") ? SecurityMode.PERMISSIVE : SecurityMode.RESTRICTED);
         return configuration;
     }
 }

@@ -79,7 +79,6 @@ public class OfficeStamperConfigurations {
     ///
     /// @param fallback an [ObjectResolver] to serve as the additional fallback resolver for this
     ///         configuration.
-    ///
     /// @return a configured [OfficeStamperConfiguration] object implementing standard processing and formatting
     ///         behaviors
     public static OfficeStamperConfiguration standard(ObjectResolver fallback) {

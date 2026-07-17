@@ -7,6 +7,10 @@ module pro.verron.officestamper.test {
     requires org.objectweb.asm;
     uses javax.imageio.spi.ImageReaderSpi;
 
+    requires pro.verron.imageio.emf;
+    requires pro.verron.imageio.wmf;
+    requires pro.verron.imageio.svg;
+
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
 

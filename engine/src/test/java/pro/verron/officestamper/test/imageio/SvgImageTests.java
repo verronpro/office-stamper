@@ -1,5 +1,6 @@
 package pro.verron.officestamper.test.imageio;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -7,13 +8,19 @@ import pro.verron.officestamper.test.utils.ContextFactory;
 import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 import pro.verron.officestamper.test.utils.ResourceUtils;
 
+import javax.imageio.ImageIO;
 import java.nio.file.Path;
 
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 
 
-@DisplayName("Image-related Features") class SvgImageTests
-        extends OfficeStamperTestBase {
+@DisplayName("SVG Image-related Features")
+class SvgImageTests extends OfficeStamperTestBase {
+
+    @BeforeAll
+    static void setup() {
+        ImageIO.scanForPlugins();
+    }
 
     @MethodSource("factories")
     @ParameterizedTest(name = "SVG Image Replacement in global paragraphs with max width")

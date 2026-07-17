@@ -125,7 +125,7 @@ public class Engine {
             javaResolution = spelNode.getValue(expressionState);
             log.debug("Resolved '{}' successfully.", expression);
             var contextBranch = (ContextBranch) Objects.requireNonNull(evaluationContext.getRootObject().getValue());
-            traceabilityReporter.onResolution(expression, javaResolution, contextBranch.stream().collect(Collectors.toList()));
+            traceabilityReporter.onResolution(expression, javaResolution, new ArrayList<>(contextBranch));
         } catch (SpelEvaluationException e) {
             var msgTemplate = "Expression %s could not be resolved against context '%s'";
             var message = msgTemplate.formatted(expression, evaluationContext);

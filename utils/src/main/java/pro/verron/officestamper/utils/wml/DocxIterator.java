@@ -156,6 +156,7 @@ public class DocxIterator implements ResetableIterator<Object> {
                 var content = sdtContent.getContent();
                 iteratorQueue.add(content.iterator());
             }
+            case Parent _ -> throw new UtilsException("Parent not supported");
             case Text _, ProofErr _ -> { /*DO NOTHING*/ }
             default -> { /*DO NOTHING*/ }
         }

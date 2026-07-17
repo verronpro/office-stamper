@@ -6,6 +6,7 @@ import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
+import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.core.DocxStamper;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
 
@@ -30,7 +31,7 @@ class ArchUnitTests {
                         "jakarta.xml.bind..",
                         "org.slf4j..",
                         "org.springframework.."
-                );
+                ).andShould().dependOnClassesThat().areNotAssignableFrom(ContentAccessor.class);
         rule.check(javaClasses);
     }
 

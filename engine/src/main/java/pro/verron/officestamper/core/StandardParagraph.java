@@ -4,7 +4,10 @@ import org.docx4j.list.ArrayListDocx4j;
 import org.docx4j.wml.*;
 import org.jvnet.jaxb.lang.Child;
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.utils.wml.Paragraph;
 import pro.verron.officestamper.utils.wml.DocxIterator;
+import pro.verron.officestamper.utils.wml.Parent;
+import pro.verron.officestamper.utils.wml.SdtContent;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.Collection;
@@ -19,20 +22,20 @@ import static pro.verron.officestamper.utils.wml.WmlUtils.isTagElement;
 
 /// Represents a wrapper for managing and manipulating DOCX paragraph elements. This class provides methods to
 /// manipulate the underlying paragraph content, process placeholders, and interact with runs within the paragraph.
-public class StandardParagraph implements Paragraph {
+public class StandardParagraph implements pro.verron.officestamper.api.Paragraph {
 
     private final DocxPart part;
-    private final ContentAccessor contents;
+    private final Parent parent;
     private final ArrayListDocx4j<Object> p;
 
     /// Constructs a new instance of the StandardParagraph class.
     ///
-    /// @param part             the source DocxPart that contains the paragraph content.
-    /// @param paragraphContent the list of objects representing the paragraph content.
-    /// @param p                the P object representing the paragraph's structure.
-    private StandardParagraph(DocxPart part, ContentAccessor paragraphContent, ArrayListDocx4j<Object> p) {
+    /// @param part   the source DocxPart that contains the paragraph content.
+    /// @param parent the list of objects representing the paragraph content.
+    /// @param p      the P object representing the paragraph's structure.
+    private StandardParagraph(DocxPart part, Parent parent, ArrayListDocx4j<Object> p) {
         this.part = part;
-        this.contents = paragraphContent;
+        this.parent = parent;
         this.p = p;
     }
 
@@ -47,6 +50,7 @@ public class StandardParagraph implements Paragraph {
             case CTSdtContentRun contentRun -> from(part, contentRun);
             case CTSmartTagRun smartTagRun when isTagElement(smartTagRun, "officestamper") ->
                     from(part, smartTagRun.getParent());
+            case Parent pa -> from(part, pa);
             default -> throw new OfficeStamperException("Unsupported parent type: " + parent.getClass());
         };
     }
@@ -57,7 +61,16 @@ public class StandardParagraph implements Paragraph {
     /// @param paragraph the P object representing the structure and content of the paragraph.
     /// @return a new instance of StandardParagraph constructed based on the provided source and paragraph.
     public static StandardParagraph from(DocxPart source, P paragraph) {
-        return new StandardParagraph(source, paragraph, (ArrayListDocx4j<Object>) paragraph.getContent());
+        return new StandardParagraph(source, new Paragraph(paragraph), (ArrayListDocx4j<Object>) paragraph.getContent()
+        );
+    }
+
+    /// Creates a new instance of StandardParagraph using the provided DocxPart and P objects.
+    ///
+    /// @param source the source DocxPart containing the paragraph.
+    /// @return a new instance of StandardParagraph constructed based on the provided source and paragraph.
+    public static StandardParagraph from(DocxPart source, Parent parent) {
+        return new StandardParagraph(source, parent, (ArrayListDocx4j<Object>) parent.getContent());
     }
 
     /// Creates a new instance of StandardParagraph from the provided DocxPart and CTSdtContentRun objects.
@@ -68,7 +81,8 @@ public class StandardParagraph implements Paragraph {
     public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
         var parent = (SdtRun) paragraph.getParent();
         var parentParent = (P) parent.getParent();
-        return new StandardParagraph(source, paragraph, (ArrayListDocx4j<Object>) parentParent.getContent());
+        return new StandardParagraph(source, new SdtContent(paragraph), (ArrayListDocx4j<Object>) parentParent.getContent()
+        );
     }
 
     /// Replaces a set of paragraph elements with new ones within the current paragraph's siblings. Ensures that the
@@ -110,7 +124,7 @@ public class StandardParagraph implements Paragraph {
 
     @Override
     public void replace(Object start, Object end, Insert insert) {
-        var content = contents.getContent();
+        var content = parent.getContent();
         var fromIndex = content.indexOf(start);
         var toIndex = content.indexOf(end);
         if (fromIndex < 0) {
@@ -134,7 +148,7 @@ public class StandardParagraph implements Paragraph {
     }
 
     private String extractExpression(Object from, Object to) {
-        var content = contents.getContent();
+        var content = parent.getContent();
         var fromIndex = content.indexOf(from);
         var toIndex = content.indexOf(to);
         var subContent = content.subList(fromIndex, toIndex + 1);
@@ -147,7 +161,7 @@ public class StandardParagraph implements Paragraph {
     /// @return the text of all runs.
     @Override
     public String asString() {
-        return WmlUtils.asString(contents);
+        return WmlUtils.asString(parent.getContent());
     }
 
     /// Applies the given consumer to the paragraph represented by the current instance. This method facilitates custom
@@ -199,4 +213,5 @@ public class StandardParagraph implements Paragraph {
     public String toString() {
         return asString();
     }
+
 }

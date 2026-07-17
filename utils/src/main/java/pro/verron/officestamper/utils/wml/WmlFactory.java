@@ -110,9 +110,7 @@ public class WmlFactory {
     public static R newRun(List<Object> values) {
         var run = new R();
         var runContent = run.getContent();
-        runContent.addAll(values.stream()
-                                .filter(WmlFactory::worthKeeping)
-                                .collect(toCollection(ArrayList::new)));
+        runContent.addAll(values.stream().filter(WmlFactory::worthKeeping).collect(toCollection(ArrayList::new)));
         return run;
     }
 
@@ -230,9 +228,7 @@ public class WmlFactory {
             mappings.put("rEmbedId", relationship.getId());
             mappings.put("id1", Long.toString(id1));
             mappings.put("id2", Integer.toString(id2));
-            var jaxbElement = (JAXBElement<?>) XmlUtils.unmarshallFromTemplate(
-                    ml,
-                    mappings);
+            var jaxbElement = (JAXBElement<?>) XmlUtils.unmarshallFromTemplate(ml, mappings);
             return (Inline) jaxbElement.getValue();
         } catch (Exception e) {
             throw new UtilsException(e);
@@ -257,10 +253,8 @@ public class WmlFactory {
         long cy;
         if (imageWidthTwips > writableWidthTwips) {
             cx = UnitsOfMeasurement.twipToEMU(writableWidthTwips);
-            cy = UnitsOfMeasurement.twipToEMU(
-                    imageHeightTwips * writableWidthTwips / imageWidthTwips);
-        }
-        else {
+            cy = UnitsOfMeasurement.twipToEMU(imageHeightTwips * writableWidthTwips / imageWidthTwips);
+        } else {
             cx = UnitsOfMeasurement.twipToEMU(imageWidthTwips);
             cy = UnitsOfMeasurement.twipToEMU(imageHeightTwips);
         }
@@ -295,10 +289,7 @@ public class WmlFactory {
     ///  [CommentRangeStart] belongs.
     /// @return A new [CommentRangeStart] object with the specified ID and
     /// parent.
-    public static CommentRangeStart newCommentRangeStart(
-            BigInteger id,
-            ContentAccessor parent
-    ) {
+    public static CommentRangeStart newCommentRangeStart(BigInteger id, Parent parent) {
         var commentRangeStart = new CommentRangeStart();
         commentRangeStart.setId(id);
         commentRangeStart.setParent(parent);
@@ -311,10 +302,7 @@ public class WmlFactory {
     /// @param parent The parent element ([P]) to which this
     ///  [CommentRangeEnd] belongs.
     /// @return A new [CommentRangeEnd] object with the specified ID and parent.
-    public static CommentRangeEnd newCommentRangeEnd(
-            BigInteger id,
-            ContentAccessor parent
-    ) {
+    public static CommentRangeEnd newCommentRangeEnd(BigInteger id, Parent parent) {
         var commentRangeEnd = new CommentRangeEnd();
         commentRangeEnd.setId(id);
         commentRangeEnd.setParent(parent);
@@ -329,10 +317,7 @@ public class WmlFactory {
     ///  [R.CommentReference] belongs.
     /// @return A new [R.CommentReference] object with the specified ID and
     /// parent.
-    public static R.CommentReference newCommentReference(
-            BigInteger id,
-            ContentAccessor parent
-    ) {
+    public static R.CommentReference newCommentReference(BigInteger id, Parent parent) {
         var commentReference = new R.CommentReference();
         commentReference.setId(id);
         commentReference.setParent(parent);
@@ -410,10 +395,9 @@ public class WmlFactory {
     /// Creates a new smart tag run with the specified element, run and
     /// attribute.
     ///
-    /// @param element   The element name for the smart tag.
-    /// @param attribute The [CTAttr] to add to the smart tag properties.
-    /// @param object    The content objects to add to the smart tag.
-    ///
+    /// @param element    The element name for the smart tag.
+    /// @param attributes The [CTAttr] list to add to the smart tag properties.
+    /// @param object     The content objects to add to the smart tag.
     /// @return A new [CTSmartTagRun] object configured with the specified
     /// parameters.
     public static CTSmartTagRun newSmartTag(String element, List<CTAttr> attributes, Object... object) {
@@ -551,9 +535,7 @@ public class WmlFactory {
         mappings.put("altText", altText);
         mappings.put("relId", relationship.getId());
 
-        var jaxbElement = (JAXBElement<?>) XmlUtils.unmarshallFromTemplate(
-                template,
-                mappings);
+        var jaxbElement = (JAXBElement<?>) XmlUtils.unmarshallFromTemplate(template, mappings);
         return (Inline) jaxbElement.getValue();
     }
 
@@ -563,5 +545,6 @@ public class WmlFactory {
     ///
     /// @param cx The x-coordinate of the scale's center.
     /// @param cy The y-coordinate of the scale's center.
-    public record Scale(long cx, long cy) {}
+    public record Scale(long cx, long cy) {
+    }
 }

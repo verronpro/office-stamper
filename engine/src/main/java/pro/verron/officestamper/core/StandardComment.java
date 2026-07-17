@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.utils.wml.Parent;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -21,8 +22,7 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 /// @author Joseph Verron
 /// @author Tom Hombergs
 /// @since 1.0.2
-public class StandardComment
-        implements Comment {
+public class StandardComment implements Comment {
     private final DocxPart part;
     private final Comments.Comment comment;
     private final CommentRangeStart commentRangeStart;
@@ -37,15 +37,8 @@ public class StandardComment
     /// @param commentRangeStart the comment range start.
     /// @param commentRangeEnd   the comment range end.
     /// @param comment           the comment.
-    /// @param commentReference the comment reference.
-    public StandardComment(
-            DocxPart part,
-            CTSmartTagRun startTagRun,
-            CommentRangeStart commentRangeStart,
-            CommentRangeEnd commentRangeEnd,
-            Comments.Comment comment,
-            @Nullable CommentReference commentReference
-    ) {
+    /// @param commentReference  the comment reference.
+    public StandardComment(DocxPart part, CTSmartTagRun startTagRun, CommentRangeStart commentRangeStart, CommentRangeEnd commentRangeEnd, Comments.Comment comment, @Nullable CommentReference commentReference) {
         this.part = part;
         this.startTagRun = startTagRun;
         this.commentRangeStart = commentRangeStart;
@@ -57,12 +50,12 @@ public class StandardComment
     /// Creates a new instance of [StandardComment] and initializes it with the given parameters, including a comment,
     /// comment range start, comment range end, and a comment reference.
     ///
-    /// @param document the [DocxPart] representing the document to which this comment belongs
-    /// @param parent the [ContentAccessor] representing the parent content of the comment range
+    /// @param document   the [DocxPart] representing the document to which this comment belongs
+    /// @param parent     the [ContentAccessor] representing the parent content of the comment range
     /// @param expression the [String] content to be included in the comment
-    /// @param id the unique [BigInteger] identifier for the comment
+    /// @param id         the unique [BigInteger] identifier for the comment
     /// @return a [StandardComment] instance initialized with the specified parameters
-    public static StandardComment create(DocxPart document, ContentAccessor parent, String expression, BigInteger id) {
+    public static StandardComment create(DocxPart document, Parent parent, String expression, BigInteger id) {
         var start = newCommentRangeStart(id, parent);
         var attributes = List.of(newCtAttr("type", "processor"));
         return new StandardComment(document,
@@ -70,7 +63,8 @@ public class StandardComment
                 start,
                 newCommentRangeEnd(id, parent),
                 newComment(id, expression),
-                newCommentReference(id, parent));
+                newCommentReference(id, parent)
+        );
     }
 
     /// Generates a string representation of the [StandardComment] object, including its ID, content, and the amount
@@ -81,10 +75,8 @@ public class StandardComment
     @Override
     public String toString() {
         return "StandardComment{comment={id=%s, content=%s}}}".formatted(comment.getId(),
-                comment.getContent()
-                       .stream()
-                       .map(TextUtils::getText)
-                       .collect(joining(",")));
+                comment.getContent().stream().map(TextUtils::getText).collect(joining(","))
+        );
     }
 
     @Override
@@ -140,13 +132,13 @@ public class StandardComment
     @Override
     public String expression() {
         return this.getComment()
-                   .getContent()
-                   .stream()
-                   .filter(P.class::isInstance)
-                   .map(P.class::cast)
-                   .map(p -> StandardParagraph.from(new TextualDocxPart(part.document()), p))
-                   .map(StandardParagraph::asString)
-                   .collect(joining());
+                .getContent()
+                .stream()
+                .filter(P.class::isInstance)
+                .map(P.class::cast)
+                .map(p -> StandardParagraph.from(new TextualDocxPart(part.document()), p))
+                .map(StandardParagraph::asString)
+                .collect(joining());
     }
 
     @Override

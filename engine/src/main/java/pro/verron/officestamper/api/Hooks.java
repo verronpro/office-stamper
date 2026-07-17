@@ -4,6 +4,7 @@ import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 import pro.verron.officestamper.utils.wml.DocxIterator;
+import pro.verron.officestamper.utils.wml.SmartTag;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 /// Provides utility methods for working with [Hook] instances in the context of a WordprocessingML-based document. The
@@ -23,8 +24,7 @@ public class Hooks {
     /// @param contentAccessor the content accessor providing access to the document's content
     /// @return a [ResetableIterator] of Hook instances for the specified document part
     public static ResetableIterator<Hook> ofHooks(ContentAccessor contentAccessor) {
-        return new DocxIterator(contentAccessor).filter(Hooks::isHook)
-                                                .map(Hooks::asHook);
+        return new DocxIterator(contentAccessor).filter(Hooks::isHook).map(Hooks::asHook);
     }
 
     private static boolean isHook(Object o) {
@@ -33,7 +33,7 @@ public class Hooks {
 
     private static Hook asHook(Object o) {
         if (o instanceof CTSmartTagRun tag && WmlUtils.isTagElement(tag, "officestamper"))
-            return contextKey -> WmlUtils.setTagAttribute(tag, "context", contextKey);
+            return contextKey -> WmlUtils.setTagAttribute(new SmartTag(tag), "context", contextKey);
         throw new IllegalArgumentException("Unexpected value: " + o);
     }
 }

@@ -131,6 +131,7 @@ public final class WmlUtils {
     /// unexpected type
     public static void remove(Child child) {
         switch (child.getParent()) {
+            case CTSdtContentRun parent -> remove((Child) parent.getParent());
             case ContentAccessor parent -> remove(parent, child);
             case CTFootnotes parent -> remove(parent, child);
             case CTEndnotes parent -> remove(parent, child);
@@ -231,7 +232,7 @@ public final class WmlUtils {
             case Br br when br.getType() == STBrType.PAGE -> "\n";
             case Br br when br.getType() == STBrType.COLUMN -> "\n";
             case Br br when br.getType() == STBrType.TEXT_WRAPPING -> "\n";
-
+            case Parent parent -> asString(parent.getContent());
             case R.NoBreakHyphen _ -> "‑";
             case R.SoftHyphen _ -> "\u00AD";
             case R.LastRenderedPageBreak _, R.AnnotationRef _, R.CommentReference _, Drawing _ -> "";
@@ -455,25 +456,8 @@ public final class WmlUtils {
     /// @param smartTag       the smart tag object to modify
     /// @param attributeKey   the key of the attribute to set or update
     /// @param attributeValue the value to assign to the specified attribute key
-    public static void setTagAttribute(CTSmartTagRun smartTag, String attributeKey, String attributeValue) {
-        var smartTagPr = smartTag.getSmartTagPr();
-        if (smartTagPr == null) {
-            smartTagPr = new CTSmartTagPr();
-            smartTag.setSmartTagPr(smartTagPr);
-        }
-        var smartTagPrAttr = smartTagPr.getAttr();
-        if (smartTagPrAttr == null) {
-            smartTagPrAttr = new ArrayList<>();
-            smartTag.setSmartTagPr(smartTagPr);
-        }
-        for (CTAttr attribute : smartTagPrAttr) {
-            if (attributeKey.equals(attribute.getName())) {
-                attribute.setVal(attributeValue);
-                return;
-            }
-        }
-        var ctAttr = newAttribute(attributeKey, attributeValue);
-        smartTagPrAttr.add(ctAttr);
+    public static void setTagAttribute(SmartTag smartTag, String attributeKey, String attributeValue) {
+        smartTag.setProperty(attributeKey, attributeValue);
     }
 
     /// Creates a new attribute object with the specified key and value.
@@ -508,20 +492,15 @@ public final class WmlUtils {
                         case CommentRangeStart crs when predicate.test(crs.getId()) -> from(items, item);
                         case CommentRangeEnd cre when predicate.test(cre.getId()) -> from(items, item);
                         case R.CommentReference rcr when predicate.test(rcr.getId()) -> from(items, item);
-                        case ContentAccessor ca -> findAll(ca, commentId);
-                        case SdtRun sdtRun -> findAll(sdtRun, commentId);
+                        case ContentAccessor ca -> (Collection<DeletableItems>) findAll(ca.getContent(), commentId);
+                        case SdtRun sdtRun -> {
+                            var ca = sdtRun.getSdtContent();
+                            yield (Collection<DeletableItems>) findAll(ca.getContent(), commentId);
+                        }
                         default -> emptyList();
                     });
                 });
                 return elementsToRemove;
-            }
-
-            private static Collection<DeletableItems> findAll(SdtRun sdtRun, BigInteger commentId) {
-                return findAll(sdtRun.getSdtContent(), commentId);
-            }
-
-            private static Collection<DeletableItems> findAll(ContentAccessor ca, BigInteger commentId) {
-                return findAll(ca.getContent(), commentId);
             }
 
             private static List<DeletableItems> from(List<Object> items, Object item) {
@@ -580,17 +559,13 @@ public final class WmlUtils {
     /// Checks if the provided smart tag contains an attribute with the
     /// specified key and value.
     ///
-    /// @param tag     the smart tag to search for the attribute
-    /// @param attrKey the key of the attribute to search for
-    /// @param attrVal the value of the attribute to match
+    /// @param tag           the smart tag to search for the attribute
+    /// @param name          the key of the attribute to search for
+    /// @param expectedValue the value of the attribute to match
     /// @return true if the smart tag contains an attribute with the specified
     /// key and value, false otherwise
-    public static boolean hasTagAttribute(CTSmartTagRun tag, String attrKey, String attrVal) {
-        var smartTagPr = tag.getSmartTagPr();
-        var smartTagPrAttr = smartTagPr.getAttr();
-        for (CTAttr ctAttr : smartTagPrAttr)
-            if (Objects.equals(ctAttr.getName(), attrKey)) return Objects.equals(ctAttr.getVal(), attrVal);
-        return false;
+    public static boolean hasTagAttribute(SmartTag tag, String name, String expectedValue) {
+        return tag.getProperty(name).filter(expectedValue::equals).isPresent();
     }
 
     /// @param startIndex the start index of the run relative to the

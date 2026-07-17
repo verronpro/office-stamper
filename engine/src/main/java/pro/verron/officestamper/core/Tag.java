@@ -1,12 +1,17 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.wml.*;
+import org.docx4j.wml.CTAttr;
+import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.R;
+import org.docx4j.wml.RPr;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.utils.wml.SmartTag;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
@@ -18,27 +23,28 @@ import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
 /// appropriate method.
 ///
 /// @param docxPart the DocxPart instance representing the part of the document associated with the tag.
-/// @param tag the CTSmartTagRun representing the smart tag element in the document.
-public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
+/// @param tag      the CTSmartTagRun representing the smart tag element in the document.
+public record Tag(DocxPart docxPart, SmartTag tag) {
 
     /// Creates a new Tag instance using the provided DocxPart and CTSmartTagRun.
     ///
     /// @param docxPart the DocxPart instance representing the part of the document associated with the new Tag.
-    /// @param tag the CTSmartTagRun representing the smart tag element in the document.
+    /// @param tag      the CTSmartTagRun representing the smart tag element in the document.
     /// @return a new Tag instance initialized with the given DocxPart and CTSmartTagRun.
-    public static Tag of(DocxPart docxPart, CTSmartTagRun tag) {
+    public static Tag of(DocxPart docxPart, SmartTag tag) {
         return new Tag(docxPart, tag);
     }
 
+    private static <T> Optional<T> getFirst(List<Object> content, Class<T> clazz) {
+        return content.stream().filter(clazz::isInstance).map(clazz::cast).findFirst();
+    }
 
     /// Removes the current tag from its parent's content list.
     ///
     /// This method locates the parent content accessor of the tag, retrieves its sibling elements, and removes the tag
     /// from the sibling list, detaching it from its parent content.
     public void remove() {
-        var parent = (ContentAccessor) tag.getParent();
-        var siblings = parent.getContent();
-        siblings.remove(tag);
+        tag.remove();
     }
 
     /// Retrieves the paragraph associated with the smart tag's parent element.
@@ -55,7 +61,7 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     ///
     /// @return a Comment object representing the current tag
     public Comment asComment() {
-        return StandardComment.create(docxPart, (ContentAccessor) tag.getParent(), expression(), BigInteger.ZERO);
+        return StandardComment.create(docxPart, tag.getParent(), expression(), BigInteger.ZERO);
     }
 
     /// Retrieves the expression of the tag.
@@ -72,49 +78,24 @@ public record Tag(DocxPart docxPart, CTSmartTagRun tag) {
     /// @param insert the Insert object containing elements to replace the current tag. It also provides the
     ///         ability to set Run Properties [RPr] for styling purposes.
     public void replace(Insert insert) {
-        var optionalRun = getFirst(tag, R.class);
+        var optionalRun = getFirst(tag.getContent(), R.class);
         optionalRun.ifPresent(firstRun -> insert.setRPr(firstRun.getRPr()));
         var siblings = tag.getContent();
         siblings.clear();
         siblings.addAll(insert.elements());
     }
 
-    private static <T> Optional<T> getFirst(CTSmartTagRun tagRun, Class<T> clazz) {
-        return tagRun.getContent()
-                     .stream()
-                     .filter(clazz::isInstance)
-                     .map(clazz::cast)
-                     .findFirst();
-    }
-
     /// Retrieves the type of the tag.
     ///
     /// @return the type.
     public Optional<String> type() {
-        return tag.getSmartTagPr()
-                  .getAttr()
-                  .stream()
-                  .filter(a -> a.getName()
-                                .equals("type"))
-                  .map(CTAttr::getVal)
-                  .findFirst();
+        return tag.getProperty("type");
     }
 
     /// Retrieves the context key of the tag.
     ///
     /// @return the context key.
-    public String getContextKey() {
-        var smartTagPr = tag.getSmartTagPr();
-        if (smartTagPr == null) return String.valueOf(0);
-        var smartTagPrAttr = smartTagPr.getAttr();
-        if (smartTagPrAttr == null) return String.valueOf(0);
-        for (CTAttr attribute : smartTagPrAttr) {
-            if ("context".equals(attribute.getName())) try {
-                return String.valueOf(Integer.parseInt(attribute.getVal()));
-            } catch (NumberFormatException _) {
-                return String.valueOf(0);
-            }
-        }
-        return String.valueOf(0);
+    public String getContextKey() { //TODO: replace by an int value, instead of string type
+        return tag.getProperty("context").orElse("0");
     }
 }

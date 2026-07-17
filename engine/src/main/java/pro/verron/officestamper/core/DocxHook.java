@@ -7,6 +7,7 @@ import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Hook;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 import pro.verron.officestamper.utils.wml.DocxIterator;
+import pro.verron.officestamper.utils.wml.SmartTag;
 
 import static pro.verron.officestamper.utils.wml.WmlUtils.isTagElement;
 
@@ -39,8 +40,8 @@ public interface DocxHook
     /// @return the hook.
     static DocxHook asHook(DocxPart part, Object o) {
         return switch (o) {
-            case CTSmartTagRun tag when isType(tag, "processor", "type") -> newCommentHook(part, tag);
-            case CTSmartTagRun tag -> new TagHook(part, new Tag(part, tag));
+            case CTSmartTagRun tag when isType(tag, "processor", "type") -> newCommentHook(part, new SmartTag(tag));
+            case CTSmartTagRun tag -> new TagHook(part, new Tag(part, new SmartTag(tag)));
             default -> throw new IllegalArgumentException("Unexpected value: " + o);
         };
     }
@@ -63,7 +64,7 @@ public interface DocxHook
     /// @param part the document part.
     /// @param tag the tag.
     /// @return the comment hook.
-    static DocxHook newCommentHook(DocxPart part, CTSmartTagRun tag) {
+    static DocxHook newCommentHook(DocxPart part, SmartTag tag) {
         var tagContent = tag.getContent();
         var commentRangeStart = (CommentRangeStart) tagContent.getFirst();
         var myTag = new Tag(part, tag);

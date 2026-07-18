@@ -2,11 +2,13 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.utils.TraversalUtilVisitor;
-import org.docx4j.wml.*;
+import org.docx4j.wml.CTSmartTagRun;
+import org.docx4j.wml.ContentAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static pro.verron.officestamper.utils.wml.WmlFactory.newSdtRun;
 import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
 
 /// A post-processor implementation that removes smart tags from a WordprocessingML document.
@@ -43,17 +45,8 @@ public final class HookRemover implements PostProcessor {
                     .filter(attr -> attr.getName().equals("sdtruntag"))
                     .findFirst();
             if (!tag.getContent().isEmpty() && optionalSdtruntag.isPresent()) {
-                var sdtRunTag = optionalSdtruntag.get();
-                var sdtRun = new SdtRun();
-                var tag1 = new Tag();
-                tag1.setVal(sdtRunTag.getVal());
-                var sdtPr = new SdtPr();
-                sdtPr.setTag(tag1);
-                sdtRun.setSdtPr(sdtPr);
-                var ctSdtContentRun = new CTSdtContentRun();
-                ctSdtContentRun.getContent().add(tag.getContent());
-                sdtRun.setSdtContent(ctSdtContentRun);
-                siblings.add(index, sdtRun);
+                var sdtRunTag = optionalSdtruntag.get().getVal();
+                siblings.add(index, newSdtRun(sdtRunTag, tag.getContent()));
             } else {
                 siblings.addAll(index, tag.getContent());
             }

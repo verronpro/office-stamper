@@ -539,6 +539,33 @@ public class WmlFactory {
         return (Inline) jaxbElement.getValue();
     }
 
+    public static SdtRun newSdtRun(String tagValue, List<Object> content) {
+        var tag = newTag(tagValue);
+        var sdtPr = newSdtPr(tag);
+        var ctSdtContentRun = new CTSdtContentRun();
+        ctSdtContentRun.getContent().add(content);
+        return newSdtRun(sdtPr, ctSdtContentRun);
+    }
+
+    private static SdtPr newSdtPr(Tag tag) {
+        var sdtPr = new SdtPr();
+        sdtPr.setTag(tag);
+        return sdtPr;
+    }
+
+    private static Tag newTag(String tagValue) {
+        var tag = new Tag();
+        tag.setVal(tagValue);
+        return tag;
+    }
+
+    private static SdtRun newSdtRun(SdtPr sdtPr, CTSdtContentRun ctSdtContentRun) {
+        var sdtRun = new SdtRun();
+        sdtRun.setSdtPr(sdtPr);
+        sdtRun.setSdtContent(ctSdtContentRun);
+        return sdtRun;
+    }
+
     /// Represents a scale with two long values as its center coordinates.
     /// The scale is defined by its x-coordinate (cx) and y-coordinate (cy).
     /// This record class is immutable and encapsulates the coordinate data.

@@ -1,7 +1,7 @@
 package pro.verron.officestamper.core;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;

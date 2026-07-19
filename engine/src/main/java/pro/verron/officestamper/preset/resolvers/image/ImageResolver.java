@@ -2,7 +2,7 @@ package pro.verron.officestamper.preset.resolvers.image;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;

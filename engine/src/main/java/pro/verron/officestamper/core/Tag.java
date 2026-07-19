@@ -3,7 +3,7 @@ package pro.verron.officestamper.core;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.Insert;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.utils.wml.SmartTag;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;
@@ -76,9 +76,13 @@ public record Tag(Part part, SmartTag tag) {
     /// @param insert the Insert object containing elements to replace the current tag. It also provides the
     ///         ability to set Run Properties [RPr] for styling purposes.
     public void replace(Insert insert) {
-        var optionalRun = getFirst(tag.getContent(), R.class);
+        replace(tag, insert);
+    }
+
+    private static void replace(SmartTag smartTag, Insert insert) {
+        var optionalRun = getFirst(smartTag.getContent(), R.class);
         optionalRun.ifPresent(firstRun -> insert.setRPr(firstRun.getRPr()));
-        var siblings = tag.getContent();
+        var siblings = smartTag.getContent();
         siblings.clear();
         siblings.addAll(insert.elements());
     }

@@ -6,7 +6,7 @@ import org.docx4j.dml.CTTextParagraph;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Table;

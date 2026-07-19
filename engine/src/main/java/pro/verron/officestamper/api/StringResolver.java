@@ -2,6 +2,7 @@ package pro.verron.officestamper.api;
 
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;
+import pro.verron.officestamper.utils.wml.Insert;
 
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 

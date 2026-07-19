@@ -7,7 +7,7 @@ import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.ExceptionResolver;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.Insert;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.api.TraceabilityReporter;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;

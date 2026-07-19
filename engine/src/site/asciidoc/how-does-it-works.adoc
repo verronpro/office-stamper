@@ -198,6 +198,7 @@ Register them on the configuration; the engine chooses an `ObjectResolver` based
 [source,java]
 ----
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.utils.wml.Insert;
 
 final class MoneyResolver implements ObjectResolver {
     @Override public boolean canResolve(Object value) { return value instanceof Money; }

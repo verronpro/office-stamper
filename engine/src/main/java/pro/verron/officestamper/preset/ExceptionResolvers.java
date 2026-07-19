@@ -3,7 +3,7 @@ package pro.verron.officestamper.preset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.ExceptionResolver;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;

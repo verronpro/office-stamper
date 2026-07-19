@@ -3,6 +3,7 @@ package pro.verron.officestamper.api;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
+import pro.verron.officestamper.utils.wml.Insert;
 
 import java.util.Collection;
 import java.util.List;

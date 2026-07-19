@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.docx4j.openpackaging.parts.relationships.Namespaces.FOOTER;
 import static org.docx4j.openpackaging.parts.relationships.Namespaces.HEADER;
+import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
 public class DocxDocument implements Document {
     private final WordprocessingMLPackage mlPackage;
@@ -96,6 +97,18 @@ public class DocxDocument implements Document {
             this.cre = cre;
             this.comment = comment;
             this.cr = cr;
+        }
+
+        public static Comment createComment(Part part, Parent parent, String expression, BigInteger id) {
+            var start = newCommentRangeStart(id, parent);
+            var attributes = List.of(newCtAttr("type", "processor"));
+            return new Comment(part,
+                    newSmartTag("officestamper", attributes, start),
+                    start,
+                    newCommentRangeEnd(id, parent),
+                    newComment(id, expression),
+                    newCommentReference(id, parent)
+            );
         }
 
         public CommentRangeEnd getCommentRangeEnd() {

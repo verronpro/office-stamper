@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
 /// Standard implementation of the [Comment] interface. Represents a comment in a DOCX document with its associated
 /// range markers and content.
@@ -39,15 +38,8 @@ public class StandardComment implements Comment {
     /// @param id         the unique [BigInteger] identifier for the comment
     /// @return a [StandardComment] instance initialized with the specified parameters
     public static StandardComment create(Part part, Parent parent, String expression, BigInteger id) {
-        var start = newCommentRangeStart(id, parent);
-        var attributes = List.of(newCtAttr("type", "processor"));
-        return new StandardComment(new DocxDocument.Comment(part,
-                newSmartTag("officestamper", attributes, start),
-                start,
-                newCommentRangeEnd(id, parent),
-                newComment(id, expression),
-                newCommentReference(id, parent)
-        ));
+        var comment = DocxDocument.Comment.createComment(part, parent, expression, id);
+        return new StandardComment(comment);
     }
 
     @Override

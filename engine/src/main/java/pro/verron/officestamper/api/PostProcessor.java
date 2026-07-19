@@ -1,6 +1,7 @@
 package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 
 /// The PostProcessor interface defines a contract for performing transformations
 /// or manipulations on instances of [WordprocessingMLPackage].
@@ -16,6 +17,6 @@ public interface PostProcessor {
     /// This method is typically used for performing operations such as modifying
     /// content, cleaning up the document structure, or applying other transformations.
     ///
-    /// @param document the WordprocessingMLPackage document to process
-    void process(WordprocessingMLPackage document);
+    /// @param document the [DocxDocument] document to process
+    void process(DocxDocument document);
 }

@@ -6,6 +6,7 @@ import org.jvnet.jaxb.lang.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.wml.Parent;
 
 import static java.util.Collections.emptyList;
 
@@ -28,7 +29,7 @@ public class DocumentUtil {
     /// @param o2 the second object
     /// @return the smallest common parent of the two objects
     /// @throws OfficeStamperException if there is an error finding the common parent
-    public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
+    public static Parent findSmallestCommonParent(Object o1, Object o2) {
         if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
             return findInsertableParent(contentAccessor);
         else if (o2 instanceof Child child) return findSmallestCommonParent(o1, child.getParent());
@@ -61,10 +62,11 @@ public class DocumentUtil {
         return contentContent.stream().anyMatch(obj -> depthElementSearch(searchTarget, obj));
     }
 
-    private static ContentAccessor findInsertableParent(Object searchFrom) {
+    private static Parent findInsertableParent(Object searchFrom) {
         return switch (searchFrom) {
-            case Tc tc -> tc;
-            case Body body -> body;
+            case Parent parent -> parent;
+            case Tc tc -> tc::getContent;
+            case Body body -> body::getContent;
             case Child child -> findInsertableParent(child.getParent());
             default -> throw new OfficeStamperException("Unexpected parent " + searchFrom.getClass());
         };

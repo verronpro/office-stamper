@@ -6,6 +6,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 
@@ -26,9 +27,8 @@ public class DocxFactory {
     /// Creates a WordprocessingMLPackage from an AsciiDoc string.
     ///
     /// @param asciidoc AsciiDoc string
-    ///
     /// @return WordprocessingMLPackage
-    public static WordprocessingMLPackage makeWordResource(String asciidoc) {
+    public static DocxDocument makeWordResource(String asciidoc) {
         // Extract comment macros and strip them from the AsciiDoc before
         // compilation
         var extraction = extractAndStripCommentMacros(asciidoc);
@@ -36,13 +36,12 @@ public class DocxFactory {
         WordprocessingMLPackage aPackage = AsciiDocCompiler.toDocx(model);
         // Apply comments specified by macros onto the generated DOCX
         applyCommentMacros(aPackage, extraction.specs());
-        return aPackage;
+        return new DocxDocument(aPackage);
     }
 
     private static MacroExtraction extractAndStripCommentMacros(String asciidoc) {
         // Regex: comment::ID[...]
-        var pattern = Pattern.compile(
-                "(?m)\\s*comment::([0-9]+)\\[([^]]*)]\\s*\n?");
+        var pattern = Pattern.compile("(?m)\\s*comment::([0-9]+)\\[([^]]*)]\\s*\n?");
         var matcher = pattern.matcher(asciidoc);
         var specs = new java.util.ArrayList<CommentSpec>();
         var sb = new StringBuilder();
@@ -52,8 +51,7 @@ public class DocxFactory {
             int startBlock = 0, startChar = 0, endBlock = 0, endChar = 0;
             String value = "";
             // parse attributes start="b,c", end="b,c", value="..."
-            var attrPattern = Pattern.compile(
-                    "(start|end|value)\\s*=\\s*\"([^\"]*)\"");
+            var attrPattern = Pattern.compile("(start|end|value)\\s*=\\s*\"([^\"]*)\"");
             var am = attrPattern.matcher(attrs);
             while (am.find()) {
                 var key = am.group(1);
@@ -72,12 +70,7 @@ public class DocxFactory {
                     case "value" -> value = val;
                 }
             }
-            specs.add(new CommentSpec(id,
-                    startBlock,
-                    startChar,
-                    endBlock,
-                    endChar,
-                    value));
+            specs.add(new CommentSpec(id, startBlock, startChar, endBlock, endChar, value));
             matcher.appendReplacement(sb, ""); // remove macro line
         }
         matcher.appendTail(sb);
@@ -85,29 +78,22 @@ public class DocxFactory {
     }
 
     /// New comment macro processing for AsciiDoc
-    private static void applyCommentMacros(
-            WordprocessingMLPackage pkg,
-            List<CommentSpec> specs
-    ) {
+    private static void applyCommentMacros(WordprocessingMLPackage pkg, List<CommentSpec> specs) {
         if (specs.isEmpty()) return;
         ensureCommentsPart(pkg);
         // Build flattened paragraph list in document order as per render
         var mdp = pkg.getMainDocumentPart();
         var paragraphs = new ArrayList<P>();
 
-        new DocxIterator(mdp).filter(P.class::isInstance)
-                             .map(P.class::cast)
-                             .forEachRemaining(paragraphs::add);
+        new DocxIterator(mdp::getContent).filter(P.class::isInstance)
+                .map(P.class::cast)
+                .forEachRemaining(paragraphs::add);
 
         for (var spec : specs) {
             // Add the comment to CommentsPart
             var comment = WmlFactory.newComment(spec.id, spec.value);
             try {
-                pkg.getMainDocumentPart()
-                   .getCommentsPart()
-                   .getContents()
-                   .getComment()
-                   .add(comment);
+                pkg.getMainDocumentPart().getCommentsPart().getContents().getComment().add(comment);
             } catch (Docx4JException e) {
                 throw new OfficeStamperException(e);
             }
@@ -119,8 +105,7 @@ public class DocxFactory {
                 var para = paragraphs.get(spec.endBlock);
                 insertAtCharIndex(para, spec.endChar, false, spec.id);
                 insertAtCharIndex(para, spec.startChar, true, spec.id);
-            }
-            else {
+            } else {
                 var endP = paragraphs.get(spec.endBlock);
                 insertAtCharIndex(endP, spec.endChar, false, spec.id);
                 var startP = paragraphs.get(spec.startBlock);
@@ -133,8 +118,7 @@ public class DocxFactory {
         var mdp = pkg.getMainDocumentPart();
         try {
             if (mdp.getCommentsPart() == null) {
-                var cp =
-                        new org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart();
+                var cp = new org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart();
                 mdp.addTargetPart(cp);
                 var comments = new org.docx4j.wml.Comments();
                 cp.setContents(comments);
@@ -144,12 +128,7 @@ public class DocxFactory {
         }
     }
 
-    private static void insertAtCharIndex(
-            P p,
-            int charIndex,
-            boolean start,
-            BigInteger id
-    ) {
+    private static void insertAtCharIndex(P p, int charIndex, boolean start, BigInteger id) {
         // Split runs so that we can insert markers exactly at charIndex
         int remaining = charIndex;
         var newContent = new ArrayList<>();
@@ -165,26 +144,18 @@ public class DocxFactory {
                     var ref = new R.CommentReference();
                     ref.setId(id);
                     newContent.add(newRun(List.of(ref)));
-                }
-                else {
+                } else {
                     var cre = new CommentRangeEnd();
                     cre.setId(id);
                     newContent.add(cre);
                 }
                 // add current and rest unchanged
                 newContent.add(o);
-                int idx2 = p.getContent()
-                            .indexOf(o);
-                for (int i = idx2 + 1;
-                     i < p.getContent()
-                          .size();
-                     i++)
-                    newContent.add(p.getContent()
-                                    .get(i));
-                p.getContent()
-                 .clear();
-                p.getContent()
-                 .addAll(newContent);
+                int idx2 = p.getContent().indexOf(o);
+                for (int i = idx2 + 1; i < p.getContent().size(); i++)
+                    newContent.add(p.getContent().get(i));
+                p.getContent().clear();
+                p.getContent().addAll(newContent);
                 return;
             }
             if (!(val instanceof R r)) {
@@ -195,8 +166,7 @@ public class DocxFactory {
             for (Object rc : r.getContent()) {
                 var rcv = rc instanceof JAXBElement<?> jj ? jj.getValue() : rc;
                 if (rcv instanceof Text t) {
-                    runLen += t.getValue() != null ? t.getValue()
-                                                      .length() : 0;
+                    runLen += t.getValue() != null ? t.getValue().length() : 0;
                 }
             }
             if (remaining <= 0) {
@@ -218,42 +188,35 @@ public class DocxFactory {
                 var rcv = rc instanceof JAXBElement<?> jj ? jj.getValue() : rc;
                 if (rcv instanceof Text t) {
                     String v = t.getValue();
-                    int partLeft = Math.min(Math.max(left - consumed, 0),
-                            v.length());
+                    int partLeft = Math.min(Math.max(left - consumed, 0), v.length());
                     String lv = v.substring(0, Math.min(partLeft, v.length()));
                     String rv = v.substring(Math.min(partLeft, v.length()));
                     if (!lv.isEmpty()) {
                         Text lt = new Text();
                         lt.setValue(lv);
                         lt.setSpace("preserve");
-                        leftRun.getContent()
-                               .add(lt);
+                        leftRun.getContent().add(lt);
                     }
                     if (!rv.isEmpty()) {
                         Text rt = new Text();
                         rt.setValue(rv);
                         rt.setSpace("preserve");
-                        rightRun.getContent()
-                                .add(rt);
+                        rightRun.getContent().add(rt);
                     }
                     consumed += v.length();
-                }
-                else {
+                } else {
                     // Copy other elements into both as needed; keep them on
                     // right to preserve formatting
-                    rightRun.getContent()
-                            .add(rc);
+                    rightRun.getContent().add(rc);
                 }
             }
             // Replace original run with leftRun, marker, rightRun
-            if (!leftRun.getContent()
-                        .isEmpty()) newContent.add(leftRun);
+            if (!leftRun.getContent().isEmpty()) newContent.add(leftRun);
             if (start) {
                 var crs = new CommentRangeStart();
                 crs.setId(id);
                 newContent.add(crs);
-            }
-            else {
+            } else {
                 var cre = new CommentRangeEnd();
                 cre.setId(id);
                 newContent.add(cre);
@@ -261,53 +224,34 @@ public class DocxFactory {
                 ref.setId(id);
                 newContent.add(newRun(List.of(ref)));
             }
-            if (!rightRun.getContent()
-                         .isEmpty()) newContent.add(rightRun);
+            if (!rightRun.getContent().isEmpty()) newContent.add(rightRun);
             // Add the rest of the original paragraph content after the split
             // run
-            int idx = p.getContent()
-                       .indexOf(o);
-            for (int i = idx + 1;
-                 i < p.getContent()
-                      .size();
-                 i++)
-                newContent.add(p.getContent()
-                                .get(i));
-            p.getContent()
-             .clear();
-            p.getContent()
-             .addAll(newContent);
+            int idx = p.getContent().indexOf(o);
+            for (int i = idx + 1; i < p.getContent().size(); i++)
+                newContent.add(p.getContent().get(i));
+            p.getContent().clear();
+            p.getContent().addAll(newContent);
             return;
         }
         // If we didn't insert yet and we exhausted runs, append marker at end
         if (start) {
             var crs = new CommentRangeStart();
             crs.setId(id);
-            p.getContent()
-             .add(crs);
-        }
-        else {
+            p.getContent().add(crs);
+        } else {
             var cre = new CommentRangeEnd();
             cre.setId(id);
-            p.getContent()
-             .add(cre);
+            p.getContent().add(cre);
             var ref = new R.CommentReference();
             ref.setId(id);
-            p.getContent()
-             .add(newRun(List.of(ref)));
+            p.getContent().add(newRun(List.of(ref)));
         }
     }
 
-    private record CommentSpec(
-            BigInteger id,
-            int startBlock,
-            int startChar,
-            int endBlock,
-            int endChar,
-            String value
-    ) {}
+    private record CommentSpec(BigInteger id, int startBlock, int startChar, int endBlock, int endChar, String value) {
+    }
 
-    private record MacroExtraction(
-            String cleanedAsciiDoc, List<CommentSpec> specs
-    ) {}
+    private record MacroExtraction(String cleanedAsciiDoc, List<CommentSpec> specs) {
+    }
 }

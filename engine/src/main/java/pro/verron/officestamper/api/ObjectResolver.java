@@ -1,6 +1,7 @@
 package pro.verron.officestamper.api;
 
 import org.jspecify.annotations.Nullable;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 /// The ObjectResolver interface provides a contract for resolving objects to create a run with the resolved content. It
 /// includes methods to check if an object can be resolved and to actually resolve an object to a run.
@@ -11,12 +12,12 @@ public interface ObjectResolver {
 
     /// Resolves the expression in the given document with the provided object.
     ///
-    /// @param docxPart the [DocxPart] document in which to resolve the expression
+    /// @param part       the [Part] in which to resolve the expression
     /// @param expression the expression value to be replaced
-    /// @param object the object to be used for resolving the expression
+    /// @param object     the object to be used for resolving the expression
     /// @return the resolved value for the expression
     /// @throws OfficeStamperException if no resolver is found for the object
-    Insert resolve(DocxPart docxPart, String expression, @Nullable Object object);
+    Insert resolve(Part part, String expression, @Nullable Object object);
 
     /// Checks if the given object can be resolved.
     ///

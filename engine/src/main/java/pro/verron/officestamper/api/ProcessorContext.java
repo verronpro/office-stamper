@@ -1,21 +1,22 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 import pro.verron.officestamper.utils.wml.DocxIterator;
+import pro.verron.officestamper.utils.wml.DocxDocument;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.util.Optional;
 
 /// Represents a context within a document processing operation.
 ///
 /// This class encapsulates key elements involved in the processing of a specific part of a
-/// [WordprocessingMLPackage]-based document, such as a part of the document, a specific paragraph, an associated
+/// [DocxDocument]-based document, such as a part of the document, a specific paragraph, an associated
 /// comment, and an expression being evaluated or processed.
 ///
 /// The [ProcessorContext] provides structured access to these elements, enabling seamless document traversal,
 /// manipulation, and analysis during processing workflows.
 public final class ProcessorContext {
-    private final DocxPart part;
+    private final Part part;
     private final Paragraph paragraph;
     private final Comment comment;
     private final String expression;
@@ -23,18 +24,12 @@ public final class ProcessorContext {
 
     /// Constructs a ProcessorContext.
     ///
-    /// @param part The [DocxPart] representing a specific part of the document being processed.
-    /// @param paragraph The [Paragraph] associated with the processing context.
-    /// @param comment The [Comment] that is relevant to the current processing context.
-    /// @param expression A [String] containing the expression or directive being evaluated.
+    /// @param part        The [DocxPart] representing a specific part of the document being processed.
+    /// @param paragraph   The [Paragraph] associated with the processing context.
+    /// @param comment     The [Comment] that is relevant to the current processing context.
+    /// @param expression  A [String] containing the expression or directive being evaluated.
     /// @param contextTree The [ContextTree] managing the hierarchical scopes for this context.
-    public ProcessorContext(
-            DocxPart part,
-            Paragraph paragraph,
-            Comment comment,
-            String expression,
-            ContextTree contextTree
-    ) {
+    public ProcessorContext(Part part, Paragraph paragraph, Comment comment, String expression, ContextTree contextTree) {
         this.part = part;
         this.paragraph = paragraph;
         this.comment = comment;
@@ -55,7 +50,9 @@ public final class ProcessorContext {
     /// Returns the comment associated with the current processing context.
     ///
     /// @return the [Comment] object.
-    public Comment comment() {return comment;}
+    public Comment comment() {
+        return comment;
+    }
 
     /// Returns the table row containing the current paragraph, if any.
     ///
@@ -73,21 +70,29 @@ public final class ProcessorContext {
 
     /// Returns the document part currently being processed.
     ///
-    /// @return the [DocxPart] object.
-    public DocxPart part() {return part;}
+    /// @return the [Part] object.
+    public Part part() {
+        return part;
+    }
 
     /// Returns the paragraph currently being processed.
     ///
     /// @return the [Paragraph] object.
-    public Paragraph paragraph() {return paragraph;}
+    public Paragraph paragraph() {
+        return paragraph;
+    }
 
     /// Returns the expression or directive currently being evaluated.
     ///
     /// @return the expression as a [String].
-    public String expression() {return expression;}
+    public String expression() {
+        return expression;
+    }
 
     /// Returns the context tree managing the hierarchical scopes for this context.
     ///
     /// @return the [ContextTree] object.
-    public ContextTree contextHolder() {return contextTree;}
+    public ContextTree contextHolder() {
+        return contextTree;
+    }
 }

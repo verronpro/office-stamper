@@ -81,20 +81,17 @@ public final class WmlUtils {
     /// extract comment elements
     /// @return a list of [Child] objects representing the extracted comment
     /// elements
-    public static List<Child> extractCommentElements(WordprocessingMLPackage document) {
+    public static List<Child> extractCommentElements(DocxDocument document) {
         var commentFinder = new CommentFinder();
-        TraversalUtil.visit(document, true, commentFinder);
+        TraversalUtil.visit(document.getPackage(), true, commentFinder);
         return commentFinder.getCommentElements();
     }
 
-    /// Finds a comment with the given ID in the specified
-    /// [WordprocessingMLPackage] document.
+    /// Finds a comment with the given ID in the specified [WordprocessingMLPackage] document.
     ///
-    /// @param document the [WordprocessingMLPackage] document to search for
-    /// the comment
+    /// @param document the [WordprocessingMLPackage] document to search for the comment
     /// @param id       the ID of the comment to find
-    /// @return an [Optional] containing the [Comment] if found, or an empty
-    /// [Optional] if not found.
+    /// @return an [Optional] containing the [Comment] if found, or an empty [Optional] if not found.
     public static Optional<Comment> findComment(WordprocessingMLPackage document, BigInteger id) {
         var name = OpenpackagingFactory.newPartName("/word/comments.xml");
         var parts = document.getParts();
@@ -119,16 +116,12 @@ public final class WmlUtils {
     }
 
 
-    /// Removes the specified child element from its parent container. Depending
-    /// on the type of the parent element, the
-    /// removal process is delegated to the appropriate helper method. If the
-    /// child is contained within a table cell and
-    /// the cell is empty after removal, an empty paragraph is added to the
-    /// cell.
+    /// Removes the specified child element from its parent container. Depending on the type of the parent element, the
+    /// removal process is delegated to the appropriate helper method. If the child is contained within a table cell and
+    /// the cell is empty after removal, an empty paragraph is added to the cell.
     ///
     /// @param child the [Child] element to be removed
-    /// @throws UtilsException if the parent of the child element is of an
-    /// unexpected type
+    /// @throws UtilsException if the parent of the child element is of an unexpected type
     public static void remove(Child child) {
         switch (child.getParent()) {
             case CTSdtContentRun parent -> remove((Child) parent.getParent());
@@ -136,9 +129,14 @@ public final class WmlUtils {
             case CTFootnotes parent -> remove(parent, child);
             case CTEndnotes parent -> remove(parent, child);
             case SdtRun parent -> remove(parent, child);
+            case Parent parent -> remove(parent, child);
             default -> throw new UtilsException("Unexpected value: " + child.getParent());
         }
         if (child.getParent() instanceof Tc cell) ensureValidity(cell);
+    }
+
+    private static void remove(Parent parent, Child child) {
+        parent.getContent().remove(child);
     }
 
     private static void remove(ContentAccessor parent, Child child) {
@@ -278,19 +276,19 @@ public final class WmlUtils {
     public static void insertSmartTag(String element, P paragraph, String expression, int start, int end) {
         var run = newRun(expression);
         var smartTag = newSmartTag("officestamper", List.of(newCtAttr("type", element)), run);
-        findFirstAffectedRunPr(paragraph, start, end).ifPresent(run::setRPr);
-        replace(paragraph, List.of(smartTag), start, end);
+        findFirstAffectedRunPr(paragraph::getContent, start, end).ifPresent(run::setRPr);
+        replace(paragraph::getContent, List.of(smartTag), start, end);
     }
 
     /// Finds the first affected run properties within the specified range.
     ///
-    /// @param contentAccessor the [ContentAccessor] to search in
-    /// @param start           the start index of the range
-    /// @param end             the end index of the range
+    /// @param parent the [Parent] to search in
+    /// @param start  the start index of the range
+    /// @param end    the end index of the range
     /// @return an [Optional] containing the [RPr] if found, or an empty
     /// [Optional] if not found
-    public static Optional<RPr> findFirstAffectedRunPr(ContentAccessor contentAccessor, int start, int end) {
-        var iterator = new DocxIterator(contentAccessor).selectClass(R.class);
+    public static Optional<RPr> findFirstAffectedRunPr(Parent parent, int start, int end) {
+        var iterator = new DocxIterator(parent).selectClass(R.class);
         var runs = StandardRun.wrap(iterator);
 
         var affectedRuns = runs.stream().filter(run -> run.isTouchedByRange(start, end)).toList();
@@ -303,12 +301,12 @@ public final class WmlUtils {
     /// Replaces content within the specified range with the provided insert
     /// objects.
     ///
-    /// @param contentAccessor the [ContentAccessor] in which to replace content
-    /// @param insert          the list of objects to insert
-    /// @param startIndex      the start index of the range to replace
-    /// @param endIndex        the end index of the range to replace
-    public static void replace(ContentAccessor contentAccessor, List<Object> insert, int startIndex, int endIndex) {
-        var iterator = new DocxIterator(contentAccessor).selectClass(R.class);
+    /// @param parent     the [Parent] in which to replace content
+    /// @param insert     the list of objects to insert
+    /// @param startIndex the start index of the range to replace
+    /// @param endIndex   the end index of the range to replace
+    public static void replace(Parent parent, List<Object> insert, int startIndex, int endIndex) {
+        var iterator = new DocxIterator(parent).selectClass(R.class);
         var runs = StandardRun.wrap(iterator);
         var affectedRuns = runs.stream().filter(run -> run.isTouchedByRange(startIndex, endIndex)).toList();
 
@@ -417,21 +415,19 @@ public final class WmlUtils {
         run.getContent().add(textObj);
     }
 
-    /// Replaces all occurrences of the specified expression with the provided
-    /// run objects.
+    /// Replaces all occurrences of the specified expression with the provided run objects.
     ///
-    /// @param contentAccessor the [ContentAccessor] in which to replace the
-    /// expression
-    /// @param expression      the expression to replace
-    /// @param insert          the list of objects to insert
-    /// @param onRPr           a consumer to handle [RPr] properties
-    public static void replaceExpressionWithRun(ContentAccessor contentAccessor, String expression, List<Object> insert, Consumer<RPr> onRPr) {
-        var text = asString(contentAccessor);
+    /// @param parent     the [Parent] in which to replace the expression
+    /// @param expression the expression to replace
+    /// @param insert     the list of objects to insert
+    /// @param onRPr      a consumer to handle [RPr] properties
+    public static void replaceExpressionWithRun(Parent parent, String expression, List<Object> insert, Consumer<RPr> onRPr) {
+        var text = asString(parent);
         int matchStartIndex = text.indexOf(expression);
         if (matchStartIndex == -1) return;/*nothing to replace*/
         int matchEndIndex = matchStartIndex + expression.length();
-        findFirstAffectedRunPr(contentAccessor, matchStartIndex, matchEndIndex).ifPresent(onRPr);
-        replace(contentAccessor, insert, matchStartIndex, matchEndIndex);
+        findFirstAffectedRunPr(parent, matchStartIndex, matchEndIndex).ifPresent(onRPr);
+        replace(parent, insert, matchStartIndex, matchEndIndex);
     }
 
     /// Checks if the given [CTSmartTagRun] contains an element that matches the
@@ -517,7 +513,7 @@ public final class WmlUtils {
     ///  to be visited
     /// @param visitor  the TraversalUtilVisitor to be applied to each relevant
     /// part of the document
-    public static void visitDocument(WordprocessingMLPackage document, TraversalUtilVisitor<?> visitor) {
+    public static void visitDocument(DocxDocument document, TraversalUtilVisitor<?> visitor) {
         var mainDocumentPart = document.getMainDocumentPart();
         TraversalUtil.visit(mainDocumentPart, visitor);
         WmlUtils.streamHeaderFooterPart(document).forEach(f -> TraversalUtil.visit(f, visitor));
@@ -525,7 +521,7 @@ public final class WmlUtils {
         WmlUtils.visitPartIfExists(visitor, mainDocumentPart.getEndNotesPart());
     }
 
-    private static Stream<Object> streamHeaderFooterPart(WordprocessingMLPackage document) {
+    private static Stream<Object> streamHeaderFooterPart(DocxDocument document) {
         return document.getDocumentModel()
                 .getSections()
                 .stream()

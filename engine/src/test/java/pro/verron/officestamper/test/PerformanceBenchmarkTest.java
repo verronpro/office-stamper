@@ -2,6 +2,7 @@ package pro.verron.officestamper.test;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import pro.verron.officestamper.core.DocxStamper;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.test.utils.ResourceUtils;
@@ -10,11 +11,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Performance Benchmark Tests")
 class PerformanceBenchmarkTest {
 
+    @Timeout(value = 20, unit = SECONDS)
     @Test
     @DisplayName("Should process a large complex document in less than 20 seconds")
     void testLargeDocumentPerformance() {

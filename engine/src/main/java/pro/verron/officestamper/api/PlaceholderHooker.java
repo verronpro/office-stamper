@@ -4,6 +4,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.P;
 import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,7 @@ public class PlaceholderHooker implements PreProcessor {
     }
 
     @Override
-    public void process(WordprocessingMLPackage document) {
+    public void process(DocxDocument document) {
         var visitor = new ParagraphCollector(pattern);
         WmlUtils.visitDocument(document, visitor);
         for (var paragraph : visitor.paragraphs()) {

@@ -1,17 +1,13 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.Part;
-import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.svg.SvgUtils;
+import pro.verron.officestamper.utils.wml.DocxDocument;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static org.docx4j.openpackaging.parts.relationships.Namespaces.FOOTER;
-import static org.docx4j.openpackaging.parts.relationships.Namespaces.HEADER;
 
 /// The [DocxStamper] class is an implementation of the [OfficeStamper] interface used to stamp DOCX templates with a
 /// context object and write the result to an output stream.
@@ -19,8 +15,7 @@ import static org.docx4j.openpackaging.parts.relationships.Namespaces.HEADER;
 /// @author Tom Hombergs
 /// @author Joseph Verron
 /// @since 1.0.0
-public class DocxStamper
-        implements OfficeStamper<WordprocessingMLPackage> {
+public class DocxStamper implements OfficeStamper<DocxDocument> {
 
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
@@ -71,45 +66,32 @@ public class DocxStamper
     /// If you need a wider vocabulary of methods available in the comments, you can create your own [CommentProcessor]
     /// and register it via [OfficeStamperConfiguration#addCommentProcessor(Class, CommentProcessorFactory)].
     ///
-    /// @param document the .docx template to stamp
+    /// @param document    the .docx template to stamp
     /// @param contextRoot the context object to use for stamping
     /// @return the stamped document
     @Override
-    public WordprocessingMLPackage stamp(WordprocessingMLPackage document, Object contextRoot) {
+    public DocxDocument stamp(DocxDocument document, Object contextRoot) {
         preprocess(document);
         process(document, contextRoot);
         postprocess(document);
         return document;
     }
 
-    private void preprocess(WordprocessingMLPackage document) {
+    private void preprocess(DocxDocument document) {
         preprocessors.forEach(processor -> processor.process(document));
     }
 
-    private void process(WordprocessingMLPackage document, Object contextRoot) {
-        var mainDocumentPart = document.getMainDocumentPart();
-        var mainPart = new TextualDocxPart(document, mainDocumentPart, mainDocumentPart);
-        process(mainPart, contextRoot);
-
-        var relationshipsPart = mainDocumentPart.getRelationshipsPart();
-        for (var relationship : relationshipsPart.getRelationshipsByType(HEADER)) {
-            Part part = relationshipsPart.getPart(relationship);
-            TextualDocxPart textualDocxPart = new TextualDocxPart(document, part, (ContentAccessor) part);
-            process(textualDocxPart, contextRoot);
-        }
-
-        for (var relationship : relationshipsPart.getRelationshipsByType(FOOTER)) {
-            Part part = relationshipsPart.getPart(relationship);
-            TextualDocxPart textualDocxPart = new TextualDocxPart(document, part, (ContentAccessor) part);
-            process(textualDocxPart, contextRoot);
-        }
+    private void process(DocxDocument document, Object contextRoot) {
+        process(document.mainPart(), contextRoot);
+        document.headerParts().forEach(part -> process(part, contextRoot));
+        document.footerParts().forEach(part -> process(part, contextRoot));
     }
 
-    private void postprocess(WordprocessingMLPackage document) {
+    private void postprocess(DocxDocument document) {
         postprocessors.forEach(processor -> processor.process(document));
     }
 
-    private void process(DocxPart part, Object contextRoot) {
+    private void process(Part part, Object contextRoot) {
         var contextTree = new ContextRoot(contextRoot);
         var iterator = DocxHook.ofHooks(part::content, part);
         while (iterator.hasNext()) {
@@ -117,7 +99,8 @@ public class DocxStamper
             var officeStamperContextFactory = new OfficeStamperEvaluationContextFactory(customFunctions,
                     commentProcessors,
                     interfaceFunctions,
-                    contextFactory);
+                    contextFactory
+            );
             if (hook.run(engineFactory, contextTree, officeStamperContextFactory)) {
                 iterator.reset();
             }

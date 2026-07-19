@@ -1,6 +1,7 @@
 package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.OpcPackage;
+import pro.verron.officestamper.utils.wml.Document;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,7 +15,7 @@ import java.util.function.Function;
 /// @param <T> The type of the template that can be stamped. This type must extend [OpcPackage].
 /// @author Joseph Verron
 /// @since 1.6.4
-public class StreamStamper<T extends OpcPackage> {
+public class StreamStamper<T extends Document> {
 
     /// Holds a reference to a function that takes in an [InputStream] and produces an instance of type [T].
     private final Function<InputStream, T> loader;

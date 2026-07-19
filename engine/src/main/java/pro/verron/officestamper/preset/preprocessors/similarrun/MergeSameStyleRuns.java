@@ -1,9 +1,9 @@
 package pro.verron.officestamper.preset.preprocessors.similarrun;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.PreProcessor;
 import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 
 import java.util.LinkedHashSet;
 
@@ -20,7 +20,7 @@ public class MergeSameStyleRuns
         implements PreProcessor {
 
     @Override
-    public void process(WordprocessingMLPackage document) {
+    public void process(DocxDocument document) {
         var visitor = new SimilarRunVisitor();
         WmlUtils.visitDocument(document, visitor);
         for (var similarStyleRuns : visitor.getSimilarStyleRuns()) {

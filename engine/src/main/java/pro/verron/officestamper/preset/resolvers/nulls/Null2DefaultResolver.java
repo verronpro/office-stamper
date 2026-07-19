@@ -1,9 +1,9 @@
 package pro.verron.officestamper.preset.resolvers.nulls;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
@@ -13,11 +13,10 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 ///
 /// @author Joseph Verron
 /// @since 1.6.7
-public record Null2DefaultResolver(String defaultValue)
-        implements ObjectResolver {
+public record Null2DefaultResolver(String defaultValue) implements ObjectResolver {
 
     @Override
-    public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
+    public Insert resolve(Part part, String expression, @Nullable Object object) {
         return new Insert(newRun(defaultValue));
     }
 

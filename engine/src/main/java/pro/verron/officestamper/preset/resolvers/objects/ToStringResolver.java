@@ -1,9 +1,9 @@
 package pro.verron.officestamper.preset.resolvers.objects;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +15,7 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 ///
 /// @author Joseph Verron
 /// @since 1.6.7
-public class ToStringResolver
-        implements ObjectResolver {
+public class ToStringResolver implements ObjectResolver {
 
     private final String linebreakPlaceholder;
 
@@ -31,7 +30,7 @@ public class ToStringResolver
     }
 
     @Override
-    public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
+    public Insert resolve(Part part, String expression, @Nullable Object object) {
         var string = String.valueOf(object);
 
         var split = string.split(linebreakPlaceholder);

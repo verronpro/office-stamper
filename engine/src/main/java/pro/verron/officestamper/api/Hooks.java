@@ -1,9 +1,9 @@
 package pro.verron.officestamper.api;
 
 import org.docx4j.wml.CTSmartTagRun;
-import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 import pro.verron.officestamper.utils.wml.DocxIterator;
+import pro.verron.officestamper.utils.wml.Parent;
 import pro.verron.officestamper.utils.wml.SmartTag;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
@@ -21,10 +21,10 @@ public class Hooks {
     /// accessor. This method filters potential hooks from the content and maps them to Hook instances associated with
     /// the given document part.
     ///
-    /// @param contentAccessor the content accessor providing access to the document's content
+    /// @param parent the [Parent] providing access to the document's content
     /// @return a [ResetableIterator] of Hook instances for the specified document part
-    public static ResetableIterator<Hook> ofHooks(ContentAccessor contentAccessor) {
-        return new DocxIterator(contentAccessor).filter(Hooks::isHook).map(Hooks::asHook);
+    public static ResetableIterator<Hook> ofHooks(Parent parent) {
+        return new DocxIterator(parent).filter(Hooks::isHook).map(Hooks::asHook);
     }
 
     private static boolean isHook(Object o) {

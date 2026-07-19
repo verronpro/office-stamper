@@ -1,17 +1,17 @@
 package pro.verron.officestamper.core;
 
 import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 /// A hook that processes comments in a document.
 public class CommentHook implements DocxHook {
-    private final DocxPart part;
+    private final Part part;
     private final Tag tag;
     private final Comment comment;
 
-    CommentHook(DocxPart part, Tag tag, Comment comment) {
+    CommentHook(Part part, Tag tag, Comment comment) {
         this.part = part;
         this.tag = tag;
         this.comment = comment;

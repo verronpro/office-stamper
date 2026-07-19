@@ -37,10 +37,10 @@ public class DocxIterator implements ResetableIterator<Object> {
     /// Creates a new [DocxIterator] instance that iterates over the content of
     /// the given [ContentAccessor].
     ///
-    /// @param contentAccessor the content accessor whose content will be
+    /// @param parent the content accessor whose content will be
     /// iterated over
-    public DocxIterator(ContentAccessor contentAccessor) {
-        this(contentAccessor.getContent()::iterator);
+    public DocxIterator(Parent parent) {
+        this(parent.getContent()::iterator);
     }
 
     private DocxIterator(Supplier<Iterator<Object>> supplier) {

@@ -1,6 +1,7 @@
 package pro.verron.officestamper.api;
 
 import org.docx4j.openpackaging.packages.OpcPackage;
+import pro.verron.officestamper.utils.wml.Document;
 
 /// This is an interface that defines the contract for stamping templates with context and returning the result as a
 /// document.
@@ -8,7 +9,7 @@ import org.docx4j.openpackaging.packages.OpcPackage;
 /// @param <T> The type of the template that can be stamped.
 /// @author Joseph Verron
 /// @since 1.6.4
-public interface OfficeStamper<T extends OpcPackage> {
+public interface OfficeStamper<T extends Document> {
 
     /// Stamps the given template with the given context and returns the resulting document.
     ///

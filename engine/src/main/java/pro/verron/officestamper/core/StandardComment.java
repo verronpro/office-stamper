@@ -5,9 +5,10 @@ import org.docx4j.wml.*;
 import org.docx4j.wml.R.CommentReference;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.utils.wml.Parent;
+import pro.verron.officestamper.utils.wml.DocxDocument;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 /// @author Tom Hombergs
 /// @since 1.0.2
 public class StandardComment implements Comment {
-    private final DocxPart part;
+    private final Part part;
     private final Comments.Comment comment;
     private final CommentRangeStart commentRangeStart;
     private final CommentRangeEnd commentRangeEnd;
@@ -32,13 +33,13 @@ public class StandardComment implements Comment {
 
     /// Constructs a new [StandardComment] object.
     ///
-    /// @param part              the [DocxPart] representing the document section this comment belongs to.
+    /// @param part              the [Part] representing the document section this comment belongs to.
     /// @param startTagRun       the start tag run.
     /// @param commentRangeStart the comment range start.
     /// @param commentRangeEnd   the comment range end.
     /// @param comment           the comment.
     /// @param commentReference  the comment reference.
-    public StandardComment(DocxPart part, CTSmartTagRun startTagRun, CommentRangeStart commentRangeStart, CommentRangeEnd commentRangeEnd, Comments.Comment comment, @Nullable CommentReference commentReference) {
+    public StandardComment(Part part, CTSmartTagRun startTagRun, CommentRangeStart commentRangeStart, CommentRangeEnd commentRangeEnd, Comments.Comment comment, @Nullable CommentReference commentReference) {
         this.part = part;
         this.startTagRun = startTagRun;
         this.commentRangeStart = commentRangeStart;
@@ -47,18 +48,28 @@ public class StandardComment implements Comment {
         this.commentReference = commentReference;
     }
 
+    public StandardComment(DocxDocument.Comment comment) {
+        this(comment.getPart(),
+                comment.getTagRun(),
+                comment.getCommentRangeStart(),
+                comment.getCommentRangeEnd(),
+                comment.getWmlComment(),
+                comment.getCommentReference()
+        );
+    }
+
     /// Creates a new instance of [StandardComment] and initializes it with the given parameters, including a comment,
     /// comment range start, comment range end, and a comment reference.
     ///
-    /// @param document   the [DocxPart] representing the document to which this comment belongs
+    /// @param part       the [Part] representing  the document section to which this comment belongs
     /// @param parent     the [ContentAccessor] representing the parent content of the comment range
     /// @param expression the [String] content to be included in the comment
     /// @param id         the unique [BigInteger] identifier for the comment
     /// @return a [StandardComment] instance initialized with the specified parameters
-    public static StandardComment create(DocxPart document, Parent parent, String expression, BigInteger id) {
+    public static StandardComment create(Part part, Parent parent, String expression, BigInteger id) {
         var start = newCommentRangeStart(id, parent);
         var attributes = List.of(newCtAttr("type", "processor"));
-        return new StandardComment(document,
+        return new StandardComment(part,
                 newSmartTag("officestamper", attributes, start),
                 start,
                 newCommentRangeEnd(id, parent),
@@ -96,7 +107,7 @@ public class StandardComment implements Comment {
     }
 
     @Override
-    public ContentAccessor getParent() {
+    public Parent getParent() {
         return DocumentUtil.findSmallestCommonParent(commentRangeStart, commentRangeEnd);
     }
 
@@ -136,7 +147,7 @@ public class StandardComment implements Comment {
                 .stream()
                 .filter(P.class::isInstance)
                 .map(P.class::cast)
-                .map(p -> StandardParagraph.from(new TextualDocxPart(part.document()), p))
+                .map(p -> StandardParagraph.from(part, p))
                 .map(StandardParagraph::asString)
                 .collect(joining());
     }

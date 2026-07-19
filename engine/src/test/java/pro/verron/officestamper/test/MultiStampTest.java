@@ -36,7 +36,7 @@ class MultiStampTest {
         var filename = "MultiStampTest.docx";
         var template = getWordResource(filename);
         var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
+        var actual = toAsciidoc(stamped.getPackage());
         assertEquals("""
                 == Multi-Stamp-Test
                 
@@ -63,7 +63,7 @@ class MultiStampTest {
 
         var template2 = getWordResource(filename);
         var wordprocessingMLPackage = stamper.stamp(template2, context);
-        var document2 = toAsciidoc(wordprocessingMLPackage);
+        var document2 = toAsciidoc(wordprocessingMLPackage.getPackage());
         assertEquals("""
                 == Multi-Stamp-Test
                 

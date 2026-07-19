@@ -1,9 +1,9 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.ContentAccessor;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ public final class HookRemover implements PostProcessor {
     }
 
     @Override
-    public void process(WordprocessingMLPackage document) {
+    public void process(DocxDocument document) {
         var visitor = new TagsVisitor(element);
         visitDocument(document, visitor);
         // Replaces tags with their content in parent

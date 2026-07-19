@@ -3,10 +3,10 @@ package pro.verron.officestamper.api;
 import org.docx4j.TraversalUtil;
 import org.docx4j.finders.CommentFinder;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.jvnet.jaxb.lang.Child;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 
 /// The CommentRemover class is a concrete implementation of the PostProcessor interface.
 /// This class is responsible for removing all comments and their corresponding elements
@@ -27,7 +27,7 @@ public class CommentRemover implements PostProcessor {
     }
 
     @Override
-    public void process(WordprocessingMLPackage document) {
+    public void process(DocxDocument document) {
         var visitor = new CommentFinder();
         TraversalUtil.visit(document.getMainDocumentPart(), visitor);
 

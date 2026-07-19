@@ -13,20 +13,22 @@ class PlaceholderPreprocessorTest {
     void process() {
         var preparePlaceholders = new PlaceholderHooker("(#\\{([^{]+?)})", "inlineProcessor");
         var document = makeWordResource("Hello, #{name}!");
-        var before = toAsciidoc(document);
+        var before = toAsciidoc(document.getPackage());
         assertEquals("""
                 Hello, #{name}!
                 
                 // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
-                """, before);
+                """, before
+        );
         preparePlaceholders.process(document);
-        var actual = toAsciidoc(document);
+        var actual = toAsciidoc(document.getPackage());
         assertEquals("""
                 Hello, tag:[start, element=officestamper, type=inlineProcessor]nametag:[end]!
                 
                 // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
-                """, actual);
+                """, actual
+        );
     }
 }

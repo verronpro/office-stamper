@@ -1,8 +1,8 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.*;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Objects;
 import static pro.verron.officestamper.utils.wml.WmlFactory.newCtAttr;
 import static pro.verron.officestamper.utils.wml.WmlFactory.newSmartTag;
 
-/// The [CommentHooker] class is responsible for preparing comment processors in a Word document. It implements the
+/// The [CommentHooker] class is responsible for preparing comment processors in a [DocxDocument]. It implements the
 /// [PreProcessor] interface and provides functionality to process comment range starts and wrap them with smart tags
 /// for further processing by the OfficeStamper engine.
 ///
@@ -25,7 +25,7 @@ public final class CommentHooker implements PreProcessor {
     }
 
     @Override
-    public void process(WordprocessingMLPackage document) {
+    public void process(DocxDocument document) {
         var visitor = new CRSCollector();
         WmlUtils.visitDocument(document, visitor);
         // Replaces comment range starts with smart tags

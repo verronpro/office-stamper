@@ -1,12 +1,12 @@
 package pro.verron.officestamper.preset.postprocessors.cleanfootnotes;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
 import org.docx4j.wml.CTFootnotes;
 import org.docx4j.wml.CTFtnEdn;
 import pro.verron.officestamper.api.PostProcessor;
 import pro.verron.officestamper.preset.postprocessors.NoteRefsVisitor;
 import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -23,8 +23,9 @@ import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
 /// @author Joseph Verron
 public class RemoveOrphanedFootnotesProcessor
         implements PostProcessor {
+
     @Override
-    public void process(WordprocessingMLPackage document) {
+    public void process(DocxDocument document) {
         var visitor = new NoteRefsVisitor();
         visitDocument(document, visitor);
         var referencedNoteIds = visitor.referencedNoteIds();
@@ -44,7 +45,7 @@ public class RemoveOrphanedFootnotesProcessor
 
     private static boolean normalNotes(CTFtnEdn note) {
         return Optional.ofNullable(note.getType())
-                       .orElse(NORMAL)
-                       .equals(NORMAL);
+                .orElse(NORMAL)
+                .equals(NORMAL);
     }
 }

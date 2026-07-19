@@ -1,14 +1,12 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.wml.CTAttr;
-import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.utils.wml.SmartTag;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -16,23 +14,23 @@ import java.util.Optional;
 
 import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
 
-/// Represents a Tag entity consisting of a DocxPart and a CTSmartTagRun. A Tag provides functionality to manipulate and
+/// Represents a Tag entity consisting of a [Part] and a [SmartTag]. A Tag provides functionality to manipulate and
 /// retrieve information related to smart tags embedded within a WordprocessingML-based document. This class offers
 /// methods to create a new Tag instance, remove the tag from its parent content, and retrieve associated elements such
 /// as Paragraph and Comment objects. Additionally, a placeholder representation of the tag can be accessed through the
 /// appropriate method.
 ///
-/// @param docxPart the DocxPart instance representing the part of the document associated with the tag.
-/// @param tag      the CTSmartTagRun representing the smart tag element in the document.
-public record Tag(DocxPart docxPart, SmartTag tag) {
+/// @param part the [Part] instance representing the part of the document associated with the tag.
+/// @param tag  the [SmartTag]  representing the smart tag element in the document.
+public record Tag(Part part, SmartTag tag) {
 
     /// Creates a new Tag instance using the provided DocxPart and CTSmartTagRun.
     ///
-    /// @param docxPart the DocxPart instance representing the part of the document associated with the new Tag.
-    /// @param tag      the CTSmartTagRun representing the smart tag element in the document.
-    /// @return a new Tag instance initialized with the given DocxPart and CTSmartTagRun.
-    public static Tag of(DocxPart docxPart, SmartTag tag) {
-        return new Tag(docxPart, tag);
+    /// @param part the [Part]  instance representing the part of the document associated with the new Tag.
+    /// @param tag  the [SmartTag] representing the smart tag element in the document.
+    /// @return a new [Tag] instance initialized with the given [Part] and [SmartTag].
+    public static Tag of(Part part, SmartTag tag) {
+        return new Tag(part, tag);
     }
 
     private static <T> Optional<T> getFirst(List<Object> content, Class<T> clazz) {
@@ -51,7 +49,7 @@ public record Tag(DocxPart docxPart, SmartTag tag) {
     ///
     /// @return the Paragraph object representing the parent element of the smart tag
     public Paragraph getParagraph() {
-        return StandardParagraph.from(docxPart, tag.getParent());
+        return StandardParagraph.from(part, tag.getParent());
     }
 
     /// Converts the current tag entity into a Comment representation.
@@ -61,7 +59,7 @@ public record Tag(DocxPart docxPart, SmartTag tag) {
     ///
     /// @return a Comment object representing the current tag
     public Comment asComment() {
-        return StandardComment.create(docxPart, tag.getParent(), expression(), BigInteger.ZERO);
+        return StandardComment.create(part, tag.getParent(), expression(), BigInteger.ZERO);
     }
 
     /// Retrieves the expression of the tag.

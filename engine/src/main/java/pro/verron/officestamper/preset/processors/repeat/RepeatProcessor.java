@@ -2,7 +2,6 @@ package pro.verron.officestamper.preset.processors.repeat;
 
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
 import org.docx4j.wml.SectPr;
@@ -10,10 +9,15 @@ import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb.lang.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.Hooks;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory.IRepeatProcessor;
+import pro.verron.officestamper.utils.wml.Parent;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +39,7 @@ public class RepeatProcessor extends CommentProcessor implements IRepeatProcesso
         super(context);
     }
 
-    private static Optional<SectPr> previousSectionBreak(Object firstObject, ContentAccessor parent) {
+    private static Optional<SectPr> previousSectionBreak(Object firstObject, Parent parent) {
         List<Object> parentContent = parent.getContent();
         int pIndex = parentContent.indexOf(firstObject);
 
@@ -51,7 +55,7 @@ public class RepeatProcessor extends CommentProcessor implements IRepeatProcesso
         return Optional.empty();
     }
 
-    private static SectPr documentSection(DocxPart part) {
+    private static SectPr documentSection(Part part) {
         try {
             return part.document().getMainDocumentPart().getContents().getBody().getSectPr();
         } catch (Docx4JException e) {

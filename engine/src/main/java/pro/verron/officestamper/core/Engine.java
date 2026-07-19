@@ -6,11 +6,14 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.ExceptionResolver;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.TraceabilityReporter;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /// The core engine of OfficeStamper, responsible for processing expressions.
 public class Engine {
@@ -20,30 +23,24 @@ public class Engine {
     private final ExceptionResolver exceptionResolver;
     private final ObjectResolverRegistry objectResolverRegistry;
     private final String expression;
-    private final DocxPart docxPart;
+    private final Part part;
     private final SpelExpressionParser expressionParser;
     private final TraceabilityReporter traceabilityReporter;
 
     /// Constructs an Engine.
     ///
-    /// @param parserConfiguration the parser configuration.
-    /// @param exceptionResolver the exception resolver.
+    /// @param parserConfiguration    the parser configuration.
+    /// @param exceptionResolver      the exception resolver.
     /// @param objectResolverRegistry the object resolver registry.
-    /// @param processorContext the processor context.
-    /// @param traceabilityReporter the traceability reporter.
-    public Engine(
-            SpelParserConfiguration parserConfiguration,
-            ExceptionResolver exceptionResolver,
-            ObjectResolverRegistry objectResolverRegistry,
-            ProcessorContext processorContext,
-            TraceabilityReporter traceabilityReporter
-    ) {
+    /// @param processorContext       the processor context.
+    /// @param traceabilityReporter   the traceability reporter.
+    public Engine(SpelParserConfiguration parserConfiguration, ExceptionResolver exceptionResolver, ObjectResolverRegistry objectResolverRegistry, ProcessorContext processorContext, TraceabilityReporter traceabilityReporter) {
         this.parserConfiguration = parserConfiguration;
         this.expressionParser = new SpelExpressionParser(parserConfiguration);
         this.exceptionResolver = exceptionResolver;
         this.objectResolverRegistry = objectResolverRegistry;
         this.expression = processorContext.expression();
-        this.docxPart = processorContext.part();
+        this.part = processorContext.part();
         this.traceabilityReporter = traceabilityReporter;
     }
 
@@ -133,7 +130,7 @@ public class Engine {
         }
 
         try {
-            var docxResolution = objectResolverRegistry.resolve(docxPart, expression, javaResolution);
+            var docxResolution = objectResolverRegistry.resolve(part, expression, javaResolution);
             log.debug("Converted '{}' to docx ({}) successfully.", expression, docxResolution);
             return docxResolution;
         } catch (SpelEvaluationException e) {

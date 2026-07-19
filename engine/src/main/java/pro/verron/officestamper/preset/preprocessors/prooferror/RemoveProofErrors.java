@@ -1,9 +1,9 @@
 package pro.verron.officestamper.preset.preprocessors.prooferror;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.ProofErr;
 import pro.verron.officestamper.api.PreProcessor;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 
 import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
 
@@ -15,7 +15,7 @@ public class RemoveProofErrors
         implements PreProcessor {
 
     @Override
-    public void process(WordprocessingMLPackage document) {
+    public void process(DocxDocument document) {
         var visitor = new ProofErrVisitor();
         visitDocument(document, visitor);
         for (ProofErr proofErr : visitor.getProofErrs()) {

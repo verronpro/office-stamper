@@ -1,7 +1,7 @@
 package pro.verron.officestamper.preset.preprocessors.rmlang;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import pro.verron.officestamper.api.PreProcessor;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 
 import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
 
@@ -16,12 +16,12 @@ public class RemoveLang
         implements PreProcessor {
 
     @Override
-    public void process(WordprocessingMLPackage document) {
+    public void process(DocxDocument document) {
         removeRprLang(document);
         removePprLang(document);
     }
 
-    private static void removeRprLang(WordprocessingMLPackage document) {
+    private static void removeRprLang(DocxDocument document) {
         var visitor = new RprLangVisitor();
         visitDocument(document, visitor);
         for (var rPr : visitor.getrPrs()) {
@@ -29,7 +29,7 @@ public class RemoveLang
         }
     }
 
-    private static void removePprLang(WordprocessingMLPackage document) {
+    private static void removePprLang(DocxDocument document) {
         var visitor2 = new PprLangVisitor();
         visitDocument(document, visitor2);
         for (var rPr : visitor2.getParaPrs()) {

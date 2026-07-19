@@ -10,6 +10,7 @@ import pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -119,6 +120,10 @@ public class DocxDocument implements Document {
 
         public Part getPart() {
             return part;
+        }
+
+        public BigInteger getId() {
+            return comment.getId();
         }
     }
 

@@ -224,15 +224,16 @@ public class DocxStamperConfiguration
     ///         function. When the function is called, the supplier's get method will be executed to return the result
     ///         of the function.
     @Override
-    public void addCustomFunction(String name, Supplier<?> implementation) {
-        this.addCustomFunction(new CustomFunction(name, List.of(), _ -> implementation.get()));
+    public OfficeStamperConfiguration addCustomFunction(String name, Supplier<?> implementation) {
+        return this.addCustomFunction(new CustomFunction(name, List.of(), _ -> implementation.get()));
     }
 
     /// Adds a custom function to the list of functions.
     ///
     /// @param function the [CustomFunction] object to be added
-    public void addCustomFunction(CustomFunction function) {
+    public OfficeStamperConfiguration addCustomFunction(CustomFunction function) {
         this.functions.add(function);
+        return this;
     }
 
     /// Adds a custom function to the context with the specified name and type.

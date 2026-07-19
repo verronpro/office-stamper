@@ -4,24 +4,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.test.utils.ContextFactory;
+import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
-class ProcessorDisplayIfTest {
-
-    public static Stream<ContextFactory> factories() {
-        return Stream.of(objectContextFactory(), mapContextFactory());
-    }
+class ProcessorDisplayIfTest extends OfficeStamperTestBase {
 
     @DisplayName("Display Bart elements")
     @ParameterizedTest
@@ -192,12 +183,8 @@ class ProcessorDisplayIfTest {
                 // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
-
         var config = standard();
-        var stamper = docxPackageStamper(config);
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Display footnotes elements")
@@ -280,11 +267,8 @@ class ProcessorDisplayIfTest {
                 
                 """;
 
-        var configuration = full();
-        var stamper = docxPackageStamper(configuration);
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals(expected, actual);
+        var config = full();
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Display endnotes elements")
@@ -367,11 +351,8 @@ class ProcessorDisplayIfTest {
                 
                 """;
 
-        var configuration = full();
-        var stamper = docxPackageStamper(configuration);
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals(expected, actual);
+        var config = full();
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Display Homer elements")
@@ -519,10 +500,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Display 'null' elements")
@@ -670,10 +648,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Display Paragraph If Integration test (off case) + Inline processors Integration test")
@@ -706,10 +681,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
-        var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = toAsciidoc(wordprocessingMLPackage);
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Display Paragraph If Integration test (on case) + Inline processors Integration test")
@@ -746,10 +718,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Display Table If Bug32 Regression test")
@@ -784,10 +753,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
-        var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = toAsciidoc(wordprocessingMLPackage);
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Display Table If Bug32 Regression test")
@@ -834,10 +800,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Display Table If Integration test")
@@ -878,9 +841,6 @@ class ProcessorDisplayIfTest {
                 
                 """;
         var config = standard();
-        var stamper = docxPackageStamper(config);
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 }

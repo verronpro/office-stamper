@@ -4,32 +4,19 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.test.utils.ContextFactory;
 import pro.verron.officestamper.test.utils.DocxFactory;
+import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Locale;
-import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
-import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 
-@DisplayName("Date Formatting features") class DateFormatTests {
-
-    static Stream<Arguments> factories() {
-        return Stream.of(//
-                argumentSet("Object-based", objectContextFactory()),//
-                argumentSet("Map-based", mapContextFactory())//
-        );
-    }
+@DisplayName("Date Formatting features")
+class DateFormatTests extends OfficeStamperTestBase {
 
     @BeforeAll
     static void beforeAll() {
@@ -40,7 +27,6 @@ import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFa
     static void afterAll() {
         Locale.setDefault(Locale.ROOT);
     }
-
 
     @DisplayName("Should allow to format dates")
     @MethodSource("factories")
@@ -144,7 +130,6 @@ import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFa
                 
                 """);
         var context = factory.date(ZonedDateTime.of(2000, 1, 12, 23, 34, 45, 567, ZoneId.of("UTC+2")));
-        var stamper = docxPackageStamper(config);
         var expected = """
                 ISO Date: 2000-01-12+02:00
                 
@@ -243,8 +228,6 @@ import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFa
                 // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
+        testStamper(config, context, template, expected);
     }
 }

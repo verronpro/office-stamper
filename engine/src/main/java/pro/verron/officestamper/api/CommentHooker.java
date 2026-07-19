@@ -41,7 +41,7 @@ public final class CommentHooker implements PreProcessor {
                 var attributes = List.of(newCtAttr("type", "processor"), newCtAttr("sdtruntag", runTag.getVal()));
                 var tag = newSmartTag("officestamper", attributes, commentRangeStart);
                 siblings.set(crsIndex, tag);
-            } else { // Word style comment range starts
+            } else { // Microsoft Word style comment range starts
                 var siblings = parent.getContent();
                 var crsIndex = siblings.indexOf(commentRangeStart);
                 var attributes = List.of(newCtAttr("type", "processor"));

@@ -145,7 +145,7 @@ Template .docx files used in tests are located in the link:{main}/test/sources[s
 
 == Who Uses This?
 
-Office-stamper is used in production for document automation in the energy sector in China, where strict schema compliance and security constraints are non-negotiable.
+Office-stamper is used in production for document automation in the energy sector in France & China, where strict schema compliance and security constraints are non-negotiable.
 If your team uses office-stamper, feel free to open an issue or PR to add yourself to this list.
 
 == Author

@@ -30,23 +30,30 @@ Before the main pass, standard configurations run a preprocessor that scans para
 This detaches expressions from their original text runs and makes them easy to iterate during the main processing pass.
 
 - Class: `pro.verron.officestamper.api.PlaceholderHooker`
-- Registered by: `pro.verron.officestamper.preset.Preprocessors.preparePlaceholders(String regex, String type)`
+- Registered by: `pro.verron.officestamper.preset.Preprocessors.preparePlaceholders(String opening, String type)`
 - Standard wiring (`OfficeStamperConfigurations.standard()`):
 
 [source,java]
 ----
-// In OfficeStamperConfigurations.standard():
-configuration.addPreprocessor(Preprocessors.removeMalformedComments());
-configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\#\\{([^{]+?)})", "inlineProcessor"));
-configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
+// In OfficeStamperConfigurations.minimal():
+configuration.addPreprocessor(Preprocessors.preparePlaceholders("${", "placeholder"));
+configuration.addPreprocessor(Preprocessors.preparePlaceholders("#{", "inlineProcessor"));
 configuration.addPreprocessor(Preprocessors.prepareCommentProcessor());
 ----
 
 How it works (simplified):
 
-- Each paragraph is stringified; a regex finds markers.
-- Group 1 is the full marker (e.g., `${...}`), group 2 is the inner expression.
-- The preprocessor replaces the matched text range with a `CTSmartTagRun` whose `type` attribute is set to the provided value (`"placeholder"` or `"inlineProcessor"`) and whose content is the raw expression text.
+- Each paragraph is stringified; the hooker scans it left-to-right for the configured opening delimiters (e.g., `${` or `#{`).
+- A placeholder ends at the closing brace that *balances* its opening brace, so expressions may nest braces freely. This is what makes SpEL inline lists and inline maps usable as placeholders:
++
+[source,text]
+----
+${ {1, 2, 3} }              -> expression " {1, 2, 3} "   (a SpEL inline list)
+${ {'a': 1, 'b': 2} }       -> expression " {'a': 1, 'b': 2} " (a SpEL inline map)
+${ {1, 2, 3}.?[#this > 1] } -> expression " {1, 2, 3}.?[#this > 1] "
+----
+- An opening delimiter that is never balanced by a closing brace is *malformed*. It spans the remainder of the paragraph and is captured verbatim (delimiters included), so the engine fails to parse it and hands it to the configured `ExceptionResolver` instead of leaving a stray delimiter behind.
+- For every matched placeholder the hooker replaces the corresponding text range with a `CTSmartTagRun` whose `type` attribute is set to the provided value (`"placeholder"` or `"inlineProcessor"`) and whose content is the inner expression (delimiters stripped, unless malformed).
 Implementation detail: it uses `WmlUtils.insertSmartTag(type, paragraph, expression, start, end)`.
 
 === 1.2. Post-processing: cleaning up markup
@@ -71,7 +78,7 @@ Customize/disable:
 ----
 // Start from the raw configuration and add only what you need
 var cfg = OfficeStamperConfigurations.raw();
-cfg.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{(.+?)})", "placeholder"));
+cfg.addPreprocessor(Preprocessors.preparePlaceholders("${", "placeholder"));
 
 // Or tweak the standard config by adding/removing preprocessors
 var std = OfficeStamperConfigurations.standard();

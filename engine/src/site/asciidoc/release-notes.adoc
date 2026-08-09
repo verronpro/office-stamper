@@ -19,6 +19,7 @@
 * **Documentation**: Rearranged documentation for better Maven site and GitHub visibility.
 * **CI/CD**: Fixed the GitHub release workflow.
 * **Modularization**: Extracted `imageio` and `asciidoc` modules into separate repositories.
+* **Placeholder tokenizer rewrite** (issue #{os}/issues/796[#796]): `PlaceholderHooker` no longer relies on a regex that forbade nested braces. It now scans for opening delimiters (`${`, `#{`, …) and balances braces, so SpEL inline lists (`${ {1, 2, 3} }`) and inline maps (`${ {'a': 1} }`) are valid placeholders. A placeholder whose opening brace is never balanced is captured verbatim and handed to the configured `ExceptionResolver` instead of being left behind as a stray `${`.
 
 == {proj}/v3.4[v3.4]
 

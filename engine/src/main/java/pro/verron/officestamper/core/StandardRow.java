@@ -7,8 +7,9 @@ import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.Hook;
 import pro.verron.officestamper.api.Hooks;
 import pro.verron.officestamper.api.Table;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.wml.Content;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;
+import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.List;
 
@@ -49,12 +50,12 @@ public class StandardRow implements Table.Row {
 
     @Override
     public void removeComment(Comment comment) {
-        WmlUtils.deleteCommentFromElements(comment.getId(), tr.getContent());
+        new Content(tr).deleteCommentFromElements(comment.getId());
     }
 
     @Override
     public List<Hook> hooks() {
-        return Hooks.ofHooks(tr::getContent).collect(toList());
+        return Hooks.ofHooks(new Content(tr)).collect(toList());
     }
 
     @Override

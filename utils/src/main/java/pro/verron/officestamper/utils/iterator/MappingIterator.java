@@ -1,6 +1,7 @@
 package pro.verron.officestamper.utils.iterator;
 
 import org.jspecify.annotations.Nullable;
+import pro.verron.officestamper.utils.wml.Content;
 
 import java.util.NoSuchElementException;
 import java.util.function.Function;
@@ -13,17 +14,16 @@ import java.util.function.Function;
 ///
 /// @param <S> the type of the source elements in the parent iterator
 /// @param <T> the type of the transformed elements returned by this iterator
-class MappingIterator<S, T>
-        implements ResetableIterator<T> {
-    private final Function<S, T> mapper;
-    private final ResetableIterator<S> source;
-    @Nullable T next;
+class MappingIterator<T, U> implements ResetableIterator<U> {
+    private final Function<T, U> mapper;
+    private final ResetableIterator<T> source;
+    private @Nullable U next;
 
     /// Constructs a MappingIterator with a parent iterator and a mapping function.
     ///
     /// @param source the underlying [ResetableIterator] containing the source elements
     /// @param mapper a function to transform the elements into a different type
-    public MappingIterator(ResetableIterator<S> source, Function<S, T> mapper) {
+    public MappingIterator(ResetableIterator<T> source, Function<T, U> mapper) {
         this.source = source;
         this.mapper = mapper;
         findNext();
@@ -43,9 +43,9 @@ class MappingIterator<S, T>
     }
 
     @Override
-    public T next() {
+    public U next() {
         if (next == null) throw new NoSuchElementException("No more elements to iterate");
-        T result = next;
+        U result = next;
         findNext();
         return result;
     }

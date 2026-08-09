@@ -1,5 +1,6 @@
 package pro.verron.officestamper.utils.wml;
 
+import org.docx4j.XmlUtils;
 import org.docx4j.com.microsoft.schemas.office.word.x2010.wordprocessingShape.CTTextboxInfo;
 import org.docx4j.com.microsoft.schemas.office.word.x2010.wordprocessingShape.CTWordprocessingShape;
 import org.docx4j.dml.Graphic;
@@ -28,22 +29,26 @@ import static org.docx4j.XmlUtils.unwrap;
 /// This class implements the [ResetableIterator] interface, allowing for the
 /// iteration to be reset to its initial
 /// state, ensuring reusability of the same iterator instance.
-public class DocxIterator implements ResetableIterator<Object> {
+public class DocxIterator implements ResetableIterator<Content.Element> {
 
-    private final Supplier<Iterator<Object>> supplier;
-    private Queue<Iterator<?>> iteratorQueue;
-    private @Nullable Object next;
+    private final Supplier<Iterator<Content.Element>> supplier;
+    private Queue<Iterator<Content.Element>> iteratorQueue;
+    private Content.@Nullable Element next;
 
     /// Creates a new [DocxIterator] instance that iterates over the content of
     /// the given [ContentAccessor].
     ///
     /// @param parent the content accessor whose content will be
     /// iterated over
-    public DocxIterator(Parent parent) {
-        this(parent.getContent()::iterator);
+    public DocxIterator(Content content) {
+        this(content.getContent());
     }
 
-    private DocxIterator(Supplier<Iterator<Object>> supplier) {
+    public DocxIterator(List<Content.Element> elements) {
+        this(elements::iterator);
+    }
+
+    private DocxIterator(Supplier<Iterator<Content.Element>> supplier) {
         this.supplier = supplier;
         initialize();
     }
@@ -52,7 +57,7 @@ public class DocxIterator implements ResetableIterator<Object> {
         var startingIterator = supplier.get();
         this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
         this.iteratorQueue.add(startingIterator);
-        this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
+        this.next = startingIterator.hasNext() ? new Content.Element(unwrap(startingIterator.next().get())) : null;
     }
 
     /// Selects and casts elements of the specified class type from the
@@ -63,7 +68,7 @@ public class DocxIterator implements ResetableIterator<Object> {
     /// @return a new [ResetableIterator] containing only elements of the
     /// specified class type
     public <T> ResetableIterator<T> selectClass(Class<T> aClass) {
-        return filter(aClass::isInstance).map(aClass::cast);
+        return filter(obj -> aClass.isInstance(obj.get())).map(obj -> aClass.cast(obj.get()));
     }
 
     @Override
@@ -78,83 +83,83 @@ public class DocxIterator implements ResetableIterator<Object> {
 
 
     @Override
-    public Object next() {
+    public Content.Element next() {
         if (next == null) throw new NoSuchElementException("No more elements to iterate");
 
         var result = next;
 
         next = null;
-        switch (result) {
+        switch (result.get()) {
             case ContentAccessor contentAccessor -> {
                 var content = contentAccessor.getContent();
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case SdtRun sdtRun -> {
                 var sdtContent = sdtRun.getSdtContent();
                 var content = sdtContent.getContent();
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case SdtBlock sdtBlock -> {
                 var sdtContent = sdtBlock.getSdtContent();
                 var content = sdtContent.getContent();
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case Pict pict -> {
                 var content = pict.getAnyAndAny();
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case VmlShapeElements rr -> {
-                var content = rr.getEGShapeElements();
-                iteratorQueue.add(content.iterator());
+                var content = rr.getEGShapeElements().stream().map(XmlUtils::unwrap).toList();
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case CTTextbox tb -> {
                 var content = tb.getTxbxContent();
                 var contentContent = content.getContent();
-                iteratorQueue.add(contentContent.iterator());
+                iteratorQueue.add(new ElementIterator(contentContent.iterator()));
             }
             case AlternateContent ac -> {
                 var choiceList = ac.getChoice();
-                iteratorQueue.add(choiceList.iterator());
+                iteratorQueue.add(new ElementIterator(choiceList.iterator()));
                 var fallback = ac.getFallback();
                 var fallbackContent = fallback.getAny();
-                iteratorQueue.add(fallbackContent.iterator());
+                iteratorQueue.add(new ElementIterator(fallbackContent.iterator()));
             }
             case AlternateContent.Choice c -> {
                 var content = c.getAny();
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case Drawing d -> {
                 var content = d.getAnchorOrInline();
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case Anchor a -> {
                 var content = List.of(a.getGraphic());
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case Graphic g -> {
                 var content = List.of(g.getGraphicData());
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case GraphicData gd -> {
                 var content = gd.getAny();
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case CTWordprocessingShape ws -> {
                 var content = List.of(ws.getTxbx());
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case CTTextboxInfo ti -> {
                 var content = List.of(ti.getTxbxContent());
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case Inline i -> {
                 var content = List.of(i.getGraphic());
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case CTSdtCell c -> {
                 var sdtContent = c.getSdtContent();
                 var content = sdtContent.getContent();
-                iteratorQueue.add(content.iterator());
+                iteratorQueue.add(new ElementIterator(content.iterator()));
             }
             case Parent _ -> throw new UtilsException("Parent not supported");
             case Text _, ProofErr _ -> { /*DO NOTHING*/ }
@@ -163,10 +168,28 @@ public class DocxIterator implements ResetableIterator<Object> {
         while (!iteratorQueue.isEmpty() && next == null) {
             var nextIterator = iteratorQueue.poll();
             if (nextIterator.hasNext()) {
-                next = unwrap(nextIterator.next());
+                next = new Content.Element(unwrap(nextIterator.next().get()));
                 iteratorQueue.add(nextIterator);
             }
         }
         return result;
+    }
+
+    private static class ElementIterator implements Iterator<Content.Element> {
+        private final Iterator<?> iterator;
+
+        public ElementIterator(Iterator<?> iterator) {
+            this.iterator = iterator;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public Content.Element next() {
+            return new Content.Element(iterator.next());
+        }
     }
 }

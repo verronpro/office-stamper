@@ -1,7 +1,9 @@
 package pro.verron.officestamper.core;
 
+import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.*;
 import pro.verron.officestamper.utils.svg.SvgUtils;
+import pro.verron.officestamper.utils.wml.Content;
 import pro.verron.officestamper.utils.wml.DocxDocument;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
@@ -93,7 +95,7 @@ public class DocxStamper implements OfficeStamper<DocxDocument> {
 
     private void process(Part part, Object contextRoot) {
         var contextTree = new ContextRoot(contextRoot);
-        var iterator = DocxHook.ofHooks(part::content, part);
+        var iterator = DocxHook.ofHooks(new Content(((ContentAccessor) part.getPart())), part);
         while (iterator.hasNext()) {
             var hook = iterator.next();
             var officeStamperContextFactory = new OfficeStamperEvaluationContextFactory(customFunctions,

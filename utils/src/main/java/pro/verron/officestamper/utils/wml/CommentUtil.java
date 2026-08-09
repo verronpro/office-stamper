@@ -40,9 +40,10 @@ public class CommentUtil {
     /// Retrieves the comment associated with a given paragraph content within a WordprocessingMLPackage document.
     ///
     /// @param parent   the content accessor to search for comments.
+    /// @param iterator
     /// @param document the WordprocessingMLPackage document containing the paragraph and its comments.
     /// @return a collection of found comments.
-    public static Collection<Comments.Comment> getCommentFor(Parent parent, OpcPackage document) {
+    public static Collection<Comments.Comment> getCommentFor(DocxIterator iterator, OpcPackage document) {
         var comments = getCommentsPart(document.getParts()).map(CommentUtil::extractContent)
                 .map(Comments::getComment)
                 .stream()
@@ -50,7 +51,7 @@ public class CommentUtil {
                 .toList();
 
         var result = new ArrayList<Comments.Comment>();
-        var commentIterator = new DocxIterator(parent).selectClass(CommentRangeStart.class);
+        var commentIterator = iterator.selectClass(CommentRangeStart.class);
         while (commentIterator.hasNext()) {
             var crs = commentIterator.next();
             findCommentById(comments, crs.getId()).ifPresent(result::add);
@@ -119,13 +120,16 @@ public class CommentUtil {
     /// @param document the document.
     /// @param parent   the content accessor.
     /// @return the comment.
-    public static Comment comment(Part docxPart, CommentRangeStart crs, DocxDocument document, Parent parent) {
-        var iterator = new DocxIterator(parent).slice(crs, null);
+    public static Comment comment(Part part, CommentRangeStart crs, DocxDocument document) {
+        var iterator = new DocxIterator(((ContentAccessor) part.getPart()).getContent()
+                .stream()
+                .map(Content.Element::new)
+                .toList()).slice(crs, null);
         CommentRangeEnd cre = null;
         CommentReference cr = null;
         var commentId = crs.getId();
         while (iterator.hasNext() && (cr == null || cre == null)) {
-            var element = iterator.next();
+            var element = iterator.next().get();
             if (element instanceof CommentRangeEnd found && cre == null && Objects.equals(found.getId(), commentId)) {
                 cre = found;
             } else if (element instanceof CommentReference found && cr == null && Objects.equals(found.getId(),
@@ -142,6 +146,6 @@ public class CommentUtil {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toMap(Comments.Comment::getId, Function.identity()))
                 .get(commentId);
-        return new Comment(docxPart, (CTSmartTagRun) crs.getParent(), crs, cre, comment, cr);
+        return new Comment(part, (CTSmartTagRun) crs.getParent(), crs, cre, comment, cr);
     }
 }

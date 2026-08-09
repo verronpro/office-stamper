@@ -17,11 +17,15 @@ public class SmartTag implements Parent {
         this.smartTag = smartTag;
     }
 
-    public Parent getParent() {
+    public Content getParent() {
         var parent = smartTag.getParent();
         return switch (parent) {
-            case P p -> new Paragraph(p);
-            case CTSdtContentRun sdtContent -> new SdtContent(sdtContent);
+            case P p -> new Content(p);
+            case CTSdtContentRun sdtContent -> {
+                var sdtContentParent = (SdtRun) sdtContent.getParent();
+                var sdtContentParentParent = (P) sdtContentParent.getParent();
+                yield new Content(sdtContentParentParent, sdtContent.getContent());
+            }
             default -> throw new RuntimeException("whatever");
         };
     }
@@ -69,5 +73,9 @@ public class SmartTag implements Parent {
         var parent = (ContentAccessor) smartTag.getParent();
         var siblings = parent.getContent();
         siblings.remove(smartTag);
+    }
+
+    public CTSmartTagRun get() {
+        return smartTag;
     }
 }

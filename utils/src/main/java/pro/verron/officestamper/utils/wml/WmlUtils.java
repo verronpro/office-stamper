@@ -26,15 +26,12 @@ import pro.verron.officestamper.utils.openpackaging.OpenpackagingFactory;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
-import static org.docx4j.XmlUtils.unwrap;
 import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
 /// Utility class with methods to help in the interaction with
@@ -245,6 +242,7 @@ public final class WmlUtils {
             case VmlShapeElements vmlShapeElements -> asString(vmlShapeElements.getEGShapeElements());
             case CTTextbox textbox -> asString(textbox.getTxbxContent());
             case CommentRangeStart _, CommentRangeEnd _ -> "";
+            case R.FootnoteRef _, R.Separator _, R.ContinuationSeparator _ -> "";
             case AlternateContent ac -> {
                 var choices = ac.getChoice();
                 yield "<alternateContent(%d)>".formatted(choices.size() + 1);
@@ -358,7 +356,7 @@ public final class WmlUtils {
         return newStartRun;
     }
 
-    private static Collection<?> wrap(R prefix, Collection<?> elements, R suffix) {
+    static Collection<?> wrap(R prefix, Collection<?> elements, R suffix) {
         var merge = new ArrayList<>();
         merge.add(prefix);
         merge.addAll(elements);
@@ -366,7 +364,7 @@ public final class WmlUtils {
         return merge;
     }
 
-    private static void removeExpression(List<Object> contents, StandardRun firstRun, int matchStartIndex, int matchEndIndex, StandardRun lastRun, List<StandardRun> affectedRuns) {
+    static void removeExpression(List<Object> contents, StandardRun firstRun, int matchStartIndex, int matchEndIndex, StandardRun lastRun, List<StandardRun> affectedRuns) {
         // remove the expression from the first run
         firstRun.replace(matchStartIndex, matchEndIndex, "");
         // remove all runs between first and last
@@ -465,47 +463,6 @@ public final class WmlUtils {
         return newCtAttr(attributeKey, attributeValue);
     }
 
-    /// Deletes all elements associated with the specified comment from the
-    /// provided list of items.
-    ///
-    /// @param commentId the ID of the comment to be deleted
-    /// @param items     the list of items from which elements associated with
-    /// the comment will be deleted
-    public static void deleteCommentFromElements(BigInteger commentId, List<Object> items) {
-        record DeletableItems(List<Object> container, List<Object> items) {
-            static List<DeletableItems> findAll(List<Object> items, BigInteger commentId) {
-                Predicate<BigInteger> predicate = bi -> Objects.equals(bi, commentId);
-                List<DeletableItems> elementsToRemove = new ArrayList<>();
-                items.forEach(item -> {
-                    Object unwrapped = unwrap(item);
-                    // Recursively finds deletable items associated with
-                    // comment ID
-                    elementsToRemove.addAll(switch (unwrapped) {
-                        case CTSmartTagRun str when str.getContent()
-                                .stream()
-                                .anyMatch(i -> i instanceof CommentRangeStart crs && predicate.test(crs.getId())) ->
-                                from(items, item);
-                        case CommentRangeStart crs when predicate.test(crs.getId()) -> from(items, item);
-                        case CommentRangeEnd cre when predicate.test(cre.getId()) -> from(items, item);
-                        case R.CommentReference rcr when predicate.test(rcr.getId()) -> from(items, item);
-                        case ContentAccessor ca -> (Collection<DeletableItems>) findAll(ca.getContent(), commentId);
-                        case SdtRun sdtRun -> {
-                            var ca = sdtRun.getSdtContent();
-                            yield (Collection<DeletableItems>) findAll(ca.getContent(), commentId);
-                        }
-                        default -> emptyList();
-                    });
-                });
-                return elementsToRemove;
-            }
-
-            private static List<DeletableItems> from(List<Object> items, Object item) {
-                return Collections.singletonList(new DeletableItems(items, List.of(item)));
-            }
-        }
-        DeletableItems.findAll(items, commentId).forEach(p -> p.container.removeAll(p.items));
-    }
-
     /// Visits the document's main content, header, footer, footnotes, and
     /// endnotes using the specified visitor.
     ///
@@ -567,7 +524,7 @@ public final class WmlUtils {
     /// @param startIndex the start index of the run relative to the
     /// containing paragraph.
     /// @param run        the [R] run itself.
-    private record StandardRun(int startIndex, R run) {
+    public record StandardRun(int startIndex, R run) {
 
         /// Initializes a list of [StandardRun] objects based on the given
         /// iterator of [R] objects.

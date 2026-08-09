@@ -12,20 +12,16 @@ import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
 import pro.verron.officestamper.utils.wml.WmlFactory;
-import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
 /// TableResolver class.
 ///
 /// @author Joseph Verron
 /// @since 1.6.2
-public class TableResolver
-        extends CommentProcessor
-        implements CommentProcessorFactory.ITableResolver {
+public class TableResolver extends CommentProcessor implements CommentProcessorFactory.ITableResolver {
 
     /// Constructs a new TableResolver with the given processor context.
     ///
@@ -36,16 +32,16 @@ public class TableResolver
 
     @Override
     public void resolveTable(@Nullable StampTable givenTable) {
-        var tbl = paragraph().parent(Tbl.class)
-                             .orElseThrow(throwing("Paragraph is not within a table!"));
+        var table = paragraph().parentTable().orElseThrow(throwing("Paragraph is not within a table!"));
+        Tbl tbl = table.asTbl();
         if (givenTable != null) {
             replaceTableInplace(tbl, givenTable);
-        }
-        else {
+        } else {
             List<Object> tableParentContent = ((ContentAccessor) tbl.getParent()).getContent();
             tableParentContent.remove(tbl);
         }
-        WmlUtils.deleteCommentFromElements(comment().getId(), context().contentIterator().collect(toList()));
+        var context = context();
+        context.comment().getContent().deleteCommentFromElements(comment().getId());
     }
 
     private void replaceTableInplace(Tbl wordTable, StampTable stampedTable) {

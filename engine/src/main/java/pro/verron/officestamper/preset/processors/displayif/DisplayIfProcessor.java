@@ -6,11 +6,11 @@ import org.jvnet.jaxb.lang.Child;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
+import pro.verron.officestamper.utils.wml.Content;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.ArrayList;
 
-import static java.util.stream.Collectors.toList;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
 /// Processor for the [CommentProcessorFactory.IDisplayIfProcessor] comment.
@@ -37,7 +37,7 @@ public class DisplayIfProcessor extends CommentProcessor implements CommentProce
     public void displayParagraphIf(@Nullable Boolean condition) {
         var paragraph = context().paragraph();
         if (!Boolean.TRUE.equals(condition)) paragraph.remove();
-        paragraph.apply(a -> WmlUtils.deleteCommentFromElements(comment().getId(), a.getContent()));
+        paragraph.apply(a -> new Content(a).deleteCommentFromElements(comment().getId()));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DisplayIfProcessor extends CommentProcessor implements CommentProce
     public void displayTableRowIf(@Nullable Boolean condition) {
         var tableRow = context().tableRow().orElseThrow(throwing("Paragraph is not within a row!"));
         if (!Boolean.TRUE.equals(condition)) tableRow.remove();
-        WmlUtils.deleteCommentFromElements(comment().getId(), tableRow.asTr().getContent());
+        new Content(tableRow.asTr()).deleteCommentFromElements(comment().getId());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class DisplayIfProcessor extends CommentProcessor implements CommentProce
     public void displayTableIf(@Nullable Boolean condition) {
         var table = context().table().orElseThrow(throwing("Paragraph is not within a table!"));
         if (!Boolean.TRUE.equals(condition)) table.remove();
-        WmlUtils.deleteCommentFromElements(comment().getId(), table.asTbl().getContent());
+        new Content(table.asTbl()).deleteCommentFromElements(comment().getId());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class DisplayIfProcessor extends CommentProcessor implements CommentProce
             }
             toRemove.forEach(WmlUtils::remove);
         }
-        WmlUtils.deleteCommentFromElements(comment().getId(), context().contentIterator().collect(toList()));
+        context().comment().getContent().deleteCommentFromElements(comment().getId());
     }
 
     @Override
@@ -105,10 +105,10 @@ public class DisplayIfProcessor extends CommentProcessor implements CommentProce
 
     @Override
     public void displayDocPartIf(@Nullable Boolean condition) {
-        var parent = comment().getParent();
-        var siblings = parent.getContent();
-        if (!Boolean.TRUE.equals(condition)) siblings.removeAll(comment().getElements());
-        WmlUtils.deleteCommentFromElements(comment().getId(), siblings);
+        var content = comment().getContent();
+        var items = content.getContent();
+        if (!Boolean.TRUE.equals(condition)) items.removeAll(comment().getElements());
+        content.deleteCommentFromElements(comment().getId());
     }
 
     @Override

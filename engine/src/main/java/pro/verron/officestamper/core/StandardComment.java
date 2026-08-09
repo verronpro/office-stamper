@@ -5,6 +5,7 @@ import org.docx4j.wml.R.CommentReference;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.Comment;
 import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.utils.wml.Content;
 import pro.verron.officestamper.utils.wml.DocxDocument;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 import pro.verron.officestamper.utils.wml.Parent;
@@ -37,9 +38,8 @@ public class StandardComment implements Comment {
     /// @param expression the [String] content to be included in the comment
     /// @param id         the unique [BigInteger] identifier for the comment
     /// @return a [StandardComment] instance initialized with the specified parameters
-    public static StandardComment create(Part part, Parent parent, String expression, BigInteger id) {
-        var comment = DocxDocument.Comment.createComment(part, parent, expression, id);
-        return new StandardComment(comment);
+    public static StandardComment create(Part part, Content content, String expression, BigInteger id) {
+        return new StandardComment(DocxDocument.Comment.createComment(part, content, expression, id));
     }
 
     @Override
@@ -59,17 +59,17 @@ public class StandardComment implements Comment {
     }
 
     @Override
-    public Parent getParent() {
+    public Content getContent() {
         return DocumentUtil.findSmallestCommonParent(comment.getCommentRangeStart(), comment.getCommentRangeEnd());
     }
 
     @Override
-    public List<Object> getElements() {
-        List<Object> elements = new ArrayList<>();
+    public List<Content.Element> getElements() {
+        List<Content.Element> elements = new ArrayList<>();
         boolean startFound = false;
         boolean endFound = false;
-        var siblings = getParent().getContent();
-        for (Object element : siblings) {
+        var siblings = getContent().getContent();
+        for (Content.Element element : siblings) {
             startFound = startFound || DocumentUtil.depthElementSearch(comment.getCommentRangeStart(), element);
             if (startFound && !endFound) elements.add(element);
             endFound = endFound || DocumentUtil.depthElementSearch(comment.getCommentRangeEnd(), element);

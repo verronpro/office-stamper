@@ -6,6 +6,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.wml.Content;
 import pro.verron.officestamper.utils.wml.DocxDocument;
 import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlFactory;
@@ -85,7 +86,7 @@ public class DocxFactory {
         var mdp = pkg.getMainDocumentPart();
         var paragraphs = new ArrayList<P>();
 
-        new DocxIterator(mdp::getContent).filter(P.class::isInstance)
+        new DocxIterator(new Content(mdp)).filter(P.class::isInstance)
                 .map(P.class::cast)
                 .forEachRemaining(paragraphs::add);
 

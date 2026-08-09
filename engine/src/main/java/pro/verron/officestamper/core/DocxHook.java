@@ -4,10 +4,7 @@ import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.CommentRangeStart;
 import pro.verron.officestamper.api.Hook;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
-import pro.verron.officestamper.utils.wml.CommentUtil;
-import pro.verron.officestamper.utils.wml.DocxIterator;
-import pro.verron.officestamper.utils.wml.Parent;
-import pro.verron.officestamper.utils.wml.SmartTag;
+import pro.verron.officestamper.utils.wml.*;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import static pro.verron.officestamper.utils.wml.WmlUtils.isTagElement;
@@ -20,16 +17,16 @@ public interface DocxHook extends Hook {
     /// @param parent the [Parent] to search for hooks.
     /// @param part   the document part.
     /// @return an iterator over the found hooks.
-    static ResetableIterator<DocxHook> ofHooks(Parent parent, Part part) {
-        return new DocxIterator(parent).filter(DocxHook::isPotentialHook).map(o -> asHook(part, o));
+    static ResetableIterator<DocxHook> ofHooks(Content content, Part part) {
+        return new DocxIterator(content).filter(DocxHook::isPotentialHook).map(o -> asHook(part, o));
     }
 
     /// Checks if the given object is a potential hook.
     ///
     /// @param o the object to check.
     /// @return `true` if it is a potential hook.
-    static boolean isPotentialHook(Object o) {
-        return o instanceof CTSmartTagRun tag && isTagElement(tag, "officestamper");
+    static boolean isPotentialHook(Content.Element o) {
+        return o.get() instanceof CTSmartTagRun tag && isTagElement(tag, "officestamper");
     }
 
     /// Converts an object to a hook.
@@ -37,8 +34,8 @@ public interface DocxHook extends Hook {
     /// @param part the document part.
     /// @param o    the object to convert.
     /// @return the hook.
-    static DocxHook asHook(Part part, Object o) {
-        return switch (o) {
+    static DocxHook asHook(Part part, Content.Element o) {
+        return switch (o.get()) {
             case CTSmartTagRun tag when isType(tag, "processor", "type") -> newCommentHook(part, new SmartTag(tag));
             case CTSmartTagRun tag -> new TagHook(part, new Tag(part, new SmartTag(tag)));
             default -> throw new IllegalArgumentException("Unexpected value: " + o);
@@ -67,7 +64,7 @@ public interface DocxHook extends Hook {
         var tagContent = tag.getContent();
         var commentRangeStart = (CommentRangeStart) tagContent.getFirst();
         var myTag = new Tag(part, tag);
-        var comment = CommentUtil.comment(part, commentRangeStart, part.document(), part::content);
+        var comment = CommentUtil.comment(part, commentRangeStart, part.document());
         var standardComment = new StandardComment(comment);
         return new CommentHook(part, myTag, standardComment);
     }

@@ -5,15 +5,12 @@ import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
-import pro.verron.officestamper.utils.wml.Insert;
+import pro.verron.officestamper.utils.wml.*;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Table;
 import pro.verron.officestamper.utils.pml.PptxDocument;
 import pro.verron.officestamper.utils.pml.PptxDocument.Slide.Shape;
-import pro.verron.officestamper.utils.wml.CommentUtil;
-import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -127,15 +124,6 @@ public class PowerpointParagraph implements Paragraph {
     }
 
     @Override
-    public void replace(List<P> toRemove, List<P> toAdd) {
-        int index = siblings().indexOf(paragraph);
-        if (index < 0) throw new OfficeStamperException("Impossible");
-
-        siblings().addAll(index, toAdd);
-        siblings().removeAll(toRemove);
-    }
-
-    @Override
     public void remove() {
         WmlUtils.remove(paragraph);
     }
@@ -204,13 +192,10 @@ public class PowerpointParagraph implements Paragraph {
     }
 
     @Override
-    public <T> Optional<T> parent(Class<T> aClass) {
-        return parent(aClass, Integer.MAX_VALUE);
-    }
-
-    @Override
     public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(paragraph::getEGTextRun, document.getPackage());
+        return CommentUtil.getCommentFor(new DocxIterator(paragraph.getEGTextRun().stream().map(
+                Content.Element::new).toList()), document.getPackage()
+        );
     }
 
     @Override
@@ -223,15 +208,6 @@ public class PowerpointParagraph implements Paragraph {
         return Optional.empty();
     }
 
-    private List<Object> siblings() {
-        return this.parent(ContentAccessor.class, 1)
-                .orElseThrow(throwing("Not a standard Child with common parent"))
-                .getContent();
-    }
-
-    private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        return WmlUtils.getFirstParentWithClass(paragraph, aClass, depth);
-    }
 
     private void singleRun(Object replacement, String full, int matchStartIndex, int matchEndIndex, List<Object> runs, PowerpointRun firstRun, PowerpointRun lastRun) {
         assert firstRun == lastRun;

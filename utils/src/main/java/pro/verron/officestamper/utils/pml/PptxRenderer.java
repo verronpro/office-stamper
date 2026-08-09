@@ -26,13 +26,13 @@ public class PptxRenderer {
     /// @return a string representation of the text content within the PptxDocument presentation.
     public static String pptxToString(PresentationMLPackage presentation) {
         return new PptxIterator(presentation).filter(CTTextParagraph.class::isInstance)
-                                             .map(CTTextParagraph.class::cast)
-                                             .map(CTTextParagraph::getEGTextRun)
-                                             .map(l -> l.stream()
-                                                        .filter(CTRegularTextRun.class::isInstance)
-                                                        .map(CTRegularTextRun.class::cast)
-                                                        .map(CTRegularTextRun::getT)
-                                                        .collect(joining()))
-                                             .collect(joining("\n", "", "\n"));
+                .map(CTTextParagraph.class::cast)
+                .map(CTTextParagraph::getEGTextRun)
+                .map(l -> l.stream()
+                        .filter(CTRegularTextRun.class::isInstance)
+                        .map(CTRegularTextRun.class::cast)
+                        .map(CTRegularTextRun::getT)
+                        .collect(joining()))
+                .collect(joining("\n", "", "\n"));
     }
 }

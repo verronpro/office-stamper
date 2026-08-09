@@ -12,7 +12,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.docx4j.openpackaging.parts.relationships.Namespaces.FOOTER;
@@ -61,7 +63,7 @@ public class DocxDocument implements Document {
     }
 
     public Part mainPart() {
-        return new Part(this, mlPackage.getMainDocumentPart(), mlPackage.getMainDocumentPart()::getContent);
+        return new Part(this, mlPackage.getMainDocumentPart(), new Content(mlPackage.getMainDocumentPart()));
     }
 
     public List<DocxDocument.Part> headerParts() {
@@ -78,7 +80,7 @@ public class DocxDocument implements Document {
         return relationshipsPart.getRelationshipsByType(type)
                 .stream()
                 .map(relationshipsPart::getPart)
-                .map(part -> new Part(this, part, ((ContentAccessor) part)::getContent))
+                .map(part -> new Part(this, part, new Content((ContentAccessor) part)))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -99,15 +101,15 @@ public class DocxDocument implements Document {
             this.cr = cr;
         }
 
-        public static Comment createComment(Part part, Parent parent, String expression, BigInteger id) {
-            var start = newCommentRangeStart(id, parent);
+        public static Comment createComment(Part part, Content content, String expression, BigInteger id) {
+            var start = newCommentRangeStart(id, content);
             var attributes = List.of(newCtAttr("type", "processor"));
             return new Comment(part,
                     newSmartTag("officestamper", attributes, start),
                     start,
-                    newCommentRangeEnd(id, parent),
+                    newCommentRangeEnd(id, content),
                     newComment(id, expression),
-                    newCommentReference(id, parent)
+                    newCommentReference(id, content)
             );
         }
 
@@ -143,9 +145,10 @@ public class DocxDocument implements Document {
     public static class Part {
         private final DocxDocument document;
         private final org.docx4j.openpackaging.parts.Part part;
-        private final Parent content;
+        private final Content content;
+        private final transient Map<Content, Content> parentMap = new HashMap<>();
 
-        public Part(DocxDocument document, org.docx4j.openpackaging.parts.Part part, Parent content) {
+        public Part(DocxDocument document, org.docx4j.openpackaging.parts.Part part, Content content) {
             this.document = document;
             this.part = part;
             this.content = content;
@@ -159,8 +162,15 @@ public class DocxDocument implements Document {
             return part;
         }
 
-        public List<Object> content() {
-            return content.getContent();
+        public List<Content> content() {
+            var paragraphs = content.getContent();
+            var contents = paragraphs.stream()
+                    .filter(ContentAccessor.class::isInstance)
+                    .map(ContentAccessor.class::cast)
+                    .map(Content::new)
+                    .toList();
+            contents.forEach(key -> parentMap.put(key, content));
+            return contents;
         }
     }
 }

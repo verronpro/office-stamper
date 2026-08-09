@@ -6,7 +6,6 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
 import org.docx4j.wml.SectPr;
 import org.jspecify.annotations.Nullable;
-import org.jvnet.jaxb.lang.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.CommentProcessor;
@@ -14,19 +13,15 @@ import pro.verron.officestamper.api.Hooks;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory.IRepeatProcessor;
-import pro.verron.officestamper.utils.wml.Parent;
-import pro.verron.officestamper.utils.wml.WmlFactory;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.wml.Content;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;
+import pro.verron.officestamper.utils.wml.WmlFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toCollection;
 
 public class RepeatProcessor extends CommentProcessor implements IRepeatProcessor {
     private static final Logger log = LoggerFactory.getLogger(RepeatProcessor.class);
@@ -39,19 +34,19 @@ public class RepeatProcessor extends CommentProcessor implements IRepeatProcesso
         super(context);
     }
 
-    private static Optional<SectPr> previousSectionBreak(Object firstObject, Parent parent) {
-        List<Object> parentContent = parent.getContent();
+    private static Optional<SectPr> previousSectionBreak(Content.Element firstObject, Content content) {
+        List<Content.Element> parentContent = content.getContent();
         int pIndex = parentContent.indexOf(firstObject);
 
         int i = pIndex - 1;
         while (i >= 0) {
-            if (parentContent.get(i) instanceof P prevParagraph) {
+            if (parentContent.get(i).get() instanceof P prevParagraph) {
                 // the first P preceding the object is the one carrying a section break
                 return ofNullable(prevParagraph.getPPr()).map(PPr::getSectPr);
             } else log.debug("The previous sibling was not a P, continuing search");
             i--;
         }
-        log.info("No previous section break found from : {}, first object index={}", parent, pIndex);
+        log.info("No previous section break found from : {}, first object index={}", content, pIndex);
         return Optional.empty();
     }
 
@@ -63,8 +58,9 @@ public class RepeatProcessor extends CommentProcessor implements IRepeatProcesso
         }
     }
 
-    private static boolean containsSectionBreaks(ArrayList<Object> elements) {
+    private static boolean containsSectionBreaks(List<Content.Element> elements) {
         return elements.stream()
+                .map(Content.Element::get)
                 .filter(P.class::isInstance)
                 .map(P.class::cast)
                 .map(P::getPPr)
@@ -73,17 +69,9 @@ public class RepeatProcessor extends CommentProcessor implements IRepeatProcesso
                 .anyMatch(Objects::nonNull);
     }
 
-    private static Optional<P> lastParagraph(List<Object> elements) {
-        if (elements.getLast() instanceof P paragraph) return Optional.of(paragraph);
+    private static Optional<Content.Element> lastParagraph(List<Content.Element> elements) {
+        if (elements.getLast().isParagraph()) return Optional.of(elements.getLast());
         else return Optional.empty();
-    }
-
-    private static Supplier<P> newEndParagraph(ArrayList<Object> copiedElements) {
-        return () -> {
-            var p = WmlFactory.newParagraph();
-            copiedElements.addLast(p);
-            return p;
-        };
     }
 
     private static boolean hasSectionBreak(P lastParagraph) {
@@ -103,34 +91,32 @@ public class RepeatProcessor extends CommentProcessor implements IRepeatProcesso
     public void repeat(@Nullable Iterable<Object> items) {
         if (items == null) return;
         var comment = context().comment();
-        var elements = comment.getElements();
         var contextHolder = context().contextHolder();
-        var parent = comment.getParent();
-        var siblings = parent.getContent();
-        var firstElement = elements.getFirst();
-        var previousSectionBreak = previousSectionBreak(firstElement, parent).orElse(documentSection(context().part()));
+        var content = comment.getContent();
+        var siblings = content.getContent();
+        var firstElement = content.getFirst();
+        var previousSectionBreak = previousSectionBreak(firstElement,
+                content
+        ).orElse(documentSection(context().part()));
         var index = siblings.indexOf(firstElement);
-        siblings.removeAll(elements);
+        content.clear();
         var iterator = items.iterator();
         // Iterates items; copies elements; conditionally adds section break; adds elements
         while (iterator.hasNext()) {
             var item = iterator.next();
-            var copiedElements = elements.stream().map(XmlUtils::deepCopy).collect(toCollection(ArrayList::new));
-            WmlUtils.deleteCommentFromElements(comment.getId(), copiedElements);
+            var copiedElements = content.copy();
+            copiedElements.deleteCommentFromElements(comment.getId());
             // Adds section break to last paragraph if needed
-            if (iterator.hasNext() && containsSectionBreaks(copiedElements)) {
-                var lastParagraph = lastParagraph(copiedElements).orElseGet(newEndParagraph(copiedElements));
-                if (!hasSectionBreak(lastParagraph)) {
-                    addSectionBreak(previousSectionBreak, lastParagraph);
+            if (iterator.hasNext() && containsSectionBreaks(copiedElements.getContent())) {
+                var lastParagraph = lastParagraph(copiedElements.getContent()).orElseGet(copiedElements::addEmptyParagraph);
+                if (!hasSectionBreak((P) lastParagraph.get())) {
+                    addSectionBreak(previousSectionBreak, (P) lastParagraph.get());
                 }
             }
-            siblings.addAll(index, copiedElements);
+            content.add(index, copiedElements.getContent());
             index += copiedElements.size();
-            copiedElements.forEach(element -> {
-                if (element instanceof Child child) child.setParent(parent);
-            });
             var subContextKey = contextHolder.addBranch(item);
-            Hooks.ofHooks(() -> copiedElements).forEachRemaining(hook -> hook.setContextKey(subContextKey));
+            Hooks.ofHooks(copiedElements).forEachRemaining(hook -> hook.setContextKey(subContextKey));
         }
     }
 }

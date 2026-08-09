@@ -87,8 +87,10 @@ public class ExceptionResolvers {
 
         @Override
         public Insert resolve(String expression, String message, Exception cause) {
-            if (tracing) throw new OfficeStamperException(message, cause);
-            else throw new OfficeStamperException(message);
+            if (tracing)
+                throw new OfficeStamperException(message, cause);
+            else
+                throw new OfficeStamperException(message);
         }
     }
 }

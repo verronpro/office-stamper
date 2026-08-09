@@ -1,9 +1,10 @@
 package pro.verron.officestamper.api;
 
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
-import pro.verron.officestamper.utils.wml.DocxIterator;
+import pro.verron.officestamper.utils.wml.Content;
 import pro.verron.officestamper.utils.wml.DocxDocument;
 import pro.verron.officestamper.utils.wml.DocxDocument.Part;
+import pro.verron.officestamper.utils.wml.DocxIterator;
 
 import java.util.Optional;
 
@@ -40,11 +41,11 @@ public final class ProcessorContext {
     /// Returns an iterator over the content associated with the current comment's range.
     ///
     /// @return a [ResetableIterator] of [Object] representing the content within the comment's scope.
-    public ResetableIterator<Object> contentIterator() {
-        var parent = comment.getParent();
+    public ResetableIterator<Content.Element> contentIterator() {
+        var content = comment.getContent();
         var crs = comment.getCommentRangeStart();
         var cre = comment.getCommentRangeEnd();
-        return new DocxIterator(parent).slice(crs, cre);
+        return new DocxIterator(content).slice(crs, cre);
     }
 
     /// Returns the comment associated with the current processing context.

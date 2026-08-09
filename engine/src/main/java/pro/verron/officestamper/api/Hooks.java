@@ -2,10 +2,7 @@ package pro.verron.officestamper.api;
 
 import org.docx4j.wml.CTSmartTagRun;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
-import pro.verron.officestamper.utils.wml.DocxIterator;
-import pro.verron.officestamper.utils.wml.Parent;
-import pro.verron.officestamper.utils.wml.SmartTag;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.wml.*;
 
 /// Provides utility methods for working with [Hook] instances in the context of a WordprocessingML-based document. The
 /// [Hooks] class contains static methods to create and manage [ResetableIterator] instances of hooks for a given
@@ -23,8 +20,8 @@ public class Hooks {
     ///
     /// @param parent the [Parent] providing access to the document's content
     /// @return a [ResetableIterator] of Hook instances for the specified document part
-    public static ResetableIterator<Hook> ofHooks(Parent parent) {
-        return new DocxIterator(parent).filter(Hooks::isHook).map(Hooks::asHook);
+    public static ResetableIterator<Hook> ofHooks(Content content) {
+        return new DocxIterator(content).filter(Hooks::isHook).map(Hooks::asHook);
     }
 
     private static boolean isHook(Object o) {

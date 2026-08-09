@@ -49,7 +49,7 @@ public record Tag(Part part, SmartTag tag) {
     ///
     /// @return the Paragraph object representing the parent element of the smart tag
     public Paragraph getParagraph() {
-        return StandardParagraph.from(part, tag.getParent());
+        return StandardParagraph.from(part, tag.get());
     }
 
     /// Converts the current tag entity into a Comment representation.

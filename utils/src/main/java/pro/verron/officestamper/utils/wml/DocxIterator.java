@@ -139,8 +139,10 @@ public class DocxIterator implements ResetableIterator<Object> {
                 iteratorQueue.add(content.iterator());
             }
             case CTWordprocessingShape ws -> {
-                var content = List.of(ws.getTxbx());
-                iteratorQueue.add(content.iterator());
+                // Decorative shapes (e.g. wps:wsp without a textbox, common in footers) have no
+                // txbx; getTxbx() is null and List.of(null) would throw an NPE. Skip them.
+                var txbx = ws.getTxbx();
+                if (txbx != null) iteratorQueue.add(List.of(txbx).iterator());
             }
             case CTTextboxInfo ti -> {
                 var content = List.of(ti.getTxbxContent());

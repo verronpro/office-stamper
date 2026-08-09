@@ -33,10 +33,9 @@ class MultiStampTest {
         var context = factory.names("Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamper = docxPackageStamper(config);
 
-        var filename = "MultiStampTest.docx";
-        var template = getWordResource(filename);
+        var template = getWordResource("MultiStampTest.docx");
         var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
+        var actual = toAsciidoc(stamped.getPackage());
         assertEquals("""
                 == Multi-Stamp-Test
                 
@@ -61,9 +60,9 @@ class MultiStampTest {
                 
                 """, actual);
 
-        var template2 = getWordResource(filename);
+        var template2 = getWordResource("MultiStampTest.docx");
         var wordprocessingMLPackage = stamper.stamp(template2, context);
-        var document2 = toAsciidoc(wordprocessingMLPackage);
+        var document2 = toAsciidoc(wordprocessingMLPackage.getPackage());
         assertEquals("""
                 == Multi-Stamp-Test
                 

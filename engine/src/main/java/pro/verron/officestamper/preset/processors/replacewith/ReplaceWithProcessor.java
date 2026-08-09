@@ -2,7 +2,7 @@ package pro.verron.officestamper.preset.processors.replacewith;
 
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;

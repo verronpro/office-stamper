@@ -2,10 +2,12 @@ package pro.verron.officestamper.core;
 
 import org.docx4j.XmlUtils;
 import org.docx4j.wml.*;
-import org.jvnet.jaxb2_commons.ppp.Child;
+import org.jvnet.jaxb.lang.Child;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.wml.Content;
+import pro.verron.officestamper.utils.wml.Parent;
 
 import static java.util.Collections.emptyList;
 
@@ -28,7 +30,7 @@ public class DocumentUtil {
     /// @param o2 the second object
     /// @return the smallest common parent of the two objects
     /// @throws OfficeStamperException if there is an error finding the common parent
-    public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
+    public static Content findSmallestCommonParent(Object o1, Object o2) {
         if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor)
             return findInsertableParent(contentAccessor);
         else if (o2 instanceof Child child) return findSmallestCommonParent(o1, child.getParent());
@@ -38,7 +40,7 @@ public class DocumentUtil {
     /// Recursively searches for an element in a content tree.
     ///
     /// @param searchTarget the element to search for
-    /// @param searchTree the content tree to search in
+    /// @param searchTree   the content tree to search in
     /// @return true if the element is found, false otherwise
     public static boolean depthElementSearch(Object searchTarget, Object searchTree) {
         var element = XmlUtils.unwrap(searchTree);
@@ -46,29 +48,29 @@ public class DocumentUtil {
 
         var contentContent = switch (element) {
             case ContentAccessor accessor -> accessor.getContent();
-            case SdtRun sdtRun -> sdtRun.getSdtContent()
-                                        .getContent();
+            case SdtRun sdtRun -> {
+                var sdtContent = sdtRun.getSdtContent();
+                yield sdtContent.getContent();
+            }
             case ProofErr _, Text _, R.CommentReference _, CommentRangeEnd _, CommentRangeStart _, Br _,
-                 R.LastRenderedPageBreak _, CTBookmark _ -> emptyList();
+                 R.LastRenderedPageBreak _, CTBookmark _, CTMarkupRange _ -> emptyList();
             default -> {
                 log.warn("Element {} not recognized", element);
                 yield emptyList();
             }
         };
 
-        return contentContent.stream()
-                             .anyMatch(obj -> depthElementSearch(searchTarget, obj));
+        return contentContent.stream().anyMatch(obj -> depthElementSearch(searchTarget, obj));
     }
 
-    private static ContentAccessor findInsertableParent(Object searchFrom) {
+    private static Content findInsertableParent(Object searchFrom) {
         return switch (searchFrom) {
-            case Tc tc -> tc;
-            case Body body -> body;
+            case Tc tc -> new Content(tc);
+            case Body body -> new Content(body);
             case Child child -> findInsertableParent(child.getParent());
             default -> throw new OfficeStamperException("Unexpected parent " + searchFrom.getClass());
         };
     }
-
 
 
 }

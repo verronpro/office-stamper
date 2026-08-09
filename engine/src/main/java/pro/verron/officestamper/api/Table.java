@@ -1,5 +1,6 @@
 package pro.verron.officestamper.api;
 
+import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 
 import java.util.List;
@@ -20,14 +21,22 @@ public interface Table {
     /// Adds all the given rows to the table starting at the specified index.
     ///
     /// @param index the index at which to start adding the rows
-    /// @param rows the list of rows to add
+    /// @param rows  the list of rows to add
     void addAll(int index, List<Row> rows);
 
     /// Adds a row to the table at the specified index.
     ///
     /// @param index the index at which to add the row
-    /// @param row the row to add
+    /// @param row   the row to add
     void add(int index, Row row);
+
+
+    /// Converts the current table representation to a [Tbl] object.
+    /// This allows low-level manipulations or access to the underlying
+    /// docx4j-specific representation of the table.
+    ///
+    /// @return the underlying [Tbl] representation of the table.
+    Tbl asTbl();
 
 
     /// Represents a row within a table that can be manipulated by the office stamper. This interface provides methods

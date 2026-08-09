@@ -21,9 +21,7 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 ///
 /// @author Joseph Verron
 /// @since 1.6.2
-public class TableResolver
-        extends CommentProcessor
-        implements CommentProcessorFactory.ITableResolver {
+public class TableResolver extends CommentProcessor implements CommentProcessorFactory.ITableResolver {
 
     /// Constructs a new TableResolver with the given processor context.
     ///
@@ -34,15 +32,16 @@ public class TableResolver
 
     @Override
     public void resolveTable(@Nullable StampTable givenTable) {
-        var tbl = paragraph().parent(Tbl.class)
-                             .orElseThrow(throwing("Paragraph is not within a table!"));
+        var table = paragraph().parentTable().orElseThrow(throwing("Paragraph is not within a table!"));
+        Tbl tbl = table.asTbl();
         if (givenTable != null) {
             replaceTableInplace(tbl, givenTable);
-        }
-        else {
+        } else {
             List<Object> tableParentContent = ((ContentAccessor) tbl.getParent()).getContent();
             tableParentContent.remove(tbl);
         }
+        var context = context();
+        context.comment().getContent().deleteCommentFromElements(comment().getId());
     }
 
     private void replaceTableInplace(Tbl wordTable, StampTable stampedTable) {

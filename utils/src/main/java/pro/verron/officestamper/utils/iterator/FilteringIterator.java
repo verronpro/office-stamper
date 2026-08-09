@@ -11,11 +11,11 @@ import java.util.function.Predicate;
 /// its initial state, re-evaluating the elements based on the same logic.
 ///
 /// @param <T> the type of the source elements in the parent iterator
-class FilteringIterator<T>
+public class FilteringIterator<T>
         implements ResetableIterator<T> {
     private final Predicate<T> filter;
     private final ResetableIterator<T> source;
-    @Nullable T next;
+    private @Nullable T next;
 
     /// Constructs a MappingIterator with a parent iterator and a mapping function.
     ///

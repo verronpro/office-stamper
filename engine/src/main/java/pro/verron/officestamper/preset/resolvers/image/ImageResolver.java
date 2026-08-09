@@ -2,14 +2,14 @@ package pro.verron.officestamper.preset.resolvers.image;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.utils.image.ImageRunOptions;
 import pro.verron.officestamper.utils.openpackaging.OpenPackage;
 import pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.util.function.Supplier;
 
@@ -19,8 +19,7 @@ import java.util.function.Supplier;
 ///
 /// @author Joseph Verron
 /// @since 1.6.7
-public class ImageResolver
-        implements ObjectResolver {
+public class ImageResolver implements ObjectResolver {
 
     private final boolean deduplicate;
 
@@ -29,7 +28,7 @@ public class ImageResolver
     }
 
     @Override
-    public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
+    public Insert resolve(Part part, String expression, @Nullable Object object) {
         if (object instanceof Image image) return resolve(part, image);
         String message = "Expected %s to be an Image".formatted(object);
         throw new OfficeStamperException(message);
@@ -45,16 +44,15 @@ public class ImageResolver
     /// @param image The image to be resolved and added
     /// @return The run containing the added image
     /// @throws OfficeStamperException If an error occurs while adding the image to the document
-    private Insert resolve(DocxPart part, Image image) {
+    private Insert resolve(Part part, Image image) {
         try {
             var document = part.document();
-            var imagePart = part.part();
-            var openPackage = OpenPackage.getOrCreate(document, imagePart);
+            var imagePart = part.getPart();
+            var openPackage = OpenPackage.getOrCreate(document.getPackage(), imagePart);
             var supplier = (Supplier<byte[]>) image::getBytes;
             var altText = image.getAltText();
             var filenameHint = image.getFilenameHint();
-            var maxWidth = image.getMaxWidth()
-                                .orElse(null);
+            var maxWidth = image.getMaxWidth().orElse(null);
             var imageOptions = new ImageRunOptions(altText, filenameHint, maxWidth, deduplicate);
             var imageRun = OpenpackagingUtils.newImageRun(openPackage, supplier, imageOptions);
             return new Insert(imageRun);

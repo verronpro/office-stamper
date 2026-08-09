@@ -46,4 +46,9 @@ public class StandardTable
         tbl.getContent()
            .add(index, tr);
     }
+
+    @Override
+    public Tbl asTbl() {
+        return tbl;
+    }
 }

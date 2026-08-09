@@ -12,6 +12,7 @@ import pro.verron.officestamper.preset.CommentProcessorFactory;
 /// @author Joseph Verron
 /// @author Youssouf Naciri
 /// @since 1.3.0
+// TODO: deprecate
 public class RepeatDocPartProcessor
         extends RepeatProcessor
         implements CommentProcessorFactory.IRepeatDocPartProcessor {

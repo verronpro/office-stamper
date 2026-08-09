@@ -1,8 +1,13 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.*;
+import org.docx4j.wml.CTSmartTagRun;
+import org.docx4j.wml.CommentRangeEnd;
+import org.docx4j.wml.CommentRangeStart;
+import org.docx4j.wml.Comments;
 import org.docx4j.wml.R.CommentReference;
 import org.jspecify.annotations.Nullable;
+import pro.verron.officestamper.utils.wml.Content;
+import pro.verron.officestamper.utils.wml.Parent;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -31,12 +36,12 @@ public interface Comment {
     /// Retrieves the parent of the comment.
     ///
     /// @return the parent of the comment
-    ContentAccessor getParent();
+    Content getContent();
 
     /// Retrieves the elements in the document that are between the comment range anchors.
     ///
     /// @return a list of objects representing the elements between the comment range anchors.
-    List<Object> getElements();
+    List<Content.Element> getElements();
 
     /// Retrieves the [CommentRangeEnd] object associated with this comment.
     ///

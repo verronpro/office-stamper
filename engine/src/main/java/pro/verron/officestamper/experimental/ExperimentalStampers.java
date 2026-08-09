@@ -1,15 +1,16 @@
 package pro.verron.officestamper.experimental;
 
-import org.docx4j.openpackaging.packages.PresentationMLPackage;
-import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.StreamStamper;
-import pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils;
+import pro.verron.officestamper.utils.pml.PptxDocument;
+import pro.verron.officestamper.utils.sml.XlsxDocument;
+
+import java.io.OutputStream;
 
 /// ExperimentalStampers is a class that provides static methods for obtaining instances of OfficeStamper
 /// implementations for stamping PowerPoint presentations and Excel templates with context and writing the result to an
-/// OutputStream.
+/// [OutputStream].
 ///
 /// @since 1.6.8
 public class ExperimentalStampers {
@@ -23,7 +24,7 @@ public class ExperimentalStampers {
     ///
     /// @return a new OfficeStamper instance for Excel templates
     /// @since 3.0
-    public static OfficeStamper<SpreadsheetMLPackage> xlsxPackageStamper() {
+    public static OfficeStamper<XlsxDocument> xlsxPackageStamper() {
         return new ExcelStamper();
     }
 
@@ -33,10 +34,8 @@ public class ExperimentalStampers {
     ///
     /// @return a new StreamStamper instance for PowerPoint presentations
     /// @since 1.6.8
-    public static StreamStamper<PresentationMLPackage> pptxStamper() {
-        return new StreamStamper<>(OpenpackagingUtils::loadPowerPoint,
-                pptxPackageStamper(),
-                OpenpackagingUtils::exportPowerPoint);
+    public static StreamStamper<PptxDocument> pptxStamper() {
+        return new StreamStamper<>(PptxDocument::load, pptxPackageStamper(), PptxDocument::save);
     }
 
     /// Returns a new instance of the OfficeStamper implementation for stamping PowerPoint presentations with context
@@ -44,7 +43,7 @@ public class ExperimentalStampers {
     ///
     /// @return a new OfficeStamper instance for PowerPoint presentations
     /// @since 3.0
-    public static OfficeStamper<PresentationMLPackage> pptxPackageStamper() {
+    public static OfficeStamper<PptxDocument> pptxPackageStamper() {
         return new PowerpointStamper();
     }
 }

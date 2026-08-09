@@ -12,9 +12,12 @@ import org.pptx4j.pml.Shape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.utils.UtilsException;
+import pro.verron.officestamper.utils.iterator.FilteringIterator;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
+import pro.verron.officestamper.utils.wml.Content;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.docx4j.XmlUtils.unwrap;
@@ -28,8 +31,7 @@ import static org.docx4j.XmlUtils.unwrap;
 ///
 /// @author verron
 /// @since 3.0
-public class PptxIterator
-        implements ResetableIterator<Object> {
+public class PptxIterator implements ResetableIterator<Object> {
 
     private static final Logger log = LoggerFactory.getLogger(PptxIterator.class);
     private final Supplier<Iterator<?>> supplier;
@@ -91,10 +93,7 @@ public class PptxIterator
             case SlidePart slidePart -> {
                 List<Object> content;
                 try {
-                    content = slidePart.getContents()
-                                       .getCSld()
-                                       .getSpTree()
-                                       .getSpOrGrpSpOrGraphicFrame();
+                    content = slidePart.getContents().getCSld().getSpTree().getSpOrGrpSpOrGraphicFrame();
                 } catch (Docx4JException e) {
                     throw new UtilsException(e);
                 }
@@ -102,8 +101,7 @@ public class PptxIterator
             }
             case Shape shape -> {
                 if (shape.getTxBody() != null) {
-                    var content = shape.getTxBody()
-                                       .getP();
+                    var content = shape.getTxBody().getP();
                     iteratorQueue.add(content.iterator());
                 }
             }
@@ -117,5 +115,9 @@ public class PptxIterator
             }
         }
         return result;
+    }
+
+    public ResetableIterator<Object> filter(Predicate<Object> predicate) {
+        return new FilteringIterator<>(this, predicate);
     }
 }

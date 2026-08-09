@@ -1,4 +1,4 @@
-package pro.verron.officestamper.experimental;
+package pro.verron.officestamper.utils.pml;
 
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextBody;
@@ -12,7 +12,7 @@ import org.jspecify.annotations.Nullable;
 import org.pptx4j.pml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.UtilsException;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ abstract class PowerpointVisitor {
         var env = System.getenv();
         var throwOnUnexpectedVisit = Boolean.parseBoolean(env.getOrDefault("throw-on-unexpected-visit", "false"));
         var message = "Unknown case : %s %s".formatted(object, object.getClass());
-        if (throwOnUnexpectedVisit) throw new OfficeStamperException(message);
+        if (throwOnUnexpectedVisit) throw new UtilsException(message);
         else logger.debug(message);
     }
 
@@ -77,7 +77,7 @@ abstract class PowerpointVisitor {
                 default -> unexpectedVisit(object);
             }
         } catch (Docx4JException e) {
-            throw new OfficeStamperException(e);
+            throw new UtilsException(e);
         }
     }
 

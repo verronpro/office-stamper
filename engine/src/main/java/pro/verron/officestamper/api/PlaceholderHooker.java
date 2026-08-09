@@ -3,6 +3,8 @@ package pro.verron.officestamper.api;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.P;
+import pro.verron.officestamper.utils.wml.Content;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.ArrayList;
@@ -10,7 +12,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
-import static pro.verron.officestamper.utils.wml.WmlUtils.insertSmartTag;
 
 /// The [PlaceholderHooker] class is a pre-processor that prepares inline
 /// placeholders in a [WordprocessingMLPackage]
@@ -61,7 +62,7 @@ public class PlaceholderHooker implements PreProcessor {
     }
 
     @Override
-    public void process(WordprocessingMLPackage document) {
+    public void process(DocxDocument document) {
         var visitor = new ParagraphCollector(pattern);
         WmlUtils.visitDocument(document, visitor);
         for (var paragraph : visitor.paragraphs()) {

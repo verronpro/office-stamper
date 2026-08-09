@@ -6,15 +6,16 @@ import org.docx4j.openpackaging.parts.SpreadsheetML.WorksheetPart;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.SdtBlock;
 import org.docx4j.wml.SdtRun;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xlsx4j.sml.Row;
 import org.xlsx4j.sml.Sheet;
 import pro.verron.officestamper.utils.UtilsException;
+import pro.verron.officestamper.utils.iterator.FilteringIterator;
 import pro.verron.officestamper.utils.iterator.ResetableIterator;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.docx4j.XmlUtils.unwrap;
@@ -34,14 +35,13 @@ import static org.docx4j.XmlUtils.unwrap;
 ///
 /// @author Joseph Verron
 /// @since 3.0
-public class XlsxIterator
-        implements ResetableIterator<Object> {
+public class XlsxIterator implements ResetableIterator<Object> {
 
     private static final Logger log = LoggerFactory.getLogger(XlsxIterator.class);
     private final Supplier<Iterator<?>> supplier;
     private final SpreadsheetMLPackage spreadsheet;
     private Queue<Iterator<?>> iteratorQueue;
-    private @Nullable Object next;
+    private Object next;
 
 
     /// Constructs a new XlsxIterator for iterating through the elements of a SpreadsheetML package.
@@ -51,10 +51,7 @@ public class XlsxIterator
     public XlsxIterator(SpreadsheetMLPackage spreadsheet) {
         this.spreadsheet = spreadsheet;
         try {
-            supplier = spreadsheet.getWorkbookPart()
-                                  .getContents()
-                                  .getSheets()
-                                  .getSheet()::iterator;
+            supplier = spreadsheet.getWorkbookPart().getContents().getSheets().getSheet()::iterator;
         } catch (Docx4JException e) {
             throw new UtilsException(e);
         }
@@ -64,7 +61,7 @@ public class XlsxIterator
         this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
     }
 
-    @Override
+
     public void reset() {
         var startingIterator = supplier.get();
         this.iteratorQueue = Collections.asLifoQueue(new ArrayDeque<>());
@@ -72,12 +69,12 @@ public class XlsxIterator
         this.next = startingIterator.hasNext() ? unwrap(startingIterator.next()) : null;
     }
 
-    @Override
+
     public boolean hasNext() {
         return next != null;
     }
 
-    @Override
+
     public Object next() {
         if (next == null) throw new NoSuchElementException("No more elements to iterate");
 
@@ -102,12 +99,9 @@ public class XlsxIterator
                 List<Row> content;
                 try {
                     var sheetId = sheet.getId();
-                    var relationshipsPart = spreadsheet.getWorkbookPart()
-                                                       .getRelationshipsPart();
+                    var relationshipsPart = spreadsheet.getWorkbookPart().getRelationshipsPart();
                     var part = relationshipsPart.getPart(sheetId);
-                    content = ((WorksheetPart) part).getContents()
-                                                    .getSheetData()
-                                                    .getRow();
+                    content = ((WorksheetPart) part).getContents().getSheetData().getRow();
                 } catch (Docx4JException e) {
                     throw new UtilsException(e);
                 }

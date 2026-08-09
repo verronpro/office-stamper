@@ -1,10 +1,10 @@
 package pro.verron.officestamper.core;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public final class ObjectResolverRegistry {
     /// @param object     the object to be used for resolving the expression.
     /// @return the resolved value for the expression.
     /// @throws OfficeStamperException if no resolver is found for the object.
-    public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
+    public Insert resolve(Part part, String expression, @Nullable Object object) {
         for (ObjectResolver resolver : resolvers)
             if (resolver.canResolve(object)) return resolver.resolve(part, expression, object);
         throw new OfficeStamperException("No resolver for %s".formatted(object));

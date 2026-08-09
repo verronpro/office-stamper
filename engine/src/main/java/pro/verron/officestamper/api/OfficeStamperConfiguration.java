@@ -113,7 +113,7 @@ public interface OfficeStamperConfiguration {
     ///
     /// @param name the unique name of the custom function to be added
     /// @param implementation a Supplier that provides the implementation of the custom function
-    void addCustomFunction(String name, Supplier<?> implementation);
+    OfficeStamperConfiguration addCustomFunction(String name, Supplier<?> implementation);
 
     /// Adds a custom function with the specified name and associated class type. This method allows users to define
     /// custom behavior by associating a function implementation with a given name and type.

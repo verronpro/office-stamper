@@ -1,4 +1,4 @@
-package pro.verron.officestamper.api;
+package pro.verron.officestamper.utils.wml;
 
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;

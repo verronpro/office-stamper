@@ -79,7 +79,6 @@ public class OfficeStamperConfigurations {
     ///
     /// @param fallback an [ObjectResolver] to serve as the additional fallback resolver for this
     ///         configuration.
-    ///
     /// @return a configured [OfficeStamperConfiguration] object implementing standard processing and formatting
     ///         behaviors
     public static OfficeStamperConfiguration standard(ObjectResolver fallback) {
@@ -99,69 +98,39 @@ public class OfficeStamperConfigurations {
                 Resolvers.isoTime(),
                 Resolvers.isoDateTime(),
                 Resolvers.nullToEmpty(),
-                fallback));
+                fallback
+        ));
 
         configuration.addPreprocessor(Preprocessors.removeMalformedComments());
 
-        var fdate = "fdate";
-        var ftime = "ftime";
-        var fdatetime = "fdatetime";
-        var fpattern = "fpattern";
-        var flocaldate = "flocaldate";
-        var flocaltime = "flocaltime";
-        var flocaldatetime = "flocaldatetime";
-        var finstant = "finstant";
-        var fordinaldate = "fordinaldate";
-        var f1123datetime = "f1123datetime";
-        var fbasicdate = "fbasicdate";
-        var fweekdate = "fweekdate";
-        var foffsetdatetime = "foffsetdatetime";
-        var fzoneddatetime = "fzoneddatetime";
-        var foffsetdate = "foffsetdate";
-        var foffsettime = "foffsettime";
-        configuration.addCustomFunction(fdate, TemporalAccessor.class)
-                     .withImplementation(ISO_DATE::format)
-                     .addCustomFunction(ftime, TemporalAccessor.class)
-                     .withImplementation(ISO_TIME::format)
-                     .addCustomFunction(fdatetime, TemporalAccessor.class)
-                     .withImplementation(ISO_DATE_TIME::format)
-                     .addCustomFunction(finstant, TemporalAccessor.class)
-                     .withImplementation(ISO_INSTANT::format)
-                     .addCustomFunction(fordinaldate, TemporalAccessor.class)
-                     .withImplementation(ISO_ORDINAL_DATE::format)
-                     .addCustomFunction(f1123datetime, TemporalAccessor.class)
-                     .withImplementation(RFC_1123_DATE_TIME::format)
-                     .addCustomFunction(fbasicdate, TemporalAccessor.class)
-                     .withImplementation(BASIC_ISO_DATE::format)
-                     .addCustomFunction(fweekdate, TemporalAccessor.class)
-                     .withImplementation(ISO_WEEK_DATE::format)
-                     .addCustomFunction(flocaldatetime, TemporalAccessor.class)
-                     .withImplementation(ISO_LOCAL_DATE_TIME::format)
-                     .addCustomFunction(flocaldatetime, TemporalAccessor.class, String.class)
-                     .withImplementation(OfficeStamperConfigurations::flocaldatetime)
-                     .addCustomFunction(flocaldatetime, TemporalAccessor.class, String.class, String.class)
-                     .withImplementation(OfficeStamperConfigurations::flocaldatetime)
-                     .addCustomFunction(foffsetdatetime, TemporalAccessor.class)
-                     .withImplementation(ISO_OFFSET_DATE_TIME::format)
-                     .addCustomFunction(fzoneddatetime, TemporalAccessor.class)
-                     .withImplementation(ISO_ZONED_DATE_TIME::format)
-                     .addCustomFunction(foffsetdate, TemporalAccessor.class)
-                     .withImplementation(ISO_OFFSET_DATE::format)
-                     .addCustomFunction(foffsettime, TemporalAccessor.class)
-                     .withImplementation(ISO_OFFSET_TIME::format)
-                     .addCustomFunction(flocaldate, TemporalAccessor.class)
-                     .withImplementation(ISO_LOCAL_DATE::format)
-                     .addCustomFunction(flocaldate, TemporalAccessor.class, String.class)
-                     .withImplementation(OfficeStamperConfigurations::flocaldate)
-                     .addCustomFunction(flocaltime, TemporalAccessor.class)
-                     .withImplementation(ISO_LOCAL_TIME::format)
-                     .addCustomFunction(flocaltime, TemporalAccessor.class, String.class)
-                     .withImplementation(OfficeStamperConfigurations::flocaltime)
-                     .addCustomFunction(fpattern, TemporalAccessor.class, String.class)
-                     .withImplementation(OfficeStamperConfigurations::fpattern)
-                     .addCustomFunction(fpattern, TemporalAccessor.class, String.class, String.class)
-                     .withImplementation(OfficeStamperConfigurations::fpattern);
-
+        var temporal = TemporalAccessor.class;
+        configuration.addCustomFunction("fdate", temporal).withImplementation(ISO_DATE::format);
+        configuration.addCustomFunction("ftime", temporal).withImplementation(ISO_TIME::format);
+        configuration.addCustomFunction("fdatetime", temporal).withImplementation(ISO_DATE_TIME::format);
+        configuration.addCustomFunction("finstant", temporal).withImplementation(ISO_INSTANT::format);
+        configuration.addCustomFunction("fordinaldate", temporal).withImplementation(ISO_ORDINAL_DATE::format);
+        configuration.addCustomFunction("f1123datetime", temporal).withImplementation(RFC_1123_DATE_TIME::format);
+        configuration.addCustomFunction("fbasicdate", temporal).withImplementation(BASIC_ISO_DATE::format);
+        configuration.addCustomFunction("fweekdate", temporal).withImplementation(ISO_WEEK_DATE::format);
+        configuration.addCustomFunction("flocaldatetime", temporal).withImplementation(ISO_LOCAL_DATE_TIME::format);
+        configuration.addCustomFunction("flocaldatetime", temporal, String.class)
+                .withImplementation(OfficeStamperConfigurations::flocaldatetime);
+        configuration.addCustomFunction("flocaldatetime", temporal, String.class, String.class)
+                .withImplementation(OfficeStamperConfigurations::flocaldatetime);
+        configuration.addCustomFunction("foffsetdatetime", temporal).withImplementation(ISO_OFFSET_DATE_TIME::format);
+        configuration.addCustomFunction("fzoneddatetime", temporal).withImplementation(ISO_ZONED_DATE_TIME::format);
+        configuration.addCustomFunction("foffsetdate", temporal).withImplementation(ISO_OFFSET_DATE::format);
+        configuration.addCustomFunction("foffsettime", temporal).withImplementation(ISO_OFFSET_TIME::format);
+        configuration.addCustomFunction("flocaldate", temporal).withImplementation(ISO_LOCAL_DATE::format);
+        configuration.addCustomFunction("flocaldate", temporal, String.class)
+                .withImplementation(OfficeStamperConfigurations::flocaldate);
+        configuration.addCustomFunction("flocaltime", temporal).withImplementation(ISO_LOCAL_TIME::format);
+        configuration.addCustomFunction("flocaltime", temporal, String.class)
+                .withImplementation(OfficeStamperConfigurations::flocaltime);
+        configuration.addCustomFunction("fpattern", temporal, String.class)
+                .withImplementation(OfficeStamperConfigurations::fpattern);
+        configuration.addCustomFunction("fpattern", temporal, String.class, String.class)
+                .withImplementation(OfficeStamperConfigurations::fpattern);
         return configuration;
     }
 
@@ -225,9 +194,7 @@ public class OfficeStamperConfigurations {
         }
         // Honor system property: officestamper.svg.mode = restricted|permissive (default: restricted)
         var svgModeProp = System.getProperty("officestamper.svg.mode");
-        configuration.setSvgSecurityMode(svgModeProp != null && svgModeProp.equalsIgnoreCase("permissive")
-                ? SecurityMode.PERMISSIVE
-                : SecurityMode.RESTRICTED);
+        configuration.setSvgSecurityMode(svgModeProp != null && svgModeProp.equalsIgnoreCase("permissive") ? SecurityMode.PERMISSIVE : SecurityMode.RESTRICTED);
         return configuration;
     }
 }

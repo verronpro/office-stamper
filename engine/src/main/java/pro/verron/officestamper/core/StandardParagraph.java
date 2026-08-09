@@ -1,105 +1,84 @@
 package pro.verron.officestamper.core;
 
 import org.docx4j.wml.*;
-import org.jvnet.jaxb2_commons.ppp.Child;
-import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.utils.wml.DocxIterator;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import org.jvnet.jaxb.lang.Child;
+import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.Table;
+import pro.verron.officestamper.utils.wml.*;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.api.OfficeStamperException.throwing;
-import static pro.verron.officestamper.utils.wml.WmlUtils.getFirstParentWithClass;
 import static pro.verron.officestamper.utils.wml.WmlUtils.isTagElement;
 
 /// Represents a wrapper for managing and manipulating DOCX paragraph elements. This class provides methods to
 /// manipulate the underlying paragraph content, process placeholders, and interact with runs within the paragraph.
-public class StandardParagraph implements Paragraph {
+public class StandardParagraph implements pro.verron.officestamper.api.Paragraph {
 
-    private final DocxPart part;
-    private final ContentAccessor contents;
-    private final ArrayListWml<Object> p;
+    private final Part part;
+    private final Content content;
 
     /// Constructs a new instance of the StandardParagraph class.
     ///
-    /// @param part             the source DocxPart that contains the paragraph content.
-    /// @param paragraphContent the list of objects representing the paragraph content.
-    /// @param p                the P object representing the paragraph's structure.
-    private StandardParagraph(DocxPart part, ContentAccessor paragraphContent, ArrayListWml<Object> p) {
+    /// @param part    the [Part] that contains the paragraph content.
+    /// @param content the list of objects representing the paragraph content.
+    private StandardParagraph(Part part, Content content) {
         this.part = part;
-        this.contents = paragraphContent;
-        this.p = p;
+        this.content = content;
     }
 
-    /// Creates a new instance of [StandardParagraph] from the provided [DocxPart] and parent object.
+    /// Creates a new instance of [StandardParagraph] from the provided [Part] and parent object.
     ///
-    /// @param part   the source DocxPart.
+    /// @param part   the source [Part].
     /// @param parent the parent object.
     /// @return a new StandardParagraph instance.
-    public static StandardParagraph from(DocxPart part, Object parent) {
+    public static StandardParagraph from(Part part, Object parent) {
         return switch (parent) {
             case P p -> from(part, p);
             case CTSdtContentRun contentRun -> from(part, contentRun);
             case CTSmartTagRun smartTagRun when isTagElement(smartTagRun, "officestamper") ->
                     from(part, smartTagRun.getParent());
+            case Parent pa -> from(part, pa);
             default -> throw new OfficeStamperException("Unsupported parent type: " + parent.getClass());
         };
     }
 
     /// Creates a new instance of StandardParagraph using the provided DocxPart and P objects.
     ///
-    /// @param source    the source DocxPart containing the paragraph.
+    /// @param part      the source [Part] containing the paragraph.
     /// @param paragraph the P object representing the structure and content of the paragraph.
     /// @return a new instance of StandardParagraph constructed based on the provided source and paragraph.
-    public static StandardParagraph from(DocxPart source, P paragraph) {
-        return new StandardParagraph(source, paragraph, (ArrayListWml<Object>) paragraph.getContent());
+    public static StandardParagraph from(Part part, P paragraph) {
+        return new StandardParagraph(part, new Content(paragraph));
+    }
+
+    /// Creates a new instance of StandardParagraph using the provided DocxPart and P objects.
+    ///
+    /// @param part the source DocxPart containing the paragraph.
+    /// @return a new instance of StandardParagraph constructed based on the provided source and paragraph.
+    public static StandardParagraph from(Part part, Content content) {
+        return new StandardParagraph(part, content);
     }
 
     /// Creates a new instance of StandardParagraph from the provided DocxPart and CTSdtContentRun objects.
     ///
-    /// @param source    the source DocxPart containing the paragraph content.
+    /// @param part      the source DocxPart containing the paragraph content.
     /// @param paragraph the CTSdtContentRun object representing the content of the paragraph.
     /// @return a new instance of StandardParagraph constructed based on the provided DocxPart and paragraph.
-    public static StandardParagraph from(DocxPart source, CTSdtContentRun paragraph) {
-        var parent = (SdtRun) paragraph.getParent();
-        var parentParent = (P) parent.getParent();
-        return new StandardParagraph(source, paragraph, (ArrayListWml<Object>) parentParent.getContent());
-    }
-
-    /// Replaces a set of paragraph elements with new ones within the current paragraph's siblings. Ensures that the
-    /// elements to be removed are replaced in the appropriate position.
-    ///
-    /// @param toRemove the list of paragraph elements to be removed.
-    /// @param toAdd    the list of paragraph elements to be added.
-    /// @throws OfficeStamperException if the current paragraph object is not found in its siblings.
-    @Override
-    public void replace(List<P> toRemove, List<P> toAdd) {
-        var siblings = siblings();
-        int index = siblings.indexOf(p.getParent());
-        if (index < 0) throw new OfficeStamperException("Impossible");
-        siblings.addAll(index, toAdd);
-        siblings.removeAll(toRemove);
-    }
-
-    private List<Object> siblings() {
-        return this.parent(ContentAccessor.class, 1)
-                .orElseThrow(throwing("This paragraph direct parent is not a classic parent object"))
-                .getContent();
-    }
-
-    private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        return getFirstParentWithClass((Child) p.getParent(), aClass, depth);
+    public static StandardParagraph from(Part part, CTSdtContentRun paragraph) {
+        return new StandardParagraph(part,
+                new Content(((P) ((SdtRun) paragraph.getParent()).getParent()), paragraph.getContent())
+        );
     }
 
     /// Removes the paragraph represented by the current instance. Delegates the removal process to a utility method
     /// that handles the underlying P object.
     @Override
     public void remove() {
-        WmlUtils.remove((Child) p.getParent());
+        content.remove();
     }
 
     @Override
@@ -109,9 +88,9 @@ public class StandardParagraph implements Paragraph {
 
     @Override
     public void replace(Object start, Object end, Insert insert) {
-        var content = contents.getContent();
-        var fromIndex = content.indexOf(start);
-        var toIndex = content.indexOf(end);
+        var contents = ((ContentAccessor) content.get()).getContent();
+        var fromIndex = contents.indexOf(start);
+        var toIndex = contents.indexOf(end);
         if (fromIndex < 0) {
             var msg = "The start element (%s) is not in the paragraph (%s)";
             throw new OfficeStamperException(msg.formatted(start, this));
@@ -133,12 +112,13 @@ public class StandardParagraph implements Paragraph {
     }
 
     private String extractExpression(Object from, Object to) {
-        var content = contents.getContent();
-        var fromIndex = content.indexOf(from);
-        var toIndex = content.indexOf(to);
-        var subContent = content.subList(fromIndex, toIndex + 1);
-        ContentAccessor contentAccessor = () -> subContent;
-        return new DocxIterator(contentAccessor).selectClass(R.class).map(WmlUtils::asString).collect(joining());
+        var contents = ((ContentAccessor) content.get()).getContent();
+        var fromIndex = contents.indexOf(from);
+        var toIndex = contents.indexOf(to);
+        var subContent = contents.subList(fromIndex, toIndex + 1);
+        return new DocxIterator(new Content(() -> subContent)).selectClass(R.class)
+                .map(WmlUtils::asString)
+                .collect(joining());
     }
 
     /// Returns the aggregated text over all runs.
@@ -146,7 +126,7 @@ public class StandardParagraph implements Paragraph {
     /// @return the text of all runs.
     @Override
     public String asString() {
-        return WmlUtils.asString(contents);
+        return WmlUtils.asString(content.get());
     }
 
     /// Applies the given consumer to the paragraph represented by the current instance. This method facilitates custom
@@ -156,19 +136,7 @@ public class StandardParagraph implements Paragraph {
     /// @param pConsumer the consumer function to apply to the paragraph's structure.
     @Override
     public void apply(Consumer<ContentAccessor> pConsumer) {
-        pConsumer.accept(() -> p);
-    }
-
-    /// Retrieves the nearest parent of the specified type for the current paragraph. The search is performed starting
-    /// from the current paragraph and traversing up to the root, with a default maximum depth of Integer.MAX_VALUE.
-    ///
-    /// @param aClass the class type of the parent to search for
-    /// @param <T>    the generic type of the parent
-    /// @return an Optional containing the parent of the specified type if found, or an empty Optional if no parent of
-    ///         the given type exists
-    @Override
-    public <T> Optional<T> parent(Class<T> aClass) {
-        return parent(aClass, Integer.MAX_VALUE);
+        content.apply(pConsumer);
     }
 
     /// Retrieves the collection of comments associated with the current paragraph.
@@ -176,17 +144,23 @@ public class StandardParagraph implements Paragraph {
     /// @return a collection of [Comments.Comment] objects related to the paragraph.
     @Override
     public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(() -> p, part.document());
+        return CommentUtil.getCommentFor(new DocxIterator(content), part.document().getPackage());
     }
 
     @Override
     public Optional<Table.Row> parentTableRow() {
-        return parent(Tr.class).map((Tr tr) -> new StandardRow(part, (Tbl) tr.getParent(), tr));
+        return WmlUtils.getFirstParentWithClass((Child) ((Child) content.get()).getParent(),
+                Tr.class,
+                Integer.MAX_VALUE
+        ).map((Tr tr) -> new StandardRow(part, (Tbl) tr.getParent(), tr));
     }
 
     @Override
     public Optional<Table> parentTable() {
-        return parent(Tbl.class).map(StandardTable::new);
+        return WmlUtils.getFirstParentWithClass((Child) ((Child) content.get()).getParent(),
+                Tbl.class,
+                Integer.MAX_VALUE
+        ).map(StandardTable::new);
     }
 
     /// Returns the string representation of the paragraph. This method delegates to the [#asString()] method to
@@ -198,4 +172,5 @@ public class StandardParagraph implements Paragraph {
     public String toString() {
         return asString();
     }
+
 }

@@ -26,8 +26,7 @@ import java.util.function.Supplier;
 /// @author Joseph Verron
 /// @author Tom Hombergs
 /// @since 1.0.3
-public class DocxStamperConfiguration
-        implements OfficeStamperConfiguration {
+public class DocxStamperConfiguration implements OfficeStamperConfiguration {
     private final Map<Class<?>, CommentProcessorFactory> commentProcessors;
     private final List<ObjectResolver> resolvers;
     private final Map<Class<?>, Object> expressionFunctions;
@@ -52,11 +51,8 @@ public class DocxStamperConfiguration
     /// - Establishing resolvers and exception handling strategies.
     ///
     /// @param evaluationContextFactory the factory used to create [EvaluationContext] instances.
-    /// @param exceptionResolver the exception resolver to use for handling exceptions during stamping.
-    public DocxStamperConfiguration(
-            EvaluationContextFactory evaluationContextFactory,
-            ExceptionResolver exceptionResolver
-    ) {
+    /// @param exceptionResolver        the exception resolver to use for handling exceptions during stamping.
+    public DocxStamperConfiguration(EvaluationContextFactory evaluationContextFactory, ExceptionResolver exceptionResolver) {
         this.commentProcessors = new HashMap<>();
         this.resolvers = new ArrayList<>();
         this.expressionFunctions = new HashMap<>();
@@ -73,29 +69,21 @@ public class DocxStamperConfiguration
     /// @param interfaceClass the interface holding methods to expose in the expression language.
     /// @param implementation the implementation to call to evaluate invocations of those methods, it must
     ///         implement the mentioned interface.
-    ///
     /// @return a [DocxStamperConfiguration] object
     @Override
-    public DocxStamperConfiguration exposeInterfaceToExpressionLanguage(
-            Class<?> interfaceClass,
-            Object implementation
-    ) {
+    public DocxStamperConfiguration exposeInterfaceToExpressionLanguage(Class<?> interfaceClass, Object implementation) {
         this.expressionFunctions.put(interfaceClass, implementation);
         return this;
     }
 
     /// Registers the specified [CommentProcessor] as an implementation of the specified interface.
     ///
-    /// @param interfaceClass the interface, implemented by the commentProcessor.
+    /// @param interfaceClass          the interface, implemented by the commentProcessor.
     /// @param commentProcessorFactory the commentProcessor factory generating instances of the specified
     ///         interface.
-    ///
     /// @return a [DocxStamperConfiguration] object
     @Override
-    public DocxStamperConfiguration addCommentProcessor(
-            Class<?> interfaceClass,
-            CommentProcessorFactory commentProcessorFactory
-    ) {
+    public DocxStamperConfiguration addCommentProcessor(Class<?> interfaceClass, CommentProcessorFactory commentProcessorFactory) {
         this.commentProcessors.put(interfaceClass, commentProcessorFactory);
         return this;
     }
@@ -218,28 +206,29 @@ public class DocxStamperConfiguration
 
     /// Adds a custom function to the system, allowing integration of user-defined functionality.
     ///
-    /// @param name The name of the custom function being added. This is used as the identifier for the function
+    /// @param name           The name of the custom function being added. This is used as the identifier for the function
     ///         and must be unique across all defined functions.
     /// @param implementation A [Supplier] functional interface that provides the implementation of the custom
     ///         function. When the function is called, the supplier's get method will be executed to return the result
     ///         of the function.
     @Override
-    public void addCustomFunction(String name, Supplier<?> implementation) {
-        this.addCustomFunction(new CustomFunction(name, List.of(), _ -> implementation.get()));
+    public OfficeStamperConfiguration addCustomFunction(String name, Supplier<?> implementation) {
+        return this.addCustomFunction(new CustomFunction(name, List.of(), _ -> implementation.get()));
     }
 
     /// Adds a custom function to the list of functions.
     ///
     /// @param function the [CustomFunction] object to be added
-    public void addCustomFunction(CustomFunction function) {
+    public OfficeStamperConfiguration addCustomFunction(CustomFunction function) {
         this.functions.add(function);
+        return this;
     }
 
     /// Adds a custom function to the context with the specified name and type.
     ///
-    /// @param name the name of the custom function
+    /// @param name   the name of the custom function
     /// @param class0 the class type of the custom function
-    /// @param <T> the type of the input parameter
+    /// @param <T>    the type of the input parameter
     /// @return an instance of [NeedsFunctionImpl] configured with the custom function
     @Override
     public <T> NeedsFunctionImpl<T> addCustomFunction(String name, Class<T> class0) {
@@ -248,11 +237,11 @@ public class DocxStamperConfiguration
 
     /// Adds a custom function with the specified name and input types.
     ///
-    /// @param name the name of the custom function to be added
+    /// @param name   the name of the custom function to be added
     /// @param class0 the class type of the first input parameter of the custom function.
     /// @param class1 the class type of the second input parameter of the custom function.
-    /// @param <T> the type of the first input parameter
-    /// @param <U> the type of the second input parameter
+    /// @param <T>    the type of the first input parameter
+    /// @param <U>    the type of the second input parameter
     /// @return an instance of [NeedsBiFunctionImpl] for further configuration or usage of the custom function.
     @Override
     public <T, U> NeedsBiFunctionImpl<T, U> addCustomFunction(String name, Class<T> class0, Class<U> class1) {
@@ -262,21 +251,16 @@ public class DocxStamperConfiguration
     /// Adds a custom function to the current context by defining its name, and the classes associated with its argument
     /// types.
     ///
-    /// @param name the name to assign to the custom function
+    /// @param name   the name to assign to the custom function
     /// @param class0 the class of the first argument type
     /// @param class1 the class of the second argument type
     /// @param class2 the class of the third argument type
-    /// @param <T> the type of the first argument
-    /// @param <U> the type of the second argument
-    /// @param <V> the type of the third argument
+    /// @param <T>    the type of the first argument
+    /// @param <U>    the type of the second argument
+    /// @param <V>    the type of the third argument
     /// @return an instance of [NeedsTriFunctionImpl] indicating the custom function implementation and usage context.
     @Override
-    public <T, U, V> NeedsTriFunctionImpl<T, U, V> addCustomFunction(
-            String name,
-            Class<T> class0,
-            Class<U> class1,
-            Class<V> class2
-    ) {
+    public <T, U, V> NeedsTriFunctionImpl<T, U, V> addCustomFunction(String name, Class<T> class0, Class<U> class1, Class<V> class2) {
         return new TriFunctionBuilder<>(this, name, class0, class1, class2);
     }
 

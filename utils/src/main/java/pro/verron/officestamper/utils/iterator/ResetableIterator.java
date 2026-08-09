@@ -17,8 +17,7 @@ import java.util.stream.StreamSupport;
 /// starting from the beginning.
 ///
 /// @param <T> the type of elements returned by this iterator
-public interface ResetableIterator<T>
-        extends Iterator<T> {
+public interface ResetableIterator<T> extends Iterator<T> {
 
     /// Resets the iterator to its initial state, allowing for iteration to start over from the beginning.
     ///
@@ -48,9 +47,9 @@ public interface ResetableIterator<T>
     /// that fall within the specified range.
     ///
     /// @param start the starting element of the slice (inclusive)
-    /// @param end the ending element of the slice (inclusive)
+    /// @param end   the ending element of the slice (inclusive)
     /// @return a new [ResetableIterator] instance that provides the sliced elements
-    default ResetableIterator<T> slice(T start, T end) {
+    default ResetableIterator<T> slice(Object start, Object end) {
         return new SlicingIterator<>(this, start, end);
     }
 
@@ -60,7 +59,7 @@ public interface ResetableIterator<T>
     /// transform each element. The resulting iterator will yield the transformed elements.
     ///
     /// @param function a [Function] used to transform each element
-    /// @param <U> the type of elements returned by the function and the resulting iterator
+    /// @param <U>      the type of elements returned by the function and the resulting iterator
     /// @return a new [ResetableIterator] instance that provides the transformed elements
     default <U> ResetableIterator<U> map(Function<T, U> function) {
         return new MappingIterator<>(this, function);
@@ -74,11 +73,10 @@ public interface ResetableIterator<T>
     /// aggregation operations.
     ///
     /// @param collector the [Collector] used to accumulate elements into a result container
-    /// @param <R> the type of the result container
+    /// @param <R>       the type of the result container
     /// @return the result of the collection operation
     default <R> R collect(Collector<? super T, ?, R> collector) {
         var spliterator = Spliterators.spliteratorUnknownSize(this, Spliterator.ORDERED);
-        return StreamSupport.stream(spliterator, false)
-                            .collect(collector);
+        return StreamSupport.stream(spliterator, false).collect(collector);
     }
 }

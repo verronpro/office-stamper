@@ -2,43 +2,30 @@ package pro.verron.officestamper.test;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.preset.ExceptionResolvers;
-import pro.verron.officestamper.preset.OfficeStampers;
 import pro.verron.officestamper.test.utils.ContextFactory;
+import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
-import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getImage;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
 
 /// @author Joseph Verron
 /// @author Tom Hombergs
-class HeaderAndFooterTest {
-    static Stream<Arguments> factories() {
-        return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
-    }
+class HeaderAndFooterTest extends OfficeStamperTestBase {
 
     @DisplayName("Placeholders in headers and footers should be replaced")
     @MethodSource("factories")
     @ParameterizedTest
     void placeholders(ContextFactory factory) {
+        var config = standard().setExceptionResolver(ExceptionResolvers.passing());
         var context = factory.imagedName("Homer Simpson", getImage(Path.of("sample-butterfly.png")));
         var template = getWordResource("ExpressionReplacementInHeaderAndFooterTest.docx");
-        var config = standard().setExceptionResolver(ExceptionResolvers.passing());
-        var stamper = OfficeStampers.docxPackageStamper(config);
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
-        assertEquals("""
+        var expected = """
                 [header]
                 --
                 [header]
@@ -77,6 +64,7 @@ class HeaderAndFooterTest {
                 --
                 
                 
-                """, actual);
+                """;
+        testStamper(config, context, template, expected);
     }
 }

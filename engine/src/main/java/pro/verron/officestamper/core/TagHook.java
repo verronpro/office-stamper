@@ -1,26 +1,21 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.api.DocxPart;
 import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 
 /// Hook for processing tags.
-public class TagHook
-        implements DocxHook {
+public class TagHook implements DocxHook {
     private final Tag tag;
-    private final DocxPart part;
+    private final Part part;
 
-    TagHook(DocxPart part, Tag tag) {
+    TagHook(Part part, Tag tag) {
         this.tag = tag;
         this.part = part;
     }
 
     @Override
-    public boolean run(
-            EngineFactory engineFactory,
-            ContextRoot contextRoot,
-            OfficeStamperEvaluationContextFactory evaluationContextFactory
-    ) {
+    public boolean run(EngineFactory engineFactory, ContextRoot contextRoot, OfficeStamperEvaluationContextFactory evaluationContextFactory) {
         if (WmlUtils.hasTagAttribute(tag.tag(), "status", "executed")) return false;
         var comment = tag.asComment();
         var paragraph = tag.getParagraph();
@@ -30,14 +25,12 @@ public class TagHook
         var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
-        var tagType = tag.type()
-                         .orElse(null);
+        var tagType = tag.type().orElse(null);
         boolean processed = false;
         if ("inlineProcessor".equals(tagType)) {
             if (engine.process(evaluationContext)) processed = true;
             tag.remove();
-        }
-        else if ("placeholder".equals(tagType)) {
+        } else if ("placeholder".equals(tagType)) {
             var insert = engine.resolve(evaluationContext);
             processed = true;
             tag.replace(insert);

@@ -1,6 +1,7 @@
 package pro.verron.officestamper.utils.iterator;
 
 import org.jspecify.annotations.Nullable;
+import pro.verron.officestamper.utils.wml.Content;
 
 import java.util.NoSuchElementException;
 
@@ -8,11 +9,10 @@ import java.util.NoSuchElementException;
 /// subset of elements from a source iterator, defined by a start and end element.
 ///
 /// @param <T> the type of elements returned by this iterator
-public class SlicingIterator<T>
-        implements ResetableIterator<T> {
+public class SlicingIterator<T> implements ResetableIterator<T> {
     private final ResetableIterator<T> source;
-    private final T start;
-    private final T end;
+    private final Object start;
+    private final Object end;
     private @Nullable T next;
     private boolean foundStart = false;
     private boolean foundEnd = false;
@@ -21,9 +21,9 @@ public class SlicingIterator<T>
     /// Constructs a new SlicingIterator with the specified source iterator and boundaries.
     ///
     /// @param source the underlying [ResetableIterator] to slice
-    /// @param start the starting element (inclusive) for iteration
-    /// @param end the ending element (inclusive) for iteration
-    public SlicingIterator(ResetableIterator<T> source, T start, T end) {
+    /// @param start  the starting element (inclusive) for iteration
+    /// @param end    the ending element (inclusive) for iteration
+    public SlicingIterator(ResetableIterator<T> source, Object start, Object end) {
         this.source = source;
         this.start = start;
         this.end = end;
@@ -34,12 +34,12 @@ public class SlicingIterator<T>
         next = null;
         while (source.hasNext() && !foundStart) {
             var o = source.next();
-            if (o == start) foundStart = true;
+            if (((Content.Element) o).get() == start) foundStart = true;
         }
 
         if (source.hasNext() && !foundEnd) {
             next = source.next();
-            if (next == end) {
+            if (((Content.Element) next).get() == end) {
                 next = null;
                 foundEnd = true;
             }

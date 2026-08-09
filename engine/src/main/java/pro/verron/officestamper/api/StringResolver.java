@@ -1,6 +1,8 @@
 package pro.verron.officestamper.api;
 
 import org.jspecify.annotations.Nullable;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
+import pro.verron.officestamper.utils.wml.Insert;
 
 import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 
@@ -11,8 +13,7 @@ import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
 /// @param <T> the type of the object to resolve
 /// @author Joseph Verron
 /// @since 1.6.7
-public abstract class StringResolver<T>
-        implements ObjectResolver {
+public abstract class StringResolver<T> implements ObjectResolver {
 
     private final Class<T> type;
 
@@ -25,12 +26,12 @@ public abstract class StringResolver<T>
 
     /// Resolves an object to a string and creates a new run with the resolved string as content.
     ///
-    /// @param part the WordprocessingMLPackage document
+    /// @param part       the WordprocessingMLPackage document
     /// @param expression the expression string
-    /// @param object the object to be resolved
+    /// @param object     the object to be resolved
     /// @return the newly created run with the resolved string as content
     @Override
-    public final Insert resolve(DocxPart part, String expression, @Nullable Object object) {
+    public final Insert resolve(Part part, String expression, @Nullable Object object) {
         if (object == null) throw new OfficeStamperException("Cannot resolve null object");
         return new Insert(newRun(resolve(type.cast(object))));
     }

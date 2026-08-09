@@ -4,6 +4,7 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.test.utils.ResourceUtils;
+import pro.verron.officestamper.utils.sml.XlsxDocument;
 
 import java.nio.file.Path;
 
@@ -22,7 +23,7 @@ import static pro.verron.officestamper.utils.sml.XlsxRenderer.xlsxToString;
         var stamper = xlsxPackageStamper();
         var templateStream = ResourceUtils.getResource(Path.of("excel-base.xlsx"));
 
-        var templatePackage = load(templateStream);
+        var templatePackage = new XlsxDocument(load(templateStream));
         var templateExpectedString = """
                 A1: Hello
                 B1: ${name}""";

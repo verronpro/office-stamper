@@ -19,7 +19,7 @@ import static pro.verron.officestamper.utils.pml.PptxRenderer.pptxToString;
         record Person(String name) {}
         var context = new Person("Bart");
         var stamped = stamper.stamp(template, context);
-        var actual = pptxToString(stamped);
+        var actual = pptxToString(stamped.getPackage());
         Assertions.assertEquals("""
                 Hello
                 Bart

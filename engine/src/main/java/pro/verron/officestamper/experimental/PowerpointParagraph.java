@@ -5,13 +5,12 @@ import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
-import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.utils.wml.*;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.Table;
-import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.utils.pml.PptxDocument;
+import pro.verron.officestamper.utils.pml.PptxDocument.Slide.Shape;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -30,21 +29,20 @@ import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 /// @author Joseph Verron
 /// @author Tom Hombergs
 /// @since 1.0.8
-public class PowerpointParagraph
-        implements Paragraph {
+public class PowerpointParagraph implements Paragraph {
 
-    private final PptxPart part;
+    private final PptxDocument document;
     private final List<PowerpointRun> runs = new ArrayList<>();
     private final CTTextParagraph paragraph;
     private int currentPosition = 0;
 
     /// Constructs a new ParagraphWrapper for the given paragraph.
     ///
-    /// @param part the source of the paragraph.
+    /// @param document  the source of the paragraph.
     /// @param paragraph the paragraph to wrap.
-    public PowerpointParagraph(PptxPart part, CTTextParagraph paragraph) {
-        this.part = part;
-        this.paragraph = paragraph;
+    public PowerpointParagraph(PptxDocument document, Shape.Paragraph paragraph) {
+        this.document = document;
+        this.paragraph = paragraph.getParagraph();
         recalculateRuns();
     }
 
@@ -55,8 +53,7 @@ public class PowerpointParagraph
         this.runs.clear();
         int index = 0;
         for (Object contentElement : paragraph.getEGTextRun()) {
-            if (contentElement instanceof CTRegularTextRun r && !r.getT()
-                                                                  .isEmpty()) {
+            if (contentElement instanceof CTRegularTextRun r && !r.getT().isEmpty()) {
                 this.addRun(r, index);
             }
             index++;
@@ -68,16 +65,12 @@ public class PowerpointParagraph
     /// @param run the run to add.
     private void addRun(CTRegularTextRun run, int index) {
         int startIndex = currentPosition;
-        int endIndex = currentPosition + run.getT()
-                                            .length() - 1;
+        int endIndex = currentPosition + run.getT().length() - 1;
         runs.add(new PowerpointRun(startIndex, endIndex, index, run));
         currentPosition = endIndex + 1;
     }
 
-    private static CTTextCharacterProperties apply(
-            CTTextCharacterProperties source,
-            CTTextCharacterProperties destination
-    ) {
+    private static CTTextCharacterProperties apply(CTTextCharacterProperties source, CTTextCharacterProperties destination) {
         ofNullable(source.getAltLang()).ifPresent(destination::setAltLang);
         ofNullable(source.getBaseline()).ifPresent(destination::setBaseline);
         ofNullable(source.getBmk()).ifPresent(destination::setBmk);
@@ -126,19 +119,8 @@ public class PowerpointParagraph
         run.setRPr(apply(textCharacterProperties));
     }
 
-    private static CTTextCharacterProperties apply(
-            CTTextCharacterProperties source
-    ) {
+    private static CTTextCharacterProperties apply(CTTextCharacterProperties source) {
         return apply(source, new CTTextCharacterProperties());
-    }
-
-    @Override
-    public void replace(List<P> toRemove, List<P> toAdd) {
-        int index = siblings().indexOf(paragraph);
-        if (index < 0) throw new OfficeStamperException("Impossible");
-
-        siblings().addAll(index, toAdd);
-        siblings().removeAll(toRemove);
     }
 
     @Override
@@ -156,7 +138,8 @@ public class PowerpointParagraph
         var element = elements.getFirst();
         if (!(element instanceof CTRegularTextRun replacementRun))
             throw new AssertionError("Insert '%s' is not a unique element of expected type '%s'".formatted(element,
-                    CTRegularTextRun.class));
+                    CTRegularTextRun.class
+            ));
 
         String text = asString();
         int matchStartIndex = text.indexOf(expression);
@@ -170,23 +153,23 @@ public class PowerpointParagraph
         boolean singleRun = affectedRuns.size() == 1;
 
         List<Object> textRun = this.paragraph.getEGTextRun();
-        replacementRun.setRPr(affectedRuns.getFirst()
-                                          .run()
-                                          .getRPr());
+        replacementRun.setRPr(affectedRuns.getFirst().run().getRPr());
         if (singleRun) singleRun(replacementRun,
                 expression,
                 matchStartIndex,
                 matchEndIndex,
                 textRun,
                 affectedRuns.getFirst(),
-                affectedRuns.getLast());
+                affectedRuns.getLast()
+        );
         else multipleRuns(replacementRun,
                 affectedRuns,
                 matchStartIndex,
                 matchEndIndex,
                 textRun,
                 affectedRuns.getFirst(),
-                affectedRuns.getLast());
+                affectedRuns.getLast()
+        );
 
     }
 
@@ -200,10 +183,7 @@ public class PowerpointParagraph
     /// @return the text of all runs.
     @Override
     public String asString() {
-        return runs.stream()
-                   .map(PowerpointRun::run)
-                   .map(CTRegularTextRun::getT)
-                   .collect(joining()) + "\n";
+        return runs.stream().map(PowerpointRun::run).map(CTRegularTextRun::getT).collect(joining()) + "\n";
     }
 
     @Override
@@ -212,13 +192,10 @@ public class PowerpointParagraph
     }
 
     @Override
-    public <T> Optional<T> parent(Class<T> aClass) {
-        return parent(aClass, Integer.MAX_VALUE);
-    }
-
-    @Override
     public Collection<Comments.Comment> getComment() {
-        return CommentUtil.getCommentFor(paragraph::getEGTextRun, part.document());
+        return CommentUtil.getCommentFor(new DocxIterator(paragraph.getEGTextRun().stream().map(
+                Content.Element::new).toList()), document.getPackage()
+        );
     }
 
     @Override
@@ -231,29 +208,10 @@ public class PowerpointParagraph
         return Optional.empty();
     }
 
-    private List<Object> siblings() {
-        return this.parent(ContentAccessor.class, 1)
-                   .orElseThrow(throwing("Not a standard Child with common parent"))
-                   .getContent();
-    }
 
-    private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        return WmlUtils.getFirstParentWithClass(paragraph, aClass, depth);
-    }
-
-    private void singleRun(
-            Object replacement,
-            String full,
-            int matchStartIndex,
-            int matchEndIndex,
-            List<Object> runs,
-            PowerpointRun firstRun,
-            PowerpointRun lastRun
-    ) {
+    private void singleRun(Object replacement, String full, int matchStartIndex, int matchEndIndex, List<Object> runs, PowerpointRun firstRun, PowerpointRun lastRun) {
         assert firstRun == lastRun;
-        boolean expressionSpansCompleteRun = full.length() == firstRun.run()
-                                                                      .getT()
-                                                                      .length();
+        boolean expressionSpansCompleteRun = full.length() == firstRun.run().getT().length();
         boolean expressionAtStartOfRun = matchStartIndex == firstRun.startIndex();
         boolean expressionAtEndOfRun = matchEndIndex == firstRun.endIndex();
         boolean expressionWithinRun = matchStartIndex > firstRun.startIndex() && matchEndIndex < firstRun.endIndex();
@@ -263,20 +221,16 @@ public class PowerpointParagraph
             runs.remove(firstRun.run());
             runs.add(firstRun.indexInParent(), replacement);
             recalculateRuns();
-        }
-        else if (expressionAtStartOfRun) {
+        } else if (expressionAtStartOfRun) {
             firstRun.replace(matchStartIndex, matchEndIndex, "");
             runs.add(firstRun.indexInParent(), replacement);
             recalculateRuns();
-        }
-        else if (expressionAtEndOfRun) {
+        } else if (expressionAtEndOfRun) {
             firstRun.replace(matchStartIndex, matchEndIndex, "");
             runs.add(firstRun.indexInParent() + 1, replacement);
             recalculateRuns();
-        }
-        else if (expressionWithinRun) {
-            String runText = firstRun.run()
-                                     .getT();
+        } else if (expressionWithinRun) {
+            String runText = firstRun.run().getT();
             int startIndex = runText.indexOf(full);
             int endIndex = startIndex + full.length();
             String substring1 = runText.substring(0, startIndex);
@@ -291,15 +245,7 @@ public class PowerpointParagraph
         }
     }
 
-    private void multipleRuns(
-            Object replacement,
-            List<PowerpointRun> affectedRuns,
-            int matchStartIndex,
-            int matchEndIndex,
-            List<Object> runs,
-            PowerpointRun firstRun,
-            PowerpointRun lastRun
-    ) {
+    private void multipleRuns(Object replacement, List<PowerpointRun> affectedRuns, int matchStartIndex, int matchEndIndex, List<Object> runs, PowerpointRun firstRun, PowerpointRun lastRun) {
         // remove the expression from first and last run
         firstRun.replace(matchStartIndex, matchEndIndex, "");
         lastRun.replace(matchStartIndex, matchEndIndex, "");
@@ -318,9 +264,7 @@ public class PowerpointParagraph
     }
 
     private List<PowerpointRun> getAffectedRuns(int startIndex, int endIndex) {
-        return runs.stream()
-                   .filter(run -> run.isTouchedByRange(startIndex, endIndex))
-                   .toList();
+        return runs.stream().filter(run -> run.isTouchedByRange(startIndex, endIndex)).toList();
     }
 
     /// {@inheritDoc}

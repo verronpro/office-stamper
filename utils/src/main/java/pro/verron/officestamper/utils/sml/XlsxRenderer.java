@@ -6,8 +6,8 @@ import org.xlsx4j.sml.Cell;
 
 import static java.util.stream.Collectors.joining;
 
-/// Utility class for rendering SpreadsheetML (Excel) files to string representations. This class provides methods to
-/// convert Excel spreadsheets into human-readable formats.
+/// Utility class for rendering SpreadsheetML (XlsxDocument) files to string representations. This class provides methods to
+/// convert XlsxDocument spreadsheets into human-readable formats.
 public class XlsxRenderer {
 
     private XlsxRenderer() {
@@ -15,13 +15,13 @@ public class XlsxRenderer {
     }
 
     /// Converts the content of a SpreadsheetMLPackage into a string by extracting and formatting cell data from the
-    /// Excel file.
+    /// XlsxDocument file.
     ///
-    /// @param spreadsheet the Excel file represented as a [SpreadsheetMLPackage]
-    /// @return a string representation of the cell content within the Excel spreadsheet
-    public static String xlsxToString(SpreadsheetMLPackage spreadsheet) {
+    /// @param spreadsheet the XlsxDocument file represented as a [SpreadsheetMLPackage]
+    /// @return a string representation of the cell content within the XlsxDocument spreadsheet
+    public static String xlsxToString(XlsxDocument document) {
         var formatter = new DataFormatter();
-        return new XlsxIterator(spreadsheet).filter(Cell.class::isInstance)
+        return new XlsxIterator(document.getPackage()).filter(Cell.class::isInstance)
                                             .map(Cell.class::cast)
                                             .map(cell -> cell.getR() + ": " + formatter.formatCellValue(cell))
                                             .collect(joining("\n"));

@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.test.utils.ObjectContextFactory;
-import pro.verron.officestamper.test.utils.ResourceUtils;
+import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -16,14 +16,12 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
-import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
-class RegressionTests {
+class RegressionTests extends OfficeStamperTestBase {
     public static final ObjectContextFactory FACTORY = new ObjectContextFactory();
     private static final Path TEMPLATE_52 = Path.of("#52.docx");
 
@@ -32,21 +30,20 @@ class RegressionTests {
                 arguments(Conditions.values(true), "Start\n\nHello, World!\n\nEnd\n\n"),
                 arguments(Conditions.values(false), "Start\n\nEnd\n\n"),
                 arguments(Conditions.values(true, true),
-                        "Start\n\nHello, World!\n\nEnd\n\nStart\n\nHello, World!\n\nEnd\n\n"),
+                        "Start\n\nHello, World!\n\nEnd\n\nStart\n\nHello, World!\n\nEnd\n\n"
+                ),
                 arguments(Conditions.values(true, false), "Start\n\nHello, World!\n\nEnd\n\nStart\n\nEnd\n\n"),
                 arguments(Conditions.values(false, true), "Start\n\nEnd\n\nStart\n\nHello, World!\n\nEnd\n\n"),
-                arguments(Conditions.values(false, false), "Start\n\nEnd\n\nStart\n\nEnd\n\n"));
+                arguments(Conditions.values(false, false), "Start\n\nEnd\n\nStart\n\nEnd\n\n")
+        );
     }
 
     /// Test that table of content specific instruction text (instrText) is not modified by error
     @Test
     void testTableOfContent() {
-        var configuration = OfficeStamperConfigurations.standard();
-        var stamper = docxPackageStamper(configuration);
-        var template = getWordResource(Path.of("TOC.docx"));
+        var config = OfficeStamperConfigurations.standard();
         var context = new Object();
-        var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = toAsciidoc(wordprocessingMLPackage);
+        var template = getWordResource(Path.of("TOC.docx"));
         var expected = """
                 == Table Of Content
                 
@@ -103,36 +100,31 @@ class RegressionTests {
                 // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
                 """;
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @Test
     void test64() {
-        var configuration = full();
+        var config = full();
         var testFunction = new TestFunction.TestFunctionImpl();
-        configuration.exposeInterfaceToExpressionLanguage(TestFunction.class, testFunction);
-        var stamper = docxPackageStamper(configuration);
-        var template = makeWordResource("${test()}");
+        config.exposeInterfaceToExpressionLanguage(TestFunction.class, testFunction);
         var context = new Object();
-        var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = toAsciidoc(wordprocessingMLPackage);
-        assertEquals("""
+        var template = makeWordResource("${test()}");
+        var expected = """
                 
                 
                 // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
-                """, actual);
+                """;
+        testStamper(config, context, template, expected);
         assertEquals(1, testFunction.counter());
     }
 
     @Test
     void test114() {
         var config = standard();
-        var stamper = docxPackageStamper(config);
         var template = getWordResource(Path.of("#114.docx"));
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
         var expected = """
                 = Issue #114
                 
@@ -151,27 +143,25 @@ class RegressionTests {
                 // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
                 """;
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @MethodSource("source52")
     @ParameterizedTest
-    void test52(Conditions conditions, String expected) {
-        var stamper = docxPackageStamper(OfficeStamperConfigurations.full());
-        var template = ResourceUtils.getWordResource(TEMPLATE_52);
-        var wordprocessingMLPackage = stamper.stamp(template, conditions);
-        var actual = toAsciidoc(wordprocessingMLPackage);
-        assertEquals(expected + """
+    void test52(Object context, String expected) {
+        var config = full();
+        var template = getWordResource(TEMPLATE_52);
+        expected = expected + """
                 // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
-                """, actual);
+                """;
+        testStamper(config, context, template, expected);
     }
 
     public interface TestFunction {
         void test();
 
-        class TestFunctionImpl
-                implements TestFunction {
+        class TestFunctionImpl implements TestFunction {
             private int counter = 0;
 
             @Override

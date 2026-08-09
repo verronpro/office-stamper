@@ -6,7 +6,7 @@ import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.StreamStamper;
 import pro.verron.officestamper.core.DocxStamper;
-import pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils;
+import pro.verron.officestamper.utils.wml.DocxDocument;
 
 /// [OfficeStampers] is a utility class that provides factory methods for creating document stampers for Office
 /// documents. This class offers convenient methods to create stampers for DOCX documents with various configurations.
@@ -24,7 +24,7 @@ public class OfficeStampers {
     ///
     /// @return a [StreamStamper] instance for stamping [WordprocessingMLPackage] documents
     /// @see OfficeStamperConfigurations#full()
-    public static StreamStamper<WordprocessingMLPackage> docxStamper() {
+    public static StreamStamper<DocxDocument> docxStamper() {
         return docxStamper(OfficeStamperConfigurations.full());
     }
 
@@ -36,9 +36,9 @@ public class OfficeStampers {
     /// @param configuration an instance of [OfficeStamperConfiguration] that defines the behavior and
     ///         preprocessing steps of the stamper
     /// @return a [StreamStamper] of [WordprocessingMLPackage] configured to process DOCX documents
-    public static StreamStamper<WordprocessingMLPackage> docxStamper(OfficeStamperConfiguration configuration) {
+    public static StreamStamper<DocxDocument> docxStamper(OfficeStamperConfiguration configuration) {
         var stamper = docxPackageStamper(configuration);
-        return new StreamStamper<>(OpenpackagingUtils::loadWord, stamper, OpenpackagingUtils::exportWord);
+        return new StreamStamper<>(DocxDocument::load, stamper, DocxDocument::save);
     }
 
     /// Creates an [OfficeStamper] instance for processing [WordprocessingMLPackage] documents with the specified
@@ -46,9 +46,8 @@ public class OfficeStampers {
     ///
     /// @param configuration an instance of [OfficeStamperConfiguration] that defines the behavior of the
     ///         stamper
-    ///
     /// @return an [OfficeStamper] for [WordprocessingMLPackage] configured to process DOCX documents
-    public static OfficeStamper<WordprocessingMLPackage> docxPackageStamper(OfficeStamperConfiguration configuration) {
+    public static OfficeStamper<DocxDocument> docxPackageStamper(OfficeStamperConfiguration configuration) {
         return new DocxStamper(configuration);
     }
 }

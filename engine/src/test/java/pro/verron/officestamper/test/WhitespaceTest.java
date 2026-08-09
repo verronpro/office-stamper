@@ -6,18 +6,17 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.test.utils.ContextFactory;
+import pro.verron.officestamper.test.utils.OfficeStamperTestBase;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
-import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 
-@DisplayName("Whitespaces manipulations") class WhitespaceTest {
+@DisplayName("Whitespaces manipulations")
+class WhitespaceTest extends OfficeStamperTestBase {
 
     static Stream<Arguments> should_preserve_spaces() {
         return Stream.of(argumentSet("obj:1 space", objectContextFactory(), "Homer Simpson", "Homer Simpson"),
@@ -25,7 +24,8 @@ import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
                 argumentSet("obj:3 space", objectContextFactory(), "Homer   Simpson", "Homer   Simpson"),
                 argumentSet("map:1 space", mapContextFactory(), "Homer Simpson", "Homer Simpson"),
                 argumentSet("map:2 space", mapContextFactory(), "Homer  Simpson", "Homer  Simpson"),
-                argumentSet("map:3 space", mapContextFactory(), "Homer   Simpson", "Homer   Simpson"));
+                argumentSet("map:3 space", mapContextFactory(), "Homer   Simpson", "Homer   Simpson")
+        );
     }
 
     static Stream<Arguments> should_preserve_tabulations() {
@@ -37,19 +37,15 @@ import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
     @ParameterizedTest(name = "Should keep any number of spaces ({argumentSetName})")
     void should_preserve_spaces(ContextFactory factory, String in, String out) {
         var config = OfficeStamperConfigurations.standard();
-        var template = makeWordResource("Space ${name}");
         var context = factory.name(in);
-
-        var stamper = docxPackageStamper(config);
-        var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = toAsciidoc(wordprocessingMLPackage);
+        var template = makeWordResource("Space ${name}");
         var expected = """
                 Space %s
                 
                 // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """.formatted(out);
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 
     @DisplayName("Should keep tabulations as tabulations")
@@ -57,18 +53,14 @@ import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
     @ParameterizedTest(name = "Should keep tabulations as tabulations ({argumentSetName})")
     void should_preserve_tabulations(ContextFactory factory) {
         var config = OfficeStamperConfigurations.standard();
-        var template = makeWordResource("Tab|TAB|${name}");
         var context = factory.name("Homer\tSimpson");
-
-        var stamper = docxPackageStamper(config);
-        var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = toAsciidoc(wordprocessingMLPackage);
+        var template = makeWordResource("Tab|TAB|${name}");
         var expected = """
                 Tab	Homer	Simpson
                 
                 // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
-        assertEquals(expected, actual);
+        testStamper(config, context, template, expected);
     }
 }

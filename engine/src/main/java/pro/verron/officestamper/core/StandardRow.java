@@ -3,7 +3,12 @@ package pro.verron.officestamper.core;
 import org.docx4j.XmlUtils;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.Hook;
+import pro.verron.officestamper.api.Hooks;
+import pro.verron.officestamper.api.Table;
+import pro.verron.officestamper.utils.wml.Content;
+import pro.verron.officestamper.utils.wml.DocxDocument.Part;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.List;
@@ -11,9 +16,8 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /// Represents a standard row in a table. This class provides functionality for manipulating table rows in a document.
-public class StandardRow
-        implements Table.Row {
-    private final DocxPart part;
+public class StandardRow implements Table.Row {
+    private final Part part;
     private final Tbl tbl;
     private final Tr tr;
 
@@ -21,9 +25,9 @@ public class StandardRow
     /// Constructs a new StandardRow with the specified table row element.
     ///
     /// @param part the document part containing the table
-    /// @param tbl the table containing the row
-    /// @param tr the table row element to wrap
-    public StandardRow(DocxPart part, Tbl tbl, Tr tr) {
+    /// @param tbl  the table containing the row
+    /// @param tr   the table row element to wrap
+    public StandardRow(Part part, Tbl tbl, Tr tr) {
         this.part = part;
         this.tbl = tbl;
         this.tr = tr;
@@ -46,13 +50,12 @@ public class StandardRow
 
     @Override
     public void removeComment(Comment comment) {
-        WmlUtils.deleteCommentFromElements(comment.getId(), tr.getContent());
+        new Content(tr).deleteCommentFromElements(comment.getId());
     }
 
     @Override
     public List<Hook> hooks() {
-        return Hooks.ofHooks(tr)
-                    .collect(toList());
+        return Hooks.ofHooks(new Content(tr)).collect(toList());
     }
 
     @Override

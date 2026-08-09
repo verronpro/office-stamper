@@ -50,13 +50,17 @@ public class Preprocessors {
         return new RemoveMalformedComments();
     }
 
-    /// Returns a [PreProcessor] object that prepares inline placeholders based on the provided regex and element name.
+    /// Returns a [PreProcessor] object that prepares inline placeholders introduced by the given opening delimiter.
+    /// The matching closing brace is found by brace balancing, so expressions may nest braces freely (for instance a
+    /// SpEL inline list or map).
     ///
-    /// @param regex the regular expression used to identify placeholders in the document
-    /// @param element the name of the smart tag element to be used for the placeholders
+    /// @param opening the literal opening delimiter of a placeholder, for instance `${` or `#{`. It must end with an
+    ///         opening brace.
+    /// @param element the name of the smart tag type to wrap matching placeholders with.
     /// @return a [PreProcessor] object that prepares inline placeholders.
-    public static PreProcessor preparePlaceholders(String regex, String element) {
-        return new PlaceholderHooker(regex, element);
+    /// @see PlaceholderHooker
+    public static PreProcessor preparePlaceholders(String opening, String element) {
+        return new PlaceholderHooker(opening, element);
     }
 
 

@@ -11,7 +11,7 @@ class PlaceholderPreprocessorTest {
 
     @Test
     void process() {
-        var preparePlaceholders = new PlaceholderHooker("(#\\{([^{]+?)})", "inlineProcessor");
+        var preparePlaceholders = new PlaceholderHooker("#{", "inlineProcessor");
         var document = makeWordResource("Hello, #{name}!");
         var before = toAsciidoc(document);
         assertEquals("""

@@ -176,8 +176,8 @@ public class OfficeStamperConfigurations {
     public static OfficeStamperConfiguration minimal() {
         var configuration = raw();
         configuration.addResolver(Resolvers.fallback("\n"));
-        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\$\\{([^{]+?)})", "placeholder"));
-        configuration.addPreprocessor(Preprocessors.preparePlaceholders("(\\#\\{([^{]+?)})", "inlineProcessor"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("${", "placeholder"));
+        configuration.addPreprocessor(Preprocessors.preparePlaceholders("#{", "inlineProcessor"));
         configuration.addPreprocessor(Preprocessors.prepareCommentProcessor());
         configuration.addPostprocessor(Postprocessors.removeTags("officestamper"));
         configuration.addPostprocessor(Postprocessors.removeComments());

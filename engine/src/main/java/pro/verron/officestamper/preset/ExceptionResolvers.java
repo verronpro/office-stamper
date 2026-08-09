@@ -61,12 +61,12 @@ public class ExceptionResolvers {
     private record DefaultingResolver(String value, boolean tracing)
             implements ExceptionResolver {
 
-        private static final Logger logger = LoggerFactory.getLogger(DefaultingResolver.class);
-
         @Override
         public Insert resolve(String expression, String message, Exception cause) {
-            if (tracing) logger.warn(message, cause);
-            else logger.warn(message);
+            var description = "Placeholder '%s' could not be resolved; falling back to the default value '%s'. %s"
+                    .formatted(expression, value, message);
+            if (tracing) logger.warn(description, cause);
+            else logger.warn(description);
             return new Insert(newRun(value));
         }
     }
@@ -76,8 +76,10 @@ public class ExceptionResolvers {
 
         @Override
         public Insert resolve(String expression, String message, Exception cause) {
-            if (tracing) logger.warn(message, cause);
-            else logger.warn(message);
+            var description = "Placeholder '%s' could not be resolved; passing it through unchanged. %s"
+                    .formatted(expression, message);
+            if (tracing) logger.warn(description, cause);
+            else logger.warn(description);
             return new Insert(newRun(template.formatted(expression)));
         }
     }
@@ -87,8 +89,10 @@ public class ExceptionResolvers {
 
         @Override
         public Insert resolve(String expression, String message, Exception cause) {
-            if (tracing) throw new OfficeStamperException(message, cause);
-            else throw new OfficeStamperException(message);
+            var description = "Placeholder '%s' could not be resolved and no fallback is configured. %s"
+                    .formatted(expression, message);
+            if (tracing) throw new OfficeStamperException(description, cause);
+            else throw new OfficeStamperException(description);
         }
     }
 }

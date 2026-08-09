@@ -1,5 +1,6 @@
 package pro.verron.officestamper.utils.wml;
 
+import org.docx4j.com.microsoft.schemas.office.word.x2010.wordprocessingShape.CTWordprocessingShape;
 import org.docx4j.wml.ContentAccessor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -143,6 +144,19 @@ class DocxIteratorTest {
         assertSame(sdtBlock, iterator.next());
         assertSame(innerContent, iterator.next());
         assertSame(innermostObj, iterator.next());
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    @DisplayName("next handles a WordprocessingShape that has no textbox (decorative shape) without throwing")
+    void testNextHandlesWordprocessingShapeWithoutTextbox() {
+        // A decorative wps:wsp (e.g. in footers) has no txbx, so getTxbx() is null.
+        // List.of(null) used to throw an NPE while iterating such a shape (issue #799).
+        var shape = new CTWordprocessingShape();
+        var iterator = new DocxIterator(() -> List.of(shape));
+
+        assertTrue(iterator.hasNext());
+        assertSame(shape, iterator.next());
         assertFalse(iterator.hasNext());
     }
 }

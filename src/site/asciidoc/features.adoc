@@ -1,0 +1,54 @@
+= Features
+
+Office-stamper is a Java template engine for dynamic creation of DOCX documents at
+runtime. You design a template in your Word processor; Office-stamper fills it from
+data.
+
+== Expression-based templating
+
+Use Spring Expression Language (SpEL) for powerful template expressions embedded in
+your document.
+
+== Comment-based processing
+
+Add special instructions as comments in your Word documents — no custom markup language
+to learn.
+
+== Formatting preservation
+
+All formatting from the original template is preserved in the generated document.
+
+== Custom functions
+
+Extend templating with your own functions via custom resolvers.
+
+== Image deduplication
+
+Identical images are automatically reused in the document to prevent file bloating.
+
+== Type-safe
+
+Strong typing for Java integration keeps your templates and code in sync.
+
+== Flexible configuration
+
+Three presets in `OfficeStamperConfigurations`:
+
+* `minimal()` — base engine with placeholder preprocessors.
+* `standard()` — recommended; adds common comment processors (repeat, displayIf,
+  replaceWith) and date/time formatting.
+* `full()` — adds cleanup for language information and orphaned notes.
+
+== Security modes
+
+Secure-by-default: SpEL runs in a restricted mode and SVG parsing uses a hardened XML
+parser. Opt into a permissive mode for trusted templates via
+`SecurityMode.PERMISSIVE` or the system properties
+`-Dofficestamper.spel.mode=...` / `-Dofficestamper.svg.mode=...`.
+
+== Related modules
+
+* `engine` — the core templating engine and public API.
+* `cli` — command-line interface for stamping from data files.
+* `excel-context` — use Excel files as template data sources.
+* `utils` — low-level utilities shared by the engine and tools.

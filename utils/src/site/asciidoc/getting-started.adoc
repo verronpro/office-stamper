@@ -1,0 +1,39 @@
+= Getting Started
+
+This guide gets the Office-stamper `utils` module working: add the dependency and build
+from source.
+
+== Prerequisites
+
+* A JDK matching the project baseline: **Java 25** (Maven `release` is set to 25; the
+  runtime requires Java 17+).
+* **Apache Maven 3.9+** (or the project's Maven wrapper, if present).
+
+== Add the dependency
+
+[source,xml]
+----
+<dependency>
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>utils</artifactId>
+    <version>${project.version}</version>
+</dependency>
+----
+
+== Build from source
+
+[source,bash]
+----
+git clone https://github.com/verronpro/office-stamper.git
+cd office-stamper
+mvn install
+----
+
+`utils` is a low-level module consumed mainly by the engine and tools; most users will
+not depend on it directly.
+
+== Where to go next
+
+* xref:features.adoc[Features] — WML helpers, iterators, and functional helpers.
+* xref:examples.adoc[Examples] — how the engine uses these utilities.
+* xref:index.adoc[Overview] — the module README and links to the full documentation.

@@ -1,0 +1,21 @@
+= Examples
+
+`utils` is an internal module: the engine is its primary consumer, so most users will
+not call it directly. The examples below show the kinds of problems it solves.
+
+== Robust document segmentation
+
+When the engine walks a document part by part, it relies on `SlicingIterator` to slice
+the content into robust, bounded segments — the same iterator you can reuse if you
+extend the engine.
+
+== Working with WordprocessingML
+
+The WML helpers wrap Docx4J objects so common manipulations (runs, paragraphs, tables)
+read and write cleanly, keeping engine code focused on templating logic.
+
+== Next steps
+
+* xref:getting-started.adoc[Getting Started] — add the dependency and build from source.
+* xref:features.adoc[Features] — WML helpers, iterators, and functional helpers.
+* See the engine module for real usage of these utilities in context.

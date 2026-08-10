@@ -1,0 +1,42 @@
+= Examples
+
+Practical CLI invocations. The Windows-focused walkthrough lives in
+xref:quickstart-windows.adoc[Quickstart (Windows)]; these cover the cross-platform
+flags.
+
+== Basic stamp
+
+[source,bash]
+----
+officestamper -d data.json -t template.docx -o output.docx
+----
+
+== Validate without writing output (dry-run)
+
+[source,bash]
+----
+officestamper -t template.docx -d data.json --dry-run
+----
+
+Unresolved placeholders cause a non-zero exit code and no file is produced.
+
+== Multi-stamp a directory
+
+[source,bash]
+----
+officestamper -t report.docx -d ./data-dir -o ./out
+----
+
+Each top-level data file or immediate subfolder becomes its own context.
+
+== Structured JSON logs (CI/automation)
+
+[source,bash]
+----
+officestamper -t template.docx -d data.json -o output.docx --log-format json
+----
+
+== Next steps
+
+* xref:getting-started.adoc[Getting Started] — add the dependency and stamp your first document.
+* xref:features.adoc[Features] — supported data formats, diagnostics, and native packaging.

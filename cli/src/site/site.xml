@@ -19,6 +19,9 @@
 
         <menu name="Module">
             <item name="Overview" href="index.html"/>
+            <item name="Getting Started" href="getting-started.html"/>
+            <item name="Features" href="features.html"/>
+            <item name="Examples" href="examples.html"/>
             <item name="Quickstart (Windows)" href="quickstart-windows.html"/>
         </menu>
 

@@ -1,0 +1,41 @@
+= Getting Started
+
+This guide gets the Office-stamper `excel-context` module working: add the dependency,
+build from source, and load your first Excel data source.
+
+== Prerequisites
+
+* A JDK matching the project baseline: **Java 25** (Maven `release` is set to 25; the
+  runtime requires Java 17+).
+* **Apache Maven 3.9+** (or the project's Maven wrapper, if present).
+
+== Add the dependency
+
+[source,xml]
+----
+<dependency>
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>excel-context</artifactId>
+    <version>${project.version}</version>
+</dependency>
+----
+
+== Build from source
+
+[source,bash]
+----
+git clone https://github.com/verronpro/office-stamper.git
+cd office-stamper
+mvn install
+----
+
+== Load your first Excel context
+
+`excel-context` parses Excel sheets and rows into a context object the engine can use
+with SpEL expressions. Wire it to the engine as you would any other context.
+
+== Where to go next
+
+* xref:features.adoc[Features] — Excel integration, flexible mapping, and the simple API.
+* xref:examples.adoc[Examples] — loading a workbook and passing it to the engine.
+* xref:index.adoc[Overview] — the module README and links to the full documentation.

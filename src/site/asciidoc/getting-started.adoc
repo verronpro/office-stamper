@@ -1,0 +1,63 @@
+= Getting Started
+
+This guide gets Office-stamper working: add the dependency, build from source, and
+stamp your first DOCX template.
+
+== Prerequisites
+
+* A JDK matching the project baseline: **Java 25** (Maven `release` is set to 25; the
+  runtime requires Java 17+).
+* **Apache Maven 3.9+** (or the project's Maven wrapper, if present).
+
+== Add the dependency
+
+[source,xml]
+----
+<dependency>
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>engine</artifactId>
+    <version>3.5</version>
+</dependency>
+
+<!-- You also need a Docx4J dependency -->
+<dependency>
+    <groupId>org.docx4j</groupId>
+    <artifactId>docx4j-core</artifactId>
+    <version>11.5.13</version>
+</dependency>
+<dependency>
+    <groupId>org.docx4j</groupId>
+    <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+    <version>11.5.13</version>
+</dependency>
+----
+
+== Build from source
+
+[source,bash]
+----
+git clone https://github.com/verronpro/office-stamper.git
+cd office-stamper
+mvn install
+----
+
+== Stamp your first document
+
+[source,java]
+----
+void main() {
+    var context = new YourPojoContext(_, _, _);
+    var stamper = OfficeStampers.docxStamper();
+
+    try (var template = Files.newInputStream(Paths.get("template.docx"));
+         var output = Files.newOutputStream(Paths.get("output.docx"))) {
+        stamper.stamp(template, context, output);
+    }
+}
+----
+
+== Where to go next
+
+* xref:features.adoc[Features] — SpEL templating, comment processing, security modes.
+* xref:examples.adoc[Examples] — configurations, resolvers, and security modes.
+* xref:index.adoc[Overview] — the project README and links to the full documentation.

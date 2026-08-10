@@ -1,0 +1,27 @@
+= Features
+
+The `utils` module contains low-level utilities shared by the Office-stamper engine and
+tools.
+
+== WML helpers
+
+Factories and utilities for working with WordprocessingML and Docx4J — building and
+querying runs, paragraphs, and tables without boilerplate.
+
+== Iterator utilities
+
+Specialized iterators such as `SlicingIterator` for robust, segment-based traversal of
+document parts.
+
+== Functional helpers
+
+Common functional interfaces and utility methods used across the codebase.
+
+== Bit/byte helpers
+
+Low-level utilities for data manipulation.
+
+== Related
+
+* `engine` — the primary consumer of these utilities.
+* The published xref:index.adoc[Javadoc] report documents the exact API surface.

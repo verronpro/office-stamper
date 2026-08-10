@@ -17,6 +17,9 @@
         <!-- Modules and Reports menus will aggregate content from all modules -->
         <menu name="Office-stamper">
             <item name="Overview" href="index.html"/>
+            <item name="Getting Started" href="getting-started.html"/>
+            <item name="Features" href="features.html"/>
+            <item name="Examples" href="examples.html"/>
         </menu>
         <menu ref="modules"/>
         <menu name="Project Info">

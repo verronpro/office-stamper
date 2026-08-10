@@ -1,0 +1,24 @@
+= Features
+
+The `excel-context` module lets you use Excel (`.xlsx`) files as data sources for
+Office-stamper.
+
+== Excel integration
+
+Use familiar spreadsheet software to manage your template data — no custom data files
+to maintain.
+
+== Flexible mapping
+
+Maps sheets and rows to data structures compatible with SpEL, so your spreadsheet
+columns become template variables.
+
+== Simple API
+
+Easy to load data and pass it to the `engine`, fitting naturally into the standard
+stamping flow.
+
+== Related
+
+* `engine` — consumes the context produced here.
+* `cli` — can read XLSX inputs directly when stamping from the command line.

@@ -1,0 +1,26 @@
+= Features
+
+The `cli` module is a command-line interface to the Office-stamper engine. It stamps
+DOCX (Word) and PPTX (PowerPoint) templates from various input data formats.
+
+== Multiple data formats
+
+Supports JSON, CSV, Java properties, XML/HTML, and XLSX inputs as template data.
+
+== Format support
+
+Choose between Word (`.docx`) or PowerPoint (`.pptx`) templates.
+
+== Diagnostics
+
+Built-in diagnostic mode reports the environment, useful for troubleshooting.
+
+== Native packaging
+
+Support for building Windows EXE installers and portable single-file binaries via
+Maven profiles (`windows-exe`, `windows-portable`).
+
+== Related
+
+* xref:quickstart-windows.adoc[Quickstart (Windows)] — install and stamp in ~5 minutes.
+* `engine` — the core templating engine the CLI drives.

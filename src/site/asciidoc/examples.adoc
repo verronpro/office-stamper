@@ -1,0 +1,35 @@
+= Examples
+
+Practical snippets for Office-stamper using the public API.
+
+== Stamp a DOCX from a Docx4J package
+
+[source,java]
+----
+var stamper = OfficeStampers.docxPackageStamper(OfficeStamperConfigurations.standard());
+WordprocessingMLPackage stamped = stamper.stamp(document, context);
+----
+
+== Customize the configuration
+
+[source,java]
+----
+var configuration = OfficeStamperConfigurations.standard()
+    .addResolver(new MyCustomResolver());
+----
+
+== Opt into permissive security mode
+
+[source,java]
+----
+import pro.verron.officestamper.api.SecurityMode;
+
+var cfg = OfficeStamperConfigurations.standard()
+    .setSpelSecurityMode(SecurityMode.PERMISSIVE)
+    .setSvgSecurityMode(SecurityMode.PERMISSIVE);
+----
+
+== Next steps
+
+* xref:getting-started.adoc[Getting Started] — add the dependency and stamp your first document.
+* xref:features.adoc[Features] — SpEL templating, comment processing, and security modes.

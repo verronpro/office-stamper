@@ -1,0 +1,49 @@
+= Getting Started
+
+This guide gets the Office-stamper `cli` working: add the dependency, build from
+source, and stamp your first template.
+
+== Prerequisites
+
+* A JDK matching the project baseline: **Java 25** (Maven `release` is set to 25; the
+  runtime requires Java 17+).
+* **Apache Maven 3.9+** (or the project's Maven wrapper, if present).
+
+== Add the dependency
+
+[source,xml]
+----
+<dependency>
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>cli</artifactId>
+    <version>${project.version}</version>
+</dependency>
+----
+
+== Build from source
+
+[source,bash]
+----
+git clone https://github.com/verronpro/office-stamper.git
+cd office-stamper
+mvn install
+----
+
+== Stamp your first document
+
+[source,bash]
+----
+officestamper \
+  -d data.json \
+  -t template.docx \
+  -o output.docx
+----
+
+This stamps `template.docx` using the data in `data.json` and writes `output.docx`.
+
+== Where to go next
+
+* xref:quickstart-windows.adoc[Quickstart (Windows)] — a 5-minute Windows walkthrough.
+* xref:features.adoc[Features] — supported data formats, diagnostics, and native packaging.
+* xref:examples.adoc[Examples] — dry-run, multi-stamp, and JSON logs.
+* xref:index.adoc[Overview] — the module README and links to the full documentation.

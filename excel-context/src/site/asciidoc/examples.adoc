@@ -1,0 +1,25 @@
+= Examples
+
+Practical use of `excel-context` as a data source for the engine.
+
+== Provide an Excel workbook as context
+
+Load an `.xlsx` file and hand the resulting context to the stamper. The sheets and rows
+become SpEL-accessible data, so a template can reference the same variables you manage
+in the spreadsheet.
+
+== Combine with the engine
+
+[source,java]
+----
+var stamper = OfficeStampers.docxStamper();
+try (var template = Files.newInputStream(Paths.get("template.docx"));
+     var output = Files.newOutputStream(Paths.get("output.docx"))) {
+    stamper.stamp(template, excelContext, output);
+}
+----
+
+== Next steps
+
+* xref:getting-started.adoc[Getting Started] — add the dependency and load your first workbook.
+* xref:features.adoc[Features] — Excel integration and flexible SpEL mapping.

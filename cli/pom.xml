@@ -107,6 +107,10 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
+                        <!-- Bound to prepare-package so reactor dependencies (e.g. engine) are packaged
+                             before copying; running earlier breaks `mvn site`, which forks the test phase
+                             and triggers MDEP-187 ("artifact has not been packaged yet"). -->
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>

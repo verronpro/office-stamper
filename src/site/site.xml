@@ -23,8 +23,8 @@
         </menu>
         <menu ref="modules"/>
         <menu name="Project Info">
-            <item name="Release Notes" href="release-notes.html"/>
-            <item name="Contributing" href="contributing.html"/>
+            <item name="Release Notes" href="engine/release-notes.html"/>
+            <item name="Contributing" href="engine/contributing.html"/>
         </menu>
         <menu name="Reports" ref="reports"/>
     </body>

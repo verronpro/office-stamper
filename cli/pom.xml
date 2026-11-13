@@ -130,6 +130,30 @@
             <id>windows-exe</id>
             <build>
                 <plugins>
+                    <!-- Produce the fat JAR consumed by jpackage below -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>pro.verron.officestamper.Main</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <!-- Produce numeric app.version from project.version for jpackage (no -SNAPSHOT allowed) -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
@@ -205,6 +229,30 @@
             <id>windows-portable</id>
             <build>
                 <plugins>
+                    <!-- Produce the fat JAR consumed by the jpackage app-image below -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>pro.verron.officestamper.Main</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <!-- Ensure clean portable directory before packaging -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

@@ -1,96 +1,100 @@
 package pro.verron.officestamper.test;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
-import org.docx4j.wml.HeaderReference;
-import org.docx4j.wml.Hdr;
-import org.docx4j.wml.HdrFtrRef;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
-import org.docx4j.wml.R;
 import org.docx4j.wml.SectPr;
-import org.docx4j.wml.Text;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.test.utils.ContextFactory;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
+import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 
 /// Regression test for [#805]: a section without its own header references inherits
 /// the previous section's header, and that header is processed more than once.
 class HeaderInheritanceTest {
-    static java.util.stream.Stream<org.junit.jupiter.params.provider.Arguments> factories() {
-        return java.util.stream.Stream.of(
-                org.junit.jupiter.params.provider.Arguments.argumentSet("obj", objectContextFactory()),
-                org.junit.jupiter.params.provider.Arguments.argumentSet("map", mapContextFactory())
-        );
+    static Stream<Arguments> factories() {
+        return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
     }
 
     @DisplayName("A placeholder in a header inherited by a second section should stamp cleanly")
     @MethodSource("factories")
     @ParameterizedTest
-    void headerPlaceholderInheritedBySecondSection(ContextFactory factory) throws Exception {
-        var template = twoSectionsWithInheritedHeader();
+    void headerPlaceholderInheritedBySecondSection(ContextFactory factory) {
+        var template = twoSectionsWithInheritedHeader("""
+                [header]
+                --
+                ${name}
+                --
+                
+                First section content
+                """);
         var configuration = OfficeStamperConfigurations.standard();
         var stamper = docxPackageStamper(configuration);
         var stamped = stamper.stamp(template, factory.name("World"));
         var actual = toAsciidoc(stamped);
-        assertTrue(actual.contains("World"), "Placeholder in inherited header should be resolved");
-        assertFalse(actual.contains("${name}"), "Placeholder should not remain unresolved");
-        assertTrue(actual.contains("Second section content"), "Body content should be stamped");
+        var expected = """
+                [header]
+                --
+                World
+
+                --
+
+
+                First section content
+
+                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
+
+                Second section content
+
+                """;
+        assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
     }
 
-    private static WordprocessingMLPackage twoSectionsWithInheritedHeader() throws Exception {
-        var pkg = WordprocessingMLPackage.createPackage();
-        var mdp = pkg.getMainDocumentPart();
-
-        var header = new HeaderPart();
-        var hdr = new Hdr();
-        header.setJaxbElement(hdr);
-        hdr.getContent().add(paragraph("${name}"));
-        var headerRelationship = mdp.addTargetPart(header);
-
-        // Section 1 references the header
-        var sectPr1 = new SectPr();
-        var headerReference = new HeaderReference();
-        headerReference.setId(headerRelationship.getId());
-        headerReference.setType(HdrFtrRef.DEFAULT);
-        sectPr1.getEGHdrFtrReferences().add(headerReference);
-
-        // Section 2 (body-level sectPr) has no headerReference: it inherits section 1's header
-        mdp.getJaxbElement()
-           .getBody()
-           .setSectPr(new SectPr());
-
-        mdp.getContent().add(paragraph("First section content"));
-        mdp.getContent().add(sectionBreak(sectPr1));
-        mdp.getContent().add(paragraph("Second section content"));
-        return pkg;
+    /// Builds a two-section template from an AsciiDoc source where section 1
+    /// references the header and section 2 has no headerReference, so it
+    /// inherits section 1's header.
+    private static WordprocessingMLPackage twoSectionsWithInheritedHeader(String asciidoc) {
+        var template = makeWordResource(asciidoc);
+        var mdp = template.getMainDocumentPart();
+        var body = mdp.getJaxbElement()
+                      .getBody();
+        // The AsciiDoc [header] block attached its reference to the body-level
+        // sectPr. Demote that sectPr onto the last paragraph of section 1
+        // (it becomes section 1's own sectPr, keeping the header reference —
+        // this is how Word marks a section break), and leave a fresh
+        // body-level sectPr with no references for section 2.
+        var sectionOneSectPr = body.getSectPr();
+        body.setSectPr(new SectPr());
+        var content = mdp.getContent();
+        var lastParagraph = (P) content.get(content.size() - 1);
+        var pPr = new PPr();
+        pPr.setSectPr(sectionOneSectPr);
+        lastParagraph.setPPr(pPr);
+        content.add(paragraph("Second section content"));
+        return template;
     }
 
     private static P paragraph(String text) {
-        var p = new P();
-        var r = new R();
-        var t = new Text();
+        var factory = new org.docx4j.wml.ObjectFactory();
+        var p = factory.createP();
+        var r = factory.createR();
+        var t = factory.createText();
         t.setValue(text);
         t.setSpace("preserve");
         r.getContent().add(t);
         p.getContent().add(r);
-        return p;
-    }
-
-    private static P sectionBreak(SectPr sectPr) {
-        var p = new P();
-        var pPr = new PPr();
-        pPr.setSectPr(sectPr);
-        p.setPPr(pPr);
         return p;
     }
 }

@@ -3,6 +3,22 @@
 :os: https://github.com/verronpro/office-stamper
 :proj: https://github.com/verronpro/office-stamper/releases/tag
 
+== v3.8 (upcoming)
+
+=== Improvements and Fixes
+
+* **Shared Headers and Footers**: Fixed the `IndexOutOfBoundsException: Index: -1` thrown by the smart-tags postprocessor when a header or footer is shared by several sections (#805).
+A section without its own header/footer references inherits the previous section's ones, so the same part can back several sections; document visitors now process each header/footer part exactly once, wherever it is declared or inherited.
+
+=== Dependencies
+
+* **asciidoc**: Updated to v3.10, which adds a standalone `[section]` marker to end document sections, with Word-like per-section header and footer inheritance (available to template tooling and AsciiDoc preview integrations).
+
+=== Documentation and Testing
+
+* **Site Structure**: Added "Getting Started", "Features" and "Examples" pages to the documentation site, and simplified the contributing guide.
+* **Test Tooling**: Tests now render templates and stamped documents in AsciiDoc format for human-readable diffs; a new `HeaderInheritanceTest` covers placeholders in headers inherited by a second section.
+
 == {proj}/v3.5[v3.5]
 
 === New Features

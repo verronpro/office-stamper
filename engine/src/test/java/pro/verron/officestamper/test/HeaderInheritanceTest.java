@@ -1,9 +1,5 @@
 package pro.verron.officestamper.test;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.P;
-import org.docx4j.wml.PPr;
-import org.docx4j.wml.SectPr;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -23,6 +19,10 @@ import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
 
 /// Regression test for [#805]: a section without its own header references inherits
 /// the previous section's header, and that header is processed more than once.
+///
+/// The template uses the AsciiDoc `[section]` marker (asciidoc 3.10) to build a
+/// two-section document where the second section has no `[header]` declaration and
+/// therefore inherits the first one's header.
 class HeaderInheritanceTest {
     static Stream<Arguments> factories() {
         return Stream.of(argumentSet("obj", objectContextFactory()), argumentSet("map", mapContextFactory()));
@@ -32,13 +32,17 @@ class HeaderInheritanceTest {
     @MethodSource("factories")
     @ParameterizedTest
     void headerPlaceholderInheritedBySecondSection(ContextFactory factory) {
-        var template = twoSectionsWithInheritedHeader("""
+        var template = makeWordResource("""
                 [header]
                 --
                 ${name}
                 --
                 
                 First section content
+                
+                [section]
+                
+                Second section content
                 """);
         var configuration = OfficeStamperConfigurations.standard();
         var stamper = docxPackageStamper(configuration);
@@ -60,41 +64,5 @@ class HeaderInheritanceTest {
 
                 """;
         assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
-    }
-
-    /// Builds a two-section template from an AsciiDoc source where section 1
-    /// references the header and section 2 has no headerReference, so it
-    /// inherits section 1's header.
-    private static WordprocessingMLPackage twoSectionsWithInheritedHeader(String asciidoc) {
-        var template = makeWordResource(asciidoc);
-        var mdp = template.getMainDocumentPart();
-        var body = mdp.getJaxbElement()
-                      .getBody();
-        // The AsciiDoc [header] block attached its reference to the body-level
-        // sectPr. Demote that sectPr onto the last paragraph of section 1
-        // (it becomes section 1's own sectPr, keeping the header reference —
-        // this is how Word marks a section break), and leave a fresh
-        // body-level sectPr with no references for section 2.
-        var sectionOneSectPr = body.getSectPr();
-        body.setSectPr(new SectPr());
-        var content = mdp.getContent();
-        var lastParagraph = (P) content.get(content.size() - 1);
-        var pPr = new PPr();
-        pPr.setSectPr(sectionOneSectPr);
-        lastParagraph.setPPr(pPr);
-        content.add(paragraph("Second section content"));
-        return template;
-    }
-
-    private static P paragraph(String text) {
-        var factory = new org.docx4j.wml.ObjectFactory();
-        var p = factory.createP();
-        var r = factory.createR();
-        var t = factory.createText();
-        t.setValue(text);
-        t.setSpace("preserve");
-        r.getContent().add(t);
-        p.getContent().add(r);
-        return p;
     }
 }

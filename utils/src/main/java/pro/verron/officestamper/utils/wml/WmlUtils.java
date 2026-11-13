@@ -542,7 +542,12 @@ public final class WmlUtils {
     public static void visitDocument(WordprocessingMLPackage document, TraversalUtilVisitor<?> visitor) {
         var mainDocumentPart = document.getMainDocumentPart();
         TraversalUtil.visit(mainDocumentPart, visitor);
-        WmlUtils.streamHeaderFooterPart(document).forEach(f -> TraversalUtil.visit(f, visitor));
+        // A section without its own header/footer references inherits the previous section's ones,
+        // so HeaderFooterPolicy can return the same part for several sections: visit each part only once.
+        Set<Object> visitedParts = Collections.newSetFromMap(new IdentityHashMap<>());
+        WmlUtils.streamHeaderFooterPart(document)
+                .filter(visitedParts::add)
+                .forEach(f -> TraversalUtil.visit(f, visitor));
         WmlUtils.visitPartIfExists(visitor, mainDocumentPart.getFootnotesPart());
         WmlUtils.visitPartIfExists(visitor, mainDocumentPart.getEndNotesPart());
     }

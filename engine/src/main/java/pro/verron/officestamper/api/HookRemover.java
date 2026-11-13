@@ -6,7 +6,10 @@ import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.ContentAccessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 
 import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
 
@@ -36,6 +39,9 @@ public final class HookRemover
             var parent = (ContentAccessor) tag.getParent();
             var siblings = parent.getContent();
             var index = siblings.indexOf(tag);
+            // The tag may have been unwrapped by a previous pass when the same
+            // part was visited more than once (e.g. a header shared by several sections)
+            if (index < 0) continue;
             siblings.remove(tag);
             siblings.addAll(index, tag.getContent());
         }
@@ -45,12 +51,13 @@ public final class HookRemover
             extends TraversalUtilVisitor<CTSmartTagRun> {
         private final String element;
         private final List<CTSmartTagRun> results = new ArrayList<>();
+        private final Set<CTSmartTagRun> seen = Collections.newSetFromMap(new IdentityHashMap<>());
 
         TagsVisitor(String element) {this.element = element;}
 
         @Override
         public void apply(CTSmartTagRun tag) {
-            if (element.equals(tag.getElement())) results.add(tag);
+            if (element.equals(tag.getElement()) && seen.add(tag)) results.add(tag);
         }
 
         List<CTSmartTagRun> getTags() {

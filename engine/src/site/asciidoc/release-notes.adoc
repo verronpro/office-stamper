@@ -3,7 +3,7 @@
 :os: https://github.com/verronpro/office-stamper
 :proj: https://github.com/verronpro/office-stamper/releases/tag
 
-== v3.8 (upcoming)
+== {proj}/v3.8[v3.8]
 
 === Improvements and Fixes
 

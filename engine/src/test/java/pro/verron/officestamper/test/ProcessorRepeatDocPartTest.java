@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
@@ -61,7 +61,7 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                [section]
                 
                 Second page is portrait, layout change should survive to repeatDocPart (${name}).
                 
@@ -73,11 +73,9 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 Fourth page is set to landscape again.
-                
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 """, toAsciidoc(template));
 
@@ -94,7 +92,7 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                [section]
                 
                 Second page is portrait, layout change should survive to repeatDocPart (Homer).
                 
@@ -114,11 +112,9 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 Fourth page is set to landscape again.
-                
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 """, actual);
     }
@@ -179,8 +175,6 @@ class ProcessorRepeatDocPartTest {
                 
                 This will stay untouched too.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
 
         var stamper = docxPackageStamper(config);
@@ -205,7 +199,7 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 Second page is landscape, layout change should survive to repeatDocPart (Homer).
                 
@@ -213,11 +207,11 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                [section]
                 
                 With a break setting the layout to portrait in between.
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 Second page is landscape, layout change should survive to repeatDocPart (Marge).
                 
@@ -225,17 +219,15 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                [section]
                 
                 With a break setting the layout to portrait in between.
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 Fourth page is set to landscape again.
-                
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 """;
 
@@ -338,8 +330,6 @@ class ProcessorRepeatDocPartTest {
                 <<<
                 
                 There are 6 characters.
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -624,8 +614,6 @@ class ProcessorRepeatDocPartTest {
                 
                 [rStyle_lev]#There are #[rStyle_lev]#3#[rStyle_lev]# grades.#
                 
-                // section {cols={col=[{w=8640}]}, pgMar={bottom=720, footer=720, header=720, left=720, right=720, top=720}, pgSz={h=15840, w=12240}, space=720}
-                
                 """;
 
         var stamper = docxPackageStamper(config);
@@ -664,8 +652,6 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=100}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """, actual);
     }
 
@@ -693,8 +679,6 @@ class ProcessorRepeatDocPartTest {
                 image:rId8[cx=5732145, cy=3523358]
                 
                 image:rId5[cx=5732145, cy=2866073]
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """, actual);
     }
@@ -725,8 +709,6 @@ class ProcessorRepeatDocPartTest {
                 This should be repeated too
                 
                 This is not repeated
-                
-                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                 
                 """;
         var stamper = docxPackageStamper(config);
@@ -771,8 +753,6 @@ class ProcessorRepeatDocPartTest {
                 
                 NB Episodes: 4
                 
-                // section {docGrid={charSpace=-6145, linePitch=299}, pgMar={bottom=1417, left=1417, right=1417, top=1417}, pgSz={code=9, h=16838, w=11906}, space=720}
-                
                 """;
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
@@ -809,7 +789,7 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 Second page is landscape, layout change should survive to repeatDocPart (Homer).
                 
@@ -817,7 +797,7 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                [section]
                 
                 With a break setting the layout to portrait in between.
                 
@@ -827,7 +807,7 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 Second page is landscape, layout change should survive to repeatDocPart (Marge).
                 
@@ -835,7 +815,7 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                [section]
                 
                 With a break setting the layout to portrait in between.
                 
@@ -845,11 +825,9 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 Fourth page is set to landscape again.
-                
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                 
                 """;
         assertEquals(expected, actual);
@@ -877,8 +855,6 @@ class ProcessorRepeatDocPartTest {
                 
                 Maggie
                 
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                
                 """;
         assertEquals(expected, actual);
     }
@@ -905,8 +881,6 @@ class ProcessorRepeatDocPartTest {
                 
                 Lisa
                 
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                
                 """;
         assertEquals(expected, actual);
     }
@@ -932,8 +906,6 @@ class ProcessorRepeatDocPartTest {
                 Lisa
                 
                 Maggie
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         assertEquals(expected, actual);

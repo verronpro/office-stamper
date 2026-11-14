@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
@@ -24,8 +24,6 @@ class ProcessorReplaceWithTest {
         var actual = toAsciidoc(stamped);
         var expected = """
                 This variable name should be resolved to the value Homer Simpson.
-                
-                // section {pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
         assertEquals(expected, actual);

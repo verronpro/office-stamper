@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
@@ -103,8 +103,6 @@ class ProcessorRepeatParagraphTest {
                 
                 There are 6 characters.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
 
         return arguments("Repeat Paragraph Integration test", standard(), context, template, expected);
@@ -124,7 +122,7 @@ class ProcessorRepeatParagraphTest {
                         
                         
                         
-                        // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                        [section]
                         
                         Second page is portrait, layout change should survive to repeatParagraph processor (Homer).
                         
@@ -141,14 +139,12 @@ class ProcessorRepeatParagraphTest {
                         Without a section break changing the layout in between, but a page break instead.
                         
                         <<<
-                        
-                        
-                        
-                        // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
-                        
+                
+                
+                
+                        [section]
+                
                         Fourth page is set to landscape again.
-                        
-                        // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
                         
                         """);
     }
@@ -165,7 +161,7 @@ class ProcessorRepeatParagraphTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                [section]
                 
                 Second page is portrait, layout change should survive to repeatParagraph processor (Homer).
                 
@@ -173,11 +169,11 @@ class ProcessorRepeatParagraphTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 With a page break changing the layout in between.
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                [section]
                 
                 Second page is portrait, layout change should survive to repeatParagraph processor (Marge).
                 
@@ -185,17 +181,15 @@ class ProcessorRepeatParagraphTest {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
+                [section]
                 
                 With a page break changing the layout in between.
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=11906, orient=landscape, w=16838}, space=708}
+                [section]
                 
                 Fourth page is set to portrait again.
-                
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 """;
 
@@ -245,8 +239,6 @@ class ProcessorRepeatParagraphTest {
                 
                 Maggie
                 
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                
                 """;
         assertEquals(expected, actual);
     }
@@ -273,8 +265,6 @@ class ProcessorRepeatParagraphTest {
                 
                 Lisa
                 
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                
                 """;
         assertEquals(expected, actual);
     }
@@ -300,8 +290,6 @@ class ProcessorRepeatParagraphTest {
                 Lisa
                 
                 Maggie
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         assertEquals(expected, actual);

@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import static java.util.Locale.forLanguageTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.minimal;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
@@ -37,18 +37,18 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
 
     static Stream<Arguments> trifunctions() {
         return Stream.of(//
-                argumentSet("Object-based, Chinese", objectContextFactory(), "ZH", "2024 四月\n"),
-                argumentSet("Object-based, French", objectContextFactory(), "FR", "2024 avril\n"),
-                argumentSet("Object-based, English", objectContextFactory(), "EN", "2024 April\n"),
-                argumentSet("Object-based, Japanese", objectContextFactory(), "JA", "2024 4月\n"),
-                argumentSet("Object-based, Hebrew", objectContextFactory(), "HE", "2024 אפריל\n"),
-                argumentSet("Object-based, Italian", objectContextFactory(), "IT", "2024 aprile\n"),
-                argumentSet("Map-based, Chinese", mapContextFactory(), "ZH", "2024 四月\n"),
-                argumentSet("Map-based, French", mapContextFactory(), "FR", "2024 avril\n"),
-                argumentSet("Map-based, English", mapContextFactory(), "EN", "2024 April\n"),
-                argumentSet("Map-based, Japanese", mapContextFactory(), "JA", "2024 4月\n"),
-                argumentSet("Map-based, Hebrew", mapContextFactory(), "HE", "2024 אפריל\n"),
-                argumentSet("Map-based, Italian", mapContextFactory(), "IT", "2024 aprile\n"));
+                argumentSet("Object-based, Chinese", objectContextFactory(), "ZH", "2024 四月"),
+                argumentSet("Object-based, French", objectContextFactory(), "FR", "2024 avril"),
+                argumentSet("Object-based, English", objectContextFactory(), "EN", "2024 April"),
+                argumentSet("Object-based, Japanese", objectContextFactory(), "JA", "2024 4月"),
+                argumentSet("Object-based, Hebrew", objectContextFactory(), "HE", "2024 אפריל"),
+                argumentSet("Object-based, Italian", objectContextFactory(), "IT", "2024 aprile"),
+                argumentSet("Map-based, Chinese", mapContextFactory(), "ZH", "2024 四月"),
+                argumentSet("Map-based, French", mapContextFactory(), "FR", "2024 avril"),
+                argumentSet("Map-based, English", mapContextFactory(), "EN", "2024 April"),
+                argumentSet("Map-based, Japanese", mapContextFactory(), "JA", "2024 4月"),
+                argumentSet("Map-based, Hebrew", mapContextFactory(), "HE", "2024 אפריל"),
+                argumentSet("Map-based, Italian", mapContextFactory(), "IT", "2024 aprile"));
     }
 
     @MethodSource("factories")
@@ -109,8 +109,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 
                 
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
@@ -128,8 +126,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         var stamper = docxPackageStamper(config);
         var expected = """
                 THE SIMPSONS
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         var stamped = stamper.stamp(template, context);
@@ -149,8 +145,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         var expected = """
                 [a, b, c]
                 
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                
                 """;
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
@@ -169,8 +163,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         var stamper = docxPackageStamper(config);
         var expected = """
                 7.22
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         var stamped = stamper.stamp(template, context);
@@ -195,7 +187,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
         var actual = toAsciidoc(stamped);
         assertEquals("""
                 %s
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """.formatted(expected), actual);
     }

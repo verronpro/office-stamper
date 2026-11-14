@@ -30,8 +30,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 
                 This paragraph has the image image:rId7[cx=63500, cy=64537] in the middle.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
         testStamper(configuration, context, template, expected);
     }
@@ -50,8 +48,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=63500, cy=63500].
                 
                 This paragraph has the image image:rId7[cx=63500, cy=63500] in the middle.
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
         testStamper(configuration, context, template, expected);
@@ -72,8 +68,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 
                 This paragraph has the image image:rId7[cx=63500, cy=63500] in the middle.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
         testStamper(configuration, context, template, expected);
     }
@@ -93,8 +87,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 
                 This paragraph has the image image:rId7[cx=476250, cy=476250] in the middle.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
         testStamper(configuration, context, template, expected);
     }
@@ -113,8 +105,6 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
                 In this paragraph, an image of Mona Lisa is inserted: image:rId7[cx=476250, cy=476250].
                 
                 This paragraph has the image image:rId7[cx=476250, cy=476250] in the middle.
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
         testStamper(configuration, context, template, expected);

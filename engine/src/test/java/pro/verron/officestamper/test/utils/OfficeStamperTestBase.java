@@ -5,6 +5,7 @@ import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pro.verron.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 
@@ -14,13 +15,25 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
 
 public class OfficeStamperTestBase {
     private static final Logger log = LoggerFactory.getLogger(OfficeStamperTestBase.class);
+
+    /// Renders the stamped document without section-layout noise: asciidoc
+    /// 4.0.0 emits a `[section-properties]` block per section by default, and
+    /// stamper tests do not verify page geometry.
+    public static String toAsciidoc(WordprocessingMLPackage pkg) {
+        return toAsciidoc(pkg, false);
+    }
+
+    /// Same as {@link #toAsciidoc(WordprocessingMLPackage)} with control over
+    /// comment emission, mirroring the asciidoc compiler's 2-arg overload.
+    public static String toAsciidoc(WordprocessingMLPackage pkg, boolean skipComments) {
+        return AsciiDocCompiler.toAsciidoc(pkg, skipComments, false);
+    }
 
     protected static Stream<ContextFactory> factories() {
         return Stream.of(objectContextFactory(), mapContextFactory());

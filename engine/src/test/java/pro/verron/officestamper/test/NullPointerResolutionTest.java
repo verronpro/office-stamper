@@ -63,8 +63,6 @@ class NullPointerResolutionTest
                         
                         Deal with: ${nullish.li[2] ?: "Nullish value!!"}
                         
-                        // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                        
                         """);
     }
 
@@ -120,8 +118,6 @@ class NullPointerResolutionTest
                 Deal with: Nullish value!!
                 
                 Deal with: Nullish value!!
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         testStamper(configuration, context, template, expected);

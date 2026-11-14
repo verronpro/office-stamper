@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
@@ -100,8 +100,6 @@ class RegressionTests {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
-                
                 """;
         assertEquals(expected, actual);
     }
@@ -118,8 +116,6 @@ class RegressionTests {
         var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals("""
                 
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """, actual);
         assertEquals(1, testFunction.counter());
@@ -148,8 +144,6 @@ class RegressionTests {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
-                
                 """;
         assertEquals(expected, actual);
     }
@@ -161,10 +155,7 @@ class RegressionTests {
         var template = ResourceUtils.getWordResource(TEMPLATE_52);
         var wordprocessingMLPackage = stamper.stamp(template, conditions);
         var actual = toAsciidoc(wordprocessingMLPackage);
-        assertEquals(expected + """
-                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
-                
-                """, actual);
+        assertEquals(expected, actual);
     }
 
     public interface TestFunction {

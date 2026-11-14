@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.of;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
@@ -99,8 +99,6 @@ class ProcessorRepeatTableRowTest {
                         
                         There are 6 characters in the above table.
                         
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
                         """);
     }
 
@@ -169,8 +167,6 @@ class ProcessorRepeatTableRowTest {
                         
                         There are 6 characters in the above table.
                         
-                        // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                        
                         """);
     }
 
@@ -189,8 +185,6 @@ class ProcessorRepeatTableRowTest {
                         |===
                         
                         
-                        
-                        // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
                         
                         """);
     }
@@ -233,8 +227,6 @@ class ProcessorRepeatTableRowTest {
                 |Maggie
                 |===
                 
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                
                 """;
         assertEquals(expected, actual);
     }
@@ -260,8 +252,6 @@ class ProcessorRepeatTableRowTest {
                 |Bart
                 |Lisa
                 |===
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         assertEquals(expected, actual);
@@ -289,8 +279,6 @@ class ProcessorRepeatTableRowTest {
                 |Lisa
                 |Maggie
                 |===
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         assertEquals(expected, actual);

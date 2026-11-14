@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
@@ -239,8 +239,6 @@ import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFa
                 ISO Localized Datetime (SHORT, MEDIUM): 00. 1. 12. 오후 11:34:45
                 
                 ISO Localized Datetime (SHORT, SHORT): 00. 1. 12. 오후 11:34
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         var stamped = stamper.stamp(template, context);

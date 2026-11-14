@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
@@ -189,8 +189,6 @@ class ProcessorDisplayIfTest {
                 
                 To show how comments spanning multiple paragraphs works.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
 
         var config = standard();
@@ -251,8 +249,6 @@ class ProcessorDisplayIfTest {
                 [Quote]
                 "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
-                
                 [footnotes]
                 --
                 6::
@@ -274,10 +270,8 @@ class ProcessorDisplayIfTest {
                 
                 [footnote text]
                  Despite her silence, Maggie has saved her family on multiple occasions.
-                
                 --
-                
-                
+
                 """;
 
         var configuration = full();
@@ -338,8 +332,6 @@ class ProcessorDisplayIfTest {
                 [Quote]
                 "From the simplicity of everyday life to the extraordinary events in Springfield, The Simpsons continue to entertain audiences with their unique charm and wit."
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
-                
                 [endnotes]
                 --
                 6::
@@ -361,10 +353,8 @@ class ProcessorDisplayIfTest {
                 
                 [endnote text]
                  Despite her silence, Maggie has saved her family on multiple occasions.
-                
                 --
-                
-                
+
                 """;
 
         var configuration = full();
@@ -513,8 +503,6 @@ class ProcessorDisplayIfTest {
                 These 6^th^ multiple paragraph block stays if “name” is not “null”.
                 
                 To show how comments spanning multiple paragraphs works.
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -665,8 +653,6 @@ class ProcessorDisplayIfTest {
                 
                 To show how comments spanning multiple paragraphs works.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
 
         var config = standard();
@@ -700,8 +686,6 @@ class ProcessorDisplayIfTest {
                 |===
                 
                 
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -741,8 +725,6 @@ class ProcessorDisplayIfTest {
                 
                 
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
 
         var config = standard();
@@ -778,8 +760,6 @@ class ProcessorDisplayIfTest {
                 |===
                 
                 
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
 
@@ -829,8 +809,6 @@ class ProcessorDisplayIfTest {
                 
                 This paragraph stays untouched.
                 
-                // section {docGrid={linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """;
 
         var config = standard();
@@ -873,8 +851,6 @@ class ProcessorDisplayIfTest {
                 
                 
                 This paragraph stays untouched.
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """;
         var config = standard();

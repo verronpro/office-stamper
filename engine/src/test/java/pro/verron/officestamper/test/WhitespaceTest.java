@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
@@ -46,8 +46,6 @@ import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
         var expected = """
                 Space %s
                 
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                
                 """.formatted(out);
         assertEquals(expected, actual);
     }
@@ -65,8 +63,6 @@ import static pro.verron.officestamper.test.utils.DocxFactory.makeWordResource;
         var actual = toAsciidoc(wordprocessingMLPackage);
         var expected = """
                 Tab	Homer	Simpson
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """;
         assertEquals(expected, actual);

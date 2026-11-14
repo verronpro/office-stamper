@@ -55,8 +55,6 @@ class DefaultTests extends OfficeStamperTestBase {
                 
                  <-- this should be empty.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """);
     }
 
@@ -74,16 +72,12 @@ class DefaultTests extends OfficeStamperTestBase {
                 
                 
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """);
     }
 
     private static ArgumentSet replaceNullExpressionTest(ContextFactory factory) {
         return argumentSet("Do not replace 'null' values - keep placeholder", standard().addResolver(Resolvers.nullToPlaceholder()), factory.name(null), getWordResource(Path.of("ReplaceNullExpressionTest.docx")), """
                 I am ${name}.
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
                 
                 """);
     }
@@ -92,8 +86,6 @@ class DefaultTests extends OfficeStamperTestBase {
     private static ArgumentSet replaceNullExpressionTest2(ContextFactory factory) {
         return argumentSet("Do replace 'null' values with empty string", standard().addResolver(Resolvers.nullToEmpty()), factory.name(null), getWordResource(Path.of("ReplaceNullExpressionTest.docx")), """
                 I am .
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
                 
                 """);
     }
@@ -119,8 +111,6 @@ class DefaultTests extends OfficeStamperTestBase {
                 
                 The variable foo has the value bar.
                 
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
-                
                 """);
     }
 
@@ -134,8 +124,6 @@ class DefaultTests extends OfficeStamperTestBase {
                 This paragraph is untouched. +
                 In this paragraph, the variable name should be resolved to the value Homer Simpson. +
                 In this paragraph, the variable foo should not be resolved: ${foo}.
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """);
     }
@@ -160,8 +148,6 @@ class DefaultTests extends OfficeStamperTestBase {
                 |===
                 
                 
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
                 
                 """);
     }
@@ -202,8 +188,6 @@ class DefaultTests extends OfficeStamperTestBase {
                 
                 It should be with header formatting: [rStyle_TitreCar]#Homer Simpson#.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """);
     }
 
@@ -227,8 +211,6 @@ class DefaultTests extends OfficeStamperTestBase {
                 
                 Before Expression After.
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """);
     }
 
@@ -244,16 +226,12 @@ class DefaultTests extends OfficeStamperTestBase {
                 
                 In this paragraph, we test that _only_ the text in the comment (but not other occurrences of the same text) is replaced (also, the format – red, bold – should be retained): name [color_FF0000]#*Homer Simpson*#
                 
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 """);
     }
 
     private static ArgumentSet leaveEmptyOnExpressionErrorTest(ContextFactory factory) {
         return argumentSet("Leave Empty On Expression Error Test", standard().setExceptionResolver(ExceptionResolvers.defaulting()), factory.name("Homer Simpson"), getWordResource(Path.of("LeaveEmptyOnExpressionErrorTest.docx")), """
                 Leave me empty .
-                
-                // section {docGrid={charSpace=-6145, linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=708}
                 
                 """);
     }
@@ -267,8 +245,6 @@ class DefaultTests extends OfficeStamperTestBase {
                 This paragraph should have a split input: whatever  +
                  split in  +
                  three lines.
-                
-                // section {pgMar={bottom=1440, left=1440, right=1440, top=1440}, pgSz={code=9, h=16839, w=11907}}
                 
                 """);
     }
@@ -303,8 +279,6 @@ class DefaultTests extends OfficeStamperTestBase {
                 
                 
                 
-                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
-                
                 """);
     }
 
@@ -315,27 +289,21 @@ class DefaultTests extends OfficeStamperTestBase {
                 [form, id=8a282f9]
                 --
                 Rich text control line Homer
-                
                 --
-                
                 
                 Rich text control inlined form:df261932[Homer]
                 
                 [form, id=fe2b2bd9]
                 --
                 Raw text control line Homer
-                
                 --
-                
                 
                 Raw text control inlined form:50007206[Homer]
                 
                 [form, id=a90c90aa]
                 --
                 Homer
-                
                 --
-                
                 
                 In a table:
                 
@@ -359,15 +327,12 @@ class DefaultTests extends OfficeStamperTestBase {
                 a|[form, id=61b817b8]
                 --
                 Raw text control line Homer
-                
                 --
                 |===
                 
                 
                 
                 
-                
-                // section {docGrid={linePitch=360}, pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}, pgSz={h=16838, w=11906}, space=708}
                 
                 """);
     }

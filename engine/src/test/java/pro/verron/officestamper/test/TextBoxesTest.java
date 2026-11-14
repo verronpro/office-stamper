@@ -31,17 +31,13 @@ class TextBoxesTest
                 
                 pict:6826989D[]This should not resolve:\s
                 
-                // section {docGrid={linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 [pict, anchor=363CAD83]
                 --
                 roundrect
                 	shadow
                 	textbox
                 		Bart Simpson
-                
                 --
-                
                 
                 [pict, anchor=6826989D]
                 --
@@ -49,9 +45,7 @@ class TextBoxesTest
                 	shadow
                 	textbox
                 		${foo}
-                
                 --
-                
                 
                 """;
         testStamper(config, context, template, expected);
@@ -72,8 +66,6 @@ class TextBoxesTest
                 
                 alternateContent:2[]This should not resolve:\s
                 
-                // section {docGrid={linePitch=240}, pgMar={bottom=1134, left=1134, right=1134, top=1134}, pgSz={h=16838, w=11906}, space=720}
-                
                 [alternateContent, anchor=1]
                 --
                 choice wps
@@ -90,9 +82,7 @@ class TextBoxesTest
                 			shadow
                 			textbox
                 				Bart Simpson
-                
                 --
-                
                 
                 [alternateContent, anchor=2]
                 --
@@ -110,9 +100,7 @@ class TextBoxesTest
                 			shadow
                 			textbox
                 				${foo}
-                
                 --
-                
                 
                 """;
         testStamper(config, context, template, expected);

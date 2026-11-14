@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.asciidoc.compiler.AsciiDocCompiler.toAsciidoc;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.test.utils.ContextFactory.objectContextFactory;
@@ -39,6 +39,11 @@ class HeaderAndFooterTest {
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals("""
+                [header-even]
+                --
+                [header]
+                --
+                
                 [header]
                 --
                 [header]
@@ -52,13 +57,12 @@ class HeaderAndFooterTest {
                 
                 [header]
                 Here, the picture should be resolved image:rId2[cx=5760720, cy=2880360].
-                
                 --
                 
-                
-                Expression Replacement in header and footer
-                
-                // section {docGrid={linePitch=360}, pgMar={bottom=1417, footer=708, header=708, left=1417, right=1417, top=1417}, pgSz={h=16838, w=11906}, space=708}
+                [footer-even]
+                --
+                [footer]
+                --
                 
                 [footer]
                 --
@@ -73,9 +77,19 @@ class HeaderAndFooterTest {
                 
                 [footer]
                 Here, the picture should be resolved image:rId1[cx=5760720, cy=2880360].
-                
                 --
                 
+                [header-first]
+                --
+                [header]
+                --
+                
+                [footer-first]
+                --
+                [footer]
+                --
+                
+                Expression Replacement in header and footer
                 
                 """, actual);
     }

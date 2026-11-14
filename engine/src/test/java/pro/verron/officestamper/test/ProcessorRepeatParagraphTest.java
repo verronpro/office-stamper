@@ -1,6 +1,7 @@
 package pro.verron.officestamper.test;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.wml.STPageOrientation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,6 +21,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.sectionOrientations;
 import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
@@ -105,7 +107,12 @@ class ProcessorRepeatParagraphTest {
                 
                 """;
 
-        return arguments("Repeat Paragraph Integration test", standard(), context, template, expected);
+        return arguments("Repeat Paragraph Integration test",
+                standard(),
+                context,
+                template,
+                sectionOrientations(getWordResource(Path.of("ProcessorRepeatParagraph.docx"))),
+                expected);
     }
 
     private static Arguments shouldKeepSectionBreakOrientationWithoutSectionBreakInsideComment(
@@ -115,6 +122,7 @@ class ProcessorRepeatParagraphTest {
                 standard(),
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
                 getWordResource(Path.of("ProcessorRepeatParagraph_OutLayout.docx")),
+                List.of(STPageOrientation.LANDSCAPE, STPageOrientation.PORTRAIT, STPageOrientation.LANDSCAPE),
                 """
                         First page is landscape.
                         
@@ -154,6 +162,12 @@ class ProcessorRepeatParagraphTest {
     ) {
         var context = factory.coupleContext();
         var template = getWordResource(Path.of("ProcessorRepeatParagraph_InLayout.docx"));
+        var expectedOrientations = List.of(STPageOrientation.LANDSCAPE,
+                STPageOrientation.PORTRAIT,
+                STPageOrientation.LANDSCAPE,
+                STPageOrientation.PORTRAIT,
+                STPageOrientation.LANDSCAPE,
+                STPageOrientation.PORTRAIT);
         var expected = """
                 First page is landscape.
                 
@@ -198,6 +212,7 @@ class ProcessorRepeatParagraphTest {
                 config,
                 context,
                 template,
+                expectedOrientations,
                 expected);
     }
 
@@ -208,6 +223,7 @@ class ProcessorRepeatParagraphTest {
             OfficeStamperConfiguration config,
             Object context,
             WordprocessingMLPackage template,
+            List<STPageOrientation> expectedOrientations,
             String expected
     ) {
         log.info(name);
@@ -215,6 +231,9 @@ class ProcessorRepeatParagraphTest {
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
+        assertEquals(expectedOrientations,
+                sectionOrientations(stamped),
+                "The section orientations should survive the stamping");
     }
 
     @Test

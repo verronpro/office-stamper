@@ -2,6 +2,7 @@ package pro.verron.officestamper.test;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.wml.STPageOrientation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.sectionOrientations;
 import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
@@ -117,6 +119,9 @@ class ProcessorRepeatDocPartTest {
                 Fourth page is set to landscape again.
                 
                 """, actual);
+        assertEquals(List.of(STPageOrientation.LANDSCAPE, STPageOrientation.PORTRAIT, STPageOrientation.LANDSCAPE),
+                sectionOrientations(stamped),
+                "The section orientations should survive the stamping");
     }
 
     @DisplayName(
@@ -238,6 +243,14 @@ class ProcessorRepeatDocPartTest {
         stamped.save(tempFile);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
+        assertEquals(List.of(STPageOrientation.PORTRAIT,
+                        STPageOrientation.LANDSCAPE,
+                        STPageOrientation.PORTRAIT,
+                        STPageOrientation.LANDSCAPE,
+                        STPageOrientation.PORTRAIT,
+                        STPageOrientation.LANDSCAPE),
+                sectionOrientations(stamped),
+                "The section orientations should survive the stamping");
     }
 
     @DisplayName("Repeat Doc Part Integration test")
@@ -831,6 +844,14 @@ class ProcessorRepeatDocPartTest {
                 
                 """;
         assertEquals(expected, actual);
+        assertEquals(List.of(STPageOrientation.PORTRAIT,
+                        STPageOrientation.LANDSCAPE,
+                        STPageOrientation.PORTRAIT,
+                        STPageOrientation.LANDSCAPE,
+                        STPageOrientation.PORTRAIT,
+                        STPageOrientation.LANDSCAPE),
+                sectionOrientations(stamped),
+                "The section orientations should survive the stamping");
     }
 
     @Test

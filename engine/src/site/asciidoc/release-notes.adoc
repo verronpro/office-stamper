@@ -9,6 +9,8 @@
 
 * **Shared Headers and Footers**: Fixed the `IndexOutOfBoundsException: Index: -1` thrown by the smart-tags postprocessor when a header or footer is shared by several sections (#805).
 A section without its own header/footer references inherits the previous section's ones, so the same part can back several sections; document visitors now process each header/footer part exactly once, wherever it is declared or inherited.
+* **Brace-balanced placeholders** (issue #{os}/issues/796[#796]): `PlaceholderHooker` no longer relies on a regex that forbade nested braces. It now scans for opening delimiters (`${`, `#{`, …) and balances braces, so SpEL inline lists (`${ {1, 2, 3} }`) and inline maps (`${ {'a': 1} }`) are valid placeholders. A placeholder whose opening brace is never balanced is captured verbatim and handed to the configured `ExceptionResolver` instead of being left behind as a stray `${`.
+* **Decorative shapes** (issue #{os}/issues/799[#799]): Fixed a `NullPointerException` when loading decorative `wps:wsp` shapes without a text box.
 
 === Dependencies
 
@@ -19,15 +21,46 @@ A section without its own header/footer references inherits the previous section
 * **Site Structure**: Added "Getting Started", "Features" and "Examples" pages to the documentation site, and simplified the contributing guide.
 * **Test Tooling**: Tests now render templates and stamped documents in AsciiDoc format for human-readable diffs; a new `HeaderInheritanceTest` covers placeholders in headers inherited by a second section.
 
+=== Packaging
+
+* **Portable Windows EXE**: Added a `windows-portable` profile that builds a self-contained `officestamper.exe` (fat jar wrapped in a 7-Zip self-extracting archive), alongside the existing `windows-exe` installer profile.
+
+== {proj}/v3.7[v3.7]
+
+=== New Features
+
+* **CLI Rework**: The command-line interface was extracted into single-purpose classes — `Contextualizer` (parses JSON/YAML/properties/CSV/XLSX/XML/HTML into a SpEL context), an `Emitter` interface with `JsonEmitter` and `LogEmitter` implementations, a `TemplateKind` enum, and the `RunResult` and `Item` records.
+* **CLI Watch Mode**: Added a `--watch` flag to the CLI for automatic re-stamping on file changes.
+* **Multi-tab Excel Context**: The CLI can now load Excel files with multiple tabs and treat them as independent or joined tables (`--excel-merge-strategy MAP|JOIN`, `--excel-join-key`).
+
+=== Refactorings
+
+* Simplified `StandardParagraph` and `WmlUtils`; centralised template-type detection and reporting in the CLI.
+
+=== Dependencies
+
+* Updated `org.panteleyev:jpackage-maven-plugin` to v1.8.0.
+* Updated `org.junit.jupiter:junit-jupiter` to v6.1.1.
+
+== {proj}/v3.6[v3.6]
+
+=== Build and Tooling
+
+* **Java**: Build and Maven tooling aligned on JDK 25 (`maven.compiler.source/target/release` set to 25).
+* **Maven**: Restructured the POMs and updated the Maven site plugin.
+* **maven-skin**: Updated to v1.0.12.
+
+=== Tests
+
+* Consolidated the test scaffolding around a shared `OfficeStamperTestBase`.
+
 == {proj}/v3.5[v3.5]
 
 === New Features
 
 * **AlternateContent Support**: The engine now correctly handles `AlternateContent` elements, ensuring that placeholders and comments within these blocks are processed.
 * **PowerPoint Image Stamping**: `PowerpointStamper` now supports filling shapes with images when a placeholder resolves to an `Image` object.
-* **CLI Watch Mode**: Added a `--watch` flag to the CLI for automatic re-stamping on file changes.
 * **Traceability Reporting**: Introduced `TraceabilityReporter` and CLI options to generate detailed JSON and HTML reports of placeholder resolutions.
-* **Multi-tab Excel Context**: The CLI can now load Excel files with multiple tabs and treat them as independent or joined tables.
 * **AsciiDoc Previews**: Integrated with `pro.verron.asciidoc` to provide previews of AsciiDoc content as images (SVG/PNG) within documents.
 
 === Improvements and Fixes
@@ -35,7 +68,6 @@ A section without its own header/footer references inherits the previous section
 * **Documentation**: Rearranged documentation for better Maven site and GitHub visibility.
 * **CI/CD**: Fixed the GitHub release workflow.
 * **Modularization**: Extracted `imageio` and `asciidoc` modules into separate repositories.
-* **Placeholder tokenizer rewrite** (issue #{os}/issues/796[#796]): `PlaceholderHooker` no longer relies on a regex that forbade nested braces. It now scans for opening delimiters (`${`, `#{`, …) and balances braces, so SpEL inline lists (`${ {1, 2, 3} }`) and inline maps (`${ {'a': 1} }`) are valid placeholders. A placeholder whose opening brace is never balanced is captured verbatim and handed to the configured `ExceptionResolver` instead of being left behind as a stray `${`.
 
 == {proj}/v3.4[v3.4]
 

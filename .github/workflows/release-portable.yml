@@ -26,7 +26,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.release.tag_name || inputs.tag_name }}
+          # Release events check out the tagged release; manual dispatches build
+          # the branch they are dispatched from (e.g. to retry a failed build
+          # without re-publishing the release).
+          ref: ${{ github.event.release.tag_name || '' }}
 
       - name: Set up Temurin JDK 25
         uses: actions/setup-java@v5
@@ -52,6 +55,18 @@ jobs:
           $artifact = Get-ChildItem -Path "cli/target/portable/officestamper-portable-*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
           if (-not $artifact) { Write-Error "Portable EXE was not produced." }
           Write-Host "Found artifact: $($artifact.FullName)"
+
+      - name: Rename artifact for the release tag
+        if: github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        run: |
+          # A manual retry builds the default branch, so the produced file carries
+          # the current snapshot version; name it after the target release instead.
+          $version = "${{ inputs.tag_name }}" -replace '^v', ''
+          $src = Get-ChildItem "cli/target/portable/officestamper-portable-*.exe" | Select-Object -First 1
+          $dest = "cli/target/portable/officestamper-portable-$version.exe"
+          Move-Item $src.FullName $dest
+          Write-Host "Renamed artifact to $dest"
 
       - name: Upload portable EXE to GitHub Release
         uses: softprops/action-gh-release@v3

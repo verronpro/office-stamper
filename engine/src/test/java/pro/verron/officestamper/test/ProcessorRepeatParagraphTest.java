@@ -1,13 +1,13 @@
 package pro.verron.officestamper.test;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.STPageOrientation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pro.verron.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.test.utils.ContextFactory;
 import pro.verron.officestamper.test.utils.ObjectContextFactory;
@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.sectionOrientations;
 import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
 import static pro.verron.officestamper.preset.OfficeStampers.docxPackageStamper;
@@ -105,14 +104,17 @@ class ProcessorRepeatParagraphTest {
                 
                 There are 6 characters.
                 
+                [section-properties]
+                --
+                cols={space=720}
+                docGrid={charSpace=-6145, linePitch=240}
+                pgMar={bottom=1134, left=1134, right=1134, top=1134}
+                pgSz={h=16838, w=11906}
+                --
+                
                 """;
 
-        return arguments("Repeat Paragraph Integration test",
-                standard(),
-                context,
-                template,
-                sectionOrientations(getWordResource(Path.of("ProcessorRepeatParagraph.docx"))),
-                expected);
+        return arguments("Repeat Paragraph Integration test", standard(), context, template, expected);
     }
 
     private static Arguments shouldKeepSectionBreakOrientationWithoutSectionBreakInsideComment(
@@ -122,13 +124,20 @@ class ProcessorRepeatParagraphTest {
                 standard(),
                 Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge"))),
                 getWordResource(Path.of("ProcessorRepeatParagraph_OutLayout.docx")),
-                List.of(STPageOrientation.LANDSCAPE, STPageOrientation.PORTRAIT, STPageOrientation.LANDSCAPE),
                 """
                         First page is landscape.
                         
                         
                         
                         
+                        
+                        [section-properties]
+                        --
+                        cols={space=708}
+                        docGrid={linePitch=360}
+                        pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                        pgSz={h=11906, orient=landscape, w=16838}
+                        --
                         
                         [section]
                         
@@ -147,12 +156,28 @@ class ProcessorRepeatParagraphTest {
                         Without a section break changing the layout in between, but a page break instead.
                         
                         <<<
-                
-                
-                
+                        
+                        
+                        
+                        [section-properties]
+                        --
+                        cols={space=708}
+                        docGrid={linePitch=360}
+                        pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                        pgSz={h=16838, w=11906}
+                        --
+                        
                         [section]
-                
+                        
                         Fourth page is set to landscape again.
+                        
+                        [section-properties]
+                        --
+                        cols={space=708}
+                        docGrid={linePitch=360}
+                        pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                        pgSz={h=11906, orient=landscape, w=16838}
+                        --
                         
                         """);
     }
@@ -162,18 +187,20 @@ class ProcessorRepeatParagraphTest {
     ) {
         var context = factory.coupleContext();
         var template = getWordResource(Path.of("ProcessorRepeatParagraph_InLayout.docx"));
-        var expectedOrientations = List.of(STPageOrientation.LANDSCAPE,
-                STPageOrientation.PORTRAIT,
-                STPageOrientation.LANDSCAPE,
-                STPageOrientation.PORTRAIT,
-                STPageOrientation.LANDSCAPE,
-                STPageOrientation.PORTRAIT);
         var expected = """
                 First page is landscape.
                 
                 
                 
                 
+                
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
                 
                 [section]
                 
@@ -183,9 +210,25 @@ class ProcessorRepeatParagraphTest {
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
+                
                 [section]
                 
                 With a page break changing the layout in between.
+                
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
                 
                 [section]
                 
@@ -195,15 +238,39 @@ class ProcessorRepeatParagraphTest {
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
+                
                 [section]
                 
                 With a page break changing the layout in between.
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
+                
                 [section]
                 
                 Fourth page is set to portrait again.
+                
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
                 
                 """;
 
@@ -212,7 +279,6 @@ class ProcessorRepeatParagraphTest {
                 config,
                 context,
                 template,
-                expectedOrientations,
                 expected);
     }
 
@@ -223,17 +289,13 @@ class ProcessorRepeatParagraphTest {
             OfficeStamperConfiguration config,
             Object context,
             WordprocessingMLPackage template,
-            List<STPageOrientation> expectedOrientations,
             String expected
     ) {
         log.info(name);
         var stamper = docxPackageStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = toAsciidoc(stamped);
+        var actual = AsciiDocCompiler.toAsciidoc(stamped);
         assertEquals(expected, actual);
-        assertEquals(expectedOrientations,
-                sectionOrientations(stamped),
-                "The section orientations should survive the stamping");
     }
 
     @Test

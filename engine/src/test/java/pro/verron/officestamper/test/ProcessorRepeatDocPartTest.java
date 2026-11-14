@@ -2,7 +2,6 @@ package pro.verron.officestamper.test;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.STPageOrientation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,6 +9,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pro.verron.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.test.utils.ContextFactory;
 import pro.verron.officestamper.test.utils.DocxFactory;
@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.sectionOrientations;
 import static pro.verron.officestamper.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.full;
 import static pro.verron.officestamper.preset.OfficeStamperConfigurations.standard;
@@ -86,13 +85,21 @@ class ProcessorRepeatDocPartTest {
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
         stamped.save(tempFile);
-        var actual = toAsciidoc(stamped);
+        var actual = AsciiDocCompiler.toAsciidoc(stamped);
         assertEquals("""
                 First page is landscape.
                 
                 
                 
                 
+                
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
                 
                 [section]
                 
@@ -114,14 +121,27 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
+                
                 [section]
                 
                 Fourth page is set to landscape again.
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
+                
                 """, actual);
-        assertEquals(List.of(STPageOrientation.LANDSCAPE, STPageOrientation.PORTRAIT, STPageOrientation.LANDSCAPE),
-                sectionOrientations(stamped),
-                "The section orientations should survive the stamping");
     }
 
     @DisplayName(
@@ -204,6 +224,14 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
+                
                 [section]
                 
                 Second page is landscape, layout change should survive to repeatDocPart (Homer).
@@ -212,9 +240,25 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
+                
                 [section]
                 
                 With a break setting the layout to portrait in between.
+                
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
                 
                 [section]
                 
@@ -224,15 +268,39 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
+                
                 [section]
                 
                 With a break setting the layout to portrait in between.
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
+                
                 [section]
                 
                 Fourth page is set to landscape again.
+                
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
                 
                 """;
 
@@ -241,16 +309,8 @@ class ProcessorRepeatDocPartTest {
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
         stamped.save(tempFile);
-        var actual = toAsciidoc(stamped);
+        var actual = AsciiDocCompiler.toAsciidoc(stamped);
         assertEquals(expected, actual);
-        assertEquals(List.of(STPageOrientation.PORTRAIT,
-                        STPageOrientation.LANDSCAPE,
-                        STPageOrientation.PORTRAIT,
-                        STPageOrientation.LANDSCAPE,
-                        STPageOrientation.PORTRAIT,
-                        STPageOrientation.LANDSCAPE),
-                sectionOrientations(stamped),
-                "The section orientations should survive the stamping");
     }
 
     @DisplayName("Repeat Doc Part Integration test")
@@ -794,13 +854,21 @@ class ProcessorRepeatDocPartTest {
         log.debug(tempFile.getAbsolutePath());
         stamped.save(tempFile);
 
-        var actual = toAsciidoc(stamped);
+        var actual = AsciiDocCompiler.toAsciidoc(stamped);
         var expected = """
                 First page is portrait.
                 
                 
                 
                 
+                
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
                 
                 [section]
                 
@@ -810,6 +878,14 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
+                
                 [section]
                 
                 With a break setting the layout to portrait in between.
@@ -819,6 +895,14 @@ class ProcessorRepeatDocPartTest {
                 |===
                 
                 
+                
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
                 
                 [section]
                 
@@ -828,6 +912,14 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
+                
                 [section]
                 
                 With a break setting the layout to portrait in between.
@@ -838,20 +930,28 @@ class ProcessorRepeatDocPartTest {
                 
                 
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=16838, w=11906}
+                --
+                
                 [section]
                 
                 Fourth page is set to landscape again.
                 
+                [section-properties]
+                --
+                cols={space=708}
+                docGrid={linePitch=360}
+                pgMar={bottom=1418, footer=709, header=709, left=1418, right=1418, top=1418}
+                pgSz={h=11906, orient=landscape, w=16838}
+                --
+                
                 """;
         assertEquals(expected, actual);
-        assertEquals(List.of(STPageOrientation.PORTRAIT,
-                        STPageOrientation.LANDSCAPE,
-                        STPageOrientation.PORTRAIT,
-                        STPageOrientation.LANDSCAPE,
-                        STPageOrientation.PORTRAIT,
-                        STPageOrientation.LANDSCAPE),
-                sectionOrientations(stamped),
-                "The section orientations should survive the stamping");
     }
 
     @Test

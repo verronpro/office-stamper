@@ -69,10 +69,8 @@ jobs:
           Write-Host "Renamed artifact to $dest"
 
       - name: Upload portable EXE to GitHub Release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ github.event.release.tag_name || inputs.tag_name }}
-          files: |
-            cli/target/portable/officestamper-portable-*.exe
+        shell: pwsh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name || inputs.tag_name }}" "cli/target/portable/officestamper-portable-*.exe" --clobber --repo "$env:GITHUB_REPOSITORY"

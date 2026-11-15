@@ -13,6 +13,8 @@ module pro.verron.officestamper.docx4j11 {
     requires org.slf4j;
 
     exports pro.verron.officestamper.docx4j11;
+    exports pro.verron.officestamper.docx4j11.preset to pro.verron.officestamper.docx4j11.test;
+    exports pro.verron.officestamper.docx4j11.preset.resolvers.image to pro.verron.officestamper.docx4j11.test;
     opens pro.verron.officestamper.docx4j11 to org.junit.platform.commons;
 
     provides pro.verron.officestamper.spi.OfficeStamper with pro.verron.officestamper.docx4j11.DocxStamperProvider;

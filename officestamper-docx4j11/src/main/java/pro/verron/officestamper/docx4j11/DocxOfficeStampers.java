@@ -1,5 +1,7 @@
 package pro.verron.officestamper.docx4j11;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
@@ -19,7 +21,9 @@ import pro.verron.officestamper.docx4j11.preset.rmlang.RemoveLang;
 import pro.verron.officestamper.docx4j11.preset.similarrun.MergeSameStyleRuns;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.preset.Resolvers;
 import pro.verron.officestamper.spi.OfficeDocument;
+import pro.verron.officestamper.spi.OfficeStamper;
 import pro.verron.officestamper.spi.StreamStamper;
 
 import java.io.IOException;
@@ -44,6 +48,24 @@ public final class DocxOfficeStampers {
     /// @return a stamper reading DOCX templates from streams
     public static StreamStamper<OfficeDocument> docxStamper() {
         return docxStamper(OfficeStamperConfigurations.full());
+    }
+
+    /// Creates a stamper operating directly on [WordprocessingMLPackage] documents, with the
+    /// legacy full configuration.
+    ///
+    /// @return a stamper for docx4j [WordprocessingMLPackage] documents
+    public static OfficeStamper<WordprocessingMLPackage> docxPackageStamper() {
+        return new LegacyOfficeStamper();
+    }
+
+    /// Creates a stamper operating directly on [WordprocessingMLPackage] documents, with the given
+    /// configuration used as-is.
+    ///
+    /// @param configuration the configuration to use for this stamper
+    /// @return a stamper for docx4j [WordprocessingMLPackage] documents
+    public static OfficeStamper<WordprocessingMLPackage> docxPackageStamper(OfficeStamperConfiguration configuration) {
+        var stamper = pro.verron.officestamper.preset.OfficeStampers.docxStamper(configuration);
+        return (template, context) -> ((DocxDocument) stamper.stamp(new DocxDocument(template), context)).pkg();
     }
 
     /// Creates a stream stamper for DOCX templates from the given configuration.
@@ -91,6 +113,30 @@ public final class DocxOfficeStampers {
     /// @return a fully configured [OfficeStamperConfiguration]
     public static OfficeStamperConfiguration full() {
         return withDocxProcessors(OfficeStamperConfigurations.full());
+    }
+
+    /// Equivalent of the legacy standard preset: the pure processors and resolvers plus placeholder
+    /// preparation, malformed-comment cleanup, the image resolver and the repeat processors.
+    ///
+    /// @return a standard configured [OfficeStamperConfiguration]
+    public static OfficeStamperConfiguration standard() {
+        return standard(Resolvers.fallback("\n"));
+    }
+
+    /// Equivalent of the legacy standard preset with a custom fallback resolver.
+    ///
+    /// @param fallback the fallback resolver to use for unresolvable placeholders
+    /// @return a standard configured [OfficeStamperConfiguration]
+    public static OfficeStamperConfiguration standard(ObjectResolver fallback) {
+        var configuration = withPlaceholderPreparation(OfficeStamperConfigurations.standard(fallback));
+        configuration.addPreprocessor(new RemoveMalformedComments());
+        configuration.addResolver(new ImageResolver(true));
+        configuration.addCommentProcessor(CommentProcessorFactory.IRepeatProcessor.class, RepeatProcessor::new);
+        configuration.addCommentProcessor(CommentProcessorFactory.IParagraphRepeatProcessor.class,
+                RepeatParagraphProcessor::new);
+        configuration.addCommentProcessor(CommentProcessorFactory.IRepeatDocPartProcessor.class,
+                RepeatDocPartProcessor::new);
+        return configuration;
     }
 
     /// Equivalent of the legacy minimal preset: docx4j-free minimal base + placeholder/comment preparation

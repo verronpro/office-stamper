@@ -33,6 +33,6 @@ module pro.verron.officestamper {
     opens pro.verron.officestamper.preset;
     exports pro.verron.officestamper.preset;
 
-    exports pro.verron.officestamper.core to pro.verron.officestamper.test, pro.verron.officestamper.docx4j11;
+    exports pro.verron.officestamper.core to pro.verron.officestamper.docx4j11.test, pro.verron.officestamper.docx4j11;
 }
 

@@ -86,12 +86,12 @@ public class DisplayIfProcessor
     public void displayWordsIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
         var iterator = context().contentIterator();
-        var toRemove = new ArrayList<Child>();
         while (iterator.hasNext()) {
             var it = iterator.next();
-            toRemove.add((Child) it);
+            it.parent()
+              .content()
+              .remove(it);
         }
-        toRemove.forEach(WmlUtils::remove);
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.spi.Comment;
+import pro.verron.officestamper.spi.Content;
 import pro.verron.officestamper.spi.Element;
 import pro.verron.officestamper.spi.Insert;
 import pro.verron.officestamper.spi.Paragraph;
@@ -108,6 +109,11 @@ final class DocxParagraph
     @Override
     public String asString() {
         return WmlUtils.asString(p);
+    }
+
+    @Override
+    public Content content() {
+        return new DocxElement(p, part).content();
     }
 
     @Override

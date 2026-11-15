@@ -34,6 +34,9 @@ public interface Paragraph {
     /// @return the text content of this paragraph
     String asString();
 
+    /// @return the mutable content of this paragraph
+    Content content();
+
     /// Applies the given consumer to the content of this paragraph.
     ///
     /// @param consumer the consumer applied to each content element

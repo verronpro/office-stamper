@@ -1,6 +1,7 @@
 package pro.verron.officestamper.docx4j11;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.wml.ContentAccessor;
 import org.docx4j.openpackaging.parts.JaxbXmlPart;
 import pro.verron.officestamper.spi.OfficeDocument;
 import pro.verron.officestamper.spi.OfficePart;
@@ -16,7 +17,7 @@ public final class DocxDocument implements OfficeDocument {
 
     private final WordprocessingMLPackage pkg;
 
-    DocxDocument(WordprocessingMLPackage pkg) {
+    public DocxDocument(WordprocessingMLPackage pkg) {
         this.pkg = pkg;
     }
 
@@ -42,7 +43,7 @@ public final class DocxDocument implements OfficeDocument {
     public List<OfficePart> parts() {
         var result = new ArrayList<OfficePart>();
         for (var part : pkg.getParts().getParts().values()) {
-            if (part instanceof JaxbXmlPart jaxb) {
+            if (part instanceof JaxbXmlPart jaxb && jaxb instanceof ContentAccessor) {
                 result.add(new DocxPart(jaxb, this));
             }
         }

@@ -29,10 +29,11 @@ public final class DocxDocumentUtil {
     /// Finds the smallest common parent between two objects — the insertable content holder that
     /// contains both (port of the legacy `DocumentUtil.findSmallestCommonParent`).
     public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
-        if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor) {
+        var unwrapped = XmlUtils.unwrap(o2);
+        if (depthElementSearch(XmlUtils.unwrap(o1), unwrapped) && unwrapped instanceof ContentAccessor contentAccessor) {
             return findInsertableParent(contentAccessor);
         }
-        if (o2 instanceof Child child) return findSmallestCommonParent(o1, child.getParent());
+        if (unwrapped instanceof Child child) return findSmallestCommonParent(o1, child.getParent());
         throw new IllegalStateException("Could not find a common parent for " + o1 + " and " + o2);
     }
 

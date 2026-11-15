@@ -4,6 +4,7 @@ package pro.verron.officestamper.preset.processors.displayif;
 import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.spi.Element;
 import pro.verron.officestamper.spi.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.utils.wml.WmlUtils;
@@ -85,13 +86,14 @@ public class DisplayIfProcessor
     @Override
     public void displayWordsIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
+        // Materialize first, then remove: the slice iterator walks the live content lists, and
+        // removing while iterating throws ConcurrentModificationException (legacy semantics).
+        var toRemove = new ArrayList<Element>();
         var iterator = context().contentIterator();
-        while (iterator.hasNext()) {
-            var it = iterator.next();
-            it.parent()
-              .content()
-              .remove(it);
-        }
+        while (iterator.hasNext()) toRemove.add(iterator.next());
+        toRemove.forEach(element -> element.parent()
+                                           .content()
+                                           .remove(element));
     }
 
     @Override

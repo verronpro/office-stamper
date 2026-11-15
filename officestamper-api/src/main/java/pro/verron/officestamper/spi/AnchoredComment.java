@@ -1,5 +1,6 @@
 package pro.verron.officestamper.spi;
 
+import java.util.Iterator;
 import java.util.List;
 
 /// A comment anchored in a paragraph, exposing its range for document manipulation.
@@ -44,6 +45,11 @@ public interface AnchoredComment {
 
     /// @return the elements between this comment's range anchors
     List<Element> elements();
+
+    /// @return a fine-grained iterator over the provider-native content strictly between this
+    ///         comment's range anchors (the words slice: nested runs between the markers, markers
+    ///         excluded) — the removal granularity of the words-level display conditions
+    Iterator<Element> contentIterator();
 
     /// Returns the native representation of this comment, for library users that implement
     /// comment-specific actions against the provider's format types.

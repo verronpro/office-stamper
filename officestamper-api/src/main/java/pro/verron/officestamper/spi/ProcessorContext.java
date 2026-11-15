@@ -37,12 +37,13 @@ public final class ProcessorContext {
         this.contextTree = contextTree;
     }
 
-    /// @return an iterator over the content of the anchored comment's range, or an empty iterator when
-    ///         no comment is associated with this context
+    /// @return an iterator over the content between the anchored comment's range markers (the
+    ///         fine-grained, provider-native slice — runs between the anchors, anchors excluded), or
+    ///         an empty iterator when no comment is associated with this context
     public Iterator<Element> contentIterator() {
         return comment == null
                 ? Collections.<Element>emptyIterator()
-                : comment.elements().iterator();
+                : comment.contentIterator();
     }
 
     /// @return the anchored comment associated with this context, or {@code null}

@@ -10,11 +10,13 @@ import org.docx4j.wml.R.CommentReference;
 import pro.verron.officestamper.spi.AnchoredComment;
 import pro.verron.officestamper.spi.Element;
 import pro.verron.officestamper.spi.Paragraph;
+import pro.verron.officestamper.utils.wml.DocxIterator;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
@@ -124,6 +126,17 @@ final class DocxAnchoredComment
             endFound = endFound || DocxDocumentUtil.depthElementSearch(end, element);
         }
         return List.copyOf(elements);
+    }
+
+    /// Fine-grained slice between the range markers: a depth-first walk of the part's content
+    /// starting after the range start and stopping before the range end (legacy
+    /// `DocxIterator(parent).slice(crs, cre)` semantics — the runs between the anchors, so a
+    /// words-level removal empties paragraphs instead of deleting them).
+    @Override
+    public Iterator<Element> contentIterator() {
+        return new DocxIterator((ContentAccessor) part.part())
+                .slice(start, end)
+                .map(o -> new DocxElement(o, part));
     }
 
     @Override

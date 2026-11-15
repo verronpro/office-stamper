@@ -56,6 +56,14 @@ public class RepeatProcessor
         if (items == null) return;
         var comment = context().comment();
         var elements = comment.elements();
+        if (log.isTraceEnabled()) {
+            var region = elements.stream()
+                                 .map(e -> DocxElement.rawOf(e)
+                                                      .getClass()
+                                                      .getSimpleName())
+                                 .toList();
+            log.trace("Repeat region: {}", region);
+        }
         var contextHolder = context().contextHolder();
         var firstRaw = DocxElement.rawOf(elements.getFirst());
         var lastRaw = DocxElement.rawOf(elements.getLast());
@@ -95,8 +103,16 @@ public class RepeatProcessor
             var discovery = context().part()
                                      .hooks();
             for (var copied : copiedElements) {
-                discovery.ofHooks(new DocxElement(copied, (DocxPart) context().part()))
-                         .forEachRemaining(hook -> hook.setAttribute("context", subContextKey));
+                var hooks = discovery.ofHooks(new DocxElement(copied, (DocxPart) context().part()));
+                int found = 0;
+                while (hooks.hasNext()) {
+                    hooks.next()
+                         .setAttribute("context", subContextKey);
+                    found++;
+                }
+                if (log.isTraceEnabled()) log.trace("Repeat scan: element {} -> {} hooks keyed {}",
+                        copied.getClass()
+                              .getSimpleName(), found, subContextKey);
             }
         }
     }

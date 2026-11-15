@@ -1,5 +1,7 @@
 package pro.verron.officestamper.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.spi.OfficePart;
 import pro.verron.officestamper.spi.ProcessorContext;
 import pro.verron.officestamper.spi.Tag;
@@ -7,6 +9,7 @@ import pro.verron.officestamper.spi.Tag;
 /// Hook for processing tags.
 public class TagHook
         implements DocxHook {
+    private static final Logger log = LoggerFactory.getLogger(TagHook.class);
     private final OfficePart part;
     private final Tag tag;
 
@@ -27,6 +30,7 @@ public class TagHook
         var expression = tag.expression();
         var contextKey = contextKey(tag);
         var contextStack = contextRoot.find(contextKey);
+        log.trace("Tag '{}' contextKey={} branch={}", expression, contextKey, contextStack);
         var processorContext = new ProcessorContext(part, paragraph, AnchoredComment, expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);

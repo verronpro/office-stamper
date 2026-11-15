@@ -125,6 +125,22 @@ final class DocxAnchoredComment
             if (startFound && !endFound) elements.add(new DocxElement(element, part));
             endFound = endFound || DocxDocumentUtil.depthElementSearch(end, element);
         }
+        if (org.slf4j.LoggerFactory.getLogger(DocxAnchoredComment.class)
+                                   .isTraceEnabled()) {
+            var content = parent.getContent()
+                                .stream()
+                                .map(o -> o.getClass()
+                                           .getSimpleName())
+                                .toList();
+            var slice = elements.stream()
+                                .map(e -> DocxElement.rawOf(e)
+                                                     .getClass()
+                                                     .getSimpleName())
+                                .toList();
+            org.slf4j.LoggerFactory.getLogger(DocxAnchoredComment.class)
+                    .trace("Comment {} parent={} content={} slice={}", comment.getId(), parent.getClass()
+                                                                                             .getSimpleName(), content, slice);
+        }
         return List.copyOf(elements);
     }
 

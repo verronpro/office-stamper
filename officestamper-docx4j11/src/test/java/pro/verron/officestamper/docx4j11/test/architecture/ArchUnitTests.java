@@ -27,7 +27,11 @@ public class ArchUnitTests {
                                                                          "org.jvnet.jaxb2_commons..",
                                                                          "jakarta.xml.bind..",
                                                                          "org.slf4j..",
-                                                                         "org.springframework..")
+                                                                         "org.springframework..",
+                                                                         // The provider's preset is the
+                                                                         // docx4j-coupled layer by design: it
+                                                                         // may use this module's own adapters.
+                                                                         "..docx4j11..")
                                                                  .orShould()
                                                                  .dependOnClassesThat()
                                                                  .belongToAnyOf(DocxStamper.class,

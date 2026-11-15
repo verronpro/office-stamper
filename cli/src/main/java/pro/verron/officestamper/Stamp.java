@@ -8,8 +8,8 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
 import pro.verron.officestamper.preset.ExceptionResolvers;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 
 import java.io.OutputStream;
 import java.nio.file.FileSystems;
@@ -251,7 +251,7 @@ public class Stamp implements Runnable {
                             Path.of(templatePath)); var out = dryRun ? OutputStream.nullOutputStream() : PathUtils.createOutputStream(
                             outputFilePath)) {
                         var context = wrapContext(item.context(), bindEnv);
-                        var configuration = OfficeStamperConfigurations.standard();
+                        var configuration = DocxOfficeStampers.standard();
                         configuration.setTraceabilityReporter(traceabilityReport);
                         if (dryRun) {
                             configuration.setExceptionResolver(ExceptionResolvers.throwing());
@@ -288,7 +288,7 @@ public class Stamp implements Runnable {
             );
             try (var templateStream = "diagnostic".equals(templatePath) ? Diagnostic.template() : PathUtils.streamFile(
                     Path.of(templatePath))) {
-                var configuration = OfficeStamperConfigurations.standard();
+                var configuration = DocxOfficeStampers.standard();
                 configuration.setTraceabilityReporter(traceabilityReport);
                 if (dryRun) {
                     // Validate: fail on unresolved placeholders but do not

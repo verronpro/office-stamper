@@ -38,7 +38,8 @@ final class DocxHooks
     public Iterator<Tag> ofHooks(Element scope) {
         if (!(scope instanceof DocxElement docxElement)) throw new IllegalArgumentException(
                 "Element is not a docx4j element: " + scope.getClass().getName());
-        return scan(docxElement.raw(), docxElement.owner());
+        // A top-level table may be JAXBElement-wrapped; unwrap so the scan sees the Tbl.
+        return scan(org.docx4j.XmlUtils.unwrap(docxElement.raw()), docxElement.owner());
     }
 
     @Override

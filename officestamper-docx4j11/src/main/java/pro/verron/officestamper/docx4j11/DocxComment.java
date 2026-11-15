@@ -26,6 +26,11 @@ public final class DocxComment implements Comment {
 
     @Override
     public String text() {
+        return textOf(comment);
+    }
+
+    /// @return the textual content of a comment object
+    static String textOf(Comments.Comment comment) {
         if (comment instanceof ContentAccessor ca) {
             var sb = new StringBuilder();
             collect(ca, sb);

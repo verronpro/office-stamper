@@ -39,9 +39,6 @@ public interface Paragraph {
     /// @param consumer the consumer applied to each content element
     void apply(Consumer<Element> consumer);
 
-    /// @return the parent element matching the given type, if any
-    <T> Optional<T> parent(Class<T> aClass);
-
     /// @return the comments anchored in this paragraph
     Collection<Comment> getComments();
 

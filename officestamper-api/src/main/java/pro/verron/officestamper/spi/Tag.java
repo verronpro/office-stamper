@@ -7,6 +7,19 @@ package pro.verron.officestamper.spi;
 public interface Tag
         extends Element {
 
+    /// @return the paragraph this tag is anchored in
+    Paragraph paragraph();
+
+    /// @return the expression carried by this tag (its textual content)
+    String expression();
+
+    /// Creates a comment-shaped object for this tag's expression, so that comment processors can
+    /// also process inline hook tags. The created markers are not attached to the document; the
+    /// processor flow operates on the tag's own content.
+    ///
+    /// @return a comment anchored where this tag is anchored
+    AnchoredComment asComment();
+
     /// @return the value of the {@code type} attribute, or {@code null} when absent
     String type();
 

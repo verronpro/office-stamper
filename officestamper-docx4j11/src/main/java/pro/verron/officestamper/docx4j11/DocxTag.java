@@ -3,11 +3,13 @@ package pro.verron.officestamper.docx4j11;
 import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.ContentAccessor;
 import org.jvnet.jaxb2_commons.ppp.Child;
+import pro.verron.officestamper.spi.AnchoredComment;
 import pro.verron.officestamper.spi.Insert;
+import pro.verron.officestamper.spi.Paragraph;
 import pro.verron.officestamper.spi.Tag;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
-import java.util.List;
+import java.math.BigInteger;
 import java.util.Objects;
 
 /// docx4j 11 implementation of {@link Tag}: an `officestamper` smart tag run.
@@ -21,6 +23,22 @@ final class DocxTag
 
     private CTSmartTagRun tag() {
         return (CTSmartTagRun) raw();
+    }
+
+    @Override
+    public Paragraph paragraph() {
+        return DocxParagraph.enclosing(owner(), tag().getParent());
+    }
+
+    @Override
+    public String expression() {
+        return WmlUtils.asString(tag().getContent());
+    }
+
+    @Override
+    public AnchoredComment asComment() {
+        return DocxAnchoredComment.create(owner(), (ContentAccessor) tag().getParent(), expression(),
+                BigInteger.ZERO);
     }
 
     @Override

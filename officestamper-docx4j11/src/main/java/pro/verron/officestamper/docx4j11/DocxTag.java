@@ -1,6 +1,7 @@
 package pro.verron.officestamper.docx4j11;
 
 import org.docx4j.wml.CTSmartTagRun;
+import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.spi.AnchoredComment;
@@ -37,6 +38,15 @@ final class DocxTag
 
     @Override
     public AnchoredComment asComment() {
+        var rangeStart = tag().getContent()
+                              .stream()
+                              .filter(CommentRangeStart.class::isInstance)
+                              .map(CommentRangeStart.class::cast)
+                              .findFirst();
+        if (rangeStart.isPresent()) {
+            var resolved = DocxHooks.resolve(owner(), rangeStart.get());
+            if (resolved != null) return resolved;
+        }
         return DocxAnchoredComment.create(owner(), (ContentAccessor) tag().getParent(), expression(),
                 BigInteger.ZERO);
     }

@@ -1,6 +1,5 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.spi.AnchoredComment;
 import pro.verron.officestamper.spi.Hook;
 import pro.verron.officestamper.spi.OfficePart;
 import pro.verron.officestamper.spi.Tag;
@@ -34,32 +33,29 @@ public interface DocxHook
 
     /// Resolves the hooks of the given part into executable hook instances.
     ///
+    /// <p>A type=processor tag resolves its anchored comment through the provider ({@code
+    /// tag.asComment()} reads the comment range start embedded in the tag's own content — the
+    /// legacy {@code newCommentHook} path); no identity matching is involved, so the resolution
+    /// does not depend on JAXB parent back-pointers.
+    ///
     /// @param part the document part to scan
     /// @return the resolved hooks, in document order
     static List<DocxHook> ofHooks(OfficePart part) {
         var discovery = part.hooks();
-        var comments = new ArrayList<AnchoredComment>();
-        discovery.ofComments(part).forEachRemaining(comments::add);
         var result = new ArrayList<DocxHook>();
-        discovery.ofHooks(part).forEachRemaining(tag -> asHook(part, tag, comments, result));
+        discovery.ofHooks(part).forEachRemaining(tag -> asHook(part, tag, result));
         return result;
     }
 
-    private static void asHook(
-            OfficePart part,
-            Tag tag,
-            List<AnchoredComment> comments,
-            List<DocxHook> result
-    ) {
+    private static void asHook(OfficePart part, Tag tag, List<DocxHook> result) {
         if ("processor".equals(tag.type())) {
-            comments.stream()
-                    .filter(AnchoredComment -> tag.equals(AnchoredComment.startAnchor().parent()))
-                    .findFirst()
-                    .ifPresent(AnchoredComment -> result.add(new CommentHook(part, tag, AnchoredComment)));
+            var comment = tag.asComment();
+            if (comment != null) {
+                result.add(new CommentHook(part, tag, comment));
+                return;
+            }
         }
-        else {
-            result.add(new TagHook(part, tag));
-        }
+        result.add(new TagHook(part, tag));
     }
 }
 

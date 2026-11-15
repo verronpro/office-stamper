@@ -56,7 +56,9 @@ final class DocxHooks
 
     /// Resolves a comment range start into a fully-anchored comment (port of the legacy
     /// `CommentUtil.comment`), or {@code null} when the range or the comment object cannot resolve.
-    private static AnchoredComment resolve(DocxPart part, CommentRangeStart crs) {
+    /// Package-visible: {@link DocxTag#asComment()} resolves the comment embedded in a
+    /// type=processor tag through this same path.
+    static AnchoredComment resolve(DocxPart part, CommentRangeStart crs) {
         var pkg = part.part().getPackage();
         var iterator = new DocxIterator((ContentAccessor) part.part()).slice(crs, null);
         CommentRangeEnd cre = null;

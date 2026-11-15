@@ -19,6 +19,7 @@ import pro.verron.officestamper.docx4j11.DocxElement;
 import pro.verron.officestamper.preset.CommentProcessorFactory.IRepeatProcessor;
 import pro.verron.officestamper.spi.OfficePart;
 import pro.verron.officestamper.spi.ProcessorContext;
+import pro.verron.officestamper.docx4j11.DocxPart;
 import pro.verron.officestamper.utils.wml.WmlFactory;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
@@ -88,10 +89,15 @@ public class RepeatProcessor
                 if (element instanceof Child child) child.setParent(parent);
             });
             var subContextKey = contextHolder.addBranch(item);
-            copiedElements.stream()
-                          .filter(CTSmartTagRun.class::isInstance)
-                          .map(CTSmartTagRun.class::cast)
-                          .forEach(tag -> WmlUtils.setTagAttribute(tag, "context", subContextKey));
+            // Every hook tag inside the copied elements (at any depth — runs live inside
+            // paragraphs, cells, etc.) carries the sub-context key of this iteration
+            // (legacy Hooks.ofHooks(copiedElements) semantics).
+            var discovery = context().part()
+                                     .hooks();
+            for (var copied : copiedElements) {
+                discovery.ofHooks(new DocxElement(copied, (DocxPart) context().part()))
+                         .forEachRemaining(hook -> hook.setAttribute("context", subContextKey));
+            }
         }
     }
 

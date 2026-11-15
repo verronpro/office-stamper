@@ -12,4 +12,7 @@ module pro.verron.officestamper.docx4j11 {
     requires org.jspecify;
 
     exports pro.verron.officestamper.docx4j11;
+    opens pro.verron.officestamper.docx4j11 to org.junit.platform.commons;
+
+    provides pro.verron.officestamper.spi.OfficeStamper with pro.verron.officestamper.docx4j11.DocxStamper;
 }

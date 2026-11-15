@@ -26,6 +26,10 @@
             <artifactId>utils</artifactId>
         </dependency>
         <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>officestamper-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>pro.verron.asciidoc</groupId>
             <artifactId>asciidoc-core</artifactId>
             <scope>test</scope>

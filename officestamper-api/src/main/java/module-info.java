@@ -4,4 +4,5 @@
 /// Concrete providers live in separate modules (officestamper-docx4j11, ...).
 module pro.verron.officestamper.api {
     exports pro.verron.officestamper.spi;
+    uses pro.verron.officestamper.spi.OfficeStamper;
 }

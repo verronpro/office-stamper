@@ -26,6 +26,7 @@ module pro.verron.officestamper {
     requires static jakarta.xml.bind;
     requires org.docx4j.openxml_objects;
     requires org.jspecify;
+    requires pro.verron.officestamper.api;
     requires pro.verron.officestamper.utils;
 
     opens pro.verron.officestamper.api;

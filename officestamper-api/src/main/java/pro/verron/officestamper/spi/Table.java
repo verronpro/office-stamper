@@ -20,7 +20,8 @@ public interface Table {
     void add(int index, Row row);
 
     /// A row within a {@link Table}.
-    interface Row {
+    interface Row
+            extends Element {
 
         /// Removes the entire row from the table.
         void remove();
@@ -33,9 +34,6 @@ public interface Table {
 
         /// @return the cells of this row, in order
         List<Cell> cells();
-
-        /// Removes the given comment from this row.
-        void removeComment(Comment comment);
     }
 
     /// A cell within a [Row].

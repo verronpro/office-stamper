@@ -20,4 +20,8 @@ public interface Element {
 
     /// @return {@code true} if this element represents a text run
     boolean isRun();
+
+    /// @return the formatting properties of this element when it is a text run carrying run
+    ///         properties, or {@code null} otherwise
+    RunProperties runProperties();
 }

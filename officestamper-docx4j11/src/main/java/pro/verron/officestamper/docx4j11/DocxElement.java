@@ -12,6 +12,7 @@ import org.docx4j.wml.Tc;
 import org.docx4j.wml.Text;
 import org.docx4j.wml.Tr;
 import pro.verron.officestamper.spi.Element;
+import pro.verron.officestamper.spi.RunProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,12 @@ public final class DocxElement implements Element {
     @Override
     public boolean isRun() {
         return value instanceof R;
+    }
+
+    @Override
+    public RunProperties runProperties() {
+        if (value instanceof R r && r.getRPr() != null) return new DocxRunProperties(r.getRPr());
+        return null;
     }
 
     private static String runText(R r) {

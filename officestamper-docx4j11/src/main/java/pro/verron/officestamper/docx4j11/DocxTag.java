@@ -3,9 +3,11 @@ package pro.verron.officestamper.docx4j11;
 import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;
+import org.docx4j.wml.R;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.spi.AnchoredComment;
 import pro.verron.officestamper.spi.Insert;
+import pro.verron.officestamper.spi.RunProperties;
 import pro.verron.officestamper.spi.Paragraph;
 import pro.verron.officestamper.spi.Tag;
 import pro.verron.officestamper.utils.wml.WmlUtils;
@@ -81,8 +83,15 @@ final class DocxTag
         for (var element : effective.elements()) {
             var raw = DocxElement.rawOf(element);
             if (raw instanceof Child child) child.setParent(tag());
+            if (raw instanceof R run) applyRunProperties(effective.runProperties(), run);
             content.add(raw);
         }
+    }
+
+    /// The provider applies the insert's run properties to the inserted runs (the formatting of the
+    /// replaced expression is preserved through [DocxElement#runProperties]).
+    private static void applyRunProperties(RunProperties properties, R run) {
+        if (properties instanceof DocxRunProperties docxProperties) run.setRPr(docxProperties.rPr());
     }
 
     @Override

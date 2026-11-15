@@ -84,8 +84,10 @@ final class DocxParagraph
     @Override
     public void replace(Element start, Element end, Insert insert) {
         var content = p.getContent();
-        var fromIndex = content.indexOf(DocxElement.rawOf(start));
-        var toIndex = content.indexOf(DocxElement.rawOf(end));
+        // Anchors may be nested inside a hook tag run wrapping the comment range start, so fall
+        // back to the top-level element containing the anchor (depth search) before failing.
+        var fromIndex = indexContaining(content, DocxElement.rawOf(start));
+        var toIndex = indexContaining(content, DocxElement.rawOf(end));
         if (fromIndex < 0) throw new IllegalStateException(
                 "The start element (" + start.text() + ") is not in the paragraph");
         if (toIndex < 0) throw new IllegalStateException(
@@ -96,6 +98,17 @@ final class DocxParagraph
         ContentAccessor scope = () -> content.subList(fromIndex, toIndex);
         WmlUtils.replaceExpressionWithRun(scope, extractExpression(fromIndex, toIndex), raws,
                 rPr -> applyRunProperties(insert, raws, rPr));
+    }
+
+    /// Index of the given raw object in the paragraph's top-level content, or of the top-level
+    /// element whose subtree contains it.
+    private static int indexContaining(List<Object> content, Object raw) {
+        var direct = content.indexOf(raw);
+        if (direct >= 0) return direct;
+        for (var i = 0; i < content.size(); i++) {
+            if (DocxDocumentUtil.depthElementSearch(raw, content.get(i))) return i;
+        }
+        return -1;
     }
 
     private String extractExpression(int fromIndex, int toIndex) {

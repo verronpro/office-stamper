@@ -31,10 +31,23 @@ public interface Table {
         /// @return a deep copy of this row
         Row copy();
 
+        /// @return the cells of this row, in order
+        List<Cell> cells();
+
         /// Removes the given comment from this row.
         void removeComment(Comment comment);
 
         /// @return the hooks associated with this row
         Iterable<Hook> hooks();
+    }
+
+    /// A cell within a [Row].
+    interface Cell
+            extends Element {
+
+        /// Replaces the content of this cell with the given elements.
+        ///
+        /// @param elements the new content of the cell
+        void setContent(List<Element> elements);
     }
 }

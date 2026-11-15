@@ -7,6 +7,7 @@ import org.docx4j.wml.Comments;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.spi.Comment;
 import pro.verron.officestamper.spi.Content;
+import pro.verron.officestamper.spi.ElementFactory;
 import pro.verron.officestamper.spi.OfficeDocument;
 import pro.verron.officestamper.spi.OfficePart;
 
@@ -52,6 +53,11 @@ public final class DocxPart implements OfficePart {
     @Override
     public OfficeDocument document() {
         return document;
+    }
+
+    @Override
+    public ElementFactory factory() {
+        return new DocxElementFactory(this);
     }
 
     JaxbXmlPart part() {

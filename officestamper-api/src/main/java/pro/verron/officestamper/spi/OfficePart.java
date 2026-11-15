@@ -10,7 +10,7 @@ public interface OfficePart {
     /// @return the part name
     String name();
 
-    /// @return the content tree of this part
+    /// @return a live, mutable view of the content tree of this part
     Content content();
 
     /// @return the comments declared in this part
@@ -18,4 +18,7 @@ public interface OfficePart {
 
     /// @return the document this part belongs to
     OfficeDocument document();
+
+    /// @return a factory creating format-native elements bound to this document
+    ElementFactory factory();
 }

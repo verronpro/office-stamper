@@ -1,7 +1,9 @@
 package pro.verron.officestamper.docx4j11;
 
+import org.docx4j.XmlUtils;
 import org.docx4j.wml.Body;
 import org.docx4j.wml.CTSdtCell;
+import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
@@ -11,6 +13,8 @@ import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
 import org.docx4j.wml.Text;
 import org.docx4j.wml.Tr;
+import org.jvnet.jaxb2_commons.ppp.Child;
+import pro.verron.officestamper.spi.Content;
 import pro.verron.officestamper.spi.Element;
 import pro.verron.officestamper.spi.RunProperties;
 
@@ -18,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /// docx4j 11 implementation of {@link Element}.
-public final class DocxElement implements Element {
+public class DocxElement implements Element {
 
     private final Object value;
     private final DocxPart part;
@@ -28,6 +32,37 @@ public final class DocxElement implements Element {
         this.part = part;
     }
 
+    /// @return the raw docx4j object this element wraps
+    Object raw() {
+        return value;
+    }
+
+    /// @param element an spi element
+    /// @return the raw docx4j object the given element wraps
+    /// @throws IllegalArgumentException when the element comes from another provider
+    static Object rawOf(Element element) {
+        if (element instanceof DocxElement docxElement) return docxElement.raw();
+        throw new IllegalArgumentException(
+                "Element is not a docx4j element: " + element.getClass().getName());
+    }
+
+    /// @param o a docx4j object
+    /// @return the live backing list of the given object's content, or {@code null} when it is not a
+    ///         container
+    static List<Object> backingList(Object o) {
+        if (o instanceof ContentAccessor ca) return ca.getContent();
+        if (o instanceof CTSmartTagRun t) return t.getContent();
+        if (o instanceof SdtRun s) return s.getSdtContent().getContent();
+        if (o instanceof SdtBlock s) return s.getSdtContent().getContent();
+        if (o instanceof CTSdtCell s) return s.getSdtContent().getContent();
+        if (o instanceof P p) return p.getContent();
+        if (o instanceof Tc tc) return tc.getContent();
+        if (o instanceof Tr tr) return tr.getContent();
+        if (o instanceof Tbl tbl) return tbl.getContent();
+        if (o instanceof Body b) return b.getContent();
+        return null;
+    }
+
     @Override
     public List<Element> children() {
         var out = new ArrayList<Element>();
@@ -35,6 +70,24 @@ public final class DocxElement implements Element {
             out.add(new DocxElement(o, part));
         }
         return List.copyOf(out);
+    }
+
+    @Override
+    public Content content() {
+        return new DocxContent(value, backingList(value), part);
+    }
+
+    @Override
+    public Element parent() {
+        if (value instanceof Child child && child.getParent() != null) {
+            return new DocxElement(child.getParent(), part);
+        }
+        return null;
+    }
+
+    @Override
+    public Element copy() {
+        return new DocxElement(XmlUtils.deepCopy(value), part);
     }
 
     @Override
@@ -71,6 +124,10 @@ public final class DocxElement implements Element {
     @Override
     public RunProperties runProperties() {
         if (value instanceof R r && r.getRPr() != null) return new DocxRunProperties(r.getRPr());
+        for (Element child : children()) {
+            var properties = child.runProperties();
+            if (properties != null) return properties;
+        }
         return null;
     }
 
@@ -95,6 +152,7 @@ public final class DocxElement implements Element {
     static List<Object> directChildren(Object o) {
         var out = new ArrayList<>();
         if (o instanceof ContentAccessor ca) out.addAll(ca.getContent());
+        else if (o instanceof CTSmartTagRun t) out.addAll(t.getContent());
         else if (o instanceof SdtRun s) out.addAll(s.getSdtContent().getContent());
         else if (o instanceof SdtBlock s) out.addAll(s.getSdtContent().getContent());
         else if (o instanceof CTSdtCell s) out.addAll(s.getSdtContent().getContent());

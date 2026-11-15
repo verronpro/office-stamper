@@ -5,10 +5,27 @@ import java.util.List;
 /// A node in a document's content tree. The underlying representation is hidden
 /// behind this interface so that consumers never depend on a specific OOXML
 /// library.
+///
+/// <p>[#text()] returns the <em>canonical textual rendering</em> of the element
+/// (tabs as {@code \t}, breaks as {@code \n}, field instructions as
+/// {@code <instrText>} placeholders). The engine relies on this rendering being
+/// consistent across reads, since placeholder offsets are computed against it.
 public interface Element {
 
     /// @return the direct child elements of this element
     List<Element> children();
+
+    /// @return a live, mutable view of this element's content when it is a container element;
+    ///         for leaf elements the view is empty and its mutators throw
+    ///         [UnsupportedOperationException]
+    Content content();
+
+    /// @return the parent element of this element, or {@code null} at the root of the tree
+    Element parent();
+
+    /// @return a deep copy of this element, detached from any parent (re-parented when inserted
+    ///         through [Content#addAll(int, List)])
+    Element copy();
 
     /// @return the textual content of this element (e.g. a run's text)
     String text();
@@ -21,7 +38,7 @@ public interface Element {
     /// @return {@code true} if this element represents a text run
     boolean isRun();
 
-    /// @return the formatting properties of this element when it is a text run carrying run
-    ///         properties, or {@code null} otherwise
+    /// @return the formatting properties of this element when it is a text run, or of the first text
+    ///         run found within it when it is a container, or {@code null} when there is none
     RunProperties runProperties();
 }

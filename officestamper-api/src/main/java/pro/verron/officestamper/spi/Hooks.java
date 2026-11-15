@@ -2,13 +2,13 @@ package pro.verron.officestamper.spi;
 
 import java.util.Iterator;
 
-/// Discovers {@link Hook}s within a document part.
+/// Discovers hook [Tag]s within a document part.
 ///
-/// <p>The concrete, library-specific discovery (e.g. docx4j smart-tag traversal) is supplied by a
-/// provider and registered through this abstraction.
+/// <p>The concrete, library-specific discovery (recursing through paragraphs, tables, SDTs,
+/// textboxes and drawings) is supplied by a provider and consumed by the engine's hook orchestration.
 public interface Hooks {
 
-    /// @param part the part to scan for hooks
-    /// @return an iterator over the hooks found in the part
-    Iterator<Hook> ofHooks(OfficePart part);
+    /// @param part the part to scan for hook tags
+    /// @return an iterator over the hook tags found in the part
+    Iterator<Tag> ofHooks(OfficePart part);
 }

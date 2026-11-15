@@ -53,4 +53,15 @@ public interface AnchoredComment {
     /// @return the native representation, cast to the given type
     /// @throws IllegalArgumentException if the provider does not support the requested type
     <T> T unwrap(Class<T> type);
+
+    /// Removes this comment's markers (range start, range end and reference) from the document,
+    /// including any hook tag left empty. The commented content itself is kept.
+    void delete();
+
+    /// Removes every marker of this comment found within the given element's subtree — used when a
+    /// deep copy of commented content (e.g. a table row) is re-inserted elsewhere and must not carry
+    /// stale markers.
+    ///
+    /// @param element the subtree to clean
+    void deleteFrom(Element element);
 }

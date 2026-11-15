@@ -26,6 +26,10 @@
             <artifactId>engine</artifactId>
         </dependency>
         <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>officestamper-docx4j11</artifactId>
+        </dependency>
+        <dependency>
             <groupId>pro.verron.asciidoc</groupId>
             <artifactId>asciidoc-core</artifactId>
         </dependency>

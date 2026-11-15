@@ -3,7 +3,6 @@ package pro.verron.officestamper.preset;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.resolvers.date.DateResolver;
-import pro.verron.officestamper.preset.resolvers.image.ImageResolver;
 import pro.verron.officestamper.preset.resolvers.localdate.LocalDateResolver;
 import pro.verron.officestamper.preset.resolvers.localdatetime.LocalDateTimeResolver;
 import pro.verron.officestamper.preset.resolvers.localtime.LocalTimeResolver;
@@ -150,17 +149,5 @@ public class Resolvers {
     /// @return An instance of [ObjectResolver]
     public static ObjectResolver legacyDate(DateTimeFormatter formatter) {
         return new DateResolver(formatter);
-    }
-
-    /// Returns an instance of [ObjectResolver] that resolves [Image] to an
-    /// actual image in the resulting .docx document. The image will be put
-    /// as an inline into the surrounding paragraph of text.
-    ///
-    /// @param deduplicate whether to deduplicate identical images in the
-    /// document
-    ///
-    /// @return An instance of [ObjectResolver]
-    public static ObjectResolver image(boolean deduplicate) {
-        return new ImageResolver(deduplicate);
     }
 }

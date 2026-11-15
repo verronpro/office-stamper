@@ -1,6 +1,6 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.api.ContextTree;
+import pro.verron.officestamper.spi.ContextTree;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,3 +52,4 @@ public class ContextRoot
         return String.valueOf(branches.size());
     }
 }
+

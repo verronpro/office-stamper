@@ -1,10 +1,10 @@
 package pro.verron.officestamper.docx4j11;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
+import pro.verron.officestamper.spi.OfficeStamper;
 
 import java.io.IOException;
 
@@ -21,7 +21,7 @@ import java.io.IOException;
 @Deprecated(forRemoval = true)
 public final class LegacyOfficeStamper implements OfficeStamper<WordprocessingMLPackage> {
 
-    private final pro.verron.officestamper.spi.OfficeStamper<DocxDocument> delegate;
+    private final pro.verron.officestamper.spi.OfficeStamper<pro.verron.officestamper.spi.OfficeDocument> delegate;
 
     /// Creates a shim with the {@link OfficeStamperConfigurations#full()} configuration.
     public LegacyOfficeStamper() {
@@ -32,18 +32,14 @@ public final class LegacyOfficeStamper implements OfficeStamper<WordprocessingML
     ///
     /// @param configuration the stamper configuration
     public LegacyOfficeStamper(OfficeStamperConfiguration configuration) {
-        this.delegate = new DocxStamper(configuration);
+        this.delegate = pro.verron.officestamper.preset.OfficeStampers
+                .docxStamper(DocxOfficeStampers.withDocxProcessors(configuration));
     }
 
     @Override
     public WordprocessingMLPackage stamp(WordprocessingMLPackage template, Object context) {
         var document = new DocxDocument(template);
-        DocxDocument result;
-        try {
-            result = delegate.stamp(document, context);
-        } catch (IOException e) {
-            throw new OfficeStamperException(e);
-        }
+        var result = (DocxDocument) delegate.stamp(document, context);
         return result.pkg();
     }
 }

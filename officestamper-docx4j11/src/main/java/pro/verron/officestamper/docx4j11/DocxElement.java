@@ -27,7 +27,7 @@ public class DocxElement implements Element {
     private final Object value;
     private final DocxPart part;
 
-    DocxElement(Object value, DocxPart part) {
+    public DocxElement(Object value, DocxPart part) {
         this.value = value;
         this.part = part;
     }
@@ -35,6 +35,16 @@ public class DocxElement implements Element {
     /// @return the raw docx4j object this element wraps
     Object raw() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof DocxElement other && value.equals(other.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 
     /// @return the part this element belongs to
@@ -45,7 +55,7 @@ public class DocxElement implements Element {
     /// @param element an spi element
     /// @return the raw docx4j object the given element wraps
     /// @throws IllegalArgumentException when the element comes from another provider
-    static Object rawOf(Element element) {
+    public static Object rawOf(Element element) {
         if (element instanceof DocxElement docxElement) return docxElement.raw();
         throw new IllegalArgumentException(
                 "Element is not a docx4j element: " + element.getClass().getName());

@@ -1,5 +1,8 @@
 package pro.verron.officestamper.api;
 
+import pro.verron.officestamper.spi.Insert;
+import pro.verron.officestamper.spi.OfficePart;
+
 
 /// ExceptionResolver is a functional interface used to resolve the behavior when an exception occurs during the
 /// processing of a placeholder.
@@ -12,9 +15,10 @@ package pro.verron.officestamper.api;
     /// processing within a document. It allows implementations to log errors, rethrow exceptions, or return fallback
     /// values.
     ///
+    /// @param part the part in which the expression was being evaluated, used to create replacement elements
     /// @param expression the placeholder expression that was being evaluated when the exception occurred.
     /// @param message a descriptive message providing context about the exception
     /// @param cause the underlying exception that was encountered
     /// @return a resolved fallback value as a String, which could be used as a replacement for the placeholder.
-    Insert resolve(String expression, String message, Exception cause);
+    Insert resolve(OfficePart part, String expression, String message, Exception cause);
 }

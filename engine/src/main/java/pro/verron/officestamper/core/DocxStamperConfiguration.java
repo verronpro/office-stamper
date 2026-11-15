@@ -5,9 +5,12 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.spi.AnchoredComment;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
+import pro.verron.officestamper.spi.PostProcessor;
+import pro.verron.officestamper.spi.PreProcessor;
 import pro.verron.officestamper.core.functions.BiFunctionBuilder;
 import pro.verron.officestamper.core.functions.FunctionBuilder;
 import pro.verron.officestamper.core.functions.TriFunctionBuilder;
@@ -136,7 +139,7 @@ public class DocxStamperConfiguration
         return expressionFunctions;
     }
 
-    /// Retrieves the map of comment processors associated with specific classes.
+    /// Retrieves the map of AnchoredComment processors associated with specific classes.
     ///
     /// @return a map where the key is the class associated with a specific type of placeholder, and the value is a
     ///         function that creates a [CommentProcessor] for that placeholder.
@@ -373,3 +376,5 @@ public class DocxStamperConfiguration
         return this;
     }
 }
+
+

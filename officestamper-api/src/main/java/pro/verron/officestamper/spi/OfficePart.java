@@ -19,6 +19,9 @@ public interface OfficePart {
     /// @return the document this part belongs to
     OfficeDocument document();
 
+    /// @return the hook and comment discovery service for this part
+    Hooks hooks();
+
     /// @return a factory creating format-native elements bound to this document
     ElementFactory factory();
 

@@ -1,6 +1,6 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.api.ContextTree;
+import pro.verron.officestamper.spi.ContextTree;
 
 import java.util.AbstractSequentialList;
 import java.util.ArrayList;
@@ -64,3 +64,4 @@ public class ContextBranch
         return branch.listIterator();
     }
 }
+

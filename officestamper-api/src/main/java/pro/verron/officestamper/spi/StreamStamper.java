@@ -10,7 +10,8 @@ import java.util.function.Function;
 /// providing the mechanisms to work with streams.
 ///
 /// @param <T> the document type, which must extend {@link OfficeDocument}
-public class StreamStamper<T extends OfficeDocument> {
+/// @param <T> the native document type this stamper operates on
+public class StreamStamper<T> {
 
     private final Function<InputStream, T> loader;
     private final OfficeStamper<T> stamper;

@@ -32,6 +32,11 @@ final class DocxElementFactory
     }
 
     @Override
+    public Element lineBreak(String text) {
+        return new DocxElement(WmlFactory.newRun(List.of(WmlFactory.newText(text), WmlFactory.newBr())), owner);
+    }
+
+    @Override
     public Element paragraph(String text) {
         return new DocxElement(WmlFactory.newParagraph(text), owner);
     }

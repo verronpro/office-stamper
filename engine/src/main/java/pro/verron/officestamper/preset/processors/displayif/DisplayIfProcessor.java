@@ -4,7 +4,7 @@ package pro.verron.officestamper.preset.processors.displayif;
 import org.jspecify.annotations.Nullable;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.spi.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.utils.wml.WmlUtils;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
-/// Processor for the [CommentProcessorFactory.IDisplayIfProcessor] comment.
+/// Processor for the [CommentProcessorFactory.IDisplayIfProcessor] AnchoredComment.
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
@@ -107,9 +107,10 @@ public class DisplayIfProcessor
     @Override
     public void displayDocPartIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        comment().getParent()
-                 .getContent()
-                 .removeAll(comment().getElements());
+        comment().elements()
+                 .forEach(element -> element.parent()
+                                            .content()
+                                            .remove(element));
     }
 
     @Override
@@ -122,3 +123,5 @@ public class DisplayIfProcessor
         displayDocPartIf(condition == null);
     }
 }
+
+

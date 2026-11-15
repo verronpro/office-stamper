@@ -3,22 +3,25 @@ package pro.verron.officestamper;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static pro.verron.officestamper.experimental.ExperimentalStampers.pptxStamper;
-import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
+import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxStamper;
 
 enum TemplateKind {
     WORD {
         @Override
-        void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os) {
+        void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os)
+                throws IOException {
             docxStamper(configuration).stamp(templateStream, context, os);
         }
     }, POWERPOINT {
         @Override
         void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os) {
-            pptxStamper().stamp(templateStream, context, os);
+            // The experimental pptx stamper is not yet ported to the docx4j-free contracts (P3);
+            // excluded from compilation until then.
+            throw new OfficeStamperException("PPTX stamping is temporarily unavailable in this build");
         }
     };
 
@@ -30,5 +33,6 @@ enum TemplateKind {
         throw new OfficeStamperException(msg.formatted(templatePath));
     }
 
-    abstract void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os);
+    abstract void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration,
+            OutputStream os) throws IOException;
 }

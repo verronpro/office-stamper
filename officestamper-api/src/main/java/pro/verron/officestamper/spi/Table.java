@@ -9,6 +9,9 @@ public interface Table {
     /// Removes the entire table from the document.
     void remove();
 
+    /// @return the rows of this table, in order
+    List<Row> rows();
+
     /// @param row the row to locate
     /// @return the index of the row, or -1 if it is not part of this table
     int indexOf(Row row);
@@ -39,6 +42,9 @@ public interface Table {
     /// A cell within a [Row].
     interface Cell
             extends Element {
+
+        /// @return a deep copy of this cell
+        Cell copy();
 
         /// Replaces the content of this cell with the given elements.
         ///

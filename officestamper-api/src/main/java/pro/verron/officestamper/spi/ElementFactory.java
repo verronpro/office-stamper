@@ -15,6 +15,10 @@ public interface ElementFactory {
     /// @return a new text run carrying the given run properties
     Element run(String text, RunProperties properties);
 
+    /// @param text the run's text, placed before the line break
+    /// @return a new text run ending with a line break
+    Element lineBreak(String text);
+
     /// @param text the paragraph's text
     /// @return a new paragraph holding a single run with the given text
     Element paragraph(String text);

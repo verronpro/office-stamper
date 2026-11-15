@@ -1,11 +1,9 @@
 package pro.verron.officestamper.preset.resolvers.nulls;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
-
-import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
+import pro.verron.officestamper.spi.Insert;
+import pro.verron.officestamper.spi.OfficePart;
 
 /// The [Null2PlaceholderResolver] class is an implementation of the ObjectResolver interface. It provides a way to
 /// resolve null objects by not replacing their expression.
@@ -26,8 +24,8 @@ public class Null2PlaceholderResolver
     }
 
     @Override
-    public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
-        return new Insert(newRun(placeholderTemplate.formatted(expression)));
+    public Insert resolve(OfficePart part, String expression, @Nullable Object object) {
+        return new Insert(part.factory().run(placeholderTemplate.formatted(expression)));
     }
 
     @Override

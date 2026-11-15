@@ -5,6 +5,8 @@ import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;
+import pro.verron.officestamper.spi.PostProcessor;
+import pro.verron.officestamper.spi.PreProcessor;
 
 import java.util.List;
 import java.util.Map;
@@ -21,12 +23,12 @@ public interface OfficeStamperConfiguration {
     /// @return the updated [OfficeStamperConfiguration] object
     OfficeStamperConfiguration exposeInterfaceToExpressionLanguage(Class<?> interfaceClass, Object implementation);
 
-    /// Adds a comment processor to the [OfficeStamperConfiguration].
+    /// Adds a AnchoredComment processor to the [OfficeStamperConfiguration].
     ///
-    /// A comment processor is responsible for processing comments in the document and performing specific operations
-    /// based on the comment content.
+    /// A AnchoredComment processor is responsible for processing comments in the document and performing specific operations
+    /// based on the AnchoredComment content.
     ///
-    /// @param interfaceClass the interface class associated with the comment processor
+    /// @param interfaceClass the interface class associated with the AnchoredComment processor
     /// @param commentProcessorFactory a factory that creates a [CommentProcessor] object
     /// @return the updated [OfficeStamperConfiguration] object
     OfficeStamperConfiguration addCommentProcessor(
@@ -64,9 +66,9 @@ public interface OfficeStamperConfiguration {
     /// @return a map containing the expression functions as values and their corresponding classes as keys.
     Map<Class<?>, Object> getExpressionFunctions();
 
-    /// Returns a map of comment processors associated with their respective classes.
+    /// Returns a map of AnchoredComment processors associated with their respective classes.
     ///
-    /// @return The map of comment processors. The keys are the classes, and the values are the corresponding comment
+    /// @return The map of AnchoredComment processors. The keys are the classes, and the values are the corresponding AnchoredComment
     ///         processor factories.
     Map<Class<?>, CommentProcessorFactory> getCommentProcessors();
 
@@ -217,3 +219,4 @@ public interface OfficeStamperConfiguration {
     /// @return the updated [OfficeStamperConfiguration] object.
     OfficeStamperConfiguration setTraceabilityReporter(TraceabilityReporter traceabilityReporter);
 }
+

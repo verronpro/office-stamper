@@ -1,5 +1,6 @@
 package pro.verron.officestamper.docx4j11;
 
+import jakarta.xml.bind.JAXBElement;
 import org.docx4j.XmlUtils;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
@@ -40,9 +41,14 @@ final class DocxRow
     public List<Table.Cell> cells() {
         return ((Tr) raw()).getContent()
                 .stream()
+                .map(DocxRow::unwrapCell)
                 .filter(Tc.class::isInstance)
                 .map(Tc.class::cast)
                 .<Table.Cell>map(tc -> new DocxCell(owner(), tc))
                 .toList();
+    }
+
+    private static Object unwrapCell(Object o) {
+        return o instanceof JAXBElement<?> jaxb ? jaxb.getValue() : o;
     }
 }

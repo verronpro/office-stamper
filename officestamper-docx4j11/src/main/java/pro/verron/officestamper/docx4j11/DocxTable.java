@@ -1,6 +1,7 @@
 package pro.verron.officestamper.docx4j11;
 
 import org.docx4j.wml.Tbl;
+import org.docx4j.wml.Tr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.spi.Table;
 import pro.verron.officestamper.utils.wml.WmlUtils;
@@ -22,6 +23,16 @@ final class DocxTable
     @Override
     public void remove() {
         WmlUtils.remove(tbl);
+    }
+
+    @Override
+    public List<Row> rows() {
+        return tbl.getContent()
+                .stream()
+                .filter(Tr.class::isInstance)
+                .map(Tr.class::cast)
+                .<Row>map(tr -> new DocxRow(part, tbl, tr))
+                .toList();
     }
 
     @Override

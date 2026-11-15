@@ -1,4 +1,4 @@
-/// Comment processors for repeating document content.
+/// AnchoredComment processors for repeating document content.
 ///
 /// Implements the `repeat` and `repeatDocPart` directives, which duplicate a
 /// paragraph or document part for each element in a collection.
@@ -8,3 +8,4 @@
 package pro.verron.officestamper.preset.processors.repeat;
 
 import org.jspecify.annotations.NullMarked;
+

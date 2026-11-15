@@ -1,6 +1,6 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.spi.ProcessorContext;
 
 /// A functional interface responsible for creating instances of the [Engine] class.
 ///
@@ -19,3 +19,4 @@ import pro.verron.officestamper.api.ProcessorContext;
     /// @return a newly created [Engine] instance configured according to the provided [ProcessorContext]
     Engine create(ProcessorContext processorContext);
 }
+

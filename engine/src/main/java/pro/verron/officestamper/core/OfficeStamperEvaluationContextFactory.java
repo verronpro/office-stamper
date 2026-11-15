@@ -2,6 +2,8 @@ package pro.verron.officestamper.core;
 
 import org.springframework.expression.EvaluationContext;
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.spi.AnchoredComment;
+import pro.verron.officestamper.spi.ProcessorContext;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,7 @@ public final class OfficeStamperEvaluationContextFactory {
     /// Constructs a factory.
     ///
     /// @param customFunctions custom functions to be registered.
-    /// @param commentProcessors comment processor factories.
+    /// @param commentProcessors AnchoredComment processor factories.
     /// @param interfaceFunctions interface functions.
     /// @param contextFactory the base evaluation context factory.
     OfficeStamperEvaluationContextFactory(
@@ -74,3 +76,5 @@ public final class OfficeStamperEvaluationContextFactory {
         return map;
     }
 }
+
+

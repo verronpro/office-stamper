@@ -21,14 +21,14 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 
 /// Element-tree search helpers for the docx4j 11 provider (port of the engine's `DocumentUtil`).
-final class DocxDocumentUtil {
+public final class DocxDocumentUtil {
 
     private DocxDocumentUtil() {
     }
 
     /// Finds the smallest common parent between two objects — the insertable content holder that
     /// contains both (port of the legacy `DocumentUtil.findSmallestCommonParent`).
-    static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
+    public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
         if (depthElementSearch(o1, o2) && o2 instanceof ContentAccessor contentAccessor) {
             return findInsertableParent(contentAccessor);
         }

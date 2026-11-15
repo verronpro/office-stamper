@@ -7,6 +7,9 @@ import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.spi.OfficePart;
+import pro.verron.officestamper.spi.Insert;
+import pro.verron.officestamper.spi.ProcessorContext;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -19,7 +22,7 @@ public class Engine {
     private final ExceptionResolver exceptionResolver;
     private final ObjectResolverRegistry objectResolverRegistry;
     private final String expression;
-    private final DocxPart docxPart;
+    private final OfficePart part;
     private final SpelExpressionParser expressionParser;
     private final TraceabilityReporter traceabilityReporter;
 
@@ -42,7 +45,7 @@ public class Engine {
         this.exceptionResolver = exceptionResolver;
         this.objectResolverRegistry = objectResolverRegistry;
         this.expression = processorContext.expression();
-        this.docxPart = processorContext.part();
+        this.part = processorContext.part();
         this.traceabilityReporter = traceabilityReporter;
     }
 
@@ -64,7 +67,7 @@ public class Engine {
         } catch (SpelParseException e) {
             var msgTemplate = "Expression %s could not be parsed successfully.";
             var message = msgTemplate.formatted(expression, evaluationContext);
-            exceptionResolver.resolve(expression, message, e);
+            exceptionResolver.resolve(part, expression, message, e);
             return false;
         }
 
@@ -77,7 +80,7 @@ public class Engine {
         } catch (SpelEvaluationException e) {
             var msgTemplate = "Expression %s could not be processed against context '%s'";
             var message = msgTemplate.formatted(expression, evaluationContext);
-            exceptionResolver.resolve(expression, message, e);
+            exceptionResolver.resolve(part, expression, message, e);
             return false;
         }
 
@@ -115,7 +118,7 @@ public class Engine {
         } catch (SpelParseException e) {
             var msgTemplate = "Expression %s could not be parsed successfully.";
             var message = msgTemplate.formatted(expression, evaluationContext);
-            return exceptionResolver.resolve(expression, message, e);
+            return exceptionResolver.resolve(part, expression, message, e);
         }
 
         var expressionState = buildExpressionState(evaluationContext);
@@ -128,17 +131,19 @@ public class Engine {
         } catch (SpelEvaluationException e) {
             var msgTemplate = "Expression %s could not be resolved against context '%s'";
             var message = msgTemplate.formatted(expression, evaluationContext);
-            return exceptionResolver.resolve(expression, message, e);
+            return exceptionResolver.resolve(part, expression, message, e);
         }
 
         try {
-            var docxResolution = objectResolverRegistry.resolve(docxPart, expression, javaResolution);
+            var docxResolution = objectResolverRegistry.resolve(part, expression, javaResolution);
             log.debug("Converted '{}' to docx ({}) successfully.", expression, docxResolution);
             return docxResolution;
         } catch (SpelEvaluationException e) {
             var msgTemplate = "Expression %s could not be converted to docx inserts.";
             var message = msgTemplate.formatted(expression, evaluationContext);
-            return exceptionResolver.resolve(expression, message, e);
+            return exceptionResolver.resolve(part, expression, message, e);
         }
     }
 }
+
+

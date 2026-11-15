@@ -4,7 +4,7 @@ import org.docx4j.dml.CTBlipFillProperties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.pptx4j.pml.Shape;
-import pro.verron.officestamper.experimental.PowerpointCollector;
+import pro.verron.officestamper.docx4j11.experimental.PowerpointCollector;
 import pro.verron.officestamper.preset.Image;
 import pro.verron.officestamper.docx4j11.test.utils.ResourceUtils;
 
@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static pro.verron.officestamper.experimental.ExperimentalStampers.pptxPackageStamper;
+import static pro.verron.officestamper.docx4j11.experimental.ExperimentalStampers.pptxPackageStamper;
 import static pro.verron.officestamper.utils.pml.PptxRenderer.pptxToString;
 
 @DisplayName("PPTX Image Stamping Test") class PptxImageTest {

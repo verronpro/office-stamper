@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxStamper;
+import static pro.verron.officestamper.docx4j11.experimental.ExperimentalStampers.pptxStamper;
 
 enum TemplateKind {
     WORD {
@@ -18,10 +19,11 @@ enum TemplateKind {
         }
     }, POWERPOINT {
         @Override
-        void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os) {
-            // The experimental pptx stamper is not yet ported to the docx4j-free contracts (P3);
-            // excluded from compilation until then.
-            throw new OfficeStamperException("PPTX stamping is temporarily unavailable in this build");
+        void stamp(InputStream templateStream, Object context, OfficeStamperConfiguration configuration, OutputStream os)
+                throws IOException {
+            // The experimental pptx stamper predates the configuration seam and runs with its own
+            // minimal resolution pipeline (direct SpEL against the context).
+            pptxStamper().stamp(templateStream, context, os);
         }
     };
 

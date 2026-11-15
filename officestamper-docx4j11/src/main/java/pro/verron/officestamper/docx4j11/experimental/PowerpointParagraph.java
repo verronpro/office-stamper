@@ -3,22 +3,16 @@ package pro.verron.officestamper.docx4j11.experimental;
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
-import org.docx4j.wml.Comments;
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
-import pro.verron.officestamper.spi.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.spi.Insert;
 import pro.verron.officestamper.spi.Paragraph;
 import pro.verron.officestamper.spi.Table;
-import pro.verron.officestamper.core.CommentUtil;
-import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
-import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
 /// A "Run" defines a region of text within a docx document with a common set of properties. Word processors are
 /// relatively free in splitting a paragraph of text into multiple runs, so there is no strict rule to say over how many
@@ -133,17 +127,13 @@ public class PowerpointParagraph
     }
 
     @Override
-    public void replace(List<P> toRemove, List<P> toAdd) {
-        int index = siblings().indexOf(paragraph);
-        if (index < 0) throw new OfficeStamperException("Impossible");
-
-        siblings().addAll(index, toAdd);
-        siblings().removeAll(toRemove);
+    public void replace(List<pro.verron.officestamper.spi.Element> toRemove, List<pro.verron.officestamper.spi.Element> toAdd) {
+        throw new OfficeStamperException("Replacing paragraph elements is not supported on pptx");
     }
 
     @Override
     public void remove() {
-        WmlUtils.remove(paragraph);
+        throw new OfficeStamperException("Removing paragraphs is not supported on pptx");
     }
 
     /// Replaces a placeholder within the paragraph with the content from the given insert, preserving formatting.
@@ -154,9 +144,9 @@ public class PowerpointParagraph
         var elements = insert.elements();
         if (elements.size() != 1) throw new AssertionError("Insert must contain exactly one element");
         var element = elements.getFirst();
-        if (!(element instanceof CTRegularTextRun replacementRun))
-            throw new AssertionError("Insert '%s' is not a unique element of expected type '%s'".formatted(element,
-                    CTRegularTextRun.class));
+        if (!(element instanceof PptxElement wrapped)
+            || !(wrapped.raw() instanceof CTRegularTextRun replacementRun))
+            throw new AssertionError("Insert '%s' is not a unique pptx text run".formatted(element));
 
         String text = asString();
         int matchStartIndex = text.indexOf(expression);
@@ -191,7 +181,9 @@ public class PowerpointParagraph
     }
 
     @Override
-    public void replace(Object from, Object to, Insert insert) {
+    public void replace(pro.verron.officestamper.spi.Element start,
+                        pro.verron.officestamper.spi.Element end,
+                        Insert insert) {
         throw new OfficeStamperException("Not yet implemented");
     }
 
@@ -207,18 +199,18 @@ public class PowerpointParagraph
     }
 
     @Override
-    public void apply(Consumer<ContentAccessor> pConsumer) {
-        pConsumer.accept(paragraph::getEGTextRun);
+    public pro.verron.officestamper.spi.Content content() {
+        throw new OfficeStamperException("Content access is not supported on pptx");
     }
 
     @Override
-    public <T> Optional<T> parent(Class<T> aClass) {
-        return parent(aClass, Integer.MAX_VALUE);
+    public void apply(Consumer<pro.verron.officestamper.spi.Element> pConsumer) {
+        throw new OfficeStamperException("Content access is not supported on pptx");
     }
 
     @Override
-    public Collection<Comments.AnchoredComment> getComment() {
-        return CommentUtil.getCommentFor(paragraph::getEGTextRun, part.document());
+    public Collection<pro.verron.officestamper.spi.Comment> getComments() {
+        return List.of();
     }
 
     @Override
@@ -229,16 +221,6 @@ public class PowerpointParagraph
     @Override
     public Optional<Table> parentTable() {
         return Optional.empty();
-    }
-
-    private List<Object> siblings() {
-        return this.parent(ContentAccessor.class, 1)
-                   .orElseThrow(throwing("Not a standard Child with common parent"))
-                   .getContent();
-    }
-
-    private <T> Optional<T> parent(Class<T> aClass, int depth) {
-        return WmlUtils.getFirstParentWithClass(paragraph, aClass, depth);
     }
 
     private void singleRun(

@@ -1,7 +1,6 @@
 package pro.verron.officestamper.docx4j11.experimental;
 
 import org.docx4j.dml.CTBlip;
-import org.docx4j.dml.CTBlip;
 import org.docx4j.dml.CTBlipFillProperties;
 import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTShapeProperties;
@@ -74,7 +73,7 @@ public class PowerpointStamper
                     var replacement = new CTRegularTextRun();
                     replacement.setT(String.valueOf(value));
                     var expression1 = variable.expression();
-                    paragraph1.replace(expression1, new Insert(replacement));
+                    paragraph1.replace(expression1, new Insert(new PptxElement(replacement)));
                 }
             }
         }
@@ -85,7 +84,7 @@ public class PowerpointStamper
         var openPackage = OpenPackage.getOrCreate(presentationMLPackage, slide);
         var imgPart = openPackage.findOrCreateImgPart(image::getBytes, true);
         var relId = imgPart.relationship()
-                           .id();
+                           .getId();
 
         var factory = new org.docx4j.dml.ObjectFactory();
         var blipFill = factory.createCTBlipFillProperties();

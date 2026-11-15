@@ -8,7 +8,7 @@ import org.xlsx4j.sml.CTRst;
 import pro.verron.officestamper.spi.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
 
-import static pro.verron.officestamper.experimental.Placeholders.findVariables;
+import static pro.verron.officestamper.docx4j11.experimental.Placeholders.findVariables;
 
 /// The ExcelStamper class is an implementation of the OfficeStamper interface for stamping Excel templates. It uses the
 /// DOCX4J library to manipulate the template and replace variable expressions with values from the context.

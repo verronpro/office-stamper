@@ -84,16 +84,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <!-- Experimental pptx/xlsx stampers are not yet ported to the spi contracts (P3);
-                             excluded from compilation until then. -->
-                        <exclude>**/experimental/**</exclude>
-                    </excludes>
-                    <testExcludes>
-                        <testExclude>**/experimental/**</testExclude>
-                    </testExcludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>

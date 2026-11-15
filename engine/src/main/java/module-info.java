@@ -13,16 +13,12 @@
 /// - [pro.verron.officestamper.preset] - Pre-configured stampers,
 /// configurations, and ready-made processors and resolvers
 module pro.verron.officestamper {
+    requires java.desktop;
     requires spring.core;
     requires spring.expression;
     uses javax.imageio.spi.ImageReaderSpi;
 
-    requires transitive org.docx4j.core;
-
-    requires static org.apache.commons.io;
     requires static org.slf4j;
-    requires static jakarta.xml.bind;
-    requires org.docx4j.openxml_objects;
     requires org.jspecify;
     requires pro.verron.officestamper.api;
     requires pro.verron.officestamper.utils;

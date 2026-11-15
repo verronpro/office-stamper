@@ -36,9 +36,6 @@ public interface Table {
 
         /// Removes the given comment from this row.
         void removeComment(Comment comment);
-
-        /// @return the hooks associated with this row
-        Iterable<Hook> hooks();
     }
 
     /// A cell within a [Row].

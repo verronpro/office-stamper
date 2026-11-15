@@ -37,6 +37,11 @@ public class DocxElement implements Element {
         return value;
     }
 
+    /// @return the part this element belongs to
+    DocxPart owner() {
+        return part;
+    }
+
     /// @param element an spi element
     /// @return the raw docx4j object the given element wraps
     /// @throws IllegalArgumentException when the element comes from another provider

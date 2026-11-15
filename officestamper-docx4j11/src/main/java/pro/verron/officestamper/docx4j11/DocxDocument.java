@@ -57,4 +57,10 @@ public final class DocxDocument implements OfficeDocument {
             throw new IOException("Failed to save DOCX", e);
         }
     }
+
+    @Override
+    public <T> T unwrap(Class<T> type) {
+        if (type.isInstance(pkg)) return type.cast(pkg);
+        throw new IllegalArgumentException("Cannot unwrap OfficeDocument as " + type.getName());
+    }
 }

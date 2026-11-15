@@ -21,4 +21,13 @@ public interface OfficePart {
 
     /// @return a factory creating format-native elements bound to this document
     ElementFactory factory();
+
+    /// Returns the native representation of this part, for processors that implement
+    /// format-specific actions against the provider's types (e.g. the docx4j part object).
+    ///
+    /// @param type the expected native type
+    /// @param <T>  the native type
+    /// @return the native representation, cast to the given type
+    /// @throws IllegalArgumentException if the provider does not support the requested type
+    <T> T unwrap(Class<T> type);
 }

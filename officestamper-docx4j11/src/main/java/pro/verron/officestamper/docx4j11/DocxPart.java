@@ -60,6 +60,12 @@ public final class DocxPart implements OfficePart {
         return new DocxElementFactory(this);
     }
 
+    @Override
+    public <T> T unwrap(Class<T> type) {
+        if (type.isInstance(part)) return type.cast(part);
+        throw new IllegalArgumentException("Cannot unwrap OfficePart as " + type.getName());
+    }
+
     JaxbXmlPart part() {
         return part;
     }

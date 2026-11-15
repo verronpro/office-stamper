@@ -18,4 +18,11 @@ public interface Hooks {
     /// @param scope the element whose subtree to scan for hook tags
     /// @return an iterator over the hook tags found within the given subtree
     Iterator<Tag> ofHooks(Element scope);
+
+    /// Discovers the anchored comments of a part: every comment whose range (start, end and
+    /// reference markers) fully resolves within the part content.
+    ///
+    /// @param part the part to scan for anchored comments
+    /// @return an iterator over the resolved anchored comments
+    Iterator<AnchoredComment> ofComments(OfficePart part);
 }

@@ -1,0 +1,40 @@
+package pro.verron.officestamper.spi;
+
+import java.util.List;
+import java.util.Optional;
+
+/// A table in a document, exposed without leaking the underlying OOXML library.
+public interface Table {
+
+    /// Removes the entire table from the document.
+    void remove();
+
+    /// @param row the row to locate
+    /// @return the index of the row, or -1 if it is not part of this table
+    int indexOf(Row row);
+
+    /// Adds all the given rows to the table starting at the specified index.
+    void addAll(int index, List<Row> rows);
+
+    /// Adds a row to the table at the specified index.
+    void add(int index, Row row);
+
+    /// A row within a {@link Table}.
+    interface Row {
+
+        /// Removes the entire row from the table.
+        void remove();
+
+        /// @return the table this row belongs to
+        Table table();
+
+        /// @return a deep copy of this row
+        Row copy();
+
+        /// Removes the given comment from this row.
+        void removeComment(Comment comment);
+
+        /// @return the hooks associated with this row
+        Iterable<Hook> hooks();
+    }
+}

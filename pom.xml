@@ -23,6 +23,8 @@
         <module>excel-context</module>
         <module>cli</module>
         <module>utils</module>
+        <module>officestamper-api</module>
+        <module>officestamper-docx4j11</module>
     </modules>
 
     <properties>
@@ -253,6 +255,16 @@
             <dependency>
                 <groupId>pro.verron.office-stamper</groupId>
                 <artifactId>utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.office-stamper</groupId>
+                <artifactId>officestamper-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.office-stamper</groupId>
+                <artifactId>officestamper-docx4j11</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

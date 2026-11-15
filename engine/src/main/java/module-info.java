@@ -36,5 +36,5 @@ module pro.verron.officestamper {
 
     exports pro.verron.officestamper.experimental;
     opens pro.verron.officestamper.experimental;
-    exports pro.verron.officestamper.core to pro.verron.officestamper.test;
+    exports pro.verron.officestamper.core to pro.verron.officestamper.test, pro.verron.officestamper.docx4j11;
 }

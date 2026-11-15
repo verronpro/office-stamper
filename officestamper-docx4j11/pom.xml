@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>pro.verron</groupId>
+        <artifactId>office-stamper</artifactId>
+        <version>3.9-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>officestamper-docx4j11</artifactId>
+    <name>Office-stamper docx4j 11 provider</name>
+    <description>
+        docx4j 11.x provider implementing the OfficeStamper API seam. This is the
+        module that pins the docx4j version; swapping it for officestamper-docx4j17
+        (or removing it entirely) is what lets the user choose / drop docx4j.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>officestamper-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-core</artifactId>
+            <version>${docx4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+            <version>${docx4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+</project>

@@ -12,26 +12,12 @@ Add the following dependency to your `pom.xml`:
 ----
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
-    <artifactId>engine</artifactId>
-    <version>3.3</version>
+    <artifactId>officestamper-docx4j11</artifactId>
+    <version>3.9</version>
 </dependency>
 ----
 
-You also need to provide a dependency to Docx4J:
-
-[source,xml]
-----
-<dependency>
-    <groupId>org.docx4j</groupId>
-    <artifactId>docx4j-core</artifactId>
-    <version>11.5.11</version>
-</dependency>
-<dependency>
-    <groupId>org.docx4j</groupId>
-    <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-    <version>11.5.11</version>
-</dependency>
-----
+The provider artifact pulls the stamping engine and the matching Docx4J release transitively — you do not need to declare Docx4J yourself.
 
 === Gradle
 
@@ -40,9 +26,7 @@ Add the following to your `build.gradle`:
 [source,groovy]
 ----
 dependencies {
-    implementation 'pro.verron.office-stamper:engine:3.3'
-    implementation 'org.docx4j:docx4j-core:11.5.11'
-    implementation 'org.docx4j:docx4j-JAXB-ReferenceImpl:11.5.11'
+    implementation 'pro.verron.office-stamper:officestamper-docx4j11:3.9'
 }
 ----
 

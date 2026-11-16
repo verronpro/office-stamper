@@ -17,8 +17,8 @@ Newer JDKs in the same major line usually work, but when the bytecode target is 
 |===
 | Office‑stamper | Java | Docx4J | Notes
 
-| 3.4.x          | 25  | 11.5.14 | Current. Two-module split: docx4j-free `engine` + `officestamper-docx4j11` provider (see below).
-| 3.3.x          | 25  | 11.4.9-11, 11.5.0-11 | See link:release-notes.html[Release Notes] for details.
+| 3.9.x          | 25  | 11.5.14, 17.0.2 | Current. Two-module split: docx4j-free `engine` + provider modules (`officestamper-docx4j11` or `officestamper-docx4j17`, see below).
+| 3.8.x          | 25  | 11.4.9-11, 11.5.0-12 | Last single-artifact line; the engine shipped docx4j inside. See link:release-notes.html[Release Notes] for details.
 | 3.2.x          | 25  | 11.4.9-11, 11.5.0-11 | Uses Java 25 toolchain.
 | 3.1.x          | 25  | 11.4.9-11, 11.5.0-9  | Internal refactors; see Release Notes.
 | 3.0.x          | 25  | 11.4.9-11, 11.5.0-8  | Processing model overhaul; see link:release-notes.html[Release Notes].
@@ -31,12 +31,12 @@ Newer JDKs in the same major line usually work, but when the bytecode target is 
 
 Notes:
 
-* The root POM currently targets Java 25 and Docx4J 11.5.14, which applies to Office‑stamper 3.4.x at the time of writing.
+* The root POM currently targets Java 25 and Docx4J 11.5.14, which applies to Office‑stamper 3.9.x at the time of writing.
 * We routinely test across several Docx4J 11.5.x versions; see link:release-notes.html[Release Notes] for the exact matrix per release.
 
-== The two-module split (3.4.x)
+== The two-module split (3.9)
 
-Starting with 3.4.x, Office‑stamper is split in two Maven artifacts:
+Starting with 3.9, Office‑stamper is split in two Maven artifacts:
 
 * `pro.verron.officestamper:engine` — the stamping engine itself. It has *no* docx4j dependency at all:
   it owns the SpEL machinery, the processor pipeline, the resolvers and the
@@ -59,11 +59,11 @@ Caveat: the `toAsciidoc`-style rendering machinery in `pro.verron.asciidoc:ascii
 is still pinned to docx4j 11 module names, so until that library ships a docx4j17-flavoured
 build, prefer `officestamper-docx4j11` if you also use the asciidoc converters.
 
-== Migrating from 3.3.x
+== Migrating from 3.8.x
 
-In 3.3.x you depended on `pro.verron.office-stamper:engine` and added docx4j yourself;
+In 3.8.x you depended on `pro.verron.office-stamper:engine` and added docx4j yourself;
 the engine contained everything, and `pro.verron.officestamper.preset.OfficeStampers`
-was the entry point. The 3.4 migration is:
+was the entry point. The 3.9 migration is:
 
 . *Dependency*: replace `pro.verron.office-stamper:engine` with
   `pro.verron.officestamper:officestamper-docx4j11` (or `-docx4j17`).
@@ -75,7 +75,7 @@ was the entry point. The 3.4 migration is:
 . *Entry point*: `OfficeStampers.docxStamper()` becomes `DocxOfficeStampers.standard()`.
   The old `pro.verron.officestamper.preset.OfficeStampers` name still exists but is now the
   docx-free factory — its method signatures changed, so calls must move to the new name.
-. *Compatibility shims* (deprecated, `forRemoval`) keep the pre-3.4 package locations compiling
+. *Compatibility shims* (deprecated, `forRemoval`) keep the pre-3.9 package locations compiling
   in the `officestamper-docx4j11` artifact:
   `pro.verron.officestamper.utils.{wml, openpackaging, image, pml, sml}.*`,
   `pro.verron.officestamper.experimental.ExperimentalStampers`, and the docx-coupled preset

@@ -26,7 +26,7 @@ module pro.verron.officestamper.docx4j11 {
     exports pro.verron.officestamper.docx4j11.preset.resolvers.image to pro.verron.officestamper.docx4j11.test;
     opens pro.verron.officestamper.docx4j11 to org.junit.platform.commons;
 
-    // Compatibility shims (deprecated): the pre-3.4 package locations, so code
+    // Compatibility shims (deprecated): the pre-3.9 package locations, so code
     // written against the single-artifact 3.3.x line keeps compiling. Every shim
     // extends the corresponding docx4j11.* class above.
     exports pro.verron.officestamper.utils.wml;

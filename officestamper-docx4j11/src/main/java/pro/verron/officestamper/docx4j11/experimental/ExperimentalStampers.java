@@ -14,7 +14,7 @@ import pro.verron.officestamper.docx4j11.openpackaging.OpenpackagingUtils;
 /// @since 1.6.8
 public class ExperimentalStampers {
 
-    private ExperimentalStampers() {
+    protected ExperimentalStampers() {
         throw new OfficeStamperException("ExperimentalStampers cannot be instantiated");
     }
 

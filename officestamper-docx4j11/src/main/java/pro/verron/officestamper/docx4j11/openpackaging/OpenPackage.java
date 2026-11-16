@@ -30,7 +30,7 @@ import static pro.verron.officestamper.docx4j11.openpackaging.OpenpackagingUtils
 /// package, such as searching for image parts.
 ///
 /// @param <T> the type of the [OpcPackage] being managed
-public final class OpenPackage<T extends OpcPackage> {
+public class OpenPackage<T extends OpcPackage> {
     private static final Map<OpcPackage, Map<Part, OpenPackage>> pool =
             new ConcurrentHashMap<>();
     private final Map<Integer, Part> imgParts = new ConcurrentHashMap<>();

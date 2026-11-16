@@ -1,6 +1,6 @@
 package pro.verron.officestamper.docx4j17.image;
 
-import pro.verron.officestamper.utils.image.ImgFormat;
+
 
 import org.docx4j.openpackaging.contenttype.ContentTypes;
 import org.slf4j.Logger;

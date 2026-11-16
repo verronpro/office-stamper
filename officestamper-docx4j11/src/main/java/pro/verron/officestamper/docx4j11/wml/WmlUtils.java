@@ -40,12 +40,12 @@ import static pro.verron.officestamper.docx4j11.wml.WmlFactory.*;
 /// Utility class with methods to help in the interaction with
 /// [WordprocessingMLPackage] documents and their elements,
 /// such as comments, parents, and child elements.
-public final class WmlUtils {
+public class WmlUtils {
 
     private static final String PRESERVE = "preserve";
     private static final Logger log = LoggerFactory.getLogger(WmlUtils.class);
 
-    private WmlUtils() {
+    protected WmlUtils() {
         throw new UtilsException("Utility class shouldn't be instantiated");
     }
 

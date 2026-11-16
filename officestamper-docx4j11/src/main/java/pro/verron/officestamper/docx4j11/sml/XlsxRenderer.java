@@ -10,7 +10,7 @@ import static java.util.stream.Collectors.joining;
 /// convert Excel spreadsheets into human-readable formats.
 public class XlsxRenderer {
 
-    private XlsxRenderer() {
+    protected XlsxRenderer() {
         throw new IllegalStateException("Utility class");
     }
 

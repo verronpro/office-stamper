@@ -59,6 +59,39 @@ Caveat: the `toAsciidoc`-style rendering machinery in `pro.verron.asciidoc:ascii
 is still pinned to docx4j 11 module names, so until that library ships a docx4j17-flavoured
 build, prefer `officestamper-docx4j11` if you also use the asciidoc converters.
 
+== Migrating from 3.3.x
+
+In 3.3.x you depended on `pro.verron.office-stamper:engine` and added docx4j yourself;
+the engine contained everything, and `pro.verron.officestamper.preset.OfficeStampers`
+was the entry point. The 3.4 migration is:
+
+. *Dependency*: replace `pro.verron.office-stamper:engine` with
+  `pro.verron.officestamper:officestamper-docx4j11` (or `-docx4j17`).
+  The manual `docx4j-core` / `docx4j-JAXB-ReferenceImpl` dependencies become unnecessary —
+  the provider brings the right docx4j line itself.
+  The `engine` artifact still exists (the provider depends on it), but depending on it alone
+  fails at runtime with `No OfficeStamper provider found on the classpath` — that error is the
+  signal that the provider artifact is missing.
+. *Entry point*: `OfficeStampers.docxStamper()` becomes `DocxOfficeStampers.standard()`.
+  The old `pro.verron.officestamper.preset.OfficeStampers` name still exists but is now the
+  docx-free factory — its method signatures changed, so calls must move to the new name.
+. *Compatibility shims* (deprecated, `forRemoval`) keep the pre-3.4 package locations compiling
+  in the `officestamper-docx4j11` artifact:
+  `pro.verron.officestamper.utils.{wml, openpackaging, image, pml, sml}.*`,
+  `pro.verron.officestamper.experimental.ExperimentalStampers`, and the docx-coupled preset
+  processors/visitors under their old `preset.preprocessors.*`, `preset.postprocessors.*`,
+  `preset.processors.repeat.*` and `preset.resolvers.image.*` locations.
+  Each shim extends the relocated implementation, so instances remain assignable.
+. *Not shimmable* — these changed shape and need a real port:
+  the old `pro.verron.officestamper.api.{Comment, Insert, Paragraph, ProcessorContext, …}`
+  contracts became the docx-free `pro.verron.officestamper.spi` contracts (custom processors
+  written against raw docx4j types must be rewritten against the spi);
+  `core.StandardParagraph` / `StandardTable` / `Tag` and friends are engine internals that
+  became provider adapters; and the docx-coupled factory classes that lived directly in
+  `pro.verron.officestamper.preset` (`OfficeStampers`, `Preprocessors`, `Postprocessors`)
+  cannot be re-created at their old location because the package is owned by the engine's
+  docx-free preset — they moved to `docx4j11.preset`.
+
 == Experimental pptx / xlsx stampers
 
 The provider artifact also carries the experimental `ExperimentalStampers`

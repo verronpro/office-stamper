@@ -12,8 +12,9 @@ import org.docx4j.openpackaging.parts.XmlPart;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.wml.R;
 import org.w3c.dom.Document;
+import pro.verron.officestamper.docx4j11.image.ImageRunOptions;
 import pro.verron.officestamper.utils.UtilsException;
-import pro.verron.officestamper.utils.image.ImageRunOptions;
+
 import pro.verron.officestamper.utils.svg.SvgUtils;
 import pro.verron.officestamper.docx4j11.wml.WmlFactory;
 
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
 /// Utility class for working with Open Packaging documents. This class provides methods to load and export Word
 /// documents using DOCX4J
 public class OpenpackagingUtils {
-    private OpenpackagingUtils() {
+    protected OpenpackagingUtils() {
         throw new UtilsException("Utility class shouldn't be instantiated");
     }
 

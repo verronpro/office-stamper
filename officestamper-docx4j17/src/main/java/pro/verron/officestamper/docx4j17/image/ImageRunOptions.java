@@ -1,4 +1,4 @@
-package pro.verron.officestamper.utils.image;
+package pro.verron.officestamper.docx4j17.image;
 
 import org.jspecify.annotations.Nullable;
 

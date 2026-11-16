@@ -1,4 +1,4 @@
-package pro.verron.officestamper.utils.image;
+package pro.verron.officestamper.docx4j11.image;
 
 import java.awt.geom.Dimension2D;
 

@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.joining;
 /// @since 3.0
 public class PptxRenderer {
 
-    private PptxRenderer() {
+    protected PptxRenderer() {
         throw new IllegalStateException("Utility class");
     }
 

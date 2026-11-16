@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toCollection;
 public class WmlFactory {
     private static final Random RANDOM = new Random();
 
-    private WmlFactory() {
+    protected WmlFactory() {
         throw new UtilsException("Utility class shouldn't be instantiated");
     }
 

@@ -1,6 +1,6 @@
 package pro.verron.officestamper.docx4j11.image;
 
-import pro.verron.officestamper.utils.image.ImgFormat;
+
 
 import org.docx4j.relationships.Relationship;
 

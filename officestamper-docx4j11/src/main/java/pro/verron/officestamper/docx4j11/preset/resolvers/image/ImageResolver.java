@@ -2,6 +2,7 @@ package pro.verron.officestamper.docx4j11.preset.resolvers.image;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.JaxbXmlPart;
+import pro.verron.officestamper.docx4j11.image.ImageRunOptions;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ObjectResolver;
@@ -10,7 +11,7 @@ import pro.verron.officestamper.docx4j11.DocxPart;
 import pro.verron.officestamper.spi.Insert;
 import pro.verron.officestamper.spi.OfficePart;
 import pro.verron.officestamper.preset.Image;
-import pro.verron.officestamper.utils.image.ImageRunOptions;
+
 import pro.verron.officestamper.docx4j11.openpackaging.OpenPackage;
 import pro.verron.officestamper.docx4j11.openpackaging.OpenpackagingUtils;
 

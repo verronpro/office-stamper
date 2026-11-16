@@ -12,8 +12,9 @@ import org.docx4j.openpackaging.parts.XmlPart;
 import org.docx4j.openpackaging.parts.relationships.Namespaces;
 import org.docx4j.wml.R;
 import org.w3c.dom.Document;
+import pro.verron.officestamper.docx4j17.image.ImageRunOptions;
 import pro.verron.officestamper.utils.UtilsException;
-import pro.verron.officestamper.utils.image.ImageRunOptions;
+
 import pro.verron.officestamper.utils.svg.SvgUtils;
 import pro.verron.officestamper.docx4j17.wml.WmlFactory;
 

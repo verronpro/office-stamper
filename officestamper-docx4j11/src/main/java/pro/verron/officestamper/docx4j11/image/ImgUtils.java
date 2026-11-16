@@ -1,6 +1,6 @@
 package pro.verron.officestamper.docx4j11.image;
 
-import pro.verron.officestamper.utils.image.ImgFormat;
+
 
 import org.docx4j.openpackaging.contenttype.ContentTypes;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class ImgUtils {
 
     private static final Logger log = LoggerFactory.getLogger(ImgUtils.class);
 
-    private ImgUtils() {throw new IllegalStateException("Utility class");}
+    protected ImgUtils() {throw new IllegalStateException("Utility class");}
 
     /// Detects the format and dimensions of an image from its byte content.
     ///

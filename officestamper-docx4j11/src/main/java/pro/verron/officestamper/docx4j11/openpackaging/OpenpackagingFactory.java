@@ -18,7 +18,7 @@ import java.io.ByteArrayInputStream;
 /// in runtime [UtilsException] for easier handling.
 public class OpenpackagingFactory {
 
-    private OpenpackagingFactory() {
+    protected OpenpackagingFactory() {
         throw new UtilsException("Utility class shouldn't be instantiated");
     }
 

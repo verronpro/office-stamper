@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pro.verron.officestamper.docx4j11.experimental.ExperimentalStampers.pptxPackageStamper;
-import static pro.verron.officestamper.utils.pml.PptxRenderer.pptxToString;
+import static pro.verron.officestamper.docx4j11.pml.PptxRenderer.pptxToString;
 
 @DisplayName("PPTX Image Stamping Test") class PptxImageTest {
 

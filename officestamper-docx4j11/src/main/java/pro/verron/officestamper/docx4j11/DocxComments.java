@@ -7,7 +7,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.CommentsPart;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
-import pro.verron.officestamper.utils.wml.DocxIterator;
+import pro.verron.officestamper.docx4j11.wml.DocxIterator;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

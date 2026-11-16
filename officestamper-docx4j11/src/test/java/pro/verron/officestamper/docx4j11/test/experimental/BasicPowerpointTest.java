@@ -8,7 +8,7 @@ import pro.verron.officestamper.docx4j11.test.utils.ResourceUtils;
 import java.nio.file.Path;
 
 import static pro.verron.officestamper.docx4j11.experimental.ExperimentalStampers.pptxPackageStamper;
-import static pro.verron.officestamper.utils.pml.PptxRenderer.pptxToString;
+import static pro.verron.officestamper.docx4j11.pml.PptxRenderer.pptxToString;
 
 @DisplayName("Basic Powerpoint Test") class BasicPowerpointTest {
     @Test

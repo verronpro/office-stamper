@@ -7,7 +7,7 @@ import pro.verron.officestamper.spi.OfficeDocument;
 import pro.verron.officestamper.spi.PreProcessor;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.P;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +18,8 @@ import java.util.Optional;
 import java.util.SequencedMap;
 
 import static java.util.Comparator.comparingInt;
-import static pro.verron.officestamper.utils.wml.WmlUtils.asString;
-import static pro.verron.officestamper.utils.wml.WmlUtils.insertSmartTag;
+import static pro.verron.officestamper.docx4j11.wml.WmlUtils.asString;
+import static pro.verron.officestamper.docx4j11.wml.WmlUtils.insertSmartTag;
 
 /// The [PlaceholderHooker] class is a pre-processor that prepares inline placeholders in a
 /// [WordprocessingMLPackage] pkg. It searches for placeholders introduced by one of the configured opening

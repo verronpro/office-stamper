@@ -25,10 +25,12 @@
         <module>utils</module>
         <module>officestamper-api</module>
         <module>officestamper-docx4j11</module>
+        <module>officestamper-docx4j17</module>
     </modules>
 
     <properties>
         <docx4j.version>11.5.14</docx4j.version>
+        <docx4j17.version>17.0.2</docx4j17.version>
         <asciidoc.version>4.0.1</asciidoc.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -265,6 +267,11 @@
             <dependency>
                 <groupId>pro.verron.office-stamper</groupId>
                 <artifactId>officestamper-docx4j11</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.office-stamper</groupId>
+                <artifactId>officestamper-docx4j17</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

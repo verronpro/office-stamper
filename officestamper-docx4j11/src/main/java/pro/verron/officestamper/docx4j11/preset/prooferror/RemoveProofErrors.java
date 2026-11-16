@@ -6,7 +6,7 @@ import org.docx4j.wml.ProofErr;
 import pro.verron.officestamper.spi.OfficeDocument;
 import pro.verron.officestamper.spi.PreProcessor;
 
-import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
+import static pro.verron.officestamper.docx4j11.wml.WmlUtils.visitDocument;
 
 /// This pre-processor removes all [ProofErr] elements from the document.
 ///

@@ -5,7 +5,7 @@ import org.docx4j.wml.RPr;
 import pro.verron.officestamper.spi.Element;
 import pro.verron.officestamper.spi.ElementFactory;
 import pro.verron.officestamper.spi.RunProperties;
-import pro.verron.officestamper.utils.wml.WmlFactory;
+import pro.verron.officestamper.docx4j11.wml.WmlFactory;
 
 import java.util.List;
 

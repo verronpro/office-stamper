@@ -13,7 +13,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
-import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
+import static pro.verron.officestamper.docx4j11.wml.WmlUtils.visitDocument;
 
 /// A post-processor implementation that removes smart tags from a WordprocessingML pkg.
 ///

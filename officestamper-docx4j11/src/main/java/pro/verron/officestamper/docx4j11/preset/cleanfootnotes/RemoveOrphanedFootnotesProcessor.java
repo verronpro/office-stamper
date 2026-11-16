@@ -9,14 +9,14 @@ import org.docx4j.wml.CTFtnEdn;
 import pro.verron.officestamper.spi.OfficeDocument;
 import pro.verron.officestamper.spi.PostProcessor;
 import pro.verron.officestamper.docx4j11.preset.cleanfootnotes.NoteRefsVisitor;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.util.Collection;
 import java.util.Optional;
 
 import static org.docx4j.wml.STFtnEdn.NORMAL;
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
-import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
+import static pro.verron.officestamper.docx4j11.wml.WmlUtils.visitDocument;
 
 /// A post-processor implementation that removes orphaned footnotes from a Word pkg.
 ///

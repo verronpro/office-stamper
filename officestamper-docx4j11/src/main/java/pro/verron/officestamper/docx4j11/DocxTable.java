@@ -4,7 +4,7 @@ import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.spi.Table;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.util.List;
 

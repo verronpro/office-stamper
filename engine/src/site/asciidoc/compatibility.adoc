@@ -41,14 +41,23 @@ Starting with 3.4.x, Office‑stamper is split in two Maven artifacts:
 * `pro.verron.officestamper:engine` — the stamping engine itself. It has *no* docx4j dependency at all:
   it owns the SpEL machinery, the processor pipeline, the resolvers and the
   `pro.verron.officestamper.spi` contracts. It runs on any OOXML object model you can adapt.
-* `pro.verron.officestamper:officestamper-docx4j11` — the docx4j 11.x provider. It is the ONLY
-  place that knows about `org.docx4j`; it adapts docx4j objects to the spi and registers the
-  docx processors, resolvers and preprocessors you know from previous releases
-  (`DocxOfficeStampers.standard()` replaces the old `OfficeStampers` presets).
+* `pro.verron.officestamper:officestamper-docx4j11` — the docx4j 11.x provider
+  (tested against 11.5.14).
+* `pro.verron.officestamper:officestamper-docx4j17` — the docx4j 17.x provider
+  (tested against 17.0.2). In docx4j 17 every JAXB object model (wml, dml, pml, sml)
+  ships in the single `docx4j-generated-objects` artifact and the parent-tracking
+  `Child` interface moved to `org.jvnet.jaxb.lang`; both providers are drop-in
+  equivalents at the OfficeStamper level — swap the artifact to change the docx4j line.
 
-Most users should depend on `officestamper-docx4j11`, which pulls the engine transitively.
-The engine alone is useful only if you plan to write your own provider for another OOXML library
-(a docx4j 17.x provider is planned but does not exist yet).
+Each provider is the ONLY place that knows about `org.docx4j`; it adapts docx4j objects
+to the spi and registers the docx processors, resolvers and preprocessors you know from
+previous releases (`DocxOfficeStampers.standard()` replaces the old `OfficeStampers` presets).
+
+Most users should depend on one provider, which pulls the engine transitively.
+The engine alone is useful only if you plan to write your own provider for another OOXML library.
+Caveat: the `toAsciidoc`-style rendering machinery in `pro.verron.asciidoc:asciidoc-docx`
+is still pinned to docx4j 11 module names, so until that library ships a docx4j17-flavoured
+build, prefer `officestamper-docx4j11` if you also use the asciidoc converters.
 
 == Experimental pptx / xlsx stampers
 

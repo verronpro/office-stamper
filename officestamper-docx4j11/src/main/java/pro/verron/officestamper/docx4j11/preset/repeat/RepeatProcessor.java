@@ -20,8 +20,8 @@ import pro.verron.officestamper.preset.CommentProcessorFactory.IRepeatProcessor;
 import pro.verron.officestamper.spi.OfficePart;
 import pro.verron.officestamper.spi.ProcessorContext;
 import pro.verron.officestamper.docx4j11.DocxPart;
-import pro.verron.officestamper.utils.wml.WmlFactory;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.WmlFactory;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

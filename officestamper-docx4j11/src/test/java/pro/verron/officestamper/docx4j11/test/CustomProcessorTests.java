@@ -21,7 +21,7 @@ import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageSt
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ResourceUtils.getWordResource;
-import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
+import static pro.verron.officestamper.docx4j11.wml.WmlFactory.newRun;
 
 @DisplayName("Custom processors features") class CustomProcessorTests {
 

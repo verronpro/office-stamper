@@ -7,8 +7,6 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.spi.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
-import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
-
 /// Processor that replaces the current run with the provided expression. This is useful for replacing an expression in
 /// a AnchoredComment with the result of the expression.
 ///

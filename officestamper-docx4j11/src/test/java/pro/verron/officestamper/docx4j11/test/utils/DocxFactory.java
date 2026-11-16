@@ -6,15 +6,15 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.*;
 import pro.verron.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.utils.wml.DocxIterator;
-import pro.verron.officestamper.utils.wml.WmlFactory;
+import pro.verron.officestamper.docx4j11.wml.DocxIterator;
+import pro.verron.officestamper.docx4j11.wml.WmlFactory;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
+import static pro.verron.officestamper.docx4j11.wml.WmlFactory.newRun;
 
 /// Factory for creating DOCX documents for testing.
 public class DocxFactory {

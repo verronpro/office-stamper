@@ -14,8 +14,8 @@ import pro.verron.officestamper.spi.Element;
 import pro.verron.officestamper.spi.Insert;
 import pro.verron.officestamper.spi.Paragraph;
 import pro.verron.officestamper.spi.Table;
-import pro.verron.officestamper.utils.wml.DocxIterator;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.DocxIterator;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.util.Collection;
 import java.util.List;

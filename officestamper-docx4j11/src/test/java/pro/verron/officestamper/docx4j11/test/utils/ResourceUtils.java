@@ -10,8 +10,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.loadPowerPoint;
-import static pro.verron.officestamper.utils.openpackaging.OpenpackagingUtils.loadWord;
+import static pro.verron.officestamper.docx4j11.openpackaging.OpenpackagingUtils.loadPowerPoint;
+import static pro.verron.officestamper.docx4j11.openpackaging.OpenpackagingUtils.loadWord;
 
 
 /// A utility class for testing. Provides methods for retrieving InputStreams from specified resource paths. Typically

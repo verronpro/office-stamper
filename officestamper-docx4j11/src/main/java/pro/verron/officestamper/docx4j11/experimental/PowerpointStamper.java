@@ -16,7 +16,7 @@ import pro.verron.officestamper.spi.Insert;
 import pro.verron.officestamper.spi.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;
-import pro.verron.officestamper.utils.openpackaging.OpenPackage;
+import pro.verron.officestamper.docx4j11.openpackaging.OpenPackage;
 
 import java.util.ArrayList;
 import java.util.List;

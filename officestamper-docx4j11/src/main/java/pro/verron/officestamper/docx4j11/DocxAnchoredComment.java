@@ -10,9 +10,9 @@ import org.docx4j.wml.R.CommentReference;
 import pro.verron.officestamper.spi.AnchoredComment;
 import pro.verron.officestamper.spi.Element;
 import pro.verron.officestamper.spi.Paragraph;
-import pro.verron.officestamper.utils.wml.DocxIterator;
-import pro.verron.officestamper.utils.wml.WmlFactory;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.DocxIterator;
+import pro.verron.officestamper.docx4j11.wml.WmlFactory;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

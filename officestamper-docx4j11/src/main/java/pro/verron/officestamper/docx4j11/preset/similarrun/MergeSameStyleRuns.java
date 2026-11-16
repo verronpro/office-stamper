@@ -4,7 +4,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.spi.OfficeDocument;
 import pro.verron.officestamper.spi.PreProcessor;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.util.LinkedHashSet;
 

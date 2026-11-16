@@ -6,13 +6,13 @@ import pro.verron.officestamper.spi.PreProcessor;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static pro.verron.officestamper.utils.wml.WmlFactory.newCtAttr;
-import static pro.verron.officestamper.utils.wml.WmlFactory.newSmartTag;
+import static pro.verron.officestamper.docx4j11.wml.WmlFactory.newCtAttr;
+import static pro.verron.officestamper.docx4j11.wml.WmlFactory.newSmartTag;
 
 /// The [CommentHooker] class is responsible for preparing comment processors in a Word pkg. It implements the
 /// [PreProcessor] interface and provides functionality to process comment range starts and wrap them with smart tags

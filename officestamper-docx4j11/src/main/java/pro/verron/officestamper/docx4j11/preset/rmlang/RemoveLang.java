@@ -4,7 +4,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import pro.verron.officestamper.spi.OfficeDocument;
 import pro.verron.officestamper.spi.PreProcessor;
 
-import static pro.verron.officestamper.utils.wml.WmlUtils.visitDocument;
+import static pro.verron.officestamper.docx4j11.wml.WmlUtils.visitDocument;
 
 /// The [RemoveLang] preprocessor removes language settings from paragraphs and runs within a Word pkg. This is
 /// useful when working with templates where language-specific formatting might interfere with the stamping process.

@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.spi.OfficeDocument;
 import pro.verron.officestamper.spi.PreProcessor;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayDeque;

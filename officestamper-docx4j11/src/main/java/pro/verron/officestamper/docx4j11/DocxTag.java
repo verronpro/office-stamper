@@ -10,7 +10,7 @@ import pro.verron.officestamper.spi.Insert;
 import pro.verron.officestamper.spi.RunProperties;
 import pro.verron.officestamper.spi.Paragraph;
 import pro.verron.officestamper.spi.Tag;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.Objects;

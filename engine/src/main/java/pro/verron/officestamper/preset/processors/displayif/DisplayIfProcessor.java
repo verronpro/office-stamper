@@ -6,7 +6,6 @@ import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.spi.Element;
 import pro.verron.officestamper.spi.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
-import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.ArrayList;
 

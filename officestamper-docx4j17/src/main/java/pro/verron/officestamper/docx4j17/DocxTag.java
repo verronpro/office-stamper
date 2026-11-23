@@ -5,11 +5,11 @@ import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R;
 import org.jvnet.jaxb.lang.Child;
-import pro.verron.officestamper.spi.AnchoredComment;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.RunProperties;
-import pro.verron.officestamper.spi.Paragraph;
-import pro.verron.officestamper.spi.Tag;
+import pro.verron.officestamper.api.AnchoredComment;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.RunProperties;
+import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.Tag;
 import pro.verron.officestamper.docx4j17.wml.WmlUtils;
 
 import java.math.BigInteger;

@@ -2,7 +2,6 @@
 /// place that knows about org.docx4j; the engine depends on officestamper-api, not
 /// on docx4j directly.
 module pro.verron.officestamper.docx4j11 {
-    requires pro.verron.officestamper.api;
     requires pro.verron.officestamper.utils;
     requires pro.verron.officestamper;
 
@@ -26,7 +25,7 @@ module pro.verron.officestamper.docx4j11 {
     exports pro.verron.officestamper.docx4j11.preset.resolvers.image to pro.verron.officestamper.docx4j11.test;
     opens pro.verron.officestamper.docx4j11 to org.junit.platform.commons;
 
-    // Compatibility shims (deprecated): the pre-3.9 package locations, so code
+    // Compatibility shims (deprecated): the pre-4.0 package locations, so code
     // written against the single-artifact 3.3.x line keeps compiling. Every shim
     // extends the corresponding docx4j11.* class above.
     exports pro.verron.officestamper.utils.wml;
@@ -45,6 +44,6 @@ module pro.verron.officestamper.docx4j11 {
     exports pro.verron.officestamper.preset.postprocessors.cleanfootnotes;
     exports pro.verron.officestamper.preset.resolvers.image;
 
-    provides pro.verron.officestamper.spi.OfficeStamper with pro.verron.officestamper.docx4j11.DocxStamperProvider;
+    provides pro.verron.officestamper.api.OfficeStamper with pro.verron.officestamper.docx4j11.DocxStamperProvider;
 }
 

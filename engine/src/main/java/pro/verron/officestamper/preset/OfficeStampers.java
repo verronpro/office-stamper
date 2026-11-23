@@ -3,8 +3,8 @@ package pro.verron.officestamper.preset;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.core.DocxStamper;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.OfficeStamper;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.OfficeStamper;
 
 /// Utility class providing factory methods for building docx4j-free stampers.
 ///

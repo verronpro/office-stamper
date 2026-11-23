@@ -2,8 +2,8 @@ package pro.verron.officestamper.docx4j11;
 
 import org.docx4j.wml.ContentAccessor;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import pro.verron.officestamper.spi.Content;
-import pro.verron.officestamper.spi.Element;
+import pro.verron.officestamper.api.Content;
+import pro.verron.officestamper.api.Element;
 
 import java.util.ArrayList;
 import java.util.List;

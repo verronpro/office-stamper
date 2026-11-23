@@ -1,8 +1,8 @@
 package pro.verron.officestamper.docx4j11.preset.repeat;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.spi.OfficeStamper;
-import pro.verron.officestamper.spi.ProcessorContext;
+import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 

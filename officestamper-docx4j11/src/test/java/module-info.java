@@ -5,7 +5,6 @@
 /// provider processors).
 module pro.verron.officestamper.docx4j11.test {
     requires pro.verron.officestamper;
-    requires pro.verron.officestamper.api;
     requires pro.verron.officestamper.docx4j11;
     requires org.objectweb.asm;
     uses javax.imageio.spi.ImageReaderSpi;

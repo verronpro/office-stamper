@@ -3,8 +3,8 @@ package pro.verron.officestamper.docx4j17.preset.prooferror;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.ProofErr;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.PreProcessor;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.PreProcessor;
 
 import static pro.verron.officestamper.docx4j17.wml.WmlUtils.visitDocument;
 

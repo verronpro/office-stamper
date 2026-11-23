@@ -7,9 +7,9 @@ import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.spi.OfficePart;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.ProcessorContext;
+import pro.verron.officestamper.api.OfficePart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.ProcessorContext;
 
 import java.util.Objects;
 import java.util.stream.Collectors;

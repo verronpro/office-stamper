@@ -2,8 +2,8 @@ package pro.verron.officestamper.preset.resolvers.nulls;
 
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.OfficePart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficePart;
 
 /// The [Null2PlaceholderResolver] class is an implementation of the ObjectResolver interface. It provides a way to
 /// resolve null objects by not replacing their expression.

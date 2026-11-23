@@ -8,8 +8,8 @@ import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.ObjectResolver;
 import pro.verron.officestamper.docx4j11.DocxElement;
 import pro.verron.officestamper.docx4j11.DocxPart;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.OfficePart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficePart;
 import pro.verron.officestamper.preset.Image;
 
 import pro.verron.officestamper.docx4j11.openpackaging.OpenPackage;

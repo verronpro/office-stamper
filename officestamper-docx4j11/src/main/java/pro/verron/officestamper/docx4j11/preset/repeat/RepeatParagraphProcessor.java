@@ -1,7 +1,7 @@
 package pro.verron.officestamper.docx4j11.preset.repeat;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.spi.ProcessorContext;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 /// Class used internally to repeat document elements. Used by the lib, should not be instantiated by clients.

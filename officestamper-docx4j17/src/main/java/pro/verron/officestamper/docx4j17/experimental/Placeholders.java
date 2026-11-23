@@ -1,7 +1,7 @@
 package pro.verron.officestamper.docx4j17.experimental;
 
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.spi.Paragraph;
+import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.core.Matcher;
 
 import java.util.List;

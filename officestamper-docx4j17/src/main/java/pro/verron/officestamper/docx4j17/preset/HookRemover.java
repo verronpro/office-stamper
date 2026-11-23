@@ -1,8 +1,8 @@
 package pro.verron.officestamper.docx4j17.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.PostProcessor;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.PostProcessor;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.ContentAccessor;

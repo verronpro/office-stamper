@@ -3,7 +3,7 @@ package pro.verron.officestamper.docx4j17;
 import org.docx4j.wml.Comments;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.Text;
-import pro.verron.officestamper.spi.Comment;
+import pro.verron.officestamper.api.Comment;
 
 /// docx4j 11 implementation of {@link Comment}.
 public final class DocxComment implements Comment {

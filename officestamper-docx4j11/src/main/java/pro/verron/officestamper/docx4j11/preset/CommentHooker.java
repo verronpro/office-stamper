@@ -1,8 +1,8 @@
 package pro.verron.officestamper.docx4j11.preset;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.PreProcessor;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.PreProcessor;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;

@@ -5,11 +5,11 @@ import pro.verron.officestamper.api.CustomFunction;
 import pro.verron.officestamper.api.EvaluationContextFactory;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.SecurityMode;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.OfficePart;
-import pro.verron.officestamper.spi.OfficeStamper;
-import pro.verron.officestamper.spi.PreProcessor;
-import pro.verron.officestamper.spi.PostProcessor;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.OfficePart;
+import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.PreProcessor;
+import pro.verron.officestamper.api.PostProcessor;
 import pro.verron.officestamper.utils.svg.SvgUtils;
 
 import java.util.ArrayList;

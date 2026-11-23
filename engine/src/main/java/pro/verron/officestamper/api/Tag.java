@@ -1,4 +1,4 @@
-package pro.verron.officestamper.spi;
+package pro.verron.officestamper.api;
 
 /// A hook tag anchored in a paragraph: the mechanism the engine uses to mark placeholders and
 /// comment processors inside a document, and to track their execution state through attributes.

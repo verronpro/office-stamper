@@ -3,7 +3,7 @@ package pro.verron.officestamper.preset.processors.repeatrow;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.spi.ProcessorContext;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 /// Repeats a table row for each element in a list.

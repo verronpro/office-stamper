@@ -5,7 +5,7 @@ import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.xlsx4j.sml.CTRst;
-import pro.verron.officestamper.spi.OfficeStamper;
+import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import static pro.verron.officestamper.docx4j11.experimental.Placeholders.findVariables;

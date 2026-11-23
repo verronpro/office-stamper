@@ -1,12 +1,12 @@
 package pro.verron.officestamper.docx4j17;
 
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.OfficeStamper;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.OfficeStamper;
 
 /// ServiceLoader provider for the docx4j 11 implementation of the OfficeStamper SPI.
 ///
-/// Registered in `META-INF/services/pro.verron.officestamper.spi.OfficeStamper` and in the module
-/// descriptor; loaded by [pro.verron.officestamper.spi.OfficeStampers#docxStamper].
+/// Registered in `META-INF/services/pro.verron.officestamper.api.OfficeStamper` and in the module
+/// descriptor; loaded by [pro.verron.officestamper.api.OfficeStampers#docxStamper].
 ///
 /// @author Joseph Verron
 /// @since 1.9.0

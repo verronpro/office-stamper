@@ -6,11 +6,11 @@ import org.docx4j.wml.CommentRangeEnd;
 import org.docx4j.wml.CommentRangeStart;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.R.CommentReference;
-import pro.verron.officestamper.spi.AnchoredComment;
-import pro.verron.officestamper.spi.Element;
-import pro.verron.officestamper.spi.Hooks;
-import pro.verron.officestamper.spi.OfficePart;
-import pro.verron.officestamper.spi.Tag;
+import pro.verron.officestamper.api.AnchoredComment;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.Hooks;
+import pro.verron.officestamper.api.OfficePart;
+import pro.verron.officestamper.api.Tag;
 import pro.verron.officestamper.docx4j11.wml.DocxIterator;
 import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 

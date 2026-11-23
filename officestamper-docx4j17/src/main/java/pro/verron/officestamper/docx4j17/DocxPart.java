@@ -5,12 +5,12 @@ import org.docx4j.finders.CommentFinder;
 import org.docx4j.openpackaging.parts.JaxbXmlPart;
 import org.docx4j.wml.Comments;
 import org.jvnet.jaxb.lang.Child;
-import pro.verron.officestamper.spi.Comment;
-import pro.verron.officestamper.spi.Content;
-import pro.verron.officestamper.spi.ElementFactory;
-import pro.verron.officestamper.spi.Hooks;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.OfficePart;
+import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.Content;
+import pro.verron.officestamper.api.ElementFactory;
+import pro.verron.officestamper.api.Hooks;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.OfficePart;
 
 import java.util.ArrayList;
 import java.util.List;

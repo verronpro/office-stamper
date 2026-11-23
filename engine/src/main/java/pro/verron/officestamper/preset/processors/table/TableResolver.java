@@ -2,10 +2,10 @@ package pro.verron.officestamper.preset.processors.table;
 
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.spi.Element;
-import pro.verron.officestamper.spi.ElementFactory;
-import pro.verron.officestamper.spi.ProcessorContext;
-import pro.verron.officestamper.spi.Table;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.ElementFactory;
+import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.Table;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
 

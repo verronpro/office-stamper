@@ -1,8 +1,8 @@
 package pro.verron.officestamper.docx4j17.experimental;
 
-import pro.verron.officestamper.spi.Content;
-import pro.verron.officestamper.spi.Element;
-import pro.verron.officestamper.spi.RunProperties;
+import pro.verron.officestamper.api.Content;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.RunProperties;
 
 import java.util.List;
 

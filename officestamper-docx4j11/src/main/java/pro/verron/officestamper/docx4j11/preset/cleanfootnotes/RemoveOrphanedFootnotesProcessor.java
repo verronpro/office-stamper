@@ -6,8 +6,8 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
 import org.docx4j.wml.CTFootnotes;
 import org.docx4j.wml.CTFtnEdn;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.PostProcessor;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.PostProcessor;
 import pro.verron.officestamper.docx4j11.preset.cleanfootnotes.NoteRefsVisitor;
 import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 

@@ -3,8 +3,8 @@ package pro.verron.officestamper.docx4j11.preset;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.PreProcessor;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.PreProcessor;
 import org.docx4j.utils.TraversalUtilVisitor;
 import org.docx4j.wml.P;
 import pro.verron.officestamper.docx4j11.wml.WmlUtils;

@@ -1,4 +1,4 @@
-package pro.verron.officestamper.spi;
+package pro.verron.officestamper.api;
 
 /// Post-processor that removes smart tags of a given element name while preserving their content.
 ///

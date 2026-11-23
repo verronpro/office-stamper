@@ -2,7 +2,6 @@
 /// place that knows about org.docx4j; the engine depends on officestamper-api, not
 /// on docx4j directly.
 module pro.verron.officestamper.docx4j17 {
-    requires pro.verron.officestamper.api;
     requires pro.verron.officestamper.utils;
     requires pro.verron.officestamper;
 
@@ -28,6 +27,6 @@ module pro.verron.officestamper.docx4j17 {
     exports pro.verron.officestamper.docx4j17.preset.resolvers.image to pro.verron.officestamper.docx4j17.test;
     opens pro.verron.officestamper.docx4j17 to org.junit.platform.commons;
 
-    provides pro.verron.officestamper.spi.OfficeStamper with pro.verron.officestamper.docx4j17.DocxStamperProvider;
+    provides pro.verron.officestamper.api.OfficeStamper with pro.verron.officestamper.docx4j17.DocxStamperProvider;
 }
 

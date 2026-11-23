@@ -1,6 +1,6 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.spi.ContextTree;
+import pro.verron.officestamper.api.ContextTree;
 
 import java.util.HashMap;
 import java.util.List;

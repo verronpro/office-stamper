@@ -1,4 +1,4 @@
-package pro.verron.officestamper.spi;
+package pro.verron.officestamper.api;
 
 /// A hook that extends or customizes the behaviour of a document-processing flow.
 ///

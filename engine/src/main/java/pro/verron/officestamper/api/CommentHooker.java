@@ -1,4 +1,4 @@
-package pro.verron.officestamper.spi;
+package pro.verron.officestamper.api;
 
 /// Pre-processor that wraps comment range starts with smart tags so the engine can process them later.
 ///

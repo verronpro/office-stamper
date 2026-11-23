@@ -3,8 +3,8 @@ package pro.verron.officestamper.preset.processors.displayif;
 
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.spi.Element;
-import pro.verron.officestamper.spi.ProcessorContext;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 import java.util.ArrayList;

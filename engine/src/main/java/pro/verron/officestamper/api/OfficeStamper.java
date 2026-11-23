@@ -1,4 +1,4 @@
-package pro.verron.officestamper.spi;
+package pro.verron.officestamper.api;
 
 /// Contract for stamping a template document with a context and returning the
 /// resulting document. The document type {@code T} is intentionally decoupled

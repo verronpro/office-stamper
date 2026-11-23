@@ -5,7 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.spi.ProcessorContext;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.docx4j11.test.utils.ContextFactory;
 
 import java.util.List;

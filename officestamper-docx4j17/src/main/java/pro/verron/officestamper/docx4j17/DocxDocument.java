@@ -3,8 +3,8 @@ package pro.verron.officestamper.docx4j17;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.openpackaging.parts.JaxbXmlPart;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.OfficePart;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.OfficePart;
 
 import java.io.IOException;
 import java.io.InputStream;

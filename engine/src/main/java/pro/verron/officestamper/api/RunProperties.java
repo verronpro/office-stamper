@@ -1,4 +1,4 @@
-package pro.verron.officestamper.spi;
+package pro.verron.officestamper.api;
 
 /// Formatting properties attached to a text run, as an opaque value.
 ///

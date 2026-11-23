@@ -8,12 +8,12 @@ import org.docx4j.wml.RPr;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import pro.verron.officestamper.spi.Comment;
-import pro.verron.officestamper.spi.Content;
-import pro.verron.officestamper.spi.Element;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.Paragraph;
-import pro.verron.officestamper.spi.Table;
+import pro.verron.officestamper.api.Comment;
+import pro.verron.officestamper.api.Content;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.Table;
 import pro.verron.officestamper.docx4j11.wml.DocxIterator;
 import pro.verron.officestamper.docx4j11.wml.WmlUtils;
 

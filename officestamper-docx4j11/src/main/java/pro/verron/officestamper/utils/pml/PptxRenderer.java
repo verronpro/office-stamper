@@ -1,7 +1,7 @@
 package pro.verron.officestamper.utils.pml;
 
 /// Deprecated compatibility shim: this type moved to [pro.verron.officestamper.docx4j11.pml.PptxRenderer]
-/// in the 3.9 two-module split. Update the import to the new location.
+/// in the 4.0 two-module split. Update the import to the new location.
 ///
 /// @deprecated use [pro.verron.officestamper.docx4j11.pml.PptxRenderer] instead.
 @Deprecated(forRemoval = true)

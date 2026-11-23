@@ -4,9 +4,9 @@ import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.dml.CTTextCharacterProperties;
 import org.docx4j.dml.CTTextParagraph;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.Paragraph;
-import pro.verron.officestamper.spi.Table;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.Paragraph;
+import pro.verron.officestamper.api.Table;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -127,7 +127,7 @@ public class PowerpointParagraph
     }
 
     @Override
-    public void replace(List<pro.verron.officestamper.spi.Element> toRemove, List<pro.verron.officestamper.spi.Element> toAdd) {
+    public void replace(List<pro.verron.officestamper.api.Element> toRemove, List<pro.verron.officestamper.api.Element> toAdd) {
         throw new OfficeStamperException("Replacing paragraph elements is not supported on pptx");
     }
 
@@ -181,8 +181,8 @@ public class PowerpointParagraph
     }
 
     @Override
-    public void replace(pro.verron.officestamper.spi.Element start,
-                        pro.verron.officestamper.spi.Element end,
+    public void replace(pro.verron.officestamper.api.Element start,
+                        pro.verron.officestamper.api.Element end,
                         Insert insert) {
         throw new OfficeStamperException("Not yet implemented");
     }
@@ -199,17 +199,17 @@ public class PowerpointParagraph
     }
 
     @Override
-    public pro.verron.officestamper.spi.Content content() {
+    public pro.verron.officestamper.api.Content content() {
         throw new OfficeStamperException("Content access is not supported on pptx");
     }
 
     @Override
-    public void apply(Consumer<pro.verron.officestamper.spi.Element> pConsumer) {
+    public void apply(Consumer<pro.verron.officestamper.api.Element> pConsumer) {
         throw new OfficeStamperException("Content access is not supported on pptx");
     }
 
     @Override
-    public Collection<pro.verron.officestamper.spi.Comment> getComments() {
+    public Collection<pro.verron.officestamper.api.Comment> getComments() {
         return List.of();
     }
 

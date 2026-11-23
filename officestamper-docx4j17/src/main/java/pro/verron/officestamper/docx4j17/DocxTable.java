@@ -3,7 +3,7 @@ package pro.verron.officestamper.docx4j17;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tr;
 import org.jvnet.jaxb.lang.Child;
-import pro.verron.officestamper.spi.Table;
+import pro.verron.officestamper.api.Table;
 import pro.verron.officestamper.docx4j17.wml.WmlUtils;
 
 import java.util.List;

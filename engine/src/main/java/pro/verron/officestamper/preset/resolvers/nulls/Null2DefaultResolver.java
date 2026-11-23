@@ -2,8 +2,8 @@ package pro.verron.officestamper.preset.resolvers.nulls;
 
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.OfficePart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficePart;
 
 /// The Null2DefaultResolver class is an implementation of the
 /// [ObjectResolver] interface

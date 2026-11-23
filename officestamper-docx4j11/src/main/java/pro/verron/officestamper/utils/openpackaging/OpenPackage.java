@@ -4,7 +4,7 @@ import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.parts.Part;
 
 /// Deprecated compatibility shim: this type moved to
-/// [pro.verron.officestamper.docx4j11.openpackaging.OpenPackage] in the 3.9
+/// [pro.verron.officestamper.docx4j11.openpackaging.OpenPackage] in the 4.0
 /// two-module split. Update the import to the new location.
 ///
 /// @deprecated use [pro.verron.officestamper.docx4j11.openpackaging.OpenPackage] instead.

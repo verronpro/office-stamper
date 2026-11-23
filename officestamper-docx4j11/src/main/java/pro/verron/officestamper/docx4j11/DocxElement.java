@@ -14,9 +14,9 @@ import org.docx4j.wml.Tc;
 import org.docx4j.wml.Text;
 import org.docx4j.wml.Tr;
 import org.jvnet.jaxb2_commons.ppp.Child;
-import pro.verron.officestamper.spi.Content;
-import pro.verron.officestamper.spi.Element;
-import pro.verron.officestamper.spi.RunProperties;
+import pro.verron.officestamper.api.Content;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.RunProperties;
 
 import java.util.ArrayList;
 import java.util.List;

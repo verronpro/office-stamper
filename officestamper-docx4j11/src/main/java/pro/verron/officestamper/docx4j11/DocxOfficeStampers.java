@@ -22,9 +22,9 @@ import pro.verron.officestamper.docx4j11.preset.similarrun.MergeSameStyleRuns;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
-import pro.verron.officestamper.spi.OfficeDocument;
-import pro.verron.officestamper.spi.OfficeStamper;
-import pro.verron.officestamper.spi.StreamStamper;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.StreamStamper;
 
 import java.io.IOException;
 import java.io.InputStream;

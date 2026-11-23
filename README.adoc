@@ -101,7 +101,7 @@ Control modes via system properties:
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
     <artifactId>officestamper-docx4j11</artifactId>
-    <version>3.9</version>
+    <version>4.0</version>
 </dependency>
 ----
 

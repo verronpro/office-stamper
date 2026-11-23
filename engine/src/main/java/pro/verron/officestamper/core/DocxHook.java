@@ -1,8 +1,8 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.spi.Hook;
-import pro.verron.officestamper.spi.OfficePart;
-import pro.verron.officestamper.spi.Tag;
+import pro.verron.officestamper.api.Hook;
+import pro.verron.officestamper.api.OfficePart;
+import pro.verron.officestamper.api.Tag;
 
 import java.util.ArrayList;
 import java.util.List;

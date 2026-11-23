@@ -20,7 +20,7 @@ module pro.verron.officestamper {
 
     requires static org.slf4j;
     requires org.jspecify;
-    requires pro.verron.officestamper.api;
+    uses pro.verron.officestamper.api.OfficeStamper;
     requires pro.verron.officestamper.utils;
 
     opens pro.verron.officestamper.api;

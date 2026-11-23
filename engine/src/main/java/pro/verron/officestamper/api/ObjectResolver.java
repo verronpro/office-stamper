@@ -1,8 +1,8 @@
 package pro.verron.officestamper.api;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.OfficePart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficePart;
 
 /// The ObjectResolver interface provides a contract for resolving objects to create a run with the resolved content. It
 /// includes methods to check if an object can be resolved and to actually resolve an object to a run.

@@ -2,9 +2,9 @@ package pro.verron.officestamper.preset.processors.replacewith;
 
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.spi.Insert;
+import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.spi.ProcessorContext;
+import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 /// Processor that replaces the current run with the provided expression. This is useful for replacing an expression in

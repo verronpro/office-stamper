@@ -1,7 +1,7 @@
 package pro.verron.officestamper.docx4j11;
 
 import org.docx4j.wml.RPr;
-import pro.verron.officestamper.spi.RunProperties;
+import pro.verron.officestamper.api.RunProperties;
 
 /// docx4j 11 implementation of {@link RunProperties}, snapshotting a run's {@code RPr}.
 final class DocxRunProperties

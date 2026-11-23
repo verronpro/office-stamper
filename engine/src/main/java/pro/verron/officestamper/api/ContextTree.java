@@ -1,4 +1,4 @@
-package pro.verron.officestamper.spi;
+package pro.verron.officestamper.api;
 
 /// A tree of contexts used for expression evaluation during document stamping. It allows nested
 /// branches to be added, enabling scoped evaluation of expressions (e.g. within repeaters).

@@ -2,9 +2,9 @@ package pro.verron.officestamper.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.verron.officestamper.spi.OfficePart;
-import pro.verron.officestamper.spi.ProcessorContext;
-import pro.verron.officestamper.spi.Tag;
+import pro.verron.officestamper.api.OfficePart;
+import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.Tag;
 
 /// Hook for processing tags.
 public class TagHook

@@ -1,9 +1,9 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.spi.AnchoredComment;
-import pro.verron.officestamper.spi.OfficePart;
-import pro.verron.officestamper.spi.ProcessorContext;
-import pro.verron.officestamper.spi.Tag;
+import pro.verron.officestamper.api.AnchoredComment;
+import pro.verron.officestamper.api.OfficePart;
+import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.Tag;
 
 /// A hook that processes comments in a document.
 public class CommentHook

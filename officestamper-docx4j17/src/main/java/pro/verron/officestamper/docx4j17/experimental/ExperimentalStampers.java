@@ -2,9 +2,9 @@ package pro.verron.officestamper.docx4j17.experimental;
 
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
-import pro.verron.officestamper.spi.OfficeStamper;
+import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.spi.StreamStamper;
+import pro.verron.officestamper.api.StreamStamper;
 import pro.verron.officestamper.docx4j17.openpackaging.OpenpackagingUtils;
 
 /// ExperimentalStampers is a class that provides static methods for obtaining instances of OfficeStamper

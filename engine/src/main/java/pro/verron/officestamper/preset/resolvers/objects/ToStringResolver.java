@@ -2,9 +2,9 @@ package pro.verron.officestamper.preset.resolvers.objects;
 
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.spi.Element;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.OfficePart;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficePart;
 
 import java.util.ArrayList;
 import java.util.List;

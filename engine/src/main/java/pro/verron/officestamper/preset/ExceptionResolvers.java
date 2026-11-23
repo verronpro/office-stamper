@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.ExceptionResolver;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.spi.Insert;
-import pro.verron.officestamper.spi.OfficePart;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficePart;
 
 
 /// The ExceptionResolvers class provides a set of static factory methods to create different types of ExceptionResolver

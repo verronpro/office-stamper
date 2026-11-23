@@ -2,9 +2,9 @@ package pro.verron.officestamper.docx4j17;
 
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
-import pro.verron.officestamper.spi.Element;
-import pro.verron.officestamper.spi.ElementFactory;
-import pro.verron.officestamper.spi.RunProperties;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.ElementFactory;
+import pro.verron.officestamper.api.RunProperties;
 import pro.verron.officestamper.docx4j17.wml.WmlFactory;
 
 import java.util.List;

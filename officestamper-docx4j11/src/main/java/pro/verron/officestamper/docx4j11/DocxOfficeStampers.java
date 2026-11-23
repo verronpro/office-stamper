@@ -50,14 +50,6 @@ public final class DocxOfficeStampers {
         return docxStamper(OfficeStamperConfigurations.full());
     }
 
-    /// Creates a stamper operating directly on [WordprocessingMLPackage] documents, with the
-    /// legacy full configuration.
-    ///
-    /// @return a stamper for docx4j [WordprocessingMLPackage] documents
-    public static OfficeStamper<WordprocessingMLPackage> docxPackageStamper() {
-        return new LegacyOfficeStamper();
-    }
-
     /// Creates a stamper operating directly on [WordprocessingMLPackage] documents, with the given
     /// configuration used as-is.
     ///

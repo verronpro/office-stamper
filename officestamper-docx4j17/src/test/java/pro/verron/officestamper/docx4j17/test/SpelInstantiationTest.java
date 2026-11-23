@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import pro.verron.officestamper.api.SecurityMode;
 import pro.verron.officestamper.docx4j17.test.utils.ContextFactory;
 
 import java.nio.file.Path;
@@ -12,7 +13,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
-import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.full;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
@@ -29,7 +29,7 @@ class SpelInstantiationTest {
     @MethodSource("factories")
     @ParameterizedTest
     void testDateInstantiationAndResolution(ContextFactory factory) {
-        var configuration = full().setEvaluationContextFactory(noopFactory());
+        var configuration = full().setSpelSecurityMode(SecurityMode.PERMISSIVE);
         var stamper = docxPackageStamper(configuration);
         var template = getWordResource(Path.of("date.docx"));
         var context = factory.empty();

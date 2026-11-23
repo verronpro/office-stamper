@@ -4,6 +4,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
+import pro.verron.officestamper.api.SecurityMode;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Resolvers;
 import pro.verron.officestamper.docx4j17.test.utils.ContextFactory;
@@ -11,7 +12,6 @@ import pro.verron.officestamper.docx4j17.test.utils.ObjectContextFactory;
 import pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static pro.verron.officestamper.preset.EvaluationContextFactories.noopFactory;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.standard;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.DocxFactory.makeWordResource;
@@ -75,7 +75,7 @@ class NullPointerResolutionTest
         // It does not work with arrays, lists, maps, etc. since it cannot guess the types to auto grow at runtime
         var parserConfiguration = new SpelParserConfiguration(true, true);
         var configuration = standard().setParserConfiguration(parserConfiguration)
-                                      .setEvaluationContextFactory(noopFactory())
+                                      .setSpelSecurityMode(SecurityMode.PERMISSIVE)
                                       .addResolver(Resolvers.nullToDefault("Nullish value!!"));
         var context = contextFactory.nullishContext();
         var template = makeWordResource("""

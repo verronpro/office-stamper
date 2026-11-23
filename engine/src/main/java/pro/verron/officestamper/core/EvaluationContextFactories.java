@@ -1,17 +1,33 @@
-package pro.verron.officestamper.api;
+package pro.verron.officestamper.core;
 
-import org.springframework.expression.*;
+import org.springframework.expression.AccessException;
+import org.springframework.expression.BeanResolver;
+import org.springframework.expression.MethodResolver;
+import org.springframework.expression.PropertyAccessor;
+import org.springframework.expression.TypeLocator;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelMessage;
-import org.springframework.expression.spel.support.*;
+import org.springframework.expression.spel.support.DataBindingMethodResolver;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.MapAccessor;
+import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.StandardOperatorOverloader;
+import org.springframework.expression.spel.support.StandardTypeComparator;
+import org.springframework.expression.spel.support.StandardTypeConverter;
+import pro.verron.officestamper.api.EvaluationContextFactory;
+import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.util.ArrayList;
 
-/// A deprecated class providing factory methods for creating predefined [EvaluationContextFactory] instances.
-/// The factories are used to create [EvaluationContext] objects with specific configurations for evaluation logic.
-/// This class has been marked for removal in future versions and should no longer be used, it is planned to move this
-/// in the core package.
-@Deprecated(since = "3.4", forRemoval = true) public class EvaluationContextFactories {
+/// Internal holder of the predefined [EvaluationContextFactory] instances backing the
+/// SpEL [SecurityMode][pro.verron.officestamper.api.SecurityMode]. This package has
+/// qualified JPMS exports (visible only to the provider modules), so this class is not
+/// part of the public API: user code selects one of these factories through
+/// [pro.verron.officestamper.api.OfficeStamperConfiguration#setSpelSecurityMode(SecurityMode)]
+/// and can supply a custom factory through
+/// [pro.verron.officestamper.api.OfficeStamperConfiguration#setEvaluationContextFactory(EvaluationContextFactory)].
+public final class EvaluationContextFactories {
 
     private EvaluationContextFactories() {
         throw new OfficeStamperException("EvaluationContextFactories cannot be instantiated");
@@ -23,15 +39,9 @@ import java.util.ArrayList;
     /// operations, such as bean resolution and type resolution, which could pose security risks.
     ///
     /// The resulting context supports access to properties and maps but restricts the
-    /// use of reflection for method invocation and disables constructor resolution. The factory
-    /// is particularly suited for scenarios where strict evaluation constraints are necessary
-    /// to avoid potential misuse or unintended consequences.
+    /// use of reflection for method invocation and disables constructor resolution.
     ///
-    /// @return a restricted [EvaluationContextFactory] with controlled behavior and
-    ///         limited capabilities for evaluating expressions.
-    /// @deprecated since 3.4, for removal in a future version. The use of this factory is no longer
-    ///             recommended due to upcoming changes in evaluation context configurations.
-    @Deprecated(since = "3.4", forRemoval = true)
+    /// @return a restricted [EvaluationContextFactory] with controlled behavior
     public static EvaluationContextFactory restrictedFactory() {
         return object -> {
             var standardEvaluationContext = new StandardEvaluationContext(object);
@@ -71,20 +81,14 @@ import java.util.ArrayList;
     /// allowing flexible property and map access during evaluation.
     ///
     /// This factory configures the resulting [EvaluationContext] to include support
-    /// for reflective property access and map-based property access. It incorporates
-    /// an ordered list of [PropertyAccessor] implementations, granting enhanced
-    /// capabilities for resolving properties and accessing data in expressions.
+    /// for reflective property access and map-based property access.
     ///
     /// The resulting context is designed for scenarios where relaxed evaluation
-    /// constraints are needed to allow dynamic property and map access within the
-    /// evaluation process. It may not be suitable for use in security-sensitive
+    /// constraints are needed. It may not be suitable for use in security-sensitive
     /// contexts due to its permissive nature.
     ///
     /// @return a permissive [EvaluationContextFactory] configured for flexible property
-    ///         and map access during evaluation.
-    /// @deprecated since 3.4, for removal in a future version. The use of this factory is no longer
-    ///             recommended due to upcoming changes in evaluation context configurations.
-    @Deprecated(since = "3.4", forRemoval = true)
+    ///         and map access
     public static EvaluationContextFactory permissiveFactory() {
         return object -> {
             var standardEvaluationContext = new StandardEvaluationContext(object);

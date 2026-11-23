@@ -75,6 +75,18 @@ was the entry point. The 4.0 migration is:
 . *Entry point*: `OfficeStampers.docxStamper()` becomes `DocxOfficeStampers.standard()`.
   The old `pro.verron.officestamper.preset.OfficeStampers` name still exists but is now the
   docx-free factory — its method signatures changed, so calls must move to the new name.
+  The no-argument `DocxOfficeStampers.docxPackageStamper()` convenience was also removed —
+  use `docxPackageStamper(OfficeStamperConfigurations.full())` for the same result.
+. *Deprecated handles removed in 4.0* (all deprecated since 3.4 with `forRemoval`):
+  * `pro.verron.officestamper.api.EvaluationContextFactories` and
+    `pro.verron.officestamper.preset.EvaluationContextFactories` — both factory helper
+    classes are gone. Replace `noopFactory()`/`permissiveFactory()`/`defaultFactory()`/
+    `restrictedFactory()` calls with `setSpelSecurityMode(SecurityMode.PERMISSIVE)` or
+    `.RESTRICTED`, which install the matching pre-configured factory.
+  * The `OfficeStamperConfiguration` factory accessors
+    (`getEvaluationContextFactory`/`setEvaluationContextFactory`) are *no longer deprecated*:
+    they are the supported extension point for a fully custom SpEL context factory.
+    A custom factory overrides the one chosen by the security mode.
 . *Compatibility shims* (deprecated, `forRemoval`) keep the pre-4.0 package locations compiling
   in the `officestamper-docx4j11` artifact:
   `pro.verron.officestamper.utils.{wml, openpackaging, image, pml, sml}.*`,
@@ -82,11 +94,11 @@ was the entry point. The 4.0 migration is:
   processors/visitors under their old `preset.preprocessors.*`, `preset.postprocessors.*`,
   `preset.processors.repeat.*` and `preset.resolvers.image.*` locations.
   Each shim extends the relocated implementation, so instances remain assignable.
-. *The `pro.verron.officestamper.api` package keeps its name* — every 3.8 import
+. *The `pro.verron.officestamper.api` package keeps its name* —   every 3.8 import
   `pro.verron.officestamper.api.<Name>` still resolves, and the configuration types
   (`SecurityMode`, `OfficeStamperConfiguration`, `CustomFunction`, the resolver
-  interfaces, the evaluation-context factories, `ExceptionResolver`,
-  `TraceabilityReporter`, `OfficeStamperException`) did not change at all.
+  interfaces, `ExceptionResolver`, `TraceabilityReporter`, `OfficeStamperException`)
+  did not change at all.
   What changed is the *shape* of the contract types — every docx4j parameter and return
   type was replaced by a docx-free adapter — so custom processors written against raw
   docx4j types must be ported; the compile errors are localized to those processor bodies.

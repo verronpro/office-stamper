@@ -46,19 +46,22 @@ public interface OfficeStamperConfiguration {
     /// Retrieves the [EvaluationContextFactory] for creating Spring Expression Language (SpEL) [EvaluationContext]
     /// instances used by the office stamper.
     ///
+    /// For the standard security levels, prefer [#getSpelSecurityMode()]; this accessor is
+    /// the extension point for supplying or inspecting a fully custom factory.
+    ///
     /// @return the [EvaluationContextFactory] for creating SpEL EvaluationContext instances.
-    /// @deprecated since version 3.4, use alternative configuration method [#getSpelSecurityMode()]
-    @Deprecated(since = "3.4", forRemoval = true)
     EvaluationContextFactory getEvaluationContextFactory();
 
     /// Sets the [EvaluationContextFactory] for creating Spring Expression Language (SpEL) EvaluationContext instances.
+    ///
+    /// For the standard security levels, prefer [#setSpelSecurityMode(SecurityMode)], which
+    /// installs the matching pre-configured factory. Use this setter only to install a fully
+    /// custom factory; setting it overrides the factory chosen by the security mode.
     ///
     /// @param evaluationContextFactory the [EvaluationContextFactory] for creating SpEL [EvaluationContext]
     ///         instances.
     ///
     /// @return the updated [OfficeStamperConfiguration] object.
-    /// @deprecated since version 3.4, use alternative configuration method [#setSpelSecurityMode(SecurityMode)]
-    @Deprecated(since = "3.4", forRemoval = true)
     OfficeStamperConfiguration setEvaluationContextFactory(EvaluationContextFactory evaluationContextFactory);
 
     /// Retrieves the map of expression functions associated with their corresponding classes.

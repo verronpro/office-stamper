@@ -121,12 +121,23 @@ was the entry point. The 4.0 migration is:
 == Experimental pptx / xlsx stampers
 
 The provider artifact also carries the experimental `ExperimentalStampers`
-(`pptxStamper()`, `xlsxPackageStamper()`), used by the command‑line interface for `.pptx` templates.
+(`pptxStamper()`, `xlsxPackageStamper()`, `openStamper()`), used by the command‑line
+interface for `.pptx` templates.
+
+Since 4.0, their signatures are expressed over the docx-free `OfficeDocument`
+abstraction — the same contract the engine uses for docx — instead of raw docx4j
+package types. The provider supplies `PptxDocument` and `XlsxDocument` adapters;
+native access to the stamped package remains available through
+`OfficeDocument.unwrap(Class)` (e.g. `stamped.unwrap(PresentationMLPackage.class)`).
+`openStamper()` is a format-detecting entry point: it loads the template as a generic
+OOXML package and dispatches to the docx, pptx or xlsx stamper.
 
 These stampers remain experimental:
 
 * they run a minimal resolution pipeline (direct SpEL against the context) and do NOT go through
   the full processor pipeline — comment processors, resolvers and preprocessors do not apply;
+* the `OfficePart` views of `PptxDocument`/`XlsxDocument` are minimal: content, hooks and
+  the element factory are docx-specific and throw for these formats;
 * their APIs and behaviour may change without notice.
 
 For production stamping, rely on the docx pipeline only.

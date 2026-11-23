@@ -13,6 +13,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.docx4j.openpackaging.packages.PresentationMLPackage;
+import pro.verron.officestamper.docx4j11.experimental.PptxDocument;
+
 import static pro.verron.officestamper.docx4j11.experimental.ExperimentalStampers.pptxPackageStamper;
 import static pro.verron.officestamper.docx4j11.pml.PptxRenderer.pptxToString;
 
@@ -37,17 +40,17 @@ import static pro.verron.officestamper.docx4j11.pml.PptxRenderer.pptxToString;
         record Context(Image name) {}
         var context = new Context(image);
 
-        var stamped = stamper.stamp(template, context);
+        var stamped = stamper.stamp(new PptxDocument(template), context);
 
         // 1. Check that the placeholder text is gone
-        var actualText = pptxToString(stamped);
+        var actualText = pptxToString(stamped.unwrap(PresentationMLPackage.class));
         assertFalse(actualText.contains("${name}"),
                 "Placeholder should be gone");
         assertFalse(actualText.contains("Bart"),
                 "Placeholder should not be replaced by string");
 
         // 2. Check that at least one shape has a blipFill
-        List<Shape> shapes = PowerpointCollector.collect(stamped, Shape.class);
+        List<Shape> shapes = PowerpointCollector.collect(stamped.unwrap(PresentationMLPackage.class), Shape.class);
         boolean foundImageFill = false;
         for (Shape shape : shapes) {
             if (shape.getSpPr() != null && shape.getSpPr()

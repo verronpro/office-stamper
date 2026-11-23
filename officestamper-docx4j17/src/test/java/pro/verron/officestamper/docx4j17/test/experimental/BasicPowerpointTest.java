@@ -7,6 +7,9 @@ import pro.verron.officestamper.docx4j17.test.utils.ResourceUtils;
 
 import java.nio.file.Path;
 
+import org.docx4j.openpackaging.packages.PresentationMLPackage;
+import pro.verron.officestamper.docx4j17.experimental.PptxDocument;
+
 import static pro.verron.officestamper.docx4j17.experimental.ExperimentalStampers.pptxPackageStamper;
 import static pro.verron.officestamper.docx4j17.pml.PptxRenderer.pptxToString;
 
@@ -18,8 +21,8 @@ import static pro.verron.officestamper.docx4j17.pml.PptxRenderer.pptxToString;
         var template = ResourceUtils.getPowerPointResource(Path.of("powerpoint-base.pptx"));
         record Person(String name) {}
         var context = new Person("Bart");
-        var stamped = stamper.stamp(template, context);
-        var actual = pptxToString(stamped);
+        var stamped = stamper.stamp(new PptxDocument(template), context);
+        var actual = pptxToString(stamped.unwrap(PresentationMLPackage.class));
         Assertions.assertEquals("""
                 Hello
                 Bart

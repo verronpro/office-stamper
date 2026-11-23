@@ -18,13 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.DocxFactory.makeWordResource;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWordResource;
 
 
@@ -44,7 +40,7 @@ class SpelInjectionTest {
         var context = factory.empty();
         var template = getWordResource("SpelInjectionTest.docx");
         var configuration = DocxOfficeStampers.standard();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         assertThrows(OfficeStamperException.class, () -> stamper.stamp(template, context));
         assertDoesNotThrow(() -> "Does not throw", "Since VM is still up.");
     }
@@ -61,7 +57,7 @@ class SpelInjectionTest {
                 """);
         var configuration = DocxOfficeStampers.minimal();
         configuration.setExceptionResolver(ExceptionResolvers.defaulting("__________"));
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var result = stamper.stamp(template, context);
         var actual = toAsciidoc(result);
         assertTrue(actual.contains("__________"),
@@ -78,7 +74,7 @@ class SpelInjectionTest {
         var context = mapContextFactory().empty();
         var template = makeWordResource("${#{T(java.lang.System).exit(0)}}");
         var configuration = DocxOfficeStampers.standard();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         assertThrows(OfficeStamperException.class, () -> stamper.stamp(template, context));
         assertDoesNotThrow(() -> "Does not throw", "Since VM is still up.");
     }
@@ -89,7 +85,7 @@ class SpelInjectionTest {
         var context = mapContextFactory().empty();
         var template = makeWordResource("Numbers: ${ {1, 2, 3} }");
         var configuration = DocxOfficeStampers.minimal();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var result = stamper.stamp(template, context);
         var actual = toAsciidoc(result);
         assertTrue(actual.contains("[1, 2, 3]"), "The inline list should be resolved to its string form");
@@ -102,7 +98,7 @@ class SpelInjectionTest {
         var context = mapContextFactory().empty();
         var template = makeWordResource("Map: ${ {'a': 1, 'b': 2} }");
         var configuration = DocxOfficeStampers.minimal();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var result = stamper.stamp(template, context);
         var actual = toAsciidoc(result);
         assertTrue(actual.contains("1"), "The map value should be resolved");

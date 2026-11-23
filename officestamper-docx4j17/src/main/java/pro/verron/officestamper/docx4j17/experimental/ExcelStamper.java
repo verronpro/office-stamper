@@ -5,6 +5,7 @@ import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.xlsx4j.sml.CTRst;
+import pro.verron.officestamper.api.OfficeDocument;
 import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
 
@@ -13,7 +14,7 @@ import static pro.verron.officestamper.docx4j17.experimental.Placeholders.findVa
 /// The ExcelStamper class is an implementation of the OfficeStamper interface for stamping Excel templates. It uses the
 /// DOCX4J library to manipulate the template and replace variable expressions with values from the context.
 public class ExcelStamper
-        implements OfficeStamper<SpreadsheetMLPackage> {
+        implements OfficeStamper {
 
     /// Default constructor for the ExcelStamper class. This constructor initializes an instance of the ExcelStamper
     /// class, which implements the OfficeStamper interface for processing and stamping Excel templates. The class
@@ -23,6 +24,12 @@ public class ExcelStamper
     }
 
     @Override
+    public OfficeDocument stamp(OfficeDocument doc, Object context)
+            throws OfficeStamperException {
+        stamp(doc.unwrap(SpreadsheetMLPackage.class), context);
+        return doc;
+    }
+
     public SpreadsheetMLPackage stamp(SpreadsheetMLPackage template, Object context)
             throws OfficeStamperException {
         var paragraphs = ExcelCollector.collect(template, CTRst.class);

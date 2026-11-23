@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.full;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWordResource;
 
 @DisplayName("Basic Word Test") class BasicWordTest {
@@ -18,7 +18,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWord
     @DisplayName("Should stamp a Word document")
     void testStamper() {
         var configuration = full();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var path = Path.of("word-base.docx");
         var template = getWordResource(path);
         record Person(String name) {}
@@ -36,7 +36,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWord
     @DisplayName("Should fail on malformed comment")
     void testMalformedStamper() {
         var configuration = full();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var template = getWordResource("malformed-comment.docx");
 
         record Person(String name) {}

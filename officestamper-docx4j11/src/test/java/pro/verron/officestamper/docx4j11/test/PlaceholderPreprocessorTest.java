@@ -19,7 +19,7 @@ class PlaceholderPreprocessorTest {
                 Hello, #{name}!
                 
                 """, before);
-        preparePlaceholders.process(new DocxDocument(document));
+        preparePlaceholders.process(document);
         var actual = toAsciidoc(document);
         assertEquals("""
                 Hello, tag:[start, element=officestamper, type=inlineProcessor]nametag:[end]!

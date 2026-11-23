@@ -20,12 +20,10 @@ public final class OfficeStampers {
     ///
     /// @return a docx4j-free office stamper
     /// @throws IllegalStateException if no provider is registered
-    @SuppressWarnings("unchecked")
-    public static OfficeStamper<OfficeDocument> docxStamper() {
+    public static OfficeStamper docxStamper() {
         return ServiceLoader.load(OfficeStamper.class)
                 .stream()
                 .map(ServiceLoader.Provider::get)
-                .map(s -> (OfficeStamper<OfficeDocument>) s)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
                         "No OfficeStamper provider found on the classpath. " +

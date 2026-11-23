@@ -7,22 +7,24 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /// Stamps documents from streams, delegating the stamp operation to an {@link OfficeStamper} while
-/// providing the mechanisms to work with streams.
-///
-/// @param <T> the document type, which must extend {@link OfficeDocument}
-/// @param <T> the native document type this stamper operates on
-public class StreamStamper<T> {
+/// providing the mechanisms to work with streams. The loader is format-specific and supplied by
+/// the provider; the exporter can simply be {@code (doc, out) -> doc.save(out)}.
+public class StreamStamper {
 
-    private final Function<InputStream, T> loader;
-    private final OfficeStamper<T> stamper;
-    private final BiConsumer<T, OutputStream> exporter;
+    private final Function<InputStream, OfficeDocument> loader;
+    private final OfficeStamper stamper;
+    private final BiConsumer<OfficeDocument, OutputStream> exporter;
 
     /// Constructs a new stream stamper.
     ///
     /// @param loader   loads a template from an input stream into a document
     /// @param stamper  the stamper performing the stamp operation
     /// @param exporter exports the stamped document to an output stream
-    public StreamStamper(Function<InputStream, T> loader, OfficeStamper<T> stamper, BiConsumer<T, OutputStream> exporter) {
+    public StreamStamper(
+            Function<InputStream, OfficeDocument> loader,
+            OfficeStamper stamper,
+            BiConsumer<OfficeDocument, OutputStream> exporter
+    ) {
         this.loader = loader;
         this.stamper = stamper;
         this.exporter = exporter;

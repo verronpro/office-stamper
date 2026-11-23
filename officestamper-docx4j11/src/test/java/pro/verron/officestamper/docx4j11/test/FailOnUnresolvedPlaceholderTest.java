@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.standard;
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ResourceUtils.getWordResource;
@@ -34,7 +34,7 @@ class FailOnUnresolvedPlaceholderTest {
         var context = factory.name("Homer");
         var template = getWordResource("FailOnUnresolvedExpressionTest.docx");
         var config = standard().setExceptionResolver(ExceptionResolvers.throwing());
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         assertThrows(OfficeStamperException.class, () -> stamper.stamp(template, context));
     }
 
@@ -44,7 +44,7 @@ class FailOnUnresolvedPlaceholderTest {
         var context = factory.name("Homer");
         var template = getWordResource(Path.of("FailOnUnresolvedExpressionTest.docx"));
         var config = standard().setExceptionResolver(ExceptionResolvers.passing());
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         assertDoesNotThrow(() -> stamper.stamp(template, context));
     }
 }

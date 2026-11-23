@@ -13,6 +13,7 @@ import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficeDocument;
 import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.preset.Image;
@@ -24,7 +25,7 @@ import java.util.List;
 /// The PowerpointStamper class implements the OfficeStamper interface to provide capability for stamping PowerPoint
 /// presentations with context and writing the result to an OutputStream.
 public class PowerpointStamper
-        implements OfficeStamper<PresentationMLPackage> {
+        implements OfficeStamper {
     /// Constructs a new instance of the PowerpointStamper class. This constructor initializes an instance of
     /// PowerpointStamper, which implements the OfficeStamper interface. The class provides functionality to apply
     /// variable-based stamping on PowerPoint templates and outputs the modified presentation.
@@ -33,6 +34,12 @@ public class PowerpointStamper
     }
 
     @Override
+    public OfficeDocument stamp(OfficeDocument doc, Object context)
+            throws OfficeStamperException {
+        stamp(doc.unwrap(PresentationMLPackage.class), context);
+        return doc;
+    }
+
     public PresentationMLPackage stamp(PresentationMLPackage template, Object context)
             throws OfficeStamperException {
         try {

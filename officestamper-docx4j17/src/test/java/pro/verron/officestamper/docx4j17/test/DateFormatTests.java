@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.standard;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.objectContextFactory;
 
@@ -144,7 +144,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.object
                 
                 """);
         var context = factory.date(ZonedDateTime.of(2000, 1, 12, 23, 34, 45, 567, ZoneId.of("UTC+2")));
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var expected = """
                 ISO Date: 2000-01-12+02:00
                 

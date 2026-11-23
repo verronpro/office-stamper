@@ -13,12 +13,9 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.objectContextFactory;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWordResource;
 
 /// @author Joseph Verron
@@ -39,9 +36,9 @@ class MultiSectionTest {
         var context = factory.sectionName("Homer", "Marge");
         var template = getWordResource("MultiSectionTest.docx");
         var configuration = DocxOfficeStampers.standard();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = AsciiDocCompiler.toAsciidoc(wordprocessingMLPackage);
+        var actual = AsciiDocCompiler.toAsciidoc(wordprocessingMLPackage.unwrap(WordprocessingMLPackage.class));
         String expected = """
                 Homer
                 

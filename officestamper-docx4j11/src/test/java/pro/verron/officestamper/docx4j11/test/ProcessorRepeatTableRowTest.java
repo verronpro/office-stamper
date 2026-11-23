@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import pro.verron.officestamper.api.OfficeDocument;
 import pro.verron.officestamper.docx4j11.test.utils.ContextFactory;
 import pro.verron.officestamper.docx4j11.test.utils.ObjectContextFactory;
 
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static pro.verron.officestamper.docx4j11.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.full;
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.DocxFactory.makeWordResource;
@@ -195,11 +196,11 @@ class ProcessorRepeatTableRowTest {
             String name,
             OfficeStamperConfiguration config,
             Object context,
-            WordprocessingMLPackage template,
+            OfficeDocument template,
             String expected
     ) {
         log.info(name);
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
         var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected, actual);
@@ -208,7 +209,7 @@ class ProcessorRepeatTableRowTest {
     @Test
     void shouldAcceptList() {
         var config = full();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
                 |===
@@ -234,7 +235,7 @@ class ProcessorRepeatTableRowTest {
     @Test
     void shouldAcceptSet() {
         var config = full();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
                 |===
@@ -260,7 +261,7 @@ class ProcessorRepeatTableRowTest {
     @Test
     void shouldAcceptQueue() {
         var config = full();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var template = makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatTableRow(names)"]
                 |===

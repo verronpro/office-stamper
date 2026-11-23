@@ -13,13 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.objectContextFactory;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWordResource;
 
 /// @author Joseph Verron
@@ -36,7 +32,7 @@ class MultiStampTest {
     void repeatDocPart(ContextFactory factory) {
         var config = DocxOfficeStampers.standard();
         var context = factory.names("Homer", "Marge", "Bart", "Lisa", "Maggie");
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
 
         var filename = "MultiStampTest.docx";
         var template = getWordResource(filename);

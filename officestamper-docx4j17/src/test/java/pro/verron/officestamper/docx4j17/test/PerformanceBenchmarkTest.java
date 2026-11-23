@@ -6,6 +6,8 @@ import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.docx4j17.test.utils.ResourceUtils;
 
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,7 @@ class PerformanceBenchmarkTest {
         var context = new Context(data);
 
         // 2. Load a template with repeated rows
-        var stamper = DocxOfficeStampers.docxPackageStamper(DocxOfficeStampers.standard());
+        var stamper = docxStamper(DocxOfficeStampers.standard());
         var template = ResourceUtils.getWordResource(Path.of("ProcessorRepeatTableRow.docx"));
 
         long start = System.currentTimeMillis();

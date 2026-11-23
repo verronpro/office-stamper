@@ -43,12 +43,14 @@ void main() {
 }
 ----
 
-If you already have a `WordprocessingMLPackage` (Docx4J document), use `docxPackageStamper`:
+If you already have a `WordprocessingMLPackage` (Docx4J document), wrap it in the provider's
+`DocxDocument` adapter — the stamper mutates your package in place:
 
 [source,java]
 ----
-var stamper = OfficeStampers.docxPackageStamper(OfficeStamperConfigurations.standard());
-WordprocessingMLPackage stamped = stamper.stamp(document, context);
+var doc = new DocxDocument(document);
+OfficeStampers.docxStamper().stamp(doc, context);
+// document is stamped in place
 ----
 
 _Want to understand the architecture?

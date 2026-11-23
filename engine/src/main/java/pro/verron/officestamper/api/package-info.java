@@ -19,6 +19,8 @@
 /// type was replaced by a docx-free adapter, so processors written against raw docx4j
 /// objects need porting. {@code OfficeStamper} is now the ServiceLoader service interface
 /// that provider artifacts implement; {@code DocxPart} was deleted — use {@code OfficePart}.
+/// {@code OfficeStamper} and {@code StreamStamper} are no longer generic — they exchange
+/// docx-free {@code OfficeDocument} adapters exclusively.
 /// See the compatibility page of the site documentation for the full per-type mapping.
 @NullMarked
 package pro.verron.officestamper.api;

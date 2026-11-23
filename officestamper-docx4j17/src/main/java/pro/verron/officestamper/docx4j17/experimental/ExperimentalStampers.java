@@ -28,7 +28,7 @@ import java.io.OutputStream;
 /// @since 1.6.8
 public class ExperimentalStampers {
 
-    private static final OfficeStamper<OfficeDocument> DOCX_STAMPER =
+    private static final OfficeStamper DOCX_STAMPER =
             OfficeStampers.docxStamper(OfficeStamperConfigurations.full());
 
     private ExperimentalStampers() {
@@ -41,19 +41,16 @@ public class ExperimentalStampers {
     ///
     /// @return a new OfficeStamper instance for Excel templates
     /// @since 3.0
-    public static OfficeStamper<OfficeDocument> xlsxPackageStamper() {
-        return (doc, context) -> {
-            new ExcelStamper().stamp(doc.unwrap(SpreadsheetMLPackage.class), context);
-            return doc;
-        };
+    public static OfficeStamper xlsxPackageStamper() {
+        return new ExcelStamper();
     }
 
     /// Returns a [StreamStamper] for stamping PowerPoint presentations from streams.
     ///
     /// @return a new StreamStamper instance for PowerPoint presentations
     /// @since 1.6.8
-    public static StreamStamper<OfficeDocument> pptxStamper() {
-        return new StreamStamper<>(
+    public static StreamStamper pptxStamper() {
+        return new StreamStamper(
                 in -> new PptxDocument(OpenpackagingUtils.loadPowerPoint(in)),
                 pptxPackageStamper(),
                 ExperimentalStampers::save);
@@ -65,11 +62,8 @@ public class ExperimentalStampers {
     ///
     /// @return a new OfficeStamper instance for PowerPoint presentations
     /// @since 3.0
-    public static OfficeStamper<OfficeDocument> pptxPackageStamper() {
-        return (doc, context) -> {
-            new PowerpointStamper().stamp(doc.unwrap(PresentationMLPackage.class), context);
-            return doc;
-        };
+    public static OfficeStamper pptxPackageStamper() {
+        return new PowerpointStamper();
     }
 
     /// Returns a format-detecting [StreamStamper]: the template stream is loaded as a
@@ -77,8 +71,8 @@ public class ExperimentalStampers {
     /// to its package type.
     ///
     /// @return a new StreamStamper handling docx, pptx and xlsx templates
-    public static StreamStamper<OfficeDocument> openStamper() {
-        return new StreamStamper<>(ExperimentalStampers::load,
+    public static StreamStamper openStamper() {
+        return new StreamStamper(ExperimentalStampers::load,
                                    ExperimentalStampers::stampAny,
                                    ExperimentalStampers::save);
     }

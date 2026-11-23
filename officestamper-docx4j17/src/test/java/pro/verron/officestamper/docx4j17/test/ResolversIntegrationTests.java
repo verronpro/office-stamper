@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.standard;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.preset.Resolvers.*;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.objectContextFactory;
@@ -40,7 +40,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.object
         var config = standard().setResolvers(List.of(isoTime(formatter)));
         var template = DocxFactory.makeWordResource("Time: ${date}");
         var context = factory.date(LocalTime.of(14, 30));
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
 
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped, true);
@@ -57,7 +57,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.object
         config.setResolvers(List.of(isoDate(formatter)));
         var template = DocxFactory.makeWordResource("Date: ${date}");
         var context = factory.date(LocalDate.of(2024, 5, 17));
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
 
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped, true);
@@ -74,7 +74,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.object
         config.setResolvers(List.of(isoDateTime(formatter)));
         var template = DocxFactory.makeWordResource("DateTime: ${date}");
         var context = factory.date(LocalDateTime.of(2024, 5, 17, 14, 30));
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
 
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped, true);
@@ -97,7 +97,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.object
 
         var context = factory.date(date);
 
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped, true);
         assertEquals("Legacy Date: 2024.05.17\n\n", actual);

@@ -75,8 +75,17 @@ was the entry point. The 4.0 migration is:
 . *Entry point*: `OfficeStampers.docxStamper()` becomes `DocxOfficeStampers.standard()`.
   The old `pro.verron.officestamper.preset.OfficeStampers` name still exists but is now the
   docx-free factory — its method signatures changed, so calls must move to the new name.
-  The no-argument `DocxOfficeStampers.docxPackageStamper()` convenience was also removed —
-  use `docxPackageStamper(OfficeStamperConfigurations.full())` for the same result.
+  The docx4j-typed `docxPackageStamper` convenience entry points (no-arg and
+  configuration-taking) were also removed — see the genericity bullet below for the
+  replacement.
+. *`OfficeStamper` and `StreamStamper` are no longer generic.* They exchange docx-free
+  `OfficeDocument` adapters, so the type parameter carried no information anymore:
+  `OfficeStamper<T>` became `OfficeStamper` (`OfficeDocument stamp(OfficeDocument, Object)`),
+  and `StreamStamper<T>` became `StreamStamper`. The docx4j-typed
+  `docxPackageStamper(OfficeStamperConfiguration)` entry point was removed with it —
+  to stamp an existing `WordprocessingMLPackage`, wrap it once:
+  `var doc = new DocxDocument(wmlPackage); stamper.stamp(doc, context);` — the package is
+  mutated in place, no unwrapping needed.
 . *Deprecated handles removed in 4.0* (all deprecated since 3.4 with `forRemoval`):
   * `pro.verron.officestamper.api.EvaluationContextFactories` and
     `pro.verron.officestamper.preset.EvaluationContextFactories` — both factory helper

@@ -20,7 +20,7 @@ public class OfficeStampers {
     ///
     /// @param configuration the configuration to use for this stamper
     /// @return a stamper operating on [OfficeDocument] objects
-    public static OfficeStamper<OfficeDocument> docxStamper(OfficeStamperConfiguration configuration) {
+    public static OfficeStamper docxStamper(OfficeStamperConfiguration configuration) {
         return new DocxStamper(configuration);
     }
 }

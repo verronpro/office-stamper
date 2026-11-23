@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.standard;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.objectContextFactory;
@@ -35,7 +36,7 @@ class HeaderAndFooterTest {
         var context = factory.imagedName("Homer Simpson", getImage(Path.of("sample-butterfly.png")));
         var template = getWordResource("ExpressionReplacementInHeaderAndFooterTest.docx");
         var config = standard().setExceptionResolver(ExceptionResolvers.passing());
-        var stamper = DocxOfficeStampers.docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals("""

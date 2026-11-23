@@ -20,7 +20,7 @@ import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.minimal;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.standard;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.DocxFactory.makeWordResource;
@@ -59,7 +59,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWord
                 (UppercaseFunction) String::toUpperCase);
         var template = getWordResource(Path.of("CustomExpressionFunction.docx"));
         var context = factory.show();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var expected = """
                 == Custom Expression Function
                 
@@ -123,7 +123,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWord
                                .withImplementation(String::toUpperCase);
         var template = makeWordResource("${toUppercase(name)}");
         var context = factory.show();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var expected = """
                 THE SIMPSONS
                 
@@ -141,7 +141,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWord
         config.addCustomFunction("foo", () -> List.of("a", "b", "c"));
         var template = makeWordResource("${foo()}");
         var context = factory.empty();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var expected = """
                 [a, b, c]
                 
@@ -160,7 +160,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWord
               .withImplementation((s, i) -> new BigDecimal(s).add(new BigDecimal(i)));
         var template = makeWordResource("${Add('3.22', 4)}");
         var context = factory.empty();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var expected = """
                 7.22
                 
@@ -182,7 +182,7 @@ import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWord
                               });
         var template = makeWordResource("${format(date,'yyyy MMMM','%s')}".formatted(tag));
         var context = factory.date(LocalDate.of(2024, Month.APRIL, 1));
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals("""

@@ -11,9 +11,9 @@ import pro.verron.officestamper.api.OfficeStamper;
 /// @author Joseph Verron
 /// @since 1.9.0
 public class DocxStamperProvider
-        implements OfficeStamper<OfficeDocument> {
+        implements OfficeStamper {
 
-    private final OfficeStamper<OfficeDocument> delegate =
+    private final OfficeStamper delegate =
             pro.verron.officestamper.preset.OfficeStampers.docxStamper(DocxOfficeStampers.full());
 
     @Override

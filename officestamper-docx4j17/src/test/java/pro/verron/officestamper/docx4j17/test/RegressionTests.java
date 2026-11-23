@@ -18,15 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.full;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.standard;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.DocxFactory.makeWordResource;
-import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWordResource;
 
 class RegressionTests {
@@ -48,7 +43,7 @@ class RegressionTests {
     @Test
     void testTableOfContent() {
         var configuration = DocxOfficeStampers.standard();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var template = getWordResource(Path.of("TOC.docx"));
         var context = new Object();
         var wordprocessingMLPackage = stamper.stamp(template, context);
@@ -115,7 +110,7 @@ class RegressionTests {
         var configuration = full();
         var testFunction = new TestFunction.TestFunctionImpl();
         configuration.exposeInterfaceToExpressionLanguage(TestFunction.class, testFunction);
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var template = makeWordResource("${test()}");
         var context = new Object();
         var wordprocessingMLPackage = stamper.stamp(template, context);
@@ -130,7 +125,7 @@ class RegressionTests {
     @Test
     void test114() {
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var template = getWordResource(Path.of("#114.docx"));
         var context = FACTORY.names(List.class, "Homer", "Marge", "Bart", "Lisa", "Maggie");
         var stamped = stamper.stamp(template, context);
@@ -157,7 +152,7 @@ class RegressionTests {
     @MethodSource("source52")
     @ParameterizedTest
     void test52(Conditions conditions, String expected) {
-        var stamper = docxPackageStamper(DocxOfficeStampers.full());
+        var stamper = docxStamper(DocxOfficeStampers.full());
         var template = ResourceUtils.getWordResource(TEMPLATE_52);
         var wordprocessingMLPackage = stamper.stamp(template, conditions);
         var actual = toAsciidoc(wordprocessingMLPackage);

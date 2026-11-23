@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import pro.verron.officestamper.api.OfficeDocument;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 import pro.verron.officestamper.preset.Resolvers;
 import pro.verron.officestamper.docx4j11.test.utils.ContextFactory;
@@ -340,7 +341,7 @@ class DefaultTests extends OfficeStamperTestBase {
     @MethodSource("tests")
     @DisplayName("Core Features")
     @ParameterizedTest(name = "Core Features: {argumentSetName}")
-    void features(OfficeStamperConfiguration config, Object context, WordprocessingMLPackage template, String expected) {
+    void features(OfficeStamperConfiguration config, Object context, OfficeDocument template, String expected) {
         testStamper(config, context, template, expected);
     }
 }

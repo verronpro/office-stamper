@@ -6,6 +6,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.asciidoc.compiler.AsciiDocCompiler;
+import pro.verron.officestamper.api.OfficeDocument;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 
@@ -15,8 +16,9 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.docx4j11.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.objectContextFactory;
 
 public class OfficeStamperTestBase {
@@ -35,6 +37,16 @@ public class OfficeStamperTestBase {
         return AsciiDocCompiler.toAsciidoc(pkg, skipComments, false);
     }
 
+    /// Renders a docx-free [OfficeDocument] (e.g. the result of a stamper call).
+    public static String toAsciidoc(OfficeDocument doc) {
+        return toAsciidoc(doc.unwrap(WordprocessingMLPackage.class), false);
+    }
+
+    /// Renders a docx-free [OfficeDocument] with control over comment emission.
+    public static String toAsciidoc(OfficeDocument doc, boolean skipComments) {
+        return toAsciidoc(doc.unwrap(WordprocessingMLPackage.class), skipComments);
+    }
+
     protected static Stream<ContextFactory> factories() {
         return Stream.of(objectContextFactory(), mapContextFactory());
     }
@@ -42,14 +54,18 @@ public class OfficeStamperTestBase {
     protected void testStamper(
             OfficeStamperConfiguration config,
             Object context,
-            WordprocessingMLPackage template,
+            OfficeDocument template,
             String expected
     ) {
-        var stamper = docxPackageStamper(config);
-        var wordprocessingMLPackage = stamper.stamp(template, context);
-        OfficeStamperTestBase.writeOutputFile(wordprocessingMLPackage);
-        var actual = toAsciidoc(wordprocessingMLPackage);
+        var stamper = docxStamper(config);
+        var stamped = stamper.stamp(template, context);
+        OfficeStamperTestBase.writeOutputFile(stamped);
+        var actual = toAsciidoc(stamped);
         assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
+    }
+
+    private static void writeOutputFile(OfficeDocument doc) {
+        writeOutputFile(doc.unwrap(OpcPackage.class));
     }
 
     private static void writeOutputFile(OpcPackage opcPackage) {

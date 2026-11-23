@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.docx4j11.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.standard;
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.ResourceUtils.getWordResource;
 
 class GoogleDocsSupportTest {
@@ -38,7 +38,7 @@ class GoogleDocsSupportTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, new Object() {
             @SuppressWarnings("unused")
             public final boolean showBlock = true;

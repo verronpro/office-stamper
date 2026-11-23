@@ -13,13 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j11.test.utils.OfficeStamperTestBase.toAsciidoc;
-import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageStamper;
-import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.mapContextFactory;
-import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.objectContextFactory;
-import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j11.test.utils.DocxFactory.makeWordResource;
 
 @DisplayName("Whitespaces manipulations") class WhitespaceTest {
@@ -45,7 +41,7 @@ import static pro.verron.officestamper.docx4j11.test.utils.DocxFactory.makeWordR
         var template = makeWordResource("Space ${name}");
         var context = factory.name(in);
 
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
         var actual = toAsciidoc(wordprocessingMLPackage);
         var expected = """
@@ -63,7 +59,7 @@ import static pro.verron.officestamper.docx4j11.test.utils.DocxFactory.makeWordR
         var template = makeWordResource("Tab|TAB|${name}");
         var context = factory.name("Homer\tSimpson");
 
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
         var actual = toAsciidoc(wordprocessingMLPackage);
         var expected = """

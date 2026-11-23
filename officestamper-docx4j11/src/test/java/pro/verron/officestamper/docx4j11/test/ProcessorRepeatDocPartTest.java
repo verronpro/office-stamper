@@ -1,6 +1,7 @@
 package pro.verron.officestamper.docx4j11.test;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import pro.verron.officestamper.api.OfficeDocument;
 import pro.verron.officestamper.docx4j11.test.utils.ContextFactory;
 import pro.verron.officestamper.docx4j11.test.utils.DocxFactory;
 import pro.verron.officestamper.docx4j11.test.utils.ObjectContextFactory;
@@ -29,7 +31,7 @@ import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j11.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.full;
 import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.standard;
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ResourceUtils.getImage;
@@ -52,7 +54,7 @@ class ProcessorRepeatDocPartTest {
             throws IOException, Docx4JException {
         OfficeStamperConfiguration config = standard();
         Object context = Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge")));
-        WordprocessingMLPackage template = getWordResource(Path.of("ProcessorRepeatDocPart_OutLayout.docx"));
+        OfficeDocument template = getWordResource(Path.of("ProcessorRepeatDocPart_OutLayout.docx"));
         assertEquals("""
                 comment::0[start="3,0", end="5,0", value="repeatDocPart(repeatValues)"]
                 
@@ -80,12 +82,12 @@ class ProcessorRepeatDocPartTest {
                 
                 """, toAsciidoc(template));
 
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
-        stamped.save(tempFile);
-        var actual = AsciiDocCompiler.toAsciidoc(stamped);
+        stamped.unwrap(OpcPackage.class).save(tempFile);
+        var actual = AsciiDocCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
         assertEquals("""
                 First page is landscape.
                 
@@ -152,7 +154,7 @@ class ProcessorRepeatDocPartTest {
     void repeatDocPartShouldNotUseSameCommentProcessorInstancesForSubtemplate(ContextFactory factory) {
         OfficeStamperConfiguration config = standard();
         Object context = factory.tableContext();
-        WordprocessingMLPackage template = getWordResource(Path.of("ProcessorRepeatDocPart_Isolation.docx"));
+        OfficeDocument template = getWordResource(Path.of("ProcessorRepeatDocPart_Isolation.docx"));
         String expected = """
                 This will stay untouched.
                 
@@ -202,7 +204,7 @@ class ProcessorRepeatDocPartTest {
                 
                 """;
 
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
@@ -216,7 +218,7 @@ class ProcessorRepeatDocPartTest {
             throws IOException, Docx4JException {
         OfficeStamperConfiguration config = standard();
         Object context = Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge")));
-        WordprocessingMLPackage template = getWordResource(Path.of("ProcessorRepeatDocPart_InLayout.docx"));
+        OfficeDocument template = getWordResource(Path.of("ProcessorRepeatDocPart_InLayout.docx"));
         String expected = """
                 First page is portrait.
                 
@@ -304,12 +306,12 @@ class ProcessorRepeatDocPartTest {
                 
                 """;
 
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
-        stamped.save(tempFile);
-        var actual = AsciiDocCompiler.toAsciidoc(stamped);
+        stamped.unwrap(OpcPackage.class).save(tempFile);
+        var actual = AsciiDocCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
         assertEquals(expected, actual);
     }
 
@@ -330,7 +332,7 @@ class ProcessorRepeatDocPartTest {
                 "Hank Azaria",
                 "Krusty the Clown",
                 "Dan Castellaneta");
-        WordprocessingMLPackage template = getWordResource(Path.of("ProcessorRepeatDocPart.docx"));
+        OfficeDocument template = getWordResource(Path.of("ProcessorRepeatDocPart.docx"));
         String expect = """
                 = Repeating Doc Part
                 
@@ -406,7 +408,7 @@ class ProcessorRepeatDocPartTest {
                 
                 """;
 
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expect, actual);
@@ -419,7 +421,7 @@ class ProcessorRepeatDocPartTest {
             throws IOException, Docx4JException {
         OfficeStamperConfiguration config = full();
         Object context = factory.schoolContext();
-        WordprocessingMLPackage template = getWordResource(Path.of("ProcessorRepeatDocPart_Nesting.docx"));
+        OfficeDocument template = getWordResource(Path.of("ProcessorRepeatDocPart_Nesting.docx"));
         String expect = """
                 = Repeating Doc Part
                 
@@ -689,11 +691,11 @@ class ProcessorRepeatDocPartTest {
                 
                 """;
 
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
-        stamped.save(tempFile);
+        stamped.unwrap(OpcPackage.class).save(tempFile);
         var actual = toAsciidoc(stamped);
         assertEquals(expect, actual);
     }
@@ -702,7 +704,7 @@ class ProcessorRepeatDocPartTest {
     @DisplayName("Repeat doc part specifications")
     @ParameterizedTest(name = "Repeat doc part specifications: {argumentSetName}")
     void shouldImportImageDataInTheMainDocument(ContextFactory factory) {
-        var stamper = docxPackageStamper(standard());
+        var stamper = docxStamper(standard());
         var stamped = stamper.stamp(getWordResource(Path.of("ProcessorRepeatDocPart_Image.docx")),
                 factory.units(getImage(Path.of("sample-butterfly.png")), getImage(Path.of("sample-map.jpg"))));
         var actual = toAsciidoc(stamped);
@@ -732,7 +734,7 @@ class ProcessorRepeatDocPartTest {
     @DisplayName("Repeat doc part specifications with #self")
     @ParameterizedTest(name = "Repeat doc part specifications with #self: {argumentSetName}")
     void shouldImportImageDataWithThisInTheMainDocument() {
-        var stamper = docxPackageStamper(standard());
+        var stamper = docxStamper(standard());
         var template = DocxFactory.makeWordResource("""
                 comment::1[start="0,0", end="1,18", value="repeatDocPart(images)"]
                 ${#this}
@@ -765,7 +767,7 @@ class ProcessorRepeatDocPartTest {
             throws Docx4JException, IOException {
         OfficeStamperConfiguration config = full();
         Object context = factory.subDocPartContext();
-        WordprocessingMLPackage template = getWordResource(Path.of("ProcessorRepeatDocPart_ImageSubTemplate.docx"));
+        OfficeDocument template = getWordResource(Path.of("ProcessorRepeatDocPart_ImageSubTemplate.docx"));
         String expected = """
                 This is not repeated
                 
@@ -784,11 +786,11 @@ class ProcessorRepeatDocPartTest {
                 This is not repeated
                 
                 """;
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
-        stamped.save(tempFile);
+        stamped.unwrap(OpcPackage.class).save(tempFile);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
@@ -800,7 +802,7 @@ class ProcessorRepeatDocPartTest {
         OfficeStamperConfiguration config = full();
         Object context = List.of(List.of("S1, Episode 1", "S1, Episode 2"),
                 List.of("S2, Episode 1", "S2, Episode 2", "S2, Episode 3", "S2, Episode 4"));
-        WordprocessingMLPackage template = getWordResource(Path.of("ProcessorRepeatDocPart_ListOfList.docx"));
+        OfficeDocument template = getWordResource(Path.of("ProcessorRepeatDocPart_ListOfList.docx"));
         String expected = """
                 = List of Lists
                 
@@ -827,11 +829,11 @@ class ProcessorRepeatDocPartTest {
                 NB Episodes: 4
                 
                 """;
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
-        stamped.save(tempFile);
+        stamped.unwrap(OpcPackage.class).save(tempFile);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
     }
@@ -844,7 +846,7 @@ class ProcessorRepeatDocPartTest {
             + "element: {argumentSetName}")
     void shouldKeepPageBreakOrientationWithSectionBreaksInsideCommentAndTableLastElement(ContextFactory factory)
             throws IOException, Docx4JException {
-        var stamper = docxPackageStamper(standard());
+        var stamper = docxStamper(standard());
         var template = getWordResource(Path.of("ProcessorRepeatDocPart_InLayoutAndTable.docx"));
         var context = Map.of("repeatValues", List.of(factory.name("Homer"), factory.name("Marge")));
 
@@ -852,9 +854,9 @@ class ProcessorRepeatDocPartTest {
 
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
-        stamped.save(tempFile);
+        stamped.unwrap(OpcPackage.class).save(tempFile);
 
-        var actual = AsciiDocCompiler.toAsciidoc(stamped);
+        var actual = AsciiDocCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
         var expected = """
                 First page is portrait.
                 
@@ -957,7 +959,7 @@ class ProcessorRepeatDocPartTest {
     @Test
     void shouldAcceptList() {
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var template = DocxFactory.makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
                 ${name}
@@ -983,7 +985,7 @@ class ProcessorRepeatDocPartTest {
     @Test
     void shouldAcceptSet() {
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var template = DocxFactory.makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
                 ${name}
@@ -1009,7 +1011,7 @@ class ProcessorRepeatDocPartTest {
     @Test
     void shouldAcceptQueue() {
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var template = DocxFactory.makeWordResource("""
                 comment::1[start="0,0", end="0,7", value="repeatDocPart(names)"]
                 ${name}

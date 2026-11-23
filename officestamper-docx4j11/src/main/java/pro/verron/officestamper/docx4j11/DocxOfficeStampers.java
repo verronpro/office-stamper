@@ -46,27 +46,17 @@ public final class DocxOfficeStampers {
     /// Creates a default full-featured stream stamper for DOCX templates.
     ///
     /// @return a stamper reading DOCX templates from streams
-    public static StreamStamper<OfficeDocument> docxStamper() {
+    public static StreamStamper docxStamper() {
         return docxStamper(OfficeStamperConfigurations.full());
-    }
-
-    /// Creates a stamper operating directly on [WordprocessingMLPackage] documents, with the given
-    /// configuration used as-is.
-    ///
-    /// @param configuration the configuration to use for this stamper
-    /// @return a stamper for docx4j [WordprocessingMLPackage] documents
-    public static OfficeStamper<WordprocessingMLPackage> docxPackageStamper(OfficeStamperConfiguration configuration) {
-        var stamper = pro.verron.officestamper.preset.OfficeStampers.docxStamper(configuration);
-        return (template, context) -> ((DocxDocument) stamper.stamp(new DocxDocument(template), context)).pkg();
     }
 
     /// Creates a stream stamper for DOCX templates from the given configuration.
     ///
     /// @param configuration the configuration to use for this stamper
     /// @return a stamper reading DOCX templates from streams
-    public static StreamStamper<OfficeDocument> docxStamper(OfficeStamperConfiguration configuration) {
+    public static StreamStamper docxStamper(OfficeStamperConfiguration configuration) {
         var stamper = pro.verron.officestamper.preset.OfficeStampers.docxStamper(configuration);
-        return new StreamStamper<>(DocxOfficeStampers::load, stamper, DocxOfficeStampers::save);
+        return new StreamStamper(DocxOfficeStampers::load, stamper, DocxOfficeStampers::save);
     }
 
     private static OfficeDocument load(InputStream in) {

@@ -13,7 +13,7 @@ import pro.verron.officestamper.docx4j11.test.utils.OfficeStamperTestBase;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.standard;
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.DocxFactory.makeWordResource;
 
 /// @author Joseph Verron
@@ -150,7 +150,7 @@ class NullPointerResolutionTest
                 
                 """);
         var configuration = standard();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         assertThrows(OfficeStamperException.class, () -> stamper.stamp(template, context));
     }
 }

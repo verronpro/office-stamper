@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j11.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.full;
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ResourceUtils.getWordResource;
@@ -30,7 +30,7 @@ class SpelPermissiveModeTest {
     @ParameterizedTest
     void permissiveMode_allowsTypeAndConstructorFeatures(ContextFactory factory) {
         var configuration = full().setSpelSecurityMode(SecurityMode.PERMISSIVE);
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var template = getWordResource(Path.of("date.docx"));
         var context = factory.empty();
 

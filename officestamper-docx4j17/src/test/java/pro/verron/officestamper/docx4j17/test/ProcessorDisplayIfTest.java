@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.full;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.standard;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWordResource;
@@ -192,7 +192,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
@@ -275,7 +275,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var configuration = full();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
@@ -358,7 +358,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var configuration = full();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
@@ -507,7 +507,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
@@ -656,7 +656,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
@@ -690,7 +690,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
         var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected, actual);
@@ -728,7 +728,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
@@ -764,7 +764,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var wordprocessingMLPackage = stamper.stamp(template, context);
         var actual = toAsciidoc(wordprocessingMLPackage);
         assertEquals(expected, actual);
@@ -812,7 +812,7 @@ class ProcessorDisplayIfTest {
                 """;
 
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);
@@ -854,7 +854,7 @@ class ProcessorDisplayIfTest {
                 
                 """;
         var config = standard();
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
         var actual = toAsciidoc(stamped);
         assertEquals(expected, actual);

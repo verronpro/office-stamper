@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j17.test.utils.OfficeStamperTestBase.toAsciidoc;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.minimal;
-import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.docxPackageStamper;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWordResource;
@@ -48,7 +48,7 @@ import static pro.verron.officestamper.docx4j17.wml.WmlFactory.newRun;
                 Visited
                 
                 """;
-        var stamper = docxPackageStamper(config);
+        var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, factory.empty());
         var actual = toAsciidoc(stamped);
         assertEquals(expected.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));

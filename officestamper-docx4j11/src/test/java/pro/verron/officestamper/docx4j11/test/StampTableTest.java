@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j11.test.utils.OfficeStamperTestBase.toAsciidoc;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.mapContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j11.test.utils.ResourceUtils.getWordResource;
@@ -33,7 +34,7 @@ class StampTableTest {
         var template = getWordResource("StampTableTest.docx");
 
         var configuration = DocxOfficeStampers.standard();
-        var stamper = DocxOfficeStampers.docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
 
         var context = factory.characterTable(List.of("Character", "Actor"),
                 List.of(List.of("Homer Simpson", "Dan Castellaneta"),

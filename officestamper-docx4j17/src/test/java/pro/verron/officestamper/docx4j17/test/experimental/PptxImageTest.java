@@ -40,7 +40,7 @@ import static pro.verron.officestamper.docx4j17.pml.PptxRenderer.pptxToString;
         record Context(Image name) {}
         var context = new Context(image);
 
-        var stamped = stamper.stamp(new PptxDocument(template), context);
+        var stamped = stamper.stamp(template, context);
 
         // 1. Check that the placeholder text is gone
         var actualText = pptxToString(stamped.unwrap(PresentationMLPackage.class));

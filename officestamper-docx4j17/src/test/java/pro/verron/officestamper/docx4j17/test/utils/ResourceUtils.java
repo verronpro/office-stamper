@@ -2,6 +2,9 @@ package pro.verron.officestamper.docx4j17.test.utils;
 
 import org.docx4j.openpackaging.packages.PresentationMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.docx4j17.DocxDocument;
+import pro.verron.officestamper.docx4j17.experimental.PptxDocument;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.preset.Image;
 
@@ -56,27 +59,27 @@ public class ResourceUtils {
     /// Retrieves a WordprocessingMLPackage from the specified resource path.
     ///
     /// @param path the path of the resource
-    /// @return a WordprocessingMLPackage for the specified resource
-    public static WordprocessingMLPackage getWordResource(String path) {
+    /// @return a docx-free OfficeDocument wrapping the loaded Word template
+    public static OfficeDocument getWordResource(String path) {
         return getWordResource(Path.of(path));
     }
 
     /// Retrieves a WordprocessingMLPackage from the specified resource path.
     ///
     /// @param path the path of the resource
-    /// @return a WordprocessingMLPackage for the specified resource
-    public static WordprocessingMLPackage getWordResource(Path path) {
+    /// @return a docx-free OfficeDocument wrapping the loaded Word template
+    public static OfficeDocument getWordResource(Path path) {
         var templateStream = getResource(path);
-        return loadWord(templateStream);
+        return new DocxDocument(loadWord(templateStream));
     }
 
     /// Retrieves a PresentationMLPackage from the specified resource path.
     ///
     /// @param path the path of the resource
-    /// @return a PresentationMLPackage for the specified resource
-    public static PresentationMLPackage getPowerPointResource(Path path) {
+    /// @return a docx-free OfficeDocument wrapping the loaded presentation
+    public static OfficeDocument getPowerPointResource(Path path) {
         var templateStream = getResource(path);
-        return loadPowerPoint(templateStream);
+        return new PptxDocument(loadPowerPoint(templateStream));
     }
 }
 

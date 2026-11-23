@@ -21,7 +21,7 @@ import static pro.verron.officestamper.docx4j11.pml.PptxRenderer.pptxToString;
         var template = ResourceUtils.getPowerPointResource(Path.of("powerpoint-base.pptx"));
         record Person(String name) {}
         var context = new Person("Bart");
-        var stamped = stamper.stamp(new PptxDocument(template), context);
+        var stamped = stamper.stamp(template, context);
         var actual = pptxToString(stamped.unwrap(PresentationMLPackage.class));
         Assertions.assertEquals("""
                 Hello

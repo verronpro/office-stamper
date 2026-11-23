@@ -3,6 +3,8 @@ package pro.verron.officestamper.docx4j17.test.utils;
 import jakarta.xml.bind.JAXBElement;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.docx4j17.DocxDocument;
 import org.docx4j.wml.*;
 import pro.verron.asciidoc.compiler.AsciiDocCompiler;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -27,8 +29,8 @@ public class DocxFactory {
     ///
     /// @param asciidoc AsciiDoc string
     ///
-    /// @return WordprocessingMLPackage
-    public static WordprocessingMLPackage makeWordResource(String asciidoc) {
+    /// @return a docx-free OfficeDocument wrapping the generated package
+    public static OfficeDocument makeWordResource(String asciidoc) {
         // Extract comment macros and strip them from the AsciiDoc before
         // compilation
         var extraction = extractAndStripCommentMacros(asciidoc);
@@ -36,7 +38,7 @@ public class DocxFactory {
         WordprocessingMLPackage aPackage = AsciiDocCompiler.toDocx(model);
         // Apply comments specified by macros onto the generated DOCX
         applyCommentMacros(aPackage, extraction.specs());
-        return aPackage;
+        return new DocxDocument(aPackage);
     }
 
     private static MacroExtraction extractAndStripCommentMacros(String asciidoc) {

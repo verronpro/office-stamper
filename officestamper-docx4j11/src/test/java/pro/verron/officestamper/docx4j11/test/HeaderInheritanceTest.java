@@ -13,13 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j11.test.utils.OfficeStamperTestBase.toAsciidoc;
-import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxPackageStamper;
-import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.mapContextFactory;
-import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j11.test.utils.ContextFactory.objectContextFactory;
-import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
 import static pro.verron.officestamper.docx4j11.test.utils.DocxFactory.makeWordResource;
 
 /// Regression test for [#805]: a section without its own header references inherits
@@ -50,7 +46,7 @@ class HeaderInheritanceTest {
                 Second section content
                 """);
         var configuration = DocxOfficeStampers.standard();
-        var stamper = docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
         var stamped = stamper.stamp(template, factory.name("World"));
         var actual = toAsciidoc(stamped);
         var expected = """

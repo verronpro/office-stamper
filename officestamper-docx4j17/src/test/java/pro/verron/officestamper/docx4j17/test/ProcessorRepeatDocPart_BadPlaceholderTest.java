@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.mapContextFactory;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.ContextFactory.objectContextFactory;
 import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getWordResource;
 
@@ -40,7 +41,7 @@ class ProcessorRepeatDocPart_BadPlaceholderTest {
                 "Bart Simpson",
                 "Nancy Cartwright");
         var configuration = DocxOfficeStampers.standard();
-        var stamper = DocxOfficeStampers.docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
 
         var exception = assertThrows(OfficeStamperException.class, () -> stamper.stamp(template, context));
 

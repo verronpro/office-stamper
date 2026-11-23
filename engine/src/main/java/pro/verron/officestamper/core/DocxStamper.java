@@ -23,7 +23,7 @@ import java.util.Map;
 /// @author Joseph Verron
 /// @since 1.0.0
 public class DocxStamper
-        implements OfficeStamper<OfficeDocument> {
+        implements OfficeStamper {
 
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;

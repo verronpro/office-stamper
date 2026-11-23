@@ -1,6 +1,7 @@
 package pro.verron.officestamper.docx4j17.test;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.junit.jupiter.api.Test;
 import pro.verron.officestamper.docx4j17.DocxOfficeStampers;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pro.verron.officestamper.docx4j17.DocxOfficeStampers.standard;
+import static pro.verron.officestamper.preset.OfficeStampers.docxStamper;
 import static pro.verron.officestamper.docx4j17.test.utils.DocxFactory.makeWordResource;
 import static pro.verron.officestamper.docx4j17.test.utils.ResourceUtils.getImage;
 
@@ -24,7 +26,7 @@ public class ImageDeduplicationTest {
     public void testImageDeduplicationEnabledByDefault()
             throws org.docx4j.openpackaging.exceptions.Docx4JException {
         var configuration = standard();
-        var stamper = DocxOfficeStampers.docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
 
         var monalisa20 = getImage(Path.of("sample-monalisa-20x20.jpg"));
         var monalisa50_1 = getImage(Path.of("sample-monalisa-50x50.jpg"));
@@ -42,7 +44,7 @@ public class ImageDeduplicationTest {
 
         var output = new ByteArrayOutputStream();
         var stamped = stamper.stamp(template, context);
-        stamped.save(output);
+        stamped.unwrap(OpcPackage.class).save(output);
 
         var resultDoc = WordprocessingMLPackage.load(new ByteArrayInputStream(output.toByteArray()));
         long imagePartCount = resultDoc.getParts()
@@ -60,7 +62,7 @@ public class ImageDeduplicationTest {
     public void testImageDeduplicationDisabled()
             throws org.docx4j.openpackaging.exceptions.Docx4JException {
         var configuration = standard().setResolvers(List.of(new ImageResolver(false)));
-        var stamper = DocxOfficeStampers.docxPackageStamper(configuration);
+        var stamper = docxStamper(configuration);
 
         var monalisa20 = getImage(Path.of("sample-monalisa-20x20.jpg"));
         var monalisa50_1 = getImage(Path.of("sample-monalisa-50x50.jpg"));
@@ -78,7 +80,7 @@ public class ImageDeduplicationTest {
 
         var output = new ByteArrayOutputStream();
         var stamped = stamper.stamp(template, context);
-        stamped.save(output);
+        stamped.unwrap(OpcPackage.class).save(output);
 
         var resultDoc = WordprocessingMLPackage.load(new ByteArrayInputStream(output.toByteArray()));
         long imagePartCount = resultDoc.getParts()

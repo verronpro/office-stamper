@@ -5,7 +5,7 @@ import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.verron.asciidoc.compiler.AsciiDocCompiler;
+import pro.verron.asciidoc.docx.DocxCompiler;
 import pro.verron.officestamper.api.OfficeDocument;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
@@ -34,7 +34,7 @@ public class OfficeStamperTestBase {
     /// Same as {@link #toAsciidoc(WordprocessingMLPackage)} with control over
     /// comment emission, mirroring the asciidoc compiler's 2-arg overload.
     public static String toAsciidoc(WordprocessingMLPackage pkg, boolean skipComments) {
-        return AsciiDocCompiler.toAsciidoc(pkg, skipComments, false);
+        return DocxCompiler.toAsciidoc(pkg, skipComments, false);
     }
 
     /// Renders a docx-free [OfficeDocument] (e.g. the result of a stamper call).

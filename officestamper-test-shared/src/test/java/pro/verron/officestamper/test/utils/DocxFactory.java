@@ -6,7 +6,8 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import pro.verron.officestamper.api.OfficeDocument;
 import org.docx4j.wml.*;
-import pro.verron.asciidoc.compiler.AsciiDocCompiler;
+import pro.verron.asciidoc.core.AsciiDocParser;
+import pro.verron.asciidoc.docx.DocxCompiler;
 import pro.verron.officestamper.api.OfficeStamperException;
 
 import java.math.BigInteger;
@@ -30,8 +31,8 @@ public class DocxFactory {
         // Extract comment macros and strip them from the AsciiDoc before
         // compilation
         var extraction = extractAndStripCommentMacros(asciidoc);
-        var model = AsciiDocCompiler.toModel(extraction.cleanedAsciiDoc());
-        WordprocessingMLPackage aPackage = AsciiDocCompiler.toDocx(model);
+        var model = new AsciiDocParser().apply(extraction.cleanedAsciiDoc());
+        WordprocessingMLPackage aPackage = DocxCompiler.toDocx(model);
         // Apply comments specified by macros onto the generated DOCX
         applyCommentMacros(aPackage, extraction.specs());
         return Flavor.get().docx(aPackage);

@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.verron.asciidoc.compiler.AsciiDocCompiler;
+import pro.verron.asciidoc.docx.DocxCompiler;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeDocument;
 import pro.verron.officestamper.test.utils.ContextFactory;
@@ -86,7 +86,7 @@ class ProcessorRepeatDocPartTest {
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
         stamped.unwrap(OpcPackage.class).save(tempFile);
-        var actual = AsciiDocCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
+        var actual = DocxCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
         assertEquals("""
                 First page is landscape.
                 
@@ -310,7 +310,7 @@ class ProcessorRepeatDocPartTest {
         var tempFile = File.createTempFile("pre", ".docx");
         log.debug(tempFile.getAbsolutePath());
         stamped.unwrap(OpcPackage.class).save(tempFile);
-        var actual = AsciiDocCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
+        var actual = DocxCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
         assertEquals(expected, actual);
     }
 
@@ -855,7 +855,7 @@ class ProcessorRepeatDocPartTest {
         log.debug(tempFile.getAbsolutePath());
         stamped.unwrap(OpcPackage.class).save(tempFile);
 
-        var actual = AsciiDocCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
+        var actual = DocxCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
         var expected = """
                 First page is portrait.
                 

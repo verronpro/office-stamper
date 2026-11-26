@@ -51,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>pro.verron.asciidoc</groupId>
-            <artifactId>asciidoc-compiler</artifactId>
+            <artifactId>asciidoc-docx</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

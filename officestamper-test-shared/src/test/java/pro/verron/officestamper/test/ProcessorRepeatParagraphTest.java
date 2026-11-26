@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.verron.asciidoc.compiler.AsciiDocCompiler;
+import pro.verron.asciidoc.docx.DocxCompiler;
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeDocument;
 import pro.verron.officestamper.test.utils.ContextFactory;
@@ -295,7 +295,7 @@ class ProcessorRepeatParagraphTest {
         log.info(name);
         var stamper = docxStamper(config);
         var stamped = stamper.stamp(template, context);
-        var actual = AsciiDocCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
+        var actual = DocxCompiler.toAsciidoc(stamped.unwrap(WordprocessingMLPackage.class));
         assertEquals(expected, actual);
     }
 

@@ -5,7 +5,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pro.verron.asciidoc.compiler.AsciiDocCompiler;
+import pro.verron.asciidoc.docx.DocxCompiler;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.test.utils.ContextFactory;
 
@@ -39,7 +39,7 @@ class MultiSectionTest {
         var configuration = Flavor.get().standard();
         var stamper = docxStamper(configuration);
         var wordprocessingMLPackage = stamper.stamp(template, context);
-        var actual = AsciiDocCompiler.toAsciidoc(wordprocessingMLPackage.unwrap(WordprocessingMLPackage.class));
+        var actual = DocxCompiler.toAsciidoc(wordprocessingMLPackage.unwrap(WordprocessingMLPackage.class));
         String expected = """
                 Homer
                 

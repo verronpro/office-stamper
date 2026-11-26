@@ -24,7 +24,7 @@ module pro.verron.officestamper.docx4j17.test {
     requires com.tngtech.archunit.junit5.api;
     requires com.tngtech.archunit;
     requires pro.verron.asciidoc.core;
-    requires pro.verron.asciidoc.compiler;
+    requires pro.verron.asciidoc.docx17;
     requires pro.verron.officestamper.utils;
 
     opens pro.verron.officestamper.docx4j17.test;

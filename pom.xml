@@ -31,7 +31,7 @@
     <properties>
         <docx4j.version>11.5.14</docx4j.version>
         <docx4j17.version>17.0.2</docx4j17.version>
-        <asciidoc.version>4.0.1</asciidoc.version>
+        <asciidoc.version>4.1.0-SNAPSHOT</asciidoc.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.report.outputEncoding>UTF-8</project.report.outputEncoding>
@@ -292,6 +292,11 @@
             <dependency>
                 <groupId>pro.verron.asciidoc</groupId>
                 <artifactId>asciidoc-docx</artifactId>
+                <version>${asciidoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pro.verron.asciidoc</groupId>
+                <artifactId>asciidoc-docx17</artifactId>
                 <version>${asciidoc.version}</version>
             </dependency>
             <dependency>

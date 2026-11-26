@@ -23,6 +23,7 @@
         <module>excel-context</module>
         <module>cli</module>
         <module>utils</module>
+        <module>officestamper-test-shared</module>
         <module>officestamper-docx4j11</module>
         <module>officestamper-docx4j17</module>
     </modules>

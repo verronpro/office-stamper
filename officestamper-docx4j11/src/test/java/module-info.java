@@ -29,10 +29,14 @@ module pro.verron.officestamper.docx4j11.test {
 
     opens pro.verron.officestamper.docx4j11.test;
     exports pro.verron.officestamper.docx4j11.test;
-    exports pro.verron.officestamper.docx4j11.test.utils;
-    opens pro.verron.officestamper.docx4j11.test.utils;
     exports pro.verron.officestamper.docx4j11.test.architecture;
     opens pro.verron.officestamper.docx4j11.test.architecture;
-    exports pro.verron.officestamper.docx4j11.test.experimental;
-    opens pro.verron.officestamper.docx4j11.test.experimental;
+    exports pro.verron.officestamper.test;
+    opens pro.verron.officestamper.test;
+    exports pro.verron.officestamper.test.utils;
+    opens pro.verron.officestamper.test.utils;
+    exports pro.verron.officestamper.test.experimental;
+    opens pro.verron.officestamper.test.experimental;
+    uses pro.verron.officestamper.test.TestFlavor;
+    provides pro.verron.officestamper.test.TestFlavor with pro.verron.officestamper.docx4j11.test.TestFlavorImpl;
 }

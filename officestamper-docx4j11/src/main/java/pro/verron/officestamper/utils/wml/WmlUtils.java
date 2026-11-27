@@ -1,8 +1,8 @@
 package pro.verron.officestamper.utils.wml;
 
-/// Deprecated compatibility shim: this type moved to [pro.verron.officestamper.docx4j11.wml.WmlUtils]
+/// Deprecated compatibility shim: this type moved to [pro.verron.officestamper.docx.wml.WmlUtils]
 /// in the 4.0 two-module split. Update the import to the new location.
 ///
-/// @deprecated use [pro.verron.officestamper.docx4j11.wml.WmlUtils] instead.
+/// @deprecated use [pro.verron.officestamper.docx.wml.WmlUtils] instead.
 @Deprecated(forRemoval = true)
-public class WmlUtils extends pro.verron.officestamper.docx4j11.wml.WmlUtils {}
+public class WmlUtils extends pro.verron.officestamper.docx.wml.WmlUtils {}

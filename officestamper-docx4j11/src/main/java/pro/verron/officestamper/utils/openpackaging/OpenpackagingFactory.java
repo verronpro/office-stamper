@@ -1,8 +1,8 @@
 package pro.verron.officestamper.utils.openpackaging;
 
-/// Deprecated compatibility shim: this type moved to [pro.verron.officestamper.docx4j11.openpackaging.OpenpackagingFactory]
+/// Deprecated compatibility shim: this type moved to [pro.verron.officestamper.docx.openpackaging.OpenpackagingFactory]
 /// in the 4.0 two-module split. Update the import to the new location.
 ///
-/// @deprecated use [pro.verron.officestamper.docx4j11.openpackaging.OpenpackagingFactory] instead.
+/// @deprecated use [pro.verron.officestamper.docx.openpackaging.OpenpackagingFactory] instead.
 @Deprecated(forRemoval = true)
-public class OpenpackagingFactory extends pro.verron.officestamper.docx4j11.openpackaging.OpenpackagingFactory {}
+public class OpenpackagingFactory extends pro.verron.officestamper.docx.openpackaging.OpenpackagingFactory {}

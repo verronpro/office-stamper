@@ -13,21 +13,21 @@ module pro.verron.officestamper.docx4j11 {
     requires org.jspecify;
     requires org.slf4j;
 
-    exports pro.verron.officestamper.docx4j11;
-    exports pro.verron.officestamper.docx4j11.experimental;
-    exports pro.verron.officestamper.docx4j11.wml to pro.verron.officestamper.docx4j11.test;
-    exports pro.verron.officestamper.docx4j11.openpackaging to pro.verron.officestamper.docx4j11.test;
-    exports pro.verron.officestamper.docx4j11.pml to pro.verron.officestamper.docx4j11.test;
-    exports pro.verron.officestamper.docx4j11.sml to pro.verron.officestamper.docx4j11.test;
-    exports pro.verron.officestamper.docx4j11.image to pro.verron.officestamper.docx4j11.test;
-    exports pro.verron.officestamper.docx4j11.preset to pro.verron.officestamper.docx4j11.test;
-    exports pro.verron.officestamper.docx4j11.preset.prooferror to pro.verron.officestamper.docx4j11.test;
-    exports pro.verron.officestamper.docx4j11.preset.resolvers.image to pro.verron.officestamper.docx4j11.test;
-    opens pro.verron.officestamper.docx4j11 to org.junit.platform.commons;
+    exports pro.verron.officestamper.docx;
+    exports pro.verron.officestamper.docx.experimental;
+    exports pro.verron.officestamper.docx.wml to pro.verron.officestamper.docx4j11.test;
+    exports pro.verron.officestamper.docx.openpackaging to pro.verron.officestamper.docx4j11.test;
+    exports pro.verron.officestamper.docx.pml to pro.verron.officestamper.docx4j11.test;
+    exports pro.verron.officestamper.docx.sml to pro.verron.officestamper.docx4j11.test;
+    exports pro.verron.officestamper.docx.image to pro.verron.officestamper.docx4j11.test;
+    exports pro.verron.officestamper.docx.preset to pro.verron.officestamper.docx4j11.test;
+    exports pro.verron.officestamper.docx.preset.prooferror to pro.verron.officestamper.docx4j11.test;
+    exports pro.verron.officestamper.docx.preset.resolvers.image to pro.verron.officestamper.docx4j11.test;
+    opens pro.verron.officestamper.docx to org.junit.platform.commons;
 
     // Compatibility shims (deprecated): the pre-4.0 package locations, so code
     // written against the single-artifact 3.3.x line keeps compiling. Every shim
-    // extends the corresponding docx4j11.* class above.
+    // extends the corresponding docx.* class above.
     exports pro.verron.officestamper.utils.wml;
     exports pro.verron.officestamper.utils.openpackaging;
     exports pro.verron.officestamper.utils.image;
@@ -44,6 +44,6 @@ module pro.verron.officestamper.docx4j11 {
     exports pro.verron.officestamper.preset.postprocessors.cleanfootnotes;
     exports pro.verron.officestamper.preset.resolvers.image;
 
-    provides pro.verron.officestamper.api.OfficeStamper with pro.verron.officestamper.docx4j11.DocxStamperProvider;
+    provides pro.verron.officestamper.api.OfficeStamper with pro.verron.officestamper.docx.DocxStamperProvider;
 }
 

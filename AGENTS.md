@@ -11,6 +11,9 @@ Maven modules:
   `OfficeStamperConfigurations` (presets `minimal()`, `standard()`, `full()`).
 - `officestamper-docx4j11` / `officestamper-docx4j17` — docx4j providers (engine + matching
   docx4j transitively); the engine itself is docx-free.
+- `officestamper-docx-sources` — flavor-neutral docx adapter sources shared by both providers,
+  which compile them via `build-helper-maven-plugin add-source` (never built, installed or
+  published on its own; the only flavor-dependent class, `docx.JaxbCompat`, lives per-flavor).
 - `officestamper-test-shared` — shared docx-stamping test sources, compiled into both
   provider test modules and run once per flavor (see Testing).
 - `utils` — low-level utilities with no engine dependency.

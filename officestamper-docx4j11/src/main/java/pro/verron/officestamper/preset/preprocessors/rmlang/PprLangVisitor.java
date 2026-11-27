@@ -1,8 +1,8 @@
 package pro.verron.officestamper.preset.preprocessors.rmlang;
 
-/// Deprecated compatibility shim: this type moved to [pro.verron.officestamper.docx4j11.preset.rmlang.PprLangVisitor]
+/// Deprecated compatibility shim: this type moved to [pro.verron.officestamper.docx.preset.rmlang.PprLangVisitor]
 /// in the 4.0 two-module split. Update the import to the new location.
 ///
-/// @deprecated use [pro.verron.officestamper.docx4j11.preset.rmlang.PprLangVisitor] instead.
+/// @deprecated use [pro.verron.officestamper.docx.preset.rmlang.PprLangVisitor] instead.
 @Deprecated(forRemoval = true)
-public class PprLangVisitor extends pro.verron.officestamper.docx4j11.preset.rmlang.PprLangVisitor {}
+public class PprLangVisitor extends pro.verron.officestamper.docx.preset.rmlang.PprLangVisitor {}

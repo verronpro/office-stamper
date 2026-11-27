@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static pro.verron.officestamper.docx4j17.wml.WmlFactory.*;
+import static pro.verron.officestamper.docx.wml.WmlFactory.*;
 
-import pro.verron.officestamper.docx4j17.wml.DocxIterator;
+import pro.verron.officestamper.docx.wml.DocxIterator;
 
 class DocxIteratorTest {
     @Test

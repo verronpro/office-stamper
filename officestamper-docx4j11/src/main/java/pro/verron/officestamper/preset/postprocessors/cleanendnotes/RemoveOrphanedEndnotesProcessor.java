@@ -1,8 +1,8 @@
 package pro.verron.officestamper.preset.postprocessors.cleanendnotes;
 
-/// Deprecated compatibility shim: this type moved to [pro.verron.officestamper.docx4j11.preset.cleanendnotes.RemoveOrphanedEndnotesProcessor]
+/// Deprecated compatibility shim: this type moved to [pro.verron.officestamper.docx.preset.cleanendnotes.RemoveOrphanedEndnotesProcessor]
 /// in the 4.0 two-module split. Update the import to the new location.
 ///
-/// @deprecated use [pro.verron.officestamper.docx4j11.preset.cleanendnotes.RemoveOrphanedEndnotesProcessor] instead.
+/// @deprecated use [pro.verron.officestamper.docx.preset.cleanendnotes.RemoveOrphanedEndnotesProcessor] instead.
 @Deprecated(forRemoval = true)
-public class RemoveOrphanedEndnotesProcessor extends pro.verron.officestamper.docx4j11.preset.cleanendnotes.RemoveOrphanedEndnotesProcessor {}
+public class RemoveOrphanedEndnotesProcessor extends pro.verron.officestamper.docx.preset.cleanendnotes.RemoveOrphanedEndnotesProcessor {}

@@ -35,7 +35,7 @@ public final class EvaluationContextFactories {
 
     /// Creates a restricted [EvaluationContextFactory] that provides a predefined,
     /// limited configuration to ensure security and control during expression evaluation.
-    /// This factory configures the resulting [EvaluationContext] to disallow certain
+    /// This factory configures the resulting [org.springframework.expression.EvaluationContext] to disallow certain
     /// operations, such as bean resolution and type resolution, which could pose security risks.
     ///
     /// The resulting context supports access to properties and maps but restricts the
@@ -80,7 +80,7 @@ public final class EvaluationContextFactories {
     /// Creates a permissive [EvaluationContextFactory] that provides a configuration
     /// allowing flexible property and map access during evaluation.
     ///
-    /// This factory configures the resulting [EvaluationContext] to include support
+    /// This factory configures the resulting [org.springframework.expression.EvaluationContext] to include support
     /// for reflective property access and map-based property access.
     ///
     /// The resulting context is designed for scenarios where relaxed evaluation

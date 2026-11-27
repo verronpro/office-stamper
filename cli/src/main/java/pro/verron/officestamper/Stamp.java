@@ -8,7 +8,7 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.docx4j11.DocxOfficeStampers;
+import pro.verron.officestamper.docx.DocxOfficeStampers;
 import pro.verron.officestamper.preset.ExceptionResolvers;
 
 import java.io.OutputStream;

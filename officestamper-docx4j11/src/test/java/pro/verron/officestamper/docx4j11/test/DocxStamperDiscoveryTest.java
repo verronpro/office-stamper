@@ -1,7 +1,7 @@
 package pro.verron.officestamper.docx4j11.test;
 
 import org.junit.jupiter.api.Test;
-import pro.verron.officestamper.docx4j11.DocxStamperProvider;
+import pro.verron.officestamper.docx.DocxStamperProvider;
 import pro.verron.officestamper.api.OfficeStampers;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;

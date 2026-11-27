@@ -16,17 +16,17 @@ module pro.verron.officestamper.docx4j17 {
     requires org.jspecify;
     requires org.slf4j;
 
-    exports pro.verron.officestamper.docx4j17;
-    exports pro.verron.officestamper.docx4j17.experimental;
-    exports pro.verron.officestamper.docx4j17.wml to pro.verron.officestamper.docx4j17.test;
-    exports pro.verron.officestamper.docx4j17.openpackaging to pro.verron.officestamper.docx4j17.test;
-    exports pro.verron.officestamper.docx4j17.pml to pro.verron.officestamper.docx4j17.test;
-    exports pro.verron.officestamper.docx4j17.sml to pro.verron.officestamper.docx4j17.test;
-    exports pro.verron.officestamper.docx4j17.image to pro.verron.officestamper.docx4j17.test;
-    exports pro.verron.officestamper.docx4j17.preset to pro.verron.officestamper.docx4j17.test;
-    exports pro.verron.officestamper.docx4j17.preset.resolvers.image to pro.verron.officestamper.docx4j17.test;
-    opens pro.verron.officestamper.docx4j17 to org.junit.platform.commons;
+    exports pro.verron.officestamper.docx;
+    exports pro.verron.officestamper.docx.experimental;
+    exports pro.verron.officestamper.docx.wml to pro.verron.officestamper.docx4j17.test;
+    exports pro.verron.officestamper.docx.openpackaging to pro.verron.officestamper.docx4j17.test;
+    exports pro.verron.officestamper.docx.pml to pro.verron.officestamper.docx4j17.test;
+    exports pro.verron.officestamper.docx.sml to pro.verron.officestamper.docx4j17.test;
+    exports pro.verron.officestamper.docx.image to pro.verron.officestamper.docx4j17.test;
+    exports pro.verron.officestamper.docx.preset to pro.verron.officestamper.docx4j17.test;
+    exports pro.verron.officestamper.docx.preset.resolvers.image to pro.verron.officestamper.docx4j17.test;
+    opens pro.verron.officestamper.docx to org.junit.platform.commons;
 
-    provides pro.verron.officestamper.api.OfficeStamper with pro.verron.officestamper.docx4j17.DocxStamperProvider;
+    provides pro.verron.officestamper.api.OfficeStamper with pro.verron.officestamper.docx.DocxStamperProvider;
 }
 

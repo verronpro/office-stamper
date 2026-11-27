@@ -125,7 +125,7 @@ was the entry point. The 4.0 migration is:
   became provider adapters; and the docx-coupled factory classes that lived directly in
   `pro.verron.officestamper.preset` (`OfficeStampers`, `Preprocessors`, `Postprocessors`)
   cannot be re-created at their old location because the package is owned by the engine's
-  docx-free preset — they moved to `docx4j11.preset`.
+  docx-free preset — they moved to `docx.preset`.
 
 == Experimental pptx / xlsx stampers
 

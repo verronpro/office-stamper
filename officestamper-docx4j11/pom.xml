@@ -87,6 +87,18 @@
                 <version>3.6.1</version>
                 <executions>
                     <execution>
+                        <id>add-shared-docx-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/../officestamper-docx-sources/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>add-shared-test-sources</id>
                         <phase>generate-test-sources</phase>
                         <goals>
@@ -94,7 +106,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${maven.multiModuleProjectDirectory}/officestamper-test-shared/src/test/java</source>
+                                <source>${project.basedir}/../officestamper-test-shared/src/test/java</source>
                             </sources>
                         </configuration>
                     </execution>

@@ -12,7 +12,7 @@ public abstract class PlaceholderHooker
 
     private final Map<String, String> elementByOpening;
 
-    /// @param opening the literal opening delimiter (e.g. {@code ${} or {@code #{}); must end with {@code {}
+    /// @param opening the literal opening delimiter (e.g. {@code $&#123;} or {@code #&#123;}); must end with {@code &#123;}
     /// @param element the smart-tag element name to wrap matching placeholders with
     protected PlaceholderHooker(String opening, String element) {
         this(Map.of(opening, element));

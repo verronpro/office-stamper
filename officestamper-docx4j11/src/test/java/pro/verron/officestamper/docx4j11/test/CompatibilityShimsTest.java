@@ -2,9 +2,9 @@ package pro.verron.officestamper.docx4j11.test;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import pro.verron.officestamper.docx4j11.experimental.ExperimentalStampers;
-import pro.verron.officestamper.docx4j11.preset.prooferror.RemoveProofErrors;
-import pro.verron.officestamper.docx4j11.wml.WmlUtils;
+import pro.verron.officestamper.docx.experimental.ExperimentalStampers;
+import pro.verron.officestamper.docx.preset.prooferror.RemoveProofErrors;
+import pro.verron.officestamper.docx.wml.WmlUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;

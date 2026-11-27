@@ -31,7 +31,8 @@ public class ArchUnitTests {
                                                                          // The provider's preset is the
                                                                          // docx4j-coupled layer by design: it
                                                                          // may use this module's own adapters.
-                                                                         "..docx4j11..")
+                                                                         "..docx4j11..",
+                                                                         "..docx..")
                                                                  .orShould()
                                                                  .dependOnClassesThat()
                                                                  .belongToAnyOf(DocxStamper.class,

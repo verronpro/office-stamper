@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static pro.verron.officestamper.docx4j11.DocxOfficeStampers.docxStamper;
-import static pro.verron.officestamper.docx4j11.experimental.ExperimentalStampers.pptxStamper;
+import static pro.verron.officestamper.docx.DocxOfficeStampers.docxStamper;
+import static pro.verron.officestamper.docx.experimental.ExperimentalStampers.pptxStamper;
 
 enum TemplateKind {
     WORD {

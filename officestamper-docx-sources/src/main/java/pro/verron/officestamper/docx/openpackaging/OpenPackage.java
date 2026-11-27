@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 
 import static org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage.createImageName;
 import static pro.verron.officestamper.utils.UtilsException.supply;
-import static pro.verron.officestamper.docx.image.ImgUtils.detectFormat;
-import static pro.verron.officestamper.docx.image.ImgUtils.supportedType;
+import static pro.verron.officestamper.utils.image.ImgUtils.detectFormat;
+import static pro.verron.officestamper.utils.image.ImgUtils.supportedType;
 import static pro.verron.officestamper.docx.openpackaging.OpenpackagingFactory.setupRelationship;
 import static pro.verron.officestamper.docx.openpackaging.OpenpackagingUtils.createSvgPart;
 

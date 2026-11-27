@@ -1,8 +1,7 @@
 package pro.verron.officestamper.docx.image;
 
-
-
 import org.docx4j.relationships.Relationship;
+import pro.verron.officestamper.utils.image.ImgFormat;
 
 /// Represents an image part with its format and the associated relationship in
 /// the document.

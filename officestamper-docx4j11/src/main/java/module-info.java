@@ -19,7 +19,6 @@ module pro.verron.officestamper.docx4j11 {
     exports pro.verron.officestamper.docx.openpackaging to pro.verron.officestamper.docx4j11.test;
     exports pro.verron.officestamper.docx.pml to pro.verron.officestamper.docx4j11.test;
     exports pro.verron.officestamper.docx.sml to pro.verron.officestamper.docx4j11.test;
-    exports pro.verron.officestamper.docx.image to pro.verron.officestamper.docx4j11.test;
     exports pro.verron.officestamper.docx.preset to pro.verron.officestamper.docx4j11.test;
     exports pro.verron.officestamper.docx.preset.prooferror to pro.verron.officestamper.docx4j11.test;
     exports pro.verron.officestamper.docx.preset.resolvers.image to pro.verron.officestamper.docx4j11.test;
@@ -27,10 +26,11 @@ module pro.verron.officestamper.docx4j11 {
 
     // Compatibility shims (deprecated): the pre-4.0 package locations, so code
     // written against the single-artifact 3.3.x line keeps compiling. Every shim
-    // extends the corresponding docx.* class above.
+    // extends the corresponding docx.* class above. Note: the image utilities are
+    // NOT shims — they returned to their pre-4.0 home in pro.verron.officestamper.utils
+    // (module pro.verron.officestamper.utils) as docx-free classes.
     exports pro.verron.officestamper.utils.wml;
     exports pro.verron.officestamper.utils.openpackaging;
-    exports pro.verron.officestamper.utils.image;
     exports pro.verron.officestamper.utils.pml;
     exports pro.verron.officestamper.utils.sml;
     exports pro.verron.officestamper.experimental;

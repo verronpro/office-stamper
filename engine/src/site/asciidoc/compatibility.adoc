@@ -98,7 +98,7 @@ was the entry point. The 4.0 migration is:
     A custom factory overrides the one chosen by the security mode.
 . *Compatibility shims* (deprecated, `forRemoval`) keep the pre-4.0 package locations compiling
   in the `officestamper-docx4j11` artifact:
-  `pro.verron.officestamper.utils.{wml, openpackaging, image, pml, sml}.*`,
+  `pro.verron.officestamper.utils.{wml, openpackaging, pml, sml}.*`,
   `pro.verron.officestamper.experimental.ExperimentalStampers`, and the docx-coupled preset
   processors/visitors under their old `preset.preprocessors.*`, `preset.postprocessors.*`,
   `preset.processors.repeat.*` and `preset.resolvers.image.*` locations.

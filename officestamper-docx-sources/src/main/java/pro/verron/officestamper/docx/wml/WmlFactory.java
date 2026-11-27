@@ -13,8 +13,8 @@ import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.*;
 import org.docx4j.wml.Comments.Comment;
 import pro.verron.officestamper.utils.UtilsException;
+import pro.verron.officestamper.utils.image.Dimension;
 
-import java.awt.geom.Dimension2D;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -272,15 +272,15 @@ public class WmlFactory {
     public static Scale computeScale(
             PageDimensions pageDimensions,
             Integer maxWidth,
-            Dimension2D dpx
+            Dimension dpx
     ) {
         double writableWidthTwips = pageDimensions.getWritableWidthTwips();
         if (maxWidth > 0 && maxWidth < writableWidthTwips)
             writableWidthTwips = maxWidth;
         double imageWidthTwips =
-                UnitsOfMeasurement.pxToTwipDouble(dpx.getWidth());
+                UnitsOfMeasurement.pxToTwipDouble(dpx.width());
         double imageHeightTwips =
-                UnitsOfMeasurement.pxToTwipDouble(dpx.getHeight());
+                UnitsOfMeasurement.pxToTwipDouble(dpx.height());
         long cx;
         long cy;
         if (imageWidthTwips > writableWidthTwips) {

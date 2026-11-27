@@ -1,8 +1,6 @@
 package pro.verron.officestamper.test.utils;
 import pro.verron.officestamper.test.Flavor;
 
-import org.docx4j.openpackaging.packages.PresentationMLPackage;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import pro.verron.officestamper.api.OfficeDocument;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.preset.Image;

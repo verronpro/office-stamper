@@ -8,6 +8,7 @@ import pro.verron.officestamper.api.ProcessorContext;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.preset.repeat.RepeatParagraphProcessor] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class RepeatParagraphProcessor
         extends pro.verron.officestamper.docx.preset.repeat.RepeatParagraphProcessor {
 

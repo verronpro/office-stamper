@@ -1,8 +1,6 @@
 package pro.verron.officestamper.docx;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import pro.verron.officestamper.api.ObjectResolver;
-import pro.verron.officestamper.api.OfficeStamperException;
 
 import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.docx.preset.CommentHooker;
@@ -23,7 +21,6 @@ import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.preset.Resolvers;
 import pro.verron.officestamper.api.OfficeDocument;
-import pro.verron.officestamper.api.OfficeStamper;
 import pro.verron.officestamper.api.StreamStamper;
 
 import java.io.IOException;

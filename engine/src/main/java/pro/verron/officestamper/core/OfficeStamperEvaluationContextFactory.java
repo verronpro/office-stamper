@@ -2,7 +2,6 @@ package pro.verron.officestamper.core;
 
 import org.springframework.expression.EvaluationContext;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.api.AnchoredComment;
 import pro.verron.officestamper.api.ProcessorContext;
 
 import java.util.HashMap;

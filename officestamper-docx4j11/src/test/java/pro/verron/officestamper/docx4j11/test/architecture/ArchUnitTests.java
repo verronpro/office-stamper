@@ -13,7 +13,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 @AnalyzeClasses(packages = "pro.verron.officestamper", importOptions = ImportOption.DoNotIncludeTests.class)
 public class ArchUnitTests {
 
-    @ArchTest ArchRule preset_depend_on_utils_and_api = classes().that()
+    @ArchTest ArchRule presetDependOnUtilsAndApi = classes().that()
                                                                  .resideInAPackage("..preset..")
                                                                  .should()
                                                                  .onlyDependOnClassesThat()
@@ -37,7 +37,7 @@ public class ArchUnitTests {
                                                                  .dependOnClassesThat()
                                                                  .belongToAnyOf(DocxStamper.class,
                                                                          DocxStamperConfiguration.class);
-    @ArchTest ArchRule core_depend_on_utils_and_api = classes().that()
+    @ArchTest ArchRule coreDependOnUtilsAndApi = classes().that()
                                                                .resideInAPackage("..core..")
                                                                .should()
                                                                .onlyDependOnClassesThat()
@@ -50,11 +50,7 @@ public class ArchUnitTests {
                                                                        "org.jspecify..",
                                                                        "org.jvnet.jaxb2_commons..",
                                                                        "jakarta.xml.bind..",
-                                                                       "org.slf4j..",
-                                                                       "org.springframework..");
-
-    /// Default constructor.
-    public ArchUnitTests() {
-    }
+                                                                         "org.slf4j..",
+                                                                         "org.springframework..");
 }
 

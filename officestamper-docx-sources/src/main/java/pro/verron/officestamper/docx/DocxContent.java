@@ -1,13 +1,12 @@
 package pro.verron.officestamper.docx;
 
-import org.docx4j.wml.ContentAccessor;
 import pro.verron.officestamper.api.Content;
 import pro.verron.officestamper.api.Element;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/// docx4j 11 implementation of {@link Content}: a live view over a docx4j content list.
+/// docx4j 11 implementation of [Content]: a live view over a docx4j content list.
 final class DocxContent
         implements Content {
 
@@ -21,15 +20,8 @@ final class DocxContent
         this.owner = owner;
     }
 
-    DocxContent(org.docx4j.openpackaging.parts.JaxbXmlPart part, DocxPart owner) {
-        this(part instanceof ContentAccessor ca ? ca : null,
-             part instanceof ContentAccessor ca ? ca.getContent() : null,
-             owner);
-    }
-
     @Override
     public List<Element> elements() {
-        if (backing == null) return List.of();
         var out = new ArrayList<Element>();
         for (Object o : backing) {
             out.add(new DocxElement(o, owner));
@@ -48,7 +40,7 @@ final class DocxContent
         requireBacking();
         for (int i = 0; i < elements.size(); i++) {
             var raw = DocxElement.rawOf(elements.get(i));
-            if (container != null) JaxbCompat.setParent(raw, container);
+            JaxbCompat.setParent(raw, container);
             backing.add(index + i, raw);
         }
     }
@@ -60,7 +52,7 @@ final class DocxContent
     }
 
     private void requireBacking() {
-        if (backing == null) throw new UnsupportedOperationException(
+        if (!DocxElement.isContainer(container)) throw new UnsupportedOperationException(
                 "This element has no mutable content");
     }
 }

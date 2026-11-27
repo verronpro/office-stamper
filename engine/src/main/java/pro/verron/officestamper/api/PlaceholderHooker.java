@@ -6,13 +6,13 @@ import java.util.Map;
 /// Pre-processor that wraps inline placeholders in a document with smart tags so the engine can
 /// process them later.
 ///
-/// <p>The concrete, library-specific traversal is supplied by a provider (R2-3).
+/// The concrete, library-specific traversal is supplied by a provider (R2-3).
 public abstract class PlaceholderHooker
         implements PreProcessor {
 
     private final Map<String, String> elementByOpening;
 
-    /// @param opening the literal opening delimiter (e.g. {@code $&#123;} or {@code #&#123;}); must end with {@code &#123;}
+    /// @param opening the literal opening delimiter (e.g. `${` or `#{`); must end with `{`
     /// @param element the smart-tag element name to wrap matching placeholders with
     protected PlaceholderHooker(String opening, String element) {
         this(Map.of(opening, element));
@@ -38,7 +38,4 @@ public abstract class PlaceholderHooker
                     "A placeholder opening delimiter must end with '{', but was '%s'".formatted(opening));
         return opening;
     }
-
-    @Override
-    public abstract void process(OfficeDocument document);
 }

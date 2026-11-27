@@ -1,7 +1,6 @@
 package pro.verron.officestamper.api;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficePart;
 
 /// The ObjectResolver interface provides a contract for resolving objects to create a run with the resolved content. It
@@ -13,12 +12,12 @@ public interface ObjectResolver {
 
     /// Resolves the expression in the given document with the provided object.
     ///
-    /// @param OfficePart the [OfficePart] document in which to resolve the expression
+    /// @param part the [OfficePart] document in which to resolve the expression
     /// @param expression the expression value to be replaced
     /// @param object the object to be used for resolving the expression
     /// @return the resolved value for the expression
     /// @throws OfficeStamperException if no resolver is found for the object
-    Insert resolve(OfficePart OfficePart, String expression, @Nullable Object object);
+    Insert resolve(OfficePart part, String expression, @Nullable Object object);
 
     /// Checks if the given object can be resolved.
     ///

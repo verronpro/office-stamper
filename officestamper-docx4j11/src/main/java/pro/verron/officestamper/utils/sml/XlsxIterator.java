@@ -8,6 +8,7 @@ import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.sml.XlsxIterator] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class XlsxIterator extends pro.verron.officestamper.docx.sml.XlsxIterator {
 
     public XlsxIterator(SpreadsheetMLPackage spreadsheet) {

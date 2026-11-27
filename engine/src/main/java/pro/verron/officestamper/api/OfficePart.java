@@ -2,7 +2,7 @@ package pro.verron.officestamper.api;
 
 import java.util.List;
 
-/// A part of an {@link OfficeDocument} (e.g. a worksheet or the main document
+/// A part of an [OfficeDocument] (e.g. a worksheet or the main document
 /// part), exposing its content and comments without leaking the underlying
 /// library types.
 public interface OfficePart {

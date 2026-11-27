@@ -1,6 +1,5 @@
 package pro.verron.officestamper.docx;
 
-import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import pro.verron.officestamper.api.Element;
 import pro.verron.officestamper.api.ElementFactory;
@@ -9,7 +8,7 @@ import pro.verron.officestamper.docx.wml.WmlFactory;
 
 import java.util.List;
 
-/// docx4j 11 implementation of {@link ElementFactory}.
+/// docx4j 11 implementation of [ElementFactory].
 final class DocxElementFactory
         implements ElementFactory {
 

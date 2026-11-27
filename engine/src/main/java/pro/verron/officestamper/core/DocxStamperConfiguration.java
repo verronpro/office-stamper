@@ -5,7 +5,6 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import pro.verron.officestamper.api.*;
-import pro.verron.officestamper.api.AnchoredComment;
 import pro.verron.officestamper.api.CustomFunction.NeedsBiFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsFunctionImpl;
 import pro.verron.officestamper.api.CustomFunction.NeedsTriFunctionImpl;

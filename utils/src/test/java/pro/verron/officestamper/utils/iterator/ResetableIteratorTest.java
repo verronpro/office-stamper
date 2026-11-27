@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/// Tests the {@link ResetableIterator} class.
+/// Tests the [ResetableIterator] class.
 public class ResetableIteratorTest {
 
     private ResetableIterator<Integer> iterator;

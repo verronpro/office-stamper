@@ -25,13 +25,13 @@ public class TagHook
             OfficeStamperEvaluationContextFactory evaluationContextFactory
     ) {
         if ("executed".equals(tag.attribute("status"))) return false;
-        var AnchoredComment = tag.asComment();
+        var anchoredComment = tag.asComment();
         var paragraph = tag.paragraph();
         var expression = tag.expression();
         var contextKey = contextKey(tag);
         var contextStack = contextRoot.find(contextKey);
         log.trace("Tag '{}' contextKey={} branch={}", expression, contextKey, contextStack);
-        var processorContext = new ProcessorContext(part, paragraph, AnchoredComment, expression, contextStack);
+        var processorContext = new ProcessorContext(part, paragraph, anchoredComment, expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
         var tagType = tag.type();

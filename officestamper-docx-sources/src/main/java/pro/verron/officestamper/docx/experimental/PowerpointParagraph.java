@@ -144,8 +144,7 @@ public class PowerpointParagraph
         var elements = insert.elements();
         if (elements.size() != 1) throw new AssertionError("Insert must contain exactly one element");
         var element = elements.getFirst();
-        if (!(element instanceof PptxElement wrapped)
-            || !(wrapped.raw() instanceof CTRegularTextRun replacementRun))
+        if (!(element instanceof PptxElement(Object raw) && raw instanceof CTRegularTextRun replacementRun))
             throw new AssertionError("Insert '%s' is not a unique pptx text run".formatted(element));
 
         String text = asString();

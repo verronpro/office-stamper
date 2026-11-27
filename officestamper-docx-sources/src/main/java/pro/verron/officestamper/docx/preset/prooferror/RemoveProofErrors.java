@@ -13,7 +13,7 @@ import static pro.verron.officestamper.docx.wml.WmlUtils.visitDocument;
 /// Proof errors are markup elements that indicate potential grammar or spelling errors in the document. This
 /// pre-processor removes them to clean up the document before further processing.
 ///
-/// <p>docx4j-coupled processor relocated from the engine preset; it implements the docx4j-free
+/// docx4j-coupled processor relocated from the engine preset; it implements the docx4j-free
 /// [PreProcessor] contract and reaches its native document through [OfficeDocument#unwrap].
 public class RemoveProofErrors
         implements PreProcessor {

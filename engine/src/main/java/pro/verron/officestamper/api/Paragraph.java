@@ -24,7 +24,7 @@ public interface Paragraph {
     /// @param insert     the insert whose elements replace the placeholder
     void replace(String expression, Insert insert);
 
-    /// Replaces the section of elements between {@code start} and {@code end} with the given insert.
+    /// Replaces the section of elements between `start` and `end` with the given insert.
     ///
     /// @param start  the first element of the section to replace
     /// @param end    the last element of the section to replace

@@ -5,4 +5,5 @@ package pro.verron.officestamper.preset.preprocessors.prooferror;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.preset.prooferror.ProofErrVisitor] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class ProofErrVisitor extends pro.verron.officestamper.docx.preset.prooferror.ProofErrVisitor {}

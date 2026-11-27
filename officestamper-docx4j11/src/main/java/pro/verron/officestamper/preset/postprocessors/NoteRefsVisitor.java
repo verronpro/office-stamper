@@ -5,4 +5,5 @@ package pro.verron.officestamper.preset.postprocessors;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.preset.cleanfootnotes.NoteRefsVisitor] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class NoteRefsVisitor extends pro.verron.officestamper.docx.preset.cleanfootnotes.NoteRefsVisitor {}

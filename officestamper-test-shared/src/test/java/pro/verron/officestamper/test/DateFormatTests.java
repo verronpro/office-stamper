@@ -1,5 +1,4 @@
 package pro.verron.officestamper.test;
-import pro.verron.officestamper.test.Flavor;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

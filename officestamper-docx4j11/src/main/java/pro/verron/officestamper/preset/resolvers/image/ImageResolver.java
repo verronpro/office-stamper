@@ -6,6 +6,7 @@ package pro.verron.officestamper.preset.resolvers.image;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.preset.resolvers.image.ImageResolver] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class ImageResolver
         extends pro.verron.officestamper.docx.preset.resolvers.image.ImageResolver {
 

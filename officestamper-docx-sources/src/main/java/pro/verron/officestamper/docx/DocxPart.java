@@ -14,7 +14,7 @@ import pro.verron.officestamper.api.OfficePart;
 import java.util.ArrayList;
 import java.util.List;
 
-/// docx4j 11 implementation of {@link OfficePart}.
+/// docx4j 11 implementation of [OfficePart].
 public final class DocxPart implements OfficePart {
 
     private final JaxbXmlPart part;
@@ -32,7 +32,7 @@ public final class DocxPart implements OfficePart {
 
     @Override
     public Content content() {
-        return new DocxContent(part, this);
+        return new DocxContent(part, DocxElement.backingList(part), this);
     }
 
     @Override
@@ -40,7 +40,7 @@ public final class DocxPart implements OfficePart {
         var finder = new CommentFinder();
         try {
             new TraversalUtil(part.getContents(), finder);
-        } catch (Exception e) {
+        } catch (Exception _) {
             return List.of();
         }
         var result = new ArrayList<Comment>();

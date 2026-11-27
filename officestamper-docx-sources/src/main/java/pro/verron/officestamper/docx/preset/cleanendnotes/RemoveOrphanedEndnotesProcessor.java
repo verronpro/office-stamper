@@ -1,6 +1,5 @@
 package pro.verron.officestamper.docx.preset.cleanendnotes;
 
-import pro.verron.officestamper.api.OfficeStamperException;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.EndnotesPart;

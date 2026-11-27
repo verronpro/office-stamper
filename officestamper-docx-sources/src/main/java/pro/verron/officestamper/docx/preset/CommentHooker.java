@@ -23,10 +23,6 @@ import static pro.verron.officestamper.docx.wml.WmlFactory.newSmartTag;
 public final class CommentHooker
         implements PreProcessor {
 
-    /// Default constructor for CommentHooker.
-    public CommentHooker() {
-    }
-
     @Override
     public void process(OfficeDocument document) {
         var pkg = document.unwrap(WordprocessingMLPackage.class);
@@ -49,10 +45,6 @@ public final class CommentHooker
             extends TraversalUtilVisitor<CommentRangeStart> {
 
         private final List<CommentRangeStart> results = new ArrayList<>();
-
-        /// Default constructor for CRSCollector.
-        public CRSCollector() {
-        }
 
         @Override
         public void apply(CommentRangeStart element) {

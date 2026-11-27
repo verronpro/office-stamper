@@ -19,7 +19,7 @@ import java.util.List;
 
 /// Operations that differ between docx4j flavors in the shared docx-stamping
 /// test suite. Each provider test module registers exactly one implementation
-/// via {@link java.util.ServiceLoader}, so the identical shared sources run
+/// via [java.util.ServiceLoader], so the identical shared sources run
 /// once per flavor.
 public interface TestFlavor {
 

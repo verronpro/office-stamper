@@ -11,7 +11,7 @@ public interface ElementFactory {
     Element run(String text);
 
     /// @param text       the run's text
-    /// @param properties the formatting to apply, or {@code null} for none
+    /// @param properties the formatting to apply, or `null` for none
     /// @return a new text run carrying the given run properties
     Element run(String text, RunProperties properties);
 

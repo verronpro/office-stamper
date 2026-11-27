@@ -3,7 +3,7 @@ package pro.verron.officestamper.api;
 /// A hook tag anchored in a paragraph: the mechanism the engine uses to mark placeholders and
 /// comment processors inside a document, and to track their execution state through attributes.
 ///
-/// <p>Tags are discovered with [Hooks] and consumed by the engine's hook orchestration.
+/// Tags are discovered with [Hooks] and consumed by the engine's hook orchestration.
 public interface Tag
         extends Element {
 
@@ -20,11 +20,11 @@ public interface Tag
     /// @return a comment anchored where this tag is anchored
     AnchoredComment asComment();
 
-    /// @return the value of the {@code type} attribute, or {@code null} when absent
+    /// @return the value of the `type` attribute, or `null` when absent
     String type();
 
     /// @param name the attribute name
-    /// @return the value of the named attribute, or {@code null} when absent
+    /// @return the value of the named attribute, or `null` when absent
     String attribute(String name);
 
     /// Sets or updates the named attribute, creating the attribute list lazily.

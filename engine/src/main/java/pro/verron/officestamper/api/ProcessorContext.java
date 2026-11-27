@@ -6,7 +6,7 @@ import java.util.Optional;
 
 /// Context for a document-processing operation, exposed without leaking the underlying OOXML library.
 ///
-/// <p>It bundles the part being processed, the current paragraph, an optional anchored comment, the
+/// It bundles the part being processed, the current paragraph, an optional anchored comment, the
 /// expression under evaluation, and the context tree that manages hierarchical scopes.
 public final class ProcessorContext {
 
@@ -20,7 +20,7 @@ public final class ProcessorContext {
     ///
     /// @param part        the part being processed
     /// @param paragraph   the paragraph being processed
-    /// @param comment     the anchored comment relevant to this context, or {@code null}
+    /// @param comment     the anchored comment relevant to this context, or `null`
     /// @param expression  the expression being evaluated
     /// @param contextTree the context tree managing scopes
     public ProcessorContext(
@@ -46,7 +46,7 @@ public final class ProcessorContext {
                 : comment.contentIterator();
     }
 
-    /// @return the anchored comment associated with this context, or {@code null}
+    /// @return the anchored comment associated with this context, or `null`
     public AnchoredComment comment() {
         return comment;
     }

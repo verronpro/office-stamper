@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 
-/// docx4j 11 implementation of {@link Paragraph} (port of the engine's `StandardParagraph`).
+/// docx4j 11 implementation of [Paragraph] (port of the engine's `StandardParagraph`).
 final class DocxParagraph
         implements Paragraph {
 

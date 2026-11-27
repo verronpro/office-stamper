@@ -1,7 +1,6 @@
 package pro.verron.officestamper.api;
 
 import java.util.List;
-import java.util.Optional;
 
 /// A table in a document, exposed without leaking the underlying OOXML library.
 public interface Table {
@@ -22,7 +21,7 @@ public interface Table {
     /// Adds a row to the table at the specified index.
     void add(int index, Row row);
 
-    /// A row within a {@link Table}.
+    /// A row within a [Table].
     interface Row
             extends Element {
 

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /// Proves the drop-in provider mechanism: a docx4j-free caller obtains the
-/// stamper purely via {@link OfficeStampers} (ServiceLoader), so the docx4j
+/// stamper purely via [OfficeStampers] (ServiceLoader), so the docx4j
 /// dependency is confined to this module and can be swapped or removed.
 class DocxStamperDiscoveryTest {
 

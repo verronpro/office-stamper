@@ -12,14 +12,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/// docx4j 11 implementation of {@link OfficeDocument}.
-public final class DocxDocument implements OfficeDocument {
-
-    private final WordprocessingMLPackage pkg;
-
-    public DocxDocument(WordprocessingMLPackage pkg) {
-        this.pkg = pkg;
-    }
+/// docx4j 11 implementation of [OfficeDocument].
+public record DocxDocument(WordprocessingMLPackage pkg) implements OfficeDocument {
 
     /// Loads a document from the given stream.
     public static DocxDocument load(InputStream in) throws IOException {
@@ -28,10 +22,6 @@ public final class DocxDocument implements OfficeDocument {
         } catch (Exception e) {
             throw new IOException("Failed to load DOCX", e);
         }
-    }
-
-    WordprocessingMLPackage pkg() {
-        return pkg;
     }
 
     @Override

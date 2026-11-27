@@ -1,7 +1,5 @@
 package pro.verron.officestamper.api;
 
-import pro.verron.officestamper.api.AnchoredComment;
-import pro.verron.officestamper.api.Paragraph;
 import pro.verron.officestamper.api.ProcessorContext;
 
 /// Abstract base class for processing comments within a paragraph.

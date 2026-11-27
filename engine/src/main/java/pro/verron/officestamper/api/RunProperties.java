@@ -2,12 +2,12 @@ package pro.verron.officestamper.api;
 
 /// Formatting properties attached to a text run, as an opaque value.
 ///
-/// <p>This is deliberately opaque: the engine's core use is <em>copy-through</em> — the properties of
+/// This is deliberately opaque: the engine's core use is *copy-through* — the properties of
 /// a run being replaced are captured via [Element#runProperties()] and applied to the runs of an
 /// [Insert] via [Insert#withRunProperties(RunProperties)], preserving the original formatting without
 /// this library needing to model every OOXML property.
 ///
-/// <p>Library users who need the raw, provider-specific representation can call [unwrap] — for
+/// Library users who need the raw, provider-specific representation can call [unwrap] — for
 /// instance to read or mutate the underlying `RPr` when using the docx4j provider.
 public interface RunProperties {
 

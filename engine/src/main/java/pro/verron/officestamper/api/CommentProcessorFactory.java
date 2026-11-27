@@ -1,6 +1,5 @@
 package pro.verron.officestamper.api;
 
-import pro.verron.officestamper.api.ProcessorContext;
 
 /// A factory for creating [CommentProcessor] instances.
 ///

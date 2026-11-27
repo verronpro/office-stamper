@@ -10,7 +10,7 @@ import pro.verron.officestamper.docx.wml.WmlUtils;
 
 import java.util.List;
 
-/// docx4j 11 implementation of {@link Table.Row} (port of the engine's `StandardRow`).
+/// docx4j 11 implementation of [Table.Row] (port of the engine's `StandardRow`).
 final class DocxRow
         extends DocxElement
         implements Table.Row {
@@ -24,7 +24,12 @@ final class DocxRow
 
     @Override
     public void remove() {
-        WmlUtils.remove((Tr) raw());
+        WmlUtils.remove(raw());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj) && obj instanceof DocxRow;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package pro.verron.officestamper.api;
 
-import pro.verron.officestamper.api.Insert;
-import pro.verron.officestamper.api.OfficePart;
 
 
 /// ExceptionResolver is a functional interface used to resolve the behavior when an exception occurs during the

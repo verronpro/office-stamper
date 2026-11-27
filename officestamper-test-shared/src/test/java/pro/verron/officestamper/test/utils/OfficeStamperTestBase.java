@@ -31,7 +31,7 @@ public class OfficeStamperTestBase {
         return toAsciidoc(pkg, false);
     }
 
-    /// Same as {@link #toAsciidoc(WordprocessingMLPackage)} with control over
+    /// Same as [#toAsciidoc(WordprocessingMLPackage)] with control over
     /// comment emission, mirroring the asciidoc compiler's 2-arg overload.
     public static String toAsciidoc(WordprocessingMLPackage pkg, boolean skipComments) {
         return DocxCompiler.toAsciidoc(pkg, skipComments, false);

@@ -1,12 +1,10 @@
 package pro.verron.officestamper.test;
-import pro.verron.officestamper.test.Flavor;
 
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pro.verron.officestamper.preset.OfficeStamperConfigurations;
 import pro.verron.officestamper.test.utils.ObjectContextFactory;
 import pro.verron.officestamper.test.utils.ResourceUtils;
 

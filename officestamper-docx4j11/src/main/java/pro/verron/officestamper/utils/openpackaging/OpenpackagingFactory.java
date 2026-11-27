@@ -5,4 +5,5 @@ package pro.verron.officestamper.utils.openpackaging;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.openpackaging.OpenpackagingFactory] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class OpenpackagingFactory extends pro.verron.officestamper.docx.openpackaging.OpenpackagingFactory {}

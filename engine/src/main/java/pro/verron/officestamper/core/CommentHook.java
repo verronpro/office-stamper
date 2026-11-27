@@ -10,12 +10,12 @@ public class CommentHook
         implements DocxHook {
     private final OfficePart part;
     private final Tag tag;
-    private final AnchoredComment AnchoredComment;
+    private final AnchoredComment anchoredComment;
 
-    CommentHook(OfficePart part, Tag tag, AnchoredComment AnchoredComment) {
+    CommentHook(OfficePart part, Tag tag, AnchoredComment anchoredComment) {
         this.part = part;
         this.tag = tag;
-        this.AnchoredComment = AnchoredComment;
+        this.anchoredComment = anchoredComment;
     }
 
     @Override
@@ -26,10 +26,10 @@ public class CommentHook
     ) {
         if ("executed".equals(tag.attribute("status"))) return false;
         var paragraph = tag.paragraph();
-        var expression = AnchoredComment.expression();
+        var expression = anchoredComment.expression();
         var contextKey = contextKey(tag);
         var contextStack = contextRoot.find(contextKey);
-        var processorContext = new ProcessorContext(part, paragraph, AnchoredComment, expression, contextStack);
+        var processorContext = new ProcessorContext(part, paragraph, anchoredComment, expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
         var processed = engine.process(evaluationContext);

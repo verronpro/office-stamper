@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/// An {@link EvaluationContext} that combines multiple contexts.
+/// An [EvaluationContext] that combines multiple contexts.
 public class UnionEvaluationContext
         implements EvaluationContext {
     private final EvaluationContext evaluationContext;

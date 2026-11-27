@@ -9,7 +9,7 @@ import java.util.List;
 
 /// Interface for hooks that process specific parts of a document.
 ///
-/// <p>Hook resolution: a hook tag carrying {@code type=processor} wraps a AnchoredComment range and drives a
+/// Hook resolution: a hook tag carrying `type=processor` wraps a AnchoredComment range and drives a
 /// AnchoredComment hook; any other hook tag drives a placeholder (inline) hook. AnchoredComment resolution relies on
 /// raw-identity equality between the tag element and the AnchoredComment's start anchor parent (the provider
 /// element adapters compare by wrapped native object).
@@ -33,9 +33,9 @@ public interface DocxHook
 
     /// Resolves the hooks of the given part into executable hook instances.
     ///
-    /// <p>A type=processor tag resolves its anchored comment through the provider ({@code
-    /// tag.asComment()} reads the comment range start embedded in the tag's own content — the
-    /// legacy {@code newCommentHook} path); no identity matching is involved, so the resolution
+    /// A type=processor tag resolves its anchored comment through the provider (`tag.asComment()`
+    /// reads the comment range start embedded in the tag's own content — the legacy
+    /// `newCommentHook` path); no identity matching is involved, so the resolution
     /// does not depend on JAXB parent back-pointers.
     ///
     /// @param part the document part to scan

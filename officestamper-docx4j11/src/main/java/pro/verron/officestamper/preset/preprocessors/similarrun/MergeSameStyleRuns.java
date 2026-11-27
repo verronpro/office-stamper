@@ -5,4 +5,5 @@ package pro.verron.officestamper.preset.preprocessors.similarrun;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.preset.similarrun.MergeSameStyleRuns] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class MergeSameStyleRuns extends pro.verron.officestamper.docx.preset.similarrun.MergeSameStyleRuns {}

@@ -2,7 +2,7 @@ package pro.verron.officestamper.api;
 
 /// Post-processor that removes smart tags of a given element name while preserving their content.
 ///
-/// <p>The concrete, library-specific traversal is supplied by a provider (R2-3).
+/// The concrete, library-specific traversal is supplied by a provider (R2-3).
 public abstract class HookRemover
         implements PostProcessor {
 
@@ -17,7 +17,4 @@ public abstract class HookRemover
     public String element() {
         return element;
     }
-
-    @Override
-    public abstract void process(OfficeDocument document);
 }

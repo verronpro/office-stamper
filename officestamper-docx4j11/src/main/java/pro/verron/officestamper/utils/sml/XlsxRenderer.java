@@ -5,4 +5,5 @@ package pro.verron.officestamper.utils.sml;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.sml.XlsxRenderer] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class XlsxRenderer extends pro.verron.officestamper.docx.sml.XlsxRenderer {}

@@ -14,7 +14,7 @@ import pro.verron.officestamper.docx.wml.WmlUtils;
 import java.math.BigInteger;
 import java.util.Objects;
 
-/// docx4j 11 implementation of {@link Tag}: an `officestamper` smart tag run.
+/// docx4j 11 implementation of [Tag]: an `officestamper` smart tag run.
 final class DocxTag
         extends DocxElement
         implements Tag {

@@ -8,7 +8,7 @@ import pro.verron.officestamper.docx.wml.WmlUtils;
 
 import java.util.List;
 
-/// docx4j 11 implementation of {@link Table.Cell}.
+/// docx4j 11 implementation of [Table.Cell].
 final class DocxCell
         extends DocxElement
         implements Table.Cell {

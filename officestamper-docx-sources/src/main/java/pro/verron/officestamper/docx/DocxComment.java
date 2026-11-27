@@ -5,7 +5,7 @@ import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.Text;
 import pro.verron.officestamper.api.Comment;
 
-/// docx4j 11 implementation of {@link Comment}.
+/// docx4j 11 implementation of [Comment].
 public final class DocxComment implements Comment {
 
     private final Comments.Comment comment;

@@ -20,7 +20,7 @@ import pro.verron.officestamper.api.RunProperties;
 import java.util.ArrayList;
 import java.util.List;
 
-/// docx4j 11 implementation of {@link Element}.
+/// docx4j 11 implementation of [Element].
 public class DocxElement implements Element {
 
     private final Object value;
@@ -61,9 +61,10 @@ public class DocxElement implements Element {
     }
 
     /// @param o a docx4j object
-    /// @return the live backing list of the given object's content, or {@code null} when it is not a
-    ///         container
+    /// @return the live backing list of the given object's content, or an empty immutable list when it
+    ///         is not a container
     static List<Object> backingList(Object o) {
+        if (!isContainer(o)) return List.of();
         if (o instanceof ContentAccessor ca) return ca.getContent();
         if (o instanceof CTSmartTagRun t) return t.getContent();
         if (o instanceof SdtRun s) return s.getSdtContent().getContent();
@@ -74,7 +75,15 @@ public class DocxElement implements Element {
         if (o instanceof Tr tr) return tr.getContent();
         if (o instanceof Tbl tbl) return tbl.getContent();
         if (o instanceof Body b) return b.getContent();
-        return null;
+        throw new AssertionError("Not a container: " + o.getClass().getName());
+    }
+
+    /// @param o a docx4j object
+    /// @return true when the given object exposes a mutable docx4j content list
+    static boolean isContainer(Object o) {
+        return o instanceof ContentAccessor || o instanceof CTSmartTagRun || o instanceof SdtRun
+               || o instanceof SdtBlock || o instanceof CTSdtCell || o instanceof P
+               || o instanceof Tc || o instanceof Tr || o instanceof Tbl || o instanceof Body;
     }
 
     @Override

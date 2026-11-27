@@ -7,7 +7,7 @@ import pro.verron.officestamper.docx.wml.WmlUtils;
 
 import java.util.List;
 
-/// docx4j 11 implementation of {@link Table} (port of the engine's `StandardTable`).
+/// docx4j 11 implementation of [Table] (port of the engine's `StandardTable`).
 final class DocxTable
         implements Table {
 

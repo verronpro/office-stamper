@@ -3,7 +3,6 @@ package pro.verron.officestamper.docx.preset.repeat;
 import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.ContentAccessor;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
@@ -12,7 +11,9 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.docx.JaxbCompat;
+import pro.verron.officestamper.api.AnchoredComment;
 import pro.verron.officestamper.api.CommentProcessor;
+import pro.verron.officestamper.api.Element;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.docx.DocxDocumentUtil;
 import pro.verron.officestamper.docx.DocxElement;
@@ -25,6 +26,7 @@ import pro.verron.officestamper.docx.wml.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -79,18 +81,8 @@ public class RepeatProcessor
         // Iterates items; copies elements; conditionally adds section break; adds elements
         while (iterator.hasNext()) {
             var item = iterator.next();
-            var copiedElements = elements.stream()
-                                         .map(DocxElement::rawOf)
-                                         .map(XmlUtils::deepCopy)
-                                         .collect(toCollection(ArrayList::new));
-            WmlUtils.deleteCommentFromElements(new BigInteger(comment.id()), copiedElements);
-            // Adds section break to last paragraph if needed
-            if (iterator.hasNext() && containsSectionBreaks(copiedElements)) {
-                var lastParagraph = lastParagraph(copiedElements).orElseGet(newEndParagraph(copiedElements));
-                if (!hasSectionBreak(lastParagraph)) {
-                    addSectionBreak(previousSectionBreak, lastParagraph);
-                }
-            }
+            var copiedElements = copyElements(comment, elements);
+            addSectionBreakForRepeatedElements(iterator, previousSectionBreak, copiedElements);
             siblings.addAll(index, copiedElements);
             index += copiedElements.size();
             copiedElements.forEach(element -> {
@@ -100,20 +92,50 @@ public class RepeatProcessor
             // Every hook tag inside the copied elements (at any depth — runs live inside
             // paragraphs, cells, etc.) carries the sub-context key of this iteration
             // (legacy Hooks.ofHooks(copiedElements) semantics).
-            var discovery = context().part()
-                                     .hooks();
-            for (var copied : copiedElements) {
-                var hooks = discovery.ofHooks(new DocxElement(copied, (DocxPart) context().part()));
-                int found = 0;
-                while (hooks.hasNext()) {
-                    hooks.next()
-                         .setAttribute("context", subContextKey);
-                    found++;
-                }
-                if (log.isTraceEnabled()) log.trace("Repeat scan: element {} -> {} hooks keyed {}",
-                        copied.getClass()
-                              .getSimpleName(), found, subContextKey);
+            attachSubContextKeys(copiedElements, subContextKey);
+        }
+    }
+
+    /// Copies the repeated region's elements, stripping the anchor comment from the copies.
+    private ArrayList<Object> copyElements(AnchoredComment comment, List<Element> elements) {
+        var copiedElements = elements.stream()
+                                     .map(DocxElement::rawOf)
+                                     .map(XmlUtils::deepCopy)
+                                     .collect(toCollection(ArrayList::new));
+        WmlUtils.deleteCommentFromElements(new BigInteger(comment.id()), copiedElements);
+        return copiedElements;
+    }
+
+    /// Adds a section break to the last copied paragraph when the original region carries one and
+    /// another iteration follows.
+    private void addSectionBreakForRepeatedElements(
+            Iterator<Object> iterator,
+            SectPr previousSectionBreak,
+            ArrayList<Object> copiedElements
+    ) {
+        if (!iterator.hasNext() || !containsSectionBreaks(copiedElements)) return;
+        var lastParagraph = lastParagraph(copiedElements).orElseGet(newEndParagraph(copiedElements));
+        if (!hasSectionBreak(lastParagraph)) {
+            addSectionBreak(previousSectionBreak, lastParagraph);
+        }
+    }
+
+    /// Tags every hook found in the copied elements with the sub-context key of this iteration.
+    private void attachSubContextKeys(List<Object> copiedElements, String subContextKey) {
+        var discovery = context().part()
+                                 .hooks();
+        var part = (DocxPart) context().part();
+        for (var copied : copiedElements) {
+            var hooks = discovery.ofHooks(new DocxElement(copied, part));
+            int found = 0;
+            while (hooks.hasNext()) {
+                hooks.next()
+                     .setAttribute("context", subContextKey);
+                found++;
             }
+            if (log.isTraceEnabled()) log.trace("Repeat scan: element {} -> {} hooks keyed {}",
+                    copied.getClass()
+                          .getSimpleName(), found, subContextKey);
         }
     }
 

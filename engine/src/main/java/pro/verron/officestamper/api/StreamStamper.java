@@ -1,14 +1,13 @@
 package pro.verron.officestamper.api;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-/// Stamps documents from streams, delegating the stamp operation to an {@link OfficeStamper} while
+/// Stamps documents from streams, delegating the stamp operation to an [OfficeStamper] while
 /// providing the mechanisms to work with streams. The loader is format-specific and supplied by
-/// the provider; the exporter can simply be {@code (doc, out) -> doc.save(out)}.
+/// the provider; the exporter can simply be `(doc, out) -> doc.save(out)`.
 public class StreamStamper {
 
     private final Function<InputStream, OfficeDocument> loader;
@@ -35,7 +34,7 @@ public class StreamStamper {
     /// @param inputStream  the template to stamp
     /// @param context      the context used for stamping
     /// @param outputStream the stream to write the result to
-    public void stamp(InputStream inputStream, Object context, OutputStream outputStream) throws IOException {
+    public void stamp(InputStream inputStream, Object context, OutputStream outputStream) {
         var template = loader.apply(inputStream);
         var stamped = stamper.stamp(template, context);
         exporter.accept(stamped, outputStream);

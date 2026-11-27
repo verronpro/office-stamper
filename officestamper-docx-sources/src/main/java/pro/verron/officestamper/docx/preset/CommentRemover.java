@@ -26,8 +26,6 @@ import org.docx4j.wml.ContentAccessor;
 /// as part of preprocessing or cleanup operations.
 public class CommentRemover
         implements PostProcessor {
-    /// Build a [CommentRemover] instance
-    public CommentRemover() {}
 
     @Override
     public void process(OfficeDocument document) {

@@ -9,6 +9,7 @@ import org.docx4j.openpackaging.parts.Part;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.openpackaging.OpenPackage] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class OpenPackage<T extends OpcPackage>
         extends pro.verron.officestamper.docx.openpackaging.OpenPackage<T> {
 

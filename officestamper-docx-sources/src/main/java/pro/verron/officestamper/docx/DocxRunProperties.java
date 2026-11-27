@@ -3,19 +3,8 @@ package pro.verron.officestamper.docx;
 import org.docx4j.wml.RPr;
 import pro.verron.officestamper.api.RunProperties;
 
-/// docx4j 11 implementation of {@link RunProperties}, snapshotting a run's {@code RPr}.
-final class DocxRunProperties
-        implements RunProperties {
-
-    private final RPr rPr;
-
-    DocxRunProperties(RPr rPr) {
-        this.rPr = rPr;
-    }
-
-    RPr rPr() {
-        return rPr;
-    }
+/// docx4j 11 implementation of [RunProperties], snapshotting a run's `RPr`.
+record DocxRunProperties(RPr rPr) implements RunProperties {
 
     @Override
     public <T> T unwrap(Class<T> type) {

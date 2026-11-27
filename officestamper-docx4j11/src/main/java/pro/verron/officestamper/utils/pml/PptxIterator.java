@@ -8,6 +8,7 @@ import org.docx4j.openpackaging.packages.PresentationMLPackage;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.pml.PptxIterator] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class PptxIterator extends pro.verron.officestamper.docx.pml.PptxIterator {
 
     public PptxIterator(PresentationMLPackage presentation) {

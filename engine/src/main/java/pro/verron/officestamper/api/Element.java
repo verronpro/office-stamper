@@ -6,9 +6,9 @@ import java.util.List;
 /// behind this interface so that consumers never depend on a specific OOXML
 /// library.
 ///
-/// <p>[#text()] returns the <em>canonical textual rendering</em> of the element
-/// (tabs as {@code \t}, breaks as {@code \n}, field instructions as
-/// {@code <instrText>} placeholders). The engine relies on this rendering being
+/// [#text()] returns the *canonical textual rendering* of the element
+/// (tabs as `\t`, breaks as `\n`, field instructions as `<instrText>` placeholders).
+/// The engine relies on this rendering being
 /// consistent across reads, since placeholder offsets are computed against it.
 public interface Element {
 
@@ -20,7 +20,7 @@ public interface Element {
     ///         [UnsupportedOperationException]
     Content content();
 
-    /// @return the parent element of this element, or {@code null} at the root of the tree
+    /// @return the parent element of this element, or `null` at the root of the tree
     Element parent();
 
     /// @return a deep copy of this element, detached from any parent (re-parented when inserted
@@ -35,10 +35,10 @@ public interface Element {
     /// @param text the new text
     void setText(String text);
 
-    /// @return {@code true} if this element represents a text run
+    /// @return `true` if this element represents a text run
     boolean isRun();
 
     /// @return the formatting properties of this element when it is a text run, or of the first text
-    ///         run found within it when it is a container, or {@code null} when there is none
+    ///         run found within it when it is a container, or `null` when there is none
     RunProperties runProperties();
 }

@@ -21,7 +21,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 
-/// docx4j 11 implementation of {@link AnchoredComment} (port of the engine's `StandardComment`
+/// docx4j 11 implementation of [AnchoredComment] (port of the engine's `StandardComment`
 /// and the comment-surgery parts of `CommentUtil`).
 final class DocxAnchoredComment
         implements AnchoredComment {
@@ -183,6 +183,6 @@ final class DocxAnchoredComment
     @Override
     public void deleteFrom(Element element) {
         var backing = DocxElement.backingList(DocxElement.rawOf(element));
-        if (backing != null) WmlUtils.deleteCommentFromElements(comment.getId(), backing);
+        WmlUtils.deleteCommentFromElements(comment.getId(), backing);
     }
 }

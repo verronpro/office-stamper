@@ -1,11 +1,9 @@
 package pro.verron.officestamper.test;
-import pro.verron.officestamper.test.Flavor;
 
 import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.junit.jupiter.api.Test;
-import pro.verron.officestamper.preset.Resolvers;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

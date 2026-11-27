@@ -1,6 +1,5 @@
 package pro.verron.officestamper.docx;
 
-import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.wml.CTSmartTagRun;
 import org.docx4j.wml.CommentRangeEnd;
 import org.docx4j.wml.CommentRangeStart;
@@ -19,7 +18,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 
-/// docx4j 11 implementation of {@link Hooks}: scans a part or an element subtree (recursing through
+/// docx4j 11 implementation of [Hooks]: scans a part or an element subtree (recursing through
 /// paragraphs, tables, SDTs, textboxes and drawings) for `officestamper` smart tags, and resolves
 /// the anchored comments of a part.
 final class DocxHooks
@@ -56,8 +55,8 @@ final class DocxHooks
     }
 
     /// Resolves a comment range start into a fully-anchored comment (port of the legacy
-    /// `CommentUtil.comment`), or {@code null} when the range or the comment object cannot resolve.
-    /// Package-visible: {@link DocxTag#asComment()} resolves the comment embedded in a
+    /// `CommentUtil.comment`), or `null` when the range or the comment object cannot resolve.
+    /// Package-visible: [DocxTag#asComment()] resolves the comment embedded in a
     /// type=processor tag through this same path.
     static AnchoredComment resolve(DocxPart part, CommentRangeStart crs) {
         var pkg = part.part().getPackage();

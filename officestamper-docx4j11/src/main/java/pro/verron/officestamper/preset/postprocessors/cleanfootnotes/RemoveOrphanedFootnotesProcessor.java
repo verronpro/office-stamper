@@ -5,4 +5,5 @@ package pro.verron.officestamper.preset.postprocessors.cleanfootnotes;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.preset.cleanfootnotes.RemoveOrphanedFootnotesProcessor] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class RemoveOrphanedFootnotesProcessor extends pro.verron.officestamper.docx.preset.cleanfootnotes.RemoveOrphanedFootnotesProcessor {}

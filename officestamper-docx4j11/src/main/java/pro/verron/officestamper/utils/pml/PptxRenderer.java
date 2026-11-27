@@ -5,4 +5,5 @@ package pro.verron.officestamper.utils.pml;
 ///
 /// @deprecated use [pro.verron.officestamper.docx.pml.PptxRenderer] instead.
 @Deprecated(forRemoval = true)
+@SuppressWarnings("squid:S2176") // intentional binary-compatibility shim: keeps the legacy simple name
 public class PptxRenderer extends pro.verron.officestamper.docx.pml.PptxRenderer {}

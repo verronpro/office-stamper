@@ -43,7 +43,15 @@ jobs:
           cache: 'maven'
 
       - run: mvn -B -ntp verify
-      - run: mkdir -p ./.qodana/code-coverage && cp ./engine/target/site/jacoco/jacoco.xml ./.qodana/code-coverage/jacoco.xml
+      # The engine module no longer runs tests itself (they moved to the shared test
+      # suite compiled into the providers), so its per-module jacoco report is never
+      # generated. Generate the reactor-wide aggregate instead; the cli module builds
+      # the broadest aggregate (engine + api + excel-context + docx4j11 classes).
+      - name: Collect reactor JaCoCo coverage
+        run: |
+          mvn -B -ntp -DskipTests org.jacoco:jacoco-maven-plugin:0.8.15:report-aggregate
+          mkdir -p ./.qodana/code-coverage
+          cp ./cli/target/site/jacoco-aggregate/jacoco.xml ./.qodana/code-coverage/jacoco.xml
 
       - uses: github/codeql-action/analyze@v4
         with:

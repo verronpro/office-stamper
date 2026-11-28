@@ -375,5 +375,3 @@ public class DocxStamperConfiguration
         return this;
     }
 }
-
-

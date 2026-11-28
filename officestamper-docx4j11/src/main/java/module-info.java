@@ -25,7 +25,7 @@ module pro.verron.officestamper.docx4j11 {
     opens pro.verron.officestamper.docx to org.junit.platform.commons;
 
     // Compatibility shims (deprecated): the pre-4.0 package locations, so code
-    // written against the single-artifact 3.3.x line keeps compiling. Every shim
+    // written against the single-artifact 3.x line keeps compiling. Every shim
     // extends the corresponding docx.* class above. Note: the image utilities are
     // NOT shims — they returned to their pre-4.0 home in pro.verron.officestamper.utils
     // (module pro.verron.officestamper.utils) as docx-free classes.
@@ -46,4 +46,3 @@ module pro.verron.officestamper.docx4j11 {
 
     provides pro.verron.officestamper.api.OfficeStamper with pro.verron.officestamper.docx.DocxStamperProvider;
 }
-

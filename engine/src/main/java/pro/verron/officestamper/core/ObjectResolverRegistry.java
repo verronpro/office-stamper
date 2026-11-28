@@ -38,4 +38,3 @@ public final class ObjectResolverRegistry {
         throw new OfficeStamperException("No resolver for %s".formatted(object));
     }
 }
-

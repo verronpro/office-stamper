@@ -220,4 +220,3 @@ public interface OfficeStamperConfiguration {
     /// @return the updated [OfficeStamperConfiguration] object.
     OfficeStamperConfiguration setTraceabilityReporter(TraceabilityReporter traceabilityReporter);
 }
-

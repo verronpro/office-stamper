@@ -199,4 +199,3 @@ public class OfficeStamperConfigurations {
         return configuration;
     }
 }
-

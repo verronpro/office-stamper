@@ -14,4 +14,3 @@ package pro.verron.officestamper.api;
     /// @return a configured [CommentProcessor] instance
     CommentProcessor create(ProcessorContext processorContext);
 }
-

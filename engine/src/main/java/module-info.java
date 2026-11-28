@@ -32,4 +32,3 @@ module pro.verron.officestamper {
             pro.verron.officestamper.docx4j17.test,
             pro.verron.officestamper.docx4j17;
 }
-

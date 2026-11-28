@@ -58,4 +58,3 @@ public interface DocxHook
         result.add(new TagHook(part, tag));
     }
 }
-

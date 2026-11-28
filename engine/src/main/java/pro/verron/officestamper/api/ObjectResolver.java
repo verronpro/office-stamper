@@ -25,4 +25,3 @@ public interface ObjectResolver {
     /// @return true if the object can be resolved, false otherwise
     boolean canResolve(@Nullable Object object);
 }
-

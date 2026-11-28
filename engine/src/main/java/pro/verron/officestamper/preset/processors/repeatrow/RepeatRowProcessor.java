@@ -50,5 +50,3 @@ public class RepeatRowProcessor
         row.remove();
     }
 }
-
-

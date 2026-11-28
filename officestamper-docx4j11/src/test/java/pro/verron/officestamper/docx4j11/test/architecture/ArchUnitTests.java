@@ -53,4 +53,3 @@ public class ArchUnitTests {
                                                                          "org.slf4j..",
                                                                          "org.springframework..");
 }
-

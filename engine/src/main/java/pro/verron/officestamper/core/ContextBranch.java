@@ -64,4 +64,3 @@ public class ContextBranch
         return branch.listIterator();
     }
 }
-

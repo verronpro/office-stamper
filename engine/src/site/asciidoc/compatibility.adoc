@@ -55,9 +55,10 @@ previous releases (`DocxOfficeStampers.standard()` replaces the old `OfficeStamp
 
 Most users should depend on one provider, which pulls the engine transitively.
 The engine alone is useful only if you plan to write your own provider for another OOXML library.
-Caveat: the `toAsciidoc`-style rendering machinery in `pro.verron.asciidoc:asciidoc-docx`
-is still pinned to docx4j 11 module names, so until that library ships a docx4j17-flavoured
-build, prefer `officestamper-docx4j11` if you also use the asciidoc converters.
+If you also use the `toAsciidoc`-style rendering machinery, note that since
+`pro.verron.asciidoc:asciidoc-docx` 4.1.0 the conversion is docx4j-flavor-agnostic:
+depend on `asciidoc-docx` with `officestamper-docx4j11`, or on `asciidoc-docx17`
+with `officestamper-docx4j17`, and either combination works.
 
 == Migrating from 3.8.x
 

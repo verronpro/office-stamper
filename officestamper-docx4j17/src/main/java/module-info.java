@@ -28,4 +28,3 @@ module pro.verron.officestamper.docx4j17 {
 
     provides pro.verron.officestamper.api.OfficeStamper with pro.verron.officestamper.docx.DocxStamperProvider;
 }
-

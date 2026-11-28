@@ -7,7 +7,6 @@ import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficePart;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /// This class is an implementation of the [ObjectResolver] interface that resolves objects by converting them to a
 /// string representation using the [Object#toString()] method and creating a new run with the resolved content.

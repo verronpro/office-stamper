@@ -7,7 +7,6 @@ import pro.verron.officestamper.utils.UtilsException;
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 

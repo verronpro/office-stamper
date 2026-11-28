@@ -123,5 +123,3 @@ public class DisplayIfProcessor
         displayDocPartIf(condition == null);
     }
 }
-
-

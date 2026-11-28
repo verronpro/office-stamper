@@ -12,4 +12,3 @@
 package pro.verron.officestamper.preset;
 
 import org.jspecify.annotations.NullMarked;
-

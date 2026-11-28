@@ -34,8 +34,7 @@ public class ReplaceWithProcessor
         if (expression == null) throw new OfficeStamperException("Cannot replace with null expression");
         var from = comment().startAnchor();
         var to = comment().endAnchor();
-        paragraph().replace(from, to, new Insert(context().part().factory().run(expression)));
+        var run = context().part().factory().run(expression);
+        paragraph().replace(from, to, new Insert(run));
     }
 }
-
-

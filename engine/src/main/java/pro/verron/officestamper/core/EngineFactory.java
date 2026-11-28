@@ -19,4 +19,3 @@ import pro.verron.officestamper.api.ProcessorContext;
     /// @return a newly created [Engine] instance configured according to the provided [ProcessorContext]
     Engine create(ProcessorContext processorContext);
 }
-

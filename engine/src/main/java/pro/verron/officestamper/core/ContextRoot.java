@@ -52,4 +52,3 @@ public class ContextRoot
         return String.valueOf(branches.size());
     }
 }
-

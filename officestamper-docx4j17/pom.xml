@@ -99,7 +99,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.basedir}/../officestamper-docx-sources/src/main/java</source>
+                                <source>${project.basedir}/../officestamper-docx4j-sources/src/main/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -111,7 +111,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.basedir}/../officestamper-test-shared/src/test/java</source>
+                                <source>${project.basedir}/../officestamper-test-sources/src/test/java</source>
                             </sources>
                         </configuration>
                     </execution>

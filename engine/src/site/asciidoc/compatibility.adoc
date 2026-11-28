@@ -105,14 +105,26 @@ was the entry point. The 4.0 migration is:
   `preset.processors.repeat.*` and `preset.resolvers.image.*` locations.
   Each shim extends the relocated implementation, so instances remain assignable.
 . *The `pro.verron.officestamper.api` package keeps its name* —   every 3.8 import
-  `pro.verron.officestamper.api.<Name>` still resolves, and the configuration types
+  `pro.verron.officestamper.api.<Name>` still resolves, and most configuration types
   (`SecurityMode`, `OfficeStamperConfiguration`, `CustomFunction`, the resolver
-  interfaces, `ExceptionResolver`, `TraceabilityReporter`, `OfficeStamperException`)
+  interfaces, `TraceabilityReporter`, `OfficeStamperException`)
   did not change at all.
-  What changed is the *shape* of the contract types — every docx4j parameter and return
+  Two functional contracts changed shape in the decoupling pass:
+  * `ExceptionResolver` no longer receives the `OfficePart`: it returns
+    `Optional<String>` — the fallback content string — and the engine builds the
+    replacement element itself. An empty optional means "no fallback" and surfaces as an
+    `OfficeStamperException` carrying the same message.
+  * `CommentProcessorFactory.create` takes the new `CommentProcessorContext` (comment
+    processors always operate on an anchored comment) instead of `ProcessorContext`.
+  What also changed is the *shape* of the document contract types — every docx4j parameter and return
   type was replaced by a docx-free adapter — so custom processors written against raw
   docx4j types must be ported; the compile errors are localized to those processor bodies.
   Per-type mapping:
+  * *Image resolver*: since 4.0 the image resolver lives with the docx preset and is
+    registered by the PROVIDER — `DocxOfficeStampers.standard()` (and the other provider
+    presets) already install it, so templates with images work out of the box. The
+    docx-free engine ships no image resolver: to customise it, use
+    `addResolver(ImageResolver)` from the provider preset or override the resolver list.
   * *Reshaped, same FQCN*: `Comment`, `CommentHooker`, `CommentRemover`,
     `CommentProcessor`, `ContextTree`, `Hook`, `HookRemover`, `Hooks`, `Insert`,
     `Paragraph`, `PlaceholderHooker`, `PostProcessor`, `PreProcessor`,
@@ -122,11 +134,23 @@ was the entry point. The 4.0 migration is:
   * *Deleted*: `DocxPart` — use `OfficePart`.
   * *New in 4.0* (no 3.8 counterpart): `AnchoredComment`, `Content`, `Element`,
     `ElementFactory`, `OfficeDocument`, `RunProperties`, `Tag`.
+  * *New in the decoupling pass*: `ProcessorContext` narrowed to part + expression +
+    context tree; the paragraph-aware `ParagraphProcessorContext` and the comment-anchored
+    `CommentProcessorContext` extend it, so `tableRow()`/`table()` and `comment()`/
+    `contentIterator()` no longer carry null branches.
   `core.StandardParagraph` / `StandardTable` / `Tag` and friends are engine internals that
   became provider adapters; and the docx-coupled factory classes that lived directly in
   `pro.verron.officestamper.preset` (`OfficeStampers`, `Preprocessors`, `Postprocessors`)
   cannot be re-created at their old location because the package is owned by the engine's
   docx-free preset — they moved to `docx.preset`.
+
+== Processing order
+
+Hooks are re-discovered in document order after every mutation: each pass executes the
+first unexecuted hook and restarts discovery. This resolves outermost hooks first and
+lets hooks inside content produced by an enclosing hook (e.g. copies made by a repeat)
+run afterwards against their own context branch. The ordering is pinned by
+`NestedHooksTest` in the shared test suite.
 
 == Experimental pptx / xlsx stampers
 

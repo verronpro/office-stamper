@@ -18,6 +18,7 @@ module pro.verron.officestamper.docx4j17 {
 
     exports pro.verron.officestamper.docx;
     exports pro.verron.officestamper.docx.experimental;
+    exports pro.verron.officestamper.docx.image to pro.verron.officestamper.docx4j17.test;
     exports pro.verron.officestamper.docx.wml to pro.verron.officestamper.docx4j17.test;
     exports pro.verron.officestamper.docx.openpackaging to pro.verron.officestamper.docx4j17.test;
     exports pro.verron.officestamper.docx.pml to pro.verron.officestamper.docx4j17.test;

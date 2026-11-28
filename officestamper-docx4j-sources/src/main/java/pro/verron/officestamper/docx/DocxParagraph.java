@@ -37,6 +37,7 @@ final class DocxParagraph
 
     /// Finds the paragraph enclosing the given object, walking up the content tree (through smart
     /// tags and SDTs).
+    @SuppressWarnings("ConstantValue") // QDJVM infers docx4j's unannotated Child.getParent() as non-null; the JAXB back-pointer is genuinely null for detached elements
     static DocxParagraph enclosing(DocxPart part, Object object) {
         if (object instanceof P paragraph) return new DocxParagraph(part, paragraph);
         if (object instanceof JAXBElement<?> jaxb) return enclosing(part, jaxb.getValue());

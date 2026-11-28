@@ -1,10 +1,4 @@
-/// Pre-processor that removes language settings from paragraphs and runs.
-///
-/// Strips `w:lang` elements from run properties and paragraph properties, which
-/// can interfere with the stamping process when templates use multiple
-/// languages.
-///
-/// Ensures non-null values by default.
+/// Preset processors for this feature, compiled once per docx4j flavor.
 @NullMarked
 package pro.verron.officestamper.docx.preset.rmlang;
 

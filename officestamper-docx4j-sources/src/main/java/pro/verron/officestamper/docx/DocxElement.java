@@ -88,6 +88,7 @@ public class DocxElement implements Element {
     }
 
     @Override
+    @SuppressWarnings("ConstantValue") // QDJVM infers docx4j's unannotated Child.getParent() as non-null; the JAXB back-pointer is genuinely null for detached elements
     public @Nullable Element parent() {
         var parent = JaxbCompat.parentOf(value);
         if (parent != null) {

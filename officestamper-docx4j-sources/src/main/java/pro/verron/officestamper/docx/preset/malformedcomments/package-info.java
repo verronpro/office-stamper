@@ -1,9 +1,4 @@
-/// Pre-processor that removes malformed comments from the document.
-///
-/// Handles unbalanced comment ranges and dangling comment references that can
-/// corrupt template processing.
-///
-/// Ensures non-null values by default.
+/// Preset processors for this feature, compiled once per docx4j flavor.
 @NullMarked
 package pro.verron.officestamper.docx.preset.malformedcomments;
 

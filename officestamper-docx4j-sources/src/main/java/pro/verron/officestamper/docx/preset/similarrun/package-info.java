@@ -1,11 +1,4 @@
-/// Pre-processor that merges consecutive runs with identical styling into a
-/// single run.
-///
-/// Reduces document complexity by combining adjacent runs that share the same
-/// formatting properties, improving processing efficiency and expression
-/// matching accuracy.
-///
-/// Ensures non-null values by default.
+/// Preset processors for this feature, compiled once per docx4j flavor.
 @NullMarked
 package pro.verron.officestamper.docx.preset.similarrun;
 

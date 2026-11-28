@@ -128,6 +128,7 @@ public class WmlUtils {
     /// @param child the element to be removed
     /// @throws UtilsException if the element is not parent-tracked, or its parent
     /// is of an unexpected type
+    @SuppressWarnings("ConstantValue") // QDJVM infers docx4j's unannotated Child.getParent() as non-null; the JAXB back-pointer is genuinely null for detached elements
     public static void remove(Object child) {
         var parent = JaxbCompat.parentOf(child);
         if (parent == null) throw new UtilsException("Cannot remove an element without a parent: " + child);

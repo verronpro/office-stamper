@@ -25,6 +25,7 @@ public final class DocxDocumentUtil {
 
     /// Finds the smallest common parent between two objects — the insertable content holder that
     /// contains both (port of the legacy `DocumentUtil.findSmallestCommonParent`).
+    @SuppressWarnings("ConstantValue") // QDJVM infers docx4j's unannotated Child.getParent() as non-null; the JAXB back-pointer is genuinely null for detached elements
     public static ContentAccessor findSmallestCommonParent(Object o1, Object o2) {
         var unwrapped = XmlUtils.unwrap(o2);
         if (depthElementSearch(XmlUtils.unwrap(o1), unwrapped) && unwrapped instanceof ContentAccessor contentAccessor) {
@@ -56,6 +57,7 @@ public final class DocxDocumentUtil {
     }
 
     /// Walks up the tree from the given object to the nearest insertable parent — a cell or the body.
+    @SuppressWarnings("ConstantValue") // QDJVM infers docx4j's unannotated Child.getParent() as non-null; the JAXB back-pointer is genuinely null for detached elements
     static ContentAccessor findInsertableParent(Object searchFrom) {
         if (searchFrom instanceof Tc tc) return tc;
         if (searchFrom instanceof Body body) return body;

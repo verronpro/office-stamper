@@ -1,7 +1,4 @@
-/// Post-processor that removes endnotes which are no longer referenced in the
-/// document.
-///
-/// Ensures non-null values by default.
+/// Preset processors for this feature, compiled once per docx4j flavor.
 @NullMarked
 package pro.verron.officestamper.docx.preset.cleanendnotes;
 

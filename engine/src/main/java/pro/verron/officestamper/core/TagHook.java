@@ -2,8 +2,8 @@ package pro.verron.officestamper.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.api.OfficePart;
-import pro.verron.officestamper.api.ProcessorContext;
 import pro.verron.officestamper.api.Tag;
 
 /// Hook for processing tags.
@@ -24,14 +24,15 @@ public class TagHook
             ContextRoot contextRoot,
             OfficeStamperEvaluationContextFactory evaluationContextFactory
     ) {
-        if ("executed".equals(tag.attribute("status"))) return false;
-        var anchoredComment = tag.asComment();
+        if (DocxHook.executed(tag)) return false;
         var paragraph = tag.paragraph();
         var expression = tag.expression();
-        var contextKey = contextKey(tag);
+        var contextKey = DocxHook.contextKey(tag);
         var contextStack = contextRoot.find(contextKey);
         log.trace("Tag '{}' contextKey={} branch={}", expression, contextKey, contextStack);
-        var processorContext = new ProcessorContext(part, paragraph, anchoredComment, expression, contextStack);
+        // The tag's comment-shaped object lets comment processors also process inline hook tags
+        // (Tag.asComment always provides one, synthesised from the tag's own content when needed).
+        var processorContext = new CommentProcessorContext(part, paragraph, tag.asComment(), expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
         var tagType = tag.type();
@@ -52,16 +53,5 @@ public class TagHook
     @Override
     public void setContextKey(String contextKey) {
         tag.setAttribute("context", contextKey);
-    }
-
-    /// Normalizes the context attribute of the tag: absent or non-numeric values resolve to "0".
-    private static String contextKey(Tag tag) {
-        var value = tag.attribute("context");
-        if (value == null) return String.valueOf(0);
-        try {
-            return String.valueOf(Integer.parseInt(value));
-        } catch (NumberFormatException _) {
-            return String.valueOf(0);
-        }
     }
 }

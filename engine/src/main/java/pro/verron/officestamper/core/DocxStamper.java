@@ -85,19 +85,26 @@ public class DocxStamper
         }
     }
 
+    /// Processes a single part against the context root.
+    ///
+    /// Hook resolution order contract: hooks are re-discovered in document order after every
+    /// mutation — processing rewrites the part content (the legacy DocxIterator.reset()
+    /// semantics), so a fixed snapshot would go stale. Each pass executes the first unexecuted
+    /// hook in document order and restarts discovery, which resolves OUTERMOST hooks first and
+    /// lets hooks inside content produced by an enclosing hook (e.g. copies made by a repeat)
+    /// run afterwards against their own context branch. This ordering is pinned by
+    /// NestedHooksTest in the shared test suite.
     private void process(OfficePart part, Object contextRoot) {
         var contextTree = new ContextRoot(contextRoot);
-        // Re-discover hooks after every mutation: processing rewrites the part content, so a
-        // fixed snapshot would go stale (the legacy DocxIterator.reset() semantics).
+        var evaluationContextFactory = new OfficeStamperEvaluationContextFactory(customFunctions,
+                commentProcessors,
+                interfaceFunctions,
+                contextFactory);
         boolean processed;
         do {
             processed = false;
             for (DocxHook hook : DocxHook.ofHooks(part)) {
-                var officeStamperContextFactory = new OfficeStamperEvaluationContextFactory(customFunctions,
-                        commentProcessors,
-                        interfaceFunctions,
-                        contextFactory);
-                if (hook.run(engineFactory, contextTree, officeStamperContextFactory)) {
+                if (hook.run(engineFactory, contextTree, evaluationContextFactory)) {
                     processed = true;
                     break;
                 }

@@ -5,7 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.test.utils.ContextFactory;
 
 import java.util.List;
@@ -68,7 +68,7 @@ import static pro.verron.officestamper.test.utils.ResourceUtils.getWordResource;
             extends CommentProcessor
             implements ICustomProcessor {
 
-        CustomProcessor(ProcessorContext processorContext) {
+        CustomProcessor(CommentProcessorContext processorContext) {
             super(processorContext);
         }
 

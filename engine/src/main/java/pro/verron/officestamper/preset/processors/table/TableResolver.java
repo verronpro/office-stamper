@@ -3,7 +3,7 @@ package pro.verron.officestamper.preset.processors.table;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.ElementFactory;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.api.Table;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 import pro.verron.officestamper.preset.StampTable;
@@ -23,7 +23,7 @@ public class TableResolver
     /// Constructs a new TableResolver with the given processor context.
     ///
     /// @param processorContext the context in which this processor operates
-    public TableResolver(ProcessorContext processorContext) {
+    public TableResolver(CommentProcessorContext processorContext) {
         super(processorContext);
     }
 

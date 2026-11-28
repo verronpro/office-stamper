@@ -7,6 +7,11 @@ import java.util.Map;
 /// process them later.
 ///
 /// The concrete, library-specific traversal is supplied by a provider (R2-3).
+///
+/// **Design note**: supporting several opening delimiters in a single hooker (the map-based
+/// constructor) is a deliberate decision. It lets one hooker mix expression styles within the
+/// same traversal pass — e.g. `${...}` placeholders and `#{...}` processor-style tags — instead
+/// of running and maintaining one hooker per delimiter.
 public abstract class PlaceholderHooker
         implements PreProcessor {
 

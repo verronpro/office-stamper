@@ -1,6 +1,6 @@
 package pro.verron.officestamper.preset.processors.repeat;
 
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.CommentProcessorContext;
 
 /// Deprecated compatibility shim: this type moved to
 /// [pro.verron.officestamper.docx.preset.repeat.RepeatProcessor] in the 4.0
@@ -12,7 +12,7 @@ import pro.verron.officestamper.api.ProcessorContext;
 public class RepeatProcessor
         extends pro.verron.officestamper.docx.preset.repeat.RepeatProcessor {
 
-    public RepeatProcessor(ProcessorContext context) {
+    public RepeatProcessor(CommentProcessorContext context) {
         super(context);
     }
 }

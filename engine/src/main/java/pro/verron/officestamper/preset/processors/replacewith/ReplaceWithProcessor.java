@@ -4,7 +4,7 @@ import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 /// Processor that replaces the current run with the provided expression. This is useful for replacing an expression in
@@ -21,7 +21,7 @@ public class ReplaceWithProcessor
     ///
     /// @param processorContext the context in which this processor operates, providing access to document
     ///         manipulation and expression evaluation utilities.
-    public ReplaceWithProcessor(ProcessorContext processorContext) {
+    public ReplaceWithProcessor(CommentProcessorContext processorContext) {
         super(processorContext);
     }
 

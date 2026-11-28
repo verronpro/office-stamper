@@ -18,16 +18,8 @@ import java.util.List;
 /// - [unwrap], which hands back the provider's native representation (e.g. the docx4j
 /// `CommentRangeStart`, `CommentRangeEnd`, `Comments.Comment` or `CommentReference` objects when
 /// using the docx4j provider) for comment-specific actions that need raw access.
-public interface AnchoredComment {
-
-    /// @return the comment identifier
-    String id();
-
-    /// @return the author of the comment
-    String author();
-
-    /// @return the textual content of the comment
-    String text();
+public interface AnchoredComment
+        extends Comment {
 
     /// @return the expression carried by this comment
     String expression();

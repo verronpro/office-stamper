@@ -22,7 +22,11 @@ public interface OfficePart {
     /// @return the hook and comment discovery service for this part
     Hooks hooks();
 
-    /// @return a factory creating format-native elements bound to this document
+    /// Returns a factory creating format-native elements bound to this document.
+    ///
+    /// The factory lives on the part rather than on the engine so that replacement content is
+    /// always created by the same provider that owns the part being modified — resolvers and
+    /// exception resolvers never build elements themselves.
     ElementFactory factory();
 
     /// Returns the native representation of this part, for processors that implement

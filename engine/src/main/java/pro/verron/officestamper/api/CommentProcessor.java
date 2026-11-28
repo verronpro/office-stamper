@@ -1,7 +1,5 @@
 package pro.verron.officestamper.api;
 
-import pro.verron.officestamper.api.ProcessorContext;
-
 /// Abstract base class for processing comments within a paragraph.
 ///
 /// The CommentProcessor represents a mechanism to manipulate or interpret comments and associated content such as
@@ -11,21 +9,21 @@ import pro.verron.officestamper.api.ProcessorContext;
 public abstract class CommentProcessor {
 
     /// The processing context for this CommentProcessor instance.
-    private final ProcessorContext context;
+    private final CommentProcessorContext context;
 
     /// Constructs a new instance of CommentProcessor to process comments and placeholders within a paragraph.
     ///
-    /// @param context the context containing the paragraph, AnchoredComment, and placeholder associated with the
+    /// @param context the context containing the paragraph, anchored comment, and placeholder associated with the
     ///         processing of this CommentProcessor.
-    protected CommentProcessor(ProcessorContext context) {
+    protected CommentProcessor(CommentProcessorContext context) {
         this.context = context;
     }
 
 
     /// Returns the processing context for this [CommentProcessor] instance.
     ///
-    /// @return the [ProcessorContext] associated with this [CommentProcessor].
-    protected ProcessorContext context() {
+    /// @return the [CommentProcessorContext] associated with this [CommentProcessor].
+    protected CommentProcessorContext context() {
         return context;
     }
 
@@ -36,9 +34,9 @@ public abstract class CommentProcessor {
         return context.paragraph();
     }
 
-    /// Returns the AnchoredComment associated with this processor.
+    /// Returns the anchored comment associated with this processor.
     ///
-    /// @return the AnchoredComment.
+    /// @return the anchored comment.
     protected AnchoredComment comment() {
         return context.comment();
     }

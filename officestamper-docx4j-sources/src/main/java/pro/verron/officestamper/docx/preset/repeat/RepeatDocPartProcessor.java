@@ -2,7 +2,7 @@ package pro.verron.officestamper.docx.preset.repeat;
 
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.OfficeStamper;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 
@@ -20,7 +20,7 @@ public class RepeatDocPartProcessor
     /// Creates a new [RepeatDocPartProcessor] instance.
     ///
     /// @param processorContext the processor context
-    public RepeatDocPartProcessor(ProcessorContext processorContext) {
+    public RepeatDocPartProcessor(CommentProcessorContext processorContext) {
         super(processorContext);
     }
 

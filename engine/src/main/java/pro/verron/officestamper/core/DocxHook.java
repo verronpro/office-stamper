@@ -57,4 +57,20 @@ public interface DocxHook
         }
         result.add(new TagHook(part, tag));
     }
+
+    /// @return `true` when the tag has already been processed by a previous hook pass
+    static boolean executed(Tag tag) {
+        return "executed".equals(tag.attribute("status"));
+    }
+
+    /// Normalizes the context attribute of the tag: absent or non-numeric values resolve to "0".
+    static String contextKey(Tag tag) {
+        var value = tag.attribute("context");
+        if (value == null) return "0";
+        try {
+            return String.valueOf(Integer.parseInt(value));
+        } catch (NumberFormatException _) {
+            return "0";
+        }
+    }
 }

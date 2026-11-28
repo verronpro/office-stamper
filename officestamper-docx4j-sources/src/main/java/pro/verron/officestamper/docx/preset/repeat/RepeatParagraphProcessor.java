@@ -1,7 +1,7 @@
 package pro.verron.officestamper.docx.preset.repeat;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 /// Class used internally to repeat document elements. Used by the lib, should not be instantiated by clients.
@@ -16,7 +16,7 @@ public class RepeatParagraphProcessor
     /// Constructs a new [RepeatParagraphProcessor] with the given processor context.
     ///
     /// @param processorContext the context in which this processor operates
-    public RepeatParagraphProcessor(ProcessorContext processorContext) {
+    public RepeatParagraphProcessor(CommentProcessorContext processorContext) {
         super(processorContext);
     }
 

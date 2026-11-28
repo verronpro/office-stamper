@@ -19,7 +19,7 @@ import pro.verron.officestamper.docx.DocxDocumentUtil;
 import pro.verron.officestamper.docx.DocxElement;
 import pro.verron.officestamper.preset.CommentProcessorFactory.IRepeatProcessor;
 import pro.verron.officestamper.api.OfficePart;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.docx.DocxPart;
 import pro.verron.officestamper.docx.wml.WmlFactory;
 import pro.verron.officestamper.docx.wml.WmlUtils;
@@ -49,7 +49,7 @@ public class RepeatProcessor
     ///
     /// @param context the context containing the paragraph, comment, and placeholder associated with the
     ///         processing of this CommentProcessor.
-    public RepeatProcessor(ProcessorContext context) {
+    public RepeatProcessor(CommentProcessorContext context) {
         super(context);
     }
 

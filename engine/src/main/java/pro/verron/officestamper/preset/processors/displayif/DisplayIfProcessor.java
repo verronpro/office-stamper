@@ -4,7 +4,7 @@ package pro.verron.officestamper.preset.processors.displayif;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.Element;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class DisplayIfProcessor
     /// Creates a new [DisplayIfProcessor].
     ///
     /// @param processorContext the context in which this processor runs
-    public DisplayIfProcessor(ProcessorContext processorContext) {
+    public DisplayIfProcessor(CommentProcessorContext processorContext) {
         super(processorContext);
     }
 

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 
 /// Comments-part access for the docx4j 11 provider (port of the engine's comment lookup logic).
 final class DocxComments {
@@ -53,7 +54,7 @@ final class DocxComments {
     }
 
     /// Looks up a comment object by its id within the document's comments part.
-    static Comments.Comment byId(OpcPackage pkg, BigInteger id) {
+    static Comments.@Nullable Comment byId(OpcPackage pkg, BigInteger id) {
         return find(all(pkg), id).orElse(null);
     }
 

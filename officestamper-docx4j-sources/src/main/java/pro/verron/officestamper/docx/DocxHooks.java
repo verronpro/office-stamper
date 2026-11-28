@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 /// docx4j 11 implementation of [Hooks]: scans a part or an element subtree (recursing through
 /// paragraphs, tables, SDTs, textboxes and drawings) for `officestamper` smart tags, and resolves
@@ -58,7 +59,7 @@ final class DocxHooks
     /// `CommentUtil.comment`), or `null` when the range or the comment object cannot resolve.
     /// Package-visible: [DocxTag#asComment()] resolves the comment embedded in a
     /// type=processor tag through this same path.
-    static AnchoredComment resolve(DocxPart part, CommentRangeStart crs) {
+    static @Nullable AnchoredComment resolve(DocxPart part, CommentRangeStart crs) {
         var pkg = part.part().getPackage();
         var iterator = new DocxIterator((ContentAccessor) part.part()).slice(crs, null);
         CommentRangeEnd cre = null;

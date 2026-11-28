@@ -12,7 +12,6 @@ import org.docx4j.wml.R.CommentReference;
 import org.docx4j.wml.R.LastRenderedPageBreak;
 import org.docx4j.wml.SdtRun;
 import org.docx4j.wml.Text;
-import org.docx4j.wml.Tbl;
 import org.docx4j.wml.Tc;
 
 
@@ -31,7 +30,10 @@ public final class DocxDocumentUtil {
         if (depthElementSearch(XmlUtils.unwrap(o1), unwrapped) && unwrapped instanceof ContentAccessor contentAccessor) {
             return findInsertableParent(contentAccessor);
         }
-        if (JaxbCompat.isChild(unwrapped)) return findSmallestCommonParent(o1, JaxbCompat.parentOf(unwrapped));
+        if (JaxbCompat.isChild(unwrapped)) {
+            var parent = JaxbCompat.parentOf(unwrapped);
+            if (parent != null) return findSmallestCommonParent(o1, parent);
+        }
         throw new IllegalStateException("Could not find a common parent for " + o1 + " and " + o2);
     }
 
@@ -55,12 +57,12 @@ public final class DocxDocumentUtil {
 
     /// Walks up the tree from the given object to the nearest insertable parent — a cell or the body.
     static ContentAccessor findInsertableParent(Object searchFrom) {
-        return switch (searchFrom) {
-            case Tc tc -> tc;
-            case Tbl _ when JaxbCompat.isChild(searchFrom) -> findInsertableParent(JaxbCompat.parentOf(searchFrom));
-            case Body body -> body;
-            case Object o when JaxbCompat.isChild(o) -> findInsertableParent(JaxbCompat.parentOf(o));
-            default -> throw new IllegalStateException("Unexpected parent " + searchFrom.getClass());
-        };
+        if (searchFrom instanceof Tc tc) return tc;
+        if (searchFrom instanceof Body body) return body;
+        if (JaxbCompat.isChild(searchFrom)) {
+            var parent = JaxbCompat.parentOf(searchFrom);
+            if (parent != null) return findInsertableParent(parent);
+        }
+        throw new IllegalStateException("Unexpected parent " + searchFrom.getClass());
     }
 }

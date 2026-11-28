@@ -38,13 +38,12 @@ final class DocxParagraph
     /// Finds the paragraph enclosing the given object, walking up the content tree (through smart
     /// tags and SDTs).
     static DocxParagraph enclosing(DocxPart part, Object object) {
-        return switch (object) {
-            case P paragraph -> new DocxParagraph(part, paragraph);
-            case JAXBElement<?> jaxb -> enclosing(part, jaxb.getValue());
-            case Object o when JaxbCompat.parentOf(o) != null -> enclosing(part, JaxbCompat.parentOf(o));
-            default -> throw new IllegalStateException(
-                    "Could not find an enclosing paragraph for " + object);
-        };
+        if (object instanceof P paragraph) return new DocxParagraph(part, paragraph);
+        if (object instanceof JAXBElement<?> jaxb) return enclosing(part, jaxb.getValue());
+        var parent = JaxbCompat.parentOf(object);
+        if (parent != null) return enclosing(part, parent);
+        throw new IllegalStateException(
+                "Could not find an enclosing paragraph for " + object);
     }
 
     private static List<Object> raws(List<Element> elements) {

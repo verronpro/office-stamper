@@ -50,10 +50,8 @@ public interface DocxHook
     private static void asHook(OfficePart part, Tag tag, List<DocxHook> result) {
         if ("processor".equals(tag.type())) {
             var comment = tag.asComment();
-            if (comment != null) {
-                result.add(new CommentHook(part, tag, comment));
-                return;
-            }
+            result.add(new CommentHook(part, tag, comment));
+            return;
         }
         result.add(new TagHook(part, tag));
     }

@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 import static java.util.stream.Collectors.joining;
 
@@ -30,16 +31,16 @@ final class DocxAnchoredComment
     private final Comments.Comment comment;
     private final CommentRangeStart start;
     private final CommentRangeEnd end;
-    private final CommentReference reference;
-    private final CTSmartTagRun startTagRun;
+    private final @Nullable CommentReference reference;
+    private final @Nullable CTSmartTagRun startTagRun;
 
     private DocxAnchoredComment(
             DocxPart part,
             Comments.Comment comment,
             CommentRangeStart start,
             CommentRangeEnd end,
-            CommentReference reference,
-            CTSmartTagRun startTagRun
+            @Nullable CommentReference reference,
+            @Nullable CTSmartTagRun startTagRun
     ) {
         this.part = part;
         this.comment = comment;
@@ -65,11 +66,11 @@ final class DocxAnchoredComment
     /// Wraps a comment found in the document (port of the legacy `CommentUtil.comment` resolution).
     static DocxAnchoredComment of(
             DocxPart part,
-            CTSmartTagRun startTagRun,
+            @Nullable CTSmartTagRun startTagRun,
             CommentRangeStart start,
             CommentRangeEnd end,
             Comments.Comment comment,
-            CommentReference reference
+            @Nullable CommentReference reference
     ) {
         return new DocxAnchoredComment(part, comment, start, end, reference, startTagRun);
     }

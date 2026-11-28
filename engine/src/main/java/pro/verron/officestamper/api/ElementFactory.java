@@ -1,6 +1,7 @@
 package pro.verron.officestamper.api;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /// Creates format-native elements ([Element]s) bound to a document. Supplied by the provider and
 /// obtained through [OfficePart#factory()].
@@ -13,7 +14,7 @@ public interface ElementFactory {
     /// @param text       the run's text
     /// @param properties the formatting to apply, or `null` for none
     /// @return a new text run carrying the given run properties
-    Element run(String text, RunProperties properties);
+    Element run(String text, @Nullable RunProperties properties);
 
     /// @param text the run's text, placed before the line break
     /// @return a new text run ending with a line break

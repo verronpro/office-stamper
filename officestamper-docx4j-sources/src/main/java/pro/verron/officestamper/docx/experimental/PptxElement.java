@@ -5,6 +5,7 @@ import pro.verron.officestamper.api.Element;
 import pro.verron.officestamper.api.RunProperties;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /// Minimal spi [Element] wrapper for pptx objects. The experimental pptx stamper
 /// only needs to carry a raw value through the spi [Insert] container; no
@@ -22,7 +23,7 @@ record PptxElement(Object raw)
     }
 
     @Override
-    public Element parent() {
+    public @Nullable Element parent() {
         return null;
     }
 
@@ -47,7 +48,7 @@ record PptxElement(Object raw)
     }
 
     @Override
-    public RunProperties runProperties() {
+    public @Nullable RunProperties runProperties() {
         return null;
     }
 }

@@ -7,6 +7,7 @@ import pro.verron.officestamper.api.RunProperties;
 import pro.verron.officestamper.docx.wml.WmlFactory;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /// docx4j 11 implementation of [ElementFactory].
 final class DocxElementFactory
@@ -24,7 +25,7 @@ final class DocxElementFactory
     }
 
     @Override
-    public Element run(String text, RunProperties properties) {
+    public Element run(String text, @Nullable RunProperties properties) {
         var r = WmlFactory.newRun(text);
         if (properties != null) r.setRPr(nativeRPr(properties));
         return new DocxElement(r, owner);

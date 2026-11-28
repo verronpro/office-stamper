@@ -19,6 +19,7 @@ import pro.verron.officestamper.api.RunProperties;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /// docx4j 11 implementation of [Element].
 public class DocxElement implements Element {
@@ -101,7 +102,7 @@ public class DocxElement implements Element {
     }
 
     @Override
-    public Element parent() {
+    public @Nullable Element parent() {
         var parent = JaxbCompat.parentOf(value);
         if (parent != null) {
             return new DocxElement(parent, part);
@@ -146,7 +147,7 @@ public class DocxElement implements Element {
     }
 
     @Override
-    public RunProperties runProperties() {
+    public @Nullable RunProperties runProperties() {
         if (value instanceof R r && r.getRPr() != null) return new DocxRunProperties(r.getRPr());
         for (Element child : children()) {
             var properties = child.runProperties();

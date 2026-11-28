@@ -13,6 +13,7 @@ import pro.verron.officestamper.docx.wml.WmlUtils;
 
 import java.math.BigInteger;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 /// docx4j 11 implementation of [Tag]: an `officestamper` smart tag run.
 final class DocxTag
@@ -53,12 +54,12 @@ final class DocxTag
     }
 
     @Override
-    public String type() {
+    public @Nullable String type() {
         return attribute("type");
     }
 
     @Override
-    public String attribute(String name) {
+    public @Nullable String attribute(String name) {
         var smartTagPr = tag().getSmartTagPr();
         if (smartTagPr == null) return null;
         for (var attr : smartTagPr.getAttr()) {
@@ -89,7 +90,7 @@ final class DocxTag
 
     /// The provider applies the insert's run properties to the inserted runs (the formatting of the
     /// replaced expression is preserved through [DocxElement#runProperties]).
-    private static void applyRunProperties(RunProperties properties, R run) {
+    private static void applyRunProperties(@Nullable RunProperties properties, R run) {
         if (properties instanceof DocxRunProperties(var rPr)) run.setRPr(rPr);
     }
 

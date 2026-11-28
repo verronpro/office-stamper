@@ -1,6 +1,7 @@
 package pro.verron.officestamper.docx;
 
 import org.jvnet.jaxb2_commons.ppp.Child;
+import org.jspecify.annotations.Nullable;
 
 /// docx4j-flavor compatibility seam for JAXB parent tracking.
 ///
@@ -21,7 +22,7 @@ public final class JaxbCompat {
     /// @param child the element whose parent is requested
     /// @return the parent element, or `null` when the element is not
     ///         parent-tracked or has no parent
-    public static Object parentOf(Object child) {
+    public static @Nullable Object parentOf(Object child) {
         if (child instanceof Child c) return c.getParent();
         return null;
     }

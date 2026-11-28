@@ -89,9 +89,10 @@ public class DisplayIfProcessor
         var toRemove = new ArrayList<Element>();
         var iterator = context().contentIterator();
         while (iterator.hasNext()) toRemove.add(iterator.next());
-        toRemove.forEach(element -> element.parent()
-                                           .content()
-                                           .remove(element));
+        toRemove.forEach(element -> {
+            var parent = element.parent();
+            if (parent != null) parent.content().remove(element);
+        });
     }
 
     @Override
@@ -108,9 +109,10 @@ public class DisplayIfProcessor
     public void displayDocPartIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
         comment().elements()
-                 .forEach(element -> element.parent()
-                                            .content()
-                                            .remove(element));
+                 .forEach(element -> {
+                     var parent = element.parent();
+                     if (parent != null) parent.content().remove(element);
+                 });
     }
 
     @Override

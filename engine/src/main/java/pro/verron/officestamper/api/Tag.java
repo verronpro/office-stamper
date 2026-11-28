@@ -1,5 +1,7 @@
 package pro.verron.officestamper.api;
 
+import org.jspecify.annotations.Nullable;
+
 /// A hook tag anchored in a paragraph: the mechanism the engine uses to mark placeholders and
 /// comment processors inside a document, and to track their execution state through attributes.
 ///
@@ -21,11 +23,11 @@ public interface Tag
     AnchoredComment asComment();
 
     /// @return the value of the `type` attribute, or `null` when absent
-    String type();
+    @Nullable String type();
 
     /// @param name the attribute name
     /// @return the value of the named attribute, or `null` when absent
-    String attribute(String name);
+    @Nullable String attribute(String name);
 
     /// Sets or updates the named attribute, creating the attribute list lazily.
     ///

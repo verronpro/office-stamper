@@ -1,6 +1,7 @@
 package pro.verron.officestamper.api;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /// A container of elements to be inserted into a document.
 ///
@@ -9,7 +10,7 @@ import java.util.List;
 ///
 /// @param elements      the immutable list of elements to insert
 /// @param runProperties the formatting to apply to the inserted runs, or `null` for none
-public record Insert(List<Element> elements, RunProperties runProperties) {
+public record Insert(List<Element> elements, @Nullable RunProperties runProperties) {
 
     /// Creates an insert holding a single element, with no run properties.
     ///
@@ -35,7 +36,7 @@ public record Insert(List<Element> elements, RunProperties runProperties) {
     ///
     /// @param runProperties the formatting to apply, or `null` for none
     /// @return a new insert with the given run properties
-    public Insert withRunProperties(RunProperties runProperties) {
+    public Insert withRunProperties(@Nullable RunProperties runProperties) {
         return new Insert(elements, runProperties);
     }
 }

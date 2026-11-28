@@ -1,6 +1,7 @@
 package pro.verron.officestamper.api;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /// A node in a document's content tree. The underlying representation is hidden
 /// behind this interface so that consumers never depend on a specific OOXML
@@ -21,7 +22,7 @@ public interface Element {
     Content content();
 
     /// @return the parent element of this element, or `null` at the root of the tree
-    Element parent();
+    @Nullable Element parent();
 
     /// @return a deep copy of this element, detached from any parent (re-parented when inserted
     ///         through [Content#addAll(int, List)])
@@ -40,5 +41,5 @@ public interface Element {
 
     /// @return the formatting properties of this element when it is a text run, or of the first text
     ///         run found within it when it is a container, or `null` when there is none
-    RunProperties runProperties();
+    @Nullable RunProperties runProperties();
 }

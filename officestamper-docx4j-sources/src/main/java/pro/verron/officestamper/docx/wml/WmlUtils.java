@@ -62,6 +62,7 @@ public class WmlUtils {
     /// @return an [Optional] containing the first parent matching the specified
     /// class, or an empty [Optional] if no
     ///         match found.
+    @SuppressWarnings("ConstantValue") // QDJVM infers docx4j's unannotated Child.getParent() as non-null; the JAXB back-pointer is genuinely null for detached elements
     public static <T> Optional<T> getFirstParentWithClass(Object child, Class<T> clazz, int depth) {
         var parent = JaxbCompat.parentOf(child);
         var currentDepth = 0;

@@ -3,10 +3,9 @@ package pro.verron.officestamper.preset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pro.verron.officestamper.api.ExceptionResolver;
-import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.OfficeStamperException;
 
-import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
+import java.util.Optional;
 
 
 /// The ExceptionResolvers class provides a set of static factory methods to create different types of ExceptionResolver
@@ -62,12 +61,12 @@ public class ExceptionResolvers {
             implements ExceptionResolver {
 
         @Override
-        public Insert resolve(String expression, String message, Exception cause) {
+        public Optional<String> resolve(String expression, String message, Exception cause) {
             var description = "Placeholder '%s' could not be resolved; falling back to the default value '%s'. %s"
                     .formatted(expression, value, message);
             if (tracing) logger.warn(description, cause);
             else logger.warn(description);
-            return new Insert(newRun(value));
+            return Optional.of(value);
         }
     }
 
@@ -75,12 +74,12 @@ public class ExceptionResolvers {
             implements ExceptionResolver {
 
         @Override
-        public Insert resolve(String expression, String message, Exception cause) {
+        public Optional<String> resolve(String expression, String message, Exception cause) {
             var description = "Placeholder '%s' could not be resolved; passing it through unchanged. %s"
                     .formatted(expression, message);
             if (tracing) logger.warn(description, cause);
             else logger.warn(description);
-            return new Insert(newRun(template.formatted(expression)));
+            return Optional.of(template.formatted(expression));
         }
     }
 
@@ -88,7 +87,7 @@ public class ExceptionResolvers {
             implements ExceptionResolver {
 
         @Override
-        public Insert resolve(String expression, String message, Exception cause) {
+        public Optional<String> resolve(String expression, String message, Exception cause) {
             var description = "Placeholder '%s' could not be resolved and no fallback is configured. %s"
                     .formatted(expression, message);
             if (tracing) throw new OfficeStamperException(description, cause);

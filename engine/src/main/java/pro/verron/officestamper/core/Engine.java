@@ -19,7 +19,7 @@ public class Engine {
     private final ExceptionResolver exceptionResolver;
     private final ObjectResolverRegistry objectResolverRegistry;
     private final String expression;
-    private final DocxPart docxPart;
+    private final OfficePart part;
     private final SpelExpressionParser expressionParser;
     private final TraceabilityReporter traceabilityReporter;
 
@@ -42,7 +42,7 @@ public class Engine {
         this.exceptionResolver = exceptionResolver;
         this.objectResolverRegistry = objectResolverRegistry;
         this.expression = processorContext.expression();
-        this.docxPart = processorContext.part();
+        this.part = processorContext.part();
         this.traceabilityReporter = traceabilityReporter;
     }
 
@@ -62,9 +62,8 @@ public class Engine {
         try {
             spelNode = parseAST(expressionParser, expression);
         } catch (SpelParseException e) {
-            var msgTemplate = "Expression %s could not be parsed successfully.";
-            var message = msgTemplate.formatted(expression, evaluationContext);
-            exceptionResolver.resolve(expression, message, e);
+            var message = "Expression %s could not be parsed successfully.".formatted(expression);
+            fallback(message, e);
             return false;
         }
 
@@ -75,9 +74,9 @@ public class Engine {
             var contextBranch = (ContextBranch) Objects.requireNonNull(evaluationContext.getRootObject().getValue());
             traceabilityReporter.onResolution(expression, value, contextBranch.stream().collect(Collectors.toList()));
         } catch (SpelEvaluationException e) {
-            var msgTemplate = "Expression %s could not be processed against context '%s'";
-            var message = msgTemplate.formatted(expression, evaluationContext);
-            exceptionResolver.resolve(expression, message, e);
+            var message = "Expression %s could not be processed against context %s"
+                    .formatted(expression, contextDescription(evaluationContext));
+            fallback(message, e);
             return false;
         }
 
@@ -88,6 +87,23 @@ public class Engine {
         var parsedExpression = parser.parseRaw(expression);
         log.trace("Parsed '{}' successfully.", expression);
         return parsedExpression.getAST();
+    }
+
+    /// Describes the context branch of an evaluation context for error messages, without
+    /// embedding the whole evaluation context's toString.
+    private static String contextDescription(EvaluationContext evaluationContext) {
+        var root = evaluationContext.getRootObject()
+                                    .getValue();
+        return root instanceof ContextBranch branch ? branch.toString() : String.valueOf(root);
+    }
+
+    /// Hands the failure to the configured [ExceptionResolver] and builds the fallback
+    /// [Insert] from its answer. A resolver that provides no fallback (empty optional)
+    /// surfaces as an [OfficeStamperException] carrying the same message.
+    private Insert fallback(String message, Exception cause) {
+        var fallback = exceptionResolver.resolve(expression, message, cause)
+                                        .orElseThrow(() -> new OfficeStamperException(message, cause));
+        return new Insert(part.factory().run(fallback));
     }
 
     private ExpressionState buildExpressionState(EvaluationContext evaluationContext) {
@@ -113,9 +129,8 @@ public class Engine {
         try {
             spelNode = parseAST(expressionParser, expression);
         } catch (SpelParseException e) {
-            var msgTemplate = "Expression %s could not be parsed successfully.";
-            var message = msgTemplate.formatted(expression, evaluationContext);
-            return exceptionResolver.resolve(expression, message, e);
+            var message = "Expression %s could not be parsed successfully.".formatted(expression);
+            return fallback(message, e);
         }
 
         var expressionState = buildExpressionState(evaluationContext);
@@ -126,19 +141,18 @@ public class Engine {
             var contextBranch = (ContextBranch) Objects.requireNonNull(evaluationContext.getRootObject().getValue());
             traceabilityReporter.onResolution(expression, javaResolution, contextBranch.stream().collect(Collectors.toList()));
         } catch (SpelEvaluationException e) {
-            var msgTemplate = "Expression %s could not be resolved against context '%s'";
-            var message = msgTemplate.formatted(expression, evaluationContext);
-            return exceptionResolver.resolve(expression, message, e);
+            var message = "Expression %s could not be resolved against context %s"
+                    .formatted(expression, contextDescription(evaluationContext));
+            return fallback(message, e);
         }
 
         try {
-            var docxResolution = objectResolverRegistry.resolve(docxPart, expression, javaResolution);
+            var docxResolution = objectResolverRegistry.resolve(part, expression, javaResolution);
             log.debug("Converted '{}' to docx ({}) successfully.", expression, docxResolution);
             return docxResolution;
         } catch (SpelEvaluationException e) {
-            var msgTemplate = "Expression %s could not be converted to docx inserts.";
-            var message = msgTemplate.formatted(expression, evaluationContext);
-            return exceptionResolver.resolve(expression, message, e);
+            var message = "Expression %s could not be converted to docx inserts.".formatted(expression);
+            return fallback(message, e);
         }
     }
 }

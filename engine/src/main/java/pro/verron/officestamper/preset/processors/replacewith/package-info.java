@@ -1,7 +1,7 @@
-/// Comment processor that replaces the current run with the evaluated
+/// AnchoredComment processor that replaces the current run with the evaluated
 /// expression result.
 ///
-/// Implements the `replaceWith` directive for substituting comment content with
+/// Implements the `replaceWith` directive for substituting AnchoredComment content with
 /// a SpEL expression value.
 ///
 /// Ensures non-null values by default.

@@ -136,7 +136,7 @@ public class DocxStamperConfiguration
         return expressionFunctions;
     }
 
-    /// Retrieves the map of comment processors associated with specific classes.
+    /// Retrieves the map of AnchoredComment processors associated with specific classes.
     ///
     /// @return a map where the key is the class associated with a specific type of placeholder, and the value is a
     ///         function that creates a [CommentProcessor] for that placeholder.

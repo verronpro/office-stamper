@@ -2,8 +2,6 @@ package pro.verron.officestamper.api;
 
 import org.jspecify.annotations.Nullable;
 
-import static pro.verron.officestamper.utils.wml.WmlFactory.newRun;
-
 /// This is an abstract class that provides a generic implementation for resolving objects to strings. It is used in
 /// conjunction with [ObjectResolver] interface to provide a flexible way to resolve different types of objects to
 /// strings.
@@ -25,14 +23,14 @@ public abstract class StringResolver<T>
 
     /// Resolves an object to a string and creates a new run with the resolved string as content.
     ///
-    /// @param part the WordprocessingMLPackage document
+    /// @param part the part in which to resolve the expression
     /// @param expression the expression string
     /// @param object the object to be resolved
     /// @return the newly created run with the resolved string as content
     @Override
-    public final Insert resolve(DocxPart part, String expression, @Nullable Object object) {
+    public final Insert resolve(OfficePart part, String expression, @Nullable Object object) {
         if (object == null) throw new OfficeStamperException("Cannot resolve null object");
-        return new Insert(newRun(resolve(type.cast(object))));
+        return new Insert(part.factory().run(resolve(type.cast(object))));
     }
 
     /// Determines if the given object can be resolved by the StringResolver.

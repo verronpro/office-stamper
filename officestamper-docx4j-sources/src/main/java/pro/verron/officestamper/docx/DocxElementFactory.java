@@ -1,0 +1,57 @@
+package pro.verron.officestamper.docx;
+
+import org.docx4j.wml.RPr;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.ElementFactory;
+import pro.verron.officestamper.api.RunProperties;
+import pro.verron.officestamper.docx.wml.WmlFactory;
+
+import java.util.List;
+import org.jspecify.annotations.Nullable;
+
+/// docx4j 11 implementation of [ElementFactory].
+final class DocxElementFactory
+        implements ElementFactory {
+
+    private final DocxPart owner;
+
+    DocxElementFactory(DocxPart owner) {
+        this.owner = owner;
+    }
+
+    @Override
+    public Element run(String text) {
+        return new DocxElement(WmlFactory.newRun(text), owner);
+    }
+
+    @Override
+    public Element run(String text, @Nullable RunProperties properties) {
+        var r = WmlFactory.newRun(text);
+        if (properties != null) r.setRPr(nativeRPr(properties));
+        return new DocxElement(r, owner);
+    }
+
+    @Override
+    public Element lineBreak(String text) {
+        return new DocxElement(WmlFactory.newRun(List.of(WmlFactory.newText(text), WmlFactory.newBr())), owner);
+    }
+
+    @Override
+    public Element paragraph(String text) {
+        return new DocxElement(WmlFactory.newParagraph(text), owner);
+    }
+
+    @Override
+    public Element paragraph(List<Element> content) {
+        var raws = content.stream()
+                .map(DocxElement::rawOf)
+                .toList();
+        return new DocxElement(WmlFactory.newParagraph(raws), owner);
+    }
+
+    private static RPr nativeRPr(RunProperties properties) {
+        if (properties instanceof DocxRunProperties(var rPr)) return rPr;
+        throw new IllegalArgumentException(
+                "Unsupported RunProperties implementation: " + properties.getClass().getName());
+    }
+}

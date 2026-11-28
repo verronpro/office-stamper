@@ -3,7 +3,7 @@ package pro.verron.officestamper.preset;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.OfficeStamperException;
 
-/// Factory class to create the correct comment processor for a given comment.
+/// Factory class to create the correct AnchoredComment processor for a given AnchoredComment.
 ///
 /// @author Joseph Verron
 /// @since 1.6.4
@@ -25,7 +25,7 @@ public class CommentProcessorFactory {
         void resolveTable(@Nullable StampTable table);
     }
 
-    /// Interface for processors that replace a single word with an expression defined in a comment.
+    /// Interface for processors that replace a single word with an expression defined in a AnchoredComment.
     ///
     /// @author Joseph Verron
     /// @author Tom Hombergs
@@ -96,91 +96,91 @@ public class CommentProcessorFactory {
     /// @since 1.0.0
     public interface IDisplayIfProcessor {
 
-        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given
+        /// Displays or removes the paragraph surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if non-null, keep the paragraph surrounding the comment, else remove.
+        /// @param condition if non-null, keep the paragraph surrounding the AnchoredComment, else remove.
         void displayParagraphIf(@Nullable Boolean condition);
 
-        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given
+        /// Displays or removes the paragraph surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if non-null, keep the paragraph surrounding the comment, else remove.
+        /// @param condition if non-null, keep the paragraph surrounding the AnchoredComment, else remove.
         void displayParagraphIfPresent(@Nullable Object condition);
 
-        /// Displays or removes the paragraph surrounding a specific comment in a document based on the given
+        /// Displays or removes the paragraph surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if null, keep the paragraph surrounding the comment, else remove.
+        /// @param condition if null, keep the paragraph surrounding the AnchoredComment, else remove.
         void displayParagraphIfAbsent(@Nullable Object condition);
 
-        /// Displays or removes the table row surrounding a specific comment in a document based on the given
+        /// Displays or removes the table row surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if true, keep the table row surrounding the comment, else remove.
+        /// @param condition if true, keep the table row surrounding the AnchoredComment, else remove.
         void displayTableRowIf(@Nullable Boolean condition);
 
-        /// Displays or removes the table row surrounding a specific comment in a document based on the given
+        /// Displays or removes the table row surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if non-null, keep the table row surrounding the comment, else remove.
+        /// @param condition if non-null, keep the table row surrounding the AnchoredComment, else remove.
         void displayTableRowIfPresent(@Nullable Object condition);
 
-        /// Displays or removes the table row surrounding a specific comment in a document based on the given
+        /// Displays or removes the table row surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if null, keep the table row surrounding the comment, else remove.
+        /// @param condition if null, keep the table row surrounding the AnchoredComment, else remove.
         void displayTableRowIfAbsent(@Nullable Object condition);
 
-        /// Displays or removes the table surrounding a specific comment in a document based on the given condition.
+        /// Displays or removes the table surrounding a specific AnchoredComment in a document based on the given condition.
         ///
-        /// @param condition if true, keep the table surrounding the comment, else remove.
+        /// @param condition if true, keep the table surrounding the AnchoredComment, else remove.
         void displayTableIf(@Nullable Boolean condition);
 
-        /// Displays or removes the table surrounding a specific comment in a document based on the given condition.
+        /// Displays or removes the table surrounding a specific AnchoredComment in a document based on the given condition.
         ///
-        /// @param condition if non-null, keep the table surrounding the comment, else remove.
+        /// @param condition if non-null, keep the table surrounding the AnchoredComment, else remove.
         void displayTableIfPresent(@Nullable Object condition);
 
-        /// Displays or removes the table surrounding a specific comment in a document based on the given condition.
+        /// Displays or removes the table surrounding a specific AnchoredComment in a document based on the given condition.
         ///
-        /// @param condition if null, keep the table surrounding the comment, else remove.
+        /// @param condition if null, keep the table surrounding the AnchoredComment, else remove.
         void displayTableIfAbsent(@Nullable Object condition);
 
-        /// Displays or removes the selected words surrounding a specific comment in a document based on the given
+        /// Displays or removes the selected words surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if true, keep the selected words surrounding the comment, else remove.
+        /// @param condition if true, keep the selected words surrounding the AnchoredComment, else remove.
         void displayWordsIf(@Nullable Boolean condition);
 
-        /// Displays or removes the selected words surrounding a specific comment in a document based on the given
+        /// Displays or removes the selected words surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if non-null, keep the selected words surrounding the comment, else remove.
+        /// @param condition if non-null, keep the selected words surrounding the AnchoredComment, else remove.
         void displayWordsIfPresent(@Nullable Object condition);
 
-        /// Displays or removes the selected words surrounding a specific comment in a document based on the given
+        /// Displays or removes the selected words surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if null, keep the selected words surrounding the comment, else remove.
+        /// @param condition if null, keep the selected words surrounding the AnchoredComment, else remove.
         void displayWordsIfAbsent(@Nullable Object condition);
 
-        /// Displays or removes the selected elements surrounding a specific comment in a document based on the given
+        /// Displays or removes the selected elements surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if true, keep the selected elements surrounding the comment, else remove.
+        /// @param condition if true, keep the selected elements surrounding the AnchoredComment, else remove.
         void displayDocPartIf(@Nullable Boolean condition);
 
-        /// Displays or removes the selected elements surrounding a specific comment in a document based on the given
+        /// Displays or removes the selected elements surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if non-null, keep the selected elements surrounding the comment, else remove.
+        /// @param condition if non-null, keep the selected elements surrounding the AnchoredComment, else remove.
         void displayDocPartIfPresent(@Nullable Object condition);
 
-        /// Displays or removes the selected elements surrounding a specific comment in a document based on the given
+        /// Displays or removes the selected elements surrounding a specific AnchoredComment in a document based on the given
         /// condition.
         ///
-        /// @param condition if null, keep the selected elements surrounding the comment, else remove.
+        /// @param condition if null, keep the selected elements surrounding the AnchoredComment, else remove.
         void displayDocPartIfAbsent(@Nullable Object condition);
     }
 }

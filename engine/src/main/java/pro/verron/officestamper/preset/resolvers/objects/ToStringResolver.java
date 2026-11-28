@@ -1,14 +1,12 @@
 package pro.verron.officestamper.preset.resolvers.objects;
 
 import org.jspecify.annotations.Nullable;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.Insert;
 import pro.verron.officestamper.api.ObjectResolver;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.Insert;
+import pro.verron.officestamper.api.OfficePart;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import static pro.verron.officestamper.utils.wml.WmlFactory.*;
 
 /// This class is an implementation of the [ObjectResolver] interface that resolves objects by converting them to a
 /// string representation using the [Object#toString()] method and creating a new run with the resolved content.
@@ -31,17 +29,17 @@ public class ToStringResolver
     }
 
     @Override
-    public Insert resolve(DocxPart part, String expression, @Nullable Object object) {
+    public Insert resolve(OfficePart part, String expression, @Nullable Object object) {
         var string = String.valueOf(object);
+        var factory = part.factory();
 
         var split = string.split(linebreakPlaceholder);
-        if (split.length == 1) return new Insert(newRun(string));
-        var elements = new ArrayList<>();
+        if (split.length == 1) return new Insert(factory.run(string));
+        var elements = new ArrayList<Element>();
         for (int i = 0; i < split.length - 1; i++) {
-            var line = split[i];
-            elements.add(newRun(List.of(newText(line), newBr())));
+            elements.add(factory.lineBreak(split[i]));
         }
-        elements.add(newRun(split[split.length - 1]));
+        elements.add(factory.run(split[split.length - 1]));
         return new Insert(elements);
     }
 

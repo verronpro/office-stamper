@@ -17,7 +17,8 @@ Newer JDKs in the same major line usually work, but when the bytecode target is 
 |===
 | Office‑stamper | Java | Docx4J | Notes
 
-| 3.3.x          | 25  | 11.4.9-11, 11.5.0-11 | Current. See link:release-notes.html[Release Notes] for details.
+| 4.0            | 25  | 11.5.14, 17.0.2 | Current. Two-module split: docx4j-free `engine` + provider modules (`officestamper-docx4j11` or `officestamper-docx4j17`, see below).
+| 3.8.x          | 25  | 11.4.9-11, 11.5.0-12 | Last single-artifact line; the engine shipped docx4j inside. See link:release-notes.html[Release Notes] for details.
 | 3.2.x          | 25  | 11.4.9-11, 11.5.0-11 | Uses Java 25 toolchain.
 | 3.1.x          | 25  | 11.4.9-11, 11.5.0-9  | Internal refactors; see Release Notes.
 | 3.0.x          | 25  | 11.4.9-11, 11.5.0-8  | Processing model overhaul; see link:release-notes.html[Release Notes].
@@ -30,8 +31,150 @@ Newer JDKs in the same major line usually work, but when the bytecode target is 
 
 Notes:
 
-* The root POM currently targets Java 25 and Docx4J 11.5.12, which applies to Office‑stamper 3.4.x at the time of writing.
+* The root POM currently targets Java 25 and Docx4J 11.5.14, which applies to Office‑stamper 4.0.x at the time of writing.
 * We routinely test across several Docx4J 11.5.x versions; see link:release-notes.html[Release Notes] for the exact matrix per release.
+
+== The two-module split (4.0)
+
+Starting with 4.0, Office‑stamper is split in two Maven artifacts:
+
+* `pro.verron.officestamper:engine` — the stamping engine itself. It has *no* docx4j dependency at all:
+  it owns the SpEL machinery, the processor pipeline, the resolvers and the
+  `pro.verron.officestamper.api` contracts. It runs on any OOXML object model you can adapt.
+* `pro.verron.officestamper:officestamper-docx4j11` — the docx4j 11.x provider
+  (tested against 11.5.14).
+* `pro.verron.officestamper:officestamper-docx4j17` — the docx4j 17.x provider
+  (tested against 17.0.2). In docx4j 17 every JAXB object model (wml, dml, pml, sml)
+  ships in the single `docx4j-generated-objects` artifact and the parent-tracking
+  `Child` interface moved to `org.jvnet.jaxb.lang`; both providers are drop-in
+  equivalents at the OfficeStamper level — swap the artifact to change the docx4j line.
+
+Each provider is the ONLY place that knows about `org.docx4j`; it adapts docx4j objects
+to the api and registers the docx processors, resolvers and preprocessors you know from
+previous releases (`DocxOfficeStampers.standard()` replaces the old `OfficeStampers` presets).
+
+Most users should depend on one provider, which pulls the engine transitively.
+The engine alone is useful only if you plan to write your own provider for another OOXML library.
+If you also use the `toAsciidoc`-style rendering machinery, note that since
+`pro.verron.asciidoc:asciidoc-docx` 4.1.0 the conversion is docx4j-flavor-agnostic:
+depend on `asciidoc-docx` with `officestamper-docx4j11`, or on `asciidoc-docx17`
+with `officestamper-docx4j17`, and either combination works.
+
+== Migrating from 3.8.x
+
+In 3.8.x you depended on `pro.verron.office-stamper:engine` and added docx4j yourself;
+the engine contained everything, and `pro.verron.officestamper.preset.OfficeStampers`
+was the entry point. The 4.0 migration is:
+
+. *Dependency*: replace `pro.verron.office-stamper:engine` with
+  `pro.verron.officestamper:officestamper-docx4j11` (or `-docx4j17`).
+  The manual `docx4j-core` / `docx4j-JAXB-ReferenceImpl` dependencies become unnecessary —
+  the provider brings the right docx4j line itself.
+  The `engine` artifact still exists (the provider depends on it), but depending on it alone
+  fails at runtime with `No OfficeStamper provider found on the classpath` — that error is the
+  signal that the provider artifact is missing.
+. *Entry point*: `OfficeStampers.docxStamper()` becomes `DocxOfficeStampers.standard()`.
+  The old `pro.verron.officestamper.preset.OfficeStampers` name still exists but is now the
+  docx-free factory — its method signatures changed, so calls must move to the new name.
+  The docx4j-typed `docxPackageStamper` convenience entry points (no-arg and
+  configuration-taking) were also removed — see the genericity bullet below for the
+  replacement.
+. *`OfficeStamper` and `StreamStamper` are no longer generic.* They exchange docx-free
+  `OfficeDocument` adapters, so the type parameter carried no information anymore:
+  `OfficeStamper<T>` became `OfficeStamper` (`OfficeDocument stamp(OfficeDocument, Object)`),
+  and `StreamStamper<T>` became `StreamStamper`. The docx4j-typed
+  `docxPackageStamper(OfficeStamperConfiguration)` entry point was removed with it —
+  to stamp an existing `WordprocessingMLPackage`, wrap it once:
+  `var doc = new DocxDocument(wmlPackage); stamper.stamp(doc, context);` — the package is
+  mutated in place, no unwrapping needed.
+. *Deprecated handles removed in 4.0* (all deprecated since 3.4 with `forRemoval`):
+  * `pro.verron.officestamper.api.EvaluationContextFactories` and
+    `pro.verron.officestamper.preset.EvaluationContextFactories` — both factory helper
+    classes are gone. Replace `noopFactory()`/`permissiveFactory()`/`defaultFactory()`/
+    `restrictedFactory()` calls with `setSpelSecurityMode(SecurityMode.PERMISSIVE)` or
+    `.RESTRICTED`, which install the matching pre-configured factory.
+  * The `OfficeStamperConfiguration` factory accessors
+    (`getEvaluationContextFactory`/`setEvaluationContextFactory`) are *no longer deprecated*:
+    they are the supported extension point for a fully custom SpEL context factory.
+    A custom factory overrides the one chosen by the security mode.
+. *Compatibility shims* (deprecated, `forRemoval`) keep the pre-4.0 package locations compiling
+  in the `officestamper-docx4j11` artifact:
+  `pro.verron.officestamper.utils.{wml, openpackaging, pml, sml}.*`,
+  `pro.verron.officestamper.experimental.ExperimentalStampers`, and the docx-coupled preset
+  processors/visitors under their old `preset.preprocessors.*`, `preset.postprocessors.*`,
+  `preset.processors.repeat.*` and `preset.resolvers.image.*` locations.
+  Each shim extends the relocated implementation, so instances remain assignable.
+. *The `pro.verron.officestamper.api` package keeps its name* —   every 3.8 import
+  `pro.verron.officestamper.api.<Name>` still resolves, and most configuration types
+  (`SecurityMode`, `OfficeStamperConfiguration`, `CustomFunction`, the resolver
+  interfaces, `TraceabilityReporter`, `OfficeStamperException`)
+  did not change at all.
+  Two functional contracts changed shape in the decoupling pass:
+  * `ExceptionResolver` no longer receives the `OfficePart`: it returns
+    `Optional<String>` — the fallback content string — and the engine builds the
+    replacement element itself. An empty optional means "no fallback" and surfaces as an
+    `OfficeStamperException` carrying the same message.
+  * `CommentProcessorFactory.create` takes the new `CommentProcessorContext` (comment
+    processors always operate on an anchored comment) instead of `ProcessorContext`.
+  What also changed is the *shape* of the document contract types — every docx4j parameter and return
+  type was replaced by a docx-free adapter — so custom processors written against raw
+  docx4j types must be ported; the compile errors are localized to those processor bodies.
+  Per-type mapping:
+  * *Image resolver*: since 4.0 the image resolver lives with the docx preset and is
+    registered by the PROVIDER — `DocxOfficeStampers.standard()` (and the other provider
+    presets) already install it, so templates with images work out of the box. The
+    docx-free engine ships no image resolver: to customise it, use
+    `addResolver(ImageResolver)` from the provider preset or override the resolver list.
+  * *Reshaped, same FQCN*: `Comment`, `CommentHooker`, `CommentRemover`,
+    `CommentProcessor`, `ContextTree`, `Hook`, `HookRemover`, `Hooks`, `Insert`,
+    `Paragraph`, `PlaceholderHooker`, `PostProcessor`, `PreProcessor`,
+    `ProcessorContext`, `StreamStamper`, `Table`.
+  * *Same FQCN, new role*: `OfficeStamper` is now the ServiceLoader service interface
+    that providers implement — user code no longer references it directly.
+  * *Deleted*: `DocxPart` — use `OfficePart`.
+  * *New in 4.0* (no 3.8 counterpart): `AnchoredComment`, `Content`, `Element`,
+    `ElementFactory`, `OfficeDocument`, `RunProperties`, `Tag`.
+  * *New in the decoupling pass*: `ProcessorContext` narrowed to part + expression +
+    context tree; the paragraph-aware `ParagraphProcessorContext` and the comment-anchored
+    `CommentProcessorContext` extend it, so `tableRow()`/`table()` and `comment()`/
+    `contentIterator()` no longer carry null branches.
+  `core.StandardParagraph` / `StandardTable` / `Tag` and friends are engine internals that
+  became provider adapters; and the docx-coupled factory classes that lived directly in
+  `pro.verron.officestamper.preset` (`OfficeStampers`, `Preprocessors`, `Postprocessors`)
+  cannot be re-created at their old location because the package is owned by the engine's
+  docx-free preset — they moved to `docx.preset`.
+
+== Processing order
+
+Hooks are re-discovered in document order after every mutation: each pass executes the
+first unexecuted hook and restarts discovery. This resolves outermost hooks first and
+lets hooks inside content produced by an enclosing hook (e.g. copies made by a repeat)
+run afterwards against their own context branch. The ordering is pinned by
+`NestedHooksTest` in the shared test suite.
+
+== Experimental pptx / xlsx stampers
+
+The provider artifact also carries the experimental `ExperimentalStampers`
+(`pptxStamper()`, `xlsxPackageStamper()`, `openStamper()`), used by the command‑line
+interface for `.pptx` templates.
+
+Since 4.0, their signatures are expressed over the docx-free `OfficeDocument`
+abstraction — the same contract the engine uses for docx — instead of raw docx4j
+package types. The provider supplies `PptxDocument` and `XlsxDocument` adapters;
+native access to the stamped package remains available through
+`OfficeDocument.unwrap(Class)` (e.g. `stamped.unwrap(PresentationMLPackage.class)`).
+`openStamper()` is a format-detecting entry point: it loads the template as a generic
+OOXML package and dispatches to the docx, pptx or xlsx stamper.
+
+These stampers remain experimental:
+
+* they run a minimal resolution pipeline (direct SpEL against the context) and do NOT go through
+  the full processor pipeline — comment processors, resolvers and preprocessors do not apply;
+* the `OfficePart` views of `PptxDocument`/`XlsxDocument` are minimal: content, hooks and
+  the element factory are docx-specific and throw for these formats;
+* their APIs and behaviour may change without notice.
+
+For production stamping, rely on the docx pipeline only.
 
 == DOCX producers (template editors)
 

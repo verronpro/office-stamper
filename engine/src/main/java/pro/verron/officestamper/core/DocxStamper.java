@@ -1,17 +1,20 @@
 package pro.verron.officestamper.core;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.Part;
-import org.docx4j.wml.ContentAccessor;
-import pro.verron.officestamper.api.*;
+import pro.verron.officestamper.api.CommentProcessorFactory;
+import pro.verron.officestamper.api.CustomFunction;
+import pro.verron.officestamper.api.EvaluationContextFactory;
+import pro.verron.officestamper.api.OfficeStamperConfiguration;
+import pro.verron.officestamper.api.SecurityMode;
+import pro.verron.officestamper.api.OfficeDocument;
+import pro.verron.officestamper.api.OfficePart;
+import pro.verron.officestamper.api.OfficeStamper;
+import pro.verron.officestamper.api.PreProcessor;
+import pro.verron.officestamper.api.PostProcessor;
 import pro.verron.officestamper.utils.svg.SvgUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static org.docx4j.openpackaging.parts.relationships.Namespaces.FOOTER;
-import static org.docx4j.openpackaging.parts.relationships.Namespaces.HEADER;
 
 /// The [DocxStamper] class is an implementation of the [OfficeStamper] interface used to stamp DOCX templates with a
 /// context object and write the result to an output stream.
@@ -20,7 +23,7 @@ import static org.docx4j.openpackaging.parts.relationships.Namespaces.HEADER;
 /// @author Joseph Verron
 /// @since 1.0.0
 public class DocxStamper
-        implements OfficeStamper<WordprocessingMLPackage> {
+        implements OfficeStamper {
 
     private final List<PreProcessor> preprocessors;
     private final List<PostProcessor> postprocessors;
@@ -53,75 +56,63 @@ public class DocxStamper
         this.postprocessors = new ArrayList<>(configuration.getPostprocessors());
     }
 
-    /// Reads in a .docx template and "stamps" it, using the specified context object to fill out any expressions it
+    /// Reads in a document template and "stamps" it, using the specified context object to fill out any expressions it
     /// finds.
     ///
-    /// In the .docx template you have the following options to influence the "stamping" process:
+    /// In the template you have the following options to influence the "stamping" process:
     ///   - Use expressions like `${name}` or `${person.isOlderThan(18)}` in the template's text. These expressions are
     /// resolved against the contextRoot object you pass into this method and are replaced by the results.
-    ///   - Use comments within the .docx template to mark certain paragraphs to be manipulated.
+    ///   - Use comments within the template to mark certain paragraphs to be manipulated.
     ///
-    /// Within comments, you can put expressions in which you can use the following methods by default:
-    ///   - `displayParagraphIf(boolean)` to conditionally display paragraphs or not
-    ///   - `displayTableRowIf(boolean)` to conditionally display table rows or not
-    ///   - `displayTableIf(boolean)` to conditionally display whole tables or not
-    ///   - `repeatTableRow(List<Object>)` to create a new table row for each object in the list and resolve expressions
-    /// within the table cells against one of the objects within the list.
-    ///
-    /// If you need a wider vocabulary of methods available in the comments, you can create your own [CommentProcessor]
-    /// and register it via [OfficeStamperConfiguration#addCommentProcessor(Class, CommentProcessorFactory)].
-    ///
-    /// @param document the .docx template to stamp
+    /// @param document the template to stamp
     /// @param contextRoot the context object to use for stamping
     /// @return the stamped document
     @Override
-    public WordprocessingMLPackage stamp(WordprocessingMLPackage document, Object contextRoot) {
+    public OfficeDocument stamp(OfficeDocument document, Object contextRoot) {
         preprocess(document);
         process(document, contextRoot);
         postprocess(document);
         return document;
     }
 
-    private void preprocess(WordprocessingMLPackage document) {
+    private void preprocess(OfficeDocument document) {
         preprocessors.forEach(processor -> processor.process(document));
     }
 
-    private void process(WordprocessingMLPackage document, Object contextRoot) {
-        var mainDocumentPart = document.getMainDocumentPart();
-        var mainPart = new TextualDocxPart(document, mainDocumentPart, mainDocumentPart);
-        process(mainPart, contextRoot);
-
-        var relationshipsPart = mainDocumentPart.getRelationshipsPart();
-        for (var relationship : relationshipsPart.getRelationshipsByType(HEADER)) {
-            Part part1 = relationshipsPart.getPart(relationship);
-            TextualDocxPart textualDocxPart = new TextualDocxPart(document, part1, (ContentAccessor) part1);
-            process(textualDocxPart, contextRoot);
-        }
-
-        for (var relationship : relationshipsPart.getRelationshipsByType(FOOTER)) {
-            Part part = relationshipsPart.getPart(relationship);
-            TextualDocxPart textualDocxPart = new TextualDocxPart(document, part, (ContentAccessor) part);
-            process(textualDocxPart, contextRoot);
+    private void process(OfficeDocument document, Object contextRoot) {
+        for (OfficePart part : document.parts()) {
+            process(part, contextRoot);
         }
     }
 
-    private void postprocess(WordprocessingMLPackage document) {
+    /// Processes a single part against the context root.
+    ///
+    /// Hook resolution order contract: hooks are re-discovered in document order after every
+    /// mutation — processing rewrites the part content (the legacy DocxIterator.reset()
+    /// semantics), so a fixed snapshot would go stale. Each pass executes the first unexecuted
+    /// hook in document order and restarts discovery, which resolves OUTERMOST hooks first and
+    /// lets hooks inside content produced by an enclosing hook (e.g. copies made by a repeat)
+    /// run afterwards against their own context branch. This ordering is pinned by
+    /// NestedHooksTest in the shared test suite.
+    private void process(OfficePart part, Object contextRoot) {
+        var contextTree = new ContextRoot(contextRoot);
+        var evaluationContextFactory = new OfficeStamperEvaluationContextFactory(customFunctions,
+                commentProcessors,
+                interfaceFunctions,
+                contextFactory);
+        boolean processed;
+        do {
+            processed = false;
+            for (DocxHook hook : DocxHook.ofHooks(part)) {
+                if (hook.run(engineFactory, contextTree, evaluationContextFactory)) {
+                    processed = true;
+                    break;
+                }
+            }
+        } while (processed);
+    }
+
+    private void postprocess(OfficeDocument document) {
         postprocessors.forEach(processor -> processor.process(document));
     }
-
-    private void process(DocxPart part, Object contextRoot) {
-        var contextTree = new ContextRoot(contextRoot);
-        var iterator = DocxHook.ofHooks(part::content, part);
-        while (iterator.hasNext()) {
-            var hook = iterator.next();
-            var officeStamperContextFactory = new OfficeStamperEvaluationContextFactory(customFunctions,
-                    commentProcessors,
-                    interfaceFunctions,
-                    contextFactory);
-            if (hook.run(engineFactory, contextTree, officeStamperContextFactory)) {
-                iterator.reset();
-            }
-        }
-    }
-
 }

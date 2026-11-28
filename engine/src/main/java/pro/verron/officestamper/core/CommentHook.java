@@ -1,21 +1,21 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.api.Comment;
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ProcessorContext;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import pro.verron.officestamper.api.AnchoredComment;
+import pro.verron.officestamper.api.OfficePart;
+import pro.verron.officestamper.api.CommentProcessorContext;
+import pro.verron.officestamper.api.Tag;
 
 /// A hook that processes comments in a document.
 public class CommentHook
         implements DocxHook {
-    private final DocxPart part;
+    private final OfficePart part;
     private final Tag tag;
-    private final Comment comment;
+    private final AnchoredComment anchoredComment;
 
-    CommentHook(DocxPart part, Tag tag, Comment comment) {
+    CommentHook(OfficePart part, Tag tag, AnchoredComment anchoredComment) {
         this.part = part;
         this.tag = tag;
-        this.comment = comment;
+        this.anchoredComment = anchoredComment;
     }
 
     @Override
@@ -24,25 +24,21 @@ public class CommentHook
             ContextRoot contextRoot,
             OfficeStamperEvaluationContextFactory evaluationContextFactory
     ) {
-        if (WmlUtils.hasTagAttribute(tag.tag(), "status", "executed")) return false;
-        var paragraph = tag.getParagraph();
-        var expression = comment.expression();
-        var contextKey = tag.getContextKey();
+        if (DocxHook.executed(tag)) return false;
+        var paragraph = tag.paragraph();
+        var expression = anchoredComment.expression();
+        var contextKey = DocxHook.contextKey(tag);
         var contextStack = contextRoot.find(contextKey);
-        var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
+        var processorContext = new CommentProcessorContext(part, paragraph, anchoredComment, expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
         var processed = engine.process(evaluationContext);
-        WmlUtils.setTagAttribute(tag.tag(), "status", "executed");
+        tag.setAttribute("status", "executed");
         return processed;
     }
 
     @Override
     public void setContextKey(String contextKey) {
-        var smartTag = tag.tag();
-        var attributeKey = "context";
-        var attributeValue = contextKey;
-        WmlUtils.setTagAttribute(smartTag, attributeKey, attributeValue);
+        tag.setAttribute("context", contextKey);
     }
-
 }

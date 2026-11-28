@@ -1,18 +1,21 @@
 package pro.verron.officestamper.core;
 
-import pro.verron.officestamper.api.DocxPart;
-import pro.verron.officestamper.api.ProcessorContext;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pro.verron.officestamper.api.CommentProcessorContext;
+import pro.verron.officestamper.api.OfficePart;
+import pro.verron.officestamper.api.Tag;
 
 /// Hook for processing tags.
 public class TagHook
         implements DocxHook {
+    private static final Logger log = LoggerFactory.getLogger(TagHook.class);
+    private final OfficePart part;
     private final Tag tag;
-    private final DocxPart part;
 
-    TagHook(DocxPart part, Tag tag) {
-        this.tag = tag;
+    TagHook(OfficePart part, Tag tag) {
         this.part = part;
+        this.tag = tag;
     }
 
     @Override
@@ -21,17 +24,18 @@ public class TagHook
             ContextRoot contextRoot,
             OfficeStamperEvaluationContextFactory evaluationContextFactory
     ) {
-        if (WmlUtils.hasTagAttribute(tag.tag(), "status", "executed")) return false;
-        var comment = tag.asComment();
-        var paragraph = tag.getParagraph();
+        if (DocxHook.executed(tag)) return false;
+        var paragraph = tag.paragraph();
         var expression = tag.expression();
-        var contextKey = tag.getContextKey();
+        var contextKey = DocxHook.contextKey(tag);
         var contextStack = contextRoot.find(contextKey);
-        var processorContext = new ProcessorContext(part, paragraph, comment, expression, contextStack);
+        log.trace("Tag '{}' contextKey={} branch={}", expression, contextKey, contextStack);
+        // The tag's comment-shaped object lets comment processors also process inline hook tags
+        // (Tag.asComment always provides one, synthesised from the tag's own content when needed).
+        var processorContext = new CommentProcessorContext(part, paragraph, tag.asComment(), expression, contextStack);
         var evaluationContext = evaluationContextFactory.create(processorContext, contextStack);
         var engine = engineFactory.create(processorContext);
-        var tagType = tag.type()
-                         .orElse(null);
+        var tagType = tag.type();
         boolean processed = false;
         if ("inlineProcessor".equals(tagType)) {
             if (engine.process(evaluationContext)) processed = true;
@@ -42,13 +46,12 @@ public class TagHook
             processed = true;
             tag.replace(insert);
         }
-        WmlUtils.setTagAttribute(tag.tag(), "status", "executed");
+        tag.setAttribute("status", "executed");
         return processed;
     }
 
     @Override
     public void setContextKey(String contextKey) {
-        WmlUtils.setTagAttribute(tag.tag(), "context", contextKey);
+        tag.setAttribute("context", contextKey);
     }
-
 }

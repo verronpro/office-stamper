@@ -1,4 +1,4 @@
-/// Built-in comment processors that handle stamping directives embedded as Word
+/// Built-in AnchoredComment processors that handle stamping directives embedded as Word
 /// comments.
 ///
 /// Ensures non-null values by default.

@@ -1,4 +1,4 @@
-/// Comment processor for stamping tables with dynamic data.
+/// AnchoredComment processor for stamping tables with dynamic data.
 ///
 /// Resolves table expressions by populating table rows from collection data.
 ///

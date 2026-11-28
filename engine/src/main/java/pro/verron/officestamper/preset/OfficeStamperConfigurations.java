@@ -5,11 +5,9 @@ import pro.verron.officestamper.api.OfficeStamperConfiguration;
 import pro.verron.officestamper.api.OfficeStamperException;
 import pro.verron.officestamper.api.SecurityMode;
 import pro.verron.officestamper.core.DocxStamperConfiguration;
+import pro.verron.officestamper.core.EvaluationContextFactories;
 import pro.verron.officestamper.preset.CommentProcessorFactory.*;
 import pro.verron.officestamper.preset.processors.displayif.DisplayIfProcessor;
-import pro.verron.officestamper.preset.processors.repeat.RepeatDocPartProcessor;
-import pro.verron.officestamper.preset.processors.repeat.RepeatParagraphProcessor;
-import pro.verron.officestamper.preset.processors.repeat.RepeatProcessor;
 import pro.verron.officestamper.preset.processors.repeatrow.RepeatRowProcessor;
 import pro.verron.officestamper.preset.processors.replacewith.ReplaceWithProcessor;
 import pro.verron.officestamper.preset.processors.table.TableResolver;
@@ -32,35 +30,20 @@ public class OfficeStamperConfigurations {
         throw new OfficeStamperException("Utility class should not be instantiated");
     }
 
-    /// Creates a full [OfficeStamperConfiguration] with standard configurations, supplemented with additional pre- and
-    /// post-processors for enhanced document handling.
+    /// Creates a full [OfficeStamperConfiguration] with the standard configurations.
     ///
-    /// This configuration includes preprocessors to:
-    /// - Remove language proof markings.
-    /// - Remove language information.
-    /// - Merge similar text runs.
+    /// This is the docx4j-free equivalent of the legacy full preset: the format-specific pre-/post-processors
+    /// (proofErr cleanup, language cleanup, run merging, orphaned note removal) are registered by the
+    /// format provider on top of this base configuration.
     ///
-    /// It also includes postprocessors to:
-    /// - Remove orphaned footnotes.
-    /// - Remove orphaned endnotes.
-    ///
-    /// @return a fully configured [OfficeStamperConfiguration] instance with the additional processors applied.
+    /// @return a fully configured [OfficeStamperConfiguration] instance.
     public static OfficeStamperConfiguration full() {
-        var configuration = standard();
-
-        configuration.addPreprocessor(Preprocessors.removeLanguageProof());
-        configuration.addPreprocessor(Preprocessors.removeLanguageInfo());
-        configuration.addPreprocessor(Preprocessors.mergeSimilarRuns());
-
-        configuration.addPostprocessor(Postprocessors.removeOrphanedFootnotes());
-        configuration.addPostprocessor(Postprocessors.removeOrphanedEndnotes());
-
-        return configuration;
+        return standard();
     }
 
     /// Creates a standard [OfficeStamperConfiguration] instance with predefined settings.
     ///
-    /// The configuration is extended with custom comment processing, resolvers, and additional preprocessors.
+    /// The configuration is extended with custom AnchoredComment processing, resolvers, and additional preprocessors.
     ///
     /// It sets up a fallback resolver with the default value of a newline character ("`\n`") to handle placeholder
     /// resolution.
@@ -71,7 +54,7 @@ public class OfficeStamperConfigurations {
         return standard(fallback);
     }
 
-    /// Creates a standard [OfficeStamperConfiguration] instance with a set of predefined comment processors, resolvers,
+    /// Creates a standard [OfficeStamperConfiguration] instance with a set of predefined AnchoredComment processors, resolvers,
     /// and preprocessors.
     ///
     /// The configuration is extended with custom functions for date and time formatting, and permits the provision of a
@@ -86,22 +69,16 @@ public class OfficeStamperConfigurations {
         var configuration = minimal();
 
         configuration.addCommentProcessor(IRepeatRowProcessor.class, RepeatRowProcessor::new);
-        configuration.addCommentProcessor(IParagraphRepeatProcessor.class, RepeatParagraphProcessor::new);
-        configuration.addCommentProcessor(IRepeatDocPartProcessor.class, RepeatDocPartProcessor::new);
-        configuration.addCommentProcessor(IRepeatProcessor.class, RepeatProcessor::new);
         configuration.addCommentProcessor(ITableResolver.class, TableResolver::new);
         configuration.addCommentProcessor(IDisplayIfProcessor.class, DisplayIfProcessor::new);
         configuration.addCommentProcessor(IReplaceWithProcessor.class, ReplaceWithProcessor::new);
 
-        configuration.setResolvers(List.of(Resolvers.image(true),
-                Resolvers.legacyDate(),
+        configuration.setResolvers(List.of(Resolvers.legacyDate(),
                 Resolvers.isoDate(),
                 Resolvers.isoTime(),
                 Resolvers.isoDateTime(),
                 Resolvers.nullToEmpty(),
                 fallback));
-
-        configuration.addPreprocessor(Preprocessors.removeMalformedComments());
 
         var fdate = "fdate";
         var ftime = "ftime";
@@ -165,22 +142,16 @@ public class OfficeStamperConfigurations {
         return configuration;
     }
 
-    /// Creates a minimal [OfficeStamperConfiguration] instance with essential settings to provide basic placeholder
-    /// processing and fallback resolvers.
+    /// Creates a minimal [OfficeStamperConfiguration] instance with essential settings: a fallback resolver only.
     ///
-    /// This configuration includes:
-    /// - A fallback resolver with a default value of a newline character ("`\n`").
-    /// - A placeholder preprocessor that prepares placeholders matching a specific pattern.
+    /// The format-specific placeholder/comment preparation and cleanup processors (wrapping `${...}` and `#{...}`
+    /// expressions into hook tags, hooking comments, removing tags and comments) are registered by the format
+    /// provider on top of this base configuration.
     ///
     /// @return a minimally configured [OfficeStamperConfiguration] instance
     public static OfficeStamperConfiguration minimal() {
         var configuration = raw();
         configuration.addResolver(Resolvers.fallback("\n"));
-        configuration.addPreprocessor(Preprocessors.preparePlaceholders("${", "placeholder"));
-        configuration.addPreprocessor(Preprocessors.preparePlaceholders("#{", "inlineProcessor"));
-        configuration.addPreprocessor(Preprocessors.prepareCommentProcessor());
-        configuration.addPostprocessor(Postprocessors.removeTags("officestamper"));
-        configuration.addPostprocessor(Postprocessors.removeComments());
         return configuration;
     }
 
@@ -213,16 +184,13 @@ public class OfficeStamperConfigurations {
     ///
     /// @return a basic [OfficeStamperConfiguration] instance with no extra configurations
     public static OfficeStamperConfiguration raw() {
-        var defaultFactory = EvaluationContextFactories.defaultFactory();
+        var defaultFactory = EvaluationContextFactories.restrictedFactory();
         var defaultExceptionResolver = ExceptionResolvers.throwing();
         var configuration = new DocxStamperConfiguration(defaultFactory, defaultExceptionResolver);
         // Honor system property: officestamper.spel.mode = restricted|permissive (default: restricted)
         var spelModeProp = System.getProperty("officestamper.spel.mode");
         var spelPermissive = spelModeProp != null && spelModeProp.equalsIgnoreCase("permissive");
         configuration.setSpelSecurityMode(spelPermissive ? SecurityMode.PERMISSIVE : SecurityMode.RESTRICTED);
-        if (spelPermissive) {
-            configuration.setEvaluationContextFactory(EvaluationContextFactories.noopFactory());
-        }
         // Honor system property: officestamper.svg.mode = restricted|permissive (default: restricted)
         var svgModeProp = System.getProperty("officestamper.svg.mode");
         configuration.setSvgSecurityMode(svgModeProp != null && svgModeProp.equalsIgnoreCase("permissive")

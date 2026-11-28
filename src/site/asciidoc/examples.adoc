@@ -2,12 +2,13 @@
 
 Practical snippets for Office-stamper using the public API.
 
-== Stamp a DOCX from a Docx4J package
+== Stamp an existing Docx4J WordprocessingMLPackage
 
 [source,java]
 ----
-var stamper = OfficeStampers.docxPackageStamper(OfficeStamperConfigurations.standard());
-WordprocessingMLPackage stamped = stamper.stamp(document, context);
+var doc = new DocxDocument(document);                       // provider adapter
+OfficeStampers.docxStamper(OfficeStamperConfigurations.standard()).stamp(doc, context);
+// the original WordprocessingMLPackage is stamped in place
 ----
 
 == Customize the configuration

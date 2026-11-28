@@ -1,5 +1,6 @@
 package pro.verron.officestamper.api;
 
+
 /// A factory for creating [CommentProcessor] instances.
 ///
 /// This functional interface allows implementations to define how comment processors should be created based on the
@@ -9,7 +10,7 @@ package pro.verron.officestamper.api;
 
     /// Creates a new [CommentProcessor] instance.
     ///
-    /// @param processorContext the context in which the processor will operate
+    /// @param processorContext the comment context in which the processor will operate
     /// @return a configured [CommentProcessor] instance
-    CommentProcessor create(ProcessorContext processorContext);
+    CommentProcessor create(CommentProcessorContext processorContext);
 }

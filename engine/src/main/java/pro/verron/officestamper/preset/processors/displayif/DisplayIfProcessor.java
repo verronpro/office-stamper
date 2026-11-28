@@ -2,17 +2,16 @@ package pro.verron.officestamper.preset.processors.displayif;
 
 
 import org.jspecify.annotations.Nullable;
-import org.jvnet.jaxb2_commons.ppp.Child;
 import pro.verron.officestamper.api.CommentProcessor;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.Element;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
-import pro.verron.officestamper.utils.wml.WmlUtils;
 
 import java.util.ArrayList;
 
 import static pro.verron.officestamper.api.OfficeStamperException.throwing;
 
-/// Processor for the [CommentProcessorFactory.IDisplayIfProcessor] comment.
+/// Processor for the [CommentProcessorFactory.IDisplayIfProcessor] AnchoredComment.
 ///
 /// @author Joseph Verron
 /// @author Tom Hombergs
@@ -25,7 +24,7 @@ public class DisplayIfProcessor
     /// Creates a new [DisplayIfProcessor].
     ///
     /// @param processorContext the context in which this processor runs
-    public DisplayIfProcessor(ProcessorContext processorContext) {
+    public DisplayIfProcessor(CommentProcessorContext processorContext) {
         super(processorContext);
     }
 
@@ -85,13 +84,15 @@ public class DisplayIfProcessor
     @Override
     public void displayWordsIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
+        // Materialize first, then remove: the slice iterator walks the live content lists, and
+        // removing while iterating throws ConcurrentModificationException (legacy semantics).
+        var toRemove = new ArrayList<Element>();
         var iterator = context().contentIterator();
-        var toRemove = new ArrayList<Child>();
-        while (iterator.hasNext()) {
-            var it = iterator.next();
-            toRemove.add((Child) it);
-        }
-        toRemove.forEach(WmlUtils::remove);
+        while (iterator.hasNext()) toRemove.add(iterator.next());
+        toRemove.forEach(element -> {
+            var parent = element.parent();
+            if (parent != null) parent.content().remove(element);
+        });
     }
 
     @Override
@@ -107,9 +108,11 @@ public class DisplayIfProcessor
     @Override
     public void displayDocPartIf(@Nullable Boolean condition) {
         if (Boolean.TRUE.equals(condition)) return;
-        comment().getParent()
-                 .getContent()
-                 .removeAll(comment().getElements());
+        comment().elements()
+                 .forEach(element -> {
+                     var parent = element.parent();
+                     if (parent != null) parent.content().remove(element);
+                 });
     }
 
     @Override

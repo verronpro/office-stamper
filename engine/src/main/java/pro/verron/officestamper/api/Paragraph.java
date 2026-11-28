@@ -1,74 +1,53 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.Comments;
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.P;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/// The Paragraph interface represents a paragraph in a text document.
-/// It provides methods for replacing a placeholder within the paragraph and retrieving the paragraph as a string.
+/// A paragraph in a document, exposed without leaking the underlying OOXML library.
+/// Implementations are supplied by a concrete provider (e.g. docx4j 11 or 17).
 public interface Paragraph {
 
-    /// Replaces specified contiguous elements within the paragraph with new elements.
+    /// Replaces the given contiguous elements with the new elements.
     ///
-    /// @param toRemove The list of elements to be removed from the paragraph.
-    /// @param toAdd The list of elements to be added to the paragraph.
-    void replace(List<P> toRemove, List<P> toAdd);
+    /// @param toRemove the elements to remove from the paragraph
+    /// @param toAdd    the elements to insert in their place
+    void replace(List<Element> toRemove, List<Element> toAdd);
 
-    /// Removes the paragraph from the document.
-    /// This method is intended to be used when a paragraph needs to be deleted.
+    /// Removes this paragraph from the document.
     void remove();
 
-    /// Replaces a specified placeholder within the paragraph with the provided insert.
+    /// Replaces a placeholder expression within this paragraph with the given insert.
     ///
-    /// @param expression the expression to replace.
-    /// @param insert     the insert containing elements that will replace the placeholder.
+    /// @param expression the expression to replace
+    /// @param insert     the insert whose elements replace the placeholder
     void replace(String expression, Insert insert);
 
-    /// Replaces a section of elements within the document, defined by the start and end objects,
-    /// with the elements provided by the given insert.
+    /// Replaces the section of elements between `start` and `end` with the given insert.
     ///
-    /// @param start  the starting object marking the beginning of the section to replace.
-    /// @param end    the ending object marking the end of the section to replace.
-    /// @param insert the insert containing the elements that will replace the specified section.
-    void replace(Object start, Object end, Insert insert);
+    /// @param start  the first element of the section to replace
+    /// @param end    the last element of the section to replace
+    /// @param insert the insert whose elements replace the section
+    void replace(Element start, Element end, Insert insert);
 
-    ///Returns the paragraph as a string.
-    ///
-    ///@return the paragraph as a string
+    /// @return the text content of this paragraph
     String asString();
 
-    /// Applies the specified consumer function to the paragraph content.
-    ///
-    /// @param pConsumer The consumer function to apply to the paragraph content.
-    void apply(Consumer<ContentAccessor> pConsumer);
+    /// @return the mutable content of this paragraph
+    Content content();
 
-    /// Retrieves the parent of the current paragraph that matches the specified class type.
+    /// Applies the given consumer to the content of this paragraph.
     ///
-    /// @param aClass The class type to match for the parent element.
-    /// @param <T> The type of the parent element to be returned.
-    /// @return An [Optional] containing the matched parent element if found, otherwise an empty [Optional].
-    <T> Optional<T> parent(Class<T> aClass);
+    /// @param consumer the consumer applied to each content element
+    void apply(Consumer<Element> consumer);
 
-    /// Retrieves a collection of comments associated with the paragraph.
-    ///
-    /// @return a collection of [Comments.Comment] objects related to the paragraph
-    Collection<Comments.Comment> getComment();
+    /// @return the comments anchored in this paragraph
+    Collection<Comment> getComments();
 
-
-    /// Retrieves the parent table row of the current paragraph, if it exists.
-    ///
-    /// @return an [Optional] containing the parent [Table.Row] if the paragraph is within a table row, otherwise an
-    ///         empty [Optional]
+    /// @return the parent table row of this paragraph, if it is inside a table row
     Optional<Table.Row> parentTableRow();
 
-    /// Retrieves the parent table of the current paragraph, if it exists.
-    ///
-    /// @return an [Optional] containing the parent [Table] if the paragraph is within a table, otherwise an empty
-    ///         [Optional]
+    /// @return the parent table of this paragraph, if it is inside a table
     Optional<Table> parentTable();
 }

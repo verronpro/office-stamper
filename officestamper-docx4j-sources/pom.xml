@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>pro.verron</groupId>
+        <artifactId>office-stamper</artifactId>
+        <version>4.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>pro.verron.office-stamper</groupId>
+    <artifactId>officestamper-docx4j-sources</artifactId>
+    <name>Office-stamper docx shared sources</name>
+    <description>
+        Flavor-neutral docx adapter sources shared verbatim by both docx4j providers
+        (officestamper-docx4j11 and officestamper-docx4j17), which compile them via
+        build-helper-maven-plugin add-source. The only flavor-dependent class,
+        pro.verron.officestamper.docx.JaxbCompat, lives per-flavor, so this module
+        can never compile standalone: it is not built, tested, installed or
+        published. The docx4j 11 dependencies are provided solely so IDEs resolve
+        the sources.
+    </description>
+
+    <properties>
+        <maven.main.skip>true</maven.main.skip>
+        <maven.test.skip>true</maven.test.skip>
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.source.skip>true</maven.source.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pro.verron.office-stamper</groupId>
+            <artifactId>utils</artifactId>
+        </dependency>
+        <!-- provided: IDE-only resolution, mirrors the docx4j 11 provider classpath -->
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-core</artifactId>
+            <version>${docx4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-openxml-objects</artifactId>
+            <version>${docx4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-openxml-objects-pml</artifactId>
+            <version>${docx4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-openxml-objects-sml</artifactId>
+            <version>${docx4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <configuration>
+                    <skipPublishing>true</skipPublishing>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

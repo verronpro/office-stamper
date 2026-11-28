@@ -1,19 +1,16 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.OpcPackage;
+/// Contract for stamping a template document with a context and returning the
+/// resulting document. The exchanged documents are docx-free [OfficeDocument]
+/// adapters supplied by a provider module (e.g. docx4j 11 or 17); native access
+/// remains available through [OfficeDocument#unwrap(Class)].
+public interface OfficeStamper {
 
-/// This is an interface that defines the contract for stamping templates with context and returning the result as a
-/// document.
-///
-/// @param <T> The type of the template that can be stamped.
-/// @author Joseph Verron
-/// @since 1.6.4
-public interface OfficeStamper<T extends OpcPackage> {
-
-    /// Stamps the given template with the given context and returns the resulting document.
+    /// Stamps the given template with the given context and returns the
+    /// resulting document. The template is mutated in place and returned.
     ///
-    /// @param template The template to stamp.
-    /// @param context The context to use for stamping.
-    /// @return The resulting document after stamping.
-    T stamp(T template, Object context);
+    /// @param template the template to stamp
+    /// @param context  the context to use for stamping
+    /// @return the resulting document after stamping
+    OfficeDocument stamp(OfficeDocument template, Object context);
 }

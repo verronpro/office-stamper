@@ -1,15 +1,13 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-
-/// The PreProcessor interface defines a method for processing a WordprocessingMLPackage
-/// document prior to executing specific operations.
-/// Implementations of this interface can modify, sanitize, or transform the document content as necessary.
+/// A processor applied to a document before stamping.
+///
+/// Implementations may modify, sanitize, or transform the document content. The concrete,
+/// library-specific behavior is supplied by a provider.
 public interface PreProcessor {
-    /// Processes the provided WordprocessingMLPackage document based on implementation-specific behavior.
-    /// This method allows for manipulation or transformation of the document, such as modifying its content,
-    /// sanitizing specific sections, or preparing the document for further actions.
+
+    /// Processes the given document.
     ///
-    /// @param document the WordprocessingMLPackage document to be processed; cannot be null
-    void process(WordprocessingMLPackage document);
+    /// @param document the document to process
+    void process(OfficeDocument document);
 }

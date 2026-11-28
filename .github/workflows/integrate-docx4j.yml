@@ -61,4 +61,18 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - run: mvn -B -ntp verify -Ddocx4j.version="${{ matrix.docx4j }}"
+      - name: Run CI
+        # -l keeps the exit code intact (a pipe would mask it); the log is uploaded
+        # below on failure because job logs are only downloadable by repository admins.
+        run: mvn -B -ntp -l mvn.log verify -Ddocx4j.version="${{ matrix.docx4j }}"
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: build-log-docx4j-${{ matrix.docx4j }}
+          path: |
+            mvn.log
+            **/target/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 14

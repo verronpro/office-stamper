@@ -1,39 +1,28 @@
 package pro.verron.officestamper.api;
 
-import org.docx4j.wml.CTSmartTagRun;
-import org.docx4j.wml.ContentAccessor;
-import pro.verron.officestamper.utils.iterator.ResetableIterator;
-import pro.verron.officestamper.utils.wml.DocxIterator;
-import pro.verron.officestamper.utils.wml.WmlUtils;
+import java.util.Iterator;
 
-/// Provides utility methods for working with [Hook] instances in the context of a WordprocessingML-based document. The
-/// [Hooks] class contains static methods to create and manage [ResetableIterator] instances of hooks for a given
-/// document part. These hooks allow the customization or extension of document processing behavior in a flexible and
-/// context-driven manner.
-public class Hooks {
+/// Discovers hook [Tag]s within a document part or any element subtree.
+///
+/// The concrete, library-specific discovery (recursing through paragraphs, tables, SDTs,
+/// textboxes and drawings) is supplied by a provider and consumed by the engine's hook orchestration.
+///
+/// Subtree-scoped discovery exists because deep-copied subtrees (e.g. a table row duplicated by a
+/// repeat processor) must have their hook tags re-discovered before being rebound to a new context.
+public interface Hooks {
 
-    private Hooks() {
-        throw new IllegalStateException("Utility class");
-    }
+    /// @param part the part to scan for hook tags
+    /// @return an iterator over the hook tags found in the part
+    Iterator<Tag> ofHooks(OfficePart part);
 
-    /// Creates a [ResetableIterator] of Hook instances for a specific document part, based on the provided content
-    /// accessor. This method filters potential hooks from the content and maps them to Hook instances associated with
-    /// the given document part.
+    /// @param scope the element whose subtree to scan for hook tags
+    /// @return an iterator over the hook tags found within the given subtree
+    Iterator<Tag> ofHooks(Element scope);
+
+    /// Discovers the anchored comments of a part: every comment whose range (start, end and
+    /// reference markers) fully resolves within the part content.
     ///
-    /// @param contentAccessor the content accessor providing access to the document's content
-    /// @return a [ResetableIterator] of Hook instances for the specified document part
-    public static ResetableIterator<Hook> ofHooks(ContentAccessor contentAccessor) {
-        return new DocxIterator(contentAccessor).filter(Hooks::isHook)
-                                                .map(Hooks::asHook);
-    }
-
-    private static boolean isHook(Object o) {
-        return o instanceof CTSmartTagRun tag && WmlUtils.isTagElement(tag, "officestamper");
-    }
-
-    private static Hook asHook(Object o) {
-        if (o instanceof CTSmartTagRun tag && WmlUtils.isTagElement(tag, "officestamper"))
-            return contextKey -> WmlUtils.setTagAttribute(tag, "context", contextKey);
-        throw new IllegalArgumentException("Unexpected value: " + o);
-    }
+    /// @param part the part to scan for anchored comments
+    /// @return an iterator over the resolved anchored comments
+    Iterator<AnchoredComment> ofComments(OfficePart part);
 }

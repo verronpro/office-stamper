@@ -3,7 +3,7 @@ package pro.verron.officestamper.preset.processors.repeatrow;
 import org.jspecify.annotations.Nullable;
 import pro.verron.officestamper.api.CommentProcessor;
 import pro.verron.officestamper.api.OfficeStamperException;
-import pro.verron.officestamper.api.ProcessorContext;
+import pro.verron.officestamper.api.CommentProcessorContext;
 import pro.verron.officestamper.preset.CommentProcessorFactory;
 
 /// Repeats a table row for each element in a list.
@@ -20,7 +20,7 @@ public class RepeatRowProcessor
     ///
     /// @param processorContext the context in which this processor operates, containing information about the
     ///         document and processing environment
-    public RepeatRowProcessor(ProcessorContext processorContext) {
+    public RepeatRowProcessor(CommentProcessorContext processorContext) {
         super(processorContext);
     }
 
@@ -32,15 +32,19 @@ public class RepeatRowProcessor
         var row = context().paragraph()
                            .parentTableRow()
                            .orElseThrow(OfficeStamperException.throwing("This paragraph is not in a table row."));
-        row.removeComment(comment());
+        // The copied rows must not carry stale AnchoredComment markers
+        comment().deleteFrom(row);
 
         var table = row.table();
         var index = table.indexOf(row);
         for (Object item : items) {
             var copy = row.copy();
             var contextKey = contextHolder.addBranch(item);
-            copy.hooks()
-                .forEach(hook -> hook.setContextKey(contextKey));
+            // Re-discover the hook tags within the copy and bind them to the new context branch
+            context().part()
+                     .hooks()
+                     .ofHooks(copy)
+                     .forEachRemaining(hook -> hook.setAttribute("context", contextKey));
             table.add(index++, copy);
         }
         row.remove();

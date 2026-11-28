@@ -43,12 +43,14 @@ void main() {
 }
 ----
 
-If you already have a `WordprocessingMLPackage` (Docx4J document), use `docxPackageStamper`:
+If you already have a `WordprocessingMLPackage` (Docx4J document), wrap it in the provider's
+`DocxDocument` adapter — the stamper mutates your package in place:
 
 [source,java]
 ----
-var stamper = OfficeStampers.docxPackageStamper(OfficeStamperConfigurations.standard());
-WordprocessingMLPackage stamped = stamper.stamp(document, context);
+var doc = new DocxDocument(document);
+OfficeStampers.docxStamper().stamp(doc, context);
+// document is stamped in place
 ----
 
 _Want to understand the architecture?
@@ -100,22 +102,13 @@ Control modes via system properties:
 ----
 <dependency>
     <groupId>pro.verron.office-stamper</groupId>
-    <artifactId>engine</artifactId>
-    <version>3.5</version>
-</dependency>
-
-<!-- You also need to provide a dependency to Docx4J -->
-<dependency>
-    <groupId>org.docx4j</groupId>
-    <artifactId>docx4j-core</artifactId>
-    <version>11.5.13</version>
-</dependency>
-<dependency>
-    <groupId>org.docx4j</groupId>
-    <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-    <version>11.5.13</version>
+    <artifactId>officestamper-docx4j11</artifactId>
+    <version>4.0</version>
 </dependency>
 ----
+
+The provider artifact brings the stamping engine and the matching Docx4J release transitively.
+A `officestamper-docx4j17` variant targets the docx4j 17.x line.
 
 == Documentation
 

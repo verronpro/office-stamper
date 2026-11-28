@@ -21,12 +21,12 @@ public interface OfficeStamperConfiguration {
     /// @return the updated [OfficeStamperConfiguration] object
     OfficeStamperConfiguration exposeInterfaceToExpressionLanguage(Class<?> interfaceClass, Object implementation);
 
-    /// Adds a comment processor to the [OfficeStamperConfiguration].
+    /// Adds a AnchoredComment processor to the [OfficeStamperConfiguration].
     ///
-    /// A comment processor is responsible for processing comments in the document and performing specific operations
-    /// based on the comment content.
+    /// A AnchoredComment processor is responsible for processing comments in the document and performing specific operations
+    /// based on the AnchoredComment content.
     ///
-    /// @param interfaceClass the interface class associated with the comment processor
+    /// @param interfaceClass the interface class associated with the AnchoredComment processor
     /// @param commentProcessorFactory a factory that creates a [CommentProcessor] object
     /// @return the updated [OfficeStamperConfiguration] object
     OfficeStamperConfiguration addCommentProcessor(
@@ -44,19 +44,22 @@ public interface OfficeStamperConfiguration {
     /// Retrieves the [EvaluationContextFactory] for creating Spring Expression Language (SpEL) [EvaluationContext]
     /// instances used by the office stamper.
     ///
+    /// For the standard security levels, prefer [#getSpelSecurityMode()]; this accessor is
+    /// the extension point for supplying or inspecting a fully custom factory.
+    ///
     /// @return the [EvaluationContextFactory] for creating SpEL EvaluationContext instances.
-    /// @deprecated since version 3.4, use alternative configuration method [#getSpelSecurityMode()]
-    @Deprecated(since = "3.4", forRemoval = true)
     EvaluationContextFactory getEvaluationContextFactory();
 
     /// Sets the [EvaluationContextFactory] for creating Spring Expression Language (SpEL) EvaluationContext instances.
+    ///
+    /// For the standard security levels, prefer [#setSpelSecurityMode(SecurityMode)], which
+    /// installs the matching pre-configured factory. Use this setter only to install a fully
+    /// custom factory; setting it overrides the factory chosen by the security mode.
     ///
     /// @param evaluationContextFactory the [EvaluationContextFactory] for creating SpEL [EvaluationContext]
     ///         instances.
     ///
     /// @return the updated [OfficeStamperConfiguration] object.
-    /// @deprecated since version 3.4, use alternative configuration method [#setSpelSecurityMode(SecurityMode)]
-    @Deprecated(since = "3.4", forRemoval = true)
     OfficeStamperConfiguration setEvaluationContextFactory(EvaluationContextFactory evaluationContextFactory);
 
     /// Retrieves the map of expression functions associated with their corresponding classes.
@@ -64,9 +67,9 @@ public interface OfficeStamperConfiguration {
     /// @return a map containing the expression functions as values and their corresponding classes as keys.
     Map<Class<?>, Object> getExpressionFunctions();
 
-    /// Returns a map of comment processors associated with their respective classes.
+    /// Returns a map of AnchoredComment processors associated with their respective classes.
     ///
-    /// @return The map of comment processors. The keys are the classes, and the values are the corresponding comment
+    /// @return The map of AnchoredComment processors. The keys are the classes, and the values are the corresponding AnchoredComment
     ///         processor factories.
     Map<Class<?>, CommentProcessorFactory> getCommentProcessors();
 

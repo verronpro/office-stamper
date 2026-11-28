@@ -23,7 +23,7 @@ public final class OfficeStamperEvaluationContextFactory {
     /// Constructs a factory.
     ///
     /// @param customFunctions custom functions to be registered.
-    /// @param commentProcessors comment processor factories.
+    /// @param commentProcessors AnchoredComment processor factories.
     /// @param interfaceFunctions interface functions.
     /// @param contextFactory the base evaluation context factory.
     OfficeStamperEvaluationContextFactory(
@@ -40,18 +40,27 @@ public final class OfficeStamperEvaluationContextFactory {
 
     /// Creates an evaluation context.
     ///
+    /// Comment processors are instantiated and registered as invokers only when the context is
+    /// comment-anchored ([CommentProcessorContext]) — both hook kinds pass one, since inline
+    /// hook tags carry a comment-shaped object by contract ([Tag#asComment]).
+    ///
     /// @param processorContext the processor context.
     /// @param branch           the context branch.
     /// @return the evaluation context.
     public EvaluationContext create(ProcessorContext processorContext, ContextBranch branch) {
         var ec = contextFactory.create(branch);
-        var processors = instantiate(commentProcessors, processorContext);
-        var invokerStream = Stream.of(streamInvokersFromClass(processors),
-                                          streamInvokersFromClass(interfaceFunctions),
-                                          streamInvokersFromCustomFunction(customFunctions))
+        var invokerStream = Stream.of(processorInvokers(processorContext),
+                                      streamInvokersFromClass(interfaceFunctions),
+                                      streamInvokersFromCustomFunction(customFunctions))
                                   .flatMap(identity());
         var invokers = new Invokers(invokerStream);
         return new UnionEvaluationContext(ec, invokers);
+    }
+
+    private Stream<Invoker> processorInvokers(ProcessorContext processorContext) {
+        if (!(processorContext instanceof CommentProcessorContext commentContext)) return Stream.empty();
+        var processors = instantiate(commentProcessors, commentContext);
+        return streamInvokersFromClass(processors);
     }
 
     /// Returns a set view of the mappings contained in this map. Each entry in the set is a mapping between a
@@ -62,7 +71,7 @@ public final class OfficeStamperEvaluationContextFactory {
 
     private static Map<Class<?>, CommentProcessor> instantiate(
             Map<Class<?>, CommentProcessorFactory> commentProcessorFactories,
-            ProcessorContext processorContext
+            CommentProcessorContext processorContext
     ) {
         var map = new HashMap<Class<?>, CommentProcessor>();
         for (var entry : commentProcessorFactories.entrySet()) {

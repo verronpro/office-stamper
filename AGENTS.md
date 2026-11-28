@@ -5,10 +5,17 @@ guidance for this project; it does not assume any relationship to other projects
 
 ## Project layout
 
-Four Maven modules:
+Maven modules:
 
 - `engine` — public API and core processing. Entry points: `OfficeStampers` (factory) and
   `OfficeStamperConfigurations` (presets `minimal()`, `standard()`, `full()`).
+- `officestamper-docx4j11` / `officestamper-docx4j17` — docx4j providers (engine + matching
+  docx4j transitively); the engine itself is docx-free.
+- `officestamper-docx4j-sources` — flavor-neutral docx adapter sources shared by both providers,
+  which compile them via `build-helper-maven-plugin add-source` (never built, installed or
+  published on its own; the only flavor-dependent class, `docx.JaxbCompat`, lives per-flavor).
+- `officestamper-test-sources` — shared docx-stamping test sources, compiled into both
+  provider test modules and run once per flavor (see Testing).
 - `utils` — low-level utilities with no engine dependency.
 - `cli` — command-line interface (Picocli).
 - `excel-context` — Excel/XLSX context support.
@@ -34,6 +41,14 @@ This project uses **Java 25** and **Maven**.
 - JUnit 5 (Jupiter); use `@DisplayName` for descriptive names; follow Arrange-Act-Assert.
 - Tests live in `src/test/java/`; template `.docx` fixtures live in
   `engine/src/test/resources/` (or a `sources` subfolder).
+- **Shared docx-stamping tests** live in `officestamper-test-sources/src/test/java`
+  (package `pro.verron.officestamper.test`) and are compiled into BOTH provider test
+  modules via `build-helper-maven-plugin add-test-source`, so each suite runs once per
+  docx4j flavor. Author new docx-stamping tests THERE, once — never mirror them between
+  `officestamper-docx4j11` and `officestamper-docx4j17`. Flavor differences go through the
+  `TestFlavor` seam (`Flavor.get()`), implemented once per provider in its
+  `TestFlavorImpl`; only provider-internal tests (shims, discovery, wml iterator,
+  ArchUnit rules) stay in the provider modules.
 - Coverage via JaCoCo, mutation testing via Pitest, architecture constraints via ArchUnit.
 - `java.awt.headless=true` is set automatically by the Surefire plugin.
 
